@@ -13,13 +13,14 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import login, { LoginInfo, WorkspaceLoginInfo } from '@hcengineering/login'
+  import { LoginInfo, WorkspaceLoginInfo } from '@hcengineering/login'
+  import { getAccount, getWorkspaces, navigateToWorkspace } from '@hcengineering/login-resources'
   import { OK } from '@hcengineering/platform'
   import { onMount } from 'svelte'
 
   import { OnboardSteps } from '../index'
-  import login from '../plugin'
-  import { ensureConfirmed, getAccount, getWorkspaces, goTo, navigateToWorkspace } from '../utils'
+  import onboard from '../plugin'
+  import { ensureConfirmed, goToLogin } from '../utils'
 
   import Form from './Form.svelte'
   import OnboardUserForm from './OnboardUserForm.svelte'
@@ -54,17 +55,17 @@
     if (account != null) {
       await ensureConfirmed(account)
     } else {
-      goTo('login')
+      goToLogin('login')
     }
 
     const workspaces = await getWorkspaces()
     if (workspaces.length > 0) {
-      goTo('selectWorkspace')
+      goToLogin('selectWorkspace')
     }
   })
 
   const action = {
-    i18n: login.string.StartUsingHuly,
+    i18n: onboard.string.StartUsingHuly,
     func: async () => {
       if (account !== undefined && isWorkspaceLoginInfo(account)) {
         navigateToWorkspace(account.workspace, account)
@@ -81,7 +82,7 @@
   {:else if step === OnboardSteps.Finish}
     <Form
       status={OK}
-      caption={login.string.SignUpCompleted}
+      caption={onboard.string.SignUpCompleted}
       subtitle={account.email}
       fields={[]}
       object={{}}

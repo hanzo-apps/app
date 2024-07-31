@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { LoginInfo, WorkspaceLoginInfo } from '@hcengineering/login'
+  import login, { LoginInfo, WorkspaceLoginInfo } from '@hcengineering/login'
+  import { getSessionLoginInfo, navigateToWorkspace } from '@hcengineering/login-resources'
   import { setMetadata } from '@hcengineering/platform'
   import presentation from '@hcengineering/presentation'
   import { Loading, setMetadataLocalStorage } from '@hcengineering/ui'
   import { onMount } from 'svelte'
-  import login from '../plugin'
-  import { afterConfirm, getSessionLoginInfo, goTo, navigateToWorkspace } from '../utils'
+  import { afterConfirm, goToLogin } from '../utils'
 
   onMount(async () => {
     const result = await getSessionLoginInfo()
@@ -20,7 +20,7 @@
       setMetadataLocalStorage(login.metadata.LoginEmail, result.email)
       await afterConfirm()
     } else {
-      goTo('login')
+      goToLogin('login')
     }
   })
 

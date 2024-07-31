@@ -1,6 +1,5 @@
 <!--
-// Copyright © 2020, 2021 Anticrm Platform Contributors.
-// Copyright © 2021, 2022 Hardcore Engineering Inc.
+// Copyright © 2024 Hardcore Engineering Inc.
 //
 // Licensed under the Eclipse Public License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License. You may
@@ -14,6 +13,8 @@
 // limitations under the License.
 -->
 <script lang="ts">
+  import login from '@hcengineering/login'
+  import { getAccount } from '@hcengineering/login-resources'
   import { getMetadata, setMetadata } from '@hcengineering/platform'
   import presentation from '@hcengineering/presentation'
   import {
@@ -29,17 +30,10 @@
   } from '@hcengineering/ui'
   import workbench from '@hcengineering/workbench'
   import { onDestroy, onMount } from 'svelte'
+
   import Auth from './Auth.svelte'
-  import Confirmation from './Confirmation.svelte'
-  import ConfirmationSend from './ConfirmationSend.svelte'
-  import CreateWorkspaceForm from './CreateWorkspaceForm.svelte'
-  import Join from './Join.svelte'
-  import LoginForm from './LoginForm.svelte'
-  import PasswordRequest from './PasswordRequest.svelte'
-  import PasswordRestore from './PasswordRestore.svelte'
-  import SelectWorkspace from './SelectWorkspace.svelte'
-  import SignupForm from './SignupForm.svelte'
-  import LoginIcon from './icons/LoginIcon.svelte'
+  import LoginIcon from './icons/OnboardIcon.svelte'
+  import OnboardForm from './OnboardForm.svelte'
 
   import loginBack from '../../img/login_back.png'
   import loginBack2x from '../../img/login_back_2x.png'
@@ -47,36 +41,22 @@
   import loginBackAvif from '../../img/login_back.avif'
   import loginBack2xAvif from '../../img/login_back_2x.avif'
 
-  import { Pages, getAccount, pages } from '..'
   import loginBackWebp from '../../img/login_back.webp'
   import loginBack2xWebp from '../../img/login_back_2x.webp'
-  import login from '../plugin'
 
-  export let page: Pages = 'signup'
+  import { Pages, pages } from '..'
 
-  let navigateUrl: string | undefined
+  export let page: Pages = 'onboard'
 
   onDestroy(location.subscribe(updatePageLoc))
 
   function updatePageLoc (loc: Location): void {
     const token = getMetadata(presentation.metadata.Token)
     page = (loc.path[1] as Pages) ?? (token != null ? 'selectWorkspace' : 'login')
-    const allowedUnauthPages: Pages[] = [
-      'login',
-      'signup',
-      'password',
-      'recovery',
-      'join',
-      'confirm',
-      'confirmationSend',
-      'auth'
-    ]
+    const allowedUnauthPages: Pages[] = ['onboard', 'auth']
     if (token === undefined ? !allowedUnauthPages.includes(page) : !pages.includes(page)) {
-      const tokens = fetchMetadataLocalStorage(login.metadata.LoginTokens)
-      page = tokens != null ? 'login' : 'signup'
+      page = 'onboard'
     }
-
-    navigateUrl = loc.query?.navigateUrl ?? undefined
   }
 
   async function chooseToken (): Promise<void> {
@@ -133,24 +113,8 @@
     <div class="panel-base" class:panel={$deviceInfo.docWidth > 768} class:white={!$themeStore.dark}>
       <Scroller padding={'1rem 0'}>
         <div class="form-content">
-          {#if page === 'login'}
-            <LoginForm {navigateUrl} />
-          {:else if page === 'signup'}
-            <SignupForm />
-          {:else if page === 'createWorkspace'}
-            <CreateWorkspaceForm />
-          {:else if page === 'password'}
-            <PasswordRequest />
-          {:else if page === 'recovery'}
-            <PasswordRestore />
-          {:else if page === 'selectWorkspace'}
-            <SelectWorkspace {navigateUrl} />
-          {:else if page === 'join'}
-            <Join />
-          {:else if page === 'confirm'}
-            <Confirmation />
-          {:else if page === 'confirmationSend'}
-            <ConfirmationSend />
+          {#if page === 'onboard'}
+            <OnboardForm />
           {:else if page === 'auth'}
             <Auth />
           {/if}
