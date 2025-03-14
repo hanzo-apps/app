@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { Space } from '@hcengineering/core'
-  import { Header, Breadcrumb } from '@hcengineering/ui'
+  import { Space } from '@hanzo/core'
+  import { Header, Breadcrumb } from '@hanzo/ui'
   import tracker from '../plugin'
   import EditRelatedTargets from './EditRelatedTargets.svelte'
 
   export let value: Space | undefined
 </script>
 
-<div class="hulyComponent">
+<div class="hanzoComponent">
   <Header adaptive={'disabled'}>
     <Breadcrumb icon={tracker.icon.Relations} label={tracker.string.RelatedIssues} size={'large'} isCurrent />
   </Header>

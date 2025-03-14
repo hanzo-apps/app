@@ -3,14 +3,14 @@
 //
 
 // Add this to the VERY top of the first file loaded in your app
-import { Analytics } from '@hcengineering/analytics'
-import { SplitLogger, configureAnalytics } from '@hcengineering/analytics-service'
-import contactPlugin from '@hcengineering/contact'
-import { MeasureMetricsContext, newMetrics, setOperationLogProfiling } from '@hcengineering/core'
-import { setMetadata } from '@hcengineering/platform'
-import { serverConfigFromEnv } from '@hcengineering/server'
-import serverAiBot from '@hcengineering/server-ai-bot'
-import serverCalendar from '@hcengineering/server-calendar'
+import { Analytics } from '@hanzo/analytics'
+import { SplitLogger, configureAnalytics } from '@hanzo/analytics-service'
+import contactPlugin from '@hanzo/contact'
+import { MeasureMetricsContext, newMetrics, setOperationLogProfiling } from '@hanzo/core'
+import { setMetadata } from '@hanzo/platform'
+import { serverConfigFromEnv } from '@hanzo/server'
+import serverAiBot from '@hanzo/server-ai-bot'
+import serverCalendar from '@hanzo/server-calendar'
 import serverCore, {
   type ConnectionSocket,
   type Session,
@@ -20,16 +20,16 @@ import serverCore, {
   type WorkspaceStatistics,
   initStatisticsContext,
   loadBrandingMap
-} from '@hcengineering/server-core'
-import serverNotification from '@hcengineering/server-notification'
-import { storageConfigFromEnv } from '@hcengineering/server-storage'
-import serverTelegram from '@hcengineering/server-telegram'
-import serverToken from '@hcengineering/server-token'
-import { startHttpServer } from '@hcengineering/server-ws'
+} from '@hanzo/server-core'
+import serverNotification from '@hanzo/server-notification'
+import { storageConfigFromEnv } from '@hanzo/server-storage'
+import serverTelegram from '@hanzo/server-telegram'
+import serverToken from '@hanzo/server-token'
+import { startHttpServer } from '@hanzo/server-ws'
 import { join } from 'path'
 import { start } from '.'
 import { profileStart, profileStop } from './inspector'
-import { setDBExtraOptions } from '@hcengineering/postgres'
+import { setDBExtraOptions } from '@hanzo/postgres'
 
 configureAnalytics(process.env.SENTRY_DSN, {})
 Analytics.setTag('application', 'transactor')

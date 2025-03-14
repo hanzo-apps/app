@@ -14,7 +14,7 @@
 -->
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import { IntlString } from '@hcengineering/platform'
+  import { IntlString } from '@hanzo/platform'
   import Header from './Header.svelte'
   import Label from './Label.svelte'
   import ButtonIcon from './ButtonIcon.svelte'
@@ -57,7 +57,7 @@
 
 <svelte:window on:keydown={onKeyDown} />
 
-<div class="hulyModal-container {type}" class:hidden class:noTopIndent>
+<div class="hanzoModal-container {type}" class:hidden class:noTopIndent>
   <Header
     {type}
     {allowFullsize}
@@ -76,7 +76,7 @@
     </svelte:fragment>
   </Header>
   <slot name="beforeContent" />
-  <div class="hulyModal-content">
+  <div class="hanzoModal-content">
     <Scroller
       padding={padding ?? typePadding}
       bottomPadding={type === 'type-popup'
@@ -90,7 +90,7 @@
   </div>
   <slot name="afterContent" />
   {#if type !== 'type-component' && !hideFooter}
-    <div class="hulyModal-footer">
+    <div class="hanzoModal-footer">
       <ButtonBase
         type={'type-button'}
         kind={'primary'}

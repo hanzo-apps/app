@@ -13,9 +13,9 @@
 // limitations under the License.
 //
 
-import type { Doc, DocumentQuery } from '@hcengineering/core'
-import { getClient } from '@hcengineering/presentation'
-import contact, { getCurrentEmployee } from '@hcengineering/contact'
+import type { Doc, DocumentQuery } from '@hanzo/core'
+import { getClient } from '@hanzo/presentation'
+import contact, { getCurrentEmployee } from '@hanzo/contact'
 
 export async function buildPersonSpaceQuery (): Promise<DocumentQuery<Doc>> {
   const client = getClient()

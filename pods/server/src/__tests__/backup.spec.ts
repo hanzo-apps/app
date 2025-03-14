@@ -8,11 +8,11 @@ import core, {
   type LowLevelStorage,
   type Ref,
   type TxCreateDoc
-} from '@hcengineering/core'
-import builder from '@hcengineering/model-all'
-import { wrapPipeline } from '@hcengineering/server-core'
-import { getServerPipeline } from '@hcengineering/server-pipeline'
-import { buildStorageFromConfig, storageConfigFromEnv } from '@hcengineering/server-storage'
+} from '@hanzo/core'
+import builder from '@hanzo/model-all'
+import { wrapPipeline } from '@hanzo/server-core'
+import { getServerPipeline } from '@hanzo/server-pipeline'
+import { buildStorageFromConfig, storageConfigFromEnv } from '@hanzo/server-storage'
 
 const model = builder().getTxes()
 // const dbURL = 'postgresql://root@localhost:26257/defaultdb?sslmode=disable'

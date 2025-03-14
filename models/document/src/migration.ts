@@ -23,8 +23,8 @@ import {
   type Class,
   type CollaborativeDoc,
   type Doc
-} from '@hcengineering/core'
-import { type Document, type DocumentSnapshot, type Teamspace } from '@hcengineering/document'
+} from '@hanzo/core'
+import { type Document, type DocumentSnapshot, type Teamspace } from '@hanzo/document'
 import {
   migrateSpaceRanks,
   tryMigrate,
@@ -33,15 +33,15 @@ import {
   type MigrationClient,
   type MigrationDocumentQuery,
   type MigrationUpgradeClient
-} from '@hcengineering/model'
-import { DOMAIN_ACTIVITY } from '@hcengineering/model-activity'
-import core, { DOMAIN_SPACE, getSocialIdByOldAccount } from '@hcengineering/model-core'
-import { DOMAIN_NOTIFICATION } from '@hcengineering/notification'
-import { type Asset } from '@hcengineering/platform'
-import { makeRank } from '@hcengineering/rank'
+} from '@hanzo/model'
+import { DOMAIN_ACTIVITY } from '@hanzo/model-activity'
+import core, { DOMAIN_SPACE, getSocialIdByOldAccount } from '@hanzo/model-core'
+import { DOMAIN_NOTIFICATION } from '@hanzo/notification'
+import { type Asset } from '@hanzo/platform'
+import { makeRank } from '@hanzo/rank'
 
-import { loadCollabYdoc, saveCollabYdoc, yDocCopyXmlField } from '@hcengineering/collaboration'
-import attachment, { DOMAIN_ATTACHMENT } from '@hcengineering/model-attachment'
+import { loadCollabYdoc, saveCollabYdoc, yDocCopyXmlField } from '@hanzo/collaboration'
+import attachment, { DOMAIN_ATTACHMENT } from '@hanzo/model-attachment'
 import document, { documentId, DOMAIN_DOCUMENT } from './index'
 
 async function migrateDocumentIcons (client: MigrationClient): Promise<void> {

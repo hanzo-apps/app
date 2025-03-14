@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { Contact } from '@hcengineering/contact'
-  import { ArrOf, Doc, Ref, RefTo } from '@hcengineering/core'
-  import { IntlString } from '@hcengineering/platform'
+  import { Contact } from '@hanzo/contact'
+  import { ArrOf, Doc, Ref, RefTo } from '@hanzo/core'
+  import { IntlString } from '@hanzo/platform'
   import ContactList from './ContactList.svelte'
 
   export let label: IntlString

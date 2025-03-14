@@ -13,14 +13,14 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { deviceOptionsStore as deviceInfo } from '@hcengineering/ui'
+  import { deviceOptionsStore as deviceInfo } from '@hanzo/ui'
   import { onDestroy, onMount } from 'svelte'
-  import presentation from '@hcengineering/presentation'
-  import { personByIdStore } from '@hcengineering/contact-resources'
-  import { RoomType } from '@hcengineering/love'
+  import presentation from '@hanzo/presentation'
+  import { personByIdStore } from '@hanzo/contact-resources'
+  import { RoomType } from '@hanzo/love'
 
   import Hall from './Hall.svelte'
-  import { getMetadata } from '@hcengineering/platform'
+  import { getMetadata } from '@hanzo/platform'
   import love from '../plugin'
   import { tryConnect, isConnected, isCurrentInstanceConnected, screenSharing } from '../utils'
   import { infos, invites, myInfo, myRequests, storePromise, currentRoom } from '../stores'
@@ -59,6 +59,6 @@
   })
 </script>
 
-<div class="hulyPanels-container">
+<div class="hanzoPanels-container">
   <Hall />
 </div>

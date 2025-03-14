@@ -13,8 +13,8 @@
 // limitations under the License.
 //
 
-import calendar, { calendarId } from '@hcengineering/calendar'
-import { type IntlString, mergeIds } from '@hcengineering/platform'
+import calendar, { calendarId } from '@hanzo/calendar'
+import { type IntlString, mergeIds } from '@hanzo/platform'
 
 export default mergeIds(calendarId, calendar, {
   string: {

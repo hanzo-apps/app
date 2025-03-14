@@ -14,8 +14,8 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Icon, Label } from '@hcengineering/ui'
-  import { Application } from '@hcengineering/workbench'
+  import { Icon, Label } from '@hanzo/ui'
+  import { Application } from '@hanzo/workbench'
 
   export let value: Application
 </script>

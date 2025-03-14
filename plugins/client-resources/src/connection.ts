@@ -14,14 +14,14 @@
 // limitations under the License.
 //
 
-import { Analytics } from '@hcengineering/analytics'
+import { Analytics } from '@hanzo/analytics'
 import client, {
   ClientSocket,
   ClientSocketReadyState,
   pingConst,
   pongConst,
   type ClientFactoryOptions
-} from '@hcengineering/client'
+} from '@hanzo/client'
 import core, {
   Account,
   Class,
@@ -50,7 +50,7 @@ import core, {
   type MeasureContext,
   type PersonUuid,
   type WorkspaceUuid
-} from '@hcengineering/core'
+} from '@hanzo/core'
 import platform, {
   PlatformError,
   Severity,
@@ -58,10 +58,10 @@ import platform, {
   UNAUTHORIZED,
   broadcastEvent,
   getMetadata
-} from '@hcengineering/platform'
+} from '@hanzo/platform'
 import { uncompress } from 'snappyjs'
 
-import { HelloRequest, HelloResponse, RPCHandler, ReqId, type Response } from '@hcengineering/rpc'
+import { HelloRequest, HelloResponse, RPCHandler, ReqId, type Response } from '@hanzo/rpc'
 
 const SECOND = 1000
 const pingTimeout = 10 * SECOND

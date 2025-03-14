@@ -13,7 +13,7 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import type { Asset, IntlString } from '@hcengineering/platform'
+  import type { Asset, IntlString } from '@hanzo/platform'
   import { AnySvelteComponent } from '../types'
   import { ComponentType } from 'svelte'
   import Icon from './Icon.svelte'
@@ -30,10 +30,10 @@
   export let isCurrent: boolean = false
 </script>
 
-<button class="hulyBreadcrumb-container {size}" class:current={isCurrent} on:click>
+<button class="hanzoBreadcrumb-container {size}" class:current={isCurrent} on:click>
   {#if size === 'large' && icon}
     <div
-      class="hulyBreadcrumb-avatar"
+      class="hanzoBreadcrumb-avatar"
       style:width={iconWidth ?? null}
       style:margin={iconMargin}
       class:withoutIconBackground
@@ -44,7 +44,7 @@
   <span
     class="{size === 'large'
       ? 'heading-medium-16'
-      : 'font-regular-14'} line-height-auto hulyBreadcrumb-label overflow-label"
+      : 'font-regular-14'} line-height-auto hanzoBreadcrumb-label overflow-label"
   >
     {#if label}<Label {label} />{/if}
     {#if title}{title}{/if}
@@ -52,7 +52,7 @@
 </button>
 
 <style lang="scss">
-  .hulyBreadcrumb-container {
+  .hanzoBreadcrumb-container {
     display: flex;
     align-items: center;
     gap: var(--spacing-0_75);
@@ -63,7 +63,7 @@
     outline: none;
     cursor: default;
 
-    .hulyBreadcrumb-avatar {
+    .hanzoBreadcrumb-avatar {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -79,21 +79,21 @@
         background-color: transparent;
       }
     }
-    .hulyBreadcrumb-label {
+    .hanzoBreadcrumb-label {
       padding: var(--spacing-0_5) 0;
       color: var(--global-secondary-TextColor);
     }
-    &.current .hulyBreadcrumb-label {
+    &.current .hanzoBreadcrumb-label {
       font-weight: 700;
     }
     &:not(.current) {
       cursor: pointer;
 
       &:hover {
-        .hulyBreadcrumb-avatar {
+        .hanzoBreadcrumb-avatar {
           background-color: var(--global-ui-hover-BackgroundColor);
         }
-        .hulyBreadcrumb-label {
+        .hanzoBreadcrumb-label {
           color: var(--global-primary-LinkColor);
         }
       }

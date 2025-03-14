@@ -23,8 +23,8 @@ import accountPlugin, {
   signUpByEmail,
   updateWorkspaceInfo,
   type AccountDB
-} from '@hcengineering/account'
-import { setMetadata } from '@hcengineering/platform'
+} from '@hanzo/account'
+import { setMetadata } from '@hanzo/platform'
 import {
   backup,
   backupFind,
@@ -33,8 +33,8 @@ import {
   createFileBackupStorage,
   createStorageBackupStorage,
   restore
-} from '@hcengineering/server-backup'
-import serverClientPlugin, { getAccountClient } from '@hcengineering/server-client'
+} from '@hanzo/server-backup'
+import serverClientPlugin, { getAccountClient } from '@hanzo/server-client'
 import {
   registerAdapterFactory,
   registerDestroyFactory,
@@ -43,11 +43,11 @@ import {
   registerTxAdapterFactory,
   setAdapterSecurity,
   sharedPipelineContextVars
-} from '@hcengineering/server-pipeline'
-import serverToken, { generateToken } from '@hcengineering/server-token'
-import { createWorkspace, upgradeWorkspace } from '@hcengineering/workspace-service'
+} from '@hanzo/server-pipeline'
+import serverToken, { generateToken } from '@hanzo/server-token'
+import { createWorkspace, upgradeWorkspace } from '@hanzo/workspace-service'
 
-import { buildStorageFromConfig, createStorageFromConfig, storageConfigFromEnv } from '@hcengineering/server-storage'
+import { buildStorageFromConfig, createStorageFromConfig, storageConfigFromEnv } from '@hanzo/server-storage'
 import { program, type Command } from 'commander'
 import { updateField } from './workspace'
 
@@ -64,24 +64,24 @@ import {
   type Version,
   type WorkspaceDataId,
   type WorkspaceUuid
-} from '@hcengineering/core'
-import { consoleModelLogger, type MigrateOperation } from '@hcengineering/model'
+} from '@hanzo/core'
+import { consoleModelLogger, type MigrateOperation } from '@hanzo/model'
 import {
   createMongoAdapter,
   createMongoDestroyAdapter,
   createMongoTxAdapter,
   shutdownMongo
-} from '@hcengineering/mongo'
-import { backupDownload } from '@hcengineering/server-backup/src/backup'
+} from '@hanzo/mongo'
+import { backupDownload } from '@hanzo/server-backup/src/backup'
 
-import { getModelVersion } from '@hcengineering/model-all'
+import { getModelVersion } from '@hanzo/model-all'
 import {
   createPostgreeDestroyAdapter,
   createPostgresAdapter,
   createPostgresTxAdapter,
   shutdownPostgres
-} from '@hcengineering/postgres'
-import type { StorageAdapter } from '@hcengineering/server-core'
+} from '@hanzo/postgres'
+import type { StorageAdapter } from '@hanzo/server-core'
 import { getAccountDBUrl, getMongoDBUrl } from './__start'
 // import { fillGithubUsers, fixAccountEmails, renameAccount } from './account'
 import { changeConfiguration } from './configuration'

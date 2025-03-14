@@ -21,7 +21,7 @@ import {
   AccountRole,
   type PersonUuid,
   type WorkspaceUuid
-} from '@hcengineering/core'
+} from '@hanzo/core'
 
 import type {
   DbCollection,
@@ -639,7 +639,7 @@ export class PostgresAccountDB implements AccountDB {
       $$ LANGUAGE SQL;
 
       /* ======= T Y P E S ======= */
-      CREATE TYPE IF NOT EXISTS global_account.social_id_type AS ENUM ('email', 'github', 'google', 'phone', 'oidc', 'huly', 'telegram');
+      CREATE TYPE IF NOT EXISTS global_account.social_id_type AS ENUM ('email', 'github', 'google', 'phone', 'oidc', 'hanzo', 'telegram');
       CREATE TYPE IF NOT EXISTS global_account.location AS ENUM ('kv', 'weur', 'eeur', 'wnam', 'enam', 'apac');
       CREATE TYPE IF NOT EXISTS global_account.workspace_role AS ENUM ('OWNER', 'MAINTAINER', 'USER', 'GUEST', 'DOCGUEST');
 

@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { IncomingHttpHeaders } from 'http'
-import { SocialIdType } from '@hcengineering/core'
-import { setMetadata } from '@hcengineering/platform'
-import serverClient from '@hcengineering/server-client'
-import { initStatisticsContext, type StorageConfiguration } from '@hcengineering/server-core'
-import { buildStorageFromConfig, storageConfigFromEnv } from '@hcengineering/server-storage'
-import serverToken, { decodeToken, type Token } from '@hcengineering/server-token'
+import { SocialIdType } from '@hanzo/core'
+import { setMetadata } from '@hanzo/platform'
+import serverClient from '@hanzo/server-client'
+import { initStatisticsContext, type StorageConfiguration } from '@hanzo/server-core'
+import { buildStorageFromConfig, storageConfigFromEnv } from '@hanzo/server-storage'
+import serverToken, { decodeToken, type Token } from '@hanzo/server-token'
 
 import { PlatformWorker } from './platform'
 import { createServer, Handler, listen } from './server'

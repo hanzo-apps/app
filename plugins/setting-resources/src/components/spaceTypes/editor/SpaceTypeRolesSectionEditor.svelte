@@ -13,9 +13,9 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import core, { Role, SortingOrder, SpaceType, SpaceTypeDescriptor } from '@hcengineering/core'
-  import { ButtonIcon, IconAdd, Label, getCurrentResolvedLocation, navigate } from '@hcengineering/ui'
-  import { createQuery } from '@hcengineering/presentation'
+  import core, { Role, SortingOrder, SpaceType, SpaceTypeDescriptor } from '@hanzo/core'
+  import { ButtonIcon, IconAdd, Label, getCurrentResolvedLocation, navigate } from '@hanzo/ui'
+  import { createQuery } from '@hanzo/presentation'
 
   import MembersIcon from '../../icons/Members.svelte'
   import PersonIcon from '../../icons/Person.svelte'
@@ -56,7 +56,7 @@
 </script>
 
 {#if descriptor !== undefined}
-  <div class="hulyTableAttr-header font-medium-12">
+  <div class="hanzoTableAttr-header font-medium-12">
     <MembersIcon size="small" />
     <span><Label label={settingRes.string.Roles} /></span>
     <ButtonIcon
@@ -71,19 +71,19 @@
     />
   </div>
   {#if roles.length}
-    <div class="hulyTableAttr-content task">
+    <div class="hanzoTableAttr-content task">
       {#each roles as role}
         <button
-          class="hulyTableAttr-content__row justify-start"
+          class="hanzoTableAttr-content__row justify-start"
           on:click|stopPropagation={() => {
             handleRoleSelected(role._id)
           }}
         >
-          <div class="hulyTableAttr-content__row-icon-wrapper">
+          <div class="hanzoTableAttr-content__row-icon-wrapper">
             <PersonIcon size="small" />
           </div>
           {#if role.name !== ''}
-            <div class="hulyTableAttr-content__row-label font-medium-14">
+            <div class="hanzoTableAttr-content__row-label font-medium-14">
               {role.name}
             </div>
           {/if}

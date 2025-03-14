@@ -13,7 +13,7 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import type { Asset, IntlString } from '@hcengineering/platform'
+  import type { Asset, IntlString } from '@hanzo/platform'
   import { ComponentType } from 'svelte'
   import { tooltip } from '../tooltips'
   import type { AnySvelteComponent, ButtonBaseSize, IconProps, LabelAndProps } from '../types'
@@ -49,7 +49,7 @@
 </script>
 
 <div
-  class="hulySplitButton-container {kind} {size}"
+  class="hanzoSplitButton-container {kind} {size}"
   class:no-focus={noFocus}
   class:disabled
   class:separate
@@ -61,7 +61,7 @@
   {:else}
     <button
       use:tooltip={showTooltip}
-      class="hulySplitButton-main"
+      class="hanzoSplitButton-main"
       class:pressed
       {disabled}
       {title}
@@ -83,7 +83,7 @@
     </button>
     <button
       use:tooltip={secondShowTooltip}
-      class="hulySplitButton-second"
+      class="hanzoSplitButton-second"
       class:pressed={secondPressed}
       {disabled}
       title={secondTitle}

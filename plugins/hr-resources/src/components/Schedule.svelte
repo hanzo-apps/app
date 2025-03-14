@@ -14,13 +14,13 @@
 -->
 <script lang="ts">
   import { onDestroy } from 'svelte'
-  import { CalendarMode } from '@hcengineering/calendar-resources'
-  import calendar from '@hcengineering/calendar-resources/src/plugin'
-  import { DocumentQuery, Ref } from '@hcengineering/core'
-  import { Department, Staff } from '@hcengineering/hr'
-  import { createQuery } from '@hcengineering/presentation'
-  import { getEmbeddedLabel } from '@hcengineering/platform'
-  import type { TabItem, DropdownIntlItem } from '@hcengineering/ui'
+  import { CalendarMode } from '@hanzo/calendar-resources'
+  import calendar from '@hanzo/calendar-resources/src/plugin'
+  import { DocumentQuery, Ref } from '@hanzo/core'
+  import { Department, Staff } from '@hanzo/hr'
+  import { createQuery } from '@hanzo/presentation'
+  import { getEmbeddedLabel } from '@hanzo/platform'
+  import type { TabItem, DropdownIntlItem } from '@hanzo/ui'
   import {
     ModernButton,
     ButtonIcon,
@@ -36,10 +36,10 @@
     deviceOptionsStore as deviceInfo,
     tableToCSV,
     showPopup
-  } from '@hcengineering/ui'
-  import view, { Viewlet, ViewletPreference } from '@hcengineering/view'
-  import { ViewletSelector, ViewletSettingButton } from '@hcengineering/view-resources'
-  import { getCurrentEmployee } from '@hcengineering/contact'
+  } from '@hanzo/ui'
+  import view, { Viewlet, ViewletPreference } from '@hanzo/view'
+  import { ViewletSelector, ViewletSettingButton } from '@hanzo/view-resources'
+  import { getCurrentEmployee } from '@hanzo/contact'
 
   import hr from '../plugin'
 
@@ -183,7 +183,7 @@
   defineSeparators('schedule', twoPanelsSeparators)
 </script>
 
-<div class="hulyPanels-container">
+<div class="hanzoPanels-container">
   {#if $deviceInfo.navigator.visible}
     <Sidebar
       {department}
@@ -203,7 +203,7 @@
     />
   {/if}
 
-  <div class="hulyComponent" bind:this={replacedPanel}>
+  <div class="hanzoComponent" bind:this={replacedPanel}>
     <Header
       adaptive={'disabled'}
       hideBefore={mode === CalendarMode.Year}
@@ -256,7 +256,7 @@
         {/if}
       </svelte:fragment>
     </Header>
-    <div class="hulyHeader-container clearPadding justify-between flex-gap-4">
+    <div class="hanzoHeader-container clearPadding justify-between flex-gap-4">
       <div class="flex-row-center flex-gap-2">
         <ButtonIcon
           icon={IconBack}
@@ -280,7 +280,7 @@
             inc(1)
           }}
         />
-        <div class="hulyHeader-divider short" />
+        <div class="hanzoHeader-divider short" />
         <div class="fs-title flex-row-center flex-grow firstLetter">
           {#if mode === CalendarMode.Month}
             <span class="mr-2 overflow-label">{getMonthName(currentDate)}</span>

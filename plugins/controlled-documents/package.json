@@ -1,5 +1,5 @@
 {
-  "name": "@hcengineering/controlled-documents",
+  "name": "@hanzo/controlled-documents",
   "version": "0.1.0",
   "main": "lib/index.js",
   "svelte": "src/index.ts",
@@ -21,7 +21,7 @@
     "_phase:validate": "compile validate"
   },
   "devDependencies": {
-    "@hcengineering/platform-rig": "^0.6.0",
+    "@hanzo/platform-rig": "^0.6.0",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-promise": "^6.1.1",
@@ -37,22 +37,22 @@
     "@types/jest": "^29.5.5"
   },
   "dependencies": {
-    "@hcengineering/platform": "^0.6.11",
-    "@hcengineering/ui": "^0.6.15",
-    "@hcengineering/core": "^0.6.32",
-    "@hcengineering/view": "^0.6.13",
-    "@hcengineering/contact": "^0.6.24",
-    "@hcengineering/notification": "^0.6.23",
-    "@hcengineering/attachment": "^0.6.14",
-    "@hcengineering/request": "^0.6.14",
-    "@hcengineering/tags": "^0.6.16",
-    "@hcengineering/training": "^0.1.0",
+    "@hanzo/platform": "^0.6.11",
+    "@hanzo/ui": "^0.6.15",
+    "@hanzo/core": "^0.6.32",
+    "@hanzo/view": "^0.6.13",
+    "@hanzo/contact": "^0.6.24",
+    "@hanzo/notification": "^0.6.23",
+    "@hanzo/attachment": "^0.6.14",
+    "@hanzo/request": "^0.6.14",
+    "@hanzo/tags": "^0.6.16",
+    "@hanzo/training": "^0.1.0",
     "lexorank": "~1.0.4",
-    "@hcengineering/activity": "^0.6.0",
-    "@hcengineering/chunter": "^0.6.20",
-    "@hcengineering/rank": "^0.6.4"
+    "@hanzo/activity": "^0.6.0",
+    "@hanzo/chunter": "^0.6.20",
+    "@hanzo/rank": "^0.6.4"
   },
   "publishConfig": {
-    "@hcengineering:registry": "https://npm.pkg.github.com"
+    "@hanzo:registry": "https://npm.pkg.github.com"
   }
 }

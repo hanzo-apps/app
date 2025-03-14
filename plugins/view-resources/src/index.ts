@@ -14,8 +14,8 @@
 // limitations under the License.
 //
 
-import { type Resources } from '@hcengineering/platform'
-import { getEventPopupPositionElement, type PopupAlignment } from '@hcengineering/ui'
+import { type Resources } from '@hanzo/platform'
+import { getEventPopupPositionElement, type PopupAlignment } from '@hanzo/ui'
 import { actionImpl } from './actionImpl'
 import ActionsPopup from './components/ActionsPopup.svelte'
 import ArrayEditor from './components/ArrayEditor.svelte'

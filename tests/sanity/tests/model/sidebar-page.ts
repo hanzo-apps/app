@@ -14,9 +14,9 @@ export class SidebarPage extends CommonPage {
   sidebar = (): Locator => this.page.locator('#sidebar')
   content = (): Locator => this.sidebar().locator('.sidebar-content')
   contentHeaderByTitle = (title: string): Locator =>
-    this.content().locator(`.hulyHeader-titleGroup:has-text("${title}")`)
+    this.content().locator(`.hanzoHeader-titleGroup:has-text("${title}")`)
 
-  contentCloseButton = (): Locator => this.content().locator('.hulyHeader-container button.iconOnly').last()
+  contentCloseButton = (): Locator => this.content().locator('.hanzoHeader-container button.iconOnly').last()
 
   calendarSidebarButton = (): Locator => this.sidebar().locator('button[id$="Calendar"]')
   officeSidebarButton = (): Locator => this.sidebar().locator('button[id$="Office"]')
@@ -30,7 +30,7 @@ export class SidebarPage extends CommonPage {
   currentYear = new Date().getFullYear().toString()
 
   plannerSidebarNextDayButton = (): Locator =>
-    this.sidebar().locator('.hulyHeader-buttonsGroup').getByRole('button').last()
+    this.sidebar().locator('.hanzoHeader-buttonsGroup').getByRole('button').last()
 
   // buttonOpenChannelInSidebar =
 

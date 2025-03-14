@@ -5,9 +5,9 @@
 
   import ServerManagerGeneral from './ServerManagerGeneral.svelte'
 
-  import { getEmbeddedLabel } from '@hcengineering/platform'
-  import presentation from '@hcengineering/presentation'
-  import { Breadcrumb, ButtonIcon, Header, IconClose, IconSettings, Switcher, TabItem } from '@hcengineering/ui'
+  import { getEmbeddedLabel } from '@hanzo/platform'
+  import presentation from '@hanzo/presentation'
+  import { Breadcrumb, ButtonIcon, Header, IconClose, IconSettings, Switcher, TabItem } from '@hanzo/ui'
   import { createEventDispatcher } from 'svelte'
 
   const dispatch = createEventDispatcher()
@@ -29,7 +29,7 @@
   let selectedTab: string | number = tabs[0].id
 </script>
 
-<div class="hulyComponent">
+<div class="hanzoComponent">
   <Header type={'type-panel'} freezeBefore>
     <svelte:fragment slot="beforeTitle">
       <ButtonIcon
@@ -56,7 +56,7 @@
     </svelte:fragment>
   </Header>
 
-  <div class="hulyComponent-content__column content">
+  <div class="hanzoComponent-content__column content">
     {#if selectedTab === 'general'}
       <ServerManagerGeneral />
     {:else if selectedTab === 'users'}

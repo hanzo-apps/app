@@ -28,7 +28,7 @@ import {
   type WorkspaceUuid,
   type WorkspaceDataId,
   type PersonId
-} from '@hcengineering/core'
+} from '@hanzo/core'
 
 /* ========= D A T A B A S E  E N T I T I E S ========= */
 export enum Location {

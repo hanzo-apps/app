@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-import { generateId, MeasureContext } from '@hcengineering/core'
+import { generateId, MeasureContext } from '@hanzo/core'
 import { type Request, type Response } from 'express'
 import { createReadStream, mkdtempSync, rmSync } from 'fs'
 import { writeFile } from 'fs/promises'

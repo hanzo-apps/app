@@ -14,8 +14,8 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import type { Customer } from '@hcengineering/lead'
-  import { Icon, tooltip } from '@hcengineering/ui'
+  import type { Customer } from '@hanzo/lead'
+  import { Icon, tooltip } from '@hanzo/ui'
   import LeadsPopup from './LeadsPopup.svelte'
   import leads from '../plugin'
 

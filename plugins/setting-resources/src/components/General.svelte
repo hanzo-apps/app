@@ -13,7 +13,7 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import core from '@hcengineering/core'
+  import core from '@hanzo/core'
   import {
     Breadcrumb,
     Header,
@@ -35,13 +35,13 @@
     getLocalWeekStart,
     hasLocalWeekStart,
     type DropdownTextItem
-  } from '@hcengineering/ui'
-  import { loginId } from '@hcengineering/login'
-  import { EditableAvatar } from '@hcengineering/contact-resources'
-  import { translateCB } from '@hcengineering/platform'
-  import { getClient, MessageBox } from '@hcengineering/presentation'
-  import { WorkspaceSetting } from '@hcengineering/setting'
-  import { AvatarType } from '@hcengineering/contact'
+  } from '@hanzo/ui'
+  import { loginId } from '@hanzo/login'
+  import { EditableAvatar } from '@hanzo/contact-resources'
+  import { translateCB } from '@hanzo/platform'
+  import { getClient, MessageBox } from '@hanzo/presentation'
+  import { WorkspaceSetting } from '@hanzo/setting'
+  import { AvatarType } from '@hanzo/contact'
 
   import setting from '../plugin'
   import { getAccountClient } from '../utils'
@@ -157,16 +157,16 @@
   }
 </script>
 
-<div class="hulyComponent">
+<div class="hanzoComponent">
   <Header adaptive={'disabled'}>
     <Breadcrumb icon={setting.icon.Setting} label={setting.string.General} size={'large'} isCurrent />
   </Header>
-  <div class="hulyComponent-content__column content">
+  <div class="hanzoComponent-content__column content">
     {#if loading}
       <Spinner size={'small'} />
     {:else}
       <Scroller align={'center'} padding={'var(--spacing-3)'} bottomPadding={'var(--spacing-3)'}>
-        <div class="hulyComponent-content flex-col flex-gap-4">
+        <div class="hanzoComponent-content flex-col flex-gap-4">
           <div class="title"><Label label={setting.string.Workspace} /></div>
           <div class="ws">
             <EditableAvatar

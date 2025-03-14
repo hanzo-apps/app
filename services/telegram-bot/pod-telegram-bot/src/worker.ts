@@ -14,15 +14,15 @@
 //
 
 import type { Collection, ObjectId, WithId } from 'mongodb'
-import { MeasureContext, Ref, SortingOrder, systemAccountUuid, WorkspaceUuid } from '@hcengineering/core'
-import { InboxNotification } from '@hcengineering/notification'
-import { TelegramNotificationRequest } from '@hcengineering/telegram'
-import { StorageAdapter } from '@hcengineering/server-core'
-import chunter, { ChunterSpace } from '@hcengineering/chunter'
-import { formatName } from '@hcengineering/contact'
-import { generateToken } from '@hcengineering/server-token'
-import { getAccountClient } from '@hcengineering/server-client'
-import { ActivityMessage } from '@hcengineering/activity'
+import { MeasureContext, Ref, SortingOrder, systemAccountUuid, WorkspaceUuid } from '@hanzo/core'
+import { InboxNotification } from '@hanzo/notification'
+import { TelegramNotificationRequest } from '@hanzo/telegram'
+import { StorageAdapter } from '@hanzo/server-core'
+import chunter, { ChunterSpace } from '@hanzo/chunter'
+import { formatName } from '@hanzo/contact'
+import { generateToken } from '@hanzo/server-token'
+import { getAccountClient } from '@hanzo/server-client'
+import { ActivityMessage } from '@hanzo/activity'
 
 import {
   ChannelRecord,

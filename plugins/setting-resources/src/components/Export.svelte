@@ -13,10 +13,10 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Class, Doc, Ref } from '@hcengineering/core'
-  import { getMetadata } from '@hcengineering/platform'
-  import presentation, { MessageBox } from '@hcengineering/presentation'
-  import { Breadcrumb, Button, DropdownLabelsIntl, Header, Label, Scroller, showPopup } from '@hcengineering/ui'
+  import { Class, Doc, Ref } from '@hanzo/core'
+  import { getMetadata } from '@hanzo/platform'
+  import presentation, { MessageBox } from '@hanzo/presentation'
+  import { Breadcrumb, Button, DropdownLabelsIntl, Header, Label, Scroller, showPopup } from '@hanzo/ui'
   import setting from '../plugin'
 
   const classItems = [
@@ -83,13 +83,13 @@
   }
 </script>
 
-<div class="hulyComponent">
+<div class="hanzoComponent">
   <Header adaptive={'disabled'}>
     <Breadcrumb icon={setting.icon.Export} label={setting.string.Export} size={'large'} isCurrent />
   </Header>
-  <div class="hulyComponent-content__column content">
+  <div class="hanzoComponent-content__column content">
     <Scroller align={'center'} padding={'var(--spacing-3)'} bottomPadding={'var(--spacing-3)'}>
-      <div class="hulyComponent-content">
+      <div class="hanzoComponent-content">
         <div class="flex-row-center p-2 flex-no-shrink">
           <div class="p-1 min-w-80">
             <div class="antiGrid-row">

@@ -30,10 +30,10 @@ import core, {
   type Tx,
   type TxCreateDoc,
   type WithLookup
-} from '@hcengineering/core'
+} from '@hanzo/core'
 
-import { Analytics } from '@hcengineering/analytics'
-import { getResource, type Resource } from '@hcengineering/platform'
+import { Analytics } from '@hanzo/analytics'
+import { getResource, type Resource } from '@hanzo/platform'
 import type { Trigger, TriggerControl, TriggerFunc } from './types'
 
 import serverCore from './plugin'

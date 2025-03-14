@@ -15,7 +15,7 @@
 -->
 <script lang="ts">
   import NumberEditor from './NumberEditor.svelte'
-  import { getEmbeddedLabel, IntlString } from '@hcengineering/platform'
+  import { getEmbeddedLabel, IntlString } from '@hanzo/platform'
 
   export let value: number | undefined
   export let onChange: ((value: number | undefined) => void) | undefined = undefined

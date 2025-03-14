@@ -13,13 +13,13 @@
 // limitations under the License.
 //
 
-import { type Client, type Doc, type Ref } from '@hcengineering/core'
-import { type NotificationType, type NotificationGroup } from '@hcengineering/notification'
-import { type Resource, mergeIds } from '@hcengineering/platform'
-import { type AnyComponent } from '@hcengineering/ui/src/types'
-import { type ActionCategory, type ViewAction } from '@hcengineering/view'
-import { loveId } from '@hcengineering/love'
-import love from '@hcengineering/love-resources/src/plugin'
+import { type Client, type Doc, type Ref } from '@hanzo/core'
+import { type NotificationType, type NotificationGroup } from '@hanzo/notification'
+import { type Resource, mergeIds } from '@hanzo/platform'
+import { type AnyComponent } from '@hanzo/ui/src/types'
+import { type ActionCategory, type ViewAction } from '@hanzo/view'
+import { loveId } from '@hanzo/love'
+import love from '@hanzo/love-resources/src/plugin'
 
 export default mergeIds(loveId, love, {
   component: {

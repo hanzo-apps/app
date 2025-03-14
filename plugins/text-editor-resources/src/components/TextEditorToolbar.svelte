@@ -14,15 +14,15 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { IconSize } from '@hcengineering/ui'
+  import { IconSize } from '@hanzo/ui'
   import { Editor } from '@tiptap/core'
   import textEditor, {
     type TextEditorAction,
     type ActionContext,
     type TextEditorActionKind
-  } from '@hcengineering/text-editor'
-  import { createQuery } from '@hcengineering/presentation'
-  import { getResource } from '@hcengineering/platform'
+  } from '@hanzo/text-editor'
+  import { createQuery } from '@hanzo/presentation'
+  import { getResource } from '@hanzo/platform'
   import { onDestroy, onMount } from 'svelte'
 
   import { inlineToolbarKey } from './extension/inlineToolbar'

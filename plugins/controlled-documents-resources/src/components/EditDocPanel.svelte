@@ -13,12 +13,12 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Class, Doc, Ref } from '@hcengineering/core'
-  import notification from '@hcengineering/notification'
-  import { Panel } from '@hcengineering/panel'
-  import { getResource, setPlatformStatus, unknownError } from '@hcengineering/platform'
-  import { getClient } from '@hcengineering/presentation'
-  import { Collaboration } from '@hcengineering/text-editor-resources'
+  import { Class, Doc, Ref } from '@hanzo/core'
+  import notification from '@hanzo/notification'
+  import { Panel } from '@hanzo/panel'
+  import { getResource, setPlatformStatus, unknownError } from '@hanzo/platform'
+  import { getClient } from '@hanzo/presentation'
+  import { Collaboration } from '@hanzo/text-editor-resources'
   import {
     Button,
     Chevron,
@@ -30,15 +30,15 @@
     navigate,
     resolvedLocationStore,
     showPopup
-  } from '@hcengineering/ui'
-  import { showMenu } from '@hcengineering/view-resources'
+  } from '@hanzo/ui'
+  import { showMenu } from '@hanzo/view-resources'
   import documents, {
     ControlledDocument,
     ControlledDocumentState,
     DocumentRequest,
     DocumentState,
     Project
-  } from '@hcengineering/controlled-documents'
+  } from '@hanzo/controlled-documents'
   import { createEventDispatcher, onDestroy, onMount } from 'svelte'
 
   import { createDocumentSnapshotAndEdit, createNewDraftForControlledDoc, getDocReference } from '../docutils'

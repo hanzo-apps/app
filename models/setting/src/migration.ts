@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-import core, { type AccountUuid, MeasureMetricsContext, type PersonId, type Ref, type Space } from '@hcengineering/core'
+import core, { type AccountUuid, MeasureMetricsContext, type PersonId, type Ref, type Space } from '@hanzo/core'
 import {
   migrateSpace,
   type MigrateUpdate,
@@ -22,9 +22,9 @@ import {
   type MigrateOperation,
   type MigrationClient,
   type MigrationUpgradeClient
-} from '@hcengineering/model'
-import setting, { type Integration, settingId } from '@hcengineering/setting'
-import { getSocialIdByOldAccount, getUniqueAccounts, getUniqueAccountsFromOldAccounts } from '@hcengineering/model-core'
+} from '@hanzo/model'
+import setting, { type Integration, settingId } from '@hanzo/setting'
+import { getSocialIdByOldAccount, getUniqueAccounts, getUniqueAccountsFromOldAccounts } from '@hanzo/model-core'
 
 import { DOMAIN_SETTING } from '.'
 

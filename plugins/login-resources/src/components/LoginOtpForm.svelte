@@ -13,7 +13,7 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { OK, Severity, Status } from '@hcengineering/platform'
+  import { OK, Severity, Status } from '@hanzo/platform'
 
   import OtpForm from './OtpForm.svelte'
   import login from '../plugin'

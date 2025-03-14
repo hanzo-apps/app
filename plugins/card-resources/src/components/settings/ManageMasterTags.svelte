@@ -13,10 +13,10 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { MasterTag } from '@hcengineering/card'
-  import { Ref } from '@hcengineering/core'
-  import { createQuery } from '@hcengineering/presentation'
-  import { clearSettingsStore } from '@hcengineering/setting-resources'
+  import { MasterTag } from '@hanzo/card'
+  import { Ref } from '@hanzo/core'
+  import { createQuery } from '@hanzo/presentation'
+  import { clearSettingsStore } from '@hanzo/setting-resources'
   import {
     Icon,
     IconOpenedArrow,
@@ -25,7 +25,7 @@
     getCurrentResolvedLocation,
     navigate,
     resolvedLocationStore
-  } from '@hcengineering/ui'
+  } from '@hanzo/ui'
   import { onDestroy } from 'svelte'
   import card from '../../plugin'
 
@@ -63,24 +63,24 @@
 
 {#each tags as tag}
   <button
-    class="hulyTaskNavLink-container font-regular-14"
+    class="hanzoTaskNavLink-container font-regular-14"
     class:selected={tag._id === selectedTagId}
     on:click={() => {
       selectProjectType(tag._id)
     }}
   >
-    <div class="hulyTaskNavLink-avatar">
+    <div class="hanzoTaskNavLink-avatar">
       {#if tag?.icon}
-        <div class="hulyTaskNavLink-icon">
+        <div class="hanzoTaskNavLink-icon">
           <Icon icon={tag?.icon} size="small" fill="currentColor" />
         </div>
       {/if}
     </div>
-    <div class="hulyTaskNavLink-content">
-      <span class="hulyTaskNavLink-content__title"><Label label={tag.label} /></span>
+    <div class="hanzoTaskNavLink-content">
+      <span class="hanzoTaskNavLink-content__title"><Label label={tag.label} /></span>
     </div>
     {#if tag._id === selectedTagId}
-      <div class="hulyTaskNavLink-icon right">
+      <div class="hanzoTaskNavLink-icon right">
         <IconOpenedArrow size={'small'} />
       </div>
     {/if}
@@ -88,7 +88,7 @@
 {/each}
 
 <style lang="scss">
-  .hulyTaskNavLink-container {
+  .hanzoTaskNavLink-container {
     display: flex;
     align-items: center;
     flex-shrink: 0;
@@ -103,7 +103,7 @@
     &.selected {
       cursor: auto;
     }
-    .hulyTaskNavLink-avatar {
+    .hanzoTaskNavLink-avatar {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -114,7 +114,7 @@
       background-color: var(--global-ui-BackgroundColor);
       border-radius: 0.375rem;
     }
-    .hulyTaskNavLink-icon {
+    .hanzoTaskNavLink-icon {
       flex-shrink: 0;
       width: 1rem;
       height: 1rem;
@@ -124,7 +124,7 @@
         visibility: hidden;
       }
     }
-    .hulyTaskNavLink-content {
+    .hanzoTaskNavLink-content {
       display: flex;
       flex-direction: column;
       gap: 0.125rem;
@@ -149,14 +149,14 @@
     &.selected {
       background-color: var(--global-ui-highlight-BackgroundColor);
 
-      .hulyTaskNavLink-icon {
+      .hanzoTaskNavLink-icon {
         color: var(--global-accent-TextColor);
 
         &.right {
           visibility: visible;
         }
       }
-      .hulyTaskNavLink-content .hulyTaskNavLink-content__title {
+      .hanzoTaskNavLink-content .hanzoTaskNavLink-content__title {
         font-weight: 700;
         color: var(--global-accent-TextColor);
       }

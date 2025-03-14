@@ -409,7 +409,7 @@ jobs:
           DOCKER_CLI_HINTS: false
       - name: Configure /etc/hosts
         run: |
-          sudo echo "127.0.0.1 huly.local" | sudo tee -a /etc/hosts
+          sudo echo "127.0.0.1 hanzo.local" | sudo tee -a /etc/hosts
       - name: Prepare server
         run: |
           cd ./qms-tests
@@ -471,7 +471,7 @@ jobs:
         run: node common/scripts/install-run-rush.js install
 
       - name: Build sanity-tests suite
-        run: node common/scripts/install-run-rush.js build -t @hcengineering/tests-sanity
+        run: node common/scripts/install-run-rush.js build -t @hanzo/tests-sanity
 
       - name: Docker Build
         run: node common/scripts/install-run-rush.js docker
@@ -479,7 +479,7 @@ jobs:
           DOCKER_CLI_HINTS: false
       - name: Configure /etc/hosts
         run: |
-          sudo echo "127.0.0.1 huly.local" | sudo tee -a /etc/hosts
+          sudo echo "127.0.0.1 hanzo.local" | sudo tee -a /etc/hosts
       - name: Prepare server
         run: |
           cd ./ws-tests
@@ -488,7 +488,7 @@ jobs:
       - name: Run API tests
         run: |
           cd ./ws-tests/api-tests
-          node ../../common/scripts/install-run-rush.js validate --to @hcengineering/api-tests
+          node ../../common/scripts/install-run-rush.js validate --to @hanzo/api-tests
           node ../../common/scripts/install-run-rushx.js api-test --verbose
       - name: Install Playwright
         run: |
@@ -540,7 +540,7 @@ jobs:
 
       - name: Checkout init repository
         run: |
-          wget https://github.com/hcengineering/init/archive/refs/heads/${{env.INIT_SCRIPTS_BRANCH}}.zip
+          wget https://github.com/hanzo/init/archive/refs/heads/${{env.INIT_SCRIPTS_BRANCH}}.zip
           unzip ${{env.INIT_SCRIPTS_BRANCH}}.zip -d pods/workspace
           mv pods/workspace/init-${{env.INIT_SCRIPTS_BRANCH}} pods/workspace/init
           rm -rf ${{env.INIT_SCRIPTS_BRANCH}}.zip
@@ -683,20 +683,20 @@ jobs:
       - name: Upload MacOS
         uses: actions/upload-artifact@v4
         with:
-          name: Huly-MacOS-x64
-          path: ./desktop-package/deploy/Huly-macos-*-x64.dmg
+          name: Hanzo-MacOS-x64
+          path: ./desktop-package/deploy/Hanzo-macos-*-x64.dmg
       - name: Upload MacOS arm64
         uses: actions/upload-artifact@v4
         with:
-          name: Huly-MacOS-arm64
-          path: ./desktop-package/deploy/Huly-macos-*-arm64.dmg
+          name: Hanzo-MacOS-arm64
+          path: ./desktop-package/deploy/Hanzo-macos-*-arm64.dmg
       - name: Upload Windows
         uses: actions/upload-artifact@v4
         with:
-          name: Huly-Windows
-          path: ./desktop-package/deploy/Huly-windows-*.zip
+          name: Hanzo-Windows
+          path: ./desktop-package/deploy/Hanzo-windows-*.zip
       - name: Upload Linux
         uses: actions/upload-artifact@v4
         with:
-          name: Huly-Linux
-          path: ./desktop-package/deploy/Huly-linux-*.zip
+          name: Hanzo-Linux
+          path: ./desktop-package/deploy/Hanzo-linux-*.zip

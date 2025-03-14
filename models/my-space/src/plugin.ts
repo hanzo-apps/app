@@ -13,4 +13,4 @@
 // limitations under the License.
 //
 
-export { default } from '@hcengineering/my-space-resources/src/plugin'
+export { default } from '@hanzo/my-space-resources/src/plugin'

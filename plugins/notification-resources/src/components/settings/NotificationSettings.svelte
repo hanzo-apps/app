@@ -14,15 +14,15 @@
 -->
 <script lang="ts">
   import { onDestroy } from 'svelte'
-  import { Ref } from '@hcengineering/core'
+  import { Ref } from '@hanzo/core'
   import type {
     BaseNotificationType,
     NotificationGroup,
     NotificationPreferencesGroup,
     NotificationTypeSetting
-  } from '@hcengineering/notification'
-  import { getResource } from '@hcengineering/platform'
-  import { getClient } from '@hcengineering/presentation'
+  } from '@hanzo/notification'
+  import { getResource } from '@hanzo/platform'
+  import { getClient } from '@hanzo/presentation'
   import {
     Breadcrumb,
     defineSeparators,
@@ -36,7 +36,7 @@
     Scroller,
     Separator,
     twoPanelsSeparators
-  } from '@hcengineering/ui'
+  } from '@hanzo/ui'
 
   import notification from '../../plugin'
   import NotificationGroupSetting from './NotificationGroupSetting.svelte'
@@ -96,7 +96,7 @@
   defineSeparators('notificationSettings', twoPanelsSeparators)
 </script>
 
-<div class="hulyComponent">
+<div class="hanzoComponent">
   <Header adaptive={'disabled'}>
     <Breadcrumb
       icon={notification.icon.Notifications}
@@ -105,8 +105,8 @@
       isCurrent
     />
   </Header>
-  <div class="hulyComponent-content__container columns">
-    <div class="hulyComponent-content__column navigation py-2">
+  <div class="hanzoComponent-content__container columns">
+    <div class="hanzoComponent-content__column navigation py-2">
       <Scroller shrink>
         {#each preferencesGroups as preferenceGroup}
           <NavItem
@@ -144,9 +144,9 @@
       </Scroller>
     </div>
     <Separator name="notificationSettings" index={0} color={'var(--theme-divider-color)'} />
-    <div class="hulyComponent-content__column content">
+    <div class="hanzoComponent-content__column content">
       <Scroller align={'center'} padding={'var(--spacing-3)'} bottomPadding={'var(--spacing-3)'}>
-        <div class="hulyComponent-content">
+        <div class="hanzoComponent-content">
           {#if loading}
             <Loading />
           {:else}

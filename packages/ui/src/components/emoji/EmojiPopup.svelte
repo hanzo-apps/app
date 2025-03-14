@@ -229,12 +229,12 @@
   $: outputGroups = updateGroups(searching, emojisCat)
 </script>
 
-<div class="hulyPopupEmoji-container kind-{kind}" class:embedded class:loading>
-  <div class="hulyPopupEmoji-header__tabs-wrapper">
-    <div class="hulyPopupEmoji-header__tabs">
+<div class="hanzoPopupEmoji-container kind-{kind}" class:embedded class:loading>
+  <div class="hanzoPopupEmoji-header__tabs-wrapper">
+    <div class="hanzoPopupEmoji-header__tabs">
       {#each categoryTabs as category (category.id)}
         <button
-          class="hulyPopupEmoji-header__tab"
+          class="hanzoPopupEmoji-header__tab"
           class:selected={(searching && searchCategory[0].id === category.id) ||
             (!searching && currentCategory.id === category.id)}
           disabled={loading}
@@ -251,11 +251,11 @@
         style:left={`${
           (searching ? 0 : emojisCat.findIndex((ec) => ec.id === currentCategory.id)) * (isMobile ? 1.875 : 2.125)
         }rem`}
-        class="hulyPopupEmoji-header__tab-cursor"
+        class="hanzoPopupEmoji-header__tab-cursor"
       />
     </div>
   </div>
-  <div class="hulyPopupEmoji-header__tools">
+  <div class="hanzoPopupEmoji-header__tools">
     <SearchInput
       value={$searchEmoji}
       placeholder={plugin.string.SearchDots}
@@ -290,11 +290,11 @@
           : Array.isArray(group.emojis)
             ? group.emojis
             : $resultEmojis.filter((re) => re.key === group.id)}
-        <div class="hulyPopupEmoji-group">
-          <div id={group.id} class="hulyPopupEmoji-group__header categoryHeader">
+        <div class="hanzoPopupEmoji-group">
+          <div id={group.id} class="hanzoPopupEmoji-group__header categoryHeader">
             <Label label={searching && $resultEmojis.length === 0 ? plugin.string.NoResults : group.label} />
           </div>
-          <div class="hulyPopupEmoji-group__palette">
+          <div class="hanzoPopupEmoji-group__palette">
             {#each emojisGroup as emoji}
               <EmojiButton
                 {emoji}
@@ -316,11 +316,11 @@
       {/each}
     {/if}
   </Scroller>
-  {#if !hidden && kind === 'fade'}<div class="hulyPopupEmoji-footer" />{/if}
+  {#if !hidden && kind === 'fade'}<div class="hanzoPopupEmoji-footer" />{/if}
 </div>
 
 <style lang="scss">
-  .hulyPopupEmoji-container {
+  .hanzoPopupEmoji-container {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -355,10 +355,10 @@
       }
     }
 
-    .hulyPopupEmoji-header__tools,
-    .hulyPopupEmoji-header__tabs-wrapper,
-    .hulyPopupEmoji-header__tabs,
-    .hulyPopupEmoji-header__tab {
+    .hanzoPopupEmoji-header__tools,
+    .hanzoPopupEmoji-header__tabs-wrapper,
+    .hanzoPopupEmoji-header__tabs,
+    .hanzoPopupEmoji-header__tab {
       display: flex;
       align-items: center;
       flex-shrink: 0;
@@ -366,18 +366,18 @@
       min-height: 0;
     }
 
-    .hulyPopupEmoji-header__tabs-wrapper {
+    .hanzoPopupEmoji-header__tabs-wrapper {
       overflow-x: auto;
       padding: 0.25rem 0.75rem;
       width: 100%;
       border-bottom: 1px solid var(--theme-popup-divider);
     }
-    .hulyPopupEmoji-header__tabs {
+    .hanzoPopupEmoji-header__tabs {
       position: relative;
       gap: 0.125rem;
       width: 100%;
     }
-    .hulyPopupEmoji-header__tab {
+    .hanzoPopupEmoji-header__tab {
       justify-content: center;
       width: 2rem;
       height: 2rem;
@@ -411,7 +411,7 @@
         }
       }
     }
-    .hulyPopupEmoji-header__tab-cursor {
+    .hanzoPopupEmoji-header__tab-cursor {
       position: absolute;
       bottom: -0.25rem;
       width: 2rem;
@@ -423,12 +423,12 @@
         width: 1.75rem;
       }
     }
-    .hulyPopupEmoji-header__tools {
+    .hanzoPopupEmoji-header__tools {
       gap: 0.5rem;
       padding: 0 0.75rem;
     }
 
-    .hulyPopupEmoji-group {
+    .hanzoPopupEmoji-group {
       display: flex;
       flex-direction: column;
       flex-wrap: nowrap;
@@ -474,10 +474,10 @@
         font-size: 1.25rem;
       }
     }
-    .hulyPopupEmoji-group + .hulyPopupEmoji-group {
+    .hanzoPopupEmoji-group + .hanzoPopupEmoji-group {
       margin-top: 0.5rem;
     }
-    .hulyPopupEmoji-footer {
+    .hanzoPopupEmoji-footer {
       position: absolute;
       left: 50%;
       bottom: 0.75rem;
@@ -491,7 +491,7 @@
     }
 
     &.kind-default {
-      .hulyPopupEmoji-group__header {
+      .hanzoPopupEmoji-group__header {
         background: var(--theme-popup-header);
 
         &::before {
@@ -501,7 +501,7 @@
     }
 
     &.loading {
-      .hulyPopupEmoji-header__tab {
+      .hanzoPopupEmoji-header__tab {
         color: var(--theme-trans-color);
       }
       :global(.scroll) {

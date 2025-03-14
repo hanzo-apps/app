@@ -14,8 +14,8 @@
 //
 
 import { BotCommand } from 'telegraf/typings/core/types/typegram'
-import { translate } from '@hcengineering/platform'
-import telegram from '@hcengineering/telegram'
+import { translate } from '@hanzo/platform'
+import telegram from '@hanzo/telegram'
 import { Context, Telegraf } from 'telegraf'
 
 import config from '../config'

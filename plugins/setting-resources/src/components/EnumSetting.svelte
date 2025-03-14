@@ -13,8 +13,8 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import core, { Enum } from '@hcengineering/core'
-  import { createQuery } from '@hcengineering/presentation'
+  import core, { Enum } from '@hanzo/core'
+  import { createQuery } from '@hanzo/presentation'
   import {
     Breadcrumb,
     ButtonIcon,
@@ -29,8 +29,8 @@
     defineSeparators,
     twoPanelsSeparators,
     showPopup
-  } from '@hcengineering/ui'
-  import { showMenu } from '@hcengineering/view-resources'
+  } from '@hanzo/ui'
+  import { showMenu } from '@hanzo/view-resources'
   import setting from '../plugin'
   import EnumValues from './EnumValues.svelte'
 
@@ -54,7 +54,7 @@
   defineSeparators('workspaceSettings', twoPanelsSeparators)
 </script>
 
-<div class="hulyComponent">
+<div class="hanzoComponent">
   <Header adaptive={'disabled'}>
     <Breadcrumb icon={setting.icon.Enums} label={setting.string.Enums} size={'large'} isCurrent />
     <svelte:fragment slot="actions">
@@ -67,13 +67,13 @@
       />
     </svelte:fragment>
   </Header>
-  <div class="hulyComponent-content__container columns">
-    <div class="hulyComponent-content__column">
-      <div class="hulyComponent-content__navHeader">
-        <div class="hulyComponent-content__navHeader-menu">
+  <div class="hanzoComponent-content__container columns">
+    <div class="hanzoComponent-content__column">
+      <div class="hanzoComponent-content__navHeader">
+        <div class="hanzoComponent-content__navHeader-menu">
           <ButtonIcon kind={'tertiary'} icon={IconTableOfContents} size={'small'} inheritColor />
         </div>
-        <div class="hulyComponent-content__navHeader-hint paragraph-regular-14">
+        <div class="hanzoComponent-content__navHeader-hint paragraph-regular-14">
           <Label label={setting.string.EnumsSettingHint} />
         </div>
       </div>
@@ -110,9 +110,9 @@
       </Scroller>
     </div>
     <Separator name={'workspaceSettings'} index={0} color={'var(--theme-divider-color)'} />
-    <div class="hulyComponent-content__column content">
+    <div class="hanzoComponent-content__column content">
       <Scroller align={'center'} padding={'var(--spacing-3)'} bottomPadding={'var(--spacing-3)'}>
-        <div class="hulyComponent-content">
+        <div class="hanzoComponent-content">
           {#if selected !== undefined}
             <EnumValues value={selected} />
           {/if}

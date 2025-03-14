@@ -13,15 +13,15 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { getClient } from '@hcengineering/presentation'
-  import { ButtonIcon, showPopup, closeTooltip, IconOptions } from '@hcengineering/ui'
-  import { ViewOptionModel, ViewOptions, ViewOptionsModel, Viewlet } from '@hcengineering/view'
+  import { getClient } from '@hanzo/presentation'
+  import { ButtonIcon, showPopup, closeTooltip, IconOptions } from '@hanzo/ui'
+  import { ViewOptionModel, ViewOptions, ViewOptionsModel, Viewlet } from '@hanzo/view'
   import { createEventDispatcher } from 'svelte'
   import view from '../plugin'
   import { focusStore } from '../selection'
   import { setViewOptions } from '../viewOptions'
   import ViewOptionsEditor from './ViewOptions.svelte'
-  import core from '@hcengineering/core'
+  import core from '@hanzo/core'
 
   export let viewlet: Viewlet | undefined
   export let kind: 'primary' | 'secondary' | 'tertiary' | 'negative' = 'secondary'

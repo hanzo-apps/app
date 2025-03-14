@@ -13,9 +13,9 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import diffview from '@hcengineering/diffview'
-  import { MarkupNode } from '@hcengineering/text'
-  import { Component } from '@hcengineering/ui'
+  import diffview from '@hanzo/diffview'
+  import { MarkupNode } from '@hanzo/text'
+  import { Component } from '@hanzo/ui'
 
   export let node: MarkupNode
   export let preview = false

@@ -1,11 +1,11 @@
 {
-  "name": "@hcengineering/qms-tests-sanity",
+  "name": "@hanzo/qms-tests-sanity",
   "version": "0.6.0",
   "main": "lib/index.js",
   "svelte": "src/index.ts",
   "types": "types/index.d.ts",
   "author": "Hardcore Engineering Inc",
-  "template": "@hcengineering/default-package",
+  "template": "@hanzo/default-package",
   "license": "EPL-2.0",
   "scripts": {
     "build": "compile",
@@ -19,18 +19,18 @@
     "format": "format tests",
     "ci": "playwright install --with-deps chromium",
     "test": "",
-    "uitest": "cross-env LOCAL_URL=http://huly.local:3003/ DEV_URL= playwright test -c ./tests/playwright.config.ts --grep-invert @PDF",
-    "uitest-pdf": "cross-env LOCAL_URL=http://huly.local:3003/ DEV_URL= playwright test -c ./tests/playwright.config.ts --grep @PDF",
+    "uitest": "cross-env LOCAL_URL=http://hanzo.local:3003/ DEV_URL= playwright test -c ./tests/playwright.config.ts --grep-invert @PDF",
+    "uitest-pdf": "cross-env LOCAL_URL=http://hanzo.local:3003/ DEV_URL= playwright test -c ./tests/playwright.config.ts --grep @PDF",
     "staging-uitest": "cross-env PLATFORM_URI=https://front.hc.engineering/ playwright test -c ./tests/playwright.config.ts --grep @staging --grep-invert @PDF",
     "dev-uitest": "cross-env PLATFORM_URI=http://localhost:8081 PLATFORM_TRANSACTOR=ws://localhost:3333 DEV_URL=http://localhost:8080/account playwright test -c ./tests/playwright.config.ts --grep-invert @PDF",
     "debug": "playwright test -c ./tests/playwright.config.ts --debug --headed",
-    "dev-debug": "cross-env PLATFORM_URI=http://localhost:8081 PLATFORM_TRANSACTOR=ws://huly.local:3333 playwright test -c ./tests/playwright.config.ts --debug --headed",
-    "codegen": "playwright codegen --load-storage storage.json http://huly.local:8083/workbench/sanity-ws/",
+    "dev-debug": "cross-env PLATFORM_URI=http://localhost:8081 PLATFORM_TRANSACTOR=ws://hanzo.local:3333 playwright test -c ./tests/playwright.config.ts --debug --headed",
+    "codegen": "playwright codegen --load-storage storage.json http://hanzo.local:8083/workbench/sanity-ws/",
     "dev-codegen": "cross-env playwright codegen --load-storage storage-dev.json http://localhost:8080/workbench/sanity-ws/",
     "allure:generate": "allure generate allure-results -o allure-report --clean"
   },
   "devDependencies": {
-    "@hcengineering/platform-rig": "^0.6.0",
+    "@hanzo/platform-rig": "^0.6.0",
     "@types/jest": "^29.5.5",
     "@types/node": "~20.11.16",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
@@ -50,7 +50,7 @@
   "dependencies": {
     "dotenv": "~16.0.0",
     "cross-env": "~7.0.3",
-    "@hcengineering/core": "^0.6.32",
-    "@hcengineering/client-resources": "^0.6.27"
+    "@hanzo/core": "^0.6.32",
+    "@hanzo/client-resources": "^0.6.27"
   }
 }

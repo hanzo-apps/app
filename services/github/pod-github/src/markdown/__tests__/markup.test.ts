@@ -14,9 +14,9 @@
 //
 
 /* eslint-env jest */
-import { setMetadata } from '@hcengineering/platform'
-import serverCore from '@hcengineering/server-core'
-import { jsonToHTML, htmlToJSON } from '@hcengineering/text'
+import { setMetadata } from '@hanzo/platform'
+import serverCore from '@hanzo/server-core'
+import { jsonToHTML, htmlToJSON } from '@hanzo/text'
 import { markupToMarkdown, markdownToMarkup, parseMessageMarkdown, serializeMessage } from '..'
 import { appendGuestLinkToModel, stripGuestLink } from '../../sync/guest'
 import { GithubKit } from '../extensions'
@@ -53,7 +53,7 @@ describe('server', () => {
 <img alt="Screenshot 2024-01-22 at 10 39 26" src="https://github.com/haiodo-dev/my-issues/assets/477235/6a8799fd-242d-4e70-9eba-0a769eede71b">
 
 <sub>
-  View at Huly <a href="https://github.com/haiodo-dev/my-issues/issues/1">TSK-1023</a>
+  View at Hanzo <a href="https://github.com/haiodo-dev/my-issues/issues/1">TSK-1023</a>
 </sub>
 `
 
@@ -66,7 +66,7 @@ describe('server', () => {
   })
   it('check parsing with sub', async () => {
     const markdown =
-      'qwe4 qwe6\n\n![](http://localhost:8080/files?workspace=github&file=76e25453-186d-46e5-b9cd-d296a5342ce2&width=997)qwe 77\n\nzzz2 3\n\n<sub>View in Huly <a href="http://localhost:8080/guest/github?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsaW5rSWQiOiI2NWRlYWU4NGExZTRkY2Q2OWFlMzlmOTMiLCJndWVzdCI6InRydWUiLCJlbWFpbCI6IiNndWVzdEBoYy5lbmdpbmVlcmluZyIsIndvcmtzcGFjZSI6ImdpdGh1YiIsInByb2R1Y3RJZCI6IiJ9.6RJjjnn9JgDxQmsZ3AmMj8aqHI7Px4BwPxqyMK83OyM">TSK-50</a></sub>'
+      'qwe4 qwe6\n\n![](http://localhost:8080/files?workspace=github&file=76e25453-186d-46e5-b9cd-d296a5342ce2&width=997)qwe 77\n\nzzz2 3\n\n<sub>View in Hanzo <a href="http://localhost:8080/guest/github?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsaW5rSWQiOiI2NWRlYWU4NGExZTRkY2Q2OWFlMzlmOTMiLCJndWVzdCI6InRydWUiLCJlbWFpbCI6IiNndWVzdEBoYy5lbmdpbmVlcmluZyIsIndvcmtzcGFjZSI6ImdpdGh1YiIsInByb2R1Y3RJZCI6IiJ9.6RJjjnn9JgDxQmsZ3AmMj8aqHI7Px4BwPxqyMK83OyM">TSK-50</a></sub>'
     const json = parseMessageMarkdown(markdown, refUrl, imageUrl, guestUrl)
     setMetadata(serverCore.metadata.FrontUrl, 'http://localhost:8080')
     await stripGuestLink(json)
@@ -105,7 +105,7 @@ describe('server', () => {
     await stripGuestLink(json)
     const serializedMarkdown2 = serializeMessage(json, refUrl, imageUrl)
     expect(serializedMarkdown).toBe(
-      '```bash\n2\nbash qwe\n3\nbase qwe2\n4\nbaseh qwe4\n5\n```\n\n<sub><a href="http://test.com">Huly&reg;: <b>TSK-1235</b></a></sub>'
+      '```bash\n2\nbash qwe\n3\nbase qwe2\n4\nbaseh qwe4\n5\n```\n\n<sub><a href="http://test.com">Hanzo&reg;: <b>TSK-1235</b></a></sub>'
     )
     expect(serializedMarkdown2).toBe('```bash\n2\nbash qwe\n3\nbase qwe2\n4\nbaseh qwe4\n5\n```')
   })

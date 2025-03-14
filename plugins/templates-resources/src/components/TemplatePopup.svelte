@@ -14,10 +14,10 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { createQuery } from '@hcengineering/presentation'
-  import { MessageTemplate, TemplateCategory } from '@hcengineering/templates'
-  import { closePopup, deviceOptionsStore, EditWithIcon, IconSearch } from '@hcengineering/ui'
-  import { groupBy } from '@hcengineering/view-resources'
+  import { createQuery } from '@hanzo/presentation'
+  import { MessageTemplate, TemplateCategory } from '@hanzo/templates'
+  import { closePopup, deviceOptionsStore, EditWithIcon, IconSearch } from '@hanzo/ui'
+  import { groupBy } from '@hanzo/view-resources'
   import templates from '../plugin'
   import { getTemplateDataProvider } from '../utils'
   import { createEventDispatcher } from 'svelte'

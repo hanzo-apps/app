@@ -14,10 +14,10 @@
 -->
 
 <script lang="ts">
-  import { deviceOptionsStore as deviceInfo, Label, TimeLeft, CodeInput } from '@hcengineering/ui'
-  import { OK, Severity, Status } from '@hcengineering/platform'
+  import { deviceOptionsStore as deviceInfo, Label, TimeLeft, CodeInput } from '@hanzo/ui'
+  import { OK, Severity, Status } from '@hanzo/platform'
   import { createEventDispatcher, onDestroy } from 'svelte'
-  import { Timestamp } from '@hcengineering/core'
+  import { Timestamp } from '@hanzo/core'
 
   import Tabs from './Tabs.svelte'
   import { BottomAction, doLoginNavigate, validateOtpLogin, OtpLoginSteps, loginOtp } from '../index'

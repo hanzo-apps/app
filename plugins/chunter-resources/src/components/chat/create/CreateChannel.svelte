@@ -14,10 +14,10 @@
 -->
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import { ModernEditbox, ButtonMenu, Label, Modal, TextArea } from '@hcengineering/ui'
-  import presentation, { getClient } from '@hcengineering/presentation'
-  import core, { getCurrentAccount } from '@hcengineering/core'
-  import contact, { getCurrentEmployee } from '@hcengineering/contact'
+  import { ModernEditbox, ButtonMenu, Label, Modal, TextArea } from '@hanzo/ui'
+  import presentation, { getClient } from '@hanzo/presentation'
+  import core, { getCurrentAccount } from '@hanzo/core'
+  import contact, { getCurrentEmployee } from '@hanzo/contact'
 
   import Lock from '../../icons/Lock.svelte'
   import chunter from '../../../plugin'
@@ -83,7 +83,7 @@
   onCancel={handleCancel}
   on:close
 >
-  <div class="hulyModal-content__titleGroup" style="padding: 0">
+  <div class="hanzoModal-content__titleGroup" style="padding: 0">
     <ModernEditbox bind:value={channelName} label={chunter.string.NewChannel} size="large" kind="ghost" />
     <TextArea
       placeholder={chunter.string.DescriptionOptional}
@@ -94,8 +94,8 @@
       bind:value={description}
     />
   </div>
-  <div class="hulyModal-content__settingsSet">
-    <div class="hulyModal-content__settingsSet-line">
+  <div class="hanzoModal-content__settingsSet">
+    <div class="hanzoModal-content__settingsSet-line">
       <span class="label"><Label label={chunter.string.Visibility} /></span>
       <ButtonMenu
         items={visibilityOptions}

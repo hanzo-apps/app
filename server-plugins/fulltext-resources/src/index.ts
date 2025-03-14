@@ -26,8 +26,8 @@ import core, {
   type Ref,
   type TxCUD,
   type TxUpdateDoc
-} from '@hcengineering/core'
-import { TriggerControl } from '@hcengineering/server-core'
+} from '@hanzo/core'
+import { TriggerControl } from '@hanzo/server-core'
 
 const indexingCtx = 'indexing_contexts'
 export async function OnChange (txes: Tx[], control: TriggerControl): Promise<Tx[]> {

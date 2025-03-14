@@ -13,10 +13,10 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import cardPlugin from '@hcengineering/card'
-  import core, { Class, ClassifierKind, Doc, Ref } from '@hcengineering/core'
-  import { createQuery, getClient } from '@hcengineering/presentation'
-  import { Icon, Label } from '@hcengineering/ui'
+  import cardPlugin from '@hanzo/card'
+  import core, { Class, ClassifierKind, Doc, Ref } from '@hanzo/core'
+  import { createQuery, getClient } from '@hanzo/presentation'
+  import { Icon, Label } from '@hanzo/ui'
   import { createEventDispatcher } from 'svelte'
 
   export let classes: Ref<Class<Doc>>[] = []
@@ -59,13 +59,13 @@
 {#each classes as cl}
   {@const clazz = client.getHierarchy().getClass(cl)}
   <button
-    class="hulyTableAttr-content__row justify-start cursor-pointer"
+    class="hanzoTableAttr-content__row justify-start cursor-pointer"
     on:click={() => {
       dispatch('select', cl)
     }}
   >
     <div
-      class="hulyTableAttr-content__row-label font-medium-14 flex flex-gap-2"
+      class="hanzoTableAttr-content__row-label font-medium-14 flex flex-gap-2"
       style:margin-left={`${level * 1.25}rem`}
     >
       <Icon icon={clazz.icon ?? cardPlugin.icon.Tag} size="small" />

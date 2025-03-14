@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { getClient } from '@hcengineering/presentation'
-  import { RelationSetting } from '@hcengineering/setting-resources'
-  import contact from '@hcengineering/contact'
+  import { getClient } from '@hanzo/presentation'
+  import { RelationSetting } from '@hanzo/setting-resources'
+  import contact from '@hanzo/contact'
   import card from '../../plugin'
 
   const client = getClient()

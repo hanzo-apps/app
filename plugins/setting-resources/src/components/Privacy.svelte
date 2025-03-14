@@ -13,8 +13,8 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import setting from '@hcengineering/setting'
-  import { Icon, Label } from '@hcengineering/ui'
+  import setting from '@hanzo/setting'
+  import { Icon, Label } from '@hanzo/ui'
 </script>
 
 <div class="antiComponent">

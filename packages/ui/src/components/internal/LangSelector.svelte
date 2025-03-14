@@ -14,7 +14,7 @@
 -->
 <script lang="ts">
   import { getContext, onMount } from 'svelte'
-  import { getMetadata } from '@hcengineering/platform'
+  import { getMetadata } from '@hanzo/platform'
   import ui, { showPopup, deviceOptionsStore as deviceInfo } from '../..'
   import LangPopup from './LangPopup.svelte'
   import Html from '../Html.svelte'

@@ -4,10 +4,10 @@ import {
   type ReccuringEvent,
   type ReccuringInstance,
   generateEventId
-} from '@hcengineering/calendar'
-import { type DocumentUpdate, type IdMap, type Timestamp, getCurrentAccount, toIdMap } from '@hcengineering/core'
-import { createQuery, getClient, onClient } from '@hcengineering/presentation'
-import { closePopup, DAY, showPopup } from '@hcengineering/ui'
+} from '@hanzo/calendar'
+import { type DocumentUpdate, type IdMap, type Timestamp, getCurrentAccount, toIdMap } from '@hanzo/core'
+import { createQuery, getClient, onClient } from '@hanzo/presentation'
+import { closePopup, DAY, showPopup } from '@hanzo/ui'
 import { writable } from 'svelte/store'
 import UpdateRecInstancePopup from './components/UpdateRecInstancePopup.svelte'
 import calendar from './plugin'

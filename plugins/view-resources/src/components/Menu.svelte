@@ -13,11 +13,11 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Class, Doc, Ref } from '@hcengineering/core'
-  import { Asset } from '@hcengineering/platform'
-  import { getClient } from '@hcengineering/presentation'
-  import { Action, Menu } from '@hcengineering/ui'
-  import { ActionGroup, Action as ViewAction, ViewContextType } from '@hcengineering/view'
+  import { Class, Doc, Ref } from '@hanzo/core'
+  import { Asset } from '@hanzo/platform'
+  import { getClient } from '@hanzo/presentation'
+  import { Action, Menu } from '@hanzo/ui'
+  import { ActionGroup, Action as ViewAction, ViewContextType } from '@hanzo/view'
   import { getActions, invokeAction } from '../actions'
 
   export let object: Doc | Doc[]

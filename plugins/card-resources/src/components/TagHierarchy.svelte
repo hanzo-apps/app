@@ -13,11 +13,11 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { MasterTag } from '@hcengineering/card'
-  import { Class, Doc, Ref } from '@hcengineering/core'
-  import { getClient } from '@hcengineering/presentation'
-  import { NavItem } from '@hcengineering/ui'
-  import { NavLink } from '@hcengineering/view-resources'
+  import { MasterTag } from '@hanzo/card'
+  import { Class, Doc, Ref } from '@hanzo/core'
+  import { getClient } from '@hanzo/presentation'
+  import { NavItem } from '@hanzo/ui'
+  import { NavLink } from '@hanzo/view-resources'
   import { createEventDispatcher } from 'svelte'
   import card from '../plugin'
 

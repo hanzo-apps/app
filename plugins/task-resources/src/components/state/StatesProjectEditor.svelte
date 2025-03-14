@@ -13,13 +13,13 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import core, { IdMap, Ref, Status, StatusCategory, toIdMap } from '@hcengineering/core'
-  import { Asset } from '@hcengineering/platform'
-  import { createQuery } from '@hcengineering/presentation'
-  import { settingsStore } from '@hcengineering/setting-resources'
-  import { ProjectStatus, ProjectType, TaskType } from '@hcengineering/task'
-  import { IconMoreV2, IconOpenedArrow, Label } from '@hcengineering/ui'
-  import { ObjectPresenter, statusStore } from '@hcengineering/view-resources'
+  import core, { IdMap, Ref, Status, StatusCategory, toIdMap } from '@hanzo/core'
+  import { Asset } from '@hanzo/platform'
+  import { createQuery } from '@hanzo/presentation'
+  import { settingsStore } from '@hanzo/setting-resources'
+  import { ProjectStatus, ProjectType, TaskType } from '@hanzo/task'
+  import { IconMoreV2, IconOpenedArrow, Label } from '@hanzo/ui'
+  import { ObjectPresenter, statusStore } from '@hanzo/view-resources'
   import { createEventDispatcher } from 'svelte'
   import task from '../../plugin'
 
@@ -186,15 +186,15 @@
 {#each categories as cat (cat._id)}
   {@const states = groups.get(cat._id) ?? []}
   {@const prevIndex = getPrevIndex(groups, cat._id)}
-  <div class="hulyTableAttr-content class withTitle">
-    <div class="hulyTableAttr-content__title">
+  <div class="hanzoTableAttr-content class withTitle">
+    <div class="hanzoTableAttr-content__title">
       <Label label={cat.label} />
     </div>
-    <div class="hulyTableAttr-content__wrapper">
+    <div class="hanzoTableAttr-content__wrapper">
       {#if states.length === 0}
         <!-- Placeholder для пустой категории -->
         <button
-          class="hulyTableAttr-content__row disableMouseOver"
+          class="hanzoTableAttr-content__row disableMouseOver"
           style="height: 100%; min-height: 3rem;"
           draggable={false}
           on:drop|preventDefault={() => {
@@ -210,7 +210,7 @@
         <!-- svelte-ignore a11y-no-static-element-interactions -->
         <button
           bind:this={elements[prevIndex + i]}
-          class="hulyTableAttr-content__row"
+          class="hanzoTableAttr-content__row"
           class:selected={state._id === opened}
           draggable={!readonly}
           on:click={() => {
@@ -230,7 +230,7 @@
             selected = undefined
           }}
         >
-          <button class="hulyTableAttr-content__row-dragMenu" on:click|stopPropagation={() => {}}>
+          <button class="hanzoTableAttr-content__row-dragMenu" on:click|stopPropagation={() => {}}>
             <IconMoreV2 size={'small'} />
           </button>
           <ObjectPresenter
@@ -239,7 +239,7 @@
             value={state}
             props={{ projectType: type._id, taskType: taskType._id, kind: 'table-attrs', size: 'medium' }}
           />
-          <div class="hulyTableAttr-content__row-arrow">
+          <div class="hanzoTableAttr-content__row-arrow">
             <IconOpenedArrow size={'small'} />
           </div>
         </button>

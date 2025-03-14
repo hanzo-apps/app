@@ -13,16 +13,16 @@
 // limitations under the License.
 //
 
-import { AccountRole } from '@hcengineering/core'
-import { type Builder } from '@hcengineering/model'
-import core from '@hcengineering/model-core'
-import workbench from '@hcengineering/model-workbench'
-import mail from '@hcengineering/mail'
-import { mySpaceId } from '@hcengineering/my-space'
+import { AccountRole } from '@hanzo/core'
+import { type Builder } from '@hanzo/model'
+import core from '@hanzo/model-core'
+import workbench from '@hanzo/model-workbench'
+import mail from '@hanzo/mail'
+import { mySpaceId } from '@hanzo/my-space'
 
 import mySpace from './plugin'
 
-export { mySpaceId } from '@hcengineering/my-space'
+export { mySpaceId } from '@hanzo/my-space'
 
 export { mySpace as default }
 

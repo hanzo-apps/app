@@ -14,8 +14,8 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { translateCB } from '@hcengineering/platform'
-  import { themeStore } from '@hcengineering/theme'
+  import { translateCB } from '@hanzo/platform'
+  import { themeStore } from '@hanzo/theme'
   import { ticker } from '..'
   import ui from '../plugin'
   import { tooltip } from '../tooltips'

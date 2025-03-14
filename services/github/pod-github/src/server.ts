@@ -8,19 +8,19 @@ import bp from 'body-parser'
 import cors from 'cors'
 import express from 'express'
 
-import { Analytics } from '@hcengineering/analytics'
-import { PersonId, BrandingMap, MeasureContext } from '@hcengineering/core'
-import { setMetadata } from '@hcengineering/platform'
-import serverClient from '@hcengineering/server-client'
-import serverCore from '@hcengineering/server-core'
-import { decodeToken } from '@hcengineering/server-token'
+import { Analytics } from '@hanzo/analytics'
+import { PersonId, BrandingMap, MeasureContext } from '@hanzo/core'
+import { setMetadata } from '@hanzo/platform'
+import serverClient from '@hanzo/server-client'
+import serverCore from '@hanzo/server-core'
+import { decodeToken } from '@hanzo/server-token'
 
 /**
  * @public
  */
 export async function start (ctx: MeasureContext, brandingMap: BrandingMap): Promise<() => Promise<void>> {
   // Create an authenticated Octokit client authenticated as a GitHub App
-  ctx.info('Running Huly Github integration', { appId: config.AppID, clientID: config.ClientID })
+  ctx.info('Running Hanzo Github integration', { appId: config.AppID, clientID: config.ClientID })
 
   setMetadata(serverCore.metadata.FrontUrl, config.FrontURL)
   setMetadata(serverClient.metadata.Endpoint, config.AccountsURL)

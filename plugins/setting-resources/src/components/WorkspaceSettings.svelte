@@ -13,9 +13,9 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { getCurrentAccount, hasAccountRole } from '@hcengineering/core'
-  import { createQuery, isAdminUser } from '@hcengineering/presentation'
-  import setting, { SettingsCategory } from '@hcengineering/setting'
+  import { getCurrentAccount, hasAccountRole } from '@hanzo/core'
+  import { createQuery, isAdminUser } from '@hanzo/presentation'
+  import setting, { SettingsCategory } from '@hanzo/setting'
   import {
     Component,
     Location,
@@ -24,7 +24,7 @@
     navigate,
     resolvedLocationStore,
     deviceOptionsStore as deviceInfo
-  } from '@hcengineering/ui'
+  } from '@hanzo/ui'
   import { onDestroy, onMount } from 'svelte'
   import { clearSettingsStore } from '../store'
 
@@ -99,7 +99,7 @@
     {/if}
   {/each}
 {:else if kind === 'content' && category === undefined}
-  <div class="hulyComponent" />
+  <div class="hanzoComponent" />
 {:else if category}
   <Component is={category.component} props={{ kind: 'content', ...category.props }} on:change />
 {/if}

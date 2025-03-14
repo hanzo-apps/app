@@ -13,9 +13,9 @@
 // limitations under the License.
 //
 
-import { Analytics } from '@hcengineering/analytics'
-import attachmentPlugin, { type Attachment } from '@hcengineering/attachment'
-import contactPlugin from '@hcengineering/contact'
+import { Analytics } from '@hanzo/analytics'
+import attachmentPlugin, { type Attachment } from '@hanzo/attachment'
+import contactPlugin from '@hanzo/contact'
 import core, {
   type AnyAttribute,
   type AttachedDoc,
@@ -52,17 +52,17 @@ import core, {
   systemAccount,
   toIdMap,
   withContext
-} from '@hcengineering/core'
-import drivePlugin, { type FileVersion } from '@hcengineering/drive'
+} from '@hanzo/core'
+import drivePlugin, { type FileVersion } from '@hanzo/drive'
 import type {
   ContentTextAdapter,
   DbAdapter,
   FullTextAdapter,
   IndexedDoc,
   StorageAdapter
-} from '@hcengineering/server-core'
-import { RateLimiter, SessionDataImpl } from '@hcengineering/server-core'
-import { jsonToText, markupToJSON, markupToText } from '@hcengineering/text'
+} from '@hanzo/server-core'
+import { RateLimiter, SessionDataImpl } from '@hanzo/server-core'
+import { jsonToText, markupToJSON, markupToText } from '@hanzo/text'
 import { findSearchPresenter, updateDocWithPresenter } from '../mapper'
 import { type FullTextPipeline } from './types'
 import { createIndexedDoc, createStateDoc, getContent } from './utils'

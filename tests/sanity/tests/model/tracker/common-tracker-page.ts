@@ -26,7 +26,7 @@ export class CommonTrackerPage extends CalendarPage {
     this.page.locator('form[id="tracker:string:MoveIssues"] input[type="checkbox"]')
 
   buttonMoreActions = (): Locator =>
-    this.page.locator('.popupPanel > .hulyHeader-container button[data-id="btnMoreActions"]')
+    this.page.locator('.popupPanel > .hanzoHeader-container button[data-id="btnMoreActions"]')
 
   textActivityContent = (): Locator => this.page.locator('div.activityMessage div.content')
   linkInActivity = (): Locator => this.page.locator('div[id="activity:string:Activity"] a')
@@ -70,15 +70,15 @@ export class CommonTrackerPage extends CalendarPage {
     this.page.locator('.antiCard.menu .antiCard-menu__item:has-text("Show empty groups")')
 
   header = (): Locator =>
-    this.page.locator('button.hulyBreadcrumb-container > span.hulyBreadcrumb-label', { hasText: 'Issues' })
+    this.page.locator('button.hanzoBreadcrumb-container > span.hanzoBreadcrumb-label', { hasText: 'Issues' })
 
-  view = (): Locator => this.page.locator('.hulyHeader-buttonsGroup > button[data-id="btn-viewOptions"]')
-  showMore = (): Locator => this.page.locator('.hulyHeader-buttonsGroup > button[data-id="btn-viewSetting"]')
-  task1 = (): Locator => this.page.getByRole('link', { name: 'Welcome to Huly! 🌟' })
+  view = (): Locator => this.page.locator('.hanzoHeader-buttonsGroup > button[data-id="btn-viewOptions"]')
+  showMore = (): Locator => this.page.locator('.hanzoHeader-buttonsGroup > button[data-id="btn-viewSetting"]')
+  task1 = (): Locator => this.page.getByRole('link', { name: 'Welcome to Hanzo! 🌟' })
   task2 = (): Locator => this.page.getByRole('link', { name: 'Create your first Project 📌' })
   task3 = (): Locator => this.page.getByRole('link', { name: 'Create your first Issue 📝' })
   task4 = (): Locator => this.page.getByRole('link', { name: 'Schedule your first Todo 📆' })
-  task5 = (): Locator => this.page.getByRole('link', { name: 'Explore all Huly has to offer' })
+  task5 = (): Locator => this.page.getByRole('link', { name: 'Explore all Hanzo has to offer' })
 
   // Actions
   async selectPanelAndViewlet (panel: string, viewletSelector: string): Promise<void> {

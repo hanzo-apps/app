@@ -35,21 +35,21 @@ import core, {
   platformNow,
   platformNowDiff,
   type AccountUuid
-} from '@hcengineering/core'
-import { generateToken } from '@hcengineering/server-token'
-import { connect } from '@hcengineering/server-tool'
+} from '@hanzo/core'
+import { generateToken } from '@hanzo/server-token'
+import { connect } from '@hanzo/server-tool'
 
-import client from '@hcengineering/client'
-import { setMetadata } from '@hcengineering/platform'
-import serverClientPlugin, { getTransactorEndpoint } from '@hcengineering/server-client'
+import client from '@hanzo/client'
+import { setMetadata } from '@hanzo/platform'
+import serverClientPlugin, { getTransactorEndpoint } from '@hanzo/server-client'
 import os from 'os'
 import { Worker, isMainThread, parentPort } from 'worker_threads'
 import { CSVWriter } from './csv'
 
-import { AvatarType, getPersonBySocialId } from '@hcengineering/contact'
-import contact from '@hcengineering/model-contact'
-import recruit from '@hcengineering/model-recruit'
-import { type Vacancy } from '@hcengineering/recruit'
+import { AvatarType, getPersonBySocialId } from '@hanzo/contact'
+import contact from '@hanzo/model-contact'
+import recruit from '@hanzo/model-recruit'
+import { type Vacancy } from '@hanzo/recruit'
 import { WebSocket } from 'ws'
 
 interface StartMessage {
@@ -620,7 +620,7 @@ export async function generateEmployee (client: TxOperations): Promise<AccountUu
     active: true
   })
 
-  const socialString = buildSocialIdString({ type: SocialIdType.HULY, value: personUuid })
+  const socialString = buildSocialIdString({ type: SocialIdType.HANZO, value: personUuid })
 
   await client.addCollection(
     contact.class.SocialIdentity,
@@ -629,7 +629,7 @@ export async function generateEmployee (client: TxOperations): Promise<AccountUu
     contact.class.Person,
     'socialIds',
     {
-      type: SocialIdType.HULY,
+      type: SocialIdType.HANZO,
       value: personUuid,
       key: socialString,
       confirmed: true
@@ -667,7 +667,7 @@ async function generateVacancy (client: TxOperations, members: AccountUuid[]): P
       avatarType: AvatarType.COLOR,
       personUuid
     })
-    const socialString = buildSocialIdString({ type: SocialIdType.HULY, value: personUuid })
+    const socialString = buildSocialIdString({ type: SocialIdType.HANZO, value: personUuid })
     await client.addCollection(
       contact.class.SocialIdentity,
       contact.space.Contacts,
@@ -675,7 +675,7 @@ async function generateVacancy (client: TxOperations, members: AccountUuid[]): P
       contact.class.Person,
       'socialIds',
       {
-        type: SocialIdType.HULY,
+        type: SocialIdType.HANZO,
         value: personUuid,
         key: socialString,
         confirmed: true

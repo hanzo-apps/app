@@ -13,10 +13,10 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import type { Class, Doc, DocumentQuery, Ref, Space } from '@hcengineering/core'
-  import core, { WithLookup } from '@hcengineering/core'
-  import { IntlString, Asset } from '@hcengineering/platform'
-  import presentation, { createQuery, getClient } from '@hcengineering/presentation'
+  import type { Class, Doc, DocumentQuery, Ref, Space } from '@hanzo/core'
+  import core, { WithLookup } from '@hanzo/core'
+  import { IntlString, Asset } from '@hanzo/platform'
+  import presentation, { createQuery, getClient } from '@hanzo/presentation'
   import {
     AnyComponent,
     Button,
@@ -26,15 +26,15 @@
     Header,
     LinkWrapper,
     Breadcrumbs
-  } from '@hcengineering/ui'
-  import view, { ViewOptions, Viewlet } from '@hcengineering/view'
+  } from '@hanzo/ui'
+  import view, { ViewOptions, Viewlet } from '@hanzo/view'
   import {
     FilterButton,
     ViewletSelector,
     ViewletSettingButton,
     DocNavLink,
     classIcon
-  } from '@hcengineering/view-resources'
+  } from '@hanzo/view-resources'
   import { createEventDispatcher } from 'svelte'
   import plugin from '../plugin'
 
@@ -125,5 +125,5 @@
     </svelte:fragment>
   </Header>
 {:else}
-  <div class="hulyHeader-container" />
+  <div class="hanzoHeader-container" />
 {/if}

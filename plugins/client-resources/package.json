@@ -1,5 +1,5 @@
 {
-  "name": "@hcengineering/client-resources",
+  "name": "@hanzo/client-resources",
   "version": "0.6.27",
   "main": "lib/index.js",
   "svelte": "src/index.ts",
@@ -22,7 +22,7 @@
     "_phase:validate": "compile validate"
   },
   "devDependencies": {
-    "@hcengineering/platform-rig": "^0.6.0",
+    "@hanzo/platform-rig": "^0.6.0",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-promise": "^6.1.1",
@@ -38,14 +38,14 @@
     "@types/snappyjs": "^0.7.1"
   },
   "dependencies": {
-    "@hcengineering/analytics": "^0.6.0",
-    "@hcengineering/platform": "^0.6.11",
-    "@hcengineering/core": "^0.6.32",
-    "@hcengineering/client": "^0.6.18",
-    "@hcengineering/rpc": "^0.6.5",
+    "@hanzo/analytics": "^0.6.0",
+    "@hanzo/platform": "^0.6.11",
+    "@hanzo/core": "^0.6.32",
+    "@hanzo/client": "^0.6.18",
+    "@hanzo/rpc": "^0.6.5",
     "snappyjs": "^0.7.0"
   },
-  "repository": "https://github.com/hcengineering/platform",
+  "repository": "https://github.com/hanzo/platform",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },

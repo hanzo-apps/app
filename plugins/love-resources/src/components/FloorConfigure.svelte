@@ -13,8 +13,8 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { DocumentUpdate, Ref } from '@hcengineering/core'
-  import { getClient } from '@hcengineering/presentation'
+  import { DocumentUpdate, Ref } from '@hanzo/core'
+  import { getClient } from '@hanzo/presentation'
   import ui, {
     Button,
     IconMaxWidth,
@@ -27,8 +27,8 @@
     Scroller,
     eventToHTMLElement,
     showPopup
-  } from '@hcengineering/ui'
-  import { Floor, GRID_WIDTH, Room, getFreeSpace } from '@hcengineering/love'
+  } from '@hanzo/ui'
+  import { Floor, GRID_WIDTH, Room, getFreeSpace } from '@hanzo/love'
   import { createEventDispatcher } from 'svelte'
   import { floors, lockedRoom, loveUseMaxWidth } from '../stores'
   import { FloorSize, RGBAColor, ResizeInitParams, RoomSide, shadowError, shadowNormal } from '../types'
@@ -37,7 +37,7 @@
   import FloorGrid from './FloorGrid.svelte'
   import RoomConfigure from './RoomConfigure.svelte'
   import lovePlg from '../plugin'
-  import { Contact } from '@hcengineering/contact'
+  import { Contact } from '@hanzo/contact'
 
   export let rooms: Room[] = []
   export let floor: Ref<Floor>
@@ -292,12 +292,12 @@
   $: rows = calculateFloorSize(rooms) + 2
 </script>
 
-<div class="hulyComponent">
+<div class="hanzoComponent">
   <Header allowFullsize adaptive={'disabled'}>
     <Breadcrumb title={selectedFloor?.name ?? ''} size={'large'} isCurrent />
     <svelte:fragment slot="actions">
       <ButtonIcon icon={IconAdd} size={'small'} on:click={addRoom} />
-      <div class="hulyHeader-divider short" />
+      <div class="hanzoHeader-divider short" />
       <Button
         icon={$loveUseMaxWidth ? IconMaxWidth : IconMinWidth}
         kind={'regular'}
@@ -314,7 +314,7 @@
       />
     </svelte:fragment>
   </Header>
-  <div class="hulyComponent-content__column content">
+  <div class="hanzoComponent-content__column content">
     <Scroller bind:divScroll padding={'1rem'} bottomPadding={'1rem'} horizontal>
       <FloorGrid
         bind:floorContainer

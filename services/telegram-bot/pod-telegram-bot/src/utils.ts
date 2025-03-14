@@ -16,7 +16,7 @@
 import { Collection } from 'mongodb'
 import otpGenerator from 'otp-generator'
 import { Message } from 'telegraf/typings/core/types/typegram'
-import { TelegramNotificationRequest } from '@hcengineering/telegram'
+import { TelegramNotificationRequest } from '@hanzo/telegram'
 import { Parser } from 'htmlparser2'
 import { MediaGroup } from 'telegraf/typings/telegram-types'
 import { InputMediaAudio, InputMediaDocument, InputMediaPhoto, InputMediaVideo } from 'telegraf/src/core/types/typegram'

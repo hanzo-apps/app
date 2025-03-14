@@ -14,18 +14,18 @@
 // limitations under the License.
 //
 
-import { type Account, type BrandingMap, type MeasureContext, type Tx } from '@hcengineering/core'
-import { buildStorageFromConfig } from '@hcengineering/server-storage'
+import { type Account, type BrandingMap, type MeasureContext, type Tx } from '@hanzo/core'
+import { buildStorageFromConfig } from '@hanzo/server-storage'
 
-import { ClientSession, startSessionManager } from '@hcengineering/server'
+import { ClientSession, startSessionManager } from '@hanzo/server'
 import {
   type ServerFactory,
   type Session,
   type SessionManager,
   type StorageConfiguration,
   type Workspace
-} from '@hcengineering/server-core'
-import { type Token } from '@hcengineering/server-token'
+} from '@hanzo/server-core'
+import { type Token } from '@hanzo/server-token'
 
 import {
   createServerPipeline,
@@ -37,7 +37,7 @@ import {
   registerTxAdapterFactory,
   setAdapterSecurity,
   sharedPipelineContextVars
-} from '@hcengineering/server-pipeline'
+} from '@hanzo/server-pipeline'
 import { uncompress } from 'snappy'
 
 import {
@@ -45,7 +45,7 @@ import {
   createMongoDestroyAdapter,
   createMongoTxAdapter,
   shutdownMongo
-} from '@hcengineering/mongo'
+} from '@hanzo/mongo'
 import {
   createPostgreeDestroyAdapter,
   createPostgresAdapter,
@@ -54,7 +54,7 @@ import {
   registerGreenUrl,
   setDBExtraOptions,
   shutdownPostgres
-} from '@hcengineering/postgres'
+} from '@hanzo/postgres'
 import { readFileSync } from 'node:fs'
 const model = JSON.parse(readFileSync(process.env.MODEL_JSON ?? 'model.json').toString()) as Tx[]
 

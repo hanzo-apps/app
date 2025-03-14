@@ -29,7 +29,7 @@ import {
   type Tx,
   type TxResult,
   type WorkspaceUuid
-} from '@hcengineering/core'
+} from '@hanzo/core'
 import { type StorageAdapter } from './storage'
 import type { ServerFindOptions } from './types'
 

@@ -13,9 +13,9 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { AccountRole, getCurrentAccount, hasAccountRole, Ref } from '@hcengineering/core'
-  import love, { Floor, Room } from '@hcengineering/love'
-  import { Breadcrumbs, ButtonIcon, eventToHTMLElement, Header, IconAdd, Scroller, showPopup } from '@hcengineering/ui'
+  import { AccountRole, getCurrentAccount, hasAccountRole, Ref } from '@hanzo/core'
+  import love, { Floor, Room } from '@hanzo/love'
+  import { Breadcrumbs, ButtonIcon, eventToHTMLElement, Header, IconAdd, Scroller, showPopup } from '@hanzo/ui'
   import { floors, rooms, selectedFloor } from '../stores'
   import FloorPreview from './FloorPreview.svelte'
   import EditFloorPopup from './EditFloorPopup.svelte'
@@ -58,8 +58,8 @@
     {/if}
   </svelte:fragment>
 </Header>
-<div class="hulyModal-container noTopIndent type-aside">
-  <div class="hulyModal-content">
+<div class="hanzoModal-container noTopIndent type-aside">
+  <div class="hanzoModal-content">
     <Scroller>
       {#each $floors as _floor}
         <FloorPreview

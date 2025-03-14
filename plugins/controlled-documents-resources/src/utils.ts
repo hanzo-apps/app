@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import chunter from '@hcengineering/chunter'
-import { type Employee, type Person, getCurrentEmployee } from '@hcengineering/contact'
+import chunter from '@hanzo/chunter'
+import { type Employee, type Person, getCurrentEmployee } from '@hanzo/contact'
 import documents, {
   type ControlledDocument,
   type Document,
@@ -35,7 +35,7 @@ import documents, {
   emptyBundle,
   getDocumentName,
   getFirstRank
-} from '@hcengineering/controlled-documents'
+} from '@hanzo/controlled-documents'
 import core, {
   type Class,
   type Client,
@@ -51,15 +51,15 @@ import core, {
   type WithLookup,
   SortingOrder,
   checkPermission
-} from '@hcengineering/core'
-import { type IntlString, translate } from '@hcengineering/platform'
-import { createQuery, getClient } from '@hcengineering/presentation'
-import request, { type Request, RequestStatus } from '@hcengineering/request'
-import { isEmptyMarkup } from '@hcengineering/text'
-import { type Location, getUserTimezone, showPopup } from '@hcengineering/ui'
-import { type KeyFilter } from '@hcengineering/view'
+} from '@hanzo/core'
+import { type IntlString, translate } from '@hanzo/platform'
+import { createQuery, getClient } from '@hanzo/presentation'
+import request, { type Request, RequestStatus } from '@hanzo/request'
+import { isEmptyMarkup } from '@hanzo/text'
+import { type Location, getUserTimezone, showPopup } from '@hanzo/ui'
+import { type KeyFilter } from '@hanzo/view'
 
-import { makeRank } from '@hcengineering/rank'
+import { makeRank } from '@hanzo/rank'
 import { getProjectDocumentLink } from './navigation'
 import documentsResources from './plugin'
 import { wizardOpened } from './stores/wizards/create-document'

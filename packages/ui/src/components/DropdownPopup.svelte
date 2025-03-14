@@ -13,9 +13,9 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import type { Asset, IntlString } from '@hcengineering/platform'
-  import { translateCB } from '@hcengineering/platform'
-  import { themeStore } from '@hcengineering/theme'
+  import type { Asset, IntlString } from '@hanzo/platform'
+  import { translateCB } from '@hanzo/platform'
+  import { themeStore } from '@hanzo/theme'
   import { createEventDispatcher, onMount } from 'svelte'
   import { deviceOptionsStore, resizeObserver } from '..'
   import plugin from '../plugin'

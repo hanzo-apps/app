@@ -14,9 +14,9 @@
 // limitations under the License.
 //
 
-import { getMetadata, type Resources } from '@hcengineering/platform'
-import { concatLink } from '@hcengineering/core'
-import presentation from '@hcengineering/presentation'
+import { getMetadata, type Resources } from '@hanzo/platform'
+import { concatLink } from '@hanzo/core'
+import presentation from '@hanzo/presentation'
 
 import Chat from './components/Chat.svelte'
 import Connect from './components/Connect.svelte'

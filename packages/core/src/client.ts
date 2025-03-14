@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-import { Analytics } from '@hcengineering/analytics'
+import { Analytics } from '@hanzo/analytics'
 import { BackupClient, DocChunk } from './backup'
 import { Class, DOMAIN_MODEL, Doc, Domain, Ref, Timestamp } from './classes'
 import core from './component'

@@ -13,8 +13,8 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { MasterTag } from '@hcengineering/card'
-  import { getClient } from '@hcengineering/presentation'
+  import { MasterTag } from '@hanzo/card'
+  import { getClient } from '@hanzo/presentation'
   import {
     ButtonIcon,
     Component,
@@ -24,7 +24,7 @@
     Separator,
     defineSeparators,
     secondNavSeparators
-  } from '@hcengineering/ui'
+  } from '@hanzo/ui'
   import card from '../../plugin'
 
   export let masterTag: MasterTag
@@ -43,11 +43,11 @@
   defineSeparators('spaceTypeEditor', secondNavSeparators)
 </script>
 
-<div class="hulyComponent-content__container columns">
+<div class="hanzoComponent-content__container columns">
   {#if visibleSecondNav}
-    <div class="hulyComponent-content__column">
-      <div class="hulyComponent-content__navHeader">
-        <div class="hulyComponent-content__navHeader-menu">
+    <div class="hanzoComponent-content__column">
+      <div class="hanzoComponent-content__navHeader">
+        <div class="hanzoComponent-content__navHeader-menu">
           <ButtonIcon kind="tertiary" icon={IconDescription} size="small" inheritColor />
         </div>
       </div>
@@ -63,11 +63,11 @@
     </div>
     <Separator name="spaceTypeEditor" index={0} color="transparent" />
   {/if}
-  <div class="hulyComponent-content__column content">
+  <div class="hanzoComponent-content__column content">
     <Scroller align="center" padding="var(--spacing-3)" bottomPadding="var(--spacing-3)">
-      <div class="hulyComponent-content gap">
+      <div class="hanzoComponent-content gap">
         {#each sections as section, i}
-          <div bind:this={sectionRefs[section.id]} class:hulyTableAttr-container={i}>
+          <div bind:this={sectionRefs[section.id]} class:hanzoTableAttr-container={i}>
             <Component
               is={section.component}
               disabled={readonly}

@@ -13,12 +13,12 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Analytics } from '@hcengineering/analytics'
-  import { Card, CardEvents, cardId, MasterTag } from '@hcengineering/card'
-  import core, { Class, Data, Doc, fillDefaults, MarkupBlobRef, Ref, SortingOrder } from '@hcengineering/core'
-  import { translate } from '@hcengineering/platform'
-  import { createQuery, getClient } from '@hcengineering/presentation'
-  import { makeRank } from '@hcengineering/rank'
+  import { Analytics } from '@hanzo/analytics'
+  import { Card, CardEvents, cardId, MasterTag } from '@hanzo/card'
+  import core, { Class, Data, Doc, fillDefaults, MarkupBlobRef, Ref, SortingOrder } from '@hanzo/core'
+  import { translate } from '@hanzo/platform'
+  import { createQuery, getClient } from '@hanzo/presentation'
+  import { makeRank } from '@hanzo/rank'
   import {
     Button,
     deviceOptionsStore as deviceInfo,
@@ -26,8 +26,8 @@
     IconAdd,
     navigate,
     Scroller
-  } from '@hcengineering/ui'
-  import { NavFooter, NavHeader, SavedView } from '@hcengineering/workbench-resources'
+  } from '@hanzo/ui'
+  import { NavFooter, NavHeader, SavedView } from '@hanzo/workbench-resources'
   import card from '../plugin'
   import TagHierarchy from './TagHierarchy.svelte'
 
@@ -80,7 +80,7 @@
   class="antiPanel-navigator {$deviceInfo.navigator.direction === 'horizontal' ? 'portrait' : 'landscape'} border-left"
   class:fly={$deviceInfo.navigator.float}
 >
-  <div class="antiPanel-wrap__content hulyNavPanel-container">
+  <div class="antiPanel-wrap__content hanzoNavPanel-container">
     <NavHeader label={card.string.Cards} />
 
     <div class="antiNav-subheader">

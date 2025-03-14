@@ -14,11 +14,11 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Ref, SortingOrder, Status } from '@hcengineering/core'
-  import { Asset, getEmbeddedLabel, getResource } from '@hcengineering/platform'
-  import { AttributeEditor, MessageBox, createQuery, getClient } from '@hcengineering/presentation'
-  import { ClassAttributes, settingsStore } from '@hcengineering/setting-resources'
-  import task, { ProjectType, TaskType, calculateStatuses, findStatusAttr } from '@hcengineering/task'
+  import { Ref, SortingOrder, Status } from '@hanzo/core'
+  import { Asset, getEmbeddedLabel, getResource } from '@hanzo/platform'
+  import { AttributeEditor, MessageBox, createQuery, getClient } from '@hanzo/presentation'
+  import { ClassAttributes, settingsStore } from '@hanzo/setting-resources'
+  import task, { ProjectType, TaskType, calculateStatuses, findStatusAttr } from '@hanzo/task'
   import {
     ButtonIcon,
     Icon,
@@ -31,8 +31,8 @@
     getCurrentLocation,
     navigate,
     showPopup
-  } from '@hcengineering/ui'
-  import { IconPicker, deleteObjects, statusStore } from '@hcengineering/view-resources'
+  } from '@hanzo/ui'
+  import { IconPicker, deleteObjects, statusStore } from '@hanzo/view-resources'
   import { taskTypeStore } from '../..'
   import plugin from '../../plugin'
   import StatesProjectEditor from '../state/StatesProjectEditor.svelte'
@@ -169,12 +169,12 @@
 </script>
 
 {#if taskType !== undefined}
-  <div class="hulyComponent-content__container columns">
-    <div class="hulyComponent-content__column content">
+  <div class="hanzoComponent-content__container columns">
+    <div class="hanzoComponent-content__column content">
       <Scroller align={'center'} padding={'var(--spacing-3)'} bottomPadding={'var(--spacing-3)'}>
-        <div class="hulyComponent-content gap">
-          <div class="hulyComponent-content__column-group mt-4">
-            <div class="hulyComponent-content__header mb-6">
+        <div class="hanzoComponent-content gap">
+          <div class="hanzoComponent-content__column-group mt-4">
+            <div class="hanzoComponent-content__header mb-6">
               <div class="flex-row-center gap-1-5">
                 <TaskTypeKindEditor
                   kind={taskType.kind}
@@ -253,8 +253,8 @@
             </div>
           </div>
 
-          <div class="hulyTableAttr-container">
-            <div class="hulyTableAttr-header font-medium-12">
+          <div class="hanzoTableAttr-container">
+            <div class="hanzoTableAttr-header font-medium-12">
               <Icon icon={task.icon.ManageTemplates} size={'small'} />
               <span><Label label={plugin.string.ProcessStates} /></span>
               <ButtonIcon

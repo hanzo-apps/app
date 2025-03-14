@@ -13,8 +13,8 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Enum } from '@hcengineering/core'
-  import presentation, { getClient, MessageBox } from '@hcengineering/presentation'
+  import { Enum } from '@hanzo/core'
+  import presentation, { getClient, MessageBox } from '@hanzo/presentation'
   import {
     ModernEditbox,
     IconAdd,
@@ -28,8 +28,8 @@
     IconMoreV2,
     ModernPopup,
     eventToHTMLElement
-  } from '@hcengineering/ui'
-  import type { DropdownIntlItem } from '@hcengineering/ui'
+  } from '@hanzo/ui'
+  import type { DropdownIntlItem } from '@hanzo/ui'
   import setting from '../plugin'
   import EnumValuesList from './EnumValuesList.svelte'
   import IconCrossedArrows from './icons/CrossedArrows.svelte'
@@ -193,8 +193,8 @@
   on:change={fileSelected}
 />
 
-<div class="hulyTableAttr-container mt-6">
-  <div class="hulyTableAttr-header font-medium-12">
+<div class="hanzoTableAttr-container mt-6">
+  <div class="hanzoTableAttr-header font-medium-12">
     <IconBulletList size={'small'} />
     <span><Label label={setting.string.Options} /></span>
     <div class="buttons-group tertiary-textColor">
@@ -221,7 +221,7 @@
     </div>
   </div>
   {#if value.enumValues.length > 0 || newItem}
-    <div class="hulyTableAttr-content options">
+    <div class="hanzoTableAttr-content options">
       <EnumValuesList
         bind:values={value.enumValues}
         disableMouseOver={newItem}
@@ -229,11 +229,11 @@
         on:drop={onDrop}
       />
       {#if newItem}
-        <div class="hulyTableAttr-content__row hovered">
-          <div class="hulyTableAttr-content__row-dragMenu">
+        <div class="hanzoTableAttr-content__row hovered">
+          <div class="hanzoTableAttr-content__row-dragMenu">
             <IconMoreV2 size={'small'} />
           </div>
-          <div class="hulyTableAttr-content__row-label font-regular-14 accent grow">
+          <div class="hanzoTableAttr-content__row-label font-regular-14 accent grow">
             <ModernEditbox
               kind={'ghost'}
               size={'small'}
@@ -249,7 +249,7 @@
             />
           </div>
           {#if matched}
-            <div class="hulyChip-item error font-medium-12">
+            <div class="hanzoChip-item error font-medium-12">
               <Label label={presentation.string.Match} />
             </div>
           {/if}

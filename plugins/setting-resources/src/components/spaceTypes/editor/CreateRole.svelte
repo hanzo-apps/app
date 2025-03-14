@@ -13,10 +13,10 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import presentation, { getClient } from '@hcengineering/presentation'
-  import { createSpaceTypeRole } from '@hcengineering/setting'
-  import { Modal, ModernEditbox } from '@hcengineering/ui'
-  import { AttachedData, Role, SpaceType } from '@hcengineering/core'
+  import presentation, { getClient } from '@hanzo/presentation'
+  import { createSpaceTypeRole } from '@hanzo/setting'
+  import { Modal, ModernEditbox } from '@hanzo/ui'
+  import { AttachedData, Role, SpaceType } from '@hanzo/core'
 
   import settingRes from '../../../plugin'
   import { clearSettingsStore } from '../../../store'
@@ -52,7 +52,7 @@
     clearSettingsStore()
   }}
 >
-  <div class="hulyModal-content__titleGroup">
+  <div class="hanzoModal-content__titleGroup">
     <ModernEditbox bind:value={roleData.name} label={settingRes.string.RoleName} size="large" kind="ghost" autoFocus />
   </div>
 </Modal>

@@ -13,9 +13,9 @@
 // limitations under the License.
 -->
 <script lang="ts" context="module">
-  import contact, { AvatarProvider, getAvatarColorForId, type AvatarInfo } from '@hcengineering/contact'
-  import { AccountUuid, PersonUuid, Ref, type Data, type WithLookup } from '@hcengineering/core'
-  import { getClient, sizeToWidth } from '@hcengineering/presentation'
+  import contact, { AvatarProvider, getAvatarColorForId, type AvatarInfo } from '@hanzo/contact'
+  import { AccountUuid, PersonUuid, Ref, type Data, type WithLookup } from '@hanzo/core'
+  import { getClient, sizeToWidth } from '@hanzo/presentation'
 
   const providers = new Map<string, AvatarProvider | null>()
 
@@ -31,9 +31,9 @@
 </script>
 
 <script lang="ts">
-  import { getAvatarProviderId, getFirstName, getLastName, Person } from '@hcengineering/contact'
-  import { Asset, getMetadata, getResource } from '@hcengineering/platform'
-  import { getBlobURL, reduceCalls } from '@hcengineering/presentation'
+  import { getAvatarProviderId, getFirstName, getLastName, Person } from '@hanzo/contact'
+  import { Asset, getMetadata, getResource } from '@hanzo/platform'
+  import { getBlobURL, reduceCalls } from '@hanzo/presentation'
   import {
     AnySvelteComponent,
     ColorDefinition,
@@ -42,7 +42,7 @@
     getPlatformAvatarColorForTextDef,
     getPlatformColor,
     themeStore
-  } from '@hcengineering/ui'
+  } from '@hanzo/ui'
   import { onMount } from 'svelte'
 
   import { loadUsersStatus, statusByUserStore } from '../utils'
@@ -147,7 +147,7 @@
       withStatus
       {adaptiveName}
     />
-    <div class="hulyAvatar-statusMarker {size}" class:online={isOnline} class:offline={!isOnline} />
+    <div class="hanzoAvatar-statusMarker {size}" class:online={isOnline} class:offline={!isOnline} />
   </div>
 {:else}
   <AvatarInstance

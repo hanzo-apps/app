@@ -13,11 +13,11 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { getEmbeddedLabel } from '@hcengineering/platform'
-  import { Avatar, personByIdStore } from '@hcengineering/contact-resources'
-  import { tooltip, deviceOptionsStore as deviceInfo, checkAdaptiveMatching } from '@hcengineering/ui'
-  import { ParticipantInfo } from '@hcengineering/love'
-  import { formatName } from '@hcengineering/contact'
+  import { getEmbeddedLabel } from '@hanzo/platform'
+  import { Avatar, personByIdStore } from '@hanzo/contact-resources'
+  import { tooltip, deviceOptionsStore as deviceInfo, checkAdaptiveMatching } from '@hanzo/ui'
+  import { ParticipantInfo } from '@hanzo/love'
+  import { formatName } from '@hanzo/contact'
   import ParticipantsList from './ParticipantsList.svelte'
 
   export let label: string
@@ -33,16 +33,16 @@
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div
-    class="hulyStatusBarButton"
+    class="hanzoStatusBarButton"
     class:active
     use:tooltip={{ component: ParticipantsList, props: { items: participants }, direction: 'bottom' }}
     on:click
   >
-    <span class="hulyStatusBarButton-label">{label}</span>
-    <div class="hulyCombineAvatars-container">
+    <span class="hanzoStatusBarButton-label">{label}</span>
+    <div class="hanzoCombineAvatars-container">
       {#each participants.slice(0, limit) as participant, i (participant._id)}
         <div
-          class="hulyCombineAvatar tiny"
+          class="hanzoCombineAvatar tiny"
           data-over={i === limit - 1 && overLimit ? `+${participants.length - limit + 1}` : undefined}
         >
           <Avatar
@@ -57,9 +57,9 @@
 {:else}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <div class="hulyStatusBarButton" class:active on:click>
-    <span class="hulyStatusBarButton-label">{label}</span>
-    <div class="hulyStatusBarButton-icons">
+  <div class="hanzoStatusBarButton" class:active on:click>
+    <span class="hanzoStatusBarButton-label">{label}</span>
+    <div class="hanzoStatusBarButton-icons">
       {#each participants as participant (participant._id)}
         <div
           use:tooltip={{ label: getEmbeddedLabel(formatName(participant.name)), direction: 'bottom' }}

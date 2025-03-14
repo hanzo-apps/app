@@ -13,9 +13,9 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { MasterTag } from '@hcengineering/card'
-  import core, { Ref } from '@hcengineering/core'
-  import { createQuery, getClient } from '@hcengineering/presentation'
+  import { MasterTag } from '@hanzo/card'
+  import core, { Ref } from '@hanzo/core'
+  import { createQuery, getClient } from '@hanzo/presentation'
   import {
     BreadcrumbItem,
     Breadcrumbs,
@@ -25,7 +25,7 @@
     getCurrentLocation,
     navigate,
     resolvedLocationStore
-  } from '@hcengineering/ui'
+  } from '@hanzo/ui'
   import { onDestroy, onMount } from 'svelte'
   import card from '../../plugin'
   import MasterTagEditor from './MasterTagEditor.svelte'
@@ -79,7 +79,7 @@
   }
 </script>
 
-<div class="hulyComponent">
+<div class="hanzoComponent">
   {#if masterTag !== undefined}
     <Header adaptive={'disabled'}>
       <Breadcrumbs {items} selected={items.length - 1} size={'large'} on:select={handleSelect} />

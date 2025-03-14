@@ -5,7 +5,7 @@ import {
   WorkspaceUuid,
   type AccountRole,
   type Timestamp
-} from '@hcengineering/core'
+} from '@hanzo/core'
 
 export interface LoginInfo {
   account: AccountUuid

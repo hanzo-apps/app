@@ -13,11 +13,11 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { MasterTag } from '@hcengineering/card'
-  import { Class, Doc, Ref } from '@hcengineering/core'
-  import { createQuery, getClient } from '@hcengineering/presentation'
-  import { ClassHierarchy } from '@hcengineering/setting-resources'
-  import { ButtonIcon, getCurrentLocation, Icon, IconAdd, Label, navigate, showPopup } from '@hcengineering/ui'
+  import { MasterTag } from '@hanzo/card'
+  import { Class, Doc, Ref } from '@hanzo/core'
+  import { createQuery, getClient } from '@hanzo/presentation'
+  import { ClassHierarchy } from '@hanzo/setting-resources'
+  import { ButtonIcon, getCurrentLocation, Icon, IconAdd, Label, navigate, showPopup } from '@hanzo/ui'
   import card from '../../plugin'
   import CreateTag from '../CreateTag.svelte'
   import TagsHierarchy from './TagsHierarchy.svelte'
@@ -55,7 +55,7 @@
   }
 </script>
 
-<div class="hulyTableAttr-header font-medium-12">
+<div class="hanzoTableAttr-header font-medium-12">
   <Icon icon={card.icon.MasterTag} size="small" />
   <span><Label label={card.string.MasterTags} /></span>
   <ButtonIcon
@@ -72,7 +72,7 @@
   />
 </div>
 {#if descendants.length}
-  <div class="hulyTableAttr-content task">
+  <div class="hanzoTableAttr-content task">
     <TagsHierarchy
       classes={descendants}
       _class={undefined}

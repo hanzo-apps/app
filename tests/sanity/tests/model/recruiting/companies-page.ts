@@ -11,7 +11,7 @@ export class CompaniesPage extends CommonRecruitingPage {
   }
 
   readonly pageHeader = (): Locator =>
-    this.page.locator('span[class*="hulyBreadcrumb-label"]', { hasText: 'Companies' })
+    this.page.locator('span[class*="hanzoBreadcrumb-label"]', { hasText: 'Companies' })
 
   readonly buttonCreateNewCompanies = (): Locator =>
     this.page.locator('button[type="submit"] > span', { hasText: 'Company' })

@@ -23,8 +23,8 @@ import {
   DOMAIN_STATUS,
   DOMAIN_TRANSIENT,
   DOMAIN_TX
-} from '@hcengineering/core'
-import { type Builder } from '@hcengineering/model'
+} from '@hanzo/core'
+import { type Builder } from '@hanzo/model'
 import { TBenchmarkDoc } from './benchmark'
 import core from './component'
 import {
@@ -80,7 +80,7 @@ import { TDomainStatusPlaceholder, TStatus, TStatusCategory } from './status'
 import { TUserStatus } from './transient'
 import { TTx, TTxApplyIf, TTxCreateDoc, TTxCUD, TTxMixin, TTxRemoveDoc, TTxUpdateDoc, TTxWorkspaceEvent } from './tx'
 
-export { coreId, DOMAIN_SPACE } from '@hcengineering/core'
+export { coreId, DOMAIN_SPACE } from '@hanzo/core'
 export * from './core'
 export {
   coreOperation,

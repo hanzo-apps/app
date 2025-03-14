@@ -14,7 +14,7 @@
 -->
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import type { IntlString } from '@hcengineering/platform'
+  import type { IntlString } from '@hanzo/platform'
   import FontSizeButton from './FontSizeButton.svelte'
   import { Label, deviceOptionsStore as deviceInfo } from '../..'
 

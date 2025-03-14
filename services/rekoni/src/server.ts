@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-import { initStatisticsContext } from '@hcengineering/server-core'
+import { initStatisticsContext } from '@hanzo/server-core'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import express from 'express'
@@ -29,8 +29,8 @@ import { parseGenericResume } from './generic'
 import { decode } from './jwt'
 import { extractDocument } from './process'
 import { type ReconiDocument } from './types'
-import serverToken from '@hcengineering/server-token'
-import { setMetadata } from '@hcengineering/platform'
+import serverToken from '@hanzo/server-token'
+import { setMetadata } from '@hanzo/platform'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 
 const extractToken = (header: IncomingHttpHeaders): any => {

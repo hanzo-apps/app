@@ -13,16 +13,16 @@
 // limitations under the License.
 //
 
-import { type Builder } from '@hcengineering/model'
-import serverCore from '@hcengineering/server-core'
-import core from '@hcengineering/core'
-import serverActivity from '@hcengineering/server-activity'
-import serverNotification from '@hcengineering/server-notification'
-import activity from '@hcengineering/activity'
-import notification from '@hcengineering/notification'
+import { type Builder } from '@hanzo/model'
+import serverCore from '@hanzo/server-core'
+import core from '@hanzo/core'
+import serverActivity from '@hanzo/server-activity'
+import serverNotification from '@hanzo/server-notification'
+import activity from '@hanzo/activity'
+import notification from '@hanzo/notification'
 
 export { activityServerOperation } from './migration'
-export { serverActivityId } from '@hcengineering/server-activity'
+export { serverActivityId } from '@hanzo/server-activity'
 
 export function createModel (builder: Builder): void {
   builder.mixin(activity.class.Reaction, core.class.Class, serverNotification.mixin.NotificationPresenter, {

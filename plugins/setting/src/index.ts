@@ -13,11 +13,11 @@
 // limitations under the License.
 //
 
-import type { AccountRole, Blob, Class, Configuration, Doc, Mixin, Ref, AccountUuid } from '@hcengineering/core'
-import type { Metadata, Plugin } from '@hcengineering/platform'
-import { Asset, IntlString, Resource, plugin } from '@hcengineering/platform'
-import { TemplateField, TemplateFieldCategory } from '@hcengineering/templates'
-import { AnyComponent } from '@hcengineering/ui'
+import type { AccountRole, Blob, Class, Configuration, Doc, Mixin, Ref, AccountUuid } from '@hanzo/core'
+import type { Metadata, Plugin } from '@hanzo/platform'
+import { Asset, IntlString, Resource, plugin } from '@hanzo/platform'
+import { TemplateField, TemplateFieldCategory } from '@hanzo/templates'
+import { AnyComponent } from '@hanzo/ui'
 
 import { SpaceTypeCreator, SpaceTypeEditor } from './spaceTypeEditor'
 

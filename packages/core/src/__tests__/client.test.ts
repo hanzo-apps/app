@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-import { IntlString, Plugin } from '@hcengineering/platform'
+import { IntlString, Plugin } from '@hanzo/platform'
 import { ClientConnectEvent, DocChunk } from '..'
 import type { Class, Data, Doc, Domain, PluginConfiguration, Ref, Timestamp } from '../classes'
 import { ClassifierKind, DOMAIN_MODEL, Space } from '../classes'

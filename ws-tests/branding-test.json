@@ -1,6 +1,6 @@
 {
-  "huly.local:8083": {
-    "key": "huly",
+  "hanzo.local:8083": {
+    "key": "hanzo",
     "title": "Platform",
     "protocol": "http",
     "languages": "en,ru,pt,es,zh,fr",

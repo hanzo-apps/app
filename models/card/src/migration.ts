@@ -13,17 +13,17 @@
 // limitations under the License.
 //
 
-import { DOMAIN_CARD } from '@hcengineering/card'
-import { chunterId } from '@hcengineering/chunter'
-import core, { type Client, type Data, type Doc, TxOperations } from '@hcengineering/core'
+import { DOMAIN_CARD } from '@hanzo/card'
+import { chunterId } from '@hanzo/chunter'
+import core, { type Client, type Data, type Doc, TxOperations } from '@hanzo/core'
 import {
   tryMigrate,
   tryUpgrade,
   type MigrateOperation,
   type MigrationClient,
   type MigrationUpgradeClient
-} from '@hcengineering/model'
-import view from '@hcengineering/view'
+} from '@hanzo/model'
+import view from '@hanzo/view'
 import card from '.'
 
 export const cardOperation: MigrateOperation = {

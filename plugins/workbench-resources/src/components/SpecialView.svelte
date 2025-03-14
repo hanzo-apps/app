@@ -13,9 +13,9 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Class, Doc, DocumentQuery, FindOptions, Ref, Space, WithLookup, mergeQueries } from '@hcengineering/core'
-  import { Asset, getResource, IntlString, Resource } from '@hcengineering/platform'
-  import { getClient } from '@hcengineering/presentation'
+  import { Class, Doc, DocumentQuery, FindOptions, Ref, Space, WithLookup, mergeQueries } from '@hanzo/core'
+  import { Asset, getResource, IntlString, Resource } from '@hanzo/platform'
+  import { getClient } from '@hanzo/presentation'
   import {
     AnyComponent,
     Breadcrumb,
@@ -28,8 +28,8 @@
     ModeSelector,
     SearchInput,
     showPopup
-  } from '@hcengineering/ui'
-  import { Viewlet, ViewletDescriptor, ViewletPreference, ViewOptions } from '@hcengineering/view'
+  } from '@hanzo/ui'
+  import { Viewlet, ViewletDescriptor, ViewletPreference, ViewOptions } from '@hanzo/view'
   import {
     FilterBar,
     FilterButton,
@@ -37,8 +37,8 @@
     getResultQuery,
     ViewletSelector,
     ViewletSettingButton
-  } from '@hcengineering/view-resources'
-  import { ParentsNavigationModel } from '@hcengineering/workbench'
+  } from '@hanzo/view-resources'
+  import { ParentsNavigationModel } from '@hanzo/workbench'
 
   import ComponentNavigator from './ComponentNavigator.svelte'
 

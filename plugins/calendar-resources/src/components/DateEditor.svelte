@@ -24,8 +24,8 @@
     eventToHTMLElement,
     getUserTimezone,
     showPopup
-  } from '@hcengineering/ui'
-  import { FixedColumn } from '@hcengineering/view-resources'
+  } from '@hanzo/ui'
+  import { FixedColumn } from '@hanzo/view-resources'
   import { createEventDispatcher } from 'svelte'
   import DateLocalePresenter from './DateLocalePresenter.svelte'
 
@@ -118,7 +118,7 @@
       <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <div
-        class="hulyButton type-button tertiary small rectangle font-medium-14"
+        class="hanzoButton type-button tertiary small rectangle font-medium-14"
         class:disabled
         tabindex={focusIndex !== -1 ? focusIndex + 1 : focusIndex}
         on:click={timeClick}
@@ -140,7 +140,7 @@
         <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <div
-          class="hulyButton type-button tertiary small rectangle font-medium-14"
+          class="hanzoButton type-button tertiary small rectangle font-medium-14"
           class:disabled
           tabindex={focusIndex !== -1 ? focusIndex + 1 : focusIndex}
           on:click={timeClick}

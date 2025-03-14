@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-import activity from '@hcengineering/activity'
+import activity from '@hanzo/activity'
 import type {
   CollectionSize,
   MarkupBlobRef,
@@ -23,15 +23,15 @@ import type {
   Role,
   RolesAssignment,
   PersonId
-} from '@hcengineering/core'
-import { AccountUuid, AccountRole, IndexKind } from '@hcengineering/core'
+} from '@hanzo/core'
+import { AccountUuid, AccountRole, IndexKind } from '@hanzo/core'
 import {
   type Document,
   type DocumentSnapshot,
   type SavedDocument,
   type Teamspace,
   documentId
-} from '@hcengineering/document'
+} from '@hanzo/document'
 import {
   type Builder,
   Collection,
@@ -47,24 +47,24 @@ import {
   TypeString,
   TypePersonId,
   UX
-} from '@hcengineering/model'
-import attachment from '@hcengineering/model-attachment'
-import chunter from '@hcengineering/model-chunter'
-import core, { TDoc, TTypedSpace } from '@hcengineering/model-core'
-import { createPublicLinkAction } from '@hcengineering/model-guest'
-import { generateClassNotificationTypes } from '@hcengineering/model-notification'
-import preference, { TPreference } from '@hcengineering/model-preference'
-import presentation from '@hcengineering/model-presentation'
-import tracker from '@hcengineering/model-tracker'
-import view, { actionTemplates, createAction } from '@hcengineering/model-view'
-import workbench from '@hcengineering/model-workbench'
-import notification from '@hcengineering/notification'
-import { type Asset, getEmbeddedLabel } from '@hcengineering/platform'
-import tags from '@hcengineering/tags'
-import time, { type ToDo, type Todoable } from '@hcengineering/time'
+} from '@hanzo/model'
+import attachment from '@hanzo/model-attachment'
+import chunter from '@hanzo/model-chunter'
+import core, { TDoc, TTypedSpace } from '@hanzo/model-core'
+import { createPublicLinkAction } from '@hanzo/model-guest'
+import { generateClassNotificationTypes } from '@hanzo/model-notification'
+import preference, { TPreference } from '@hanzo/model-preference'
+import presentation from '@hanzo/model-presentation'
+import tracker from '@hanzo/model-tracker'
+import view, { actionTemplates, createAction } from '@hanzo/model-view'
+import workbench from '@hanzo/model-workbench'
+import notification from '@hanzo/notification'
+import { type Asset, getEmbeddedLabel } from '@hanzo/platform'
+import tags from '@hanzo/tags'
+import time, { type ToDo, type Todoable } from '@hanzo/time'
 import document from './plugin'
 
-export { documentId } from '@hcengineering/document'
+export { documentId } from '@hanzo/document'
 
 export { documentOperation } from './migration'
 export { document as default }

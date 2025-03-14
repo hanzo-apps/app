@@ -1,6 +1,6 @@
 {
-  "huly.local:8080": {
-    "title": "Huly",
+  "hanzo.local:8080": {
+    "title": "Hanzo",
     "languages": "en,ru,pt,es,zh,fr,de",
     "defaultLanguage": "en",
     "defaultApplication": "tracker",
@@ -10,26 +10,26 @@
     "links": [
       {
         "rel": "manifest",
-        "href": "/huly/site.webmanifest"
+        "href": "/hanzo/site.webmanifest"
       },
       {
         "rel": "icon",
-        "href": "/huly/favicon.svg",
+        "href": "/hanzo/favicon.svg",
         "type": "image/svg+xml"
       },
       {
         "rel": "shortcut icon",
-        "href": "/huly/favicon.ico",
+        "href": "/hanzo/favicon.ico",
         "sizes": "any"
       },
       {
         "rel": "apple-touch-icon",
-        "href": "/huly/apple-touch-icon.png"
+        "href": "/hanzo/apple-touch-icon.png"
       }
     ]
   },
-  "huly.local:8087": {
-    "title": "Huly",
+  "hanzo.local:8087": {
+    "title": "Hanzo",
     "languages": "en,ru,pt,es,zh,fr,de",
     "defaultLanguage": "en",
     "defaultApplication": "tracker",
@@ -39,25 +39,25 @@
     "links": [
       {
         "rel": "manifest",
-        "href": "/huly/site.webmanifest"
+        "href": "/hanzo/site.webmanifest"
       },
       {
         "rel": "icon",
-        "href": "/huly/favicon.svg",
+        "href": "/hanzo/favicon.svg",
         "type": "image/svg+xml"
       },
       {
         "rel": "shortcut icon",
-        "href": "/huly/favicon.ico",
+        "href": "/hanzo/favicon.ico",
         "sizes": "any"
       },
       {
         "rel": "apple-touch-icon",
-        "href": "/huly/apple-touch-icon.png"
+        "href": "/hanzo/apple-touch-icon.png"
       }
     ]
   },
-  "huly.local:8081": {
+  "hanzo.local:8081": {
     "title": "TraceX",
     "languages": "en",
     "defaultLanguage": "en",
@@ -97,7 +97,7 @@
       }
     ]
   },
-  "huly.local:8088": {
+  "hanzo.local:8088": {
     "title": "TraceX",
     "languages": "en",
     "defaultLanguage": "en",

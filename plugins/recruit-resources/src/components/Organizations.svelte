@@ -13,13 +13,13 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Organization } from '@hcengineering/contact'
-  import core, { Doc, DocumentQuery, Ref, WithLookup } from '@hcengineering/core'
-  import { createQuery } from '@hcengineering/presentation'
-  import { Applicant, Vacancy } from '@hcengineering/recruit'
-  import { Button, Component, IconAdd, Breadcrumb, Loading, SearchInput, showPopup, Header } from '@hcengineering/ui'
-  import view, { BuildModelKey, ViewOptions, Viewlet, ViewletPreference } from '@hcengineering/view'
-  import { FilterBar, FilterButton, ViewletSelector, ViewletSettingButton } from '@hcengineering/view-resources'
+  import { Organization } from '@hanzo/contact'
+  import core, { Doc, DocumentQuery, Ref, WithLookup } from '@hanzo/core'
+  import { createQuery } from '@hanzo/presentation'
+  import { Applicant, Vacancy } from '@hanzo/recruit'
+  import { Button, Component, IconAdd, Breadcrumb, Loading, SearchInput, showPopup, Header } from '@hanzo/ui'
+  import view, { BuildModelKey, ViewOptions, Viewlet, ViewletPreference } from '@hanzo/view'
+  import { FilterBar, FilterButton, ViewletSelector, ViewletSettingButton } from '@hanzo/view-resources'
   import recruit from '../plugin'
   import CreateOrganization from './CreateOrganization.svelte'
   import VacancyListApplicationsPopup from './organizations/VacancyListApplicationsPopup.svelte'

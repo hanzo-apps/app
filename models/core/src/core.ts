@@ -57,7 +57,7 @@ import {
   type TypeAny,
   type Version,
   DOMAIN_SEQUENCE
-} from '@hcengineering/core'
+} from '@hanzo/core'
 import {
   Hidden,
   Index,
@@ -73,8 +73,8 @@ import {
   TypeTimestamp,
   TypePersonId,
   UX
-} from '@hcengineering/model'
-import { getEmbeddedLabel, type IntlString, type Plugin } from '@hcengineering/platform'
+} from '@hanzo/model'
+import { getEmbeddedLabel, type IntlString, type Plugin } from '@hanzo/platform'
 import core from './component'
 
 // C O R E

@@ -1,6 +1,6 @@
 //
 
-import { AvatarType, type Person, type Contact, type SocialIdentity } from '@hcengineering/contact'
+import { AvatarType, type Person, type Contact, type SocialIdentity } from '@hanzo/contact'
 import {
   AccountRole,
   buildSocialIdString,
@@ -14,7 +14,7 @@ import {
   type Ref,
   type Space,
   type TxCUD
-} from '@hcengineering/core'
+} from '@hanzo/core'
 import {
   createDefaultSpace,
   type MigrateOperation,
@@ -25,10 +25,10 @@ import {
   type ModelLogger,
   tryMigrate,
   tryUpgrade
-} from '@hcengineering/model'
-import activity, { DOMAIN_ACTIVITY } from '@hcengineering/model-activity'
-import core, { getAccountsFromTxes, getSocialKeyByOldEmail } from '@hcengineering/model-core'
-import { DOMAIN_VIEW } from '@hcengineering/model-view'
+} from '@hanzo/model'
+import activity, { DOMAIN_ACTIVITY } from '@hanzo/model-activity'
+import core, { getAccountsFromTxes, getSocialKeyByOldEmail } from '@hanzo/model-core'
+import { DOMAIN_VIEW } from '@hanzo/model-view'
 
 import contact, { contactId, DOMAIN_CHANNEL, DOMAIN_CONTACT } from './index'
 

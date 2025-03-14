@@ -31,17 +31,17 @@ import {
   type PersonId,
   type Person,
   buildSocialIdString
-} from '@hcengineering/core'
-import { getMongoClient } from '@hcengineering/mongo' // TODO: get rid of this import later
-import platform, { getMetadata, PlatformError, Severity, Status, translate } from '@hcengineering/platform'
-import { getDBClient } from '@hcengineering/postgres'
+} from '@hanzo/core'
+import { getMongoClient } from '@hanzo/mongo' // TODO: get rid of this import later
+import platform, { getMetadata, PlatformError, Severity, Status, translate } from '@hanzo/platform'
+import { getDBClient } from '@hanzo/postgres'
 import otpGenerator from 'otp-generator'
 import { pbkdf2Sync, randomBytes } from 'crypto'
 
 import { MongoAccountDB } from './collections/mongo'
 import { PostgresAccountDB } from './collections/postgres'
 import { accountPlugin } from './plugin'
-import { sharedPipelineContextVars } from '@hcengineering/server-pipeline'
+import { sharedPipelineContextVars } from '@hanzo/server-pipeline'
 import {
   AccountMethodHandler,
   OtpInfo,
@@ -57,8 +57,8 @@ import {
   WorkspaceStatus,
   AccountEventType
 } from './types'
-import { Analytics } from '@hcengineering/analytics'
-import { TokenError, decodeTokenVerbose, generateToken } from '@hcengineering/server-token'
+import { Analytics } from '@hanzo/analytics'
+import { TokenError, decodeTokenVerbose, generateToken } from '@hanzo/server-token'
 
 export const GUEST_ACCOUNT = 'b6996120-416f-49cd-841e-e4a5d2e49c9b'
 
@@ -432,11 +432,11 @@ export async function createAccount (
   confirmed = false,
   createdOn = Date.now()
 ): Promise<void> {
-  // Create Huly social id and account
+  // Create Hanzo social id and account
   // Currently, it's always created along with the account but never confirmed.
   // What's the actual use case for it?
   await db.socialId.insertOne({
-    type: SocialIdType.HULY,
+    type: SocialIdType.HANZO,
     value: personUuid,
     personUuid,
     ...(confirmed ? { verifiedOn: Date.now() } : {})
@@ -650,7 +650,7 @@ export async function createWorkspaceRecord (
   region: string = '',
   initMode: WorkspaceMode = 'pending-creation'
 ): Promise<CreateWorkspaceRecordResult> {
-  const brandingKey = branding?.key ?? 'huly'
+  const brandingKey = branding?.key ?? 'hanzo'
   const regionInfo = getRegions().find((it) => it.region === region)
 
   if (regionInfo === undefined) {

@@ -14,8 +14,8 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import core, { Class, Ref, Space } from '@hcengineering/core'
-  import type { Asset, IntlString } from '@hcengineering/platform'
+  import core, { Class, Ref, Space } from '@hanzo/core'
+  import type { Asset, IntlString } from '@hanzo/platform'
   import {
     AnySvelteComponent,
     CheckBox,
@@ -24,7 +24,7 @@
     tooltip,
     EditWithIcon,
     IconSearch
-  } from '@hcengineering/ui'
+  } from '@hanzo/ui'
   import { ComponentType, createEventDispatcher } from 'svelte'
   import presentation from '..'
   import { createQuery } from '../utils'

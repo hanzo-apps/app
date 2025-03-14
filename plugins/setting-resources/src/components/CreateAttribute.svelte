@@ -23,9 +23,9 @@
     PropertyType,
     Ref,
     Type
-  } from '@hcengineering/core'
-  import { Asset, getEmbeddedLabel } from '@hcengineering/platform'
-  import presentation, { getClient } from '@hcengineering/presentation'
+  } from '@hanzo/core'
+  import { Asset, getEmbeddedLabel } from '@hanzo/platform'
+  import presentation, { getClient } from '@hanzo/presentation'
   import {
     AnyComponent,
     Component,
@@ -37,12 +37,12 @@
     IconDelete,
     IconCopy,
     showPopup
-  } from '@hcengineering/ui'
-  import { DropdownIntlItem } from '@hcengineering/ui/src/types'
+  } from '@hanzo/ui'
+  import { DropdownIntlItem } from '@hanzo/ui/src/types'
   import setting from '../plugin'
-  import view from '@hcengineering/view'
+  import view from '@hanzo/view'
   import { clearSettingsStore } from '../store'
-  import { IconPicker } from '@hcengineering/view-resources'
+  import { IconPicker } from '@hanzo/view-resources'
 
   export let _id: Ref<Class<Type<PropertyType>>> | undefined = undefined
   export let _class: Ref<Class<Doc>>
@@ -134,8 +134,8 @@
     <ButtonIcon icon={IconDelete} size={'small'} kind={'tertiary'} />
     <ButtonIcon icon={IconCopy} size={'small'} kind={'tertiary'} />
   </svelte:fragment>
-  <div class="hulyModal-content__titleGroup">
-    <div class="hulyChip-item font-medium-12">
+  <div class="hanzoModal-content__titleGroup">
+    <div class="hanzoChip-item font-medium-12">
       <Label label={setting.string.Custom} />
     </div>
     <div class="flex items-center">
@@ -149,8 +149,8 @@
       <ModernEditbox bind:value={name} label={core.string.Name} size={'large'} kind={'ghost'} autoFocus />
     </div>
   </div>
-  <div class="hulyModal-content__settingsSet">
-    <div class="hulyModal-content__settingsSet-line">
+  <div class="hanzoModal-content__settingsSet">
+    <div class="hanzoModal-content__settingsSet-line">
       <span class="label">
         <Label label={setting.string.Type} />
       </span>

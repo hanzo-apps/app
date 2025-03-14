@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-import activity, { ActivityMessage, DocUpdateMessage } from '@hcengineering/activity'
-import { Analytics } from '@hcengineering/analytics'
-import chunter, { ChatMessage } from '@hcengineering/chunter'
-import contact, { Employee, formatName, includesAny, Person } from '@hcengineering/contact'
+import activity, { ActivityMessage, DocUpdateMessage } from '@hanzo/activity'
+import { Analytics } from '@hanzo/analytics'
+import chunter, { ChatMessage } from '@hanzo/chunter'
+import contact, { Employee, formatName, includesAny, Person } from '@hanzo/contact'
 import core, {
   PersonId,
   Class,
@@ -35,7 +35,7 @@ import core, {
   TxUpdateDoc,
   type MeasureContext,
   AccountUuid
-} from '@hcengineering/core'
+} from '@hanzo/core'
 import notification, {
   BaseNotificationType,
   Collaborators,
@@ -46,25 +46,25 @@ import notification, {
   NotificationType,
   type NotificationProviderSetting,
   type NotificationTypeSetting
-} from '@hcengineering/notification'
-import { getMetadata, getResource, IntlString, translate } from '@hcengineering/platform'
-import serverCore, { TriggerControl } from '@hcengineering/server-core'
+} from '@hanzo/notification'
+import { getMetadata, getResource, IntlString, translate } from '@hanzo/platform'
+import serverCore, { TriggerControl } from '@hanzo/server-core'
 import {
   getPersonsBySocialIds,
   getEmployeesBySocialIds,
   getSocialStringsByPersons,
   getPerson
-} from '@hcengineering/server-contact'
+} from '@hanzo/server-contact'
 import serverNotification, {
   HTMLPresenter,
   NotificationPresenter,
   ReceiverInfo,
   SenderInfo,
   TextPresenter
-} from '@hcengineering/server-notification'
-import serverView from '@hcengineering/server-view'
-import { encodeObjectURI } from '@hcengineering/view'
-import { workbenchId } from '@hcengineering/workbench'
+} from '@hanzo/server-notification'
+import serverView from '@hanzo/server-view'
+import { encodeObjectURI } from '@hanzo/view'
+import { workbenchId } from '@hanzo/workbench'
 
 import { NotifyResult } from './types'
 

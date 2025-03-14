@@ -13,10 +13,10 @@
 // limitations under the License.
 //
 
-import { Client, MeasureContext, WorkspaceIds } from '@hcengineering/core'
-import { Class, Doc, Ref, Space } from '@hcengineering/core/types/classes'
-import core from '@hcengineering/model-core'
-import { StorageAdapter } from '@hcengineering/server-core'
+import { Client, MeasureContext, WorkspaceIds } from '@hanzo/core'
+import { Class, Doc, Ref, Space } from '@hanzo/core/types/classes'
+import core from '@hanzo/model-core'
+import { StorageAdapter } from '@hanzo/server-core'
 import path from 'path'
 import { UnifiedConverter } from './converter'
 import { UnifiedJsonSerializer } from './json/json-serializer'

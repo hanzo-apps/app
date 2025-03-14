@@ -14,12 +14,12 @@
 -->
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import core, { getCurrentAccount, type Ref } from '@hcengineering/core'
-  import { createQuery } from '@hcengineering/presentation'
-  import { Scroller, deviceOptionsStore as deviceInfo } from '@hcengineering/ui'
-  import { NavLink } from '@hcengineering/view-resources'
-  import type { Application } from '@hcengineering/workbench'
-  import workbench from '@hcengineering/workbench'
+  import core, { getCurrentAccount, type Ref } from '@hanzo/core'
+  import { createQuery } from '@hanzo/presentation'
+  import { Scroller, deviceOptionsStore as deviceInfo } from '@hanzo/ui'
+  import { NavLink } from '@hanzo/view-resources'
+  import type { Application } from '@hanzo/workbench'
+  import workbench from '@hanzo/workbench'
 
   import { isAppAllowed } from '../utils'
   import AppItem from './AppItem.svelte'

@@ -14,8 +14,8 @@
 -->
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import { resizeObserver } from '@hcengineering/ui'
-  import { GRID_WIDTH } from '@hcengineering/love'
+  import { resizeObserver } from '@hanzo/ui'
+  import { GRID_WIDTH } from '@hanzo/love'
   import { loveUseMaxWidth } from '../stores'
 
   export let floorContainer: HTMLDivElement

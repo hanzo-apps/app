@@ -15,7 +15,7 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { resizeObserver } from '@hcengineering/ui'
+  import { resizeObserver } from '@hanzo/ui'
   import { afterUpdate } from 'svelte'
   import { fixedWidthStore } from '../utils'
 

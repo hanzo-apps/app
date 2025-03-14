@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-import { setMetadata } from '@hcengineering/platform'
-import serverClient, { withRetry } from '@hcengineering/server-client'
-import serverToken, { generateToken } from '@hcengineering/server-token'
-import { initStatisticsContext } from '@hcengineering/server-core'
+import { setMetadata } from '@hanzo/platform'
+import serverClient, { withRetry } from '@hanzo/server-client'
+import serverToken, { generateToken } from '@hanzo/server-token'
+import { initStatisticsContext } from '@hanzo/server-core'
 
 import config from './config'
 import { getAccountUuid } from './utils/account'
@@ -23,8 +23,8 @@ import { registerLoaders } from './loaders'
 import { getDbStorage } from './storage'
 import { AIControl } from './controller'
 import { createServer, listen } from './server/server'
-import type { SocialId } from '@hcengineering/core'
-import { getClient as getAccountClient } from '@hcengineering/account-client'
+import type { SocialId } from '@hanzo/core'
+import { getClient as getAccountClient } from '@hanzo/account-client'
 
 export const start = async (): Promise<void> => {
   setMetadata(serverToken.metadata.Secret, config.ServerSecret)

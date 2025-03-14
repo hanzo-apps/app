@@ -13,10 +13,10 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Tx } from '@hcengineering/core'
-  import { addTxListener, createQuery, getClient, removeTxListener } from '@hcengineering/presentation'
-  import { panelstore } from '@hcengineering/ui'
-  import { OpenSidebarWidgetParams, SidebarEvent, TxSidebarEvent, WidgetPreference } from '@hcengineering/workbench'
+  import { Tx } from '@hanzo/core'
+  import { addTxListener, createQuery, getClient, removeTxListener } from '@hanzo/presentation'
+  import { panelstore } from '@hanzo/ui'
+  import { OpenSidebarWidgetParams, SidebarEvent, TxSidebarEvent, WidgetPreference } from '@hanzo/workbench'
   import { onMount } from 'svelte'
 
   import workbench from '../../plugin'

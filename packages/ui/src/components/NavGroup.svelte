@@ -13,10 +13,10 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import type { Doc, Ref } from '@hcengineering/core'
+  import type { Doc, Ref } from '@hanzo/core'
   import { createEventDispatcher } from 'svelte'
-  import type { Asset, IntlString } from '@hcengineering/platform'
-  import { getEmbeddedLabel } from '@hcengineering/platform'
+  import type { Asset, IntlString } from '@hanzo/platform'
+  import { getEmbeddedLabel } from '@hanzo/platform'
   import type { AnyComponent, IconSize, AnySvelteComponent } from '..'
   import {
     showPopup,
@@ -86,13 +86,13 @@
 </script>
 
 <div
-  class="hulyNavGroup-container"
+  class="hanzoNavGroup-container"
   class:nested={type === 'nested' || type === 'nested-selectable'}
   class:selectable={type === 'nested-selectable'}
   class:noDivider
 >
   <button
-    class="hulyNavGroup-header"
+    class="hanzoNavGroup-header"
     class:isOpen={(isOpen || visible) && !empty}
     class:highlighted
     class:selected
@@ -105,15 +105,15 @@
     on:drop
   >
     {#if isFold && !empty}
-      <button class="hulyNavGroup-header__chevron" class:collapsed={!isOpen}>
+      <button class="hanzoNavGroup-header__chevron" class:collapsed={!isOpen}>
         <IconDown size={'small'} />
       </button>
     {/if}
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div class="hulyNavGroup-header__label font-medium-12" on:click={handleMenuClicked}>
+    <div class="hanzoNavGroup-header__label font-medium-12" on:click={handleMenuClicked}>
       {#if visibleIcon}
-        <div class="hulyNavGroup-header__icon" class:folder={folderIcon}>
+        <div class="hanzoNavGroup-header__icon" class:folder={folderIcon}>
           <Icon icon={visibleIcon} size={iconSize} {iconProps} />
         </div>
       {/if}
@@ -131,7 +131,7 @@
     <div class="flex-grow" />
     {#if $$slots.extra}<slot name="extra" />{/if}
     {#if tools || $$slots.tools}
-      <div class="hulyNavGroup-header__tools">
+      <div class="hanzoNavGroup-header__tools">
         {#if tools}
           <Component
             is={tools}
@@ -145,11 +145,11 @@
       </div>
     {/if}
     {#if selected && type === 'nested-selectable'}
-      <div class="hulyNavGroup-header__arrow"><IconOpenedArrow size={'small'} /></div>
+      <div class="hanzoNavGroup-header__arrow"><IconOpenedArrow size={'small'} /></div>
     {/if}
   </button>
   {#if !empty}
-    <div {id} class="hulyNavGroup-content">
+    <div {id} class="hanzoNavGroup-content">
       {#if (!isOpen && visible) || forciblyСollapsed}
         <slot name="visible" {isOpen} />
       {:else}

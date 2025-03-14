@@ -32,9 +32,9 @@ import {
   type WithLookup,
   buildModel,
   concatLink
-} from '@hcengineering/core'
+} from '@hanzo/core'
 
-import { PlatformError, unknownError } from '@hcengineering/platform'
+import { PlatformError, unknownError } from '@hanzo/platform'
 
 import type { RestClient } from './types'
 import { extractJson, withRetry } from './utils'

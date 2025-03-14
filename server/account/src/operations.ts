@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-import { Analytics } from '@hcengineering/analytics'
+import { Analytics } from '@hanzo/analytics'
 import {
   AccountRole,
   buildSocialIdString,
@@ -34,7 +34,7 @@ import {
   type WorkspaceMemberInfo,
   type WorkspaceMode,
   type WorkspaceUuid
-} from '@hcengineering/core'
+} from '@hanzo/core'
 import platform, {
   getMetadata,
   PlatformError,
@@ -42,8 +42,8 @@ import platform, {
   Status,
   translate,
   unknownError
-} from '@hcengineering/platform'
-import { decodeTokenVerbose, generateToken } from '@hcengineering/server-token'
+} from '@hanzo/platform'
+import { decodeTokenVerbose, generateToken } from '@hanzo/server-token'
 
 import { isAdminEmail } from './admin'
 import { accountPlugin } from './plugin'
@@ -315,7 +315,7 @@ export async function validateOtp (
 
     ctx.info('OTP signup success', emailSocialId)
   } else {
-    // Confirm huly social id if hasn't been confirmed yet
+    // Confirm hanzo social id if hasn't been confirmed yet
 
     ctx.info('OTP login success', emailSocialId)
   }

@@ -14,9 +14,9 @@
 //
 
 import { Client as ElasticClient } from '@elastic/elasticsearch'
-import core, { DOMAIN_DOC_INDEX_STATE } from '@hcengineering/core'
-import { getMongoClient, getWorkspaceMongoDB } from '@hcengineering/mongo'
-import { type StorageAdapter } from '@hcengineering/server-core'
+import core, { DOMAIN_DOC_INDEX_STATE } from '@hanzo/core'
+import { getMongoClient, getWorkspaceMongoDB } from '@hanzo/mongo'
+import { type StorageAdapter } from '@hanzo/server-core'
 
 export async function rebuildElastic (
   mongoUrl: string,

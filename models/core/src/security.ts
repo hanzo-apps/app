@@ -28,7 +28,7 @@ import {
   type SpaceTypeDescriptor,
   type TypedSpace,
   type AccountUuid
-} from '@hcengineering/core'
+} from '@hanzo/core'
 import {
   ArrOf,
   Collection,
@@ -42,8 +42,8 @@ import {
   TypeRef,
   TypeString,
   UX
-} from '@hcengineering/model'
-import { getEmbeddedLabel, type Asset, type IntlString } from '@hcengineering/platform'
+} from '@hanzo/model'
+import { getEmbeddedLabel, type Asset, type IntlString } from '@hanzo/platform'
 import core from './component'
 import { TAttachedDoc, TDoc } from './core'
 

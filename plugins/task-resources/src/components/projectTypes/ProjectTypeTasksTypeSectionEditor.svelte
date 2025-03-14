@@ -13,11 +13,11 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { SortingOrder } from '@hcengineering/core'
-  import { ButtonIcon, IconAdd, Label, getCurrentResolvedLocation, navigate } from '@hcengineering/ui'
-  import { createQuery } from '@hcengineering/presentation'
-  import { ProjectType, ProjectTypeDescriptor, TaskType } from '@hcengineering/task'
-  import { clearSettingsStore, settingsStore } from '@hcengineering/setting-resources'
+  import { SortingOrder } from '@hanzo/core'
+  import { ButtonIcon, IconAdd, Label, getCurrentResolvedLocation, navigate } from '@hanzo/ui'
+  import { createQuery } from '@hanzo/presentation'
+  import { ProjectType, ProjectTypeDescriptor, TaskType } from '@hanzo/task'
+  import { clearSettingsStore, settingsStore } from '@hanzo/setting-resources'
 
   import IconLayers from '../icons/Layers.svelte'
   import TaskTypeIcon from '../taskTypes/TaskTypeIcon.svelte'
@@ -56,7 +56,7 @@
 </script>
 
 {#if descriptor !== undefined}
-  <div class="hulyTableAttr-header font-medium-12">
+  <div class="hanzoTableAttr-header font-medium-12">
     <IconLayers size={'small'} />
     <span><Label label={task.string.TaskTypes} /></span>
     <ButtonIcon
@@ -74,23 +74,23 @@
     />
   </div>
   {#if taskTypes.length}
-    <div class="hulyTableAttr-content task">
+    <div class="hanzoTableAttr-content task">
       {#each taskTypes as taskType}
         <button
-          class="hulyTableAttr-content__row"
+          class="hanzoTableAttr-content__row"
           on:click|stopPropagation={() => {
             handleTaskTypeSelected(taskType._id)
           }}
         >
-          <div class="hulyTableAttr-content__row-icon-wrapper">
+          <div class="hanzoTableAttr-content__row-icon-wrapper">
             <TaskTypeIcon value={taskType} size={'small'} />
           </div>
           {#if taskType.name}
-            <div class="hulyTableAttr-content__row-label font-medium-14">
+            <div class="hanzoTableAttr-content__row-label font-medium-14">
               {taskType.name}
             </div>
           {/if}
-          <div class="hulyTableAttr-content__row-label grow dark font-regular-14">
+          <div class="hanzoTableAttr-content__row-label grow dark font-regular-14">
             <TaskTypeKindEditor readonly kind={taskType.kind} />
           </div>
         </button>

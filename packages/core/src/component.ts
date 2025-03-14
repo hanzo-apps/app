@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-import type { Asset, IntlString, Plugin, StatusCode } from '@hcengineering/platform'
-import { plugin } from '@hcengineering/platform'
+import type { Asset, IntlString, Plugin, StatusCode } from '@hanzo/platform'
+import { plugin } from '@hanzo/platform'
 import type { BenchmarkDoc } from './benchmark'
 import { AccountRole } from './classes'
 import type {

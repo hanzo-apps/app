@@ -13,10 +13,10 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { getClient } from '@hcengineering/presentation'
-  import core, { SpaceType, SpaceTypeDescriptor } from '@hcengineering/core'
-  import type { IntlString } from '@hcengineering/platform'
-  import { SpaceTypeEditor } from '@hcengineering/setting'
+  import { getClient } from '@hanzo/presentation'
+  import core, { SpaceType, SpaceTypeDescriptor } from '@hanzo/core'
+  import type { IntlString } from '@hanzo/platform'
+  import { SpaceTypeEditor } from '@hanzo/setting'
   import {
     ButtonIcon,
     Component,
@@ -26,7 +26,7 @@
     Separator,
     defineSeparators,
     secondNavSeparators
-  } from '@hcengineering/ui'
+  } from '@hanzo/ui'
 
   export let type: SpaceType
   export let descriptor: SpaceTypeDescriptor | undefined
@@ -61,11 +61,11 @@
 </script>
 
 {#if type !== undefined && descriptor !== undefined}
-  <div class="hulyComponent-content__container columns">
+  <div class="hanzoComponent-content__container columns">
     {#if visibleSecondNav}
-      <div class="hulyComponent-content__column">
-        <div class="hulyComponent-content__navHeader">
-          <div class="hulyComponent-content__navHeader-menu">
+      <div class="hanzoComponent-content__column">
+        <div class="hanzoComponent-content__navHeader">
+          <div class="hanzoComponent-content__navHeader-menu">
             <ButtonIcon kind="tertiary" icon={IconDescription} size="small" inheritColor />
           </div>
         </div>
@@ -82,11 +82,11 @@
       <Separator name="spaceTypeEditor" index={0} color="transparent" />
     {/if}
     {#if editorDescriptor !== undefined}
-      <div class="hulyComponent-content__column content">
+      <div class="hanzoComponent-content__column content">
         <Scroller align="center" padding="var(--spacing-3)" bottomPadding="var(--spacing-3)">
-          <div class="hulyComponent-content gap">
+          <div class="hanzoComponent-content gap">
             {#each editorDescriptor.sections as section}
-              <div bind:this={sectionRefs[section.id]} class:hulyTableAttr-container={!section.withoutContainer}>
+              <div bind:this={sectionRefs[section.id]} class:hanzoTableAttr-container={!section.withoutContainer}>
                 <Component
                   is={section.component}
                   disabled={readonly}

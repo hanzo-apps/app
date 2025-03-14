@@ -1,5 +1,5 @@
 {
-  "name": "@hcengineering/text",
+  "name": "@hanzo/text",
   "version": "0.6.5",
   "main": "lib/index.js",
   "svelte": "src/index.ts",
@@ -22,7 +22,7 @@
     "_phase:validate": "compile validate"
   },
   "devDependencies": {
-    "@hcengineering/platform-rig": "^0.6.0",
+    "@hanzo/platform-rig": "^0.6.0",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-promise": "^6.1.1",
@@ -38,8 +38,8 @@
     "@types/markdown-it": "~13.0.0"
   },
   "dependencies": {
-    "@hcengineering/core": "^0.6.32",
-    "@hcengineering/text-core": "^0.6.0",
+    "@hanzo/core": "^0.6.32",
+    "@hanzo/text-core": "^0.6.0",
     "@tiptap/core": "^2.11.3",
     "@tiptap/html": "^2.11.3",
     "@tiptap/pm": "^2.11.3",
@@ -66,7 +66,7 @@
     "@tiptap/extension-text-align": "~2.11.0",
     "@tiptap/extension-text-style": "~2.11.0"
   },
-  "repository": "https://github.com/hcengineering/platform",
+  "repository": "https://github.com/hanzo/platform",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },

@@ -7,7 +7,7 @@
   "COLLABORATOR_URL": "wss://collaborator.hc.engineering",
   "DESKTOP_UPDATES_CHANNEL": "front",
   "FILES_URL": "https://dl.hc.engineering/blob/:workspace/:blobId/:filename",
-  "GITHUB_APP": "huly-github-staging",
+  "GITHUB_APP": "hanzo-github-staging",
   "GITHUB_CLIENTID": "Iv1.cd9d3f7987474b5e",
   "GITHUB_URL": "https://github.hc.engineering",
   "GMAIL_URL": "https://gmail.hc.engineering/",

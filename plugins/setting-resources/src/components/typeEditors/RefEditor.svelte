@@ -13,13 +13,13 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import core, { Class, Doc, DOMAIN_STATUS, Ref, RefTo } from '@hcengineering/core'
-  import { TypeRef } from '@hcengineering/model'
-  import { getClient } from '@hcengineering/presentation'
-  import { DropdownLabelsIntl, Label } from '@hcengineering/ui'
-  import view from '@hcengineering/view-resources/src/plugin'
+  import core, { Class, Doc, DOMAIN_STATUS, Ref, RefTo } from '@hanzo/core'
+  import { TypeRef } from '@hanzo/model'
+  import { getClient } from '@hanzo/presentation'
+  import { DropdownLabelsIntl, Label } from '@hanzo/ui'
+  import view from '@hanzo/view-resources/src/plugin'
   import { createEventDispatcher } from 'svelte'
-  import type { ButtonKind, ButtonSize } from '@hcengineering/ui'
+  import type { ButtonKind, ButtonSize } from '@hanzo/ui'
 
   export let type: RefTo<Doc> | undefined
   export let editable: boolean = true
@@ -51,7 +51,7 @@
   $: refClass && dispatch('change', { type: TypeRef(refClass) })
 </script>
 
-<div class="hulyModal-content__settingsSet-line">
+<div class="hanzoModal-content__settingsSet-line">
   <span class="label">
     <Label label={core.string.Class} />
   </span>

@@ -13,9 +13,9 @@
 // limitations under the License.
 //
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import activity, { ActivityMessage, DocUpdateMessage } from '@hcengineering/activity'
-import chunter, { ChatMessage } from '@hcengineering/chunter'
-import contact, { Channel, ChannelProvider, Contact, Employee, formatName, Person } from '@hcengineering/contact'
+import activity, { ActivityMessage, DocUpdateMessage } from '@hanzo/activity'
+import chunter, { ChatMessage } from '@hanzo/chunter'
+import contact, { Channel, ChannelProvider, Contact, Employee, formatName, Person } from '@hanzo/contact'
 import {
   PersonId,
   Class,
@@ -29,26 +29,26 @@ import {
   Tx,
   TxCreateDoc,
   TxProcessor
-} from '@hcengineering/core'
+} from '@hanzo/core'
 import notification, {
   BaseNotificationType,
   InboxNotification,
   MentionInboxNotification,
   NotificationType
-} from '@hcengineering/notification'
-import { getMetadata, getResource, translate } from '@hcengineering/platform'
-import { TriggerControl } from '@hcengineering/server-core'
-import { NotificationProviderFunc, ReceiverInfo, SenderInfo } from '@hcengineering/server-notification'
+} from '@hanzo/notification'
+import { getMetadata, getResource, translate } from '@hanzo/platform'
+import { TriggerControl } from '@hanzo/server-core'
+import { NotificationProviderFunc, ReceiverInfo, SenderInfo } from '@hanzo/server-notification'
 import {
   getNotificationLink,
   getTextPresenter,
   getTranslatedNotificationContent
-} from '@hcengineering/server-notification-resources'
-import serverTelegram from '@hcengineering/server-telegram'
-import { generateToken } from '@hcengineering/server-token'
-import setting, { Integration } from '@hcengineering/setting'
-import telegram, { TelegramMessage, TelegramNotificationRequest } from '@hcengineering/telegram'
-import { jsonToHTML, markupToJSON } from '@hcengineering/text'
+} from '@hanzo/server-notification-resources'
+import serverTelegram from '@hanzo/server-telegram'
+import { generateToken } from '@hanzo/server-token'
+import setting, { Integration } from '@hanzo/setting'
+import telegram, { TelegramMessage, TelegramNotificationRequest } from '@hanzo/telegram'
+import { jsonToHTML, markupToJSON } from '@hanzo/text'
 
 /**
  * @public

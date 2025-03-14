@@ -13,8 +13,8 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Visibility } from '@hcengineering/calendar'
-  import { ButtonMenu, DropdownIntlItem, themeStore } from '@hcengineering/ui'
+  import { Visibility } from '@hanzo/calendar'
+  import { ButtonMenu, DropdownIntlItem, themeStore } from '@hanzo/ui'
   import { createEventDispatcher } from 'svelte'
   import calendar from '../plugin'
 

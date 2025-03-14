@@ -13,10 +13,10 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Person, formatName } from '@hcengineering/contact'
-  import { Avatar, personByIdStore } from '@hcengineering/contact-resources'
-  import { Ref } from '@hcengineering/core'
-  import { Icon, Loading, resizeObserver } from '@hcengineering/ui'
+  import { Person, formatName } from '@hanzo/contact'
+  import { Avatar, personByIdStore } from '@hanzo/contact-resources'
+  import { Ref } from '@hanzo/core'
+  import { Icon, Loading, resizeObserver } from '@hanzo/ui'
   import love from '../plugin'
 
   export let _id: string

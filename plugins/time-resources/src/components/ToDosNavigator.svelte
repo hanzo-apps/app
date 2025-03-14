@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { ScheduleNavSection } from '@hcengineering/calendar-resources'
-  import { getCurrentEmployee } from '@hcengineering/contact'
-  import { Ref, getCurrentAccount } from '@hcengineering/core'
-  import { Asset, IntlString } from '@hcengineering/platform'
-  import { createQuery } from '@hcengineering/presentation'
-  import { NavFooter } from '@hcengineering/workbench-resources'
-  import tagsPlugin, { TagElement as TagElementType } from '@hcengineering/tags'
+  import { ScheduleNavSection } from '@hanzo/calendar-resources'
+  import { getCurrentEmployee } from '@hanzo/contact'
+  import { Ref, getCurrentAccount } from '@hanzo/core'
+  import { Asset, IntlString } from '@hanzo/platform'
+  import { createQuery } from '@hanzo/presentation'
+  import { NavFooter } from '@hanzo/workbench-resources'
+  import tagsPlugin, { TagElement as TagElementType } from '@hanzo/tags'
   import ui, {
     Label,
     Separator,
@@ -16,7 +16,7 @@
     getPlatformColorDef,
     themeStore,
     deviceOptionsStore as deviceInfo
-  } from '@hcengineering/ui'
+  } from '@hanzo/ui'
   import { ToDosMode } from '..'
   import time from '../plugin'
 
@@ -108,8 +108,8 @@
   class="antiPanel-navigator {$deviceInfo.navigator.direction === 'horizontal' ? 'portrait' : 'landscape'} border-left"
   class:fly={$deviceInfo.navigator.float}
 >
-  <div class="antiPanel-wrap__content hulyNavPanel-container">
-    <div class="hulyNavPanel-header">
+  <div class="antiPanel-wrap__content hanzoNavPanel-container">
+    <div class="hanzoNavPanel-header">
       <Label label={time.string.Planner} />
     </div>
 
@@ -131,7 +131,7 @@
       {/each}
       <div class="min-h-3 flex-no-shrink" />
 
-      <div class="hulyAccordionItem-container border" class:noBorder={tags.length === 0}>
+      <div class="hanzoAccordionItem-container border" class:noBorder={tags.length === 0}>
         <Month
           currentDate={mode === 'date' ? currentDate : null}
           on:update={(event) => {

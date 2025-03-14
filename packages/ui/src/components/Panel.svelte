@@ -189,7 +189,7 @@
           }}
         />
         {#if $$slots.beforeTitle}
-          <div class="hulyHeader-divider short no-print" />
+          <div class="hanzoHeader-divider short no-print" />
         {/if}
       {/if}
       <slot name="beforeTitle" />

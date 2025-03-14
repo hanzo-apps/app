@@ -13,16 +13,16 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Project } from '@hcengineering/controlled-documents'
+  import { Project } from '@hanzo/controlled-documents'
 
   export let project: Project
   export let onClick: () => void
 </script>
 
-<button class="hulyPopup-row" on:click={onClick}>
+<button class="hanzoPopup-row" on:click={onClick}>
   <div class="w-full flex flex-gap-2 clear-mins">
-    <div class="hulyPopup-row__labels-wrapper">
-      <div class="hulyPopup-row__label overflow-label">
+    <div class="hanzoPopup-row__labels-wrapper">
+      <div class="hanzoPopup-row__label overflow-label">
         {project.name}
       </div>
     </div>

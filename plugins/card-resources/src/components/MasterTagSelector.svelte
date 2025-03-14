@@ -13,10 +13,10 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Card, MasterTag } from '@hcengineering/card'
-  import { fillDefaults } from '@hcengineering/core'
-  import { createQuery, getClient } from '@hcengineering/presentation'
-  import { DropdownLabelsIntl, Label } from '@hcengineering/ui'
+  import { Card, MasterTag } from '@hanzo/card'
+  import { fillDefaults } from '@hanzo/core'
+  import { createQuery, getClient } from '@hanzo/presentation'
+  import { DropdownLabelsIntl, Label } from '@hanzo/ui'
   import card from '../plugin'
 
   export let value: Card

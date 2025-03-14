@@ -13,9 +13,9 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import core, { Class, ClassifierKind, Data, Ref, RefTo, Status, generateId, toIdMap } from '@hcengineering/core'
-  import { Resource, getEmbeddedLabel, getResource } from '@hcengineering/platform'
-  import presentation, { getClient, hasResource } from '@hcengineering/presentation'
+  import core, { Class, ClassifierKind, Data, Ref, RefTo, Status, generateId, toIdMap } from '@hanzo/core'
+  import { Resource, getEmbeddedLabel, getResource } from '@hanzo/platform'
+  import presentation, { getClient, hasResource } from '@hanzo/presentation'
   import {
     ProjectType,
     ProjectTypeDescriptor,
@@ -24,11 +24,11 @@
     TaskTypeDescriptor,
     createState,
     findStatusAttr
-  } from '@hcengineering/task'
-  import { DropdownIntlItem, Modal, ModernEditbox, Label, ButtonMenu } from '@hcengineering/ui'
+  } from '@hanzo/task'
+  import { DropdownIntlItem, Modal, ModernEditbox, Label, ButtonMenu } from '@hanzo/ui'
   import task from '../../plugin'
   import TaskTypeKindEditor from './TaskTypeKindEditor.svelte'
-  import { clearSettingsStore } from '@hcengineering/setting-resources'
+  import { clearSettingsStore } from '@hanzo/setting-resources'
 
   const client = getClient()
   export let type: ProjectType
@@ -171,18 +171,18 @@
     clearSettingsStore()
   }}
 >
-  <div class="hulyModal-content__titleGroup">
+  <div class="hanzoModal-content__titleGroup">
     <ModernEditbox bind:value={name} label={task.string.TaskName} size={'large'} kind={'ghost'} autoFocus />
   </div>
-  <div class="hulyModal-content__settingsSet">
-    <div class="hulyModal-content__settingsSet-line">
+  <div class="hanzoModal-content__settingsSet">
+    <div class="hanzoModal-content__settingsSet-line">
       <span class="label">
         <Label label={task.string.TaskType} />
       </span>
       <TaskTypeKindEditor bind:kind />
     </div>
     {#if taskTypeDescriptors.length > 1}
-      <div class="hulyModal-content__settingsSet-line">
+      <div class="hanzoModal-content__settingsSet-line">
         <span class="label">
           <Label label={task.string.Type} />
         </span>

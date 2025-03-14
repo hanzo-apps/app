@@ -8,17 +8,17 @@ import core, {
   type SearchOptions,
   type SearchQuery,
   type TxCUD
-} from '@hcengineering/core'
+} from '@hanzo/core'
 import type {
   ClientSessionCtx,
   ConnectionSocket,
   PipelineFactory,
   Session,
   SessionManager
-} from '@hcengineering/server-core'
-import { decodeToken } from '@hcengineering/server-token'
+} from '@hanzo/server-core'
+import { decodeToken } from '@hanzo/server-token'
 
-import { rpcJSONReplacer } from '@hcengineering/rpc'
+import { rpcJSONReplacer } from '@hanzo/rpc'
 import { createHash } from 'crypto'
 import { type Express, type Response as ExpressResponse, type Request } from 'express'
 import type { OutgoingHttpHeaders } from 'http2'
@@ -244,7 +244,7 @@ export function registerRPC (
     })
   })
 
-  // To use in non-js (rust) clients that can't link to @hcengineering/core
+  // To use in non-js (rust) clients that can't link to @hanzo/core
   app.get('/api/v1/generate-id/:workspaceId', (req, res) => {
     void withSession(req, res, async () => {
       const result = { id: generateId() }

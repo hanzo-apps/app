@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { Analytics } from '@hcengineering/analytics'
+import { Analytics } from '@hanzo/analytics'
 import type {
   Class,
   Doc,
@@ -13,7 +13,7 @@ import type {
   TxWorkspaceEvent,
   WorkspaceUuid,
   WorkspaceIds
-} from '@hcengineering/core'
+} from '@hanzo/core'
 import core, {
   DOMAIN_DOC_INDEX_STATE,
   generateId,
@@ -21,7 +21,7 @@ import core, {
   ModelDb,
   systemAccountUuid,
   WorkspaceEvent
-} from '@hcengineering/core'
+} from '@hanzo/core'
 import {
   ContextNameMiddleware,
   DBAdapterInitMiddleware,
@@ -29,22 +29,22 @@ import {
   DomainFindMiddleware,
   LowLevelMiddleware,
   ModelMiddleware
-} from '@hcengineering/middleware'
+} from '@hanzo/middleware'
 import {
   createMongoAdapter,
   createMongoDestroyAdapter,
   createMongoTxAdapter,
   shutdownMongo
-} from '@hcengineering/mongo'
-import { PlatformError, setMetadata, unknownError } from '@hcengineering/platform'
+} from '@hanzo/mongo'
+import { PlatformError, setMetadata, unknownError } from '@hanzo/platform'
 import {
   createPostgreeDestroyAdapter,
   createPostgresAdapter,
   createPostgresTxAdapter,
   setDBExtraOptions,
   shutdownPostgres
-} from '@hcengineering/postgres'
-import serverClientPlugin, { getTransactorEndpoint, getAccountClient } from '@hcengineering/server-client'
+} from '@hanzo/postgres'
+import serverClientPlugin, { getTransactorEndpoint, getAccountClient } from '@hanzo/server-client'
 import serverCore, {
   createContentAdapter,
   createPipeline,
@@ -54,8 +54,8 @@ import serverCore, {
   type Pipeline,
   type PipelineContext,
   type StorageAdapter
-} from '@hcengineering/server-core'
-import { FullTextIndexPipeline, searchFulltext, type FulltextDBConfiguration } from '@hcengineering/server-indexer'
+} from '@hanzo/server-core'
+import { FullTextIndexPipeline, searchFulltext, type FulltextDBConfiguration } from '@hanzo/server-indexer'
 import {
   getConfig,
   registerAdapterFactory,
@@ -65,8 +65,8 @@ import {
   registerTxAdapterFactory,
   setAdapterSecurity,
   sharedPipelineContextVars
-} from '@hcengineering/server-pipeline'
-import serverToken, { decodeToken, generateToken, type Token } from '@hcengineering/server-token'
+} from '@hanzo/server-pipeline'
+import serverToken, { decodeToken, generateToken, type Token } from '@hanzo/server-token'
 import cors from '@koa/cors'
 import Koa from 'koa'
 import bodyParser from 'koa-bodyparser'

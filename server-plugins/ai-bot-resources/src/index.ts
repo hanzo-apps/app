@@ -22,13 +22,13 @@ import core, {
   TxProcessor,
   TxUpdateDoc,
   UserStatus
-} from '@hcengineering/core'
-import { TriggerControl } from '@hcengineering/server-core'
-import { getAccountBySocialId, getPerson } from '@hcengineering/server-contact'
-import { aiBotEmailSocialId, AIEventRequest } from '@hcengineering/ai-bot'
+} from '@hanzo/core'
+import { TriggerControl } from '@hanzo/server-core'
+import { getAccountBySocialId, getPerson } from '@hanzo/server-contact'
+import { aiBotEmailSocialId, AIEventRequest } from '@hanzo/ai-bot'
 
 import { createAccountRequest, hasAiEndpoint, sendAIEvents } from './utils'
-import chunter, { ChatMessage, DirectMessage, ThreadMessage } from '@hcengineering/chunter'
+import chunter, { ChatMessage, DirectMessage, ThreadMessage } from '@hanzo/chunter'
 
 async function OnUserStatus (txes: TxCUD<UserStatus>[], control: TriggerControl): Promise<Tx[]> {
   if (!hasAiEndpoint()) {

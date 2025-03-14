@@ -20,12 +20,12 @@ import {
   type MigrationDocumentQuery,
   type MigrationUpgradeClient,
   tryMigrate
-} from '@hcengineering/model'
-import analyticsCollector, { analyticsCollectorId } from '@hcengineering/analytics-collector'
-import { DOMAIN_SPACE, getSocialKeyByOldEmail } from '@hcengineering/model-core'
-import { DOMAIN_DOC_NOTIFY, DOMAIN_NOTIFICATION } from '@hcengineering/model-notification'
-import { DOMAIN_ACTIVITY } from '@hcengineering/model-activity'
-import { buildSocialIdString, type Doc, MeasureMetricsContext } from '@hcengineering/core'
+} from '@hanzo/model'
+import analyticsCollector, { analyticsCollectorId } from '@hanzo/analytics-collector'
+import { DOMAIN_SPACE, getSocialKeyByOldEmail } from '@hanzo/model-core'
+import { DOMAIN_DOC_NOTIFY, DOMAIN_NOTIFICATION } from '@hanzo/model-notification'
+import { DOMAIN_ACTIVITY } from '@hanzo/model-activity'
+import { buildSocialIdString, type Doc, MeasureMetricsContext } from '@hanzo/core'
 
 async function removeOnboardingChannels (client: MigrationClient): Promise<void> {
   const channels = await client.find(DOMAIN_SPACE, { 'analytics:mixin:AnalyticsChannel': { $exists: true } })

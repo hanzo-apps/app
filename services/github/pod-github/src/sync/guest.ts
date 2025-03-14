@@ -2,21 +2,21 @@
 // Copyright © 2023 Hardcore Engineering Inc.
 //
 
-import { Branding, generateUuid, PersonUuid, TxOperations, WorkspaceIds, WorkspaceUuid } from '@hcengineering/core'
-import { MarkupMarkType, MarkupNode, MarkupNodeType, traverseNode } from '@hcengineering/text'
-import { getPublicLink } from '@hcengineering/server-guest-resources'
-import { Task } from '@hcengineering/task'
-import { generateToken } from '@hcengineering/server-token'
+import { Branding, generateUuid, PersonUuid, TxOperations, WorkspaceIds, WorkspaceUuid } from '@hanzo/core'
+import { MarkupMarkType, MarkupNode, MarkupNodeType, traverseNode } from '@hanzo/text'
+import { getPublicLink } from '@hanzo/server-guest-resources'
+import { Task } from '@hanzo/task'
+import { generateToken } from '@hanzo/server-token'
 
-const githubLinkText = process.env.LINK_TEXT ?? 'Huly&reg;:'
+const githubLinkText = process.env.LINK_TEXT ?? 'Hanzo&reg;:'
 
-const githubLinkTextOld = 'View in Huly'
+const githubLinkTextOld = 'View in Hanzo'
 
-export function hasHulyLinkText (text: string): boolean {
+export function hasHanzoLinkText (text: string): boolean {
   return text.includes(githubLinkText) || text.includes(githubLinkTextOld)
 }
 
-export function hasHulyLink (href: string, guestLink: string): boolean {
+export function hasHanzoLink (href: string, guestLink: string): boolean {
   return href.includes(guestLink)
 }
 

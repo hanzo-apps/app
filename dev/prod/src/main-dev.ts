@@ -14,13 +14,13 @@
 // limitations under the License.
 //
 
-import { createApp } from '@hcengineering/ui'
+import { createApp } from '@hanzo/ui'
 import { configurePlatform } from './platform'
 import { configurePlatformDevServer } from './platform-dev'
 
 configurePlatform().then(() => {
 
-  if (process.env.CLIENT_TYPE === 'dev-server' || process.env.CLIENT_TYPE === 'dev-production' || process.env.CLIENT_TYPE === 'dev-huly' || process.env.CLIENT_TYPE === 'dev-bold') {
+  if (process.env.CLIENT_TYPE === 'dev-server' || process.env.CLIENT_TYPE === 'dev-production' || process.env.CLIENT_TYPE === 'dev-hanzo' || process.env.CLIENT_TYPE === 'dev-bold') {
     configurePlatformDevServer()
   }
   

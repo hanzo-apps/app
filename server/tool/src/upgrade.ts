@@ -10,10 +10,10 @@ import {
   ModelDb,
   Ref,
   WorkspaceIds
-} from '@hcengineering/core'
-import { MigrateUpdate, MigrationClient, MigrationIterator, ModelLogger } from '@hcengineering/model'
-import { Pipeline, StorageAdapter } from '@hcengineering/server-core'
-import { AccountClient } from '@hcengineering/account-client'
+} from '@hanzo/core'
+import { MigrateUpdate, MigrationClient, MigrationIterator, ModelLogger } from '@hanzo/model'
+import { Pipeline, StorageAdapter } from '@hanzo/server-core'
+import { AccountClient } from '@hanzo/account-client'
 
 /**
  * Upgrade client implementation.

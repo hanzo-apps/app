@@ -13,13 +13,13 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import calendar from '@hcengineering/calendar'
-  import { Organization } from '@hcengineering/contact'
-  import { DateRangeMode, Doc, FindOptions, Ref } from '@hcengineering/core'
-  import { IntlString } from '@hcengineering/platform'
-  import { Applicant, Review } from '@hcengineering/recruit'
-  import { Button, DatePresenter, IconAdd, Label, Scroller, showPopup } from '@hcengineering/ui'
-  import { Table } from '@hcengineering/view-resources'
+  import calendar from '@hanzo/calendar'
+  import { Organization } from '@hanzo/contact'
+  import { DateRangeMode, Doc, FindOptions, Ref } from '@hanzo/core'
+  import { IntlString } from '@hanzo/platform'
+  import { Applicant, Review } from '@hanzo/recruit'
+  import { Button, DatePresenter, IconAdd, Label, Scroller, showPopup } from '@hanzo/ui'
+  import { Table } from '@hanzo/view-resources'
   import recruit from '../../plugin'
   import FileDuo from '../icons/FileDuo.svelte'
   import SectionEmpty from '../SectionEmpty.svelte'

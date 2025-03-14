@@ -14,7 +14,7 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { isEmptyMarkup, markupToJSON } from '@hcengineering/text'
+  import { isEmptyMarkup, markupToJSON } from '@hanzo/text'
   import Node from './markup/Node.svelte'
 
   export let message: string

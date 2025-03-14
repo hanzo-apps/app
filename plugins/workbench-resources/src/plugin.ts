@@ -13,11 +13,11 @@
 // limitations under the License.
 //
 
-import { mergeIds } from '@hcengineering/platform'
-import type { IntlString, Metadata } from '@hcengineering/platform'
+import { mergeIds } from '@hanzo/platform'
+import type { IntlString, Metadata } from '@hanzo/platform'
 
-import workbench, { workbenchId } from '@hcengineering/workbench'
-import { type AnyComponent } from '@hcengineering/ui/src/types'
+import workbench, { workbenchId } from '@hanzo/workbench'
+import { type AnyComponent } from '@hanzo/ui/src/types'
 
 export default mergeIds(workbenchId, workbench, {
   string: {

@@ -13,9 +13,9 @@
 // limitations under the License.
 //
 
-import { TriggerControl } from '@hcengineering/server-core'
-import contact, { Employee, pickPrimarySocialId, type Person } from '@hcengineering/contact'
-import { AccountUuid, parseSocialIdString, PersonId, type Ref, toIdMap } from '@hcengineering/core'
+import { TriggerControl } from '@hanzo/server-core'
+import contact, { Employee, pickPrimarySocialId, type Person } from '@hanzo/contact'
+import { AccountUuid, parseSocialIdString, PersonId, type Ref, toIdMap } from '@hanzo/core'
 
 export async function getTriggerCurrentPerson (control: TriggerControl): Promise<Person | undefined> {
   const { type, value } = parseSocialIdString(control.txFactory.account)

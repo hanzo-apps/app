@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-import { type AccountDB, LoginInfo, joinWithProvider, loginOrSignUpWithProvider } from '@hcengineering/account'
-import { BrandingMap, concatLink, MeasureContext, getBranding, SocialIdType } from '@hcengineering/core'
+import { type AccountDB, LoginInfo, joinWithProvider, loginOrSignUpWithProvider } from '@hanzo/account'
+import { BrandingMap, concatLink, MeasureContext, getBranding, SocialIdType } from '@hanzo/core'
 import Router from 'koa-router'
 import { Issuer, Strategy } from 'openid-client'
 import qs from 'querystringify'

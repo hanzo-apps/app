@@ -13,10 +13,10 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { MasterTag } from '@hcengineering/card'
-  import { Ref, isOwnerOrMaintainer } from '@hcengineering/core'
-  import { createQuery } from '@hcengineering/presentation'
-  import { ClassAttributes, ClassHierarchy, clearSettingsStore } from '@hcengineering/setting-resources'
+  import { MasterTag } from '@hanzo/card'
+  import { Ref, isOwnerOrMaintainer } from '@hanzo/core'
+  import { createQuery } from '@hanzo/presentation'
+  import { ClassAttributes, ClassHierarchy, clearSettingsStore } from '@hanzo/setting-resources'
   import {
     Breadcrumb,
     Button,
@@ -29,8 +29,8 @@
     navigate,
     showPopup,
     twoPanelsSeparators
-  } from '@hcengineering/ui'
-  import view from '@hcengineering/view'
+  } from '@hanzo/ui'
+  import view from '@hanzo/view'
   import card from '../plugin'
   import CreateTag from './CreateTag.svelte'
 
@@ -68,12 +68,12 @@
   defineSeparators('workspaceSettings', twoPanelsSeparators)
 </script>
 
-<div class="hulyComponent">
+<div class="hanzoComponent">
   <Header adaptive={'disabled'}>
     <Breadcrumb icon={card.icon.MasterTags} label={card.string.MasterTags} size={'large'} isCurrent />
   </Header>
-  <div class="hulyComponent-content__container columns">
-    <div class="hulyComponent-content__column">
+  <div class="hanzoComponent-content__container columns">
+    <div class="hanzoComponent-content__column">
       <div class="ulyComponent-content__navHeader flex-between trans-title flex-no-shrink bottom-divider p-3">
         <Button
           icon={view.icon.Add}
@@ -104,9 +104,9 @@
       </Scroller>
     </div>
     <Separator name={'workspaceSettings'} index={0} color={'var(--theme-divider-color)'} />
-    <div class="hulyComponent-content__column content">
+    <div class="hanzoComponent-content__column content">
       <Scroller align={'center'} padding={'var(--spacing-3)'} bottomPadding={'var(--spacing-3)'}>
-        <div class="hulyComponent-content">
+        <div class="hanzoComponent-content">
           {#if _class !== undefined}
             <ClassAttributes {_class} disabled={false} />
           {/if}

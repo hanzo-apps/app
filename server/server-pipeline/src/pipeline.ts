@@ -12,7 +12,7 @@ import {
   type MeasureContext,
   type Tx,
   type WorkspaceIds
-} from '@hcengineering/core'
+} from '@hanzo/core'
 import {
   ApplyTxMiddleware,
   BroadcastMiddleware,
@@ -36,7 +36,7 @@ import {
   SpaceSecurityMiddleware,
   TriggersMiddleware,
   TxMiddleware
-} from '@hcengineering/middleware'
+} from '@hanzo/middleware'
 import {
   createBenchmarkAdapter,
   createInMemoryAdapter,
@@ -51,8 +51,8 @@ import {
   type PipelineFactory,
   type StorageAdapter,
   type WorkspaceDestroyAdapter
-} from '@hcengineering/server-core'
-import { generateToken } from '@hcengineering/server-token'
+} from '@hanzo/server-core'
+import { generateToken } from '@hanzo/server-token'
 import { createStorageDataAdapter } from './blobStorage'
 /**
  * @public

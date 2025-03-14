@@ -13,15 +13,15 @@
 // limitations under the License.
 //
 
-import { ActivityMessage } from '@hcengineering/activity'
-import { ChannelItem } from '@hcengineering/contact'
-import { PersonId, AttachedDoc, Class, Doc, Ref, Timestamp } from '@hcengineering/core'
-import { InboxNotification, NotificationProvider, NotificationType } from '@hcengineering/notification'
-import type { IntlString, Metadata, Plugin } from '@hcengineering/platform'
-import { plugin } from '@hcengineering/platform'
-import type { Handler, IntegrationType } from '@hcengineering/setting'
-import { TemplateField } from '@hcengineering/templates'
-import type { AnyComponent } from '@hcengineering/ui'
+import { ActivityMessage } from '@hanzo/activity'
+import { ChannelItem } from '@hanzo/contact'
+import { PersonId, AttachedDoc, Class, Doc, Ref, Timestamp } from '@hanzo/core'
+import { InboxNotification, NotificationProvider, NotificationType } from '@hanzo/notification'
+import type { IntlString, Metadata, Plugin } from '@hanzo/platform'
+import { plugin } from '@hanzo/platform'
+import type { Handler, IntegrationType } from '@hanzo/setting'
+import { TemplateField } from '@hanzo/templates'
+import type { AnyComponent } from '@hanzo/ui'
 
 /**
  * @public

@@ -11,9 +11,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Blobs, Class, Doc, Domain, MarkupBlobRef, Mixin, Rank, Ref } from '@hcengineering/core'
-import { Asset, IntlString, plugin, Plugin } from '@hcengineering/platform'
-import type { AnyComponent } from '@hcengineering/ui'
+import { Blobs, Class, Doc, Domain, MarkupBlobRef, Mixin, Rank, Ref } from '@hanzo/core'
+import { Asset, IntlString, plugin, Plugin } from '@hanzo/platform'
+import type { AnyComponent } from '@hanzo/ui'
 
 export * from './analytics'
 

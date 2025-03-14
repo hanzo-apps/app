@@ -14,11 +14,11 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import contact, { getName, Person } from '@hcengineering/contact'
-  import PersonPresenter from '@hcengineering/contact-resources/src/components/PersonPresenter.svelte'
-  import { Ref } from '@hcengineering/core'
-  import { getClient } from '@hcengineering/presentation'
-  import type { Applicant } from '@hcengineering/recruit'
+  import contact, { getName, Person } from '@hanzo/contact'
+  import PersonPresenter from '@hanzo/contact-resources/src/components/PersonPresenter.svelte'
+  import { Ref } from '@hanzo/core'
+  import { getClient } from '@hanzo/presentation'
+  import type { Applicant } from '@hanzo/recruit'
 
   export let value: Applicant
 

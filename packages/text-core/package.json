@@ -1,5 +1,5 @@
 {
-  "name": "@hcengineering/text-core",
+  "name": "@hanzo/text-core",
   "version": "0.6.0",
   "main": "lib/index.js",
   "svelte": "src/index.ts",
@@ -22,7 +22,7 @@
     "_phase:validate": "compile validate"
   },
   "devDependencies": {
-    "@hcengineering/platform-rig": "^0.6.0",
+    "@hanzo/platform-rig": "^0.6.0",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-promise": "^6.1.1",
@@ -39,10 +39,10 @@
     "jest-environment-jsdom": "^29.7.0"
   },
   "dependencies": {
-    "@hcengineering/core": "^0.6.32",
+    "@hanzo/core": "^0.6.32",
     "fast-equals": "^5.2.2"
   },
-  "repository": "https://github.com/hcengineering/platform",
+  "repository": "https://github.com/hanzo/platform",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },

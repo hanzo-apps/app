@@ -13,10 +13,10 @@
 // limitations under the License.
 //
 
-import board, { boardId } from '@hcengineering/board'
-import { type Ref, type StatusCategory } from '@hcengineering/core'
-import { type IntlString, mergeIds } from '@hcengineering/platform'
-import type { AnyComponent } from '@hcengineering/ui/src/types'
+import board, { boardId } from '@hanzo/board'
+import { type Ref, type StatusCategory } from '@hanzo/core'
+import { type IntlString, mergeIds } from '@hanzo/platform'
+import type { AnyComponent } from '@hanzo/ui/src/types'
 
 export default mergeIds(boardId, board, {
   string: {

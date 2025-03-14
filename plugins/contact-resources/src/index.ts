@@ -21,7 +21,7 @@ import {
   type Channel,
   type Contact,
   type Person
-} from '@hcengineering/contact'
+} from '@hanzo/contact'
 import {
   AccountRole,
   SocialIdType,
@@ -32,10 +32,10 @@ import {
   type Ref,
   type RelatedDocument,
   type WithLookup
-} from '@hcengineering/core'
-import login from '@hcengineering/login'
-import { getResource, type IntlString, type Resources } from '@hcengineering/platform'
-import { MessageBox, getBlobRef, getClient, type ObjectSearchResult } from '@hcengineering/presentation'
+} from '@hanzo/core'
+import login from '@hanzo/login'
+import { getResource, type IntlString, type Resources } from '@hanzo/platform'
+import { MessageBox, getBlobRef, getClient, type ObjectSearchResult } from '@hanzo/presentation'
 import {
   getPlatformAvatarColorByName,
   getPlatformAvatarColorForTextDef,
@@ -48,8 +48,8 @@ import {
   type AnySvelteComponent,
   type ColorDefinition,
   type TooltipAlignment
-} from '@hcengineering/ui'
-import { AggregationManager } from '@hcengineering/view-resources'
+} from '@hanzo/ui'
+import { AggregationManager } from '@hanzo/view-resources'
 import PersonIdArrayEditor from './components/PersonIdArrayEditor.svelte'
 import AccountArrayEditor from './components/AccountArrayEditor.svelte'
 import AccountBox from './components/AccountBox.svelte'

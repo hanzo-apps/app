@@ -1,4 +1,4 @@
-import { ActivityMessageControl, DocAttributeUpdates, DocUpdateAction } from '@hcengineering/activity'
+import { ActivityMessageControl, DocAttributeUpdates, DocUpdateAction } from '@hanzo/activity'
 import core, {
   AttachedDoc,
   type Attribute,
@@ -18,12 +18,12 @@ import core, {
   combineAttributes,
   ArrOf,
   AccountUuid
-} from '@hcengineering/core'
-import notification from '@hcengineering/notification'
-import { translate } from '@hcengineering/platform'
-import { ActivityControl, DocObjectCache, getAllObjectTransactions } from '@hcengineering/server-activity'
-import { TriggerControl } from '@hcengineering/server-core'
-import { getDocCollaborators } from '@hcengineering/server-notification-resources'
+} from '@hanzo/core'
+import notification from '@hanzo/notification'
+import { translate } from '@hanzo/platform'
+import { ActivityControl, DocObjectCache, getAllObjectTransactions } from '@hanzo/server-activity'
+import { TriggerControl } from '@hanzo/server-core'
+import { getDocCollaborators } from '@hanzo/server-notification-resources'
 
 function getAvailableAttributesKeys (tx: TxCUD<Doc>, hierarchy: Hierarchy): string[] {
   if (hierarchy.isDerived(tx._class, core.class.TxUpdateDoc)) {

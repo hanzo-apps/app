@@ -34,8 +34,8 @@ import {
   type TxUpdateDoc,
   type TxWorkspaceEvent,
   type WorkspaceEvent
-} from '@hcengineering/core'
-import { Hidden, Index, Model, Prop, TypeRef } from '@hcengineering/model'
+} from '@hanzo/core'
+import { Hidden, Index, Model, Prop, TypeRef } from '@hanzo/model'
 import core from './component'
 import { TDoc } from './core'
 

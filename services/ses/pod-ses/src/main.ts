@@ -13,8 +13,8 @@
 // limitations under the License.
 //
 
-import type { Ref } from '@hcengineering/core'
-import { PushSubscription, type PushData } from '@hcengineering/notification'
+import type { Ref } from '@hanzo/core'
+import { PushSubscription, type PushData } from '@hanzo/notification'
 import type { Request, Response } from 'express'
 import webpush, { WebPushError } from 'web-push'
 import config from './config'
@@ -49,9 +49,9 @@ export const main = async (): Promise<void> => {
 
   if (config.PushPublicKey !== undefined && config.PushPrivateKey !== undefined) {
     try {
-      const subj = config.PushSubject ?? 'mailto:hey@huly.io'
+      const subj = config.PushSubject ?? 'mailto:hey@hanzo.io'
       console.log('Setting VAPID details', subj, config.PushPublicKey.length, config.PushPrivateKey.length)
-      webpush.setVapidDetails(config.PushSubject ?? 'mailto:hey@huly.io', config.PushPublicKey, config.PushPrivateKey)
+      webpush.setVapidDetails(config.PushSubject ?? 'mailto:hey@hanzo.io', config.PushPublicKey, config.PushPrivateKey)
       webpushInitDone = true
     } catch (err: any) {
       console.error(err)

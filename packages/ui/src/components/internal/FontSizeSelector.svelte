@@ -13,7 +13,7 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { IntlString } from '@hcengineering/platform'
+  import { IntlString } from '@hanzo/platform'
   import { getContext } from 'svelte'
   import ui, { deviceOptionsStore as deviceInfo, modalStore, showPopup } from '../..'
   import FontSizePopup from './FontSizePopup.svelte'

@@ -1,4 +1,4 @@
-import { concatLink, platformNow } from '@hcengineering/core'
+import { concatLink, platformNow } from '@hanzo/core'
 import type postgres from 'postgres'
 import type { ParameterOrJSON } from 'postgres'
 import { convertArrayParams, doFetchTypes, getPrepare } from './utils'

@@ -13,10 +13,10 @@
 // limitations under the License.
 //
 
-import { DocumentQuery, type Doc, type Ref, type SpaceTypeDescriptor } from '@hcengineering/core'
-import type { Asset, IntlString, Plugin, Resource } from '@hcengineering/platform'
+import { DocumentQuery, type Doc, type Ref, type SpaceTypeDescriptor } from '@hanzo/core'
+import type { Asset, IntlString, Plugin, Resource } from '@hanzo/platform'
 
-import { plugin } from '@hcengineering/platform'
+import { plugin } from '@hanzo/platform'
 
 /** @public */
 export const mySpaceId = 'mySpace' as Plugin

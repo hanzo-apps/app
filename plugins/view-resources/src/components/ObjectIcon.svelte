@@ -13,10 +13,10 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import view from '@hcengineering/view'
-  import { Component, Icon, IconSize } from '@hcengineering/ui'
-  import type { Doc } from '@hcengineering/core'
-  import { getClient } from '@hcengineering/presentation'
+  import view from '@hanzo/view'
+  import { Component, Icon, IconSize } from '@hanzo/ui'
+  import type { Doc } from '@hanzo/core'
+  import { getClient } from '@hanzo/presentation'
 
   import { classIcon } from '../utils'
 

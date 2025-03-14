@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-import type { Asset, IntlString, Plugin } from '@hcengineering/platform'
+import type { Asset, IntlString, Plugin } from '@hanzo/platform'
 import type { DocumentQuery } from './storage'
 import { WorkspaceDataId, WorkspaceUuid } from './utils'
 
@@ -92,7 +92,7 @@ export type AccountUuid = PersonUuid & { __accountUuid: true }
 /**
  * @public
  * String representation of a social id linked to a global person.
- * E.g. email:pied.piper@hcengineering.com or huly:ea3bf257-94b5-4a31-a7da-466d578d850f
+ * E.g. email:pied.piper@hanzo.com or hanzo:ea3bf257-94b5-4a31-a7da-466d578d850f
  */
 export type PersonId = string & { __personId: true }
 
@@ -860,7 +860,7 @@ export enum SocialIdType {
   GOOGLE = 'google',
   PHONE = 'phone',
   OIDC = 'oidc',
-  HULY = 'huly',
+  HANZO = 'hanzo',
   TELEGRAM = 'telegram'
 }
 export interface SocialId {

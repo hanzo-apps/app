@@ -14,11 +14,11 @@
 -->
 
 <script lang="ts">
-  import { ModernButton, showPopup } from '@hcengineering/ui'
-  import telegram from '@hcengineering/telegram'
-  import presentation from '@hcengineering/presentation'
-  import { concatLink } from '@hcengineering/core'
-  import { getMetadata } from '@hcengineering/platform'
+  import { ModernButton, showPopup } from '@hanzo/ui'
+  import telegram from '@hanzo/telegram'
+  import presentation from '@hanzo/presentation'
+  import { concatLink } from '@hanzo/core'
+  import { getMetadata } from '@hanzo/platform'
 
   import ConfigureBotPopup from './ConfigureBotPopup.svelte'
 

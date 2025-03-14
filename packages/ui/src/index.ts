@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-import { addLocation } from '@hcengineering/platform'
+import { addLocation } from '@hanzo/platform'
 import { type SvelteComponent } from 'svelte'
 import { readable, writable } from 'svelte/store'
 import Root from './components/internal/Root.svelte'
@@ -47,7 +47,7 @@ export type {
   MouseTargetEvent
 } from './types'
 
-export { themeStore, languageStore } from '@hcengineering/theme'
+export { themeStore, languageStore } from '@hanzo/theme'
 // export { applicationShortcutKey } from './utils'
 export { getCurrentLocation, locationToUrl, navigate, location, setLocationStorageKey } from './location'
 

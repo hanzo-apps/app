@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-import { Analytics } from '@hcengineering/analytics'
+import { Analytics } from '@hanzo/analytics'
 import core, {
   BackupClient,
   Client as CoreClient,
@@ -41,10 +41,10 @@ import core, {
   type TxCUD,
   type WorkspaceIds,
   type WorkspaceUuid
-} from '@hcengineering/core'
-import { BlobClient, createClient, getTransactorEndpoint } from '@hcengineering/server-client'
-import { estimateDocSize, type StorageAdapter } from '@hcengineering/server-core'
-import { generateToken } from '@hcengineering/server-token'
+} from '@hanzo/core'
+import { BlobClient, createClient, getTransactorEndpoint } from '@hanzo/server-client'
+import { estimateDocSize, type StorageAdapter } from '@hanzo/server-core'
+import { generateToken } from '@hanzo/server-token'
 import { deepEqual } from 'fast-equals'
 import {
   createReadStream,
@@ -747,7 +747,7 @@ export async function backup (
   let connection!: CoreClient & BackupClient
   let printEnd = true
 
-  const tmpRoot = mkdtempSync('huly')
+  const tmpRoot = mkdtempSync('hanzo')
 
   try {
     let backupInfo: BackupInfo = {

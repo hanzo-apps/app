@@ -13,10 +13,10 @@
 // limitations under the License.
 //
 
-import type { Ref } from '@hcengineering/core'
-import { mergeIds } from '@hcengineering/platform'
-import mySpace, { mySpaceId } from '@hcengineering/my-space'
-import type { Viewlet } from '@hcengineering/view'
+import type { Ref } from '@hanzo/core'
+import { mergeIds } from '@hanzo/platform'
+import mySpace, { mySpaceId } from '@hanzo/my-space'
+import type { Viewlet } from '@hanzo/view'
 
 export default mergeIds(mySpaceId, mySpace, {
   viewlet: {

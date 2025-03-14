@@ -13,10 +13,10 @@
 // limitations under the License.
 //
 
-import { Class, Ref, Timestamp, WorkspaceUuid } from '@hcengineering/core'
-import { InboxNotification } from '@hcengineering/notification'
-import { ChunterSpace } from '@hcengineering/chunter'
-import { ActivityMessage } from '@hcengineering/activity'
+import { Class, Ref, Timestamp, WorkspaceUuid } from '@hanzo/core'
+import { InboxNotification } from '@hanzo/notification'
+import { ChunterSpace } from '@hanzo/chunter'
+import { ActivityMessage } from '@hanzo/activity'
 
 export interface UserRecord {
   telegramId: number

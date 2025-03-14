@@ -14,9 +14,9 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { OK, Severity, Status } from '@hcengineering/platform'
-  import presentation from '@hcengineering/presentation'
-  import { logIn } from '@hcengineering/workbench'
+  import { OK, Severity, Status } from '@hanzo/platform'
+  import presentation from '@hanzo/presentation'
+  import { logIn } from '@hanzo/workbench'
   import BottomActionComponent from './BottomAction.svelte'
   import login from '../plugin'
   import { getPasswordValidationRules } from '../validations'

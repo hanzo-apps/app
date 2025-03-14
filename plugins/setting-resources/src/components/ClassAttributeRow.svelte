@@ -13,10 +13,10 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import core, { AnyAttribute, ArrOf, Doc, EnumOf, RefTo, Type } from '@hcengineering/core'
-  import { IntlString } from '@hcengineering/platform'
-  import { getClient } from '@hcengineering/presentation'
-  import { AnySvelteComponent, Icon, IconMoreV2, Label, IconOpenedArrow } from '@hcengineering/ui'
+  import core, { AnyAttribute, ArrOf, Doc, EnumOf, RefTo, Type } from '@hanzo/core'
+  import { IntlString } from '@hanzo/platform'
+  import { getClient } from '@hanzo/presentation'
+  import { AnySvelteComponent, Icon, IconMoreV2, Label, IconOpenedArrow } from '@hanzo/ui'
   import settings from '../plugin'
 
   export let attribute: AnyAttribute
@@ -49,22 +49,22 @@
   }
 </script>
 
-<button class="hulyTableAttr-content__row" class:hovered class:selected on:contextmenu on:click>
-  <button class="hulyTableAttr-content__row-dragMenu" on:click|stopPropagation={clickMore}>
+<button class="hanzoTableAttr-content__row" class:hovered class:selected on:contextmenu on:click>
+  <button class="hanzoTableAttr-content__row-dragMenu" on:click|stopPropagation={clickMore}>
     <IconMoreV2 size={'small'} />
   </button>
   {#if attribute.icon !== undefined}
-    <div class="hulyTableAttr-content__row-icon">
+    <div class="hanzoTableAttr-content__row-icon">
       <Icon icon={attribute.icon} size={'small'} />
     </div>
   {/if}
-  <div class="hulyTableAttr-content__row-label font-regular-14 grow" class:accent={!attribute.hidden}>
+  <div class="hanzoTableAttr-content__row-label font-regular-14 grow" class:accent={!attribute.hidden}>
     <Label label={attribute.label} />
   </div>
   {#if attributeMapper}
     <svelte:component this={attributeMapper.component} {...attributeMapper.props} {attribute} />
   {/if}
-  <div class="hulyTableAttr-content__row-type font-medium-12">
+  <div class="hanzoTableAttr-content__row-type font-medium-12">
     <Label label={attribute.type.label} />
     {#if attributeType !== undefined}
       : <Label label={attributeType} />
@@ -83,7 +83,7 @@
       {/if}
     {/if}
   </div>
-  <div class="hulyTableAttr-content__row-arrow">
+  <div class="hanzoTableAttr-content__row-arrow">
     <IconOpenedArrow size={'small'} />
   </div>
 </button>

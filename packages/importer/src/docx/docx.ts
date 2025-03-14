@@ -13,12 +13,12 @@
 // limitations under the License.
 //
 
-import { MarkupNode, htmlToJSON } from '@hcengineering/text'
-import { markupToMarkdown } from '@hcengineering/text-markdown'
+import { MarkupNode, htmlToJSON } from '@hanzo/text'
+import { markupToMarkdown } from '@hanzo/text-markdown'
 import { mkdir, readdir, readFile, writeFile } from 'fs/promises'
 import * as yaml from 'js-yaml'
 import { basename, dirname, extname, join, relative } from 'path'
-import { HulyControlledDocumentHeader, HulyDocumentTemplateHeader } from '../huly/huly'
+import { HanzoControlledDocumentHeader, HanzoDocumentTemplateHeader } from '../hanzo/hanzo'
 
 export interface DocumentConverterOptions {
   outputPath: string
@@ -32,7 +32,7 @@ export interface DocumentState {
   path: string
   root: string
   markup: MarkupNode
-  header?: HulyControlledDocumentHeader | HulyDocumentTemplateHeader
+  header?: HanzoControlledDocumentHeader | HanzoDocumentTemplateHeader
 }
 
 export interface DocumentPreprocessorOptions<T> {

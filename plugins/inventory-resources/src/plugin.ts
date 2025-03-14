@@ -14,8 +14,8 @@
 // limitations under the License.
 //
 
-import inventory, { inventoryId } from '@hcengineering/inventory'
-import { type IntlString, mergeIds, type StatusCode } from '@hcengineering/platform'
+import inventory, { inventoryId } from '@hanzo/inventory'
+import { type IntlString, mergeIds, type StatusCode } from '@hanzo/platform'
 
 export default mergeIds(inventoryId, inventory, {
   status: {

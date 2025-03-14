@@ -13,14 +13,14 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import attachment from '@hcengineering/attachment'
-  import contact, { Channel, getName, Person } from '@hcengineering/contact'
-  import { ChannelsEditor, Avatar } from '@hcengineering/contact-resources'
-  import { createQuery, getClient } from '@hcengineering/presentation'
-  import { Component, Label } from '@hcengineering/ui'
-  import { DocNavLink } from '@hcengineering/view-resources'
+  import attachment from '@hanzo/attachment'
+  import contact, { Channel, getName, Person } from '@hanzo/contact'
+  import { ChannelsEditor, Avatar } from '@hanzo/contact-resources'
+  import { createQuery, getClient } from '@hanzo/presentation'
+  import { Component, Label } from '@hanzo/ui'
+  import { DocNavLink } from '@hanzo/view-resources'
   import recruit from '../plugin'
-  import chunter from '@hcengineering/chunter'
+  import chunter from '@hanzo/chunter'
 
   export let candidate: Person | undefined
   export let disabled: boolean = false

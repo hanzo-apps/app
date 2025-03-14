@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-import contact, { type Person } from '@hcengineering/contact'
-import { SocialIdType, buildSocialIdString, type Ref, type Timestamp, type TxOperations } from '@hcengineering/core'
-import { MarkupNodeType, traverseNode, type MarkupNode } from '@hcengineering/text'
-import tracker from '@hcengineering/tracker'
+import contact, { type Person } from '@hanzo/contact'
+import { SocialIdType, buildSocialIdString, type Ref, type Timestamp, type TxOperations } from '@hanzo/core'
+import { MarkupNodeType, traverseNode, type MarkupNode } from '@hanzo/text'
+import tracker from '@hanzo/tracker'
 import csv from 'csvtojson'
 import { download } from '../importer/dowloader'
 import {
@@ -274,16 +274,16 @@ class ClickupImporter {
 
   private convertChecklistsToMarkdown (clickup: string): string {
     const checklists = JSON.parse(clickup) as ClickupChecklist
-    let huly: string = '\n'
+    let hanzo: string = '\n'
     for (const [key, values] of Object.entries(checklists)) {
-      huly += `**${key}**\n`
+      hanzo += `**${key}**\n`
       for (const value of values) {
         // no way to check if item is checked, this info doesn't exported from ClickUp 🤯
-        huly += `* [ ] ${value} \n`
+        hanzo += `* [ ] ${value} \n`
       }
-      huly += '\n'
+      hanzo += '\n'
     }
-    return huly
+    return hanzo
   }
 
   private async fillPersonsByNames (): Promise<void> {

@@ -13,12 +13,12 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Analytics } from '@hcengineering/analytics'
-  import login from '@hcengineering/login'
-  import { getResource } from '@hcengineering/platform'
-  import presentation from '@hcengineering/presentation'
-  import setting from '@hcengineering/setting'
-  import { Breadcrumb, Button, EditBox, Header, Icon, Label } from '@hcengineering/ui'
+  import { Analytics } from '@hanzo/analytics'
+  import login from '@hanzo/login'
+  import { getResource } from '@hanzo/platform'
+  import presentation from '@hanzo/presentation'
+  import setting from '@hanzo/setting'
+  import { Breadcrumb, Button, EditBox, Header, Icon, Label } from '@hanzo/ui'
   import plugin from '../plugin'
   import Error from './icons/Error.svelte'
 
@@ -56,7 +56,7 @@
   $: updateSaved(oldPassword, password, password2)
 </script>
 
-<div class="hulyComponent">
+<div class="hanzoComponent">
   <Header adaptive={'disabled'}>
     <Breadcrumb icon={setting.icon.Password} label={setting.string.ChangePassword} size={'large'} isCurrent />
   </Header>

@@ -1,4 +1,4 @@
-import { type AnalyticProvider } from "@hcengineering/analytics"
+import { type AnalyticProvider } from "@hanzo/analytics"
 import * as Sentry from "@sentry/svelte"
 
 export class SentryAnalyticProvider implements AnalyticProvider {
@@ -17,7 +17,7 @@ export class SentryAnalyticProvider implements AnalyticProvider {
         // We recommend adjusting this value in production
         tracesSampleRate: 1.0,
 
-        tracePropagationTargets: [/^https:\/\/huly\.app/, /^https:\/\/app\.huly\.io/, /^https:\/\/account\.huly\.io/],
+        tracePropagationTargets: [/^https:\/\/hanzo\.app/, /^https:\/\/app\.hanzo\.io/, /^https:\/\/account\.hanzo\.io/],
 
         replaysSessionSampleRate: 0.0,
         replaysOnErrorSampleRate: 1.0,

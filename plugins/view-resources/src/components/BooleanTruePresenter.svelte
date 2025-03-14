@@ -14,7 +14,7 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { getPlatformColor, themeStore } from '@hcengineering/ui'
+  import { getPlatformColor, themeStore } from '@hanzo/ui'
 
   export let value: boolean
   export let trueColor = 16

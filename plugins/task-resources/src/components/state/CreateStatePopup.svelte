@@ -13,11 +13,11 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import core, { Attribute, Class, Ref, Status, StatusCategory } from '@hcengineering/core'
-  import { Asset, getEmbeddedLabel } from '@hcengineering/platform'
-  import presentation, { createQuery, getClient } from '@hcengineering/presentation'
-  import { clearSettingsStore, settingsStore } from '@hcengineering/setting-resources'
-  import { ProjectType, TaskType, calculateStatuses, createState } from '@hcengineering/task'
+  import core, { Attribute, Class, Ref, Status, StatusCategory } from '@hanzo/core'
+  import { Asset, getEmbeddedLabel } from '@hanzo/platform'
+  import presentation, { createQuery, getClient } from '@hanzo/presentation'
+  import { clearSettingsStore, settingsStore } from '@hanzo/setting-resources'
+  import { ProjectType, TaskType, calculateStatuses, createState } from '@hanzo/task'
   import {
     ButtonIcon,
     ButtonMenu,
@@ -35,9 +35,9 @@
     getPlatformColorDef,
     showPopup,
     themeStore
-  } from '@hcengineering/ui'
-  import { ColorsPopup, statusStore } from '@hcengineering/view-resources'
-  import view from '@hcengineering/view-resources/src/plugin'
+  } from '@hanzo/ui'
+  import { ColorsPopup, statusStore } from '@hanzo/view-resources'
+  import view from '@hanzo/view-resources/src/plugin'
   import { taskTypeStore, typeStore } from '../..'
   import task from '../../plugin'
   import ApproveStatusRenamePopup from './ApproveStatusRenamePopup.svelte'
@@ -365,7 +365,7 @@
       />
     {/if}
   </svelte:fragment>
-  <div class="hulyModal-content__titleGroup">
+  <div class="hanzoModal-content__titleGroup">
     <ModernEditbox bind:value label={task.string.StatusName} size={'large'} kind={'ghost'} disabled={readonly} />
     <TextArea
       placeholder={task.string.Description}
@@ -377,8 +377,8 @@
       bind:value={description}
     />
   </div>
-  <div class="hulyModal-content__settingsSet">
-    <div class="hulyModal-content__settingsSet-line">
+  <div class="hanzoModal-content__settingsSet">
+    <div class="hanzoModal-content__settingsSet-line">
       <span class="label"><Label label={getEmbeddedLabel('Status Category')} /></span>
       <ButtonMenu
         items={categories}
@@ -394,9 +394,9 @@
       />
     </div>
   </div>
-  <div class="hulyModal-content__settingsSet table">
-    <div class="hulyTableAttr-container">
-      <div class="hulyTableAttr-header font-medium-12 withButton">
+  <div class="hanzoModal-content__settingsSet table">
+    <div class="hanzoTableAttr-container">
+      <div class="hanzoTableAttr-header font-medium-12 withButton">
         <ButtonMenu
           {items}
           {selected}
@@ -418,7 +418,7 @@
           <IconWithEmoji icon={color ?? 0} size={'medium'} />
         {/if}
       </div>
-      <div class="hulyTableAttr-content">
+      <div class="hanzoTableAttr-content">
         {#if selected === 0}
           <ColorsPopup
             selected={getPlatformColorDef(color ?? 0, $themeStore.dark).name}

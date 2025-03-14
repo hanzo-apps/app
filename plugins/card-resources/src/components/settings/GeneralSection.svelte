@@ -13,9 +13,9 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { MasterTag } from '@hcengineering/card'
-  import { getEmbeddedLabel, translateCB } from '@hcengineering/platform'
-  import { getClient } from '@hcengineering/presentation'
+  import { MasterTag } from '@hanzo/card'
+  import { getEmbeddedLabel, translateCB } from '@hanzo/platform'
+  import { getClient } from '@hanzo/presentation'
   import {
     ButtonIcon,
     getCurrentLocation,
@@ -24,8 +24,8 @@
     navigate,
     showPopup,
     themeStore
-  } from '@hcengineering/ui'
-  import { IconPicker } from '@hcengineering/view-resources'
+  } from '@hanzo/ui'
+  import { IconPicker } from '@hanzo/view-resources'
   import card from '../../plugin'
   import { deleteMasterTag } from '../../utils'
 
@@ -69,8 +69,8 @@
   }
 </script>
 
-<div class="hulyComponent-content__column-group">
-  <div class="hulyComponent-content__header items-center">
+<div class="hanzoComponent-content__column-group">
+  <div class="hanzoComponent-content__header items-center">
     <div class="flex items-center">
       <ButtonIcon
         icon={masterTag.icon ?? card.icon.MasterTag}

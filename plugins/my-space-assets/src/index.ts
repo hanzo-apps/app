@@ -13,8 +13,8 @@
 // limitations under the License.
 //
 
-import { loadMetadata } from '@hcengineering/platform'
-import mySpace from '@hcengineering/my-space'
+import { loadMetadata } from '@hanzo/platform'
+import mySpace from '@hanzo/my-space'
 
 const icons = require('../assets/icons.svg') as string // eslint-disable-line
 loadMetadata(mySpace.icon, {

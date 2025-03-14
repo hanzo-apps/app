@@ -27,7 +27,7 @@ import contact, {
   getFirstName,
   getLastName,
   getName
-} from '@hcengineering/contact'
+} from '@hanzo/contact'
 import core, {
   Doc,
   Hierarchy,
@@ -42,12 +42,12 @@ import core, {
   type Space,
   SocialIdType,
   AccountUuid
-} from '@hcengineering/core'
-import notification, { Collaborators } from '@hcengineering/notification'
-import { getMetadata } from '@hcengineering/platform'
-import { getAccountBySocialId, getTriggerCurrentPerson } from '@hcengineering/server-contact'
-import serverCore, { TriggerControl } from '@hcengineering/server-core'
-import { workbenchId } from '@hcengineering/workbench'
+} from '@hanzo/core'
+import notification, { Collaborators } from '@hanzo/notification'
+import { getMetadata } from '@hanzo/platform'
+import { getAccountBySocialId, getTriggerCurrentPerson } from '@hanzo/server-contact'
+import serverCore, { TriggerControl } from '@hanzo/server-core'
+import { workbenchId } from '@hanzo/workbench'
 
 export async function OnSpaceTypeMembers (txes: Tx[], control: TriggerControl): Promise<Tx[]> {
   const result: Tx[] = []

@@ -14,10 +14,10 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import core, { Doc, generateId, PersonId, Ref } from '@hcengineering/core'
-  import { Category, Product } from '@hcengineering/inventory'
-  import { Card, createQuery, getClient } from '@hcengineering/presentation'
-  import { Button, DropdownLabels, DropdownTextItem, EditBox } from '@hcengineering/ui'
+  import core, { Doc, generateId, PersonId, Ref } from '@hanzo/core'
+  import { Category, Product } from '@hanzo/inventory'
+  import { Card, createQuery, getClient } from '@hanzo/presentation'
+  import { Button, DropdownLabels, DropdownTextItem, EditBox } from '@hanzo/ui'
   import { createEventDispatcher } from 'svelte'
   import inventory from '../plugin'
 

@@ -4,7 +4,7 @@
     <section>
       <h3>Open static url in app</h3>
       <a 
-        href="huly://front.hc.engineering/workbench/platform/tracker/TSK-1"
+        href="hanzo://front.hc.engineering/workbench/platform/tracker/TSK-1"
       >
         Open in the app
       </a>
@@ -23,7 +23,7 @@
         value="https://front.hc.engineering/workbench/platform/tracker/TSK-1" 
       />    
       <script>
-        // const src = "huly://front.hc.engineering/workbench/platform/tracker/TSK-1"
+        // const src = "hanzo://front.hc.engineering/workbench/platform/tracker/TSK-1"
 
         function openInApp(link) {
           // Try to open in the app using a hidden iframe
@@ -43,8 +43,8 @@
           setTimeout(() => {
             const inp = document.getElementById('urlInput')            
             const url = inp.value
-              .replace('https://', 'huly://')
-              .replace('http://', 'huly://')
+              .replace('https://', 'hanzo://')
+              .replace('http://', 'hanzo://')
 
             openInApp(url)
           }, 1000)

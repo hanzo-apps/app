@@ -33,7 +33,7 @@ import {
   type PermissionsStore,
   type PermissionsBySpace,
   type PersonsByPermission
-} from '@hcengineering/contact'
+} from '@hanzo/contact'
 import core, {
   type AggregateValue,
   type Class,
@@ -56,11 +56,11 @@ import core, {
   type AccountUuid,
   notEmpty,
   getCurrentAccount
-} from '@hcengineering/core'
-import notification, { type DocNotifyContext, type InboxNotification } from '@hcengineering/notification'
-import { type IntlString, getEmbeddedLabel, getResource, translate } from '@hcengineering/platform'
-import { createQuery, getClient, onClient } from '@hcengineering/presentation'
-import { type TemplateDataProvider } from '@hcengineering/templates'
+} from '@hanzo/core'
+import notification, { type DocNotifyContext, type InboxNotification } from '@hanzo/notification'
+import { type IntlString, getEmbeddedLabel, getResource, translate } from '@hanzo/platform'
+import { createQuery, getClient, onClient } from '@hanzo/presentation'
+import { type TemplateDataProvider } from '@hanzo/templates'
 import {
   getCurrentResolvedLocation,
   getPanelURI,
@@ -68,11 +68,11 @@ import {
   type Location,
   type ResolvedLocation,
   type TabItem
-} from '@hcengineering/ui'
-import view, { type Filter, type GrouppingManager } from '@hcengineering/view'
-import { accessDeniedStore, FilterQuery } from '@hcengineering/view-resources'
+} from '@hanzo/ui'
+import view, { type Filter, type GrouppingManager } from '@hanzo/view'
+import { accessDeniedStore, FilterQuery } from '@hanzo/view-resources'
 import { derived, get, writable } from 'svelte/store'
-import { type LocationData } from '@hcengineering/workbench'
+import { type LocationData } from '@hanzo/workbench'
 
 import contact from './plugin'
 

@@ -13,7 +13,7 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { ButtonIcon, IconAdd, showPopup } from '@hcengineering/ui'
+  import { ButtonIcon, IconAdd, showPopup } from '@hanzo/ui'
   import CreateTag from '../CreateTag.svelte'
   import card from '../../plugin'
 

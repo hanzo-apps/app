@@ -13,8 +13,8 @@
 // limitations under the License.
 //
 
-import activity, { ActivityMessage, ActivityReference, UserMentionInfo } from '@hcengineering/activity'
-import contact, { Employee, Person, pickPrimarySocialId } from '@hcengineering/contact'
+import activity, { ActivityMessage, ActivityReference, UserMentionInfo } from '@hanzo/activity'
+import contact, { Employee, Person, pickPrimarySocialId } from '@hanzo/contact'
 import core, {
   PersonId,
   Blob,
@@ -39,9 +39,9 @@ import core, {
   type MeasureContext,
   AccountUuid,
   buildSocialIdString
-} from '@hcengineering/core'
-import notification, { CommonInboxNotification, MentionInboxNotification } from '@hcengineering/notification'
-import { StorageAdapter, TriggerControl } from '@hcengineering/server-core'
+} from '@hanzo/core'
+import notification, { CommonInboxNotification, MentionInboxNotification } from '@hanzo/notification'
+import { StorageAdapter, TriggerControl } from '@hanzo/server-core'
 import {
   applyNotificationProviders,
   getCommonNotificationTxes,
@@ -53,8 +53,8 @@ import {
   shouldNotifyCommon,
   toReceiverInfo,
   type NotificationProviderControl
-} from '@hcengineering/server-notification-resources'
-import { areEqualJson, extractReferences, jsonToMarkup, markupToJSON } from '@hcengineering/text-core'
+} from '@hanzo/server-notification-resources'
+import { areEqualJson, extractReferences, jsonToMarkup, markupToJSON } from '@hanzo/text-core'
 
 export function isDocMentioned (doc: Ref<Doc>, content: string): boolean {
   const references = []

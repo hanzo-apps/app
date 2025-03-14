@@ -13,15 +13,15 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import type { IntlString } from '@hcengineering/platform'
-  import { Label } from '@hcengineering/ui'
+  import type { IntlString } from '@hanzo/platform'
+  import { Label } from '@hanzo/ui'
 
   export let label: IntlString
   export let withButton: boolean = false
   export let small: boolean = false
 </script>
 
-<div class="hulyNavPanel-header" class:withButton class:small>
+<div class="hanzoNavPanel-header" class:withButton class:small>
   <span class="overflow-label"><Label {label} /></span>
   <slot />
 </div>

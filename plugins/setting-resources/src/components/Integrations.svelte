@@ -13,11 +13,11 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Ref, getCurrentAccount } from '@hcengineering/core'
-  import { createQuery } from '@hcengineering/presentation'
-  import type { Integration, IntegrationType } from '@hcengineering/setting'
-  import setting from '@hcengineering/setting'
-  import { Header, Breadcrumb } from '@hcengineering/ui'
+  import { Ref, getCurrentAccount } from '@hanzo/core'
+  import { createQuery } from '@hanzo/presentation'
+  import type { Integration, IntegrationType } from '@hanzo/setting'
+  import setting from '@hanzo/setting'
+  import { Header, Breadcrumb } from '@hanzo/ui'
   import PluginCard from './PluginCard.svelte'
 
   const typeQuery = createQuery()
@@ -38,7 +38,7 @@
   }
 </script>
 
-<div class="hulyComponent">
+<div class="hanzoComponent">
   <Header adaptive={'disabled'}>
     <Breadcrumb icon={setting.icon.Integrations} label={setting.string.Integrations} size={'large'} isCurrent />
   </Header>

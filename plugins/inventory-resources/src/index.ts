@@ -14,10 +14,10 @@
 // limitations under the License.
 //
 
-import { type Client, type Doc, type Ref } from '@hcengineering/core'
-import { type Resources } from '@hcengineering/platform'
-import { showPopup } from '@hcengineering/ui'
-import { type Category, type Product } from '@hcengineering/inventory'
+import { type Client, type Doc, type Ref } from '@hanzo/core'
+import { type Resources } from '@hanzo/platform'
+import { showPopup } from '@hanzo/ui'
+import { type Category, type Product } from '@hanzo/inventory'
 
 import Categories from './components/Categories.svelte'
 import CategoryPresenter from './components/CategoryPresenter.svelte'

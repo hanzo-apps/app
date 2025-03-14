@@ -1,10 +1,10 @@
-import aiBot from '@hcengineering/ai-bot'
-import { connectMeeting, disconnectMeeting } from '@hcengineering/ai-bot-resources'
-import { Analytics } from '@hcengineering/analytics'
-import calendar, { type Event, getAllEvents } from '@hcengineering/calendar'
-import chunter from '@hcengineering/chunter'
-import contact, { getCurrentEmployee, getName, type Person } from '@hcengineering/contact'
-import { personByIdStore } from '@hcengineering/contact-resources'
+import aiBot from '@hanzo/ai-bot'
+import { connectMeeting, disconnectMeeting } from '@hanzo/ai-bot-resources'
+import { Analytics } from '@hanzo/analytics'
+import calendar, { type Event, getAllEvents } from '@hanzo/calendar'
+import chunter from '@hanzo/chunter'
+import contact, { getCurrentEmployee, getName, type Person } from '@hanzo/contact'
+import { personByIdStore } from '@hanzo/contact-resources'
 import core, {
   AccountRole,
   concatLink,
@@ -17,8 +17,8 @@ import core, {
   type Ref,
   type Space,
   type TxOperations
-} from '@hcengineering/core'
-import login from '@hcengineering/login'
+} from '@hanzo/core'
+import login from '@hanzo/login'
 import {
   getFreeRoomPlace,
   type Invite,
@@ -37,14 +37,14 @@ import {
   type RoomMetadata,
   RoomType,
   TranscriptionStatus
-} from '@hcengineering/love'
-import { getEmbeddedLabel, getMetadata, getResource, type IntlString } from '@hcengineering/platform'
+} from '@hanzo/love'
+import { getEmbeddedLabel, getMetadata, getResource, type IntlString } from '@hanzo/platform'
 import presentation, {
   copyTextToClipboard,
   createQuery,
   type DocCreatePhase,
   getClient
-} from '@hcengineering/presentation'
+} from '@hanzo/presentation'
 import {
   closePanel,
   type DropdownTextItem,
@@ -52,17 +52,17 @@ import {
   navigate,
   panelstore,
   showPopup
-} from '@hcengineering/ui'
-import view from '@hcengineering/view'
-import { getObjectLinkFragment } from '@hcengineering/view-resources'
-import { type Widget, type WidgetTab } from '@hcengineering/workbench'
+} from '@hanzo/ui'
+import view from '@hanzo/view'
+import { getObjectLinkFragment } from '@hanzo/view-resources'
+import { type Widget, type WidgetTab } from '@hanzo/workbench'
 import {
   currentWorkspaceStore,
   openWidget,
   openWidgetTab,
   sidebarStore,
   updateWidgetState
-} from '@hcengineering/workbench-resources'
+} from '@hanzo/workbench-resources'
 import { isKrispNoiseFilterSupported, KrispNoiseFilter } from '@livekit/krisp-noise-filter'
 import { BackgroundBlur, type BackgroundOptions, type ProcessorWrapper } from '@livekit/track-processors'
 import {

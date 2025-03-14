@@ -13,7 +13,7 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import type { IntlString } from '@hcengineering/platform'
+  import type { IntlString } from '@hanzo/platform'
   import { createEventDispatcher } from 'svelte'
   import { BreadcrumbItem } from '../types'
   import Breadcrumb from './Breadcrumb.svelte'
@@ -30,7 +30,7 @@
   const dispatch = createEventDispatcher()
 </script>
 
-<div class="hulyBreadcrumbs-container {size}">
+<div class="hanzoBreadcrumbs-container {size}">
   {#each items as item, i}
     {#if i !== 0}<ChevronRight size={'small'} />{/if}
     <Breadcrumb
@@ -43,7 +43,7 @@
     />
   {/each}
   {#if (afterLabel || $$slots.afterLabel) && !hideAfter}
-    <span class="hulyBreadcrumbs-afterLabel font-medium-12">
+    <span class="hanzoBreadcrumbs-afterLabel font-medium-12">
       {#if afterLabel}<Label label={afterLabel} />{/if}
       <slot name="afterLabel" />
     </span>
@@ -51,13 +51,13 @@
 </div>
 
 <style lang="scss">
-  .hulyBreadcrumbs-container {
+  .hanzoBreadcrumbs-container {
     display: flex;
     align-items: center;
     height: var(--global-small-Size);
     min-width: 0;
 
-    .hulyBreadcrumbs-afterLabel {
+    .hanzoBreadcrumbs-afterLabel {
       max-width: 10rem;
       white-space: nowrap;
       word-break: break-all;

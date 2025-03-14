@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-import { getClient as getAccountClient } from '@hcengineering/account-client'
+import { getClient as getAccountClient } from '@hanzo/account-client'
 import {
   getBranding,
   isArchivingMode,
@@ -28,32 +28,32 @@ import {
   type WorkspaceInfoWithStatus,
   type WorkspaceUpdateEvent,
   type WorkspaceUuid
-} from '@hcengineering/core'
-import { type MigrateOperation, type ModelLogger } from '@hcengineering/model'
+} from '@hanzo/core'
+import { type MigrateOperation, type ModelLogger } from '@hanzo/model'
 import {
   getTransactorEndpoint,
   withRetryConnUntilSuccess,
   withRetryConnUntilTimeout
-} from '@hcengineering/server-client'
-import { generateToken } from '@hcengineering/server-token'
-import { FileModelLogger, prepareTools } from '@hcengineering/server-tool'
+} from '@hanzo/server-client'
+import { generateToken } from '@hanzo/server-token'
+import { FileModelLogger, prepareTools } from '@hanzo/server-tool'
 import path from 'path'
 
-import { Analytics } from '@hcengineering/analytics'
+import { Analytics } from '@hanzo/analytics'
 import {
   createMongoAdapter,
   createMongoDestroyAdapter,
   createMongoTxAdapter,
   shutdownMongo
-} from '@hcengineering/mongo'
+} from '@hanzo/mongo'
 import {
   createPostgreeDestroyAdapter,
   createPostgresAdapter,
   createPostgresTxAdapter,
   shutdownPostgres
-} from '@hcengineering/postgres'
-import { doBackupWorkspace, doRestoreWorkspace } from '@hcengineering/server-backup'
-import type { PipelineFactory, StorageAdapter } from '@hcengineering/server-core'
+} from '@hanzo/postgres'
+import { doBackupWorkspace, doRestoreWorkspace } from '@hanzo/server-backup'
+import type { PipelineFactory, StorageAdapter } from '@hanzo/server-core'
 import {
   createBackupPipeline,
   getConfig,
@@ -65,8 +65,8 @@ import {
   registerTxAdapterFactory,
   setAdapterSecurity,
   sharedPipelineContextVars
-} from '@hcengineering/server-pipeline'
-import { buildStorageFromConfig, storageConfigFromEnv } from '@hcengineering/server-storage'
+} from '@hanzo/server-pipeline'
+import { buildStorageFromConfig, storageConfigFromEnv } from '@hanzo/server-storage'
 import { createWorkspace, upgradeWorkspace } from './ws-operations'
 
 export interface WorkspaceOptions {

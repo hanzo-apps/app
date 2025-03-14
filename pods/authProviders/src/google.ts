@@ -1,5 +1,5 @@
-import { type AccountDB, LoginInfo, joinWithProvider, loginOrSignUpWithProvider } from '@hcengineering/account'
-import { BrandingMap, concatLink, MeasureContext, getBranding, SocialIdType } from '@hcengineering/core'
+import { type AccountDB, LoginInfo, joinWithProvider, loginOrSignUpWithProvider } from '@hanzo/account'
+import { BrandingMap, concatLink, MeasureContext, getBranding, SocialIdType } from '@hanzo/core'
 import Router from 'koa-router'
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
 import qs from 'querystringify'

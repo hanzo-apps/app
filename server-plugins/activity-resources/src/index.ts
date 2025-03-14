@@ -19,7 +19,7 @@ import activity, {
   DocAttributeUpdates,
   DocUpdateMessage,
   Reaction
-} from '@hcengineering/activity'
+} from '@hanzo/activity'
 import core, {
   PersonId,
   AttachedDoc,
@@ -36,18 +36,18 @@ import core, {
   TxCreateDoc,
   TxCUD,
   TxProcessor
-} from '@hcengineering/core'
-import { getAccountBySocialId } from '@hcengineering/server-contact'
-import notification, { NotificationContent } from '@hcengineering/notification'
-import { getResource, translate } from '@hcengineering/platform'
-import { ActivityControl, DocObjectCache } from '@hcengineering/server-activity'
-import type { TriggerControl } from '@hcengineering/server-core'
+} from '@hanzo/core'
+import { getAccountBySocialId } from '@hanzo/server-contact'
+import notification, { NotificationContent } from '@hanzo/notification'
+import { getResource, translate } from '@hanzo/platform'
+import { ActivityControl, DocObjectCache } from '@hanzo/server-activity'
+import type { TriggerControl } from '@hanzo/server-core'
 import {
   createCollabDocInfo,
   createCollaboratorNotifications,
   getTextPresenter,
   removeDocInboxNotifications
-} from '@hcengineering/server-notification-resources'
+} from '@hanzo/server-notification-resources'
 
 import { ReferenceTrigger } from './references'
 import { getAttrName, getCollectionAttribute, getDocUpdateAction, getTxAttributesUpdates } from './utils'

@@ -32,7 +32,7 @@ import {
   type Version,
   type PersonUuid,
   type WorkspaceUuid
-} from '@hcengineering/core'
+} from '@hanzo/core'
 
 import type {
   DbCollection,

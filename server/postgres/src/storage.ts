@@ -60,7 +60,7 @@ import core, {
   type WithLookup,
   type WorkspaceIds,
   type WorkspaceUuid
-} from '@hcengineering/core'
+} from '@hanzo/core'
 import {
   calcHashHash,
   type DbAdapter,
@@ -68,7 +68,7 @@ import {
   type DomainHelperOperations,
   type ServerFindOptions,
   type TxAdapter
-} from '@hcengineering/server-core'
+} from '@hanzo/server-core'
 import type postgres from 'postgres'
 import { createDBClient, createGreenDBClient, type DBClient } from './client'
 import {

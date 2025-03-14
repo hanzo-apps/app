@@ -14,7 +14,7 @@
 -->
 
 <script lang="ts">
-  import { Doc } from '@hcengineering/core'
+  import { Doc } from '@hanzo/core'
   import { onDestroy, onMount } from 'svelte'
 
   import { updateMyPresence, removeMyPresence } from '../store'

@@ -23,9 +23,9 @@
     PropertyType,
     Ref,
     Type
-  } from '@hcengineering/core'
-  import { Asset, getEmbeddedLabel } from '@hcengineering/platform'
-  import presentation, { getClient, Card } from '@hcengineering/presentation'
+  } from '@hanzo/core'
+  import { Asset, getEmbeddedLabel } from '@hanzo/platform'
+  import presentation, { getClient, Card } from '@hanzo/presentation'
   import {
     AnyComponent,
     Component,
@@ -34,12 +34,12 @@
     Label,
     showPopup,
     ButtonIcon
-  } from '@hcengineering/ui'
-  import { DropdownIntlItem } from '@hcengineering/ui/src/types'
+  } from '@hanzo/ui'
+  import { DropdownIntlItem } from '@hanzo/ui/src/types'
   import setting from '../plugin'
-  import view from '@hcengineering/view'
+  import view from '@hanzo/view'
   import { createEventDispatcher } from 'svelte'
-  import { IconPicker } from '@hcengineering/view-resources'
+  import { IconPicker } from '@hanzo/view-resources'
 
   export let _class: Ref<Class<Doc>>
   let selectedType: Ref<Class<Type<PropertyType>>> | undefined = undefined
@@ -126,8 +126,8 @@
   on:close
   canSave={!(type === undefined || name === undefined || name.trim().length === 0)}
 >
-  <div class="hulyModal-container">
-    <div class="hulyModal-content__titleGroup">
+  <div class="hanzoModal-container">
+    <div class="hanzoModal-content__titleGroup">
       <div class="flex items-center">
         <ButtonIcon
           icon={icon ?? setting.icon.Enums}
@@ -139,8 +139,8 @@
         <ModernEditbox bind:value={name} label={core.string.Name} size={'large'} kind={'ghost'} autoFocus />
       </div>
     </div>
-    <div class="hulyModal-content__settingsSet">
-      <div class="hulyModal-content__settingsSet-line">
+    <div class="hanzoModal-content__settingsSet">
+      <div class="hanzoModal-content__settingsSet-line">
         <span class="label">
           <Label label={setting.string.Type} />
         </span>

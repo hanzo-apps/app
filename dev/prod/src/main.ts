@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-import { createApp } from '@hcengineering/ui'
+import { createApp } from '@hanzo/ui'
 import { configurePlatform } from './platform'
 
 configurePlatform().then(() => {

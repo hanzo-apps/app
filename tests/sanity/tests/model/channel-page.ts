@@ -13,7 +13,7 @@ export class ChannelPage extends CommonPage {
   readonly inputMessage = (): Locator => this.page.locator('div[class~="text-editor-view"]')
   readonly buttonSendMessage = (): Locator => this.page.locator('g#Send')
   readonly textMessage = (messageText: string): Locator =>
-    this.page.locator('.hulyComponent .activityMessage', { hasText: messageText })
+    this.page.locator('.hanzoComponent .activityMessage', { hasText: messageText })
 
   readonly textMessageInSidebar = (messageText: string): Locator =>
     this.page.locator('#sidebar .activityMessage', { hasText: messageText })
@@ -58,7 +58,7 @@ export class ChannelPage extends CommonPage {
   readonly saveMessageTab = (): Locator => this.page.getByRole('button', { name: 'Saved' })
   readonly pinnedMessageButton = (): Locator => this.page.getByRole('button', { name: 'pinned' })
   readonly pinnedMessage = (message: string): Locator => this.page.locator('.antiPopup').getByText(message)
-  readonly closeReplyButton = (): Locator => this.page.locator('.hulyHeader-container > button.iconOnly')
+  readonly closeReplyButton = (): Locator => this.page.locator('.hanzoHeader-container > button.iconOnly')
   readonly openReplyMessage = (): Locator => this.page.getByText('1 reply Last reply less than')
   readonly editMessageButton = (): Locator => this.page.getByRole('button', { name: 'Edit' })
   readonly copyLinkButton = (): Locator => this.page.getByRole('button', { name: 'Copy link' })
@@ -80,21 +80,21 @@ export class ChannelPage extends CommonPage {
   private readonly addButtonPreview = (): Locator => this.page.getByRole('button', { name: 'Add', exact: true })
 
   readonly inputSearchIcon = (): Locator => this.page.locator('.searchInput-wrapper')
-  readonly inputSearchChannel = (): Locator => this.page.locator('.hulyHeader-container').getByPlaceholder('Search')
+  readonly inputSearchChannel = (): Locator => this.page.locator('.hanzoHeader-container').getByPlaceholder('Search')
 
-  readonly channelContainers = (): Locator => this.page.locator('.hulyNavItem-container')
+  readonly channelContainers = (): Locator => this.page.locator('.hanzoNavItem-container')
 
   readonly starredChannelContainers = (): Locator =>
-    this.page.locator('#navGroup-starred').locator('.hulyNavItem-container')
+    this.page.locator('#navGroup-starred').locator('.hanzoNavItem-container')
 
   readonly issueChannelContainers = (): Locator =>
-    this.page.locator('#navGroup-tracker\\:class\\:Issue').locator('.hulyNavItem-container')
+    this.page.locator('#navGroup-tracker\\:class\\:Issue').locator('.hanzoNavItem-container')
 
   readonly vacancyChannelContainers = (): Locator =>
-    this.page.locator('#navGroup-recruit\\:class\\:Vacancy').locator('.hulyNavItem-container')
+    this.page.locator('#navGroup-recruit\\:class\\:Vacancy').locator('.hanzoNavItem-container')
 
   readonly applicationChannelContainers = (): Locator =>
-    this.page.locator('#navGroup-recruit\\:class\\:Applicant').locator('.hulyNavItem-container')
+    this.page.locator('#navGroup-recruit\\:class\\:Applicant').locator('.hanzoNavItem-container')
 
   async sendMessage (message: string): Promise<void> {
     await this.inputMessage().fill(message)
@@ -305,7 +305,7 @@ export class ChannelPage extends CommonPage {
   async makeActionWithChannelInMenu (channelName: string, action: string): Promise<void> {
     await this.openNavigator()
     await this.channelContainers().filter({ hasText: channelName }).hover()
-    await this.channelContainers().filter({ hasText: channelName }).locator('.hulyNavItem-actions').click()
+    await this.channelContainers().filter({ hasText: channelName }).locator('.hanzoNavItem-actions').click()
     await this.selectFromDropdown(this.page, action)
   }
 

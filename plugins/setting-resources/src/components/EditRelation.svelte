@@ -13,11 +13,11 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import core, { Association } from '@hcengineering/core'
-  import { getEmbeddedLabel, IntlString } from '@hcengineering/platform'
-  import presentation, { getClient, MessageBox } from '@hcengineering/presentation'
-  import { Button, DropdownIntlItem, EditBox, IconDelete, Label, Modal, showPopup } from '@hcengineering/ui'
-  import view from '@hcengineering/view'
+  import core, { Association } from '@hanzo/core'
+  import { getEmbeddedLabel, IntlString } from '@hanzo/platform'
+  import presentation, { getClient, MessageBox } from '@hanzo/presentation'
+  import { Button, DropdownIntlItem, EditBox, IconDelete, Label, Modal, showPopup } from '@hanzo/ui'
+  import view from '@hanzo/view'
   import setting from '../plugin'
   import { clearSettingsStore } from '../store'
 
@@ -81,7 +81,7 @@
   <svelte:fragment slot="actions">
     <Button icon={IconDelete} kind={'dangerous'} on:click={remove} />
   </svelte:fragment>
-  <div class="hulyModal-content__settingsSet">
+  <div class="hanzoModal-content__settingsSet">
     <div class="flex flex-gap-4">
       <div class="flex-col p-4 flex-gap-2">
         <div class="flex-col-center">A</div>

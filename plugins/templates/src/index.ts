@@ -13,10 +13,10 @@
 // limitations under the License.
 //
 
-import type { Class, Doc, Markup, Ref, Space } from '@hcengineering/core'
-import type { IntlString, Plugin, Resource, Asset } from '@hcengineering/platform'
-import { plugin } from '@hcengineering/platform'
-import { type AnyComponent } from '@hcengineering/ui/src/types'
+import type { Class, Doc, Markup, Ref, Space } from '@hanzo/core'
+import type { IntlString, Plugin, Resource, Asset } from '@hanzo/platform'
+import { plugin } from '@hanzo/platform'
+import { type AnyComponent } from '@hanzo/ui/src/types'
 
 /**
  * @public

@@ -1,5 +1,5 @@
 {
-  "name": "@hcengineering/ai-bot-resources",
+  "name": "@hanzo/ai-bot-resources",
   "version": "0.6.0",
   "main": "src/index.ts",
   "author": "Anticrm Platform Contributors",
@@ -16,7 +16,7 @@
     "_phase:validate": "compile validate"
   },
   "devDependencies": {
-    "@hcengineering/platform-rig": "^0.6.0",
+    "@hanzo/platform-rig": "^0.6.0",
     "@types/jest": "^29.5.5",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "@typescript-eslint/parser": "^6.11.0",
@@ -38,14 +38,14 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@hcengineering/ai-bot": "^0.6.0",
-    "@hcengineering/analytics-collector": "^0.6.0",
-    "@hcengineering/chunter": "^0.6.20",
-    "@hcengineering/core": "^0.6.32",
-    "@hcengineering/love": "^0.6.0",
-    "@hcengineering/platform": "^0.6.11",
-    "@hcengineering/presentation": "^0.6.3",
-    "@hcengineering/ui": "^0.6.15",
+    "@hanzo/ai-bot": "^0.6.0",
+    "@hanzo/analytics-collector": "^0.6.0",
+    "@hanzo/chunter": "^0.6.20",
+    "@hanzo/core": "^0.6.32",
+    "@hanzo/love": "^0.6.0",
+    "@hanzo/platform": "^0.6.11",
+    "@hanzo/presentation": "^0.6.3",
+    "@hanzo/ui": "^0.6.15",
     "svelte": "^4.2.19"
   }
 }

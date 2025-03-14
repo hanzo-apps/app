@@ -13,12 +13,12 @@
 // limitations under the License.
 //
 
-import { type Builder } from '@hcengineering/model'
+import { type Builder } from '@hanzo/model'
 
-import core from '@hcengineering/core'
-import serverCore from '@hcengineering/server-core'
-import serverFulltext from '@hcengineering/server-fulltext'
-export { serverFulltextId } from '@hcengineering/server-fulltext'
+import core from '@hanzo/core'
+import serverCore from '@hanzo/server-core'
+import serverFulltext from '@hanzo/server-fulltext'
+export { serverFulltextId } from '@hanzo/server-fulltext'
 export function createModel (builder: Builder): void {
   builder.createDoc(serverCore.class.Trigger, core.space.Model, {
     trigger: serverFulltext.trigger.OnChange

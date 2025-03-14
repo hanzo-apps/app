@@ -13,8 +13,8 @@
 // limitations under the License.
 //
 
-import type { Person } from '@hcengineering/contact'
-import type { Ref, Timestamp } from '@hcengineering/core'
+import type { Person } from '@hanzo/contact'
+import type { Ref, Timestamp } from '@hanzo/core'
 
 export interface PresenceTyping {
   person: Ref<Person>

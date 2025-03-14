@@ -38,16 +38,16 @@ import {
   TxOperations,
   Type,
   UXObject
-} from '@hcengineering/core'
-import { Asset, IntlString, Resource, Status } from '@hcengineering/platform'
-import { Preference } from '@hcengineering/preference'
+} from '@hanzo/core'
+import { Asset, IntlString, Resource, Status } from '@hanzo/platform'
+import { Preference } from '@hanzo/preference'
 import {
   AnyComponent,
   AnySvelteComponent,
   Location,
   Location as PlatformLocation,
   type LabelAndProps
-} from '@hcengineering/ui'
+} from '@hanzo/ui'
 
 /**
  * @public

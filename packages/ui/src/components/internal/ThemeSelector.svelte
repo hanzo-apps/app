@@ -1,10 +1,10 @@
 <script lang="ts">
   import { getContext } from 'svelte'
-  import { IntlString } from '@hcengineering/platform'
+  import { IntlString } from '@hanzo/platform'
   import ui, { showPopup, deviceOptionsStore as deviceInfo } from '../..'
   import Theme from './icons/Theme.svelte'
   import ThemePopup from './ThemePopup.svelte'
-  import { isSystemThemeDark } from '@hcengineering/theme'
+  import { isSystemThemeDark } from '@hanzo/theme'
 
   const { currentTheme, setTheme } = getContext<{ currentTheme: string, setTheme: (theme: string) => void }>('theme')
 

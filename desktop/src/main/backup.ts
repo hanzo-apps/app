@@ -1,12 +1,12 @@
-import client, { clientId } from '@hcengineering/client'
-import { MeasureMetricsContext, WorkspaceIds, type BackupClient, type Client } from '@hcengineering/core'
-import { addLocation, getResource, setMetadata } from '@hcengineering/platform'
+import client, { clientId } from '@hanzo/client'
+import { MeasureMetricsContext, WorkspaceIds, type BackupClient, type Client } from '@hanzo/core'
+import { addLocation, getResource, setMetadata } from '@hanzo/platform'
 import WebSocket from 'ws'
 
 import {
   backup,
   createFileBackupStorage
-} from '@hcengineering/server-backup'
+} from '@hanzo/server-backup'
 import { dialog, type BrowserWindow } from 'electron'
 
 let runningBackup: {
@@ -25,7 +25,7 @@ export async function createClient (
   setMetadata(client.metadata.ClientSocketFactory, (url) => {
     return new WebSocket(url) as any
   })
-  addLocation(clientId, () => import('@hcengineering/client-resources'))
+  addLocation(clientId, () => import('@hanzo/client-resources'))
 
   const clientFactory = await getResource(client.function.GetClient)
   return (await clientFactory(token, transactorUrl)) as unknown as Client & BackupClient
@@ -67,7 +67,7 @@ export function startBackup (window: BrowserWindow, token: string, endpoint: str
     .showOpenDialog(window, {
       properties: ['openDirectory'],
       buttonLabel: 'Select a backup folder',
-      message: 'Select a folder for Huly incremental backup.'
+      message: 'Select a folder for Hanzo incremental backup.'
     })
     .then((response) => {
       if (!response.canceled && response.filePaths.length > 0) {
@@ -77,8 +77,8 @@ export function startBackup (window: BrowserWindow, token: string, endpoint: str
             buttons: ['Backup....', 'Cancel'],
             defaultId: 0,
             textWidth: 500,
-            title: 'Huly desktop need a confirmation for a backup process to be started...',
-            message: `Huly Desktop need a confirmation for a backup process to be started....\n\n
+            title: 'Hanzo desktop need a confirmation for a backup process to be started...',
+            message: `Hanzo Desktop need a confirmation for a backup process to be started....\n\n
                       An incremental backup will be performed to folder:\n ${response.filePaths[0]}\n
                       Backup could be canceled and resumed laterly into same location.`,
             checkboxLabel: 'Include files >= 50mb',

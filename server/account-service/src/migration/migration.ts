@@ -19,8 +19,8 @@ import {
   type WorkspaceDataId,
   type WorkspaceUuid,
   type SocialKey
-} from '@hcengineering/core'
-import { type AccountDB, createAccount } from '@hcengineering/account'
+} from '@hanzo/core'
+import { type AccountDB, createAccount } from '@hanzo/account'
 import { getMongoAccountDB } from './utils'
 import { type Account as OldAccount, type Workspace as OldWorkspace } from './types'
 import { type MongoAccountDB } from './collections/mongo'

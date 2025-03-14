@@ -3,8 +3,8 @@
 //
 //
 
-import core, { Doc, DocData, DocumentUpdate, MeasureContext, TxOperations, generateId } from '@hcengineering/core'
-import github, { DocSyncInfo, GithubIntegrationRepository, GithubProject } from '@hcengineering/github'
+import core, { Doc, DocData, DocumentUpdate, MeasureContext, TxOperations, generateId } from '@hanzo/core'
+import github, { DocSyncInfo, GithubIntegrationRepository, GithubProject } from '@hanzo/github'
 import { Endpoints } from '@octokit/types'
 import {
   Repository,
@@ -357,8 +357,8 @@ export class RepositorySyncMapper implements DocSyncManager {
 
     /**
      Variants:
-     "https://api.github.com/repos/hcengineering/anticrm/issues/comments/1679316918"
-     "https://github.com/hcengineering/uberflow/pull/195"
+     "https://api.github.com/repos/hanzo/anticrm/issues/comments/1679316918"
+     "https://github.com/hanzo/uberflow/pull/195"
      * */
     this.ctx.info('handle repository rename', { repo, workspace: this.provider.getWorkspaceId() })
     const update = async (): Promise<void> => {

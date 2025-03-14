@@ -14,7 +14,7 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { showPopup, resizeObserver, deviceOptionsStore as deviceInfo, PopupResult } from '@hcengineering/ui'
+  import { showPopup, resizeObserver, deviceOptionsStore as deviceInfo, PopupResult } from '@hanzo/ui'
   import { onDestroy, onMount } from 'svelte'
   import MentionPopup from './MentionPopup.svelte'
   import DummyPopup from './DummyPopup.svelte'

@@ -14,11 +14,11 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { getName, Person } from '@hcengineering/contact'
-  import { Avatar } from '@hcengineering/contact-resources'
-  import { getClient } from '@hcengineering/presentation'
-  import { tooltip } from '@hcengineering/ui'
-  import { openDoc } from '@hcengineering/view-resources'
+  import { getName, Person } from '@hanzo/contact'
+  import { Avatar } from '@hanzo/contact-resources'
+  import { getClient } from '@hanzo/presentation'
+  import { tooltip } from '@hanzo/ui'
+  import { openDoc } from '@hanzo/view-resources'
   import calendar from '../plugin'
 
   export let value: Person | Person[]

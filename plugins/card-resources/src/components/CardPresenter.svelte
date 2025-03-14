@@ -13,11 +13,11 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Card } from '@hcengineering/card'
-  import { Asset, getEmbeddedLabel } from '@hcengineering/platform'
-  import { AnySvelteComponent, Icon, tooltip } from '@hcengineering/ui'
-  import { ObjectPresenterType } from '@hcengineering/view'
-  import { DocNavLink, ObjectMention } from '@hcengineering/view-resources'
+  import { Card } from '@hanzo/card'
+  import { Asset, getEmbeddedLabel } from '@hanzo/platform'
+  import { AnySvelteComponent, Icon, tooltip } from '@hanzo/ui'
+  import { ObjectPresenterType } from '@hanzo/view'
+  import { DocNavLink, ObjectMention } from '@hanzo/view-resources'
   import ParentNamesPresenter from './ParentNamesPresenter.svelte'
   import card from '../plugin'
 

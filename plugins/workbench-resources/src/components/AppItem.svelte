@@ -13,9 +13,9 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import type { Asset, IntlString } from '@hcengineering/platform'
-  import type { AnySvelteComponent } from '@hcengineering/ui'
-  import { Icon, Loading, tooltip } from '@hcengineering/ui'
+  import type { Asset, IntlString } from '@hanzo/platform'
+  import type { AnySvelteComponent } from '@hanzo/ui'
+  import { Icon, Loading, tooltip } from '@hanzo/ui'
 
   export let label: IntlString
   export let icon: Asset | AnySvelteComponent

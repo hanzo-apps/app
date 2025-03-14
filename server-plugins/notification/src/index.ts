@@ -14,24 +14,24 @@
 // limitations under the License.
 //
 
-import { ActivityMessage } from '@hcengineering/activity'
-import { Employee, Person, PersonSpace } from '@hcengineering/contact'
-import { PersonId, Class, Doc, Mixin, Ref, Tx, TxCUD, AccountUuid } from '@hcengineering/core'
+import { ActivityMessage } from '@hanzo/activity'
+import { Employee, Person, PersonSpace } from '@hanzo/contact'
+import { PersonId, Class, Doc, Mixin, Ref, Tx, TxCUD, AccountUuid } from '@hanzo/core'
 import {
   BaseNotificationType,
   InboxNotification,
   NotificationContent,
   NotificationProvider,
   NotificationType
-} from '@hcengineering/notification'
-import { Metadata, Plugin, Resource, plugin } from '@hcengineering/platform'
-import type { TriggerControl, TriggerFunc } from '@hcengineering/server-core'
+} from '@hanzo/notification'
+import { Metadata, Plugin, Resource, plugin } from '@hanzo/platform'
+import type { TriggerControl, TriggerFunc } from '@hanzo/server-core'
 
 /**
  * @public
  */
 export const serverNotificationId = 'server-notification' as Plugin
-export { DOMAIN_USER_NOTIFY, DOMAIN_NOTIFICATION, DOMAIN_DOC_NOTIFY } from '@hcengineering/notification'
+export { DOMAIN_USER_NOTIFY, DOMAIN_NOTIFICATION, DOMAIN_DOC_NOTIFY } from '@hanzo/notification'
 
 /**
  * @public

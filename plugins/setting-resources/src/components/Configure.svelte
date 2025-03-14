@@ -13,9 +13,9 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import core, { PluginConfiguration } from '@hcengineering/core'
-  import { configurationStore, getClient, isAdminUser } from '@hcengineering/presentation'
-  import { Breadcrumb, Button, Header, Icon, IconInfo, Label, Scroller } from '@hcengineering/ui'
+  import core, { PluginConfiguration } from '@hanzo/core'
+  import { configurationStore, getClient, isAdminUser } from '@hanzo/presentation'
+  import { Breadcrumb, Button, Header, Icon, IconInfo, Label, Scroller } from '@hanzo/ui'
   import setting from '../plugin'
 
   const client = getClient()
@@ -33,11 +33,11 @@
   }
 </script>
 
-<div class="hulyComponent">
+<div class="hanzoComponent">
   <Header adaptive={'disabled'}>
     <Breadcrumb icon={setting.icon.Setting} label={setting.string.Configuration} size={'large'} isCurrent />
   </Header>
-  <div class="hulyComponent-content__column content">
+  <div class="hanzoComponent-content__column content">
     <Scroller align={'center'} padding={'var(--spacing-3)'} bottomPadding={'var(--spacing-3)'}>
       <div class="flex-row-center flex-wrap gap-around-4">
         {#each $configurationStore.list as config}

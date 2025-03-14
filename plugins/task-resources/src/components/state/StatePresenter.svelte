@@ -14,10 +14,10 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import core, { IdMap, Ref, Status, StatusCategory } from '@hcengineering/core'
-  import { Asset } from '@hcengineering/platform'
-  import { getClient, reduceCalls } from '@hcengineering/presentation'
-  import task, { Project, ProjectType, TaskType } from '@hcengineering/task'
+  import core, { IdMap, Ref, Status, StatusCategory } from '@hanzo/core'
+  import { Asset } from '@hanzo/platform'
+  import { getClient, reduceCalls } from '@hanzo/presentation'
+  import task, { Project, ProjectType, TaskType } from '@hanzo/task'
   import {
     ColorDefinition,
     Icon,
@@ -26,9 +26,9 @@
     getColorNumberByText,
     getPlatformColorDef,
     themeStore
-  } from '@hcengineering/ui'
-  import view from '@hcengineering/view'
-  import { statusStore } from '@hcengineering/view-resources'
+  } from '@hanzo/ui'
+  import view from '@hanzo/view'
+  import { statusStore } from '@hanzo/view-resources'
   import { createEventDispatcher, onMount } from 'svelte'
   import { selectedTypeStore, typeStore } from '../..'
   import IconBacklog from '../icons/IconBacklog.svelte'
@@ -137,7 +137,7 @@
 
 {#if value}
   {#if kind === 'table-attrs'}
-    <button class="hulyTableAttr-content__row-icon-wrapper" on:click>
+    <button class="hanzoTableAttr-content__row-icon-wrapper" on:click>
       {#if icon != null}
         <Icon {icon} {size} {iconProps} />
       {:else if category?._id === task.statusCategory.Active}
@@ -154,7 +154,7 @@
         <Icon icon={categoryIcons[category?._id ?? task.statusCategory.UnStarted]} {size} {iconProps} />
       {/if}
     </button>
-    <span class="hulyTableAttr-content__row-label font-medium-12 uppercase grow overflow-label">
+    <span class="hanzoTableAttr-content__row-label font-medium-12 uppercase grow overflow-label">
       {value.name}
     </span>
   {:else}

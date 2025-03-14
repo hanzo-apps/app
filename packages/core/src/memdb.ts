@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-import { PlatformError, Severity, Status } from '@hcengineering/platform'
+import { PlatformError, Severity, Status } from '@hanzo/platform'
 import { Lookup, MeasureContext, ReverseLookups, getObjectValue } from '.'
 import type { Class, Doc, Ref } from './classes'
 

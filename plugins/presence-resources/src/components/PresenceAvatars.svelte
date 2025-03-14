@@ -14,11 +14,11 @@
 -->
 
 <script lang="ts">
-  import { type Doc } from '@hcengineering/core'
-  import { type Person, formatName } from '@hcengineering/contact'
-  import { Avatar, personByIdStore } from '@hcengineering/contact-resources'
-  import { getEmbeddedLabel } from '@hcengineering/platform'
-  import { IconSize, tooltip, deviceOptionsStore as deviceInfo, checkAdaptiveMatching } from '@hcengineering/ui'
+  import { type Doc } from '@hanzo/core'
+  import { type Person, formatName } from '@hanzo/contact'
+  import { Avatar, personByIdStore } from '@hanzo/contact-resources'
+  import { getEmbeddedLabel } from '@hanzo/platform'
+  import { IconSize, tooltip, deviceOptionsStore as deviceInfo, checkAdaptiveMatching } from '@hanzo/ui'
   import PresenceList from './PresenceList.svelte'
   import { presenceByObjectId, followee, toggleFollowee } from '../store'
 
@@ -39,12 +39,12 @@
 {#if persons.length > 0}
   {#if adaptive}
     <div
-      class="hulyCombineAvatars-container"
+      class="hanzoCombineAvatars-container"
       use:tooltip={{ component: PresenceList, props: { persons, size }, direction: 'bottom' }}
     >
       {#each persons.slice(0, limit) as person, i}
         <div
-          class="hulyCombineAvatar tiny"
+          class="hanzoCombineAvatar tiny"
           data-over={i === limit - 1 && overLimit ? `+${persons.length - limit + 1}` : undefined}
         >
           <Avatar name={person.name} {size} {person} />

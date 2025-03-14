@@ -19,8 +19,8 @@ import {
   type MeasureContext,
   type StorageIterator,
   type WorkspaceDataId
-} from '@hcengineering/core'
-import { PlatformError, unknownError } from '@hcengineering/platform'
+} from '@hanzo/core'
+import { PlatformError, unknownError } from '@hanzo/platform'
 import { type Readable } from 'stream'
 
 export type ListBlobResult = Omit<Blob, 'contentType' | 'version'>

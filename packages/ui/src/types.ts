@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-import { type Timestamp } from '@hcengineering/core'
+import { type Timestamp } from '@hanzo/core'
 import type {
   Asset,
   IntlString,
   /* Metadata, Plugin, plugin, */ Resource /*, Service */
-} from '@hcengineering/platform'
+} from '@hanzo/platform'
 import { /* getContext, */ type ComponentType } from 'svelte'
 
 /**

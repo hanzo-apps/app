@@ -13,7 +13,7 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import type { Asset, IntlString } from '@hcengineering/platform'
+  import type { Asset, IntlString } from '@hanzo/platform'
   import { ComponentType, onMount } from 'svelte'
   import { checkAdaptiveMatching, deviceOptionsStore as deviceInfo } from '..'
   import { registerFocus } from '../focus'
@@ -30,7 +30,7 @@
   import Icon from './Icon.svelte'
   import Label from './Label.svelte'
   import Spinner from './Spinner.svelte'
-  import { Analytics } from '@hcengineering/analytics'
+  import { Analytics } from '@hanzo/analytics'
 
   export let label: IntlString | undefined = undefined
   export let labelParams: Record<string, any> = {}

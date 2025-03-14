@@ -14,7 +14,7 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { TaskType } from '@hcengineering/task'
+  import { TaskType } from '@hanzo/task'
   import {
     ColorDefinition,
     Icon,
@@ -23,8 +23,8 @@
     getColorNumberByText,
     getPlatformColorDef,
     themeStore
-  } from '@hcengineering/ui'
-  import view from '@hcengineering/view'
+  } from '@hanzo/ui'
+  import view from '@hanzo/view'
   import { createEventDispatcher, onMount } from 'svelte'
 
   export let value: TaskType | undefined

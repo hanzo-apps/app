@@ -1,5 +1,5 @@
 {
-  "name": "@hcengineering/platform",
+  "name": "@hanzo/platform",
   "version": "0.6.11",
   "main": "lib/index.js",
   "svelte": "src/index.ts",
@@ -22,7 +22,7 @@
     "_phase:validate": "compile validate"
   },
   "devDependencies": {
-    "@hcengineering/platform-rig": "^0.6.0",
+    "@hanzo/platform-rig": "^0.6.0",
     "@types/jest": "^29.5.5",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "@typescript-eslint/parser": "^6.11.0",
@@ -39,7 +39,7 @@
   "dependencies": {
     "intl-messageformat": "^10.7.14"
   },
-  "repository": "https://github.com/hcengineering/platform",
+  "repository": "https://github.com/hanzo/platform",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },

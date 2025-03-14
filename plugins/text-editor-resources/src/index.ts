@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-import { type Resources } from '@hcengineering/platform'
+import { type Resources } from '@hanzo/platform'
 import { formatLink } from './kits/default-kit'
 import { isEditable, isHeadingVisible } from './kits/editor-kit'
 import {
@@ -29,7 +29,7 @@ import { createInlineComment, shouldShowCreateInlineCommentAction } from './comp
 import { isTextStylingEnabled, openBackgroundColorOptions, openTextColorOptions } from './components/extension/colors'
 export { getTargetObjectFromUrl, getReferenceFromUrl, getReferenceLabel } from './components/extension/reference'
 
-export * from '@hcengineering/presentation/src/types'
+export * from '@hanzo/presentation/src/types'
 export type { EditorKitOptions } from './kits/editor-kit'
 export { default as Collaboration } from './components/Collaboration.svelte'
 export { default as CollaborationDiffViewer } from './components/CollaborationDiffViewer.svelte'

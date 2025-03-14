@@ -14,9 +14,9 @@
 // limitations under the License.
 //
 
-import { type Metadata, type Plugin, plugin } from '@hcengineering/platform'
+import { type Metadata, type Plugin, plugin } from '@hanzo/platform'
 
-import type { Class, Ref, Space, Mixin } from '@hcengineering/core'
+import type { Class, Ref, Space, Mixin } from '@hanzo/core'
 import type { ObjectDDParticipant, SearchPresenter, Trigger } from './types'
 
 /**

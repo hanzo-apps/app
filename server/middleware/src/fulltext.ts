@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-import { Analytics } from '@hcengineering/analytics'
+import { Analytics } from '@hanzo/analytics'
 import core, {
   docKey,
   DOMAIN_DOC_INDEX_STATE,
@@ -36,15 +36,15 @@ import core, {
   type SearchResult,
   type SessionData,
   type Tx
-} from '@hcengineering/core'
+} from '@hanzo/core'
 import type {
   IndexedDoc,
   Middleware,
   MiddlewareCreator,
   PipelineContext,
   TxMiddlewareResult
-} from '@hcengineering/server-core'
-import { BaseMiddleware } from '@hcengineering/server-core'
+} from '@hanzo/server-core'
+import { BaseMiddleware } from '@hanzo/server-core'
 /**
  * @public
  */

@@ -14,10 +14,10 @@
 -->
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import { Reaction } from '@hcengineering/activity'
-  import { Doc, getCurrentAccount, PersonId } from '@hcengineering/core'
-  import { EmojiPopup, IconAdd, showPopup, tooltip, type Emojis } from '@hcengineering/ui'
-  import { includesAny } from '@hcengineering/contact'
+  import { Reaction } from '@hanzo/activity'
+  import { Doc, getCurrentAccount, PersonId } from '@hanzo/core'
+  import { EmojiPopup, IconAdd, showPopup, tooltip, type Emojis } from '@hanzo/ui'
+  import { includesAny } from '@hanzo/contact'
 
   import ReactionsTooltip from './ReactionsTooltip.svelte'
   import { updateDocReactions } from '../../utils'
@@ -62,12 +62,12 @@
   }
 </script>
 
-<div class="hulyReactions-container">
+<div class="hanzoReactions-container">
   {#each [...reactionsAccounts] as [emoji, accounts]}
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div
-      class="hulyReactions-button"
+      class="hanzoReactions-button"
       class:highlight={includesAny(accounts, me.socialIds)}
       class:cursor-pointer={!readonly}
       use:tooltip={{ component: ReactionsTooltip, props: { reactionAccounts: accounts } }}
@@ -80,14 +80,14 @@
   {#if object && reactionsAccounts.size > 0 && !readonly}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div class="hulyReactions-button withoutBackground" class:opened on:click={openEmojiPalette}>
+    <div class="hanzoReactions-button withoutBackground" class:opened on:click={openEmojiPalette}>
       <IconAdd size="small" />
     </div>
   {/if}
 </div>
 
 <style lang="scss">
-  .hulyReactions-container {
+  .hanzoReactions-container {
     display: flex;
     flex-wrap: wrap;
     column-gap: 0.125rem;
@@ -102,7 +102,7 @@
       margin-left: 0.25rem;
     }
 
-    .hulyReactions-button {
+    .hanzoReactions-button {
       display: flex;
       justify-content: center;
       align-items: center;

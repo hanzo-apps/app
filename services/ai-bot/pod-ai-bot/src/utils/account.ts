@@ -20,11 +20,11 @@ import {
   AccountRole,
   type Person as GlobalPerson,
   type AccountUuid
-} from '@hcengineering/core'
-import { generateToken } from '@hcengineering/server-token'
-import { getAccountClient, withRetry } from '@hcengineering/server-client'
-import { aiBotAccountEmail, aiBotEmailSocialId } from '@hcengineering/ai-bot'
-import { MeasureContext, PersonUuid, systemAccountUuid } from '@hcengineering/core'
+} from '@hanzo/core'
+import { generateToken } from '@hanzo/server-token'
+import { getAccountClient, withRetry } from '@hanzo/server-client'
+import { aiBotAccountEmail, aiBotEmailSocialId } from '@hanzo/ai-bot'
+import { MeasureContext, PersonUuid, systemAccountUuid } from '@hanzo/core'
 
 import config from '../config'
 import { wait } from './common'

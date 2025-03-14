@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-import { Analytics } from '@hcengineering/analytics'
+import { Analytics } from '@hanzo/analytics'
 import core, {
   AccountRole,
   getCurrentAccount,
@@ -25,17 +25,17 @@ import core, {
   type Doc,
   type Ref,
   type WithLookup
-} from '@hcengineering/core'
-import { getResource } from '@hcengineering/platform'
-import { addRefreshListener, getClient } from '@hcengineering/presentation'
-import { getEventPositionElement, showPopup } from '@hcengineering/ui'
+} from '@hanzo/core'
+import { getResource } from '@hanzo/platform'
+import { addRefreshListener, getClient } from '@hanzo/presentation'
+import { getEventPositionElement, showPopup } from '@hanzo/ui'
 import {
   type Action,
   type ActionGroup,
   type ActionIgnore,
   type ViewActionInput,
   type ViewContextType
-} from '@hcengineering/view'
+} from '@hanzo/view'
 import Menu from './components/Menu.svelte'
 import view from './plugin'
 import { type FocusSelection, type SelectionStore } from './selection'

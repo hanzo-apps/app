@@ -1,17 +1,17 @@
 {
-  "huly.local:8080": {
-    "title": "Huly",
+  "hanzo.local:8080": {
+    "title": "Hanzo",
     "language": "en"
   },
-  "huly.local:8087": {
-    "title": "Huly",
+  "hanzo.local:8087": {
+    "title": "Hanzo",
     "language": "en"
   },
-  "huly.local:8081": {
+  "hanzo.local:8081": {
     "title": "TraceX",
     "language": "en"
   },
-  "huly.local:8088": {
+  "hanzo.local:8088": {
     "title": "TraceX",
     "language": "en"
   }

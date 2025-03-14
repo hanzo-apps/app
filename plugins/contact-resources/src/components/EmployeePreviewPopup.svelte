@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { Employee } from '@hcengineering/contact'
-  import { Class, Doc, Ref } from '@hcengineering/core'
-  import { ModernButton, navigate, resizeObserver } from '@hcengineering/ui'
+  import { Employee } from '@hanzo/contact'
+  import { Class, Doc, Ref } from '@hanzo/core'
+  import { ModernButton, navigate, resizeObserver } from '@hanzo/ui'
   import { createEventDispatcher } from 'svelte'
-  import view from '@hcengineering/view'
-  import { getObjectLinkFragment } from '@hcengineering/view-resources'
-  import { ComponentExtensions, getClient } from '@hcengineering/presentation'
+  import view from '@hanzo/view'
+  import { getObjectLinkFragment } from '@hanzo/view-resources'
+  import { ComponentExtensions, getClient } from '@hanzo/presentation'
 
   import contact from '../plugin'
   import Avatar from './Avatar.svelte'
@@ -77,7 +77,7 @@
       <span class="username">
         <EmployeePresenter value={employee} shouldShowAvatar={false} showPopup={false} compact />
       </span>
-      <span class="hulyAvatar-statusMarker small relative mt-0-5" class:online={isOnline} class:offline={!isOnline} />
+      <span class="hanzoAvatar-statusMarker small relative mt-0-5" class:online={isOnline} class:offline={!isOnline} />
     </div>
     <div class="separator" />
     <div class="flex-presenter flex-gap-2 p-2">

@@ -13,8 +13,8 @@
 // limitations under the License.
 //
 
-import { Permission, Ref, Space } from '@hcengineering/core'
-import { ColorDefinition } from '@hcengineering/ui'
+import { Permission, Ref, Space } from '@hanzo/core'
+import { ColorDefinition } from '@hanzo/ui'
 
 import { Person } from './index'
 

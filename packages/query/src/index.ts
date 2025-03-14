@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-import { Analytics } from '@hcengineering/analytics'
+import { Analytics } from '@hanzo/analytics'
 import core, {
   Association,
   BulkUpdateEvent,
@@ -59,8 +59,8 @@ import core, {
   reduceCalls,
   shouldShowArchived,
   toFindResult
-} from '@hcengineering/core'
-import { PlatformError } from '@hcengineering/platform'
+} from '@hanzo/core'
+import { PlatformError } from '@hanzo/platform'
 import { deepEqual } from 'fast-equals'
 import { Refs } from './refs'
 import { ResultArray } from './results'

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-import { buildSocialIdString, concatLink, SocialIdType, TxOperations } from '@hcengineering/core'
+import { buildSocialIdString, concatLink, SocialIdType, TxOperations } from '@hanzo/core'
 import {
   ClickupImporter,
   defaultDocumentPreprocessors,
@@ -20,12 +20,12 @@ import {
   type DocumentConverterOptions,
   type FileUploader,
   FrontFileUploader,
-  HulyFormatImporter,
+  HanzoFormatImporter,
   importNotion,
   type Logger
-} from '@hcengineering/importer'
-import { setMetadata } from '@hcengineering/platform'
-import serverClientPlugin, { createClient, getAccountClient } from '@hcengineering/server-client'
+} from '@hanzo/importer'
+import { setMetadata } from '@hanzo/platform'
+import serverClientPlugin, { createClient, getAccountClient } from '@hanzo/server-client'
 import { program } from 'commander'
 import { readFileSync } from 'fs'
 import * as yaml from 'js-yaml'
@@ -154,17 +154,17 @@ export function importTool (): void {
       })
     })
 
-  // import /home/anna/xored/huly/platform/dev/import-tool/src/huly/example-workspace --workspace ws1 --user user1 --password 1234
+  // import /home/anna/xored/hanzo/platform/dev/import-tool/src/hanzo/example-workspace --workspace ws1 --user user1 --password 1234
   program
     .command('import <dir>')
-    .description('import issues in Unified Huly Format')
+    .description('import issues in Unified Hanzo Format')
     .requiredOption('-u, --user <user>', 'user')
     .requiredOption('-pw, --password <password>', 'password')
     .requiredOption('-ws, --workspace <workspace>', 'workspace url where the documents should be imported to')
     .action(async (dir: string, cmd) => {
       const { workspace, user, password } = cmd
       await authorize(user, password, workspace, async (client, uploader) => {
-        const importer = new HulyFormatImporter(client, uploader, new ConsoleLogger())
+        const importer = new HanzoFormatImporter(client, uploader, new ConsoleLogger())
         await importer.importFolder(dir)
       })
     })
@@ -173,7 +173,7 @@ export function importTool (): void {
     .command('convert-qms-docx <dir>')
     .requiredOption('-o, --out <dir>', 'out')
     .option('-c, --config <file>', 'configPath')
-    .description('convert QMS document into Unified Huly Format')
+    .description('convert QMS document into Unified Hanzo Format')
     .action(async (dir: string, cmd) => {
       const { out, configPath } = cmd
       const configSearchPath = configPath ?? join(dir, 'import.yaml')

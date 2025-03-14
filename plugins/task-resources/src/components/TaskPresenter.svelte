@@ -14,10 +14,10 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { getClient } from '@hcengineering/presentation'
-  import type { Task } from '@hcengineering/task'
-  import { Icon } from '@hcengineering/ui'
-  import { DocNavLink } from '@hcengineering/view-resources'
+  import { getClient } from '@hanzo/presentation'
+  import type { Task } from '@hanzo/task'
+  import { Icon } from '@hanzo/ui'
+  import { DocNavLink } from '@hanzo/view-resources'
   import task from '../plugin'
 
   export let value: Task

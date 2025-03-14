@@ -13,16 +13,16 @@
 // limitations under the License.
 //
 
-import { AccountUuid, buildSocialIdString, SocialIdType } from '@hcengineering/core'
-import type { Metadata, Plugin } from '@hcengineering/platform'
-import { plugin } from '@hcengineering/platform'
+import { AccountUuid, buildSocialIdString, SocialIdType } from '@hanzo/core'
+import type { Metadata, Plugin } from '@hanzo/platform'
+import { plugin } from '@hanzo/platform'
 
 export * from './rest'
 
 export const aiBotId = 'ai-bot' as Plugin
 
 export const aiBotAccountUuid = '' as AccountUuid
-export const aiBotAccountEmail = 'huly.ai.bot@hc.engineering'
+export const aiBotAccountEmail = 'hanzo.ai.bot@hc.engineering'
 export const aiBotEmailSocialId = buildSocialIdString({
   type: SocialIdType.EMAIL,
   value: aiBotAccountEmail

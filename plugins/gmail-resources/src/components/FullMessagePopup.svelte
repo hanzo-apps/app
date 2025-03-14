@@ -14,14 +14,14 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import attachment, { Attachment } from '@hcengineering/attachment'
-  import { AttachmentPresenter } from '@hcengineering/attachment-resources'
-  import { SharedMessage } from '@hcengineering/gmail'
-  import { createQuery } from '@hcengineering/presentation'
-  import { Label } from '@hcengineering/ui'
+  import attachment, { Attachment } from '@hanzo/attachment'
+  import { AttachmentPresenter } from '@hanzo/attachment-resources'
+  import { SharedMessage } from '@hanzo/gmail'
+  import { createQuery } from '@hanzo/presentation'
+  import { Label } from '@hanzo/ui'
   import gmail from '../plugin'
   import FullMessageContent from './FullMessageContent.svelte'
-  import core from '@hcengineering/core'
+  import core from '@hanzo/core'
 
   export let message: SharedMessage
 

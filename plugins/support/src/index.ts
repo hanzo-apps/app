@@ -13,18 +13,18 @@
 // limitations under the License.
 //
 
-import { Class, Ref } from '@hcengineering/core'
-import type { Asset, IntlString, Plugin, Resource } from '@hcengineering/platform'
-import { plugin } from '@hcengineering/platform'
+import { Class, Ref } from '@hanzo/core'
+import type { Asset, IntlString, Plugin, Resource } from '@hanzo/platform'
+import { plugin } from '@hanzo/platform'
 import { SupportClientFactory, SupportConversation, SupportSystem } from './types'
 
 export * from './types'
 export { deleteSupportConversation, updateSupportConversation } from './utils'
 
-export const supportLink = 'https://huly.link/slack'
-export const reportBugLink = 'https://github.com/hcengineering/platform/issues/new'
-export const docsLink = 'http://docs.huly.io/'
-export const privacyPolicyLink = 'https://v1.huly.io/legal/privacy/'
+export const supportLink = 'https://hanzo.link/slack'
+export const reportBugLink = 'https://github.com/hanzo/platform/issues/new'
+export const docsLink = 'http://docs.hanzo.io/'
+export const privacyPolicyLink = 'https://v1.hanzo.io/legal/privacy/'
 
 /**
  * @public

@@ -41,12 +41,12 @@
   $: withIcons = items.some((it) => it.icon !== undefined)
 </script>
 
-<div class="hulyPopup-container" use:resizeObserver={() => dispatch('changeContent')}>
+<div class="hanzoPopup-container" use:resizeObserver={() => dispatch('changeContent')}>
   <Scroller padding={'var(--spacing-0_5)'} gap={'flex-gap-0-5'}>
     {#each items as item, i}
       <!-- svelte-ignore a11y-mouse-events-have-key-events -->
       <button
-        class="hulyPopup-row"
+        class="hanzoPopup-row"
         class:withKeys={item.keys}
         on:mouseover={(ev) => {
           ev.currentTarget.focus()
@@ -59,24 +59,24 @@
         }}
       >
         {#if withIcons}
-          <div class="hulyPopup-row__icon">
+          <div class="hanzoPopup-row__icon">
             {#if item.icon}<Icon icon={item.icon} size={'small'} />{/if}
           </div>
         {/if}
         {#if item.description}
-          <div class="hulyPopup-row__labels-wrapper">
-            <div class="hulyPopup-row__label overflow-label">
+          <div class="hanzoPopup-row__labels-wrapper">
+            <div class="hanzoPopup-row__label overflow-label">
               <Label label={item.label} params={item.params ?? params} />
             </div>
-            <div class="hulyPopup-row__label small dark">
+            <div class="hanzoPopup-row__label small dark">
               <Label label={item.description} params={item.paramsDescription ?? params} />
             </div>
           </div>
         {:else}
-          <div class="hulyPopup-row__label"><Label label={item.label} params={item.params ?? params} /></div>
+          <div class="hanzoPopup-row__label"><Label label={item.label} params={item.params ?? params} /></div>
         {/if}
         {#if item.keys}
-          <div class="hulyPopup-row__keys">
+          <div class="hanzoPopup-row__keys">
             {#each item.keys as key, j}
               {#if j !== 0}
                 <div class="mr-1 ml-1">/</div>
@@ -95,7 +95,7 @@
           </div>
         {/if}
         {#if item.id === selected}
-          <div class="hulyPopup-row__icon">
+          <div class="hanzoPopup-row__icon">
             <IconCheck size={'small'} />
           </div>
         {/if}

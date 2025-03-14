@@ -14,9 +14,9 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Contact } from '@hcengineering/contact'
-  import { Ref } from '@hcengineering/core'
-  import { createQuery } from '@hcengineering/presentation'
+  import { Contact } from '@hanzo/contact'
+  import { Ref } from '@hanzo/core'
+  import { createQuery } from '@hanzo/presentation'
   import contact from '../plugin'
   import ContactPresenter from './ContactPresenter.svelte'
 

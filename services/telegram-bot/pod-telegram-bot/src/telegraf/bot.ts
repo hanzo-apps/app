@@ -15,11 +15,11 @@
 
 import { Context, Markup, NarrowedContext, session, Telegraf } from 'telegraf'
 import { message } from 'telegraf/filters'
-import telegram from '@hcengineering/telegram'
-import { htmlToMarkup, isEmptyMarkup, jsonToMarkup, MarkupNodeType } from '@hcengineering/text'
+import telegram from '@hanzo/telegram'
+import { htmlToMarkup, isEmptyMarkup, jsonToMarkup, MarkupNodeType } from '@hanzo/text'
 import { toHTML } from '@telegraf/entity'
 import { CallbackQuery, Message, Update } from 'telegraf/typings/core/types/typegram'
-import { translate } from '@hcengineering/platform'
+import { translate } from '@hanzo/platform'
 import { ObjectId, WithId } from 'mongodb'
 
 import config from '../config'
@@ -28,7 +28,7 @@ import { TgContext, ReplyMessage } from './types'
 import { toTelegramFileInfo } from '../utils'
 import { Command, defineCommands } from './commands'
 import { ChannelRecord, MessageRecord, TelegramFileInfo, UserRecord, WorkspaceInfo } from '../types'
-import { WorkspaceUuid } from '@hcengineering/core'
+import { WorkspaceUuid } from '@hanzo/core'
 
 function encodeChannelId (channelId: string): string {
   return `@${channelId}`

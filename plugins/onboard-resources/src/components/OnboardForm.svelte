@@ -13,11 +13,11 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { LoginInfo, WorkspaceLoginInfo } from '@hcengineering/login'
-  import { getAccount, getWorkspaces, navigateToWorkspace } from '@hcengineering/login-resources'
-  import { OK } from '@hcengineering/platform'
+  import { LoginInfo, WorkspaceLoginInfo } from '@hanzo/login'
+  import { getAccount, getWorkspaces, navigateToWorkspace } from '@hanzo/login-resources'
+  import { OK } from '@hanzo/platform'
   import { onMount } from 'svelte'
-  import { Analytics } from '@hcengineering/analytics'
+  import { Analytics } from '@hanzo/analytics'
 
   import { OnboardSteps } from '../index'
   import onboard from '../plugin'
@@ -67,10 +67,10 @@
   })
 
   const action = {
-    i18n: onboard.string.StartUsingHuly,
+    i18n: onboard.string.StartUsingHanzo,
     func: async () => {
       if (account !== undefined && isWorkspaceLoginInfo(account)) {
-        Analytics.handleEvent(OnboardEvents.StartHuly)
+        Analytics.handleEvent(OnboardEvents.StartHanzo)
         navigateToWorkspace(account.workspace, account)
       }
     }

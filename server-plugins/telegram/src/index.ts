@@ -14,10 +14,10 @@
 // limitations under the License.
 //
 
-import { Metadata, Plugin, Resource, plugin } from '@hcengineering/platform'
-import { ObjectDDParticipantFunc, TriggerFunc } from '@hcengineering/server-core'
-import { NotificationProviderFunc, TypeMatchFunc } from '@hcengineering/server-notification'
-import { TemplateFieldServerFunc } from '@hcengineering/server-templates'
+import { Metadata, Plugin, Resource, plugin } from '@hanzo/platform'
+import { ObjectDDParticipantFunc, TriggerFunc } from '@hanzo/server-core'
+import { NotificationProviderFunc, TypeMatchFunc } from '@hanzo/server-notification'
+import { TemplateFieldServerFunc } from '@hanzo/server-templates'
 
 /**
  * @public

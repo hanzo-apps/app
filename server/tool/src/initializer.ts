@@ -1,4 +1,4 @@
-import { saveCollabJson } from '@hcengineering/collaboration'
+import { saveCollabJson } from '@hanzo/collaboration'
 import core, {
   AttachedDoc,
   Class,
@@ -16,14 +16,14 @@ import core, {
   Space,
   TxOperations,
   type WorkspaceIds
-} from '@hcengineering/core'
-import { ModelLogger } from '@hcengineering/model'
-import { makeRank } from '@hcengineering/rank'
-import { HulyFormatImporter, StorageFileUploader } from '@hcengineering/importer'
-import type { StorageAdapter } from '@hcengineering/server-core'
-import { jsonToMarkup } from '@hcengineering/text'
-import { markdownToMarkup } from '@hcengineering/text-markdown'
-import { pickPrimarySocialId } from '@hcengineering/contact'
+} from '@hanzo/core'
+import { ModelLogger } from '@hanzo/model'
+import { makeRank } from '@hanzo/rank'
+import { HanzoFormatImporter, StorageFileUploader } from '@hanzo/importer'
+import type { StorageAdapter } from '@hanzo/server-core'
+import { jsonToMarkup } from '@hanzo/text'
+import { markdownToMarkup } from '@hanzo/text-markdown'
+import { pickPrimarySocialId } from '@hanzo/contact'
 import { v4 as uuid } from 'uuid'
 import path from 'path'
 
@@ -192,7 +192,7 @@ export class WorkspaceInitializer {
       const initPath = path.resolve(this.initRepoDir, step.path)
       // eslint-disable-next-line no-template-curly-in-string
       const initPerson = vars[`\${${this.creatorPersonVar}}`]
-      const importer = new HulyFormatImporter(this.client, uploader, logger, this.socialKey, initPerson)
+      const importer = new HanzoFormatImporter(this.client, uploader, logger, this.socialKey, initPerson)
       await importer.importFolder(initPath)
     } catch (error) {
       logger.error('Import failed', error)

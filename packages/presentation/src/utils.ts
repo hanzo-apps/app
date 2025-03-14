@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-import { Analytics } from '@hcengineering/analytics'
+import { Analytics } from '@hanzo/analytics'
 import core, {
   MeasureMetricsContext,
   TxOperations,
@@ -48,11 +48,11 @@ import core, {
   type TypeAny,
   type WithLookup,
   type WorkspaceUuid
-} from '@hcengineering/core'
-import { getMetadata, getResource } from '@hcengineering/platform'
-import { LiveQuery as LQ } from '@hcengineering/query'
-import { getRawCurrentLocation, workspaceId, type AnyComponent, type AnySvelteComponent } from '@hcengineering/ui'
-import view, { type AttributeCategory, type AttributeEditor } from '@hcengineering/view'
+} from '@hanzo/core'
+import { getMetadata, getResource } from '@hanzo/platform'
+import { LiveQuery as LQ } from '@hanzo/query'
+import { getRawCurrentLocation, workspaceId, type AnyComponent, type AnySvelteComponent } from '@hanzo/ui'
+import view, { type AttributeCategory, type AttributeEditor } from '@hanzo/view'
 import { deepEqual } from 'fast-equals'
 import { onDestroy } from 'svelte'
 import { get, writable } from 'svelte/store'
@@ -61,7 +61,7 @@ import { type KeyedAttribute } from '..'
 import { OptimizeQueryMiddleware, PresentationPipelineImpl, type PresentationPipeline } from './pipeline'
 import plugin from './plugin'
 
-export { reduceCalls } from '@hcengineering/core'
+export { reduceCalls } from '@hanzo/core'
 
 let liveQuery: LQ
 let rawLiveQuery: LQ
@@ -562,7 +562,7 @@ export async function getBlobURL (blob: Blob): Promise<string> {
 export function copyTextToClipboardOldBrowser (text: string): void {
   const textarea = document.createElement('textarea')
   textarea.value = text
-  textarea.classList.add('hulyClipboardArea')
+  textarea.classList.add('hanzoClipboardArea')
   document.body.appendChild(textarea)
   textarea.select()
   try {

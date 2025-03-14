@@ -10,7 +10,7 @@ export class ApplicationsDetailsPage extends CommonRecruitingPage {
   }
 
   readonly textApplicationId = (): Locator =>
-    this.page.locator('div.hulyHeader-container div.hulyHeader-titleGroup > *').last()
+    this.page.locator('div.hanzoHeader-container div.hanzoHeader-titleGroup > *').last()
 
   readonly buttonState = (): Locator =>
     this.page

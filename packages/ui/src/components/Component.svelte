@@ -13,7 +13,7 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { getResourceP } from '@hcengineering/platform'
+  import { getResourceP } from '@hanzo/platform'
   import { deepEqual } from 'fast-equals'
   import { SvelteComponent } from 'svelte'
   import type { AnyComponent, AnySvelteComponent } from '../types'

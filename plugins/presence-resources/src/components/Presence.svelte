@@ -14,7 +14,7 @@
 -->
 
 <script lang="ts">
-  import { Doc } from '@hcengineering/core'
+  import { Doc } from '@hanzo/core'
 
   import PresenceContext from './PresenceContext.svelte'
 

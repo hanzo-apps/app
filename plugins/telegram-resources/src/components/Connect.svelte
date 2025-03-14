@@ -13,13 +13,13 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { getMetadata } from '@hcengineering/platform'
-  import { Button, EditBox, IconClose, Label } from '@hcengineering/ui'
+  import { getMetadata } from '@hanzo/platform'
+  import { Button, EditBox, IconClose, Label } from '@hanzo/ui'
   import { createEventDispatcher } from 'svelte'
-  import presentation from '@hcengineering/presentation'
+  import presentation from '@hanzo/presentation'
   import PinPad from './PinPad.svelte'
   import telegram from '../plugin'
-  import { concatLink } from '@hcengineering/core'
+  import { concatLink } from '@hanzo/core'
 
   const dispatch = createEventDispatcher()
 

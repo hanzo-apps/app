@@ -14,10 +14,10 @@
 -->
 
 <script lang="ts">
-  import { CodeForm, Icon, IconCheckmark, Label, Loading, Modal, ModernButton } from '@hcengineering/ui'
-  import presentation from '@hcengineering/presentation'
-  import { getEmbeddedLabel, getMetadata, IntlString } from '@hcengineering/platform'
-  import { concatLink, getCurrentAccount } from '@hcengineering/core'
+  import { CodeForm, Icon, IconCheckmark, Label, Loading, Modal, ModernButton } from '@hanzo/ui'
+  import presentation from '@hanzo/presentation'
+  import { getEmbeddedLabel, getMetadata, IntlString } from '@hanzo/platform'
+  import { concatLink, getCurrentAccount } from '@hanzo/core'
   import { createEventDispatcher, onMount } from 'svelte'
 
   import telegram from '../plugin'
@@ -125,7 +125,7 @@
   canSave
   on:close
 >
-  <div class="hulyModal-content__titleGroup" style="padding: 0">
+  <div class="hanzoModal-content__titleGroup" style="padding: 0">
     {#if isLoading}
       <div class="flex-row-top mt-2 h-32">
         <Loading size="medium" />

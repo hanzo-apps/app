@@ -3,7 +3,7 @@ services:
   mongodb:
     image: 'mongo:7-jammy'
     extra_hosts:
-      - "huly.local:host-gateway"
+      - "hanzo.local:host-gateway"
     command: mongod --port 27018
     environment:
       - PUID=1000
@@ -41,7 +41,7 @@ services:
   account:
     image: hardcoreeng/account
     extra_hosts:
-      - "huly.local:host-gateway"
+      - "hanzo.local:host-gateway"
     pull_policy: never
     links:
       - mongodb
@@ -55,14 +55,14 @@ services:
       - SERVER_SECRET=secret
       - WORKSPACE_LIMIT_PER_USER=100
       - DB_URL=mongodb://mongodb:27018
-      - TRANSACTOR_URL=ws://transactor:3334;ws://huly.local:3334
+      - TRANSACTOR_URL=ws://transactor:3334;ws://hanzo.local:3334
       - STORAGE_CONFIG=${STORAGE_CONFIG}
       - MODEL_ENABLED=*
       - BRANDING_PATH=/var/cfg/branding-test.json
   workspace:
     image: hardcoreeng/workspace
     extra_hosts:
-      - "huly.local:host-gateway"
+      - "hanzo.local:host-gateway"
     links:
       - mongodb
       - minio
@@ -72,7 +72,7 @@ services:
       - SERVER_SECRET=secret
       - DB_URL=mongodb://mongodb:27018
       - MONGO_URL=mongodb://mongodb:27018
-      - TRANSACTOR_URL=ws://transactor:3334;ws://huly.local:3334
+      - TRANSACTOR_URL=ws://transactor:3334;ws://hanzo.local:3334
       - STORAGE_CONFIG=${STORAGE_CONFIG}
       - MODEL_ENABLED=*
       - ACCOUNTS_URL=http://account:3003
@@ -81,7 +81,7 @@ services:
   front:
     image: hardcoreeng/front
     extra_hosts:
-      - "huly.local:host-gateway"
+      - "hanzo.local:host-gateway"
     pull_policy: never
     links:
       - account
@@ -97,22 +97,22 @@ services:
     environment:
       - SERVER_PORT=8083
       - SERVER_SECRET=secret
-      - ACCOUNTS_URL=http://huly.local:3003
+      - ACCOUNTS_URL=http://hanzo.local:3003
       - MONGO_URL=mongodb://mongodb:27018
       - UPLOAD_URL=/files
-      - GMAIL_URL=http://huly.local:8088
-      - CALENDAR_URL=http://huly.local:8095
+      - GMAIL_URL=http://hanzo.local:8088
+      - CALENDAR_URL=http://hanzo.local:8095
       - REKONI_URL=http://rekoni:4007
-      - TELEGRAM_URL=http://huly.local:8086
-      - COLLABORATOR_URL=ws://huly.local:3079
+      - TELEGRAM_URL=http://hanzo.local:8086
+      - COLLABORATOR_URL=ws://hanzo.local:3079
       - STORAGE_CONFIG=${STORAGE_CONFIG}
-      - BRANDING_URL=http://huly.local:8083/branding-test.json
-      - PRINT_URL=http://huly.local:4003
-      - SIGN_URL=http://huly.local:4008
+      - BRANDING_URL=http://hanzo.local:8083/branding-test.json
+      - PRINT_URL=http://hanzo.local:4003
+      - SIGN_URL=http://hanzo.local:4008
   transactor:
     image: hardcoreeng/transactor
     extra_hosts:
-      - "huly.local:host-gateway"
+      - "hanzo.local:host-gateway"
     pull_policy: never
     links:
       - mongodb
@@ -131,8 +131,8 @@ services:
       - METRICS_CONSOLE=false
       - METRICS_FILE=metrics.txt
       - STORAGE_CONFIG=${STORAGE_CONFIG}
-      - FRONT_URL=http://huly.local:8083
-      - UPLOAD_URL=http://huly.local:8083/files
+      - FRONT_URL=http://hanzo.local:8083
+      - UPLOAD_URL=http://hanzo.local:8083/files
       - ACCOUNTS_URL=http://account:3003
       - LAST_NAME_FIRST=true
       - FULLTEXT_URL=http://fulltext:4710
@@ -140,7 +140,7 @@ services:
   collaborator:
     image: hardcoreeng/collaborator
     extra_hosts:
-      - "huly.local:host-gateway"
+      - "hanzo.local:host-gateway"
     links:
       - mongodb
       - minio
@@ -163,7 +163,7 @@ services:
   print:
     image: hardcoreeng/print
     extra_hosts:
-      - "huly.local:host-gateway"
+      - "hanzo.local:host-gateway"
     restart: unless-stopped
     ports:
       - 4003:4005
@@ -180,7 +180,7 @@ services:
   sign:
     image: hardcoreeng/sign
     extra_hosts:
-      - "huly.local:host-gateway"
+      - "hanzo.local:host-gateway"
     restart: unless-stopped
     ports:
       - 4008:4006

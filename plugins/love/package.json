@@ -1,5 +1,5 @@
 {
-  "name": "@hcengineering/love",
+  "name": "@hanzo/love",
   "version": "0.6.0",
   "main": "lib/index.js",
   "svelte": "src/index.ts",
@@ -22,7 +22,7 @@
     "_phase:validate": "compile validate"
   },
   "devDependencies": {
-    "@hcengineering/platform-rig": "^0.6.0",
+    "@hanzo/platform-rig": "^0.6.0",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-promise": "^6.1.1",
@@ -38,16 +38,16 @@
     "prettier-plugin-svelte": "^3.2.2"
   },
   "dependencies": {
-    "@hcengineering/platform": "^0.6.11",
-    "@hcengineering/contact": "^0.6.24",
-    "@hcengineering/preference": "^0.6.13",
-    "@hcengineering/notification": "^0.6.23",
-    "@hcengineering/ui": "^0.6.15",
-    "@hcengineering/calendar": "^0.6.24",
-    "@hcengineering/drive": "^0.6.0",
-    "@hcengineering/core": "^0.6.32",
-    "@hcengineering/view": "^0.6.13",
-    "@hcengineering/workbench": "^0.6.16"
+    "@hanzo/platform": "^0.6.11",
+    "@hanzo/contact": "^0.6.24",
+    "@hanzo/preference": "^0.6.13",
+    "@hanzo/notification": "^0.6.23",
+    "@hanzo/ui": "^0.6.15",
+    "@hanzo/calendar": "^0.6.24",
+    "@hanzo/drive": "^0.6.0",
+    "@hanzo/core": "^0.6.32",
+    "@hanzo/view": "^0.6.13",
+    "@hanzo/workbench": "^0.6.16"
   },
   "exports": {
     ".": {

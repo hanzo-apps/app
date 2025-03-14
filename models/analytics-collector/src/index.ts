@@ -13,16 +13,16 @@
 // limitations under the License.
 //
 
-import { type Builder, Model, Prop, ReadOnly, TypeString, UX, TypeBoolean } from '@hcengineering/model'
-import { type OnboardingChannel } from '@hcengineering/analytics-collector'
-import chunter from '@hcengineering/chunter'
-import { TChannel } from '@hcengineering/model-chunter'
-import activity, { type ActivityMessageControl } from '@hcengineering/activity'
-import core, { type PersonId, type WorkspaceUuid } from '@hcengineering/core'
+import { type Builder, Model, Prop, ReadOnly, TypeString, UX, TypeBoolean } from '@hanzo/model'
+import { type OnboardingChannel } from '@hanzo/analytics-collector'
+import chunter from '@hanzo/chunter'
+import { TChannel } from '@hanzo/model-chunter'
+import activity, { type ActivityMessageControl } from '@hanzo/activity'
+import core, { type PersonId, type WorkspaceUuid } from '@hanzo/core'
 
 import analyticsCollector from './plugin'
 
-export { analyticsCollectorId } from '@hcengineering/analytics-collector'
+export { analyticsCollectorId } from '@hanzo/analytics-collector'
 export { analyticsCollectorOperation } from './migration'
 export default analyticsCollector
 

@@ -13,7 +13,7 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import type { Asset, IntlString } from '@hcengineering/platform'
+  import type { Asset, IntlString } from '@hanzo/platform'
   import {
     AnySvelteComponent,
     Breadcrumbs,
@@ -25,15 +25,15 @@
     HeaderAdaptive,
     IconSettings,
     IconToDetails
-  } from '@hcengineering/ui'
+  } from '@hanzo/ui'
   import { createEventDispatcher } from 'svelte'
-  import view from '@hcengineering/view'
-  import { openDoc } from '@hcengineering/view-resources'
-  import { getClient } from '@hcengineering/presentation'
-  import { Doc, Ref } from '@hcengineering/core'
-  import { ActivityMessagesFilter } from '@hcengineering/activity'
-  import workbench from '@hcengineering/workbench'
-  import { PresenceAvatars } from '@hcengineering/presence-resources'
+  import view from '@hanzo/view'
+  import { openDoc } from '@hanzo/view-resources'
+  import { getClient } from '@hanzo/presentation'
+  import { Doc, Ref } from '@hanzo/core'
+  import { ActivityMessagesFilter } from '@hanzo/activity'
+  import workbench from '@hanzo/workbench'
+  import { PresenceAvatars } from '@hanzo/presence-resources'
 
   import { userSearch } from '../index'
   import chunter from '../plugin'
@@ -98,7 +98,7 @@
       currentOnly
     />
   {:else}
-    <div class="hulyHeader-titleGroup">
+    <div class="hanzoHeader-titleGroup">
       {#if icon}
         <div class="content-color mr-2 pl-2">
           <Icon {icon} size={'small'} {iconProps} />

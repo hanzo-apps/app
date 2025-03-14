@@ -13,9 +13,9 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import type { IntlString } from '@hcengineering/platform'
-  import type { ButtonKind, ButtonSize, TooltipAlignment } from '@hcengineering/ui'
-  import { Button, Label } from '@hcengineering/ui'
+  import type { IntlString } from '@hanzo/platform'
+  import type { ButtonKind, ButtonSize, TooltipAlignment } from '@hanzo/ui'
+  import { Button, Label } from '@hanzo/ui'
 
   export let label: IntlString
   export let tooltip: IntlString

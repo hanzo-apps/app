@@ -13,14 +13,14 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Class, Doc, Ref } from '@hcengineering/core'
-  import { getClient } from '@hcengineering/presentation'
-  import { Separator, deviceOptionsStore as deviceInfo } from '@hcengineering/ui'
-  import { SpecialView } from '@hcengineering/workbench-resources'
+  import { Class, Doc, Ref } from '@hanzo/core'
+  import { getClient } from '@hanzo/presentation'
+  import { Separator, deviceOptionsStore as deviceInfo } from '@hanzo/ui'
+  import { SpecialView } from '@hanzo/workbench-resources'
   import card from '../plugin'
   import Navigator from './Navigator.svelte'
   import { onDestroy } from 'svelte'
-  import { IntlString } from '@hcengineering/platform'
+  import { IntlString } from '@hanzo/platform'
 
   export let currentSpace: Ref<Class<Doc>>
 
@@ -42,7 +42,7 @@
   onDestroy(() => ($deviceInfo.replacedPanel = undefined))
 </script>
 
-<div class="hulyPanels-container">
+<div class="hanzoPanels-container">
   {#if $deviceInfo.navigator.visible}
     <Navigator bind:_class />
     <Separator
@@ -55,7 +55,7 @@
     />
   {/if}
 
-  <div class="hulyComponent" bind:this={replacedPanel}>
+  <div class="hanzoComponent" bind:this={replacedPanel}>
     {#if _class !== undefined && label !== undefined}
       <SpecialView {_class} {label} icon={card.icon.Card} />
     {/if}

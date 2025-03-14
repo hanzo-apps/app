@@ -14,7 +14,7 @@
 //
 
 /* Popups */
-.hulyPopup-container {
+.hanzoPopup-container {
   display: flex;
   flex-direction: column;
   max-height: 22.625rem;
@@ -33,7 +33,7 @@
     min-width: 16.5rem;
     max-width: 16.5rem;
   }
-  .hulyPopup-row {
+  .hanzoPopup-row {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -108,19 +108,19 @@
     &.disabled,
     &:disabled {
       cursor: default;
-      .hulyPopup-row__label { opacity: .5; }
+      .hanzoPopup-row__label { opacity: .5; }
     }
     &.noHover {
       cursor: default;
     }
   }
-  .hulyPopup-group {
+  .hanzoPopup-group {
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
     padding: var(--spacing-0_5);
   }
-  .hulyPopup-divider {
+  .hanzoPopup-divider {
     flex-shrink: 0;
     width: 100%;
     height: 1px;

@@ -1,32 +1,32 @@
 {
-  "huly.local:8080": {
-    "key": "huly-dev",
-    "title": "Huly",
+  "hanzo.local:8080": {
+    "key": "hanzo-dev",
+    "title": "Hanzo",
     "protocol": "http",
     "language": "en",
     "lastNameFirst": "true"
   },
-  "huly.local:8087": {
-    "key": "huly",
-    "title": "Huly",
+  "hanzo.local:8087": {
+    "key": "hanzo",
+    "title": "Hanzo",
     "protocol": "http",
     "language": "en",
     "lastNameFirst": "true"
   },
   "host.docker.internal:8087": {
-    "key": "huly-docker",
-    "title": "Huly",
+    "key": "hanzo-docker",
+    "title": "Hanzo",
     "protocol": "http",
     "language": "en",
     "lastNameFirst": "true"
   },
-  "huly.local:8081": {
+  "hanzo.local:8081": {
     "key": "tracex-dev",
     "title": "TraceX",
     "protocol": "http",
     "language": "en"
   },
-  "huly.local:8088": {
+  "hanzo.local:8088": {
     "key": "tracex",
     "title": "TraceX",
     "protocol": "http",
@@ -34,7 +34,7 @@
   },
   "host.docker.internal:8088": {
     "key": "tracex-docker",
-    "title": "Huly",
+    "title": "Hanzo",
     "protocol": "http",
     "language": "en",
     "lastNameFirst": "true"

@@ -14,9 +14,9 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Ref, Space, Status } from '@hcengineering/core'
-  import { statusStore } from '@hcengineering/view-resources'
-  import { Project } from '@hcengineering/tracker'
+  import { Ref, Space, Status } from '@hanzo/core'
+  import { statusStore } from '@hanzo/view-resources'
+  import { Project } from '@hanzo/tracker'
 
   import IssueStatusIcon from './IssueStatusIcon.svelte'
 

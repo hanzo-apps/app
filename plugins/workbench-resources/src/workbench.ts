@@ -21,8 +21,8 @@ import core, {
   type Ref,
   generateId,
   reduceCalls
-} from '@hcengineering/core'
-import { type Application, workbenchId, type WorkbenchTab } from '@hcengineering/workbench'
+} from '@hanzo/core'
+import { type Application, workbenchId, type WorkbenchTab } from '@hanzo/workbench'
 import {
   location as locationStore,
   locationToUrl,
@@ -33,12 +33,12 @@ import {
   languageStore,
   type AnyComponent,
   locationStorageKeyId
-} from '@hcengineering/ui'
-import presentation, { getClient } from '@hcengineering/presentation'
-import view from '@hcengineering/view'
-import { type Asset, type IntlString, getMetadata, getResource, translate } from '@hcengineering/platform'
-import { parseLinkId } from '@hcengineering/view-resources'
-import notification, { notificationId } from '@hcengineering/notification'
+} from '@hanzo/ui'
+import presentation, { getClient } from '@hanzo/presentation'
+import view from '@hanzo/view'
+import { type Asset, type IntlString, getMetadata, getResource, translate } from '@hanzo/platform'
+import { parseLinkId } from '@hanzo/view-resources'
+import notification, { notificationId } from '@hanzo/notification'
 
 import { locationWorkspaceStore } from './utils'
 import workbench from './plugin'

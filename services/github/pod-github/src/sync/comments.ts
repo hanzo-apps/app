@@ -1,7 +1,7 @@
 //
 // Copyright © 2023 Hardcore Engineering Inc.
 //
-import chunter, { ChatMessage } from '@hcengineering/chunter'
+import chunter, { ChatMessage } from '@hanzo/chunter'
 import core, {
   PersonId,
   AttachedData,
@@ -10,9 +10,9 @@ import core, {
   MeasureContext,
   Ref,
   TxOperations
-} from '@hcengineering/core'
-import github, { DocSyncInfo, GithubIntegrationRepository, GithubProject } from '@hcengineering/github'
-import { LiveQuery } from '@hcengineering/query'
+} from '@hanzo/core'
+import github, { DocSyncInfo, GithubIntegrationRepository, GithubProject } from '@hanzo/github'
+import { LiveQuery } from '@hanzo/query'
 import { deepEqual } from 'fast-equals'
 import {
   ContainerFocus,
@@ -25,7 +25,7 @@ import {
 } from '../types'
 import { collectUpdate, deleteObjects, errorToObj, getSince, isGHWriteAllowed } from './utils'
 
-import { Analytics } from '@hcengineering/analytics'
+import { Analytics } from '@hanzo/analytics'
 import { IssueComment, IssueCommentCreatedEvent, IssueCommentEvent } from '@octokit/webhooks-types'
 import config from '../config'
 import { syncConfig } from './syncConfig'
@@ -353,8 +353,8 @@ export class CommentSyncManager implements DocSyncManager {
     }
   }
 
-  isHulyLinkComment (message: string): boolean {
-    return message.includes('<p>Connected to') && message.includes('Huly&reg;')
+  isHanzoLinkComment (message: string): boolean {
+    return message.includes('<p>Connected to') && message.includes('Hanzo&reg;')
   }
 
   private async createComment (
@@ -370,7 +370,7 @@ export class CommentSyncManager implements DocSyncManager {
       attachments: 0
     }
     // Check if it is Connected message.
-    if ((comment as any).performed_via_github_app !== undefined && this.isHulyLinkComment(comment.body)) {
+    if ((comment as any).performed_via_github_app !== undefined && this.isHanzoLinkComment(comment.body)) {
       // No need to create comment on platform.
       return
     }

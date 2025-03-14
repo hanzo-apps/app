@@ -2,8 +2,8 @@
   "name": "desktop",
   "version": "0.6.435",
   "main": "dist/main/electron.js",
-  "author": "Hardcore Engineering <hey@huly.io>",
-  "template": "@hcengineering/default-package",
+  "author": "Hardcore Engineering <hey@hanzo.io>",
+  "template": "@hanzo/default-package",
   "scripts": {
     "_phase:package": "rushx package",
     "package": "rushx bump && rm -rf ./dist && cp -r ../desktop/dist . && cp ../desktop/.env ./dist && echo 'done'",
@@ -15,8 +15,8 @@
     "bump": "bump-package-version"
   },
   "devDependencies": {
-    "@hcengineering/platform-rig": "^0.6.0",
-    "@hcengineering/desktop": "^0.6.0",
+    "@hanzo/platform-rig": "^0.6.0",
+    "@hanzo/desktop": "^0.6.0",
     "@vercel/webpack-asset-relocator-loader": "^1.7.3",
     "node-loader": "~2.0.0",
     "cross-env": "~7.0.3",
@@ -30,12 +30,12 @@
     "electron-squirrel-startup": "~1.0.0",
     "dotenv": "~16.0.0"
   },
-  "homepage": "https://huly.io/",
-  "productName": "Huly Desktop",
-  "description": "Huly Desktop experience",
+  "homepage": "https://hanzo.io/",
+  "productName": "Hanzo Desktop",
+  "description": "Hanzo Desktop experience",
   "build": {
-    "productName": "Huly",
-    "appId": "hc.hcengineering.Huly",
+    "productName": "Hanzo",
+    "appId": "hc.hanzo.Hanzo",
     "directories": {
       "output": "deploy"
     },
@@ -44,7 +44,7 @@
     ],
     "mac": {
       "category": "public.app-category.utilities",
-      "artifactName": "Huly-macos-${version}-${arch}.${ext}",
+      "artifactName": "Hanzo-macos-${version}-${arch}.${ext}",
       "target": "default",
       "icon": "./src/AppIcon.icns",
       "hardenedRuntime": true,
@@ -53,7 +53,7 @@
       "notarize": false,
       "publish": {
         "provider": "generic",
-        "url": "https://dist.huly.io",
+        "url": "https://dist.hanzo.io",
         "channel": "latest"
       }
     },
@@ -62,17 +62,17 @@
         "zip",
         "nsis"
       ],
-      "artifactName": "Huly-windows-${version}.${ext}",
+      "artifactName": "Hanzo-windows-${version}.${ext}",
       "verifyUpdateCodeSignature": false,
       "icon": "./src/AppIcon.png",
       "publish": {
         "provider": "generic",
-        "url": "https://dist.huly.io",
+        "url": "https://dist.hanzo.io",
         "channel": "latest"
       }
     },
     "linux": {
-      "artifactName": "Huly-linux-${version}.${ext}",
+      "artifactName": "Hanzo-linux-${version}.${ext}",
       "target": [
         "AppImage",
         "deb",
@@ -81,7 +81,7 @@
       "category": "Utility",
       "publish": {
         "provider": "generic",
-        "url": "https://dist.huly.io",
+        "url": "https://dist.hanzo.io",
         "channel": "latest"
       }
     }

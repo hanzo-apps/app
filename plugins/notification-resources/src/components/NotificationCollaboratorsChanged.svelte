@@ -13,13 +13,13 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { mySocialStringsStore } from '@hcengineering/contact-resources'
-  import contact, { includesAny } from '@hcengineering/contact'
-  import { DisplayDocUpdateMessage } from '@hcengineering/activity'
-  import notification from '@hcengineering/notification'
-  import { BaseMessagePreview } from '@hcengineering/activity-resources'
-  import { Action, Icon, Label } from '@hcengineering/ui'
-  import { type PersonId } from '@hcengineering/core'
+  import { mySocialStringsStore } from '@hanzo/contact-resources'
+  import contact, { includesAny } from '@hanzo/contact'
+  import { DisplayDocUpdateMessage } from '@hanzo/activity'
+  import notification from '@hanzo/notification'
+  import { BaseMessagePreview } from '@hanzo/activity-resources'
+  import { Action, Icon, Label } from '@hanzo/ui'
+  import { type PersonId } from '@hanzo/core'
 
   export let message: DisplayDocUpdateMessage
   export let actions: Action[] = []

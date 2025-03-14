@@ -13,9 +13,9 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import core, { AnyAttribute, Class, Doc, Ref, Space } from '@hcengineering/core'
-  import { IntlString } from '@hcengineering/platform'
-  import { createQuery, getClient } from '@hcengineering/presentation'
+  import core, { AnyAttribute, Class, Doc, Ref, Space } from '@hanzo/core'
+  import { IntlString } from '@hanzo/platform'
+  import { createQuery, getClient } from '@hanzo/presentation'
   import {
     ActionIcon,
     AnySvelteComponent,
@@ -29,8 +29,8 @@
     getEventPositionElement,
     resizeObserver,
     showPopup
-  } from '@hcengineering/ui'
-  import { ObjectPresenter } from '@hcengineering/view-resources'
+  } from '@hanzo/ui'
+  import { ObjectPresenter } from '@hanzo/view-resources'
   import { onDestroy } from 'svelte'
   import settings from '../plugin'
   import { clearSettingsStore, settingsStore } from '../store'
@@ -147,7 +147,7 @@
 {#if showTitle}
   {#if clazz}
     <div class="flex-row-center flex-no-shrink mb-6">
-      <div class="hulyInput-body">
+      <div class="hanzoInput-body">
         <Label label={clazz.label} />
       </div>
       {#if hierarchy.hasMixin(clazz, settings.mixin.UserMixin)}
@@ -159,13 +159,13 @@
   {/if}
 {/if}
 <div
-  class="hulyTableAttr-container"
+  class="hanzoTableAttr-container"
   use:resizeObserver={(el) => {
     if (el.clientWidth < deviceWidths[0] && !el.classList.contains('short')) el.classList.add('short')
     else if (el.clientWidth >= deviceWidths[0] && el.classList.contains('short')) el.classList.remove('short')
   }}
 >
-  <div class="hulyTableAttr-header font-medium-12" class:withButton={showHierarchy}>
+  <div class="hanzoTableAttr-header font-medium-12" class:withButton={showHierarchy}>
     {#if showHeader}
       {#if showHierarchy}
         <ModernButton icon={IconSettings} kind={'secondary'} size={'small'} {disabled} hasMenu>
@@ -191,11 +191,11 @@
     />
   </div>
   {#if showHierarchy}
-    <div class="hulyTableAttr-content class withTitle">
-      <div class="hulyTableAttr-content__title">
+    <div class="hanzoTableAttr-content class withTitle">
+      <div class="hanzoTableAttr-content__title">
         <Label label={settings.string.Properties} />
       </div>
-      <div class="hulyTableAttr-content__wrapper">
+      <div class="hanzoTableAttr-content__wrapper">
         <ClassAttributesList
           {_class}
           {ofClass}
@@ -207,11 +207,11 @@
       </div>
     </div>
     {#each classes as clazz2}
-      <div class="hulyTableAttr-content class withTitle">
-        <div class="hulyTableAttr-content__title">
+      <div class="hanzoTableAttr-content class withTitle">
+        <div class="hanzoTableAttr-content__title">
           <Label label={clazz2.label} />
         </div>
-        <div class="hulyTableAttr-content__wrapper">
+        <div class="hanzoTableAttr-content__wrapper">
           <ClassAttributesList
             _class={clazz2._id}
             {ofClass}
@@ -225,7 +225,7 @@
       </div>
     {/each}
   {:else if attributes.length > 0}
-    <div class="hulyTableAttr-content class">
+    <div class="hanzoTableAttr-content class">
       <ClassAttributesList
         {_class}
         {ofClass}
@@ -239,7 +239,7 @@
 </div>
 
 <style lang="scss">
-  .hulyInput-body {
+  .hanzoInput-body {
     flex-grow: 1;
     flex-shrink: 0;
     padding: var(--spacing-1) var(--spacing-2);

@@ -13,11 +13,11 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Ref } from '@hcengineering/core'
-  import { ColorDefinition } from '@hcengineering/ui'
-  import { IssueStatus, Project } from '@hcengineering/tracker'
+  import { Ref } from '@hanzo/core'
+  import { ColorDefinition } from '@hanzo/ui'
+  import { IssueStatus, Project } from '@hanzo/tracker'
   import IssueStatusIcon from './IssueStatusIcon.svelte'
-  import { ProjectType, TaskType } from '@hcengineering/task'
+  import { ProjectType, TaskType } from '@hanzo/task'
 
   export let value: IssueStatus | undefined
   export let space: Ref<Project> | undefined = undefined
@@ -35,7 +35,7 @@
 
 {#if value}
   {#if kind === 'table-attrs'}
-    <button class="hulyTableAttr-content__row-icon-wrapper" on:click>
+    <button class="hanzoTableAttr-content__row-icon-wrapper" on:click>
       <IssueStatusIcon
         {value}
         {size}
@@ -48,7 +48,7 @@
       />
     </button>
     <span
-      class="hulyTableAttr-content__row-label font-medium-12 uppercase grow overflow-label"
+      class="hanzoTableAttr-content__row-label font-medium-12 uppercase grow overflow-label"
       style:color={accentedColor?.color ?? 'var(--global-primary-TextColor)'}
     >
       {value.name}

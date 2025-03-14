@@ -4,7 +4,7 @@
   // Licensed under the Eclipse Public License v2.0 (SPDX: EPL-2.0).
   //
   import { createEventDispatcher } from 'svelte'
-  import { getEmbeddedLabel } from '@hcengineering/platform'
+  import { getEmbeddedLabel } from '@hanzo/platform'
   import { tooltip, capitalizeFirstLetter, type EmojiWithGroup, type LabelAndProps } from '../../'
   import { getEmoji } from '.'
   import { type Emoji } from 'emojibase'
@@ -31,7 +31,7 @@
 {#if emoji}
   <button
     use:tooltip={showTooltip ?? { label: getEmbeddedLabel(capitalizeFirstLetter(displayedEmoji?.label ?? '')) }}
-    class="hulyPopupEmoji-button"
+    class="hanzoPopupEmoji-button"
     class:preview
     class:selected
     class:skins={_emoji?.skins !== undefined && _emoji.skins.length === 5}
@@ -50,7 +50,7 @@
 {/if}
 
 <style lang="scss">
-  .hulyPopupEmoji-button {
+  .hanzoPopupEmoji-button {
     display: flex;
     justify-content: center;
     align-items: center;

@@ -13,10 +13,10 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Person as Contact } from '@hcengineering/contact'
-  import type { Class, Ref } from '@hcengineering/core'
-  import { createQuery } from '@hcengineering/presentation'
-  import { IconSize } from '@hcengineering/ui'
+  import { Person as Contact } from '@hanzo/contact'
+  import type { Class, Ref } from '@hanzo/core'
+  import { createQuery } from '@hanzo/presentation'
+  import { IconSize } from '@hanzo/ui'
   import Avatar from './Avatar.svelte'
   import EmptyAvatar from './icons/EmptyAvatar.svelte'
 
@@ -49,14 +49,14 @@
 </script>
 
 {#if items !== undefined}
-  <div class="hulyCombineAvatars-container">
+  <div class="hanzoCombineAvatars-container">
     {#if includeEmpty}
-      <div class="hulyCombineAvatar {size}" data-over={getDataOver(persons.length === 0, items)}>
+      <div class="hanzoCombineAvatar {size}" data-over={getDataOver(persons.length === 0, items)}>
         <EmptyAvatar {size} />
       </div>
     {/if}
     {#each persons as person, i}
-      <div class="hulyCombineAvatar {size}" data-over={getDataOver(persons.length === i + 1, items)}>
+      <div class="hanzoCombineAvatar {size}" data-over={getDataOver(persons.length === i + 1, items)}>
         <Avatar {person} {size} name={person.name} showStatus={false} />
       </div>
     {/each}

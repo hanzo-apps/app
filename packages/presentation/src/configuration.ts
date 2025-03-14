@@ -13,8 +13,8 @@
 // limitations under the License.
 //
 
-import core, { SortingOrder, type PluginConfiguration, type Tx, type TxUpdateDoc } from '@hcengineering/core'
-import { getResourcePlugin, type Plugin, type Resource } from '@hcengineering/platform'
+import core, { SortingOrder, type PluginConfiguration, type Tx, type TxUpdateDoc } from '@hanzo/core'
+import { getResourcePlugin, type Plugin, type Resource } from '@hanzo/platform'
 import { writable } from 'svelte/store'
 import { addTxListener, createQuery } from '.'
 

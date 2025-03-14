@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-import { Analytics } from '@hcengineering/analytics'
+import { Analytics } from '@hanzo/analytics'
 import core, {
   cutObjectArray,
   generateId,
@@ -43,10 +43,10 @@ import core, {
   platformNow,
   platformNowDiff,
   AccountUuid
-} from '@hcengineering/core'
-import { getClient as getAccountClient, isWorkspaceLoginInfo } from '@hcengineering/account-client'
-import { unknownError, type Status } from '@hcengineering/platform'
-import { type HelloRequest, type HelloResponse, type Request, type Response } from '@hcengineering/rpc'
+} from '@hanzo/core'
+import { getClient as getAccountClient, isWorkspaceLoginInfo } from '@hanzo/account-client'
+import { unknownError, type Status } from '@hanzo/platform'
+import { type HelloRequest, type HelloResponse, type Request, type Response } from '@hanzo/rpc'
 import {
   LOGGING_ENABLED,
   pingConst,
@@ -61,8 +61,8 @@ import {
   type ConnectionSocket,
   type Session,
   type Workspace
-} from '@hcengineering/server-core'
-import { generateToken, type Token } from '@hcengineering/server-token'
+} from '@hanzo/server-core'
+import { generateToken, type Token } from '@hanzo/server-token'
 
 import { sendResponse } from './utils'
 

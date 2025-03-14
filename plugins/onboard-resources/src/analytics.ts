@@ -14,5 +14,5 @@
 //
 
 export const OnboardEvents = {
-  StartHuly: 'onboard.startHuly'
+  StartHanzo: 'onboard.startHanzo'
 }

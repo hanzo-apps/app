@@ -34,7 +34,7 @@ import core, {
   TxProcessor,
   type TxResult,
   type WorkspaceIds
-} from '@hcengineering/core'
+} from '@hanzo/core'
 import { type DbAdapter, type DbAdapterHandler, type DomainHelperOperations } from './adapter'
 /**
  * @public

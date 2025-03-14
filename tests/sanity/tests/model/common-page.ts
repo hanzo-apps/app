@@ -8,7 +8,7 @@ export class CommonPage {
     this.page = page
   }
 
-  appHeader = (): Locator => this.page.locator('.hulyNavPanel-header')
+  appHeader = (): Locator => this.page.locator('.hanzoNavPanel-header')
   selectPopupInput = (): Locator => this.page.locator('div.selectPopup input')
   selectPopupInputSearch = (): Locator => this.page.locator('div.popup input.search')
   selectPopupListItem = (name: string): Locator => this.page.locator('div.selectPopup div.list-item', { hasText: name })
@@ -44,8 +44,8 @@ export class CommonPage {
   mentionPopupListItem = (mentionName: string): Locator =>
     this.page.locator('form.mentionPoup div.list-item', { hasText: mentionName })
 
-  hulyPopupRowButton = (name: string): Locator =>
-    this.page.locator('div.hulyPopup-container button.hulyPopup-row', { hasText: name })
+  hanzoPopupRowButton = (name: string): Locator =>
+    this.page.locator('div.hanzoPopup-container button.hanzoPopup-row', { hasText: name })
 
   cardCloseButton = (): Locator => this.page.locator('div.popup button[id="card-close"]')
   menuPopupItemButton = (itemText: string): Locator =>
@@ -67,10 +67,10 @@ export class CommonPage {
   calendarDay = (daySelector: string): Locator => this.page.locator(`div.popup div.calendar button.day${daySelector}`)
 
   linesFromTable = (text: string = ''): Locator =>
-    this.page.locator('.hulyComponent table tbody tr').filter({ hasText: text })
+    this.page.locator('.hanzoComponent table tbody tr').filter({ hasText: text })
 
   linesFromList = (text: string = ''): Locator =>
-    this.page.locator('.hulyComponent .list-container div.row').filter({ hasText: text })
+    this.page.locator('.hanzoComponent .list-container div.row').filter({ hasText: text })
 
   firstInputFirstDigit = (): Locator =>
     this.page.locator('div.date-popup-container div.input:first-child span.digit:first-child')
@@ -91,7 +91,7 @@ export class CommonPage {
     this.page.locator('div.date-popup-container div.input:last-child span.digit:nth-child(5)')
 
   submitButton = (): Locator => this.page.locator('div.date-popup-container button[type="submit"]')
-  buttonBreadcrumb = (hasText?: string): Locator => this.page.locator('button.hulyBreadcrumb-container', { hasText })
+  buttonBreadcrumb = (hasText?: string): Locator => this.page.locator('button.hanzoBreadcrumb-container', { hasText })
   appsShowMenuButton = (): Locator => this.page.locator('[id="app-workbench\\:string\\:ShowMenu"]')
 
   async openNavigator (): Promise<void> {
@@ -209,7 +209,7 @@ export class CommonPage {
   }
 
   async selectPopupItem (name: string): Promise<void> {
-    await this.hulyPopupRowButton(name).click({ delay: 100 })
+    await this.hanzoPopupRowButton(name).click({ delay: 100 })
   }
 
   async closePopup (): Promise<void> {

@@ -24,8 +24,8 @@ import core, {
   type Space,
   TxOperations,
   type WorkspaceUuid
-} from '@hcengineering/core'
-import { type DbAdapter, wrapAdapterToClient } from '@hcengineering/server-core'
+} from '@hanzo/core'
+import { type DbAdapter, wrapAdapterToClient } from '@hanzo/server-core'
 import { createMongoAdapter, createMongoTxAdapter } from '..'
 import { getMongoClient, type MongoClientReference, shutdownMongo } from '../utils'
 import { genMinModel } from './minmodel'

@@ -1,9 +1,9 @@
 <script lang="ts">
-  import core, { Data, Ref } from '@hcengineering/core'
-  import { getEmbeddedLabel, getResource } from '@hcengineering/platform'
-  import { createQuery, getClient, MessageViewer, SpaceSelector } from '@hcengineering/presentation'
-  import { MessageTemplate, TemplateCategory } from '@hcengineering/templates'
-  import { StyledTextEditor } from '@hcengineering/text-editor-resources'
+  import core, { Data, Ref } from '@hanzo/core'
+  import { getEmbeddedLabel, getResource } from '@hanzo/platform'
+  import { createQuery, getClient, MessageViewer, SpaceSelector } from '@hanzo/presentation'
+  import { MessageTemplate, TemplateCategory } from '@hanzo/templates'
+  import { StyledTextEditor } from '@hanzo/text-editor-resources'
   import {
     Action,
     Button,
@@ -19,8 +19,8 @@
     defineSeparators,
     twoPanelsSeparators,
     Scroller
-  } from '@hcengineering/ui'
-  import { getActions as getContributedActions, TreeItem, TreeNode } from '@hcengineering/view-resources'
+  } from '@hanzo/ui'
+  import { getActions as getContributedActions, TreeItem, TreeNode } from '@hanzo/view-resources'
   import templatesPlugin from '../plugin'
   import CreateTemplateCategory from './CreateTemplateCategory.svelte'
   import FieldPopup from './FieldPopup.svelte'
@@ -150,7 +150,7 @@
   defineSeparators('workspaceSettings', twoPanelsSeparators)
 </script>
 
-<div class="hulyComponent">
+<div class="hanzoComponent">
   <Header adaptive={'disabled'}>
     <Breadcrumb
       icon={templatesPlugin.icon.Templates}
@@ -160,8 +160,8 @@
     />
   </Header>
 
-  <div class="hulyComponent-content__container columns">
-    <div class="hulyComponent-content__column">
+  <div class="hanzoComponent-content__container columns">
+    <div class="hanzoComponent-content__column">
       <div id="create-template" class="flex-between trans-title flex-no-shrink bottom-divider p-3">
         <Button
           icon={templatesPlugin.icon.Template}
@@ -202,9 +202,9 @@
       </div>
     </div>
     <Separator name={'workspaceSettings'} index={0} color={'var(--theme-divider-color)'} />
-    <div class="hulyComponent-content__column content">
+    <div class="hanzoComponent-content__column content">
       <Scroller align={'center'} padding={'var(--spacing-3)'} bottomPadding={'var(--spacing-3)'}>
-        <div class="hulyComponent-content">
+        <div class="hanzoComponent-content">
           {#if newTemplate}
             <div class="flex-between mr-4">
               <span class="trans-title mb-3">

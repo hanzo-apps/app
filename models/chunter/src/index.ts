@@ -13,15 +13,15 @@
 // limitations under the License.
 //
 
-import activity, { type ActivityMessageControl } from '@hcengineering/activity'
-import { chunterId, type ChunterSpace } from '@hcengineering/chunter'
-import contact from '@hcengineering/contact'
-import { type Builder } from '@hcengineering/model'
-import core from '@hcengineering/model-core'
-import presentation from '@hcengineering/model-presentation'
-import view from '@hcengineering/model-view'
-import workbench from '@hcengineering/model-workbench'
-import { WidgetType } from '@hcengineering/workbench'
+import activity, { type ActivityMessageControl } from '@hanzo/activity'
+import { chunterId, type ChunterSpace } from '@hanzo/chunter'
+import contact from '@hanzo/contact'
+import { type Builder } from '@hanzo/model'
+import core from '@hanzo/model-core'
+import presentation from '@hanzo/model-presentation'
+import view from '@hanzo/model-view'
+import workbench from '@hanzo/model-workbench'
+import { WidgetType } from '@hanzo/workbench'
 
 import { defineActions } from './actions'
 import { defineNotifications } from './notifications'
@@ -38,7 +38,7 @@ import {
   TThreadMessage
 } from './types'
 
-export { chunterId } from '@hcengineering/chunter'
+export { chunterId } from '@hanzo/chunter'
 export { chunterOperation } from './migration'
 export * from './types'
 

@@ -20,13 +20,13 @@ import {
   type MigrationDocumentQuery,
   type MigrationUpgradeClient,
   tryMigrate
-} from '@hcengineering/model'
-import { DOMAIN_PREFERENCE } from '@hcengineering/preference'
-import view, { type Filter, type FilteredView, type ViewletPreference, viewId } from '@hcengineering/view'
-import { getSocialIdByOldAccount } from '@hcengineering/model-core'
+} from '@hanzo/model'
+import { DOMAIN_PREFERENCE } from '@hanzo/preference'
+import view, { type Filter, type FilteredView, type ViewletPreference, viewId } from '@hanzo/view'
+import { getSocialIdByOldAccount } from '@hanzo/model-core'
 
 import { DOMAIN_VIEW } from '.'
-import { MeasureMetricsContext } from '@hcengineering/core'
+import { MeasureMetricsContext } from '@hanzo/core'
 
 async function removeDoneStatePref (client: MigrationClient): Promise<void> {
   const prefs = await client.find<ViewletPreference>(DOMAIN_PREFERENCE, {

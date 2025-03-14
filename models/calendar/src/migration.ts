@@ -13,8 +13,8 @@
 // limitations under the License.
 //
 
-import { type Calendar, calendarId, type Event, type ReccuringEvent } from '@hcengineering/calendar'
-import { type Doc, MeasureMetricsContext, type PersonId, type Ref, type Space } from '@hcengineering/core'
+import { type Calendar, calendarId, type Event, type ReccuringEvent } from '@hanzo/calendar'
+import { type Doc, MeasureMetricsContext, type PersonId, type Ref, type Space } from '@hanzo/core'
 import {
   createDefaultSpace,
   type MigrateUpdate,
@@ -24,8 +24,8 @@ import {
   type MigrateOperation,
   type MigrationClient,
   type MigrationUpgradeClient
-} from '@hcengineering/model'
-import { DOMAIN_SPACE, getSocialIdByOldAccount } from '@hcengineering/model-core'
+} from '@hanzo/model'
+import { DOMAIN_SPACE, getSocialIdByOldAccount } from '@hanzo/model-core'
 import { DOMAIN_CALENDAR, DOMAIN_EVENT } from '.'
 import calendar from './plugin'
 

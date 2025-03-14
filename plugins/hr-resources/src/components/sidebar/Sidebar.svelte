@@ -13,11 +13,11 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Ref } from '@hcengineering/core'
-  import { Department } from '@hcengineering/hr'
-  import { Scroller, Separator, deviceOptionsStore as deviceInfo } from '@hcengineering/ui'
-  import { TreeNode } from '@hcengineering/view-resources'
-  import { NavFooter, NavHeader } from '@hcengineering/workbench-resources'
+  import { Ref } from '@hanzo/core'
+  import { Department } from '@hanzo/hr'
+  import { Scroller, Separator, deviceOptionsStore as deviceInfo } from '@hanzo/ui'
+  import { TreeNode } from '@hanzo/view-resources'
+  import { NavFooter, NavHeader } from '@hanzo/workbench-resources'
 
   import hr from '../../plugin'
 
@@ -34,7 +34,7 @@
   class="antiPanel-navigator {$deviceInfo.navigator.direction === 'horizontal' ? 'portrait' : 'landscape'} border-left"
   class:fly={$deviceInfo.navigator.float}
 >
-  <div class="antiPanel-wrap__content hulyNavPanel-container">
+  <div class="antiPanel-wrap__content hanzoNavPanel-container">
     <NavHeader label={hr.string.HRApplication} />
 
     <Scroller shrink>

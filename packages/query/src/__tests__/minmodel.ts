@@ -27,10 +27,10 @@ import type {
   TxCreateDoc,
   TxCUD,
   AccountUuid
-} from '@hcengineering/core'
-import core, { AttachedDoc, ClassifierKind, DOMAIN_MODEL, DOMAIN_TX, TxFactory } from '@hcengineering/core'
-import type { IntlString, Plugin } from '@hcengineering/platform'
-import { plugin } from '@hcengineering/platform'
+} from '@hanzo/core'
+import core, { AttachedDoc, ClassifierKind, DOMAIN_MODEL, DOMAIN_TX, TxFactory } from '@hanzo/core'
+import type { IntlString, Plugin } from '@hanzo/platform'
+import { plugin } from '@hanzo/platform'
 
 const txFactory = new TxFactory(core.account.System)
 

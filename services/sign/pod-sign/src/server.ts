@@ -14,10 +14,10 @@
 // limitations under the License.
 //
 
-import { generateId, type WorkspaceIds } from '@hcengineering/core'
-import { initStatisticsContext, StorageConfiguration } from '@hcengineering/server-core'
-import { buildStorageFromConfig } from '@hcengineering/server-storage'
-import { getClient as getAccountClientRaw, AccountClient, isWorkspaceLoginInfo } from '@hcengineering/account-client'
+import { generateId, type WorkspaceIds } from '@hanzo/core'
+import { initStatisticsContext, StorageConfiguration } from '@hanzo/server-core'
+import { buildStorageFromConfig } from '@hanzo/server-storage'
+import { getClient as getAccountClientRaw, AccountClient, isWorkspaceLoginInfo } from '@hanzo/account-client'
 import cors from 'cors'
 import express, { type Express, type NextFunction, type Request, type Response } from 'express'
 import { type Server } from 'http'
@@ -90,7 +90,7 @@ export function createServer (storageConfig: StorageConfiguration, brandings: Br
 
       const originalFile = await storageAdapter.read(measureCtx, wsIds, fileId)
       const ctx = {
-        title: branding?.title ?? 'Huly'
+        title: branding?.title ?? 'Hanzo'
       }
       const signRes = await signPDF(Buffer.concat(originalFile), config.Cert, config.CertPwd, ctx)
 

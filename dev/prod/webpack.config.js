@@ -28,10 +28,10 @@ const devServerTest = clientType === 'dev-server-test'
 const devServerWorker = clientType === 'dev-worker'
 const devServerWorkerLocal = clientType === 'dev-worker-local'
 const devProduction = clientType === 'dev-production'
-const devProductionHuly = clientType === 'dev-huly'
+const devProductionHanzo = clientType === 'dev-hanzo'
 const devProductionBold = clientType === 'dev-bold'
 const dev =
-  (process.env.CLIENT_TYPE ?? '') === 'dev' || devServer || devProduction || devProductionHuly || devProductionBold || devServerWorker || devServerWorkerLocal || devServerTest
+  (process.env.CLIENT_TYPE ?? '') === 'dev' || devServer || devProduction || devProductionHanzo || devProductionBold || devServerWorker || devServerWorkerLocal || devServerTest
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 
 const { EsbuildPlugin } = require('esbuild-loader')
@@ -44,28 +44,28 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 
 const devProxy = {
   '/account': {
-    target: 'http://huly.local:3000',
+    target: 'http://hanzo.local:3000',
     changeOrigin: true,
     pathRewrite: { '^/account': '' },
     logLevel: 'debug'
   },
   '/files': {
-    target: 'http://huly.local:8087',
+    target: 'http://hanzo.local:8087',
     changeOrigin: true,
     logLevel: 'debug'
   },
   '/api/v1': {
-    target: 'http://huly.local:8087',
+    target: 'http://hanzo.local:8087',
     changeOrigin: true,
     logLevel: 'debug'
   },
   '/import': {
-    target: 'http://huly.local:8087',
+    target: 'http://hanzo.local:8087',
     changeOrigin: true,
     logLevel: 'debug'
   },
   '/rekoni/recognize': {
-    target: 'http://huly.local:4004',
+    target: 'http://hanzo.local:4004',
     changeOrigin: true,
     pathRewrite: { '^/rekoni/recognize': '/recognize' },
     logLevel: 'debug'
@@ -74,54 +74,54 @@ const devProxy = {
 
 const devProxyTest = {
   '/account': {
-    target: 'http://huly.local:3003',
+    target: 'http://hanzo.local:3003',
     changeOrigin: true,
     pathRewrite: { '^/account': '' },
     logLevel: 'debug'
   },
   '/files': {
-    target: 'http://huly.local:8083',
+    target: 'http://hanzo.local:8083',
     changeOrigin: true,
     logLevel: 'debug'
   },
   '/api/v1': {
-    target: 'http://huly.local:8083',
+    target: 'http://hanzo.local:8083',
     changeOrigin: true,
     logLevel: 'debug'
   },
   '/import': {
-    target: 'http://huly.local:8083',
+    target: 'http://hanzo.local:8083',
     changeOrigin: true,
     logLevel: 'debug'
   },
   '/rekoni/recognize': {
-    target: 'http://huly.local:4004',
+    target: 'http://hanzo.local:4004',
     changeOrigin: true,
     pathRewrite: { '^/rekoni/recognize': '/recognize' },
     logLevel: 'debug'
   }
 }
 
-const devHulyProxy = {
+const devHanzoProxy = {
   '/account': {
-    target: 'https://account.huly.app/',
+    target: 'https://account.hanzo.app/',
     changeOrigin: true,
     pathRewrite: { '^/account': '' },
     logLevel: 'debug'
   },
   '/api/v1': {
-    target: 'http://huly.app',
+    target: 'http://hanzo.app',
     changeOrigin: true,
     logLevel: 'debug'
   },
   '/files': {
-    target: 'https://huly.app/files',
+    target: 'https://hanzo.app/files',
     changeOrigin: true,
     pathRewrite: { '^/files': '' },
     logLevel: 'debug'
   },
   '/rekoni/recognize': {
-    target: 'https://rekoni.huly.app',
+    target: 'https://rekoni.hanzo.app',
     changeOrigin: true,
     pathRewrite: { '^/rekoni/recognize': '/recognize' },
     logLevel: 'debug'
@@ -182,7 +182,7 @@ const proxy = {
   'dev-server-test': devProxyTest,
   'dev-production': devFrontProxy,
   'dev-bold': devBoldProxy,
-  'dev-huly': devHulyProxy
+  'dev-hanzo': devHanzoProxy
 }
 
 /**
@@ -192,7 +192,7 @@ module.exports = [
   {
     mode: dev ? 'development' : mode,
     entry: {
-      serviceWorker: '@hcengineering/notification/src/serviceWorker.ts'
+      serviceWorker: '@hanzo/notification/src/serviceWorker.ts'
     },
     module: {
       rules: [
@@ -232,7 +232,7 @@ module.exports = [
         }
       : undefined,
     entry: {
-      bundle: ['@hcengineering/theme/styles/global.scss', ...(dev ? ['./src/main-dev.ts'] : ['./src/main.ts'])]
+      bundle: ['@hanzo/theme/styles/global.scss', ...(dev ? ['./src/main-dev.ts'] : ['./src/main.ts'])]
     },
     ignoreWarnings: [
       {
@@ -245,7 +245,7 @@ module.exports = [
       symlinks: true,
       alias: {
         svelte: path.resolve('node_modules', 'svelte/src/runtime'),
-        '@hcengineering/platform-rig/profiles/ui/svelte': path.resolve('node_modules', 'svelte/src/runtime')
+        '@hanzo/platform-rig/profiles/ui/svelte': path.resolve('node_modules', 'svelte/src/runtime')
       },
       fallback: {
         crypto: false

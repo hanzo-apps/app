@@ -63,7 +63,7 @@ import core, {
   type TxUpdateDoc,
   type WithLookup,
   platformNow
-} from '@hcengineering/core'
+} from '@hanzo/core'
 import {
   type DbAdapter,
   type DbAdapterHandler,
@@ -72,7 +72,7 @@ import {
   type StorageAdapter,
   type TxAdapter,
   calcHashHash
-} from '@hcengineering/server-core'
+} from '@hanzo/server-core'
 import {
   type AbstractCursor,
   type AnyBulkWriteOperation,

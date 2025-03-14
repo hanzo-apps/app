@@ -13,12 +13,12 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import core from '@hcengineering/core'
-  import { getClient } from '@hcengineering/presentation'
-  import { Label, resizeObserver, Scroller } from '@hcengineering/ui'
-  import { DropdownIntlItem } from '@hcengineering/ui/src/types'
+  import core from '@hanzo/core'
+  import { getClient } from '@hanzo/presentation'
+  import { Label, resizeObserver, Scroller } from '@hanzo/ui'
+  import { DropdownIntlItem } from '@hanzo/ui/src/types'
   import { createEventDispatcher } from 'svelte'
-  import view from '@hcengineering/view'
+  import view from '@hanzo/view'
 
   const dispatch = createEventDispatcher()
 
@@ -47,16 +47,16 @@
   }
 </script>
 
-<div class="hulyPopup-container" use:resizeObserver={() => dispatch('changeContent')}>
+<div class="hanzoPopup-container" use:resizeObserver={() => dispatch('changeContent')}>
   <Scroller padding={'var(--spacing-0_5)'} gap={'flex-gap-0-5'}>
     {#each items as item}
       <button
-        class="hulyPopup-row"
+        class="hanzoPopup-row"
         on:click={() => {
           handleSelection(item.id)
         }}
       >
-        <span class="hulyPopup-row__label overflow-label">
+        <span class="hanzoPopup-row__label overflow-label">
           <Label label={item.label} />
         </span>
       </button>

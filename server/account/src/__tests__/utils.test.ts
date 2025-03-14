@@ -23,7 +23,7 @@ import {
   SocialIdType,
   systemAccountUuid,
   WorkspaceUuid
-} from '@hcengineering/core'
+} from '@hanzo/core'
 import {
   generateWorkspaceUrl,
   cleanEmail,
@@ -65,16 +65,16 @@ import {
   sendEmail
 } from '../utils'
 // eslint-disable-next-line import/no-named-default
-import platform, { getMetadata, PlatformError, Severity, Status } from '@hcengineering/platform'
-import { decodeTokenVerbose, generateToken, TokenError } from '@hcengineering/server-token'
+import platform, { getMetadata, PlatformError, Severity, Status } from '@hanzo/platform'
+import { decodeTokenVerbose, generateToken, TokenError } from '@hanzo/server-token'
 import { randomBytes } from 'crypto'
 
 import { AccountDB, AccountEventType, Workspace } from '../types'
 import { accountPlugin } from '../plugin'
 
 // Mock platform with minimum required functionality
-jest.mock('@hcengineering/platform', () => {
-  const actual = jest.requireActual('@hcengineering/platform')
+jest.mock('@hanzo/platform', () => {
+  const actual = jest.requireActual('@hanzo/platform')
 
   return {
     ...actual,
@@ -86,14 +86,14 @@ jest.mock('@hcengineering/platform', () => {
 })
 
 // Mock server-token
-jest.mock('@hcengineering/server-token', () => ({
-  TokenError: jest.requireActual('@hcengineering/server-token').TokenError,
+jest.mock('@hanzo/server-token', () => ({
+  TokenError: jest.requireActual('@hanzo/server-token').TokenError,
   decodeTokenVerbose: jest.fn(),
   generateToken: jest.fn()
 }))
 
 // Mock analytics
-jest.mock('@hcengineering/analytics', () => ({
+jest.mock('@hanzo/analytics', () => ({
   Analytics: {
     handleError: jest.fn()
   }
@@ -1386,7 +1386,7 @@ describe('account utils', () => {
       )
     })
 
-    test('should create HULY social id when creating account', async () => {
+    test('should create HANZO social id when creating account', async () => {
       const email = 'new@example.com'
       const password = 'password123'
       const firstName = 'John'
@@ -1398,10 +1398,10 @@ describe('account utils', () => {
 
       await signUpByEmail(mockCtx, mockDb, mockBranding, email, password, firstName, lastName)
 
-      // Verify HULY social id creation
+      // Verify HANZO social id creation
       expect(mockDb.socialId.insertOne).toHaveBeenCalledWith(
         expect.objectContaining({
-          type: SocialIdType.HULY,
+          type: SocialIdType.HANZO,
           value: personUuid,
           personUuid
         })

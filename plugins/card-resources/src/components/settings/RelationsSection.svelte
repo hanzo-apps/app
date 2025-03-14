@@ -13,13 +13,13 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { MasterTag } from '@hcengineering/card'
-  import core, { Association, Class, Doc, Ref } from '@hcengineering/core'
-  import { IntlString } from '@hcengineering/platform'
-  import { createQuery, getClient } from '@hcengineering/presentation'
-  import setting from '@hcengineering/setting'
-  import { clearSettingsStore, settingsStore } from '@hcengineering/setting-resources'
-  import { ButtonIcon, Icon, IconAdd, Label, showPopup } from '@hcengineering/ui'
+  import { MasterTag } from '@hanzo/card'
+  import core, { Association, Class, Doc, Ref } from '@hanzo/core'
+  import { IntlString } from '@hanzo/platform'
+  import { createQuery, getClient } from '@hanzo/presentation'
+  import setting from '@hanzo/setting'
+  import { clearSettingsStore, settingsStore } from '@hanzo/setting-resources'
+  import { ButtonIcon, Icon, IconAdd, Label, showPopup } from '@hanzo/ui'
   import { onDestroy } from 'svelte'
   import CreateRelation from './CreateRelation.svelte'
 
@@ -62,21 +62,21 @@
   })
 </script>
 
-<div class="hulyTableAttr-header font-medium-12">
+<div class="hanzoTableAttr-header font-medium-12">
   <Icon icon={setting.icon.Relations} size="small" />
   <span><Label label={core.string.Relations} /></span>
   <ButtonIcon kind="primary" icon={IconAdd} size="small" dataId={'btnAdd'} on:click={addRelation} />
 </div>
 {#if filtered.length}
-  <div class="hulyTableAttr-content task">
+  <div class="hanzoTableAttr-content task">
     {#each filtered as association}
       <button
-        class="hulyTableAttr-content__row justify-start"
+        class="hanzoTableAttr-content__row justify-start"
         on:click|stopPropagation={() => {
           handleSelect(association)
         }}
       >
-        <div class="hulyTableAttr-content__row-label font-medium-14 cursor-pointer">
+        <div class="hanzoTableAttr-content__row-label font-medium-14 cursor-pointer">
           {association.nameA} (<Label label={getClassLabel(association.classA)} />) - {association.nameB} (<Label
             label={getClassLabel(association.classB)}
           />)

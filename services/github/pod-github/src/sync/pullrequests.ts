@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Analytics } from '@hcengineering/analytics'
-import { Person } from '@hcengineering/contact'
+import { Analytics } from '@hanzo/analytics'
+import { Person } from '@hanzo/contact'
 import core, {
   PersonId,
   AttachedData,
@@ -18,7 +18,7 @@ import core, {
   generateId,
   makeCollabId,
   makeDocCollabId
-} from '@hcengineering/core'
+} from '@hanzo/core'
 import github, {
   DocSyncInfo,
   GithubIntegrationRepository,
@@ -29,10 +29,10 @@ import github, {
   GithubPullRequestState,
   GithubTodo,
   LastReviewState
-} from '@hcengineering/github'
-import task, { TaskType, calcRank, makeRank } from '@hcengineering/task'
-import time, { ToDo, ToDoPriority } from '@hcengineering/time'
-import tracker, { Issue, IssuePriority, IssueStatus, Project } from '@hcengineering/tracker'
+} from '@hanzo/github'
+import task, { TaskType, calcRank, makeRank } from '@hanzo/task'
+import time, { ToDo, ToDoPriority } from '@hanzo/time'
+import tracker, { Issue, IssuePriority, IssueStatus, Project } from '@hanzo/tracker'
 import { ProjectsV2ItemEvent, PullRequestEvent } from '@octokit/webhooks-types'
 import { Octokit } from 'octokit'
 import config from '../config'
@@ -360,7 +360,7 @@ export class PullRequestSyncManager extends IssueSyncManagerBase implements DocS
       external: pullRequestExternal,
       externalVersion: githubExternalSyncVersion,
       derivedVersion: '',
-      addHulyLink: true,
+      addHanzoLink: true,
       lastModified,
       lastGithubUser: account
     })
@@ -965,7 +965,7 @@ export class PullRequestSyncManager extends IssueSyncManagerBase implements DocS
     if (container?.container === undefined) {
       return { needSync: githubSyncVersion }
     }
-    const needCreateConnectedAtHuly = info.addHulyLink === true
+    const needCreateConnectedAtHanzo = info.addHanzoLink === true
     if (
       (container.project.projectNodeId === undefined ||
         !container.container.projectStructure.has(container.project._id)) &&
@@ -996,8 +996,8 @@ export class PullRequestSyncManager extends IssueSyncManagerBase implements DocS
 
     const syncResult = await this.syncToTarget(target, container, existing, pullRequestExternal, derivedClient, info)
 
-    if (existing !== undefined && pullRequestExternal !== undefined && needCreateConnectedAtHuly) {
-      await this.addHulyLink(info, syncResult, existing, pullRequestExternal, container)
+    if (existing !== undefined && pullRequestExternal !== undefined && needCreateConnectedAtHanzo) {
+      await this.addHanzoLink(info, syncResult, existing, pullRequestExternal, container)
     }
     return {
       ...syncResult,

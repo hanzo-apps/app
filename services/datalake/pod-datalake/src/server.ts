@@ -13,9 +13,9 @@
 // limitations under the License.
 //
 
-import { Analytics } from '@hcengineering/analytics'
-import { MeasureContext, metricsAggregate } from '@hcengineering/core'
-import { decodeToken, TokenError } from '@hcengineering/server-token'
+import { Analytics } from '@hanzo/analytics'
+import { MeasureContext, metricsAggregate } from '@hanzo/core'
+import { decodeToken, TokenError } from '@hanzo/server-token'
 
 import cors from 'cors'
 import express, { type Express, type NextFunction, type Request, type Response } from 'express'
@@ -242,8 +242,8 @@ export function createServer (ctx: MeasureContext, config: Config): { app: Expre
 
   app.get('/', (_req, res) => {
     res.send(`
-      Huly® Datalake™ <a href="https://huly.io">https://huly.io</a>
-      © 2025 <a href="https://hulylabs.com">Huly Labs</a>
+      Hanzo® Datalake™ <a href="https://hanzo.io">https://hanzo.io</a>
+      © 2025 <a href="https://hanzolabs.com">Hanzo Labs</a>
     `)
   })
 

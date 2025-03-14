@@ -14,11 +14,11 @@
 // limitations under the License.
 //
 
-import type { AccountRole, Class, Doc, DocumentQuery, Obj, PersonId, Ref, Space, Tx } from '@hcengineering/core'
-import { DocNotifyContext, InboxNotification } from '@hcengineering/notification'
-import type { Asset, IntlString, Resource } from '@hcengineering/platform'
-import type { Preference } from '@hcengineering/preference'
-import { AnyComponent, type AnySvelteComponent, Location, ResolvedLocation } from '@hcengineering/ui'
+import type { AccountRole, Class, Doc, DocumentQuery, Obj, PersonId, Ref, Space, Tx } from '@hanzo/core'
+import { DocNotifyContext, InboxNotification } from '@hanzo/notification'
+import type { Asset, IntlString, Resource } from '@hanzo/platform'
+import type { Preference } from '@hanzo/preference'
+import { AnyComponent, type AnySvelteComponent, Location, ResolvedLocation } from '@hanzo/ui'
 
 /** @public */
 export interface LocationData {

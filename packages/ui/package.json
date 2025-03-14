@@ -1,5 +1,5 @@
 {
-  "name": "@hcengineering/ui",
+  "name": "@hanzo/ui",
   "version": "0.6.15",
   "main": "src/index.ts",
   "author": "Anticrm Platform Contributors",
@@ -16,7 +16,7 @@
     "_phase:validate": "compile validate"
   },
   "devDependencies": {
-    "@hcengineering/platform-rig": "^0.6.0",
+    "@hanzo/platform-rig": "^0.6.0",
     "@types/dompurify": "^3.0.5",
     "@types/jest": "^29.5.5",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
@@ -39,10 +39,10 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@hcengineering/analytics": "^0.6.0",
-    "@hcengineering/core": "^0.6.32",
-    "@hcengineering/platform": "^0.6.11",
-    "@hcengineering/theme": "^0.6.5",
+    "@hanzo/analytics": "^0.6.0",
+    "@hanzo/core": "^0.6.32",
+    "@hanzo/platform": "^0.6.11",
+    "@hanzo/theme": "^0.6.5",
     "autolinker": "4.0.0",
     "date-fns": "^2.30.0",
     "date-fns-tz": "^2.0.0",
@@ -53,7 +53,7 @@
     "plyr": "^3.7.8",
     "svelte": "^4.2.19"
   },
-  "repository": "https://github.com/hcengineering/platform",
+  "repository": "https://github.com/hanzo/platform",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   }

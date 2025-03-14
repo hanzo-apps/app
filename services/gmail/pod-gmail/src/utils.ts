@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-import { type Data, type Doc, type DocumentUpdate } from '@hcengineering/core'
+import { type Data, type Doc, type DocumentUpdate } from '@hanzo/core'
 import { deepEqual } from 'fast-equals'
 import { type Token, type User } from './types'
 

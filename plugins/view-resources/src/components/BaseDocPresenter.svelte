@@ -13,10 +13,10 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { type AnySvelteComponent, Icon, IconSize } from '@hcengineering/ui'
-  import { getClient } from '@hcengineering/presentation'
-  import { Doc } from '@hcengineering/core'
-  import { Asset } from '@hcengineering/platform'
+  import { type AnySvelteComponent, Icon, IconSize } from '@hanzo/ui'
+  import { getClient } from '@hanzo/presentation'
+  import { Doc } from '@hanzo/core'
+  import { Asset } from '@hanzo/platform'
 
   import { classIcon, getDocLinkTitle } from '../utils'
 

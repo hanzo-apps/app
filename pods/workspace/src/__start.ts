@@ -1,12 +1,12 @@
 //
 // Copyright © 2023 Hardcore Engineering Inc.
 //
-import { Analytics } from '@hcengineering/analytics'
-import { configureAnalytics, SplitLogger } from '@hcengineering/analytics-service'
-import { MeasureMetricsContext, newMetrics, type Tx } from '@hcengineering/core'
-import builder, { getModelVersion, migrateOperations } from '@hcengineering/model-all'
-import { initStatisticsContext, loadBrandingMap } from '@hcengineering/server-core'
-import { serveWorkspaceAccount } from '@hcengineering/workspace-service'
+import { Analytics } from '@hanzo/analytics'
+import { configureAnalytics, SplitLogger } from '@hanzo/analytics-service'
+import { MeasureMetricsContext, newMetrics, type Tx } from '@hanzo/core'
+import builder, { getModelVersion, migrateOperations } from '@hanzo/model-all'
+import { initStatisticsContext, loadBrandingMap } from '@hanzo/server-core'
+import { serveWorkspaceAccount } from '@hanzo/workspace-service'
 import { join } from 'path'
 
 const enabled = (process.env.MODEL_ENABLED ?? '*').split(',').map((it) => it.trim())

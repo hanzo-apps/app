@@ -6,7 +6,7 @@
   TODO:
   * Add since to synchronization
 */
-import { Analytics } from '@hcengineering/analytics'
+import { Analytics } from '@hanzo/analytics'
 import core, {
   PersonId,
   AttachedData,
@@ -21,7 +21,7 @@ import core, {
   makeCollabId,
   makeCollabJsonId,
   makeDocCollabId
-} from '@hcengineering/core'
+} from '@hanzo/core'
 import github, {
   DocSyncInfo,
   GithubIntegrationRepository,
@@ -29,9 +29,9 @@ import github, {
   GithubProject,
   IntegrationRepositoryData,
   GithubIssue as TGithubIssue
-} from '@hcengineering/github'
-import task, { TaskType, calcRank } from '@hcengineering/task'
-import tracker, { Issue, IssuePriority } from '@hcengineering/tracker'
+} from '@hanzo/github'
+import task, { TaskType, calcRank } from '@hanzo/task'
+import tracker, { Issue, IssuePriority } from '@hanzo/tracker'
 import { Issue as GithubIssue, IssuesEvent, ProjectsV2ItemEvent } from '@octokit/webhooks-types'
 import { Octokit } from 'octokit'
 import config from '../config'
@@ -309,7 +309,7 @@ export class IssueSyncManager extends IssueSyncManagerBase implements DocSyncMan
         external: issueExternal,
         externalVersion: githubExternalSyncVersion,
         lastModified: new Date(issueExternal.updatedAt).getTime(),
-        addHulyLink: true
+        addHanzoLink: true
       })
 
       // We need trigger comments, if their sync data created before
@@ -335,7 +335,7 @@ export class IssueSyncManager extends IssueSyncManagerBase implements DocSyncMan
       return { needSync: githubSyncVersion }
     }
 
-    let needCreateConnectedAtHuly = info.addHulyLink === true
+    let needCreateConnectedAtHanzo = info.addHanzoLink === true
 
     if (
       (container.project.projectNodeId === undefined ||
@@ -410,13 +410,13 @@ export class IssueSyncManager extends IssueSyncManagerBase implements DocSyncMan
         url: issueExternal.url.toLowerCase(),
         githubNumber: issueExternal.number,
         lastModified: new Date(issueExternal.updatedAt).getTime(),
-        addHulyLink: false, // Do not need, since we create comment on Github about issue is connected.
+        addHanzoLink: false, // Do not need, since we create comment on Github about issue is connected.
         current: {
           title: issueExternal.title,
           description: await this.provider.getMarkup(container.container, issueExternal.body, this.stripGuestLink)
         }
       }
-      needCreateConnectedAtHuly = true
+      needCreateConnectedAtHanzo = true
       await derivedClient.update(info, update)
       info.external = update.external
       info.externalVersion = update.externalVersion
@@ -461,8 +461,8 @@ export class IssueSyncManager extends IssueSyncManagerBase implements DocSyncMan
       }
     }
 
-    if (existing !== undefined && issueExternal !== undefined && needCreateConnectedAtHuly) {
-      await this.addHulyLink(info, syncResult, existing, issueExternal, container)
+    if (existing !== undefined && issueExternal !== undefined && needCreateConnectedAtHanzo) {
+      await this.addHanzoLink(info, syncResult, existing, issueExternal, container)
     }
 
     return {

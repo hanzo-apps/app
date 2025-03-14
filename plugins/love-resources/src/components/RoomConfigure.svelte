@@ -13,12 +13,12 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import contact, { Contact, Person } from '@hcengineering/contact'
-  import { AssigneeBox, personByIdStore } from '@hcengineering/contact-resources'
-  import { Ref } from '@hcengineering/core'
-  import { getClient } from '@hcengineering/presentation'
-  import { ActionIcon, EditBox, Icon, IconDelete, resizeObserver } from '@hcengineering/ui'
-  import { Room, RoomAccess, RoomType, isOffice } from '@hcengineering/love'
+  import contact, { Contact, Person } from '@hanzo/contact'
+  import { AssigneeBox, personByIdStore } from '@hanzo/contact-resources'
+  import { Ref } from '@hanzo/core'
+  import { getClient } from '@hanzo/presentation'
+  import { ActionIcon, EditBox, Icon, IconDelete, resizeObserver } from '@hanzo/ui'
+  import { Room, RoomAccess, RoomType, isOffice } from '@hanzo/love'
   import { createEventDispatcher, onMount } from 'svelte'
   import { cubicOut } from 'svelte/easing'
   import { tweened } from 'svelte/motion'
@@ -176,9 +176,9 @@
   class:dragged={top !== undefined || left !== undefined}
   class:placed
   style={dragStyle}
-  style:--huly-floor-roomWidth={room.width}
-  style:--huly-floor-roomHeight={room.height}
-  style:--huly-floor-roomShadow={`var(--theme-popup-shadow), ${$shadow.x}px ${$shadow.y}px ${$shadow.r}px ${$shadow.s}px rgba(${$shadowColor.r}, ${$shadowColor.g}, ${$shadowColor.b}, ${$shadowColor.a})`}
+  style:--hanzo-floor-roomWidth={room.width}
+  style:--hanzo-floor-roomHeight={room.height}
+  style:--hanzo-floor-roomShadow={`var(--theme-popup-shadow), ${$shadow.x}px ${$shadow.y}px ${$shadow.r}px ${$shadow.s}px rgba(${$shadowColor.r}, ${$shadowColor.g}, ${$shadowColor.b}, ${$shadowColor.a})`}
   style:grid-column={`${room.x + 2} / span ${room.width}`}
   style:grid-row={`${room.y + 2} / span ${room.height}`}
   style:grid-template-columns={`repeat(${room.width}, 1fr)`}

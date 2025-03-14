@@ -13,7 +13,7 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { AccountRole, Ref, getCurrentAccount, hasAccountRole, WithLookup } from '@hcengineering/core'
+  import { AccountRole, Ref, getCurrentAccount, hasAccountRole, WithLookup } from '@hanzo/core'
   import ui, {
     Breadcrumb,
     Header,
@@ -23,11 +23,11 @@
     IconMaxWidth,
     IconMinWidth,
     Button
-  } from '@hcengineering/ui'
-  import { Floor, Room } from '@hcengineering/love'
+  } from '@hanzo/ui'
+  import { Floor, Room } from '@hanzo/love'
   import { createEventDispatcher } from 'svelte'
-  import { ViewletSelector } from '@hcengineering/view-resources'
-  import { Viewlet, ViewletPreference } from '@hcengineering/view'
+  import { ViewletSelector } from '@hanzo/view-resources'
+  import { Viewlet, ViewletPreference } from '@hanzo/view'
 
   import lovePlg from '../plugin'
   import { currentRoom, floors, loveUseMaxWidth } from '../stores'
@@ -51,7 +51,7 @@
   $: editable = hasAccountRole(me, AccountRole.Maintainer)
 </script>
 
-<div class="hulyComponent">
+<div class="hanzoComponent">
   <Header adaptive={'disabled'}>
     <Breadcrumb title={selectedFloor?.name ?? ''} size={'large'} isCurrent />
     <svelte:fragment slot="beforeTitle">
@@ -76,7 +76,7 @@
       {/if}
     </svelte:fragment>
   </Header>
-  <div class="hulyComponent-content__column content">
+  <div class="hanzoComponent-content__column content">
     {#if viewlet?.$lookup?.descriptor?.component}
       <Component is={viewlet.$lookup.descriptor.component} props={{ floor, rooms }} on:open />
     {/if}

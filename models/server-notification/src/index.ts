@@ -14,15 +14,15 @@
 // limitations under the License.
 //
 
-import { type Builder, Mixin, Model } from '@hcengineering/model'
+import { type Builder, Mixin, Model } from '@hanzo/model'
 
-import contact from '@hcengineering/contact'
-import core, { type Ref } from '@hcengineering/core'
-import { TClass, TDoc } from '@hcengineering/model-core'
-import { TNotificationType } from '@hcengineering/model-notification'
-import notification, { type NotificationProvider } from '@hcengineering/notification'
-import { type Resource } from '@hcengineering/platform'
-import serverCore from '@hcengineering/server-core'
+import contact from '@hanzo/contact'
+import core, { type Ref } from '@hanzo/core'
+import { TClass, TDoc } from '@hanzo/model-core'
+import { TNotificationType } from '@hanzo/model-notification'
+import notification, { type NotificationProvider } from '@hanzo/notification'
+import { type Resource } from '@hanzo/platform'
+import serverCore from '@hanzo/server-core'
 import serverNotification, {
   type HTMLPresenter,
   type NotificationContentProvider,
@@ -33,9 +33,9 @@ import serverNotification, {
   type TextPresenter,
   type TypeMatch,
   type TypeMatchFunc
-} from '@hcengineering/server-notification'
+} from '@hanzo/server-notification'
 
-export { serverNotificationId } from '@hcengineering/server-notification'
+export { serverNotificationId } from '@hanzo/server-notification'
 
 @Mixin(serverNotification.mixin.HTMLPresenter, core.class.Class)
 export class THTMLPresenter extends TClass implements HTMLPresenter {

@@ -15,7 +15,7 @@
 
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import type { Asset, IntlString } from '@hcengineering/platform'
+  import type { Asset, IntlString } from '@hanzo/platform'
   import type { ComponentType } from 'svelte'
   import type { AnySvelteComponent } from '../types'
   import { getTreeCollapsed, setTreeCollapsed } from '../location'
@@ -65,9 +65,9 @@
   $: updateDurationLabel(duration)
 </script>
 
-<div class="hulyAccordionItem-container {kind}" class:nested>
+<div class="hanzoAccordionItem-container {kind}" class:nested>
   <button
-    class="hulyAccordionItem-header {kind} {size}"
+    class="hanzoAccordionItem-header {kind} {size}"
     class:bottomSpace
     class:nested
     class:disabled
@@ -81,23 +81,23 @@
     on:click|stopPropagation={handleClick}
   >
     <div
-      class="hulyAccordionItem-header__label-wrapper {size === 'large' ? 'heading-medium-16' : 'font-medium-12'}"
+      class="hanzoAccordionItem-header__label-wrapper {size === 'large' ? 'heading-medium-16' : 'font-medium-12'}"
       class:withIcon={size === 'medium' && icon !== undefined}
     >
       {#if size === 'large' && !disabled}
-        <div class="hulyAccordionItem-header__chevron">
+        <div class="hanzoAccordionItem-header__chevron">
           <Icon icon={IconChevronRight} size={'small'} />
         </div>
       {/if}
       {#if size !== 'small' && icon !== undefined && !disabled}
-        <div class="hulyAccordionItem-header__chevron">
+        <div class="hanzoAccordionItem-header__chevron">
           <Icon {icon} size={size === 'medium' ? 'small' : 'medium'} {iconProps} />
         </div>
       {/if}
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div
-        class="hulyAccordionItem-header__label"
+        class="hanzoAccordionItem-header__label"
         on:click|stopPropagation={() => {
           if (selectable) dispatch('select')
           else handleClick()
@@ -108,25 +108,25 @@
         <slot name="title" />
       </div>
       {#if counter !== false && ($$slots.counter || typeof counter === 'number')}
-        <span class="hulyAccordionItem-header__separator">•</span>
-        <span class="hulyAccordionItem-header__counter">
+        <span class="hanzoAccordionItem-header__separator">•</span>
+        <span class="hanzoAccordionItem-header__counter">
           {#if typeof counter === 'number'}{counter}{/if}
           <slot name="counter" />
         </span>
       {/if}
       {#if duration !== false && ($$slots.duration || duration !== 0)}
-        <span class="hulyAccordionItem-header__separator">•</span>
-        <span class="hulyAccordionItem-header__duration">
+        <span class="hanzoAccordionItem-header__separator">•</span>
+        <span class="hanzoAccordionItem-header__duration">
           {#if typeof duration === 'number' && durationLabel !== ''}{durationLabel}{/if}
           <slot name="duration" />
         </span>
       {/if}
     </div>
-    <div class="hulyAccordionItem-header__tools">
+    <div class="hanzoAccordionItem-header__tools">
       <slot name="actions" />
     </div>
   </button>
-  <div class="hulyAccordionItem-content" style:align-items={contentAlign}>
+  <div class="hanzoAccordionItem-content" style:align-items={contentAlign}>
     <slot />
   </div>
 </div>

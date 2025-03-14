@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-import type { Asset, Resource } from '@hcengineering/platform'
+import type { Asset, Resource } from '@hanzo/platform'
 
 import type { KeysByType } from 'simplytyped'
 import type { Association, AttachedDoc, Class, Doc, Ref, Space } from './classes'

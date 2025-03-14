@@ -13,8 +13,8 @@
 // limitations under the License.
 //
 
-import { addStringsLoader, loadMetadata } from '@hcengineering/platform'
-import survey, { surveyId } from '@hcengineering/survey'
+import { addStringsLoader, loadMetadata } from '@hanzo/platform'
+import survey, { surveyId } from '@hanzo/survey'
 
 const icons = require('../assets/icons.svg') as string // eslint-disable-line
 loadMetadata(survey.icon, {

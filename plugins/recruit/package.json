@@ -1,5 +1,5 @@
 {
-  "name": "@hcengineering/recruit",
+  "name": "@hanzo/recruit",
   "version": "0.6.29",
   "main": "lib/index.js",
   "svelte": "src/index.ts",
@@ -22,7 +22,7 @@
     "_phase:validate": "compile validate"
   },
   "devDependencies": {
-    "@hcengineering/platform-rig": "^0.6.0",
+    "@hanzo/platform-rig": "^0.6.0",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-promise": "^6.1.1",
@@ -37,17 +37,17 @@
     "@types/jest": "^29.5.5"
   },
   "dependencies": {
-    "@hcengineering/platform": "^0.6.11",
-    "@hcengineering/core": "^0.6.32",
-    "@hcengineering/contact": "^0.6.24",
-    "@hcengineering/chunter": "^0.6.20",
-    "@hcengineering/survey": "^0.6.0",
-    "@hcengineering/task": "^0.6.20",
-    "@hcengineering/calendar": "^0.6.24",
-    "@hcengineering/ui": "^0.6.15",
-    "@hcengineering/tags": "^0.6.16"
+    "@hanzo/platform": "^0.6.11",
+    "@hanzo/core": "^0.6.32",
+    "@hanzo/contact": "^0.6.24",
+    "@hanzo/chunter": "^0.6.20",
+    "@hanzo/survey": "^0.6.0",
+    "@hanzo/task": "^0.6.20",
+    "@hanzo/calendar": "^0.6.24",
+    "@hanzo/ui": "^0.6.15",
+    "@hanzo/tags": "^0.6.16"
   },
-  "repository": "https://github.com/hcengineering/platform",
+  "repository": "https://github.com/hanzo/platform",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   }

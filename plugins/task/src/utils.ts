@@ -27,12 +27,12 @@ import core, {
   type AnyAttribute,
   type Rank,
   type RefTo
-} from '@hcengineering/core'
-import { PlatformError, getEmbeddedLabel, unknownStatus } from '@hcengineering/platform'
+} from '@hanzo/core'
+import { PlatformError, getEmbeddedLabel, unknownStatus } from '@hanzo/platform'
 import task, { Project, ProjectStatus, ProjectType, Task, TaskType } from '.'
-import { makeRank } from '@hcengineering/rank'
+import { makeRank } from '@hanzo/rank'
 
-export { genRanks, makeRank } from '@hcengineering/rank'
+export { genRanks, makeRank } from '@hanzo/rank'
 
 /**
  * @deprecated Prefer {@link makeRank}

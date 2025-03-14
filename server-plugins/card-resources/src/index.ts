@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-import card, { Card, DOMAIN_CARD, MasterTag, Tag } from '@hcengineering/card'
+import card, { Card, DOMAIN_CARD, MasterTag, Tag } from '@hanzo/card'
 import core, {
   AnyAttribute,
   Class,
@@ -25,10 +25,10 @@ import core, {
   TxProcessor,
   TxRemoveDoc,
   TxUpdateDoc
-} from '@hcengineering/core'
-import { TriggerControl } from '@hcengineering/server-core'
-import view from '@hcengineering/view'
-import setting from '@hcengineering/setting'
+} from '@hanzo/core'
+import { TriggerControl } from '@hanzo/server-core'
+import view from '@hanzo/view'
+import setting from '@hanzo/setting'
 
 async function OnAttribute (ctx: TxCreateDoc<AnyAttribute>[], control: TriggerControl): Promise<Tx[]> {
   const attr = TxProcessor.createDoc2Doc(ctx[0])

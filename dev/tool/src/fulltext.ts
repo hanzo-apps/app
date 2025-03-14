@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-import { type MeasureContext } from '@hcengineering/core'
+import { type MeasureContext } from '@hanzo/core'
 
 export async function reindexWorkspace (ctx: MeasureContext, fulltextUrl: string, token: string): Promise<void> {
   try {

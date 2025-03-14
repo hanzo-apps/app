@@ -13,10 +13,10 @@
 // limitations under the License.
 //
 
-import lead, { leadId } from '@hcengineering/lead'
-import { type IntlString, mergeIds, type Resource } from '@hcengineering/platform'
-import { type Client, type Doc, type Ref } from '@hcengineering/core'
-import { type AnyComponent } from '@hcengineering/ui/src/types'
+import lead, { leadId } from '@hanzo/lead'
+import { type IntlString, mergeIds, type Resource } from '@hanzo/platform'
+import { type Client, type Doc, type Ref } from '@hanzo/core'
+import { type AnyComponent } from '@hanzo/ui/src/types'
 
 export default mergeIds(leadId, lead, {
   string: {

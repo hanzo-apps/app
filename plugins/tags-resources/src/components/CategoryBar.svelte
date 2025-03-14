@@ -13,10 +13,10 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { Class, Doc, Ref, SortingOrder } from '@hcengineering/core'
-  import { createQuery } from '@hcengineering/presentation'
-  import { TagCategory, TagElement } from '@hcengineering/tags'
-  import { ModernButton, getPlatformColorForTextDef, showPopup, themeStore, ScrollerBar } from '@hcengineering/ui'
+  import { Class, Doc, Ref, SortingOrder } from '@hanzo/core'
+  import { createQuery } from '@hanzo/presentation'
+  import { TagCategory, TagElement } from '@hanzo/tags'
+  import { ModernButton, getPlatformColorForTextDef, showPopup, themeStore, ScrollerBar } from '@hanzo/ui'
   import { createEventDispatcher } from 'svelte'
   import tags from '../plugin'
   import { getTagStyle, TagElementInfo } from '../utils'
@@ -132,7 +132,7 @@
 </script>
 
 {#if visibleCategories.length > 1}
-  <div class="hulyHeader-container clearPadding justify-between flex-gap-4">
+  <div class="hanzoHeader-container clearPadding justify-between flex-gap-4">
     <ModernButton
       label={tags.string.AllCategories}
       kind={'tertiary'}

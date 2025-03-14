@@ -8,20 +8,20 @@ export class PlanningNavigationMenuPage {
   }
 
   readonly buttonToDoAll = (): Locator =>
-    this.page.locator('button[class*="hulyNavItem-container"] span[class*="hulyNavItem-label"]', {
+    this.page.locator('button[class*="hanzoNavItem-container"] span[class*="hanzoNavItem-label"]', {
       hasText: 'All'
     })
 
   readonly buttonToDoUnplanned = (): Locator =>
-    this.page.locator('button[class*="hulyNavItem-container"] span[class*="hulyNavItem-label"]', {
+    this.page.locator('button[class*="hanzoNavItem-container"] span[class*="hanzoNavItem-label"]', {
       hasText: 'Unplanned'
     })
 
   readonly buttonToDoPlanned = (): Locator =>
-    this.page.locator('button[class*="hulyNavItem-container"] span[class*="hulyNavItem-label"]:text-is("Planned")')
+    this.page.locator('button[class*="hanzoNavItem-container"] span[class*="hanzoNavItem-label"]:text-is("Planned")')
 
   readonly accordionContainerToDoUnplanned = (): Locator =>
-    this.page.locator('div.toDos-container div.hulyAccordionItem-container', { hasText: 'Unplanned' })
+    this.page.locator('div.toDos-container div.hanzoAccordionItem-container', { hasText: 'Unplanned' })
 
   async clickOnButtonToDoAll (): Promise<void> {
     await this.buttonToDoAll().click()
@@ -37,10 +37,10 @@ export class PlanningNavigationMenuPage {
 
   async compareCountersUnplannedToDos (): Promise<void> {
     const navCount = parseInt(
-      await this.buttonToDoUnplanned().locator('xpath=..').locator('span.hulyNavItem-count').innerText(),
+      await this.buttonToDoUnplanned().locator('xpath=..').locator('span.hanzoNavItem-count').innerText(),
       10
     )
-    const accCount = await this.accordionContainerToDoUnplanned().locator('button.hulyToDoLine-container').count()
+    const accCount = await this.accordionContainerToDoUnplanned().locator('button.hanzoToDoLine-container').count()
     expect(accCount).toBe(navCount)
   }
 }

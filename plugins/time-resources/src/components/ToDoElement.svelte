@@ -13,12 +13,12 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import { SortingOrder, WithLookup } from '@hcengineering/core'
-  import { createQuery, getClient } from '@hcengineering/presentation'
-  import tags from '@hcengineering/tags'
-  import { Component, IconMoreV2, Spinner, showPanel, Icon } from '@hcengineering/ui'
-  import { showMenu } from '@hcengineering/view-resources'
-  import time, { ToDo, ToDoPriority, WorkSlot } from '@hcengineering/time'
+  import { SortingOrder, WithLookup } from '@hanzo/core'
+  import { createQuery, getClient } from '@hanzo/presentation'
+  import tags from '@hanzo/tags'
+  import { Component, IconMoreV2, Spinner, showPanel, Icon } from '@hanzo/ui'
+  import { showMenu } from '@hanzo/view-resources'
+  import time, { ToDo, ToDoPriority, WorkSlot } from '@hanzo/time'
   import plugin from '../plugin'
   import ToDoDuration from './ToDoDuration.svelte'
   import WorkItemPresenter from './WorkItemPresenter.svelte'
@@ -68,7 +68,7 @@
 </script>
 
 <button
-  class="hulyToDoLine-container"
+  class="hanzoToDoLine-container"
   class:hovered
   class:isDone
   on:click|stopPropagation={open}
@@ -77,18 +77,18 @@
   }}
 >
   <div class="flex-row-center flex-grow flex-gap-2">
-    <div class="hulyToDoLine-statusPriority" class:isNew>
+    <div class="hanzoToDoLine-statusPriority" class:isNew>
       {#if updating !== undefined}
         <Spinner size={'small'} />
       {:else}
-        <button class="hulyToDoLine-dragbox" on:contextmenu={onMenuClick}>
+        <button class="hanzoToDoLine-dragbox" on:contextmenu={onMenuClick}>
           <Icon icon={IconMoreV2} size={'small'} />
         </button>
         <ToDoPriorityPresenter value={todo.priority} muted={isDone} />
       {/if}
     </div>
     <WorkItemPresenter {todo} kind={'todo-line'} withoutSpace />
-    <div class="hulyToDoLine-title text-left font-regular-14 line-height-auto overflow-label">
+    <div class="hanzoToDoLine-title text-left font-regular-14 line-height-auto overflow-label">
       {todo.title}
     </div>
   </div>
@@ -112,7 +112,7 @@
       </span>
     {/if}
   </div>
-  <div class="hulyToDoLine-checkbox" class:updating>
+  <div class="hanzoToDoLine-checkbox" class:updating>
     <ToDoCheckbox checked={isDone} priority={todo.priority} on:value={markDone} />
   </div>
 </button>

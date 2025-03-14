@@ -13,8 +13,8 @@
 // limitations under the License.
 -->
 <script lang="ts">
-  import core, { Enum } from '@hcengineering/core'
-  import presentation, { getClient, MessageBox } from '@hcengineering/presentation'
+  import core, { Enum } from '@hanzo/core'
+  import presentation, { getClient, MessageBox } from '@hanzo/presentation'
   import {
     IconAdd,
     IconAttachment,
@@ -28,14 +28,14 @@
     IconMoreV2,
     eventToHTMLElement,
     ModernPopup
-  } from '@hcengineering/ui'
-  import type { DropdownIntlItem } from '@hcengineering/ui'
+  } from '@hanzo/ui'
+  import type { DropdownIntlItem } from '@hanzo/ui'
   import { createEventDispatcher } from 'svelte'
   import setting from '../plugin'
   import EnumValuesList from './EnumValuesList.svelte'
   import IconBulletList from './icons/BulletList.svelte'
   import Report from './icons/Report.svelte'
-  import { IntlString } from '@hcengineering/platform'
+  import { IntlString } from '@hanzo/platform'
 
   export let value: Enum | undefined
   export let name: string = value?.name ?? ''
@@ -224,7 +224,7 @@
     <ModernEditbox bind:value={name} label={setting.string.EnumTitle} kind={'ghost'} size={'large'} width={'100%'} />
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div
-      class="hulyTableAttr-container mt-6"
+      class="hanzoTableAttr-container mt-6"
       class:dragDropZone={dragover}
       on:dragover|preventDefault={() => {
         dragover = true
@@ -234,7 +234,7 @@
       }}
       on:drop|preventDefault|stopPropagation={fileDrop}
     >
-      <div class="hulyTableAttr-header font-medium-12">
+      <div class="hanzoTableAttr-header font-medium-12">
         <IconBulletList size={'small'} />
         <span><Label label={setting.string.Options} /></span>
         <div class="buttons-group tertiary-textColor">
@@ -265,7 +265,7 @@
         </div>
       </div>
       {#if values.length > 0 || newItem}
-        <div class="hulyTableAttr-content options">
+        <div class="hanzoTableAttr-content options">
           <EnumValuesList
             bind:values
             on:update={(e) => {
@@ -276,11 +276,11 @@
             }}
           />
           {#if newItem}
-            <div class="hulyTableAttr-content__row hovered">
-              <div class="hulyTableAttr-content__row-dragMenu">
+            <div class="hanzoTableAttr-content__row hovered">
+              <div class="hanzoTableAttr-content__row-dragMenu">
                 <IconMoreV2 size={'small'} />
               </div>
-              <div class="hulyTableAttr-content__row-label font-regular-14 accent grow">
+              <div class="hanzoTableAttr-content__row-label font-regular-14 accent grow">
                 <ModernEditbox
                   kind={'ghost'}
                   size={'small'}
@@ -298,7 +298,7 @@
                 />
               </div>
               {#if matched}
-                <div class="hulyChip-item error font-medium-12">
+                <div class="hanzoChip-item error font-medium-12">
                   <Label label={presentation.string.Match} />
                 </div>
               {/if}

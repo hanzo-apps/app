@@ -22,7 +22,7 @@ import {
   AccountRole,
   type Version,
   type Data
-} from '@hcengineering/core'
+} from '@hanzo/core'
 import {
   MongoDbCollection,
   AccountMongoDbCollection,

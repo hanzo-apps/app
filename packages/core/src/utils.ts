@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-import { getEmbeddedLabel, IntlString } from '@hcengineering/platform'
+import { getEmbeddedLabel, IntlString } from '@hanzo/platform'
 import { deepEqual } from 'fast-equals'
 import { DOMAIN_BENCHMARK } from './benchmark'
 import {
