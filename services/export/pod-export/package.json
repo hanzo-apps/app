@@ -9,7 +9,7 @@
     "types/**/*",
     "tsconfig.json"
   ],
-  "author": "Hardcore Engineering Inc.",
+  "author": "Hanzo Industries Inc.",
   "scripts": {
     "build": "compile",
     "build:watch": "compile",
@@ -18,9 +18,9 @@
     "_phase:docker-build": "rushx docker:build",
     "_phase:docker-staging": "rushx docker:staging",
     "bundle": "node ../../../common/scripts/esbuild.js --keep-names=true",
-    "docker:build": "../../../common/scripts/docker_build.sh hardcoreeng/export",
-    "docker:staging": "../../../common/scripts/docker_tag.sh hardcoreeng/export staging",
-    "docker:push": "../../../common/scripts/docker_tag.sh hardcoreeng/export",
+    "docker:build": "../../../common/scripts/docker_build.sh hanzoai/export",
+    "docker:staging": "../../../common/scripts/docker_tag.sh hanzoai/export staging",
+    "docker:push": "../../../common/scripts/docker_tag.sh hanzoai/export",
     "format": "format src",
     "_phase:build": "compile transpile src",
     "_phase:test": "jest --passWithNoTests --silent",

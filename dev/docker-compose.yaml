@@ -1,6 +1,6 @@
 services:
   stream: 
-    image: 'hardcoreeng/hanzo-stream'
+    image: 'hanzoai/hanzo-stream'
     extra_hosts:
       - 'hanzo.local:host-gateway'
     container_name: stream
@@ -74,7 +74,7 @@ services:
       test: curl -s http://localhost:9200/_cluster/health | grep -vq '"status":"red"'
     restart: unless-stopped
   account:
-    image: hardcoreeng/account
+    image: hanzoai/account
     extra_hosts:
       - 'hanzo.local:host-gateway'
     links:
@@ -110,7 +110,7 @@ services:
       # - DISABLE_SIGNUP=true
     restart: unless-stopped
   stats:
-    image: hardcoreeng/stats
+    image: hanzoai/stats
     extra_hosts:
       - 'hanzo.local:host-gateway'
     ports:
@@ -120,7 +120,7 @@ services:
       - SERVER_SECRET=secret
     restart: unless-stopped
   workspace:
-    image: hardcoreeng/workspace
+    image: hanzoai/workspace
     extra_hosts:
       - 'hanzo.local:host-gateway'
     links:
@@ -146,7 +146,7 @@ services:
       # - INIT_WORKSPACE=staging-dev
     restart: unless-stopped
   workspace_cockroach:
-    image: hardcoreeng/workspace
+    image: hanzoai/workspace
     extra_hosts:
       - 'hanzo.local:host-gateway'
     links:
@@ -173,7 +173,7 @@ services:
       # - INIT_WORKSPACE=staging-dev
     restart: unless-stopped
   collaborator:
-    image: hardcoreeng/collaborator
+    image: hanzoai/collaborator
     extra_hosts:
       - 'hanzo.local:host-gateway'
     links:
@@ -191,7 +191,7 @@ services:
       - STATS_URL=http://hanzo.local:4900
     restart: unless-stopped
   front:
-    image: hardcoreeng/front
+    image: hanzoai/front
     extra_hosts:
       - 'hanzo.local:host-gateway'
     links:
@@ -227,7 +227,7 @@ services:
       # - DISABLE_SIGNUP=true
     restart: unless-stopped
   transactor:
-    image: hardcoreeng/transactor
+    image: hanzoai/transactor
     extra_hosts:
       - 'hanzo.local:host-gateway'
     links:
@@ -265,7 +265,7 @@ services:
       - AI_BOT_URL=http://hanzo.local:4010
     restart: unless-stopped
   transactor_cockroach:
-    image: hardcoreeng/transactor
+    image: hanzoai/transactor
     extra_hosts:
       - 'hanzo.local:host-gateway'
     links:
@@ -300,7 +300,7 @@ services:
       - AI_BOT_URL=http://hanzo.local:4010
     restart: unless-stopped
   green:
-    image: hardcoreeng/green
+    image: hanzoai/green
     extra_hosts:
       - 'hanzo.local:host-gateway'
     links:
@@ -315,12 +315,12 @@ services:
       - DB_URL=postgresql://root@hanzo.local:26257/defaultdb?sslmode=disable
     restart: unless-stopped    
   rekoni:
-    image: hardcoreeng/rekoni-service
+    image: hanzoai/rekoni-service
     restart: unless-stopped
     ports:
       - 4004:4004
   fulltext:
-    image: hardcoreeng/fulltext
+    image: hanzoai/fulltext
     extra_hosts:
       - 'hanzo.local:host-gateway'
     restart: unless-stopped
@@ -339,7 +339,7 @@ services:
       - REKONI_URL=http://hanzo.local:4004
       - ACCOUNTS_URL=http://hanzo.local:3000
   fulltext_cockroach:
-    image: hardcoreeng/fulltext
+    image: hanzoai/fulltext
     extra_hosts:
       - 'hanzo.local:host-gateway'
     restart: unless-stopped
@@ -359,7 +359,7 @@ services:
       - REKONI_URL=http://hanzo.local:4004
       - ACCOUNTS_URL=http://hanzo.local:3000
   print:
-    image: hardcoreeng/print
+    image: hanzoai/print
     extra_hosts:
       - 'hanzo.local:host-gateway'
     restart: unless-stopped
@@ -371,7 +371,7 @@ services:
       - STATS_URL=http://hanzo.local:4900
       - ACCOUNTS_URL=http://hanzo.local:3000
   sign:
-    image: hardcoreeng/sign
+    image: hanzoai/sign
     extra_hosts:
       - 'hanzo.local:host-gateway'
     restart: unless-stopped
@@ -391,7 +391,7 @@ services:
       - BRANDING_PATH=/var/cfg/branding.json
       - STATS_URL=http://hanzo.local:4900
 #  analytics:
-#    image: hardcoreeng/analytics-collector
+#    image: hanzoai/analytics-collector
 #    extra_hosts:
 #      - 'hanzo.local:host-gateway'
 #    restart: unless-stopped
@@ -406,7 +406,7 @@ services:
 #      - ACCOUNTS_URL=http://hanzo.local:3000
 #      - STATS_URL=http://hanzo.local:4900
   aiBot:
-    image: hardcoreeng/ai-bot
+    image: hanzoai/ai-bot
     ports:
       - 4010:4010
     extra_hosts:
@@ -426,7 +426,7 @@ services:
 #      - LOVE_ENDPOINT=http://hanzo.local:8096
 #      - OPENAI_API_KEY=token
 #  telegram-bot:
-#    image: hardcoreeng/telegram-bot
+#    image: hanzoai/telegram-bot
 #   extra_hosts:
 #     - "hanzo.local:host-gateway"
 #    restart: unless-stopped
@@ -441,7 +441,7 @@ services:
 #      - SERVICE_ID=telegram-bot-service
 #      - STATS_URL=http://hanzo.local:4900
   export:
-    image: hardcoreeng/export
+    image: hanzoai/export
     extra_hosts:
       - 'hanzo.local:host-gateway'
     links:

@@ -4,7 +4,7 @@
   "main": "lib/index.js",
   "svelte": "src/index.ts",
   "types": "types/index.d.ts",
-  "author": "Anticrm Platform Contributors",
+  "author": "Hanzo Platform Contributors",
   "template": "@hanzo/node-package",
   "license": "EPL-2.0",
   "scripts": {

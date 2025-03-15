@@ -1,5 +1,5 @@
 //
-// Copyright @ 2024 Hardcore Engineering Inc.
+// Copyright @ 2024 Hanzo Industries Inc.
 //
 
 import { type Training, trainingPrefix, TrainingState } from '@hanzo/training'

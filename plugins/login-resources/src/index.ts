@@ -1,6 +1,6 @@
 //
-// Copyright © 2020, 2021 Anticrm Platform Contributors.
-// Copyright © 2021 Hardcore Engineering Inc.
+// Copyright © 2020, 2021 Hanzo Platform Contributors.
+// Copyright © 2021 Hanzo Industries Inc.
 //
 // Licensed under the Eclipse Public License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License. You may
@@ -32,9 +32,9 @@ import {
 import { type Pages, pages } from '@hanzo/login'
 export { pages, type Pages }
 /*!
- * Anticrm Platform™ Login Plugin
- * © 2020, 2021 Anticrm Platform Contributors.
- * © 2021 Hardcore Engineering Inc. All Rights Reserved.
+ * Hanzo Platform™ Login Plugin
+ * © 2020, 2021 Hanzo Platform Contributors.
+ * © 2021 Hanzo Industries Inc. All Rights Reserved.
  * Licensed under the Eclipse Public License, Version 2.0
  */
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type

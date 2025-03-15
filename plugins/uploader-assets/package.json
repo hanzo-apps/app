@@ -2,7 +2,7 @@
   "name": "@hanzo/uploader-assets",
   "version": "0.6.0",
   "main": "src/index.ts",
-  "author": "Hardcore Engineering Inc.",
+  "author": "Hanzo Industries Inc.",
   "template": "@hanzo/assets-package",
   "license": "EPL-2.0",
   "scripts": {

@@ -1,5 +1,5 @@
 //
-// Copyright © 2023 Hardcore Engineering Inc
+// Copyright © 2023 Hanzo Industries Inc
 //
 
 // Add this to the VERY top of the first file loaded in your app

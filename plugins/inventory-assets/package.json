@@ -2,7 +2,7 @@
   "name": "@hanzo/inventory-assets",
   "version": "0.6.11",
   "main": "src/index.ts",
-  "author": "Anticrm Platform Contributors",
+  "author": "Hanzo Platform Contributors",
   "template": "@hanzo/assets-package",
   "license": "EPL-2.0",
   "scripts": {

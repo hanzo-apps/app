@@ -1,5 +1,5 @@
 //
-// Copyright © 2023 Hardcore Engineering Inc.
+// Copyright © 2023 Hanzo Industries Inc.
 //
 
 import { type Ref } from '@hanzo/core'

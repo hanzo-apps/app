@@ -1,5 +1,5 @@
 //
-// Copyright © 2022 Hardcore Engineering Inc.
+// Copyright © 2022 Hanzo Industries Inc.
 //
 
 const child_process = require('child_process')

@@ -2,7 +2,7 @@
   "name": "@hanzo/questions-assets",
   "version": "0.1.0",
   "main": "src/index.ts",
-  "author": "Hardcore Engineering Inc",
+  "author": "Hanzo Industries Inc",
   "template": "@hanzo/assets-package",
   "scripts": {
     "build": "compile",

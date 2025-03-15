@@ -1,6 +1,6 @@
 /*!
-// Copyright © 2020, 2021 Anticrm Platform Contributors.
-// Copyright © 2021 Hardcore Engineering Inc.
+// Copyright © 2020, 2021 Hanzo Platform Contributors.
+// Copyright © 2021 Hanzo Industries Inc.
 //
 // Licensed under the Eclipse Public License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License. You may
@@ -35,7 +35,7 @@ export type Plugin = string & { __plugin: true }
  *
  * @remarks
  *
- * Almost anything in the Anticrm Platform is a `Resource`. Resources referenced by Platform Resource Identifier (PRI).
+ * Almost anything in the Hanzo Platform is a `Resource`. Resources referenced by Platform Resource Identifier (PRI).
  *
  * @example
  * ```typescript

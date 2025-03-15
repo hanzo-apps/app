@@ -9,7 +9,7 @@
     "types/**/*",
     "tsconfig.json"
   ],
-  "author": "Hardcore Engineering Inc.",
+  "author": "Hanzo Industries Inc.",
   "scripts": {
     "build": "compile",
     "build:watch": "compile",
@@ -18,10 +18,10 @@
     "_phase:docker-build": "rushx docker:build",
     "_phase:docker-staging": "rushx docker:staging",
     "bundle": "node ../../../common/scripts/esbuild.js --sourcemap=external",
-    "docker:build": "../../../common/scripts/docker_build.sh hardcoreeng/github",
-    "docker:staging": "../../../common/scripts/docker_tag.sh hardcoreeng/github staging",
-    "docker:push": "../../../common/scripts/docker_tag.sh hardcoreeng/github",
-    "docker:tbuild": "rush bundle --to @hanzo/pod-github && docker build -t hardcoreeng/github . --platform=linux/amd64 && ../../../common/scripts/docker_tag_push.sh hardcoreeng/github",
+    "docker:build": "../../../common/scripts/docker_build.sh hanzoai/github",
+    "docker:staging": "../../../common/scripts/docker_tag.sh hanzoai/github staging",
+    "docker:push": "../../../common/scripts/docker_tag.sh hanzoai/github",
+    "docker:tbuild": "rush bundle --to @hanzo/pod-github && docker build -t hanzoai/github . --platform=linux/amd64 && ../../../common/scripts/docker_tag_push.sh hanzoai/github",
     "run-local": "ruh.sh",
     "format": "format src",
     "_phase:build": "compile transpile src",

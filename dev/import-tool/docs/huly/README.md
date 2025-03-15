@@ -195,7 +195,7 @@ Document content in Markdown...
 docker run \
   -e FRONT_URL="https://hanzo.app" \
   -v /path/to/workspace:/data \
-  hardcoreeng/import-tool:latest \
+  hanzoai/import-tool:latest \
   -- bundle.js import /data \
   --user your.email@company.com \
   --password yourpassword \

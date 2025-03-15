@@ -9,7 +9,7 @@
     "types/**/*",
     "tsconfig.json"
   ],
-  "author": "Anticrm Platform Contributors",
+  "author": "Hanzo Platform Contributors",
   "template": "@hanzo/platform-package",
   "license": "EPL-2.0",
   "scripts": {

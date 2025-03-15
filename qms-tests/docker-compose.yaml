@@ -39,7 +39,7 @@ services:
       retries: 10
       test: curl -s http://localhost:9200/_cluster/health | grep -vq '"status":"red"'
   account:
-    image: hardcoreeng/account
+    image: hanzoai/account
     extra_hosts:
       - "hanzo.local:host-gateway"
     pull_policy: never
@@ -60,7 +60,7 @@ services:
       - MODEL_ENABLED=*
       - BRANDING_PATH=/var/cfg/branding-test.json
   workspace:
-    image: hardcoreeng/workspace
+    image: hanzoai/workspace
     extra_hosts:
       - "hanzo.local:host-gateway"
     links:
@@ -79,7 +79,7 @@ services:
       - BRANDING_PATH=/var/cfg/branding.json
     restart: unless-stopped
   front:
-    image: hardcoreeng/front
+    image: hanzoai/front
     extra_hosts:
       - "hanzo.local:host-gateway"
     pull_policy: never
@@ -110,7 +110,7 @@ services:
       - PRINT_URL=http://hanzo.local:4003
       - SIGN_URL=http://hanzo.local:4008
   transactor:
-    image: hardcoreeng/transactor
+    image: hanzoai/transactor
     extra_hosts:
       - "hanzo.local:host-gateway"
     pull_policy: never
@@ -138,7 +138,7 @@ services:
       - FULLTEXT_URL=http://fulltext:4710
       - BRANDING_PATH=/var/cfg/branding-test.json
   collaborator:
-    image: hardcoreeng/collaborator
+    image: hanzoai/collaborator
     extra_hosts:
       - "hanzo.local:host-gateway"
     links:
@@ -156,12 +156,12 @@ services:
       - STORAGE_CONFIG=${STORAGE_CONFIG}
     restart: unless-stopped 
   rekoni:
-    image: hardcoreeng/rekoni-service
+    image: hanzoai/rekoni-service
     restart: on-failure
     ports:
       - 4007:4004
   print:
-    image: hardcoreeng/print
+    image: hanzoai/print
     extra_hosts:
       - "hanzo.local:host-gateway"
     restart: unless-stopped
@@ -178,7 +178,7 @@ services:
         limits:
           memory: 300M
   sign:
-    image: hardcoreeng/sign
+    image: hanzoai/sign
     extra_hosts:
       - "hanzo.local:host-gateway"
     restart: unless-stopped
@@ -203,7 +203,7 @@ services:
         limits:
           memory: 300M
   fulltext:
-    image: hardcoreeng/fulltext
+    image: hanzoai/fulltext
     restart: unless-stopped
     links:
       - elastic

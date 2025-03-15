@@ -1,5 +1,5 @@
 <!--
-// Copyright © 2021, 2023 Anticrm Platform Contributors.
+// Copyright © 2021, 2023 Hanzo Platform Contributors.
 //
 // Licensed under the Eclipse Public License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License. You may

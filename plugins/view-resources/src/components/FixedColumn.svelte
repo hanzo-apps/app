@@ -1,7 +1,7 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!--
-// Copyright © 2020, 2021 Anticrm Platform Contributors.
-// Copyright © 2021 Hardcore Engineering Inc.
+// Copyright © 2020, 2021 Hanzo Platform Contributors.
+// Copyright © 2021 Hanzo Industries Inc.
 //
 // Licensed under the Eclipse Public License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License. You may

@@ -3,7 +3,7 @@
   "version": "0.6.0",
   "main": "lib/index.js",
   "types": "types/index.d.ts",
-  "author": "Anticrm Platform Contributors",
+  "author": "Hanzo Platform Contributors",
   "license": "EPL-2.0",
   "files": [
     "lib/**/*",
@@ -13,8 +13,8 @@
   "type": "module",
   "scripts": {
     "build": "node esbuild.config.js",
-    "docker:build": "../../../common/scripts/docker_build.sh hardcoreeng/love-agent",
-    "docker:push": "../../../common/scripts/docker_tag.sh hardcoreeng/love-agent",
+    "docker:build": "../../../common/scripts/docker_build.sh hanzoai/love-agent",
+    "docker:push": "../../../common/scripts/docker_tag.sh hanzoai/love-agent",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint --fix src/**/*.ts",
     "format": "prettier --write src/**/*.ts && pnpm lint:fix"

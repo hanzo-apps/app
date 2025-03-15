@@ -1,5 +1,5 @@
 //
-// Copyright © 2020, 2021 Anticrm Platform Contributors.
+// Copyright © 2020, 2021 Hanzo Platform Contributors.
 //
 // Licensed under the Eclipse Public License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License. You may
@@ -14,7 +14,7 @@
 //
 
 /**
- * Anticrm Platform Foundation Types
+ * Hanzo Platform Foundation Types
  * @packageDocumentation
  */
 

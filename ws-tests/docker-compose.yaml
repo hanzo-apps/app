@@ -47,7 +47,7 @@ services:
       retries: 10
       test: curl -s http://localhost:9200/_cluster/health | grep -vq '"status":"red"'
   account:
-    image: hardcoreeng/account
+    image: hanzoai/account
     pull_policy: never
     links:
       - mongodb
@@ -73,7 +73,7 @@ services:
       - BRANDING_PATH=/var/cfg/branding.json
       - STATS_URL=http://hanzo.local:4901
   workspace:
-    image: hardcoreeng/workspace
+    image: hanzoai/workspace
     extra_hosts:
       - 'hanzo.local:host-gateway'
     links:
@@ -95,7 +95,7 @@ services:
       - BACKUP_BUCKET=${BACKUP_BUCKET_NAME}
     restart: unless-stopped
   workspace_europe:
-    image: hardcoreeng/workspace
+    image: hanzoai/workspace
     extra_hosts:
       - 'hanzo.local:host-gateway'
     links:
@@ -117,7 +117,7 @@ services:
       - BACKUP_BUCKET=${BACKUP_BUCKET_NAME}
     restart: unless-stopped
   front:
-    image: hardcoreeng/front
+    image: hanzoai/front
     extra_hosts:
       - 'hanzo.local:host-gateway'
     pull_policy: never
@@ -149,7 +149,7 @@ services:
       - STATS_URL=http://hanzo.local:4901
       - STATS_API=http://hanzo.local:4901
   transactor:
-    image: hardcoreeng/transactor
+    image: hanzoai/transactor
     extra_hosts:
       - 'hanzo.local:host-gateway'
     pull_policy: never
@@ -180,7 +180,7 @@ services:
       - STATS_URL=http://hanzo.local:4901
       - ENABLE_COMPRESSION=true
   transactor-europe:
-    image: hardcoreeng/transactor
+    image: hanzoai/transactor
     extra_hosts:
       - 'hanzo.local:host-gateway'
     pull_policy: never
@@ -211,7 +211,7 @@ services:
       - STATS_URL=http://hanzo.local:4901
       - ENABLE_COMPRESSION=true
   collaborator:
-    image: hardcoreeng/collaborator
+    image: hanzoai/collaborator
     extra_hosts:
       - 'hanzo.local:host-gateway'
     links:
@@ -229,7 +229,7 @@ services:
       - STATS_URL=http://hanzo.local:4901
     restart: unless-stopped
   rekoni:
-    image: hardcoreeng/rekoni-service
+    image: hanzoai/rekoni-service
     extra_hosts:
       - 'hanzo.local:host-gateway'
     restart: on-failure
@@ -238,7 +238,7 @@ services:
     environment:
       - STATS_URL=http://hanzo.local:4901
   fulltext:
-    image: hardcoreeng/fulltext
+    image: hanzoai/fulltext
     extra_hosts:
       - 'hanzo.local:host-gateway'
     restart: unless-stopped
@@ -260,7 +260,7 @@ services:
       - ACCOUNTS_URL=http://hanzo.local:3003
       - STATS_URL=http://hanzo.local:4901
   fulltext-europe:
-    image: hardcoreeng/fulltext
+    image: hanzoai/fulltext
     extra_hosts:
       - 'hanzo.local:host-gateway'
     restart: unless-stopped
@@ -283,7 +283,7 @@ services:
       - ACCOUNTS_URL=http://hanzo.local:3003
       - STATS_URL=http://hanzo.local:4901
   stats:
-    image: hardcoreeng/stats
+    image: hanzoai/stats
     extra_hosts:
       - 'hanzo.local:host-gateway'
     ports:

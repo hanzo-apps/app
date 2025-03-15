@@ -1,5 +1,5 @@
 //
-// Copyright © 2023 Hardcore Engineering Inc.
+// Copyright © 2023 Hanzo Industries Inc.
 //
 //
 /* eslint-disable @typescript-eslint/no-unused-vars */

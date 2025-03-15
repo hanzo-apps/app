@@ -39,7 +39,7 @@ services:
       retries: 10
       test: curl -s http://localhost:9200/_cluster/health | grep -vq '"status":"red"'
   account:
-    image: hardcoreeng/account
+    image: hanzoai/account
     pull_policy: never
     links:
       - mongodb
@@ -60,7 +60,7 @@ services:
       - BRANDING_PATH=/var/cfg/branding.json
       - STATS_URL=http://stats:4901
   workspace:
-    image: hardcoreeng/workspace
+    image: hanzoai/workspace
     links:
       - mongodb
       - cockroach
@@ -78,7 +78,7 @@ services:
       - STATS_URL=http://stats:4901
     restart: unless-stopped
   front:
-    image: hardcoreeng/front
+    image: hanzoai/front
     pull_policy: never
     links:
       - account
@@ -108,7 +108,7 @@ services:
       - STATS_URL=http://stats:4901
       - STATS_API=http://localhost:4901
   transactor:
-    image: hardcoreeng/transactor
+    image: hanzoai/transactor
     pull_policy: never
     links:
       - mongodb
@@ -137,7 +137,7 @@ services:
       - STATS_URL=http://stats:4901
       - ENABLE_COMPRESSION=true
   collaborator:
-    image: hardcoreeng/collaborator
+    image: hanzoai/collaborator
     links:
       - mongodb
       - minio
@@ -153,7 +153,7 @@ services:
       - STATS_URL=http://stats:4901
     restart: unless-stopped
   rekoni:
-    image: hardcoreeng/rekoni-service
+    image: hanzoai/rekoni-service
     restart: on-failure
     ports:
       - 4007:4004
@@ -161,7 +161,7 @@ services:
       - STATS_URL=http://stats:4901
     
   fulltext:
-    image: hardcoreeng/fulltext
+    image: hanzoai/fulltext
     restart: unless-stopped
     links:
       - elastic
@@ -181,7 +181,7 @@ services:
       - ACCOUNTS_URL=http://account:3003
       - STATS_URL=http://stats:4901
   stats:
-    image: hardcoreeng/stats
+    image: hanzoai/stats
     ports:
       - 4901:4901
     environment:

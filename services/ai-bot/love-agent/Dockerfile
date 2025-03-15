@@ -1,4 +1,4 @@
-FROM hardcoreeng/base:v20250310
+FROM hanzoai/base:v20250310
 WORKDIR /usr/src/app
 
 RUN npm install -g pnpm

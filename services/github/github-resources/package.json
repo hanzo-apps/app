@@ -2,7 +2,7 @@
   "name": "@hanzo/github-resources",
   "version": "0.6.0",
   "main": "src/index.ts",
-  "author": "Hardcore Engineering Inc.",
+  "author": "Hanzo Industries Inc.",
   "scripts": {
     "build": "compile ui",
     "build:docs": "api-extractor run --local",

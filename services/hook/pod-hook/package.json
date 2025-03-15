@@ -9,7 +9,7 @@
     "types/**/*",
     "tsconfig.json"
   ],
-  "author": "Hardcore Engineering Inc.",
+  "author": "Hanzo Industries Inc.",
   "scripts": {
     "build": "compile",
     "build:watch": "compile",
@@ -18,10 +18,10 @@
     "_phase:docker-build": "rushx docker:build",
     "_phase:docker-staging": "rushx docker:staging",
     "bundle": "node ../../../common/scripts/esbuild.js",
-    "docker:build": "../../../common/scripts/docker_build.sh hardcoreeng/hook",
-    "docker:staging": "../../../common/scripts/docker_tag.sh hardcoreeng/hook staging",
-    "docker:abuild": "docker build -t hardcoreeng/hook . --platform=linux/arm64 && ../../../common/scripts/docker_tag_push.sh hardcoreeng/hook",
-    "docker:push": "../../../common/scripts/docker_tag.sh hardcoreeng/hook",
+    "docker:build": "../../../common/scripts/docker_build.sh hanzoai/hook",
+    "docker:staging": "../../../common/scripts/docker_tag.sh hanzoai/hook staging",
+    "docker:abuild": "docker build -t hanzoai/hook . --platform=linux/arm64 && ../../../common/scripts/docker_tag_push.sh hanzoai/hook",
+    "docker:push": "../../../common/scripts/docker_tag.sh hanzoai/hook",
     "run-local": "ts-node src/index.ts",
     "format": "format src",
     "_phase:build": "compile transpile src",

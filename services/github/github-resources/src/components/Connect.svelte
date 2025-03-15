@@ -1,6 +1,6 @@
 <!--
 //
-// Copyright © 2023 Hardcore Engineering Inc.
+// Copyright © 2023 Hanzo Industries Inc.
 //GithubIntegrationsGithubIntegrations
 -->
 <script lang="ts">

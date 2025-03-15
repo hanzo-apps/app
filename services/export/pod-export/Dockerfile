@@ -1,5 +1,5 @@
 
-FROM hardcoreeng/print-base:v20250113a
+FROM hanzoai/print-base:v20250113a
 WORKDIR /usr/src/app
 COPY bundle/bundle.js ./
 

@@ -1,5 +1,5 @@
 //
-// Copyright © 2024 Hardcore Engineering Inc.
+// Copyright © 2024 Hanzo Industries Inc.
 //
 // Licensed under the Eclipse Public License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License. You may
@@ -41,7 +41,7 @@ export async function createClient (
   setMetadata(client.metadata.ClientSocketFactory, (url) => {
     const socket = new WebSocket(url, {
       headers: {
-        'User-Agent': getMetadata(plugin.metadata.UserAgent) ?? 'Anticrm Client'
+        'User-Agent': getMetadata(plugin.metadata.UserAgent) ?? 'Hanzo Client'
       }
     })
     return socket

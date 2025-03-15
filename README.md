@@ -254,4 +254,4 @@ node ./common/scripts/bump.js -p projectName
 
 This project is tested with BrowserStack.
 
-<sub><sup>&copy; 2025 <a href="https://hardcoreeng.com">Hardcore Engineering Inc</a>.</sup></sub>
+<sub><sup>&copy; 2025 <a href="https://hanzoai.com">Hanzo Industries Inc</a>.</sup></sub>
