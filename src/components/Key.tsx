@@ -5,7 +5,7 @@ import colors from 'tailwindcss/colors'
 import {BlurView} from './BlurView'
 import {observer} from 'mobx-react-lite'
 import {useStore} from 'store'
-import {solNative} from 'lib/SolNative'
+import {hanzoNative} from 'lib/HanzoNative'
 
 interface IProps {
   title?: string

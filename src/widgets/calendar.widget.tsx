@@ -1,5 +1,5 @@
 import {Key} from 'components/Key'
-import {solNative} from 'lib/SolNative'
+import {hanzoNative} from 'lib/HanzoNative'
 import {DateTime} from 'luxon'
 import {observer} from 'mobx-react-lite'
 import React, {FC, useEffect} from 'react'
@@ -13,9 +13,9 @@ export let CalendarWidget: FC = observer(() => {
 
   useEffect(() => {
     if (focused) {
-      solNative.turnOnHorizontalArrowsListeners()
+      hanzoNative.turnOnHorizontalArrowsListeners()
     } else {
-      solNative.turnOffHorizontalArrowsListeners()
+      hanzoNative.turnOffHorizontalArrowsListeners()
     }
   }, [focused])
 
@@ -23,7 +23,7 @@ export let CalendarWidget: FC = observer(() => {
     return (
       <TouchableOpacity
         onPress={() => {
-          solNative.requestCalendarAccess().then(() => {
+          hanzoNative.requestCalendarAccess().then(() => {
             store.ui.getCalendarAccess()
           })
         }}>

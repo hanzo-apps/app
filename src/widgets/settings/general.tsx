@@ -1,7 +1,7 @@
 import { Input } from 'components/Input'
 import {MyRadioButton} from 'components/MyRadioButton'
 import {MySwitch} from 'components/MySwitch'
-import {solNative} from 'lib/SolNative'
+import {hanzoNative} from 'lib/HanzoNative'
 import {observer} from 'mobx-react-lite'
 import {ScrollView, Text, TouchableOpacity, View} from 'react-native'
 import {useStore} from 'store'
@@ -112,14 +112,14 @@ export const General = observer(() => {
           <TouchableOpacity
             onPress={async () => {
               try {
-                solNative.hideWindow()
-                let path = await solNative.openFilePicker()
+                hanzoNative.hideWindow()
+                let path = await hanzoNative.openFilePicker()
                 if (path) {
                   path = path.replace('file://', '')
                   path = decodeURI(path)
                   store.ui.addSearchFolder(path)
                 }
-                solNative.showWindow()
+                hanzoNative.showWindow()
               } catch (e) {}
             }}>
             <Text className="text-blue-500">Add folder</Text>

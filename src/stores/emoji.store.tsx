@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import {autorun, makeAutoObservable, runInAction, toJS} from 'mobx'
 import {IRootStore} from 'store'
 import {emojis as rawEmojis_} from '../lib/emojis'
-import {solNative} from 'lib/SolNative'
+import {hanzoNative} from 'lib/HanzoNative'
 import MiniSearch from 'minisearch'
 import {storage} from './storage'
 
@@ -176,7 +176,7 @@ export const createEmojiStore = (root: IRootStore) => {
         }
       }
 
-      solNative.insertToFrontmostApp(emojiChar)
+      hanzoNative.insertToFrontmostApp(emojiChar)
     },
   })
 

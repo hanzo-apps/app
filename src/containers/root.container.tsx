@@ -15,10 +15,20 @@ import {ScratchpadWidget} from 'widgets/scratchpad.widget'
 import {SearchWidget} from 'widgets/search.widget'
 import {SettingsWidget} from 'widgets/settings.widget'
 import {TranslationWidget} from 'widgets/translation.widget'
+import {AIWidget} from 'widgets/ai.widget'
 
 export const RootContainer = observer(() => {
   const store = useStore()
   const widget = store.ui.focusedWidget
+
+  // Show onboarding if not completed
+  if (store.ui.onboardingStep !== 'v1_completed' && store.ui.onboardingStep !== 'v1_skipped') {
+    return (
+      <View onLayout={store.ui.setWindowHeight}>
+        <OnboardingWidget />
+      </View>
+    )
+  }
 
   let subWindow = (
     <View
@@ -102,6 +112,14 @@ export const RootContainer = observer(() => {
     subWindow = (
       <View className="fullWindow">
         <ProcessesWidget />
+      </View>
+    )
+  }
+
+  if (widget === Widget.AI) {
+    subWindow = (
+      <View className="fullWindow">
+        <AIWidget />
       </View>
     )
   }

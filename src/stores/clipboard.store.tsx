@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import {solNative} from 'lib/SolNative'
+import {hanzoNative} from 'lib/HanzoNative'
 import {autorun, makeAutoObservable, runInAction, toJS} from 'mobx'
 import {EmitterSubscription} from 'react-native'
 import {IRootStore} from 'store'
@@ -83,12 +83,12 @@ export const createClipboardStore = (root: IRootStore) => {
     setSaveHistory: (v: boolean) => {
       store.saveHistory = v
       if (!v) {
-        solNative.securelyStore('@sol.clipboard_history_v2', '[]')
+        hanzoNative.securelyStore('@hanzo.clipboard_history_v2', '[]')
       }
     },
   })
 
-  onCopyListener = solNative.addListener('onTextCopied', store.onTextCopied)
+  onCopyListener = hanzoNative.addListener('onTextCopied', store.onTextCopied)
 
   const hydrate = async () => {
     let state: string | null | undefined
@@ -107,8 +107,8 @@ export const createClipboardStore = (root: IRootStore) => {
     }
 
     if (store.saveHistory) {
-      const entry = await solNative.securelyRetrieve(
-        '@sol.clipboard_history_v2',
+      const entry = await hanzoNative.securelyRetrieve(
+        '@hanzo.clipboard_history_v2',
       )
 
       if (entry) {
@@ -126,8 +126,8 @@ export const createClipboardStore = (root: IRootStore) => {
     if (store.saveHistory) {
       const history = toJS(store)
       try {
-        await solNative.securelyStore(
-          '@sol.clipboard_history_v2',
+        await hanzoNative.securelyStore(
+          '@hanzo.clipboard_history_v2',
           JSON.stringify(history.items),
         )
       } catch (e) {

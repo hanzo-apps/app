@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import {MainInput} from 'components/MainInput'
 import {useFullSize} from 'hooks/useFullSize'
-import {solNative} from 'lib/SolNative'
+import {hanzoNative} from 'lib/HanzoNative'
 import {observer} from 'mobx-react-lite'
 import React, {FC, useCallback, useEffect, useRef} from 'react'
 import {FlatList, Text, View, ViewStyle, TouchableOpacity} from 'react-native'
@@ -26,9 +26,9 @@ export const EmojisWidget: FC<Props> = observer(({style}) => {
   const emojis = store.emoji.emojis
 
   useEffect(() => {
-    solNative.turnOnHorizontalArrowsListeners()
+    hanzoNative.turnOnHorizontalArrowsListeners()
     return () => {
-      solNative.turnOffHorizontalArrowsListeners()
+      hanzoNative.turnOffHorizontalArrowsListeners()
     }
   }, [])
 

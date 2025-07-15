@@ -1,0 +1,186 @@
+.app {
+  @apply min-h-screen flex items-center justify-center p-0;
+  background: transparent;
+}
+
+.app-container {
+  @apply w-full max-w-2xl min-h-[400px] max-h-[80vh] overflow-hidden;
+}
+
+/* Widget base styles */
+.widget {
+  @apply p-6 animate-fade-in;
+}
+
+.widget-header {
+  @apply mb-4;
+}
+
+.widget-header h2 {
+  @apply text-2xl font-bold mb-1;
+}
+
+.widget-footer {
+  @apply mt-4 pt-4 border-t border-border text-center;
+}
+
+/* Search widget */
+.search-widget .search-form {
+  @apply mb-4;
+}
+
+.search-widget .search-input {
+  @apply w-full;
+}
+
+/* AI widget */
+.ai-widget {
+  @apply flex flex-col h-full;
+}
+
+.ai-messages {
+  @apply flex-1 overflow-y-auto mb-4 max-h-[400px];
+}
+
+.message {
+  @apply p-3 rounded-lg mb-2;
+}
+
+.user-message {
+  @apply bg-accent/20 ml-8;
+}
+
+.assistant-message {
+  @apply bg-secondary mr-8;
+}
+
+.message-content {
+  @apply text-sm leading-relaxed;
+}
+
+.ai-input-form {
+  @apply sticky bottom-0;
+}
+
+.ai-input {
+  @apply w-full input;
+}
+
+.loading-dots {
+  @apply flex gap-1;
+}
+
+.loading-dots span {
+  @apply animate-pulse;
+}
+
+.loading-dots span:nth-child(2) {
+  @apply animation-delay-100;
+}
+
+.loading-dots span:nth-child(3) {
+  @apply animation-delay-200;
+}
+
+/* Clipboard widget */
+.clipboard-items {
+  @apply space-y-2 overflow-y-auto max-h-[400px];
+}
+
+.clipboard-item {
+  @apply p-3 rounded-lg hover:bg-secondary/50 cursor-pointer transition-colors;
+}
+
+.clipboard-item.selected {
+  @apply bg-secondary;
+}
+
+.clipboard-item.pinned {
+  @apply border border-accent/30;
+}
+
+.item-text {
+  @apply text-sm mb-1;
+}
+
+.item-meta {
+  @apply flex items-center gap-2;
+}
+
+/* Emoji widget */
+.emoji-grid {
+  @apply grid grid-cols-10 gap-1 overflow-y-auto max-h-[400px];
+}
+
+.emoji-button {
+  @apply text-2xl p-2 rounded hover:bg-secondary/50 transition-colors cursor-pointer;
+}
+
+/* File search widget */
+.file-results {
+  @apply space-y-2 overflow-y-auto max-h-[400px];
+}
+
+.file-item {
+  @apply flex items-center;
+}
+
+.file-content {
+  @apply flex-1;
+}
+
+.file-name {
+  @apply font-medium mb-1;
+}
+
+/* Processes widget */
+.processes-list {
+  @apply space-y-2 overflow-y-auto max-h-[400px];
+}
+
+.process-item {
+  @apply flex items-center justify-between;
+}
+
+.process-info {
+  @apply flex-1;
+}
+
+.process-name {
+  @apply font-medium;
+}
+
+.process-stats {
+  @apply flex items-center;
+}
+
+/* Settings widget */
+.settings-form {
+  @apply space-y-4;
+}
+
+.setting-group {
+  @apply space-y-2;
+}
+
+.setting-label {
+  @apply block text-sm font-medium text-text-secondary;
+}
+
+.setting-input,
+.setting-select {
+  @apply w-full input;
+}
+
+.setting-actions {
+  @apply flex gap-2 mt-6;
+}
+
+/* Empty states */
+.empty-state {
+  @apply text-center py-8;
+}
+
+.empty-state p {
+  @apply text-text-secondary;
+}

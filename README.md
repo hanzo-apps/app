@@ -1,4 +1,4 @@
-# Sol
+# Hanzo App
 
 ![Header](Header.png)
 
@@ -9,22 +9,24 @@
   </a>
   <br/>
   <br/>
-  <a align="center" href="https://www.producthunt.com/posts/sol-2?utm_source=badge-top-post-badge&utm_medium=badge&utm_souce=badge-sol&#0045;2" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=336659&theme=dark&period=daily" alt="Sol - Open&#0032;source&#0032;macOS&#0032;command&#0032;palette | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+  <a align="center" href="https://hanzo.app" target="_blank">Visit Hanzo App</a>
 </div>
 
-Sol is an open source app launcher, focused on ease of use and speed. It has minimal configuration and runs natively.
+Hanzo App is an AI-powered command palette and local AI assistant for macOS. It merges the best of Sol's powerful app launcher capabilities with Jan's advanced local AI features, creating the ultimate productivity tool. Access Hanzo AI instantly with the Tab key.
 
-[Visit official site](https://sol.ospfranco.com)
+Copyright © 2025 Hanzo Industries Inc
+
+[Visit official site](https://hanzo.app)
 
 ## Download
 
 Install via brew
 
 ```
-brew install --cask sol
+brew install --cask hanzo
 ```
 
-Or manually download the latest [release](https://github.com/ospfranco/sol/tree/main/releases).
+Or manually download the latest [release](https://github.com/hanzoai/app/releases).
 
 ## Discord
 
@@ -34,26 +36,35 @@ https://discord.gg/W9XmqCQCKP
 
 ## Features
 
-- App search
+### AI Assistant (Hanzo Zen)
+- Press Tab to instantly access AI chat from anywhere
+- Powered by the Zen model
+- Context-aware assistance
+- Code generation and debugging
+- Natural language to action
+
+### Productivity Tools
+- App search and launch
 - Custom shortcuts
 - Google translate
-- Calendar
-- Show upcoming appointement in Menu Bar
+- Calendar integration
+- Show upcoming appointment in Menu Bar
 - Custom AppleScript commands
 - Custom links
-- Imports browser bookmarks
+- Browser bookmarks import
 - Window Manager
 - Emoji picker
 - Clipboard manager
 - Notes Scratchpad
+
+### Utilities
 - Retrieve Wi-Fi password
 - Show IP address
-- Start a google meet
+- Start a Google Meet
 - Switch OS theme
 - Process killer
 - Clear XCode Derived Data
-- Generate NanoID
-- Generate UUID
+- Generate NanoID/UUID
 - Generate lorem ipsum
 - Format and paste JSON
 - Forward media keys to Spotify/Apple Music

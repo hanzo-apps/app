@@ -1,4 +1,4 @@
-import {solNative} from 'lib/SolNative'
+import {hanzoNative} from 'lib/HanzoNative'
 import {observer} from 'mobx-react-lite'
 import {FC, useEffect} from 'react'
 import {TextInput, View} from 'react-native'
@@ -9,11 +9,11 @@ export const ScratchpadWidget: FC = observer(() => {
   let store = useStore()
 
   useEffect(() => {
-    solNative.turnOffVerticalArrowsListeners()
-    solNative.turnOffEnterListener()
+    hanzoNative.turnOffVerticalArrowsListeners()
+    hanzoNative.turnOffEnterListener()
     return () => {
-      solNative.turnOnEnterListener()
-      solNative.turnOnVerticalArrowsListeners()
+      hanzoNative.turnOnEnterListener()
+      hanzoNative.turnOnVerticalArrowsListeners()
     }
   }, [])
 

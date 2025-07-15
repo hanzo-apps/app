@@ -1,7 +1,7 @@
 import {Assets} from 'assets'
 import {IRootStore} from 'store'
 import {ItemType, Widget} from './ui.store'
-import {solNative} from 'lib/SolNative'
+import {hanzoNative} from 'lib/HanzoNative'
 import {Clipboard, Linking, Text, View} from 'react-native'
 import {FileIcon} from 'components/FileIcon'
 import {nanoid} from 'nanoid'
@@ -20,8 +20,8 @@ export function createBaseItems(store: IRootStore) {
       alias: 'dark',
       type: ItemType.CONFIGURATION,
       callback: () => {
-        solNative.toggleDarkMode()
-        solNative.restart()
+        hanzoNative.toggleDarkMode()
+        hanzoNative.restart()
       },
     },
     {
@@ -31,11 +31,11 @@ export function createBaseItems(store: IRootStore) {
       type: ItemType.CONFIGURATION,
       callback: async () => {
         try {
-          await solNative.executeAppleScript(
+          await hanzoNative.executeAppleScript(
             'tell application "Finder" to sleep',
           )
         } catch (e) {
-          solNative.showToast(`Could not sleep: ${e}`, 'error')
+          hanzoNative.showToast(`Could not sleep: ${e}`, 'error')
         }
       },
     },
@@ -46,12 +46,12 @@ export function createBaseItems(store: IRootStore) {
       type: ItemType.CONFIGURATION,
       callback: async () => {
         try {
-          await solNative.executeAppleScript(
+          await hanzoNative.executeAppleScript(
             'tell application "Finder" to restart',
           )
-          solNative.showToast('Restarting', 'success')
+          hanzoNative.showToast('Restarting', 'success')
         } catch (e) {
-          solNative.showToast(`Could not restart: ${e}`, 'error')
+          hanzoNative.showToast(`Could not restart: ${e}`, 'error')
         }
       },
     },
@@ -62,12 +62,12 @@ export function createBaseItems(store: IRootStore) {
       type: ItemType.CONFIGURATION,
       callback: async () => {
         try {
-          await solNative.executeAppleScript(
+          await hanzoNative.executeAppleScript(
             'tell application "Finder" to shut down',
           )
-          solNative.showToast('Shutting down', 'success')
+          hanzoNative.showToast('Shutting down', 'success')
         } catch (e) {
-          solNative.showToast(`Could not power off: ${e}`, 'error')
+          hanzoNative.showToast(`Could not power off: ${e}`, 'error')
         }
       },
     },
@@ -77,7 +77,7 @@ export function createBaseItems(store: IRootStore) {
       name: 'AirDrop',
       type: ItemType.CONFIGURATION,
       callback: () => {
-        solNative.executeAppleScript(`tell application "Finder"
+        hanzoNative.executeAppleScript(`tell application "Finder"
           if exists window "AirDrop" then
                   tell application "System Events" to ¬
                           tell application process "Finder" to ¬
@@ -104,18 +104,18 @@ export function createBaseItems(store: IRootStore) {
       type: ItemType.CONFIGURATION,
       callback: async () => {
         try {
-          await solNative.executeAppleScript(
+          await hanzoNative.executeAppleScript(
             `tell application "System Events" to keystroke "q" using {control down, command down}`,
           )
         } catch (e) {
-          solNative.showToast(`Could not lock: ${e}`, 'error')
+          hanzoNative.showToast(`Could not lock: ${e}`, 'error')
         }
       },
     },
     {
       id: 'settings',
       iconImage: Assets.SettingsIcon,
-      name: 'Sol Settings',
+      name: 'Hanzo Settings',
       alias: 'preferences',
       type: ItemType.CONFIGURATION,
       callback: () => {
@@ -146,7 +146,7 @@ export function createBaseItems(store: IRootStore) {
       name: 'Resize window to full-screen',
       type: ItemType.CONFIGURATION,
       callback: () => {
-        solNative.resizeFrontmostFullscreen()
+        hanzoNative.resizeFrontmostFullscreen()
       },
     },
     {
@@ -161,7 +161,7 @@ export function createBaseItems(store: IRootStore) {
       name: 'Resize window to right-half',
       type: ItemType.CONFIGURATION,
       callback: () => {
-        solNative.resizeFrontmostRightHalf()
+        hanzoNative.resizeFrontmostRightHalf()
       },
     },
     {
@@ -176,7 +176,7 @@ export function createBaseItems(store: IRootStore) {
       name: 'Resize window to left-half',
       type: ItemType.CONFIGURATION,
       callback: () => {
-        solNative.resizeFrontmostLeftHalf()
+        hanzoNative.resizeFrontmostLeftHalf()
       },
     },
     {
@@ -191,7 +191,7 @@ export function createBaseItems(store: IRootStore) {
       name: 'Resize window to top-half',
       type: ItemType.CONFIGURATION,
       callback: () => {
-        solNative.resizeFrontmostTopHalf()
+        hanzoNative.resizeFrontmostTopHalf()
       },
     },
     {
@@ -206,7 +206,7 @@ export function createBaseItems(store: IRootStore) {
       name: 'Resize window to bottom-half',
       type: ItemType.CONFIGURATION,
       callback: () => {
-        solNative.resizeFrontmostBottomHalf()
+        hanzoNative.resizeFrontmostBottomHalf()
       },
     },
     {
@@ -221,7 +221,7 @@ export function createBaseItems(store: IRootStore) {
       name: 'Resize window to top-left',
       type: ItemType.CONFIGURATION,
       callback: () => {
-        solNative.resizeTopLeft()
+        hanzoNative.resizeTopLeft()
       },
     },
     {
@@ -236,7 +236,7 @@ export function createBaseItems(store: IRootStore) {
       name: 'Resize window to top-right',
       type: ItemType.CONFIGURATION,
       callback: () => {
-        solNative.resizeTopRight()
+        hanzoNative.resizeTopRight()
       },
     },
     {
@@ -251,7 +251,7 @@ export function createBaseItems(store: IRootStore) {
       name: 'Resize window to bottom-left',
       type: ItemType.CONFIGURATION,
       callback: () => {
-        solNative.resizeBottomLeft()
+        hanzoNative.resizeBottomLeft()
       },
     },
     {
@@ -266,7 +266,7 @@ export function createBaseItems(store: IRootStore) {
       name: 'Resize window to bottom-right',
       type: ItemType.CONFIGURATION,
       callback: () => {
-        solNative.resizeBottomRight()
+        hanzoNative.resizeBottomRight()
       },
     },
     {
@@ -281,7 +281,7 @@ export function createBaseItems(store: IRootStore) {
       name: 'Move window to next screen',
       type: ItemType.CONFIGURATION,
       callback: () => {
-        solNative.moveFrontmostNextScreen()
+        hanzoNative.moveFrontmostNextScreen()
       },
     },
     {
@@ -296,7 +296,7 @@ export function createBaseItems(store: IRootStore) {
       name: 'Move window to previous screen',
       type: ItemType.CONFIGURATION,
       callback: () => {
-        solNative.moveFrontmostPrevScreen()
+        hanzoNative.moveFrontmostPrevScreen()
       },
     },
     {
@@ -311,7 +311,7 @@ export function createBaseItems(store: IRootStore) {
       name: 'Move window to center',
       type: ItemType.CONFIGURATION,
       callback: () => {
-        solNative.moveFrontmostCenter()
+        hanzoNative.moveFrontmostCenter()
       },
     },
     {
@@ -340,7 +340,7 @@ export function createBaseItems(store: IRootStore) {
       name: 'Check for updates',
       type: ItemType.CONFIGURATION,
       callback: () => {
-        solNative.checkForUpdates()
+        hanzoNative.checkForUpdates()
       },
     },
     {
@@ -429,7 +429,7 @@ export function createBaseItems(store: IRootStore) {
         try {
           await Linking.openURL('~/Developer')
         } catch (e) {
-          solNative.showToast(
+          hanzoNative.showToast(
             'Developer folder not found, try creating ~/Developer 😉',
             'error',
           )
@@ -455,7 +455,7 @@ export function createBaseItems(store: IRootStore) {
       callback: async () => {
         await Linking.openURL(`https://meet.google.com/new`)
 
-        solNative.executeAppleScript(`if application "Safari" is running then
+        hanzoNative.executeAppleScript(`if application "Safari" is running then
           delay 3
           tell application "Safari"
             set myurl to URL of front document as string
@@ -515,11 +515,11 @@ export function createBaseItems(store: IRootStore) {
       alias: 'Clear xcode',
       type: ItemType.CONFIGURATION,
       callback: async () => {
-        await solNative.executeBashScript(
+        await hanzoNative.executeBashScript(
           'rm -rf ~/Library/Developer/Xcode/DerivedData',
         )
 
-        solNative.showToast('Cleared', 'success')
+        hanzoNative.showToast('Cleared', 'success')
       },
     },
     {
@@ -529,8 +529,8 @@ export function createBaseItems(store: IRootStore) {
       type: ItemType.CONFIGURATION,
       callback: async () => {
         const id = nanoid()
-        solNative.pasteToFrontmostApp(id)
-        solNative.showToast('Generated and pasted', 'success')
+        hanzoNative.pasteToFrontmostApp(id)
+        hanzoNative.showToast('Generated and pasted', 'success')
       },
     },
     {
@@ -540,8 +540,8 @@ export function createBaseItems(store: IRootStore) {
       type: ItemType.CONFIGURATION,
       callback: async () => {
         const id = uuidv4()
-        solNative.pasteToFrontmostApp(id)
-        solNative.showToast('Generated and pasted', 'success')
+        hanzoNative.pasteToFrontmostApp(id)
+        hanzoNative.showToast('Generated and pasted', 'success')
       },
     },
     {
@@ -551,17 +551,17 @@ export function createBaseItems(store: IRootStore) {
       type: ItemType.CONFIGURATION,
       callback: async () => {
         const paragraph = chance.paragraph()
-        solNative.pasteToFrontmostApp(paragraph)
-        solNative.showToast('Generated', 'success')
+        hanzoNative.pasteToFrontmostApp(paragraph)
+        hanzoNative.showToast('Generated', 'success')
       },
     },
     {
       id: 'quit_sol',
       icon: '💀',
-      name: 'Quit/Exit Sol',
+      name: 'Quit/Exit Hanzo',
       type: ItemType.CONFIGURATION,
       callback: async () => {
-        solNative.quit()
+        hanzoNative.quit()
       },
     },
     {
@@ -574,11 +574,11 @@ export function createBaseItems(store: IRootStore) {
         if (latestString)
           try {
             latestString = JSON.parse(latestString)
-            solNative.pasteToFrontmostApp(JSON.stringify(latestString, null, 2))
-            solNative.showToast('Pasted!', 'success')
+            hanzoNative.pasteToFrontmostApp(JSON.stringify(latestString, null, 2))
+            hanzoNative.showToast('Pasted!', 'success')
           } catch (e) {
-            solNative.pasteToFrontmostApp(latestString)
-            solNative.showToast('Not a valid JSON', 'error')
+            hanzoNative.pasteToFrontmostApp(latestString)
+            hanzoNative.showToast('Not a valid JSON', 'error')
           }
       },
     },
@@ -589,7 +589,7 @@ export function createBaseItems(store: IRootStore) {
       type: ItemType.CONFIGURATION,
       callback: async () => {
         try {
-          solNative.executeAppleScript(`-- get list of open apps
+          hanzoNative.executeAppleScript(`-- get list of open apps
           tell application "System Events"
             set allApps to displayed name of (every process whose background only is false) as list
           end tell
@@ -606,7 +606,7 @@ export function createBaseItems(store: IRootStore) {
           end repeat
           `)
         } catch (e) {
-          solNative.showToast(
+          hanzoNative.showToast(
             `Could not kill all apps: ${e}. Be sure to give accessibility access`,
             'error',
           )
@@ -622,15 +622,15 @@ export function createBaseItems(store: IRootStore) {
       alias: 'wifi',
       callback: () => {
         try {
-          const res = solNative.getWifiPassword()
+          const res = hanzoNative.getWifiPassword()
           if (!res) {
-            solNative.showToast(`No password found`, 'error')
+            hanzoNative.showToast(`No password found`, 'error')
             return
           }
           Clipboard.setString(res.password)
-          solNative.showToast('Password copied to clipboard', 'success')
+          hanzoNative.showToast('Password copied to clipboard', 'success')
         } catch (e) {
-          solNative.showToast(`Could not retrieve password: ${e}`, 'error')
+          hanzoNative.showToast(`Could not retrieve password: ${e}`, 'error')
         }
       },
     },
@@ -642,16 +642,16 @@ export function createBaseItems(store: IRootStore) {
       alias: 'wifi',
       callback: () => {
         try {
-          const res = solNative.getWifiPassword()
+          const res = hanzoNative.getWifiPassword()
           if (!res) {
-            solNative.showToast(`Could not retrieve password`, 'success')
+            hanzoNative.showToast(`Could not retrieve password`, 'success')
             return
           }
 
           Clipboard.setString(res.password)
-          solNative.showWifiQR(res.ssid, res.password)
+          hanzoNative.showWifiQR(res.ssid, res.password)
         } catch (e) {
-          solNative.showToast(`Could not retrieve password: ${e}`, 'error')
+          hanzoNative.showToast(`Could not retrieve password: ${e}`, 'error')
         }
       },
     },
@@ -663,12 +663,12 @@ export function createBaseItems(store: IRootStore) {
       alias: 'trash',
       callback: async () => {
         try {
-          await solNative.executeAppleScript(
+          await hanzoNative.executeAppleScript(
             `tell application "Finder" to empty trash`,
           )
-          solNative.showToast('Trash emptied', 'success')
+          hanzoNative.showToast('Trash emptied', 'success')
         } catch (e) {
-          solNative.showToast(`Could not empty trash: ${e}`, 'error')
+          hanzoNative.showToast(`Could not empty trash: ${e}`, 'error')
         }
       },
     },
@@ -679,10 +679,10 @@ export function createBaseItems(store: IRootStore) {
       type: ItemType.CONFIGURATION,
       callback: async () => {
         try {
-          await solNative.hideNotch()
-          solNative.showToast('Notch hidden', 'success')
+          await hanzoNative.hideNotch()
+          hanzoNative.showToast('Notch hidden', 'success')
         } catch (e) {
-          solNative.showToast(`Could not hide notch: ${e}`, 'error')
+          hanzoNative.showToast(`Could not hide notch: ${e}`, 'error')
         }
       },
     },
@@ -691,11 +691,11 @@ export function createBaseItems(store: IRootStore) {
     //   name: 'Add VSCode bindings to Xcode',
     //   type: ItemType.CONFIGURATION,
     //   callback: async () => {
-    //     await solNative.executeBashScript(
+    //     await hanzoNative.executeBashScript(
     //       `touch ~/Library/Developer/Xcode/UserData/KeyBindings/VSCodeKeyBindings.idekeybindings`,
     //     )
 
-    //     solNative.showToast('✅ Added bindings. Select them from the Xcode preferences')
+    //     hanzoNative.showToast('✅ Added bindings. Select them from the Xcode preferences')
     //   },
     // }
   ]
@@ -719,7 +719,7 @@ export function createBaseItems(store: IRootStore) {
       name: 'Success toast',
       type: ItemType.CONFIGURATION,
       callback: () => {
-        solNative.showToast(
+        hanzoNative.showToast(
           'This is a Toast test with a long test to make sure everything fits! 🍞',
           'success',
         )
@@ -731,7 +731,7 @@ export function createBaseItems(store: IRootStore) {
       name: 'error toast',
       type: ItemType.CONFIGURATION,
       callback: () => {
-        solNative.showToast(
+        hanzoNative.showToast(
           'This is a Toast test with a long test to make sure everything fits! 🍞',
           'error',
         )

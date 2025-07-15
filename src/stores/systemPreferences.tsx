@@ -1,4 +1,4 @@
-import {solNative} from 'lib/SolNative'
+import {hanzoNative} from 'lib/HanzoNative'
 import {Image, ImageSourcePropType, Linking} from 'react-native'
 import {ItemType} from './ui.store'
 import {FileIcon} from 'components/FileIcon'
@@ -42,17 +42,17 @@ const iconMap: Record<string, ImageSourcePropType> = {
 
 const SYSTEM_PREFERENCE_PANES = '/System/Library/PreferencePanes'
 const GLOBAL_PREFERENCE_PANES = '/Library/PreferencePanes'
-const USER_PREFERENCE_PANES = `/Users/${solNative.userName()}/Library/PreferencePanes`
+const USER_PREFERENCE_PANES = `/Users/${hanzoNative.userName()}/Library/PreferencePanes`
 
 function extractObjectFromPrefPanePath(path: string, fileName: string) {
   if (ignoreList.includes(fileName)) {
     return null
   }
 
-  let plistFileExists = solNative.exists(`${path}/Contents/Info.plist`)
+  let plistFileExists = hanzoNative.exists(`${path}/Contents/Info.plist`)
 
   if (plistFileExists) {
-    let plistContent = solNative.readFile(path)
+    let plistContent = hanzoNative.readFile(path)
 
     let parsed = plistContent ? plist.parse(plistContent) : null
 
@@ -80,20 +80,20 @@ function extractObjectFromPrefPanePath(path: string, fileName: string) {
   }
 }
 
-const systemPanes = solNative.exists(SYSTEM_PREFERENCE_PANES)
-  ? solNative
+const systemPanes = hanzoNative.exists(SYSTEM_PREFERENCE_PANES)
+  ? hanzoNative
       .ls(SYSTEM_PREFERENCE_PANES)
       .map(pane => extractObjectFromPrefPanePath(SYSTEM_PREFERENCE_PANES, pane))
   : []
 
-const globalPanes = solNative.exists(GLOBAL_PREFERENCE_PANES)
-  ? solNative
+const globalPanes = hanzoNative.exists(GLOBAL_PREFERENCE_PANES)
+  ? hanzoNative
       .ls(GLOBAL_PREFERENCE_PANES)
       .map(pane => extractObjectFromPrefPanePath(GLOBAL_PREFERENCE_PANES, pane))
   : []
 
-const userPanes = solNative.exists(USER_PREFERENCE_PANES)
-  ? solNative
+const userPanes = hanzoNative.exists(USER_PREFERENCE_PANES)
+  ? hanzoNative
       .ls(USER_PREFERENCE_PANES)
       .map(pane => extractObjectFromPrefPanePath(USER_PREFERENCE_PANES, pane))
   : []
@@ -126,7 +126,7 @@ export function buildSystemPreferenceItem({
           <FileIcon
             className="w-6 h-6"
             url={
-              solNative.OSVersion >= 13
+              hanzoNative.OSVersion >= 13
                 ? '/System/Applications/System Settings.app'
                 : '/System/Applications/System Preferences.app'
             }
@@ -137,10 +137,10 @@ export function buildSystemPreferenceItem({
     },
     type: ItemType.PREFERENCE_PANE,
     callback: () => {
-      if (solNative.OSVersion >= 13) {
+      if (hanzoNative.OSVersion >= 13) {
         Linking.openURL(preferenceId)
       } else {
-        solNative.executeAppleScript(`tell application "System Preferences"
+        hanzoNative.executeAppleScript(`tell application "System Preferences"
         activate
         set current pane to pane "${preferenceId}"
        end tell
@@ -159,7 +159,7 @@ const manualPanes: Item[] = [
     },
     type: ItemType.PREFERENCE_PANE,
     callback: () => {
-      solNative.executeBashScript(
+      hanzoNative.executeBashScript(
         'open x-apple.systempreferences:com.apple.Wallpaper-Settings.extension',
       )
     },
@@ -184,7 +184,7 @@ const manualPanes: Item[] = [
     alias: 'wifi',
     type: ItemType.PREFERENCE_PANE,
     callback: () => {
-      solNative.executeBashScript(
+      hanzoNative.executeBashScript(
         'open x-apple.systempreferences:com.apple.wifi-settings-extension',
       )
     },
@@ -245,7 +245,7 @@ const manualPanes: Item[] = [
     },
     type: ItemType.PREFERENCE_PANE,
     callback: () => {
-      solNative.executeBashScript(
+      hanzoNative.executeBashScript(
         'open x-apple.systempreferences:com.apple.preference.battery',
       )
     },

@@ -6,7 +6,7 @@ import {MyRadioButton} from 'components/MyRadioButton'
 import {MySwitch} from 'components/MySwitch'
 import {useFullSize} from 'hooks/useFullSize'
 import {languages} from 'lib/languages'
-import {solNative} from 'lib/SolNative'
+import {hanzoNative} from 'lib/HanzoNative'
 import {observer} from 'mobx-react-lite'
 import {FC, useState} from 'react'
 import {
@@ -37,17 +37,17 @@ export const About = observer(() => {
         }}
       />
       <View className="gap-2">
-        <Text className="text-3xl">Sol</Text>
+        <Text className="text-3xl">Hanzo</Text>
         <Text className="font-semibold">{packageInfo.version}</Text>
         <View className="flex-row items-center gap-2">
           <Text className="">built by</Text>
           <Image source={Assets.OSP} className="h-6 w-6 rounded-full" />
-          <Text className="">ospfranco</Text>
+          <Text className="">Hanzo AI</Text>
         </View>
         <TouchableOpacity
           className="bg-blue-500 p-2 rounded justify-center items-center"
           onPress={() => {
-            Linking.openURL('https://sol.ospfranco.com/')
+            Linking.openURL('https://hanzo.ai/')
           }}>
           <Text className="text-white">Website</Text>
         </TouchableOpacity>

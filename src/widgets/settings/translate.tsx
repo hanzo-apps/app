@@ -5,7 +5,7 @@ import {MyRadioButton} from 'components/MyRadioButton'
 import {MySwitch} from 'components/MySwitch'
 import {useFullSize} from 'hooks/useFullSize'
 import {languages} from 'lib/languages'
-import {solNative} from 'lib/SolNative'
+import {hanzoNative} from 'lib/HanzoNative'
 import {observer} from 'mobx-react-lite'
 import {FC, useState} from 'react'
 import {

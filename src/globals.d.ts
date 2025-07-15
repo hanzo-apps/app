@@ -33,7 +33,7 @@ type CalendarAuthorizationStatus =
   | 'authorized'
 
 declare var global: {
-  __SolProxy: {
+  __HanzoProxy: {
     setHeight: (height: number) => void
     resetWindowSize: () => void
     hideWindow: () => void

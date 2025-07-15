@@ -4,13 +4,13 @@ PODS:
   - FBLazyVector (0.76.8)
   - fmt (9.1.0)
   - glog (0.3.5)
-  - hermes-engine (0.76.6):
-    - hermes-engine/Pre-built (= 0.76.6)
-  - hermes-engine/Pre-built (0.76.6)
+  - hermes-engine (0.76.8):
+    - hermes-engine/Pre-built (= 0.76.8)
+  - hermes-engine/Pre-built (0.76.8)
   - HotKey (0.2.1)
-  - MMKV (2.0.2):
-    - MMKVCore (~> 2.0.2)
-  - MMKVCore (2.0.2)
+  - MMKV (2.2.2):
+    - MMKVCore (~> 2.2.2)
+  - MMKVCore (2.2.2)
   - RCT-Folly (2024.01.01.00):
     - boost
     - DoubleConversion
@@ -1659,7 +1659,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNSentry (5.35.0):
+  - RNSentry (6.17.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1680,11 +1680,11 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - Sentry/HybridSDK (= 8.37.0)
+    - Sentry/HybridSDK (= 8.53.1)
     - Yoga
-  - Sentry/HybridSDK (8.37.0)
+  - Sentry/HybridSDK (8.53.1)
   - SocketRocket (0.7.1)
-  - Sparkle (2.6.4)
+  - Sparkle (2.7.1)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -1917,10 +1917,10 @@ SPEC CHECKSUMS:
   FBLazyVector: 5cf722f50085b070072e33d96b111f6f07642885
   fmt: cca1eb84179ad528ae1ba9fdf135ed1ac49e19cb
   glog: 750f96a379703a2d724d2f1fc6cb3a3eff000817
-  hermes-engine: 1949ca944b195a8bde7cbf6316b9068e19cf53c6
+  hermes-engine: ea89b864870ef107096c440c56eb6cba409b2689
   HotKey: 400beb7caa29054ea8d864c96f5ba7e5b4852277
-  MMKV: 3eacda84cd1c4fc95cf848d3ecb69d85ed56006c
-  MMKVCore: 508b4d3a8ce031f1b5c8bd235f0517fb3f4c73a9
+  MMKV: b4802ebd5a7c68fc0c4a5ccb4926fbdfb62d68e0
+  MMKVCore: a255341a3746955f50da2ad9121b18cb2b346e61
   RCT-Folly: 38dded4465d7da30a12a3087110693a6799091d4
   RCTDeprecation: 7fa7002418c68d8ff065b29e9e9cfd8d904d6c64
   RCTRequired: 1b362fcc140f1f422345fa3cec4f2456f8a4fbba
@@ -1981,10 +1981,10 @@ SPEC CHECKSUMS:
   ReactCommon: 4a00dca5726c3c9d4c23f4fb7d22454096603f3d
   RNCAsyncStorage: b6410dead2732b5c72a7fdb1ecb5651bbcf4674b
   RNReanimated: 3e9f6bc7668f30371aab26e818deeb3cc02e12f1
-  RNSentry: b1d9f61f725d3aba2ce943bfea23ac74b860ee89
-  Sentry: ee060c09b2f7ec1240e95c766ab44c04c7bdb052
+  RNSentry: 6f1d2da72747daacc76e33066d633800a4baddae
+  Sentry: 1e4e974d45f09d153af4b30b42acfb1c79e957d3
   SocketRocket: 03f7111df1a343b162bf5b06ead333be808e1e0a
-  Sparkle: 5f8960a7a119aa7d45dacc0d5837017170bc5675
+  Sparkle: 5f93557176b762f712e8cd80680778bf23c7348c
   Yoga: d55e10ce36d63e12891ad908521377d0aab8bdb6
 
 PODFILE CHECKSUM: 09d9f4d8690650f7bbc4a5e78de155d44c82904c

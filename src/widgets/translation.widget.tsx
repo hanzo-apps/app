@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import {MainInput} from 'components/MainInput'
 import {useFullSize} from 'hooks/useFullSize'
-import {solNative} from 'lib/SolNative'
+import {hanzoNative} from 'lib/HanzoNative'
 import {languages} from 'lib/languages'
 import {observer} from 'mobx-react-lite'
 import React, {FC, useEffect} from 'react'
@@ -21,10 +21,10 @@ export const TranslationWidget: FC<Props> = observer(({style}) => {
   const store = useStore()
 
   useEffect(() => {
-    solNative.turnOnHorizontalArrowsListeners()
+    hanzoNative.turnOnHorizontalArrowsListeners()
 
     return () => {
-      solNative.turnOffHorizontalArrowsListeners()
+      hanzoNative.turnOffHorizontalArrowsListeners()
     }
   }, [])
 

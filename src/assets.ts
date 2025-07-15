@@ -129,8 +129,8 @@ import LockIcon from './assets/LockIcon.png'
 import Logo from './assets/Logo.png'
 import SearchIcon from './assets/SearchIcon.png'
 import SleepIcon from './assets/SleepIcon.png'
-import SolBlackSmall from './assets/SolBlackSmall.png'
-import SolWhiteSmall from './assets/SolWhiteSmall.png'
+import HanzoBlackSmall from './assets/HanzoBlackSmall.png'
+import HanzoWhiteSmall from './assets/HanzoWhiteSmall.png'
 import Star from './assets/star.png'
 import StarFilled from './assets/starFilled.png'
 import Safari from './assets/safari.png'
@@ -156,8 +156,8 @@ export const Assets = {
   Safari,
   googleLogo,
   googleTranslateLogo,
-  SolBlackSmall,
-  SolWhiteSmall,
+  HanzoBlackSmall,
+  HanzoWhiteSmall,
   Logo,
   Airdrop,
   Star,

@@ -1,0 +1,19 @@
+current directory: /Users/z/work/hanzo/app/vendor/bundle/ruby/3.3.0/gems/sysrandom-1.0.5/ext/sysrandom
+/Users/z/.local/share/mise/installs/ruby/3.3.0/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /Users/z/work/hanzo/app/vendor/bundle/ruby/3.3.0/gems/sysrandom-1.0.5/ext/sysrandom
+make DESTDIR\= sitearchdir\=./.gem.20250424-38297-y9bzqz sitelibdir\=./.gem.20250424-38297-y9bzqz clean
+
+current directory: /Users/z/work/hanzo/app/vendor/bundle/ruby/3.3.0/gems/sysrandom-1.0.5/ext/sysrandom
+make DESTDIR\= sitearchdir\=./.gem.20250424-38297-y9bzqz sitelibdir\=./.gem.20250424-38297-y9bzqz
+compiling randombytes_sysrandom.c
+compiling sysrandom_ext.c
+linking shared-object sysrandom_ext.bundle
+
+current directory: /Users/z/work/hanzo/app/vendor/bundle/ruby/3.3.0/gems/sysrandom-1.0.5/ext/sysrandom
+make DESTDIR\= sitearchdir\=./.gem.20250424-38297-y9bzqz sitelibdir\=./.gem.20250424-38297-y9bzqz install
+/opt/homebrew/bin/ginstall -c -m 0755 sysrandom_ext.bundle ./.gem.20250424-38297-y9bzqz
+
+current directory: /Users/z/work/hanzo/app/vendor/bundle/ruby/3.3.0/gems/sysrandom-1.0.5/ext/sysrandom
+make DESTDIR\= sitearchdir\=./.gem.20250424-38297-y9bzqz sitelibdir\=./.gem.20250424-38297-y9bzqz clean

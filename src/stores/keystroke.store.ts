@@ -1,6 +1,6 @@
 import {extractMeetingLink} from 'lib/calendar'
 
-import {solNative} from 'lib/SolNative'
+import {hanzoNative} from 'lib/HanzoNative'
 import {makeAutoObservable} from 'mobx'
 import {Clipboard, EmitterSubscription, Linking} from 'react-native'
 import {IRootStore} from 'store'
@@ -49,19 +49,24 @@ export const createKeystrokeStore = (root: IRootStore) => {
         // tab key
         case 48: {
           switch (root.ui.focusedWidget) {
-            //   case Widget.SEARCH:
-            //     if (!!root.calendar.filteredEvents.length) {
-            //       root.ui.selectedIndex = 0
-            //       root.ui.focusedWidget = Widget.CALENDAR
-            //     }
-            //     break
-
-            //   case Widget.CALENDAR:
-            //     root.ui.selectedIndex = 0
-            //     root.ui.focusedWidget = Widget.SEARCH
-            //     break
+            case Widget.SEARCH:
+              // Tab from search launches AI
+              root.ui.focusedWidget = Widget.AI
+              break
+            
+            case Widget.AI:
+              // Tab from AI goes back to search
+              root.ui.focusedWidget = Widget.SEARCH
+              break
+              
             case Widget.SCRATCHPAD:
               root.ui.rotateScratchPadColor()
+              break
+              
+            default:
+              // Tab from anywhere else launches AI
+              root.ui.focusedWidget = Widget.AI
+              break
           }
 
           break
@@ -80,10 +85,10 @@ export const createKeystrokeStore = (root: IRootStore) => {
                     0,
                     filePath.lastIndexOf('/'),
                   )
-                  solNative.openFinderAt(directoryPath)
+                  hanzoNative.openFinderAt(directoryPath)
                 } else {
-                  solNative.openFile(file.url!)
-                  solNative.hideWindow()
+                  hanzoNative.openFile(file.url!)
+                  hanzoNative.hideWindow()
                 }
               }
               break
@@ -93,10 +98,10 @@ export const createKeystrokeStore = (root: IRootStore) => {
               const process =
                 root.processes.filteredProcesses[root.ui.selectedIndex]
               if (process) {
-                solNative.killProcess(process.id.toString())
+                hanzoNative.killProcess(process.id.toString())
               }
-              solNative.hideWindow()
-              solNative.showToast(
+              hanzoNative.hideWindow()
+              hanzoNative.showToast(
                 `Process "${process.processName}" killed`,
                 'success',
               )
@@ -122,9 +127,9 @@ export const createKeystrokeStore = (root: IRootStore) => {
                   } catch (e) {
                     // console.log('could not open in browser')
                   }
-                  solNative.hideWindow()
+                  hanzoNative.hideWindow()
                 } else {
-                  solNative.pasteToFrontmostApp(entry.text)
+                  hanzoNative.pasteToFrontmostApp(entry.text)
                 }
               }
 
@@ -183,7 +188,7 @@ export const createKeystrokeStore = (root: IRootStore) => {
               } else {
                 Linking.openURL('ical://')
               }
-              solNative.hideWindow()
+              hanzoNative.hideWindow()
               break
             }
 
@@ -192,7 +197,7 @@ export const createKeystrokeStore = (root: IRootStore) => {
                 Clipboard.setString(
                   root.ui.translationResults[root.ui.selectedIndex],
                 )
-                solNative.hideWindow()
+                hanzoNative.hideWindow()
                 root.ui.translationResults = []
               }
               break
@@ -203,7 +208,7 @@ export const createKeystrokeStore = (root: IRootStore) => {
                 !root.ui.query &&
                 root.ui.calendarAuthorizationStatus === 'notDetermined'
               ) {
-                solNative
+                hanzoNative
                   .requestCalendarAccess()
                   .then(() => {
                     root.ui.getCalendarAccess()
@@ -211,13 +216,13 @@ export const createKeystrokeStore = (root: IRootStore) => {
                   .catch(e => {
                     root.ui.getCalendarAccess()
                   })
-                solNative.hideWindow()
+                hanzoNative.hideWindow()
                 return
               }
 
               if (!root.ui.query && !root.ui.isAccessibilityTrusted) {
-                solNative.requestAccessibilityAccess()
-                solNative.hideWindow()
+                hanzoNative.requestAccessibilityAccess()
+                hanzoNative.hideWindow()
                 return
               }
 
@@ -259,7 +264,7 @@ export const createKeystrokeStore = (root: IRootStore) => {
                     Linking.openURL(
                       `https://google.com/search?q=${encodeURI(root.ui.query)}`,
                     ).catch(e => {
-                      solNative.showToast(
+                      hanzoNative.showToast(
                         `Could not open URL: ${root.ui.query}, error: ${e}`,
                         'error',
                       )
@@ -269,7 +274,7 @@ export const createKeystrokeStore = (root: IRootStore) => {
                     Linking.openURL(
                       `https://duckduckgo.com/?q=${encodeURI(root.ui.query)}`,
                     ).catch(e => {
-                      solNative.showToast(
+                      hanzoNative.showToast(
                         `Could not open URL: ${root.ui.query}, error: ${e}`,
                         'error',
                       )
@@ -279,7 +284,7 @@ export const createKeystrokeStore = (root: IRootStore) => {
                     Linking.openURL(
                       `https://bing.com/search?q=${encodeURI(root.ui.query)}`,
                     ).catch(e => {
-                      solNative.showToast(
+                      hanzoNative.showToast(
                         `Could not open URL: ${root.ui.query}, error: ${e}`,
                         'error',
                       )
@@ -291,7 +296,7 @@ export const createKeystrokeStore = (root: IRootStore) => {
                         root.ui.query,
                       )}`,
                     ).catch(e => {
-                      solNative.showToast(
+                      hanzoNative.showToast(
                         `Could not open URL: ${root.ui.query}, error: ${e}`,
                         'error',
                       )
@@ -304,7 +309,7 @@ export const createKeystrokeStore = (root: IRootStore) => {
                         encodeURI(root.ui.query),
                       ),
                     ).catch(e => {
-                      solNative.showToast(
+                      hanzoNative.showToast(
                         `Could not open URL: ${root.ui.query}, error: ${e}`,
                         'error',
                       )
@@ -312,7 +317,7 @@ export const createKeystrokeStore = (root: IRootStore) => {
                     break
                 }
 
-                solNative.hideWindow()
+                hanzoNative.hideWindow()
                 return
               }
 
@@ -324,8 +329,8 @@ export const createKeystrokeStore = (root: IRootStore) => {
 
               if (item.type === ItemType.TEMPORARY_RESULT) {
                 Clipboard.setString(root.ui.temporaryResult!)
-                solNative.showToast('Copied to clipboard', 'success')
-                solNative.hideWindow()
+                hanzoNative.showToast('Copied to clipboard', 'success')
+                hanzoNative.hideWindow()
                 return
               }
 
@@ -335,7 +340,7 @@ export const createKeystrokeStore = (root: IRootStore) => {
 
               // close window
               if (!item.preventClose) {
-                solNative.hideWindow()
+                hanzoNative.hideWindow()
               }
 
               if (store.commandPressed && item.metaCallback) {
@@ -345,7 +350,7 @@ export const createKeystrokeStore = (root: IRootStore) => {
                 item.callback()
                 return
               } else if (item.url) {
-                solNative.openFile(item.url)
+                hanzoNative.openFile(item.url)
                 return
               }
 
@@ -355,20 +360,20 @@ export const createKeystrokeStore = (root: IRootStore) => {
                 }
 
                 if (item.isApplescript) {
-                  solNative.executeAppleScript(item.text)
+                  hanzoNative.executeAppleScript(item.text)
                 } else {
                   try {
                     const canOpenURL = await Linking.canOpenURL(item.text)
                     if (canOpenURL) {
                       await Linking.openURL(item.text)
                     } else {
-                      solNative.showToast(
+                      hanzoNative.showToast(
                         `Could not open URL: ${item.text}`,
                         'error',
                       )
                     }
                   } catch (e) {
-                    solNative.showToast(
+                    hanzoNative.showToast(
                       `Could not open URL: ${item.text}`,
                       'error',
                     )
@@ -390,7 +395,7 @@ export const createKeystrokeStore = (root: IRootStore) => {
             case Widget.SCRATCHPAD:
             case Widget.CLIPBOARD:
             case Widget.GOOGLE_MAP:
-              solNative.hideWindow()
+              hanzoNative.hideWindow()
               break
 
             default:
@@ -784,8 +789,8 @@ export const createKeystrokeStore = (root: IRootStore) => {
     },
   })
 
-  keyDownListener = solNative.addListener('keyDown', store.keyDown)
-  keyUpListener = solNative.addListener('keyUp', store.keyUp)
+  keyDownListener = hanzoNative.addListener('keyDown', store.keyDown)
+  keyUpListener = hanzoNative.addListener('keyUp', store.keyUp)
 
   return store
 }

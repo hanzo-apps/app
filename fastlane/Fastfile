@@ -7,26 +7,26 @@ platform :mac do
       sh("bun", "bump")
     end
 
-    version = get_version_number(xcodeproj: "./macos/sol.xcodeproj")
+    version = get_version_number(xcodeproj: "./macos/hanzo.xcodeproj")
 
-    path = "/Users/osp/Developer/sol/"
-    appFileName = path + "Sol.app"
+    path = "/Users/z/work/hanzo/app/"
+    appFileName = path + "Hanzo.app"
     zipFileName = path + "releases/" + version + ".zip"
     
     gym(
       scheme: "release",
       configuration: "Release",
       clean: true,
-      workspace: "./macos/sol.xcworkspace",
+      workspace: "./macos/hanzo.xcworkspace",
       output_directory: path,
       export_method: "developer-id"
     )
 
     notarize(
       package: appFileName,
-      bundle_id: "com.ospfranco.sol",
-      username: "ospfranco@protonmail.com",
-      asc_provider: "24CMR7378R"
+      bundle_id: "com.hanzo.app",
+      username: "support@hanzo.ai",
+      asc_provider: "HANZO_TEAM_ID"
     )
 
     zip(
@@ -36,7 +36,7 @@ platform :mac do
     )
 
     set_github_release(
-      repository_name: "ospfranco/sol",
+      repository_name: "hanzoai/app",
       api_token: ENV["GITHUB_API_TOKEN"],
       name: "v" + version,
       tag_name: version,
@@ -44,7 +44,7 @@ platform :mac do
       upload_assets: [zipFileName]
     )
 
-    file_url = "https://github.com/ospfranco/sol/releases/download/" + version + "/" + version + ".zip"
+    file_url = "https://github.com/hanzoai/app/releases/download/" + version + "/" + version + ".zip"
     
     
     Dir.chdir("..") do
@@ -61,8 +61,8 @@ platform :mac do
 
     sh("cp", "-R", appFileName, "/Applications/")
 
-    sh("open", "/Applications/Sol.app")
+    sh("open", "/Applications/Hanzo.app")
 
-    sh("pingme", "Sol " + version + " released")
+    sh("pingme", "Hanzo " + version + " released")
   end
 end

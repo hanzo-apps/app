@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import {Assets} from 'assets'
 import {FileIcon} from 'components/FileIcon'
 import {Parser} from 'expr-eval'
-import {solNative} from 'lib/SolNative'
+import {hanzoNative} from 'lib/HanzoNative'
 import {CONSTANTS} from 'lib/constants'
 import {googleTranslate} from 'lib/translator'
 import {autorun, makeAutoObservable, runInAction, toJS} from 'mobx'
@@ -41,6 +41,7 @@ export enum Widget {
   CLIPBOARD = 'CLIPBOARD',
   PROCESSES = 'PROCESSES',
   FILE_SEARCH = 'FILE_SEARCH',
+  AI = 'AI',
 }
 
 export enum ItemType {
@@ -118,7 +119,7 @@ let minisearch = new MiniSearch({
     stopWords.has(term) ? null : term.toLowerCase(),
 })
 
-const userName = solNative.userName()
+const userName = hanzoNative.userName()
 let defaultSearchFolders = [
   `/Users/${userName}/Downloads`,
   `/Users/${userName}/Documents`,
@@ -204,14 +205,14 @@ export const createUIStore = (root: IRootStore) => {
         store.shortcuts = parsedStore.shortcuts ?? defaultShortcuts
       })
 
-      solNative.setLaunchAtLogin(parsedStore.launchAtLogin ?? true)
-      solNative.setGlobalShortcut(parsedStore.globalShortcut)
-      solNative.setShowWindowOn(
+      hanzoNative.setLaunchAtLogin(parsedStore.launchAtLogin ?? true)
+      hanzoNative.setGlobalShortcut(parsedStore.globalShortcut)
+      hanzoNative.setShowWindowOn(
         parsedStore.showWindowOn ?? 'screenWithFrontmost',
       )
-      solNative.useBackgroundOverlay(store.useBackgroundOverlay)
-      solNative.setMediaKeyForwardingEnabled(store.mediaKeyForwardingEnabled)
-      solNative.updateHotkeys(toJS(store.shortcuts))
+      hanzoNative.useBackgroundOverlay(store.useBackgroundOverlay)
+      hanzoNative.setMediaKeyForwardingEnabled(store.mediaKeyForwardingEnabled)
+      hanzoNative.updateHotkeys(toJS(store.shortcuts))
       store.getApps()
       store.migrateCustomItems()
     } else {
@@ -236,7 +237,7 @@ export const createUIStore = (root: IRootStore) => {
     onboardingStep: 'v1_start' as OnboardingStep,
     searchEngine: 'google' as SearchEngine,
     customSearchUrl: 'https://google.com/search?q=%s' as string,
-    globalShortcut: 'option' as 'command' | 'option' | 'control',
+    globalShortcut: 'command' as 'command' | 'option' | 'control',
     scratchpadShortcut: 'command' as 'command' | 'option' | 'none',
     clipboardManagerShortcut: 'shift' as 'shift' | 'option' | 'none',
     showWindowOn: 'screenWithFrontmost' as
@@ -287,7 +288,7 @@ export const createUIStore = (root: IRootStore) => {
         runInAction(() => {
           store.isLoading = true
         })
-        const fileResults = solNative.searchFiles(
+        const fileResults = hanzoNative.searchFiles(
           toJS(store.searchFolders),
           store.query,
         )
@@ -353,13 +354,13 @@ export const createUIStore = (root: IRootStore) => {
             iconImage: Assets.Chrome,
             callback: async () => {
               if (!bookmark.url) {
-                solNative.showToast('Cannot open bookmark without url', 'error')
+                hanzoNative.showToast('Cannot open bookmark without url', 'error')
               }
 
               try {
                 await Linking.openURL(bookmark.url)
               } catch (e) {
-                solNative.showToast(`Could not open url: ${e}`, 'error')
+                hanzoNative.showToast(`Could not open url: ${e}`, 'error')
               }
             },
           }
@@ -543,11 +544,11 @@ export const createUIStore = (root: IRootStore) => {
       store.onboardingStep = step
     },
     setGlobalShortcut: (key: 'command' | 'option' | 'control') => {
-      solNative.setGlobalShortcut(key)
+      hanzoNative.setGlobalShortcut(key)
       store.globalShortcut = key
     },
     setShowWindowOn: (on: 'screenWithFrontmost' | 'screenWithCursor') => {
-      solNative.setShowWindowOn(on)
+      hanzoNative.setShowWindowOn(on)
       store.showWindowOn = on
     },
     focusWidget: (widget: Widget) => {
@@ -574,7 +575,7 @@ export const createUIStore = (root: IRootStore) => {
         }
 
         if (query === 'ip') {
-          let info = solNative.getWifiInfo()
+          let info = hanzoNative.getWifiInfo()
           if (info.ip) {
             store.temporaryResult = info.ip
           }
@@ -582,7 +583,7 @@ export const createUIStore = (root: IRootStore) => {
       }
     },
     getApps: () => {
-      solNative
+      hanzoNative
         .getApps()
         .then(apps => {
           let appsRecord: Record<string, Item> = {}
@@ -596,9 +597,9 @@ export const createUIStore = (root: IRootStore) => {
               url.replace('file://', '') + 'Contents/Info.plist',
             )
             let alias = null
-            if (solNative.exists(plistPath)) {
+            if (hanzoNative.exists(plistPath)) {
               try {
-                let plistContent = solNative.readFile(plistPath)
+                let plistContent = hanzoNative.readFile(plistPath)
                 if (plistContent != null) {
                   const properties = plist.parse(plistContent)
                   alias = properties.CFBundleIdentifier
@@ -623,7 +624,7 @@ export const createUIStore = (root: IRootStore) => {
           })
         })
         .catch(e => {
-          solNative.showToast(`Could not get apps: ${e}`, 'error')
+          hanzoNative.showToast(`Could not get apps: ${e}`, 'error')
           Sentry.captureException(e)
         })
     },
@@ -674,10 +675,10 @@ export const createUIStore = (root: IRootStore) => {
     },
     getCalendarAccess: () => {
       store.calendarAuthorizationStatus =
-        solNative.getCalendarAuthorizationStatus()
+        hanzoNative.getCalendarAuthorizationStatus()
     },
     getAccessibilityStatus: () => {
-      solNative.getAccessibilityStatus().then(v => {
+      hanzoNative.getAccessibilityStatus().then(v => {
         runInAction(() => {
           store.isAccessibilityTrusted = v
         })
@@ -705,14 +706,14 @@ export const createUIStore = (root: IRootStore) => {
     },
     setLaunchAtLogin: (v: boolean) => {
       store.launchAtLogin = v
-      solNative.setLaunchAtLogin(v)
+      hanzoNative.setLaunchAtLogin(v)
     },
     setUseBackgroundOverlay: (v: boolean) => {
       store.useBackgroundOverlay = v
-      solNative.useBackgroundOverlay(v)
+      hanzoNative.useBackgroundOverlay(v)
     },
     getFullDiskAccessStatus: async () => {
-      const hasAccess = await solNative.hasFullDiskAccess()
+      const hasAccess = await hanzoNative.hasFullDiskAccess()
       runInAction(() => {
         store.hasFullDiskAccess = hasAccess
         if (hasAccess) {
@@ -724,7 +725,7 @@ export const createUIStore = (root: IRootStore) => {
     },
     getSafariBookmarks: async () => {
       if (store.hasFullDiskAccess) {
-        const safariBookmarks = await solNative.getSafariBookmarks()
+        const safariBookmarks = await hanzoNative.getSafariBookmarks()
 
         runInAction(() => {
           store.safariBookmarks = safariBookmarks
@@ -732,11 +733,11 @@ export const createUIStore = (root: IRootStore) => {
       }
     },
     getBraveBookmarks: async () => {
-      const username = solNative.userName()
+      const username = hanzoNative.userName()
       const path = `/Users/${username}/Library/Application Support/BraveSoftware/Brave-Browser/Default/Bookmarks`
-      const exists = solNative.exists(path)
+      const exists = hanzoNative.exists(path)
       if (exists) {
-        const bookmarksString = solNative.readFile(path)
+        const bookmarksString = hanzoNative.readFile(path)
         if (!bookmarksString) {
           return
         }
@@ -752,11 +753,11 @@ export const createUIStore = (root: IRootStore) => {
       }
     },
     getChromeBookmarks: async () => {
-      const username = solNative.userName()
+      const username = hanzoNative.userName()
       const path = `/Users/${username}/Library/Application Support/Google/Chrome/Default/Bookmarks`
-      const exists = solNative.exists(path)
+      const exists = hanzoNative.exists(path)
       if (exists) {
-        const bookmarksString = solNative.readFile(path)
+        const bookmarksString = hanzoNative.readFile(path)
         if (!bookmarksString) {
           return
         }
@@ -774,7 +775,7 @@ export const createUIStore = (root: IRootStore) => {
 
     setMediaKeyForwardingEnabled: (enabled: boolean) => {
       store.mediaKeyForwardingEnabled = enabled
-      solNative.setMediaKeyForwardingEnabled(enabled)
+      hanzoNative.setMediaKeyForwardingEnabled(enabled)
     },
 
     setTargetHeight: (height: number) => {
@@ -787,7 +788,7 @@ export const createUIStore = (root: IRootStore) => {
       colorScheme: 'light' | 'dark' | null | undefined
     }) {
       store.isDarkMode = colorScheme === 'dark'
-      solNative.restart()
+      hanzoNative.restart()
     },
 
     setReduceTransparency: (v: boolean) => {
@@ -835,26 +836,26 @@ export const createUIStore = (root: IRootStore) => {
       if (item.callback) {
         item.callback()
       } else if (item.url) {
-        solNative.openFile(item.url)
+        hanzoNative.openFile(item.url)
       }
 
       if (itemsThatShouldShowWindow.includes(item.id)) {
-        setTimeout(solNative.showWindow, 0)
+        setTimeout(hanzoNative.showWindow, 0)
       }
     },
 
     setShorcut(id: string, shortcut: string) {
       store.shortcuts[id] = shortcut
-      solNative.updateHotkeys(toJS(store.shortcuts))
+      hanzoNative.updateHotkeys(toJS(store.shortcuts))
     },
 
     restoreDefaultShorcuts() {
       store.shortcuts = defaultShortcuts
-      solNative.updateHotkeys(toJS(store.shortcuts))
+      hanzoNative.updateHotkeys(toJS(store.shortcuts))
     },
 
     setWindowHeight(e: any) {
-      solNative.setWindowHeight(e.nativeEvent.layout.height)
+      hanzoNative.setWindowHeight(e.nativeEvent.layout.height)
     },
 
     // Old custom items are not migrated to the new format which has an id
@@ -880,10 +881,10 @@ export const createUIStore = (root: IRootStore) => {
     store.getFullDiskAccessStatus()
   })
 
-  onShowListener = solNative.addListener('onShow', store.onShow)
-  onHideListener = solNative.addListener('onHide', store.onHide)
-  onHotkeyListener = solNative.addListener('hotkey', store.onHotkey)
-  onFileSearchListener = solNative.addListener(
+  onShowListener = hanzoNative.addListener('onShow', store.onShow)
+  onHideListener = hanzoNative.addListener('onHide', store.onHide)
+  onHotkeyListener = hanzoNative.addListener('hotkey', store.onHotkey)
+  onFileSearchListener = hanzoNative.addListener(
     'onFileSearch',
     store.onFileSearch,
   )

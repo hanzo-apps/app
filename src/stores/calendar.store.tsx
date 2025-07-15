@@ -1,6 +1,6 @@
 import {captureException} from '@sentry/react-native'
 import {extractMeetingLink} from 'lib/calendar'
-import {solNative} from 'lib/SolNative'
+import {hanzoNative} from 'lib/HanzoNative'
 import {sleep} from 'lib/various'
 import {DateTime} from 'luxon'
 import {makeAutoObservable} from 'mobx'
@@ -113,7 +113,7 @@ export const createCalendarStore = (root: IRootStore) => {
     //  /_/    \_\___|\__|_|\___/|_| |_|___/
     fetchEvents: () => {
       if (!root.ui.calendarEnabled && !root.ui.showUpcomingEvent) {
-        solNative.setStatusBarItemTitle('')
+        hanzoNative.setStatusBarItemTitle('')
         return
       }
 
@@ -122,7 +122,7 @@ export const createCalendarStore = (root: IRootStore) => {
         return
       }
 
-      const events = solNative.getEvents()
+      const events = hanzoNative.getEvents()
 
       if (root.ui.calendarEnabled) {
         store.events = events
@@ -139,7 +139,7 @@ export const createCalendarStore = (root: IRootStore) => {
         })
 
         if (!upcomingEvent) {
-          solNative.setStatusBarItemTitle('')
+          hanzoNative.setStatusBarItemTitle('')
           return
         }
 
@@ -147,7 +147,7 @@ export const createCalendarStore = (root: IRootStore) => {
         const minutes = lStart.diffNow('minutes').minutes
 
         if (minutes <= 0) {
-          solNative.setStatusBarItemTitle(`⏰ ${upcomingEvent.title?.trim()}`)
+          hanzoNative.setStatusBarItemTitle(`⏰ ${upcomingEvent.title?.trim()}`)
           return
         }
 
@@ -157,7 +157,7 @@ export const createCalendarStore = (root: IRootStore) => {
           minutes - relativeHours * 60,
         )}m`
 
-        solNative.setStatusBarItemTitle(
+        hanzoNative.setStatusBarItemTitle(
           `${upcomingEvent.title!.trim().substring(0, 18)}${
             upcomingEvent.title!.length > 18 ? '...' : ''
           } • ${relativeHoursStr} ${relativeMinutesStr}`,
@@ -190,7 +190,7 @@ export const createCalendarStore = (root: IRootStore) => {
     },
     getCalendarAccess: () => {
       store.calendarAuthorizationStatus =
-        solNative.getCalendarAuthorizationStatus()
+        hanzoNative.getCalendarAuthorizationStatus()
     },
     onStatusBarItemClick: () => {
       const event = root.calendar.filteredEvents[0]
@@ -205,7 +205,7 @@ export const createCalendarStore = (root: IRootStore) => {
           try {
             Linking.openURL(eventLink)
           } catch (e) {
-            solNative.showToast(
+            hanzoNative.showToast(
               `Failed to open event link: ${eventLink}`,
               'error',
             )
@@ -223,8 +223,8 @@ export const createCalendarStore = (root: IRootStore) => {
 
   store.poll()
 
-  onShowListener = solNative.addListener('onShow', store.onShow)
-  onStatusBarItemClickListener = solNative.addListener(
+  onShowListener = hanzoNative.addListener('onShow', store.onShow)
+  onStatusBarItemClickListener = hanzoNative.addListener(
     'onStatusBarItemClick',
     store.onStatusBarItemClick,
   )

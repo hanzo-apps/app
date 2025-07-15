@@ -4,7 +4,7 @@ import {BackButton} from 'components/BackButton'
 import {Input} from 'components/Input'
 import {MySwitch} from 'components/MySwitch'
 import {SolButton} from 'components/SolButton'
-import {solNative} from 'lib/SolNative'
+import {hanzoNative} from 'lib/HanzoNative'
 import {observer} from 'mobx-react-lite'
 import React, {FC, useEffect, useState} from 'react'
 import {Image, Text, TouchableOpacity, View, ViewStyle} from 'react-native'
@@ -45,7 +45,7 @@ export const CreateItemWidget: FC<Props> = observer(({style}) => {
   const [iconSelectorOpen, setIconSelectorOpen] = useState(false)
 
   useEffect(() => {
-    const subscription = solNative.addListener('keyDown', e => {
+    const subscription = hanzoNative.addListener('keyDown', e => {
       if (isApplescript && e.keyCode === 36) {
         setText(text + '\n')
       }
