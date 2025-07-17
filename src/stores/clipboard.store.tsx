@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {hanzoNative} from 'lib/HanzoNative'
 import {autorun, makeAutoObservable, runInAction, toJS} from 'mobx'
-import {EmitterSubscription} from 'react-native'
+import {EmitterSubscription} from 'react-native-web'
 import {IRootStore} from 'store'
 import {Widget} from './ui.store'
 import MiniSearch from 'minisearch'

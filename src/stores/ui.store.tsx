@@ -11,7 +11,7 @@ import {
   EmitterSubscription,
   Linking,
   NativeEventSubscription,
-} from 'react-native'
+} from 'react-native-web'
 import {IRootStore} from 'store'
 import {createBaseItems} from './items'
 import plist from '@expo/plist'

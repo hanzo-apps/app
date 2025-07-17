@@ -1,4 +1,10 @@
-import {NativeEventEmitter, NativeModules} from 'react-native'
+// Re-export the web version for compatibility
+export { hanzoNative } from './HanzoNative.web';
+export { default } from './HanzoNative.web';
+
+// Original React Native implementation commented out for reference
+/*
+import {NativeEventEmitter, NativeModules} from 'react-native-web'
 
 class HanzoNativeClass extends NativeEventEmitter {
   openFile: (path: string) => void

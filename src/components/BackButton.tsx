@@ -7,7 +7,7 @@ import {
   TouchableOpacityProps,
   View,
   useColorScheme,
-} from 'react-native'
+} from 'react-native-web'
 import {observer} from 'mobx-react-lite'
 import {useStore} from 'store'
 import {Assets} from 'assets'
@@ -28,7 +28,7 @@ export const BackButton: FC<Props> = observer(props => {
       <View
         className={clsx('h-6 w-6 items-center justify-center rounded', {
           'bg-transparent': !hovered,
-          'bg-neutral-400 dark:bg-neutral-700': hovered,
+          'bg-accent': hovered,
         })}>
         <Image
           source={Assets.ArrowLeftWhite}

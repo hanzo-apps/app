@@ -1,8 +1,8 @@
 import {BackButton} from 'components/BackButton'
 import {SelectableButton} from 'components/SelectableButton'
-import {View} from 'react-native'
+import {View} from 'react-native-web'
 import {useStore} from 'store'
-import {Widget} from 'stores/ui.store'
+import { Widget } from 'stores/unified.store'
 
 export const Sidebar = ({
   selected,

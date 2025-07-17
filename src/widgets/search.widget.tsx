@@ -15,9 +15,9 @@ import {
   TouchableOpacity,
   View,
   ViewStyle,
-} from 'react-native'
+} from 'react-native-web'
 import {useStore} from 'store'
-import {ItemType, Widget} from 'stores/ui.store'
+import { Widget } from 'stores/unified.store'
 
 type Props = {
   style?: ViewStyle

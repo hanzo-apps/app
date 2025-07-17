@@ -1,20 +1,35 @@
 import React, { useEffect } from 'react';
+import { View, AppRegistry } from 'react-native-web';
 import { observer } from 'mobx-react-lite';
 import { listen } from '@tauri-apps/api/event';
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import { invoke } from '@tauri-apps/api/tauri';
-import { uiStore } from '@/stores/ui.store';
-import SearchWidget from '@/widgets/SearchWidget';
-import AIWidget from '@/widgets/AIWidget';
-import ClipboardWidget from '@/widgets/ClipboardWidget';
-import CalendarWidget from '@/widgets/CalendarWidget';
-import EmojiWidget from '@/widgets/EmojiWidget';
-import FileSearchWidget from '@/widgets/FileSearchWidget';
-import ProcessesWidget from '@/widgets/ProcessesWidget';
-import SettingsWidget from '@/widgets/SettingsWidget';
-import './App.css';
+import { invoke } from '@tauri-apps/api/core';
+import { StoreProvider, useStore } from '@/stores/StoreProvider';
+import { Widget } from '@/stores/unified.store';
 
-const App = observer(() => {
+// Import Sol's widgets directly
+import { SearchWidget } from '@/widgets/search.widget';
+import { CalendarWidget } from '@/widgets/calendar.widget';
+import { ClipboardWidget } from '@/widgets/clipboard.widget';
+import { EmojisWidget } from '@/widgets/emojis.widget';
+import { FileSearchWidget } from '@/widgets/fileSearch.widget';
+import { ProcessesWidget } from '@/widgets/processes.widget';
+import { SettingsWidget } from '@/widgets/settings.widget';
+import { TranslationWidget } from '@/widgets/translation.widget';
+import { ScratchpadWidget } from '@/widgets/scratchpad.widget';
+import { OnboardingWidget } from '@/widgets/onboarding.widget';
+import { CreateItemWidget } from '@/widgets/createItem.widget';
+
+// Import Jan's AI widget
+import AIWidget from '@/widgets/ai.widget';
+
+// Import styles
+import './App.css';
+import './global.css'; // Sol's global styles
+
+const AppContent = observer(() => {
+  const store = useStore();
+  
   useEffect(() => {
     // Set up window event listeners
     const setupListeners = async () => {
@@ -29,7 +44,7 @@ const App = observer(() => {
 
       // Listen for widget change events
       const unlistenShow = await listen('show-widget', ({ payload }: any) => {
-        uiStore.setWidget(payload.widget || 'search');
+        store.ui.setWidget(payload.widget || Widget.SEARCH);
         invoke('show_window');
       });
 
@@ -39,10 +54,7 @@ const App = observer(() => {
     };
 
     setupListeners();
-
-    // Register global shortcuts via Rust backend
-    invoke('register_shortcuts');
-  }, []);
+  }, [store]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -53,24 +65,26 @@ const App = observer(() => {
           break;
         case 'ArrowDown':
           e.preventDefault();
-          uiStore.selectNext();
+          store.ui.selectNext();
           break;
         case 'ArrowUp':
           e.preventDefault();
-          uiStore.selectPrevious();
+          store.ui.selectPrevious();
           break;
         case 'Enter':
           if (e.metaKey || e.ctrlKey) {
-            // Execute with modifier
             e.preventDefault();
-            uiStore.executeSelected();
+            store.ui.executeSelected();
+          } else if (!e.shiftKey) {
+            e.preventDefault();
+            store.ui.executeSelected();
           }
           break;
         case 'Tab':
           if (!e.shiftKey) {
             e.preventDefault();
             // Switch to AI widget
-            uiStore.setWidget('ai');
+            store.ui.setWidget(Widget.AI);
           }
           break;
       }
@@ -78,38 +92,64 @@ const App = observer(() => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [store]);
 
   const renderWidget = () => {
-    switch (uiStore.currentWidget) {
-      case 'search':
+    switch (store.ui.focusedWidget) {
+      case Widget.SEARCH:
         return <SearchWidget />;
-      case 'ai':
+      case Widget.AI:
         return <AIWidget />;
-      case 'clipboard':
-        return <ClipboardWidget />;
-      case 'calendar':
+      case Widget.CALENDAR:
         return <CalendarWidget />;
-      case 'emoji':
-        return <EmojiWidget />;
-      case 'fileSearch':
+      case Widget.CLIPBOARD:
+        return <ClipboardWidget />;
+      case Widget.EMOJIS:
+        return <EmojisWidget />;
+      case Widget.FILE_SEARCH:
         return <FileSearchWidget />;
-      case 'processes':
+      case Widget.PROCESSES:
         return <ProcessesWidget />;
-      case 'settings':
+      case Widget.SETTINGS:
         return <SettingsWidget />;
+      case Widget.TRANSLATION:
+        return <TranslationWidget />;
+      case Widget.SCRATCHPAD:
+        return <ScratchpadWidget />;
+      case Widget.ONBOARDING:
+        return <OnboardingWidget />;
+      case Widget.CREATE_ITEM:
+        return <CreateItemWidget />;
       default:
         return <SearchWidget />;
     }
   };
 
   return (
-    <div className="app vibrancy" data-widget={uiStore.currentWidget}>
-      <div className="app-container">
+    <View className="app vibrancy" data-widget={store.ui.focusedWidget}>
+      <View className="app-container">
         {renderWidget()}
-      </div>
-    </div>
+      </View>
+    </View>
   );
 });
+
+const App = () => {
+  return (
+    <StoreProvider>
+      <AppContent />
+    </StoreProvider>
+  );
+};
+
+// Register the app for React Native Web
+AppRegistry.registerComponent('Hanzo', () => App);
+
+// For web, we need to run the app
+if (typeof document !== 'undefined') {
+  AppRegistry.runApplication('Hanzo', {
+    rootTag: document.getElementById('root')
+  });
+}
 
 export default App;

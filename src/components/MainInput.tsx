@@ -1,15 +1,8 @@
 import {observer} from 'mobx-react-lite'
-import {
-  DevSettings,
-  Image,
-  TouchableOpacity,
-  View,
-  useColorScheme,
-} from 'react-native'
-import {TextInput} from 'react-native-macos'
+import {Image, TouchableOpacity, View, TextInput} from 'react-native-web'
 import {useStore} from 'store'
 import colors from 'tailwindcss/colors'
-import {Widget} from 'stores/ui.store'
+import {Widget} from 'stores/unified.store'
 import {BackButton} from './BackButton'
 import {Assets} from 'assets'
 
@@ -23,15 +16,14 @@ type Props = {
 
 export const MainInput = observer<Props>(
   ({
-    placeholder = 'What would you like to do?',
+    placeholder = 'Search for apps and commands...',
     showBackButton,
-    style,
     hideIcon,
   }) => {
     const store = useStore()
-    const colorScheme = useColorScheme()
+    const isDarkMode = store.ui.isDarkMode
     const reloadApp = async () => {
-      DevSettings.reload()
+      window.location.reload()
     }
 
     let leftButton = null
@@ -40,7 +32,7 @@ export const MainInput = observer<Props>(
         <BackButton
           onPress={() => {
             store.ui.setQuery('')
-            store.ui.focusWidget(Widget.SEARCH)
+            store.ui.setWidget(Widget.SEARCH)
           }}
         />
       )
@@ -50,11 +42,8 @@ export const MainInput = observer<Props>(
       leftButton = (
         <TouchableOpacity onPress={reloadApp}>
           <Image
-            source={require('../assets/Logo.png')}
-            style={{width: 24, height: 24}}
-            tintColor={
-              colorScheme === 'dark' ? colors.neutral[400] : colors.neutral[600]
-            }
+            source={isDarkMode ? Assets.logoMinimal : Assets.logoMinimalWhite}
+            style={{width: 20, height: 20}}
           />
         </TouchableOpacity>
       )
@@ -65,7 +54,7 @@ export const MainInput = observer<Props>(
     }
 
     return (
-      <View className="min-h-[42px] flex-row items-center gap-2 my-1 flex-1">
+      <View className="min-h-[42px] flex-row items-center gap-2 my-1 flex-1 px-2">
         {leftButton}
         <TextInput
           autoFocus
@@ -74,9 +63,9 @@ export const MainInput = observer<Props>(
           onChangeText={store.ui.setQuery}
           // @ts-ignore
           className="text-lg flex-1"
-          cursorColor={colorScheme === 'dark' ? colors.white : colors.black}
+          cursorColor={isDarkMode ? colors.white : colors.black}
           placeholder={placeholder}
-          placeholderTextColor={colorScheme === 'dark' ? '#555' : '#888'}
+          placeholderTextColor={isDarkMode ? '#888' : '#888'}
         />
       </View>
     )

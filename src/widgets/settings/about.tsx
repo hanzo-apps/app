@@ -18,9 +18,9 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native'
+} from 'react-native-web'
 import {useStore} from 'store'
-import {ItemType} from 'stores/ui.store'
+import { ItemType } from 'stores/unified.store'
 import packageInfo from '../../../package.json'
 
 export const About = observer(() => {

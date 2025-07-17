@@ -1,14 +1,19 @@
-import {cssInterop} from 'nativewind'
-import {requireNativeComponent, ViewStyle} from 'react-native'
+import {cssInterop} from 'lib/nativewind-shim'
+import {View, ViewStyle} from 'react-native-web'
 
-const FileIconNative = requireNativeComponent<{
+// Web fallback for native FileIcon component
+export const FileIcon = (props: {
   url: string
   style?: ViewStyle
   className?: string
-}>('FileIcon')
-
-export const FileIcon = (props: any) => {
-  return <FileIconNative {...props} />
+}) => {
+  // For web, we can use a simple view with an icon or image
+  return (
+    <View {...props}>
+      {/* File icon placeholder */}
+      <View style={{width: 24, height: 24, backgroundColor: '#ddd', borderRadius: 4}} />
+    </View>
+  )
 }
 
 cssInterop(FileIcon, {

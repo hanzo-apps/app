@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import React, {FC} from 'react'
-import {Text, TouchableOpacity, View} from 'react-native'
+import {Text, TouchableOpacity, View} from 'react-native-web'
 
 interface Props {
   label: string

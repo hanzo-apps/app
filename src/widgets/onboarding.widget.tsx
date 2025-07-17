@@ -6,9 +6,9 @@ import {Key} from 'components/Key'
 import {useFullSize} from 'hooks/useFullSize'
 import {observer} from 'mobx-react-lite'
 import React, {FC, useEffect, useState} from 'react'
-import {Appearance, Image, Text, View, ViewStyle} from 'react-native'
+import {Appearance, Image, Text, View, ViewStyle} from 'react-native-web'
 import {useStore} from 'store'
-import {Widget} from 'stores/ui.store'
+import { Widget } from 'stores/unified.store'
 import customColors from '../colors'
 
 interface Props {

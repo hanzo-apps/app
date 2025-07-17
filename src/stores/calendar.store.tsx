@@ -4,7 +4,7 @@ import {hanzoNative} from 'lib/HanzoNative'
 import {sleep} from 'lib/various'
 import {DateTime} from 'luxon'
 import {makeAutoObservable} from 'mobx'
-import {EmitterSubscription, Linking} from 'react-native'
+import {EmitterSubscription, Linking} from 'react-native-web'
 import {IRootStore} from 'store'
 
 const DAYS_TO_PARSE = 14

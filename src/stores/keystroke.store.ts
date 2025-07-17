@@ -2,7 +2,7 @@ import {extractMeetingLink} from 'lib/calendar'
 
 import {hanzoNative} from 'lib/HanzoNative'
 import {makeAutoObservable} from 'mobx'
-import {Clipboard, EmitterSubscription, Linking} from 'react-native'
+import {Clipboard, EmitterSubscription, Linking} from 'react-native-web'
 import {IRootStore} from 'store'
 import {ItemType, Widget} from './ui.store'
 import {EMOJI_ROW_SIZE} from './emoji.store'

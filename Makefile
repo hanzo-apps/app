@@ -1,283 +1,232 @@
-# Hanzo App Makefile - Tauri Edition
-# Cross-platform AI assistant for Windows, Linux, macOS, iOS, and Android
-# Copyright (c) 2025 Hanzo Industries Inc
+# Hanzo App Makefile
+.PHONY: help install dev build test clean
 
-.PHONY: help install dev build release clean test lint format setup setup-rust setup-node setup-mobile
+# Default target
+.DEFAULT_GOAL := help
 
 # Colors for output
+BLUE := \033[0;34m
 GREEN := \033[0;32m
 YELLOW := \033[0;33m
 RED := \033[0;31m
-BLUE := \033[0;34m
 NC := \033[0m # No Color
 
 # Platform detection
 UNAME_S := $(shell uname -s)
-ifeq ($(UNAME_S),Linux)
-    PLATFORM := linux
-endif
+UNAME_M := $(shell uname -m)
+
 ifeq ($(UNAME_S),Darwin)
     PLATFORM := macos
-endif
-ifeq ($(OS),Windows_NT)
+    ifeq ($(UNAME_M),arm64)
+        TARGET := aarch64-apple-darwin
+    else
+        TARGET := x86_64-apple-darwin
+    endif
+else ifeq ($(UNAME_S),Linux)
+    PLATFORM := linux
+    ifeq ($(UNAME_M),x86_64)
+        TARGET := x86_64-unknown-linux-gnu
+    else
+        TARGET := aarch64-unknown-linux-gnu
+    endif
+else
     PLATFORM := windows
+    TARGET := x86_64-pc-windows-msvc
 endif
 
+## Help
 help:
-	@echo "$(GREEN)Hanzo App - AI-powered assistant for all platforms$(NC)"
-	@echo "$(BLUE)Built with Tauri for native performance$(NC)"
+	@echo "$(BLUE)Hanzo App Build System$(NC)"
 	@echo ""
-	@echo "$(YELLOW)Setup Commands:$(NC)"
-	@echo "  $(GREEN)make setup$(NC)          - Complete setup for all platforms"
-	@echo "  $(GREEN)make setup-rust$(NC)     - Install Rust and Tauri CLI"
-	@echo "  $(GREEN)make setup-node$(NC)     - Install Node.js dependencies"
-	@echo "  $(GREEN)make setup-mobile$(NC)   - Setup iOS and Android development"
+	@echo "$(GREEN)Available targets:$(NC)"
+	@echo "  $(YELLOW)install$(NC)         Install all dependencies"
+	@echo "  $(YELLOW)dev$(NC)             Start development server"
+	@echo "  $(YELLOW)build$(NC)           Build for current platform"
+	@echo "  $(YELLOW)build-all$(NC)       Build for all platforms"
+	@echo "  $(YELLOW)build-macos$(NC)     Build for macOS"
+	@echo "  $(YELLOW)build-linux$(NC)     Build for Linux"
+	@echo "  $(YELLOW)build-windows$(NC)   Build for Windows"
+	@echo "  $(YELLOW)test$(NC)            Run all tests"
+	@echo "  $(YELLOW)test-unit$(NC)       Run unit tests"
+	@echo "  $(YELLOW)test-e2e$(NC)        Run E2E tests"
+	@echo "  $(YELLOW)test-backend$(NC)    Run backend tests"
+	@echo "  $(YELLOW)coverage$(NC)        Generate test coverage"
+	@echo "  $(YELLOW)lint$(NC)            Run linters"
+	@echo "  $(YELLOW)format$(NC)          Format code"
+	@echo "  $(YELLOW)clean$(NC)           Clean build artifacts"
 	@echo ""
-	@echo "$(YELLOW)Development Commands:$(NC)"
-	@echo "  $(GREEN)make dev$(NC)            - Run in development mode (desktop)"
-	@echo "  $(GREEN)make dev-ios$(NC)        - Run on iOS device/simulator"
-	@echo "  $(GREEN)make dev-android$(NC)    - Run on Android device/emulator"
-	@echo "  $(GREEN)make dev-all$(NC)        - Run desktop + mobile dev servers"
-	@echo ""
-	@echo "$(YELLOW)Build Commands:$(NC)"
-	@echo "  $(GREEN)make build$(NC)          - Build for current platform"
-	@echo "  $(GREEN)make build-all$(NC)      - Build for all desktop platforms"
-	@echo "  $(GREEN)make build-windows$(NC)  - Build for Windows"
-	@echo "  $(GREEN)make build-linux$(NC)    - Build for Linux"
-	@echo "  $(GREEN)make build-macos$(NC)    - Build for macOS"
-	@echo "  $(GREEN)make build-ios$(NC)      - Build for iOS"
-	@echo "  $(GREEN)make build-android$(NC)  - Build for Android"
-	@echo ""
-	@echo "$(YELLOW)Release Commands:$(NC)"
-	@echo "  $(GREEN)make release$(NC)        - Create release for current platform"
-	@echo "  $(GREEN)make release-all$(NC)    - Create releases for all platforms"
-	@echo ""
-	@echo "$(YELLOW)Utility Commands:$(NC)"
-	@echo "  $(GREEN)make clean$(NC)          - Clean build artifacts"
-	@echo "  $(GREEN)make test$(NC)           - Run tests"
-	@echo "  $(GREEN)make lint$(NC)           - Run linters"
-	@echo "  $(GREEN)make format$(NC)         - Format code"
-	@echo "  $(GREEN)make update-deps$(NC)    - Update all dependencies"
+	@echo "$(BLUE)Platform: $(PLATFORM) ($(TARGET))$(NC)"
 
-# Complete setup for development
-setup: setup-rust setup-node
-	@echo "$(GREEN)✓ Setup complete! Run 'make dev' to start developing$(NC)"
+## Install dependencies
+install:
+	@echo "$(BLUE)Installing dependencies...$(NC)"
+	@command -v pnpm >/dev/null 2>&1 || { echo "$(RED)pnpm is required but not installed. Installing...$(NC)"; npm install -g pnpm; }
+	@command -v rustc >/dev/null 2>&1 || { echo "$(RED)Rust is required but not installed. Please install from https://rustup.rs/$(NC)"; exit 1; }
+	pnpm install
+	cd src-tauri && cargo fetch
+	@echo "$(GREEN)Dependencies installed successfully!$(NC)"
 
-# Install Rust and Tauri toolchain
-setup-rust:
-	@echo "$(YELLOW)Installing Rust and Tauri CLI...$(NC)"
-	@if ! command -v rustc >/dev/null 2>&1; then \
-		echo "$(YELLOW)Installing Rust...$(NC)"; \
-		curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y; \
-		. $$HOME/.cargo/env; \
-	fi
-	@echo "$(YELLOW)Installing Tauri CLI...$(NC)"
-	@cargo install tauri-cli --version "^2.0.0"
-	@cargo install cargo-mobile2
-	@echo "$(GREEN)✓ Rust and Tauri CLI installed$(NC)"
+## Development
+dev:
+	@echo "$(BLUE)Starting development server...$(NC)"
+	pnpm tauri dev
 
-# Install Node.js dependencies
-setup-node:
-	@echo "$(YELLOW)Installing Node.js dependencies...$(NC)"
-	@if command -v bun >/dev/null 2>&1; then \
-		bun install; \
-	elif command -v pnpm >/dev/null 2>&1; then \
-		pnpm install; \
-	elif command -v yarn >/dev/null 2>&1; then \
-		yarn install; \
+dev-web:
+	@echo "$(BLUE)Starting web development server only...$(NC)"
+	pnpm vite
+
+## Building
+build: build-web build-tauri
+	@echo "$(GREEN)Build complete for $(PLATFORM)!$(NC)"
+
+build-web:
+	@echo "$(BLUE)Building web assets...$(NC)"
+	pnpm vite build
+
+build-tauri:
+	@echo "$(BLUE)Building Tauri app for $(TARGET)...$(NC)"
+	pnpm tauri build --target $(TARGET)
+
+build-all: build-macos build-linux build-windows
+	@echo "$(GREEN)All platform builds complete!$(NC)"
+
+build-macos:
+	@echo "$(BLUE)Building for macOS...$(NC)"
+	pnpm tauri build --target universal-apple-darwin
+
+build-linux:
+	@echo "$(BLUE)Building for Linux...$(NC)"
+	pnpm tauri build --target x86_64-unknown-linux-gnu
+	pnpm tauri build --target aarch64-unknown-linux-gnu
+
+build-windows:
+	@echo "$(BLUE)Building for Windows...$(NC)"
+	@if [ "$(PLATFORM)" = "windows" ]; then \
+		pnpm tauri build --target x86_64-pc-windows-msvc; \
 	else \
-		npm install; \
+		echo "$(YELLOW)Cross-compilation to Windows requires additional setup$(NC)"; \
 	fi
-	@echo "$(GREEN)✓ Node.js dependencies installed$(NC)"
 
-# Setup mobile development
-setup-mobile: setup-rust setup-node
-	@echo "$(YELLOW)Setting up mobile development...$(NC)"
-	@rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
-	@rustup target add aarch64-apple-ios x86_64-apple-ios aarch64-apple-ios-sim
-	@echo "$(YELLOW)Initializing Tauri mobile...$(NC)"
-	@cd src-tauri && cargo mobile init
-	@echo "$(GREEN)✓ Mobile development setup complete$(NC)"
-	@echo "$(YELLOW)Note: Ensure you have Xcode (iOS) and Android Studio installed$(NC)"
+## Testing
+test: test-unit test-backend
+	@echo "$(GREEN)All tests passed!$(NC)"
 
-# Development mode - Desktop
-dev: setup-node
-	@echo "$(YELLOW)Starting Hanzo in development mode...$(NC)"
-	@if command -v bun >/dev/null 2>&1; then \
-		bun tauri dev; \
+test-unit:
+	@echo "$(BLUE)Running unit tests...$(NC)"
+	pnpm vitest run
+
+test-unit-watch:
+	@echo "$(BLUE)Running unit tests in watch mode...$(NC)"
+	pnpm vitest
+
+test-unit-ui:
+	@echo "$(BLUE)Opening Vitest UI...$(NC)"
+	pnpm vitest --ui
+
+test-e2e:
+	@echo "$(BLUE)Running E2E tests...$(NC)"
+	@if [ "$(CI)" = "true" ]; then \
+		echo "Running in CI mode (headless)"; \
+		pnpm wdio run wdio.conf.ts; \
 	else \
-		npm run tauri dev; \
+		echo "$(YELLOW)E2E tests are configured to run in CI only (Linux)$(NC)"; \
+		echo "To run locally, use: CI=true make test-e2e"; \
 	fi
 
-# Development mode - iOS
-dev-ios: setup-mobile
-	@echo "$(YELLOW)Starting Hanzo for iOS...$(NC)"
-	@npm run tauri ios dev
+test-backend:
+	@echo "$(BLUE)Running backend tests...$(NC)"
+	cd src-tauri && cargo test
 
-# Development mode - Android
-dev-android: setup-mobile
-	@echo "$(YELLOW)Starting Hanzo for Android...$(NC)"
-	@npm run tauri android dev
+test-backend-verbose:
+	@echo "$(BLUE)Running backend tests (verbose)...$(NC)"
+	cd src-tauri && cargo test -- --nocapture
 
-# Development mode - All platforms
-dev-all:
-	@echo "$(YELLOW)Starting development servers for all platforms...$(NC)"
-	@make -j3 dev dev-ios dev-android
+coverage:
+	@echo "$(BLUE)Generating test coverage...$(NC)"
+	pnpm vitest run --coverage
+	cd src-tauri && cargo tarpaulin --out Html
 
-# Build for current platform
-build: setup-node
-	@echo "$(YELLOW)Building Hanzo for $(PLATFORM)...$(NC)"
-	@npm run tauri build
-	@echo "$(GREEN)✓ Build complete for $(PLATFORM)$(NC)"
+## Code Quality
+lint: lint-frontend lint-backend
+	@echo "$(GREEN)Linting complete!$(NC)"
 
-# Build for all desktop platforms
-build-all: build-windows build-linux build-macos
-	@echo "$(GREEN)✓ All desktop builds complete$(NC)"
+lint-frontend:
+	@echo "$(BLUE)Linting frontend code...$(NC)"
+	pnpm eslint src --ext ts,tsx --max-warnings 0
 
-# Build for Windows
-build-windows: setup-node
-	@echo "$(YELLOW)Building Hanzo for Windows...$(NC)"
-	@npm run tauri build -- --target x86_64-pc-windows-msvc
-	@npm run tauri build -- --target i686-pc-windows-msvc
-	@echo "$(GREEN)✓ Windows build complete$(NC)"
+lint-backend:
+	@echo "$(BLUE)Linting backend code...$(NC)"
+	cd src-tauri && cargo clippy -- -D warnings
 
-# Build for Linux
-build-linux: setup-node
-	@echo "$(YELLOW)Building Hanzo for Linux...$(NC)"
-	@npm run tauri build -- --target x86_64-unknown-linux-gnu
-	@echo "$(GREEN)✓ Linux build complete$(NC)"
+format: format-frontend format-backend
+	@echo "$(GREEN)Formatting complete!$(NC)"
 
-# Build for macOS
-build-macos: setup-node
-	@echo "$(YELLOW)Building Hanzo for macOS...$(NC)"
-	@npm run tauri build -- --target x86_64-apple-darwin
-	@npm run tauri build -- --target aarch64-apple-darwin
-	@echo "$(GREEN)✓ macOS build complete$(NC)"
+format-frontend:
+	@echo "$(BLUE)Formatting frontend code...$(NC)"
+	pnpm prettier --write "src/**/*.{ts,tsx,css}"
 
-# Build for iOS
-build-ios: setup-mobile
-	@echo "$(YELLOW)Building Hanzo for iOS...$(NC)"
-	@npm run tauri ios build
-	@echo "$(GREEN)✓ iOS build complete$(NC)"
+format-backend:
+	@echo "$(BLUE)Formatting backend code...$(NC)"
+	cd src-tauri && cargo fmt
 
-# Build for Android
-build-android: setup-mobile
-	@echo "$(YELLOW)Building Hanzo for Android...$(NC)"
-	@npm run tauri android build
-	@echo "$(GREEN)✓ Android build complete$(NC)"
-
-# Create release build
-release: setup-node
-	@echo "$(YELLOW)Creating release build for $(PLATFORM)...$(NC)"
-	@npm run tauri build -- --release
-	@echo "$(GREEN)✓ Release build complete$(NC)"
-
-# Create releases for all platforms
-release-all:
-	@echo "$(YELLOW)Creating releases for all platforms...$(NC)"
-	@make release PLATFORM=windows
-	@make release PLATFORM=linux
-	@make release PLATFORM=macos
-	@make release PLATFORM=ios
-	@make release PLATFORM=android
-	@echo "$(GREEN)✓ All releases complete$(NC)"
-
-# Clean build artifacts
+## Cleaning
 clean:
-	@echo "$(YELLOW)Cleaning build artifacts...$(NC)"
-	@rm -rf src-tauri/target
-	@rm -rf dist
-	@rm -rf node_modules
-	@rm -rf src-tauri/gen
-	@echo "$(GREEN)✓ Clean complete$(NC)"
+	@echo "$(BLUE)Cleaning build artifacts...$(NC)"
+	rm -rf dist
+	rm -rf src-tauri/target
+	rm -rf node_modules/.vite
+	rm -rf coverage
+	@echo "$(GREEN)Clean complete!$(NC)"
 
-# Run tests
-test:
-	@echo "$(YELLOW)Running tests...$(NC)"
-	@cargo test --manifest-path=src-tauri/Cargo.toml
-	@npm test
-	@echo "$(GREEN)✓ All tests passed$(NC)"
+clean-all: clean
+	@echo "$(BLUE)Cleaning all dependencies...$(NC)"
+	rm -rf node_modules
+	rm -rf src-tauri/target
+	@echo "$(GREEN)Deep clean complete!$(NC)"
 
-# Run linters
-lint:
-	@echo "$(YELLOW)Running linters...$(NC)"
-	@cargo clippy --manifest-path=src-tauri/Cargo.toml -- -D warnings
-	@npm run lint
-	@echo "$(GREEN)✓ Linting complete$(NC)"
+## CI/CD Helpers
+ci-setup:
+	@echo "$(BLUE)Setting up CI environment...$(NC)"
+	sudo apt-get update
+	sudo apt-get install -y webkit2gtk-4.1 libappindicator3-dev librsvg2-dev patchelf
 
-# Format code
-format:
-	@echo "$(YELLOW)Formatting code...$(NC)"
-	@cargo fmt --manifest-path=src-tauri/Cargo.toml
-	@npm run format
-	@echo "$(GREEN)✓ Code formatted$(NC)"
+ci-test: install lint test
+	@echo "$(GREEN)CI tests complete!$(NC)"
 
-# Update dependencies
+## Release
+release-patch:
+	@echo "$(BLUE)Creating patch release...$(NC)"
+	npm version patch
+	git push && git push --tags
+
+release-minor:
+	@echo "$(BLUE)Creating minor release...$(NC)"
+	npm version minor
+	git push && git push --tags
+
+release-major:
+	@echo "$(BLUE)Creating major release...$(NC)"
+	npm version major
+	git push && git push --tags
+
+## Development Tools
+check-deps:
+	@echo "$(BLUE)Checking dependencies...$(NC)"
+	@command -v pnpm >/dev/null 2>&1 && echo "$(GREEN)✓ pnpm$(NC)" || echo "$(RED)✗ pnpm$(NC)"
+	@command -v rustc >/dev/null 2>&1 && echo "$(GREEN)✓ rust$(NC)" || echo "$(RED)✗ rust$(NC)"
+	@command -v cargo >/dev/null 2>&1 && echo "$(GREEN)✓ cargo$(NC)" || echo "$(RED)✗ cargo$(NC)"
+	@command -v node >/dev/null 2>&1 && echo "$(GREEN)✓ node$(NC)" || echo "$(RED)✗ node$(NC)"
+
 update-deps:
-	@echo "$(YELLOW)Updating dependencies...$(NC)"
-	@cargo update --manifest-path=src-tauri/Cargo.toml
-	@npm update
-	@echo "$(GREEN)✓ Dependencies updated$(NC)"
+	@echo "$(BLUE)Updating dependencies...$(NC)"
+	pnpm update
+	cd src-tauri && cargo update
 
-# Platform-specific helpers
-ifeq ($(PLATFORM),macos)
-install-app: build
-	@echo "$(YELLOW)Installing Hanzo.app to /Applications...$(NC)"
-	@cp -R src-tauri/target/release/bundle/macos/Hanzo.app /Applications/
-	@echo "$(GREEN)✓ Hanzo installed to /Applications$(NC)"
-endif
+## Docker (for Linux CI)
+docker-build:
+	@echo "$(BLUE)Building Docker image for CI...$(NC)"
+	docker build -t hanzo-app-ci -f Dockerfile.ci .
 
-ifeq ($(PLATFORM),linux)
-install-app: build
-	@echo "$(YELLOW)Installing Hanzo...$(NC)"
-	@sudo cp src-tauri/target/release/hanzo /usr/local/bin/
-	@echo "$(GREEN)✓ Hanzo installed to /usr/local/bin$(NC)"
-endif
-
-# Quick commands
-quick-start: setup dev
-	@echo "$(GREEN)✓ Hanzo is running!$(NC)"
-
-# CI/CD helpers
-ci-test: setup-rust setup-node lint test
-	@echo "$(GREEN)✓ CI tests complete$(NC)"
-
-ci-build: setup-rust setup-node build-all
-	@echo "$(GREEN)✓ CI builds complete$(NC)"
-
-# Docker support (for Linux builds on other platforms)
-docker-build-linux:
-	@echo "$(YELLOW)Building Linux version in Docker...$(NC)"
-	@docker build -t hanzo-linux-builder -f Dockerfile.linux .
-	@docker run --rm -v $(PWD):/app hanzo-linux-builder make build-linux
-	@echo "$(GREEN)✓ Linux build complete via Docker$(NC)"
-
-# Development utilities
-watch:
-	@echo "$(YELLOW)Starting file watcher...$(NC)"
-	@cargo watch -x 'run --manifest-path=src-tauri/Cargo.toml'
-
-serve:
-	@echo "$(YELLOW)Starting frontend dev server only...$(NC)"
-	@npm run dev
-
-# Help for migrating from React Native
-migrate-help:
-	@echo "$(BLUE)=== Migration Guide from React Native to Tauri ===$(NC)"
-	@echo ""
-	@echo "$(YELLOW)1. Frontend Changes:$(NC)"
-	@echo "   - Move React code to src/ directory"
-	@echo "   - Replace React Native components with web equivalents"
-	@echo "   - Use Tauri's invoke API instead of native modules"
-	@echo ""
-	@echo "$(YELLOW)2. Backend Changes:$(NC)"
-	@echo "   - Implement native features in Rust (src-tauri/)"
-	@echo "   - Use Tauri commands for IPC communication"
-	@echo ""
-	@echo "$(YELLOW)3. Platform-specific code:$(NC)"
-	@echo "   - Use conditional compilation in Rust"
-	@echo "   - Use CSS media queries for responsive design"
-	@echo ""
-	@echo "Run 'make setup' to get started with Tauri!"
-
-.DEFAULT_GOAL := help
+docker-test:
+	@echo "$(BLUE)Running tests in Docker...$(NC)"
+	docker run --rm hanzo-app-ci make ci-test

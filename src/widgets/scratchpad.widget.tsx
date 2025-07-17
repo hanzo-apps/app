@@ -1,7 +1,7 @@
 import {hanzoNative} from 'lib/HanzoNative'
 import {observer} from 'mobx-react-lite'
 import {FC, useEffect} from 'react'
-import {TextInput, View} from 'react-native'
+import {TextInput, View} from 'react-native-web'
 import {useStore} from 'store'
 import colors from 'tailwindcss/colors'
 

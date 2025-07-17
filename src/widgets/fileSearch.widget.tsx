@@ -6,7 +6,7 @@ import {MainInput} from 'components/MainInput'
 import {useFullSize} from 'hooks/useFullSize'
 import {observer} from 'mobx-react-lite'
 import React, {FC, useEffect, useRef} from 'react'
-import {FlatList, Text, View, ViewStyle} from 'react-native'
+import {FlatList, Text, View, ViewStyle} from 'react-native-web'
 import {useStore} from 'store'
 
 interface Props {

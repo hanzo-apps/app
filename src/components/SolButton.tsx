@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import {useBoolean} from 'hooks'
 import React, {FC} from 'react'
-import {Text, TouchableOpacity, TouchableOpacityProps} from 'react-native'
+import {Text, TouchableOpacity, TouchableOpacityProps} from 'react-native-web'
 
 interface Props extends TouchableOpacityProps {
   title: string

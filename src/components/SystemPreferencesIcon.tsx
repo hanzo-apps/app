@@ -1,6 +1,6 @@
-import {hanzoNative} from 'lib/HanzoNative'
+import {solNative} from 'lib/SolNative'
 import React from 'react'
-import {ViewStyle} from 'react-native'
+import {ViewStyle} from 'react-native-web'
 import {FileIcon} from './FileIcon'
 
 export const SystemPreferencesIcon = ({style}: {style?: ViewStyle} = {}) => {
@@ -9,7 +9,7 @@ export const SystemPreferencesIcon = ({style}: {style?: ViewStyle} = {}) => {
       style={style}
       className="w-6 h-6"
       url={
-        hanzoNative.OSVersion >= 13
+        solNative.OSVersion >= 13
           ? '/System/Applications/System Settings.app'
           : '/System/Applications/System Preferences.app'
       }

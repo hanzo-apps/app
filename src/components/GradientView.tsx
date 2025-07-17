@@ -1,5 +1,5 @@
-import {cssInterop} from 'nativewind'
-import {requireNativeComponent, ViewStyle} from 'react-native'
+import {cssInterop} from 'lib/nativewind-shim'
+import {View, ViewStyle} from 'react-native-web'
 
 type GradientProps = {
   children?: any
@@ -12,10 +12,19 @@ type GradientProps = {
   cornerRadius?: number
 }
 
-const GradientViewNative = requireNativeComponent<GradientProps>('GradientView')
-
+// Web fallback for native gradient view
 export const GradientView = (props: GradientProps) => {
-  return <GradientViewNative {...props} />
+  const gradientStyle = {
+    ...props.style,
+    background: `linear-gradient(${props.angle}deg, ${props.startColor}, ${props.endColor})`,
+    borderRadius: props.cornerRadius || 0,
+  }
+  
+  return (
+    <View {...props} style={gradientStyle}>
+      {props.children}
+    </View>
+  )
 }
 
 cssInterop(GradientView, {

@@ -1,16 +1,7 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
 import './styles/globals.css';
+import './App'; // App self-registers with React Native Web
 
 // Disable context menu in production
 if (!import.meta.env.DEV) {
   document.addEventListener('contextmenu', (e) => e.preventDefault());
 }
-
-// Render the app
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);

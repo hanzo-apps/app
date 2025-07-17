@@ -1,11 +1,9 @@
 import clsx from 'clsx'
-import React, {FC} from 'react'
-import {Text, View, ViewStyle} from 'react-native'
+import {FC} from 'react'
+import {Text, View, ViewStyle} from 'react-native-web'
 import colors from 'tailwindcss/colors'
-import {BlurView} from './BlurView'
 import {observer} from 'mobx-react-lite'
 import {useStore} from 'store'
-import {hanzoNative} from 'lib/HanzoNative'
 
 interface IProps {
   title?: string
@@ -33,9 +31,12 @@ export const Key: FC<IProps> = observer(
 
         {!!symbol && (
           <View
-            className={
-              'w-[20px] h-[20px] items-center justify-center rounded border subBg border-color'
-            }>
+            className={clsx(
+              'w-[20px] h-[20px] items-center justify-center rounded border subBg border-color',
+              {
+                'bg-accent border-accent': primary,
+              },
+            )}>
             <Text
               className="text-xs text-center"
               style={{

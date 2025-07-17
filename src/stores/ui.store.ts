@@ -2,7 +2,7 @@ import { makeAutoObservable } from 'mobx';
 import MiniSearch from 'minisearch';
 import { nanoid } from 'nanoid';
 import { storage, getStoredData, setStoredData } from '@/utils/storage';
-import { invoke } from '@tauri-apps/api/tauri';
+import { invoke } from '@tauri-apps/api/core';
 
 export interface AppItem {
   id: string;
@@ -65,8 +65,17 @@ class UIStore {
     
     // Load system apps
     try {
-      const apps = await invoke<AppItem[]>('get_apps');
-      this.items = [...this.items, ...apps];
+      const apps = await invoke<any[]>('get_apps');
+      const appItems: AppItem[] = apps.map(app => ({
+        id: app.id,
+        name: app.name,
+        type: 'app' as const,
+        path: app.path,
+        icon: app.icon,
+        frequency: 0,
+        keywords: [app.name.toLowerCase()]
+      }));
+      this.items = [...this.items, ...appItems];
     } catch (error) {
       console.error('Failed to load apps:', error);
     }
@@ -135,13 +144,13 @@ class UIStore {
     // Execute based on type
     switch (selected.type) {
       case 'app':
-        await invoke('launch_app', { appId: selected.path || selected.name });
+        await invoke('launch_app', { appId: selected.id });
         break;
       case 'bookmark':
         await invoke('open_url', { url: selected.url });
         break;
       case 'command':
-        await invoke('execute_command', { command: selected.path });
+        await invoke('execute_command', { command: selected.id });
         break;
       case 'file':
         await invoke('open_file', { path: selected.path });

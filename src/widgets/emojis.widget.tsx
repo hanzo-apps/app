@@ -4,7 +4,7 @@ import {useFullSize} from 'hooks/useFullSize'
 import {hanzoNative} from 'lib/HanzoNative'
 import {observer} from 'mobx-react-lite'
 import React, {FC, useCallback, useEffect, useRef} from 'react'
-import {FlatList, Text, View, ViewStyle, TouchableOpacity} from 'react-native'
+import {FlatList, Text, View, ViewStyle, TouchableOpacity} from 'react-native-web'
 import {useStore} from 'store'
 import {EMOJI_ROW_SIZE, Emoji} from 'stores/emoji.store'
 

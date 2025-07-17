@@ -5,11 +5,11 @@ import {hanzoNative} from 'lib/HanzoNative'
 import {languages} from 'lib/languages'
 import {observer} from 'mobx-react-lite'
 import React, {FC, useEffect} from 'react'
-import {StyleProp, Text, View, ViewStyle} from 'react-native'
+import {StyleProp, Text, View, ViewStyle} from 'react-native-web'
 import {useStore} from 'store'
 import customColors from '../colors'
 import {BackButton} from 'components/BackButton'
-import {Widget} from 'stores/ui.store'
+import { Widget } from 'stores/unified.store'
 
 interface Props {
   style?: StyleProp<ViewStyle>

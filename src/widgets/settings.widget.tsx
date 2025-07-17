@@ -1,7 +1,7 @@
 import {useFullSize} from 'hooks/useFullSize'
 import {observer} from 'mobx-react-lite'
 import {FC, useState} from 'react'
-import {View} from 'react-native'
+import {View} from 'react-native-web'
 import {About} from './settings/about'
 import {General} from './settings/general'
 import {Shortcuts} from './settings/shortcuts'

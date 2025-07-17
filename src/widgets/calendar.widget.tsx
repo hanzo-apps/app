@@ -3,9 +3,9 @@ import {hanzoNative} from 'lib/HanzoNative'
 import {DateTime} from 'luxon'
 import {observer} from 'mobx-react-lite'
 import React, {FC, useEffect} from 'react'
-import {Text, TouchableOpacity, View} from 'react-native'
+import {Text, TouchableOpacity, View} from 'react-native-web'
 import {useStore} from 'store'
-import {Widget} from 'stores/ui.store'
+import { Widget } from 'stores/unified.store'
 
 export let CalendarWidget: FC = observer(() => {
   let store = useStore()

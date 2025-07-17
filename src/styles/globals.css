@@ -1,3 +1,5 @@
+@import "../../node_modules/highlight.js/styles/github-dark.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -123,4 +125,70 @@
   .animation-delay-300 {
     animation-delay: 300ms;
   }
+}
+
+/* Chat message styles */
+.prose {
+  @apply text-text-primary;
+}
+
+.prose code {
+  @apply text-accent;
+}
+
+.prose pre {
+  @apply bg-secondary/50 rounded-lg p-4 my-4 overflow-x-auto;
+}
+
+.prose a {
+  @apply text-accent hover:underline;
+}
+
+.prose strong {
+  @apply font-bold text-text-primary;
+}
+
+.prose em {
+  @apply italic;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-accent pl-4 py-2 my-4 text-text-secondary;
+}
+
+.prose ul, .prose ol {
+  @apply my-4 pl-6;
+}
+
+.prose li {
+  @apply my-1;
+}
+
+.prose table {
+  @apply w-full my-4 border-collapse;
+}
+
+.prose th, .prose td {
+  @apply border border-border px-4 py-2 text-left;
+}
+
+.prose th {
+  @apply bg-secondary/50 font-semibold;
+}
+
+/* Loading animation for streaming messages */
+.loading-dots {
+  @apply flex space-x-1;
+}
+
+.loading-dots span {
+  @apply inline-block w-2 h-2 bg-accent rounded-full animate-bounce;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.loading-dots span:nth-child(3) {
+  animation-delay: 0.2s;
 }

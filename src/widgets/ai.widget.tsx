@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { observer } from 'mobx-react-lite'
-import { View, Text, TextInput, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native'
+import { View, Text, TextInput, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native-web'
 import { useStore } from '../store'
 import { ChatMessage, Assistant } from '../ai/types'
 import { aiService } from '../services/ai.service'
@@ -175,3 +175,5 @@ export const AIWidget: React.FC<AIWidgetProps> = observer(({ widget }) => {
     </KeyboardAvoidingView>
   )
 })
+
+export default AIWidget

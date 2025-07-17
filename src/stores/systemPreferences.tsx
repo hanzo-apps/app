@@ -1,5 +1,5 @@
 import {hanzoNative} from 'lib/HanzoNative'
-import {Image, ImageSourcePropType, Linking} from 'react-native'
+import {Image, ImageSourcePropType, Linking} from 'react-native-web'
 import {ItemType} from './ui.store'
 import {FileIcon} from 'components/FileIcon'
 import plist from '@expo/plist'

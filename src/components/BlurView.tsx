@@ -1,7 +1,6 @@
-import {requireNativeComponent, ViewStyle} from 'react-native'
-
-import {cssInterop} from 'nativewind'
-import {FC} from 'react'
+import { View, ViewStyle } from 'react-native-web'
+import { cssInterop } from 'lib/nativewind-shim'
+import { FC } from 'react'
 
 type BlurViewProps = {
   children?: any
@@ -21,13 +20,22 @@ type BlurViewProps = {
   className?: string
 }
 
-export const BlurViewNative = requireNativeComponent<BlurViewProps>('BlurView')
+// Web fallback for native blur view
+export const BlurViewNative = View
 
 export const BlurView: FC<BlurViewProps> = props => {
+  const blurStyle = {
+    ...props.style,
+    // @ts-ignore
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  }
+  
   return (
-    <BlurViewNative
+    <View
       {...props}
-      materialName={props.materialName ?? 'windowBackground'}
+      style={blurStyle}
     />
   )
 }

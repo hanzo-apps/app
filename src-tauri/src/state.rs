@@ -1,10 +1,13 @@
 use parking_lot::RwLock;
-use serde::{Deserialize, Serialize};
 use std::sync::Arc;
+use tokio::sync::Mutex;
 use crate::commands::Settings;
+use crate::search::SearchIndex;
 
 pub struct AppState {
-    settings: Arc<RwLock<Settings>>,
+    pub settings: Arc<RwLock<Settings>>,
+    pub search_index: Arc<Mutex<SearchIndex>>,
+    pub clipboard_history: Arc<Mutex<Vec<String>>>,
 }
 
 impl AppState {
@@ -19,6 +22,8 @@ impl AppState {
         
         Self {
             settings: Arc::new(RwLock::new(default_settings)),
+            search_index: Arc::new(Mutex::new(SearchIndex::new())),
+            clipboard_history: Arc::new(Mutex::new(Vec::new())),
         }
     }
     

@@ -3,7 +3,7 @@ import {MyRadioButton} from 'components/MyRadioButton'
 import {MySwitch} from 'components/MySwitch'
 import {hanzoNative} from 'lib/HanzoNative'
 import {observer} from 'mobx-react-lite'
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native'
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native-web'
 import {useStore} from 'store'
 
 export const General = observer(() => {

@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useRef} from 'react'
-import {Animated, ViewProps, ViewStyle} from 'react-native'
+import {Animated, ViewProps, ViewStyle} from 'react-native-web'
 
 interface Props extends ViewProps {
   visible: boolean

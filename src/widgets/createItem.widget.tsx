@@ -7,9 +7,9 @@ import {SolButton} from 'components/SolButton'
 import {hanzoNative} from 'lib/HanzoNative'
 import {observer} from 'mobx-react-lite'
 import React, {FC, useEffect, useState} from 'react'
-import {Image, Text, TouchableOpacity, View, ViewStyle} from 'react-native'
+import {Image, Text, TouchableOpacity, View, ViewStyle} from 'react-native-web'
 import {useStore} from 'store'
-import {ItemType} from 'stores/ui.store'
+import { ItemType } from 'stores/unified.store'
 
 interface Props {
   style?: ViewStyle

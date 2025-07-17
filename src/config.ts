@@ -1,4 +1,4 @@
-import {LogBox} from 'react-native'
+import {LogBox} from 'react-native-web'
 import Fuse, {IFuseOptions} from 'fuse.js'
 import * as Sentry from '@sentry/react-native'
 import {SentryDSN} from './env'

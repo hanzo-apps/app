@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import React, {FC} from 'react'
-import {TouchableOpacity, View} from 'react-native'
+import {TouchableOpacity, View} from 'react-native-web'
 
 interface Props {
   value: boolean

@@ -3,6 +3,27 @@
   background: transparent;
 }
 
+/* macOS vibrancy effect */
+.vibrancy {
+  background-color: rgba(30, 30, 30, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+@media (prefers-color-scheme: dark) {
+  .vibrancy {
+    background-color: rgba(30, 30, 30, 0.8);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .vibrancy {
+    background-color: rgba(255, 255, 255, 0.7);
+  }
+}
+
 .app-container {
   @apply w-full max-w-2xl min-h-[400px] max-h-[80vh] overflow-hidden;
 }
@@ -63,7 +84,7 @@
 }
 
 .ai-input {
-  @apply w-full input;
+  @apply w-full;
 }
 
 .loading-dots {
@@ -75,11 +96,11 @@
 }
 
 .loading-dots span:nth-child(2) {
-  @apply animation-delay-100;
+  animation-delay: 100ms;
 }
 
 .loading-dots span:nth-child(3) {
-  @apply animation-delay-200;
+  animation-delay: 200ms;
 }
 
 /* Clipboard widget */
@@ -169,7 +190,8 @@
 
 .setting-input,
 .setting-select {
-  @apply w-full input;
+  @apply w-full bg-secondary text-text-primary border border-border rounded-md px-4 py-2 
+         focus:outline-none focus:border-accent transition-colors;
 }
 
 .setting-actions {
