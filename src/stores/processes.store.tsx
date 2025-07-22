@@ -1,8 +1,8 @@
-import {FUSE_OPTIONS} from 'config'
+import {FUSE_OPTIONS} from '../config'
 import Fuse from 'fuse.js'
-import {hanzoNative} from 'lib/HanzoNative'
+import {hanzoNative} from '../lib/HanzoNative'
 import {makeAutoObservable} from 'mobx'
-import {IRootStore} from 'store'
+import {IRootStore} from '../store'
 
 export type Process = {
   id: number

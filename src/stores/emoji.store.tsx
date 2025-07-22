@@ -1,8 +1,8 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { AsyncStorage } from './storage'
 import {autorun, makeAutoObservable, runInAction, toJS} from 'mobx'
-import {IRootStore} from 'store'
+import {IRootStore} from '../store'
 import {emojis as rawEmojis_} from '../lib/emojis'
-import {hanzoNative} from 'lib/HanzoNative'
+import {hanzoNative} from '../lib/HanzoNative'
 import MiniSearch from 'minisearch'
 import {storage} from './storage'
 

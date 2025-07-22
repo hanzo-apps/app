@@ -1,24 +1,44 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import {Assets} from 'assets'
-import {FileIcon} from 'components/FileIcon'
+import { AsyncStorage } from './storage'
+import {Assets} from '../assets'
+import {FileIcon} from '../components/FileIcon'
 import {Parser} from 'expr-eval'
-import {hanzoNative} from 'lib/HanzoNative'
-import {CONSTANTS} from 'lib/constants'
-import {googleTranslate} from 'lib/translator'
+import {hanzoNative} from '../lib/HanzoNative'
+import {CONSTANTS} from '../lib/constants'
+import {googleTranslate} from '../lib/translator'
 import {autorun, makeAutoObservable, runInAction, toJS} from 'mobx'
 import {
   Appearance,
-  EmitterSubscription,
   Linking,
-  NativeEventSubscription,
 } from 'react-native-web'
-import {IRootStore} from 'store'
+
+// Type definitions for web compatibility
+type EmitterSubscription = {
+  remove: () => void;
+}
+type NativeEventSubscription = {
+  remove: () => void;
+}
+
+// Import global types
+type CalendarAuthorizationStatus = globalThis.CalendarAuthorizationStatus;
+type OnboardingStep = globalThis.OnboardingStep;
+type FileDescription = globalThis.FileDescription;
+type INativeEvent = globalThis.INativeEvent;
+type Item = globalThis.Item;
+import {IRootStore} from '../store'
 import {createBaseItems} from './items'
-import plist from '@expo/plist'
+// Simple plist parser stub for web compatibility
+const plist = {
+  parse: (content: string) => {
+    // Basic XML plist parsing - just extract CFBundleIdentifier
+    const match = content.match(/<key>CFBundleIdentifier<\/key>\s*<string>([^<]+)<\/string>/);
+    return { CFBundleIdentifier: match ? match[1] : null };
+  }
+};
 import MiniSearch from 'minisearch'
-import * as Sentry from '@sentry/react-native'
+// Sentry not needed for Tauri app
 import {storage} from './storage'
-import {defaultShortcuts, validShortcutTokensRegex} from 'lib/shorcuts'
+import {defaultShortcuts, validShortcutTokensRegex} from '../lib/shorcuts'
 
 const exprParser = new Parser()
 
@@ -54,11 +74,7 @@ export enum ItemType {
   PREFERENCE_PANE = 'PREFERENCE_PANE',
 }
 
-export enum ScratchPadColor {
-  SYSTEM = 'SYSTEM',
-  BLUE = 'BLUE',
-  ORANGE = 'ORANGE',
-}
+// ScratchPadColor is imported from unified.store
 
 let stopWords = new Set([
   'and',
@@ -130,6 +146,9 @@ let defaultSearchFolders = [
 ]
 
 export type UIStore = ReturnType<typeof createUIStore>
+
+// Export the ScratchPadColor enum from here as well for backward compatibility
+export { ScratchPadColor } from './unified.store'
 type SearchEngine = 'google' | 'bing' | 'duckduckgo' | 'perplexity' | 'custom'
 
 const itemsThatShouldShowWindow = [
@@ -145,7 +164,7 @@ export const createUIStore = (root: IRootStore) => {
     try {
       storage.set('@ui.store', JSON.stringify(plainState))
     } catch (e) {
-      Sentry.captureException(e)
+      console.error('UI store error:', e)
     }
   }
 
@@ -373,10 +392,7 @@ export const createUIStore = (root: IRootStore) => {
         if (minisearch.documentCount === 0) {
           for (let item of allItems) {
             if (!item.id) {
-              Sentry.captureMessage('Item without id', {
-                level: 'warning',
-                extra: {item},
-              })
+              console.warn('Item without id:', item);
             }
           }
           minisearch.addAll(allItems)
@@ -625,7 +641,7 @@ export const createUIStore = (root: IRootStore) => {
         })
         .catch(e => {
           hanzoNative.showToast(`Could not get apps: ${e}`, 'error')
-          Sentry.captureException(e)
+          console.error('Apps fetch error:', e)
         })
     },
     onShow: ({target}: {target?: string}) => {

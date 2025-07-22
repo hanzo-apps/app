@@ -1,26 +1,32 @@
 // Re-export assets for Sol compatibility
-import logoMinimal from './assets/logoMinimal.png';
-import logoMinimalWhite from './assets/logoMinimalWhite.png';
-import smallLogo from './assets/smallLogo.png';
-import macosSettings from './assets/macosSettings.png';
-import power from './assets/power.png';
-import restart from './assets/restart.png';
-import shortcuts from './assets/shortcuts.png';
-import toggle from './assets/toggle.png';
-import translate from './assets/translate.png';
-import close from './assets/close.png';
+import HanzoBlackSmall from './assets/HanzoBlackSmall.png';
+import HanzoWhiteSmall from './assets/HanzoWhiteSmall.png';
+import SolBlackSmall from './assets/SolBlackSmall.png';
+import SolWhiteSmall from './assets/SolWhiteSmall.png';
+import Logo from './assets/Logo.png';
+import SettingsIcon from './assets/SettingsIcon.png';
+import google_translate from './assets/google_translate.png';
 
 export const Assets = {
-  logoMinimal,
-  logoMinimalWhite,
-  smallLogo,
-  macosSettings,
-  power,
-  restart,
-  shortcuts,
-  toggle,
-  translate,
-  close,
+  logoMinimal: HanzoBlackSmall,
+  logoMinimalWhite: HanzoWhiteSmall,
+  smallLogo: Logo,
+  macosSettings: SettingsIcon,
+  power: SettingsIcon, // fallback
+  restart: SettingsIcon, // fallback
+  shortcuts: SettingsIcon, // fallback
+  toggle: SettingsIcon, // fallback
+  translate: google_translate,
+  close: SettingsIcon, // fallback
+  Safari: SettingsIcon, // fallback
+  Brave: SettingsIcon, // fallback
+  Chrome: SettingsIcon, // fallback
+  DarkModeIcon: SettingsIcon, // fallback
+  SleepIcon: SettingsIcon, // fallback
+  Airdrop: SettingsIcon, // fallback
+  LockIcon: SettingsIcon, // fallback
+  SettingsIcon: SettingsIcon,
+  googleLogo: google_translate, // use translate icon as fallback
 };
 
 // Re-export custom icons

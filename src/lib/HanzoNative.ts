@@ -195,3 +195,4 @@ class HanzoNativeClass extends NativeEventEmitter {
 }
 
 export const hanzoNative = new HanzoNativeClass(NativeModules.HanzoNative)
+*/

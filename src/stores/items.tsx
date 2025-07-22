@@ -1,13 +1,16 @@
-import {Assets} from 'assets'
-import {IRootStore} from 'store'
-import {ItemType, Widget} from './ui.store'
-import {hanzoNative} from 'lib/HanzoNative'
+import {Assets} from '../assets'
+import {IRootStore} from '../store'
+import {ItemType, Widget} from './unified.store'
+import {hanzoNative} from '../lib/HanzoNative'
 import {Clipboard, Linking, Text, View} from 'react-native-web'
-import {FileIcon} from 'components/FileIcon'
+import {FileIcon} from '../components/FileIcon'
 import {nanoid} from 'nanoid'
 import {v4 as uuidv4} from 'uuid'
 import {systemPreferenceItems} from './systemPreferences'
 import Chance from 'chance'
+
+// Import Item type from globals
+type Item = globalThis.Item
 
 const chance = new Chance()
 

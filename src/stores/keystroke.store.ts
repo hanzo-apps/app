@@ -1,10 +1,15 @@
-import {extractMeetingLink} from 'lib/calendar'
+import {extractMeetingLink} from '../lib/calendar'
 
-import {hanzoNative} from 'lib/HanzoNative'
+import {hanzoNative} from '../lib/HanzoNative'
 import {makeAutoObservable} from 'mobx'
-import {Clipboard, EmitterSubscription, Linking} from 'react-native-web'
-import {IRootStore} from 'store'
-import {ItemType, Widget} from './ui.store'
+import {Clipboard, Linking} from 'react-native-web'
+
+// EmitterSubscription type for web compatibility
+type EmitterSubscription = {
+  remove: () => void;
+}
+import {IRootStore} from '../store'
+import {ItemType, Widget} from './unified.store'
 import {EMOJI_ROW_SIZE} from './emoji.store'
 
 let keyDownListener: EmitterSubscription | undefined

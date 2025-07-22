@@ -1,4 +1,4 @@
-import {solNative} from 'lib/SolNative'
+import {hanzoNative} from 'lib/HanzoNative'
 import {observer} from 'mobx-react-lite'
 import React, {useEffect, useRef} from 'react'
 import {Animated, useColorScheme} from 'react-native-web'
@@ -8,7 +8,7 @@ export const LoadingBar = observer(() => {
   const store = useStore()
   const isDarkMode = store.ui.isDarkMode
   const animatedBorderRef = useRef(new Animated.Value(0))
-  const accentColor = solNative.accentColor
+  const accentColor = hanzoNative.accentColor
 
   useEffect(() => {
     Animated.timing(animatedBorderRef.current, {

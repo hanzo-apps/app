@@ -2,7 +2,7 @@ import { makeAutoObservable } from 'mobx';
 import MiniSearch from 'minisearch';
 import { nanoid } from 'nanoid';
 import { readText, writeText } from '@tauri-apps/plugin-clipboard-manager';
-import { getStoredData, setStoredData } from '@/utils/storage';
+import { getStoredData, setStoredData } from '../utils/storage';
 
 export interface ClipboardItem {
   id: string;

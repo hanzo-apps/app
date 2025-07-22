@@ -1,12 +1,15 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import {hanzoNative} from 'lib/HanzoNative'
+import { AsyncStorage } from './storage'
+import {hanzoNative} from '../lib/HanzoNative'
 import {autorun, makeAutoObservable, runInAction, toJS} from 'mobx'
-import {EmitterSubscription} from 'react-native-web'
-import {IRootStore} from 'store'
-import {Widget} from './ui.store'
+// EmitterSubscription type for web compatibility
+type EmitterSubscription = {
+  remove: () => void;
+}
+import {IRootStore} from '../store'
+import {Widget} from './unified.store'
 import MiniSearch from 'minisearch'
 import {storage} from './storage'
-import {captureException} from '@sentry/react-native'
+// Sentry not needed for Tauri app
 
 const MAX_ITEMS = 1000
 
@@ -61,7 +64,7 @@ export const createClipboardStore = (root: IRootStore) => {
         try {
           minisearch.remove(store.items[store.items.length - 1])
         } catch (e) {
-          captureException(e)
+          console.error('Clipboard error:', e)
         }
 
         store.items = store.items.slice(0, MAX_ITEMS)

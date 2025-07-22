@@ -89,8 +89,8 @@ interface ITrackingProject {
 type Item = {
   id: string
   icon?: string
-  iconImage?: ImageURISource | number | ImageURISource[]
-  IconComponent?: FC<any>
+  iconImage?: import('react-native').ImageSourcePropType | number | import('react-native').ImageSourcePropType[]
+  IconComponent?: import('react').FC<any>
   color?: string
   url?: string
   preventClose?: boolean
@@ -102,6 +102,7 @@ type Item = {
   metaCallback?: () => void
   isApplescript?: boolean
   text?: string
+  shortcut?: string
   isFavorite?: boolean // injected in UI array
   isRunning?: boolean // only apps have this
 }

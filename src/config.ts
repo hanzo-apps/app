@@ -1,9 +1,4 @@
-import {LogBox} from 'react-native-web'
 import Fuse, {IFuseOptions} from 'fuse.js'
-import * as Sentry from '@sentry/react-native'
-import {SentryDSN} from './env'
-
-LogBox.ignoreLogs(['Clipboard ', 'Component', 'Require cycle:'])
 
 export const FUSE_OPTIONS: IFuseOptions<any> = {
   threshold: 0.15,
@@ -15,11 +10,5 @@ export const FUSE_OPTIONS: IFuseOptions<any> = {
   ],
 }
 
-if (!__DEV__) {
-  Sentry.init({
-    dsn: SentryDSN,
-    enableAppHangTracking: false,
-  })
-} else {
-  Sentry.setUser({email: 'ospfranco@gmail.com'})
-}
+// Development mode check for Tauri
+export const __DEV__ = process.env.NODE_ENV === 'development'

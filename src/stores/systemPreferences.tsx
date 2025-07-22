@@ -1,8 +1,19 @@
-import {hanzoNative} from 'lib/HanzoNative'
+import {hanzoNative} from '../lib/HanzoNative'
 import {Image, ImageSourcePropType, Linking} from 'react-native-web'
-import {ItemType} from './ui.store'
+import {ItemType} from './unified.store'
 import {FileIcon} from 'components/FileIcon'
-import plist from '@expo/plist'
+// Simple plist parser stub for web compatibility
+const plist = {
+  parse: (content: string) => {
+    // Basic XML plist parsing
+    const result: any = {};
+    const matches = content.matchAll(/<key>([^<]+)<\/key>\s*<string>([^<]+)<\/string>/g);
+    for (const match of matches) {
+      result[match[1]] = match[2];
+    }
+    return result;
+  }
+};
 import {Assets, Icons} from 'assets'
 
 const ignoreList = [

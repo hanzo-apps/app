@@ -1,11 +1,20 @@
-import {captureException} from '@sentry/react-native'
-import {extractMeetingLink} from 'lib/calendar'
-import {hanzoNative} from 'lib/HanzoNative'
-import {sleep} from 'lib/various'
+// Sentry not needed for Tauri app
+import {extractMeetingLink} from '../lib/calendar'
+import {hanzoNative} from '../lib/HanzoNative'
+import {sleep} from '../lib/various'
 import {DateTime} from 'luxon'
 import {makeAutoObservable} from 'mobx'
-import {EmitterSubscription, Linking} from 'react-native-web'
-import {IRootStore} from 'store'
+import {Linking} from 'react-native-web'
+
+// EmitterSubscription type for web compatibility
+type EmitterSubscription = {
+  remove: () => void;
+}
+
+// Import global types
+type CalendarAuthorizationStatus = globalThis.CalendarAuthorizationStatus;
+type INativeEvent = globalThis.INativeEvent;
+import {IRootStore} from '../store'
 
 const DAYS_TO_PARSE = 14
 
@@ -178,7 +187,7 @@ export const createCalendarStore = (root: IRootStore) => {
         try {
           store.fetchEvents()
         } catch (e) {
-          captureException(e)
+          console.error('Calendar error:', e)
         }
       }
 

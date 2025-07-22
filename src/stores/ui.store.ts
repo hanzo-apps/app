@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import MiniSearch from 'minisearch';
 import { nanoid } from 'nanoid';
-import { storage, getStoredData, setStoredData } from '@/utils/storage';
+import { storage, getStoredData, setStoredData } from '../utils/storage';
 import { invoke } from '@tauri-apps/api/core';
 
 export interface AppItem {

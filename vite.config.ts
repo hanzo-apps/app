@@ -71,6 +71,7 @@ export default defineConfig({
       '@types': path.resolve(__dirname, './src/types'),
       'assets': path.resolve(__dirname, './src/assets'),
       'components': path.resolve(__dirname, './src/components'),
+      'config': path.resolve(__dirname, './src/config'),
       'lib': path.resolve(__dirname, './src/lib'),
       'stores': path.resolve(__dirname, './src/stores'),
       'store': path.resolve(__dirname, './src/store'),
