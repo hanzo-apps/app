@@ -85,7 +85,7 @@ build-web:
 
 build-tauri:
 	@echo "$(BLUE)Building Tauri app for $(TARGET)...$(NC)"
-	pnpm tauri build --target $(TARGET)
+	cd src-tauri && pnpm tauri build --target $(TARGET)
 
 build-all: build-macos build-linux build-windows
 	@echo "$(GREEN)All platform builds complete!$(NC)"

@@ -1,0 +1,54 @@
+model_list:
+  # Local models via llama-cpp
+  - model_name: "qwen-0.5b"
+    litellm_params:
+      model: "openai/qwen-0.5b"
+      api_base: "http://localhost:8080/v1"
+      api_key: "dummy"
+    model_info:
+      max_tokens: 2048
+      
+  # Hanzo-hosted models
+  - model_name: "gpt-3.5-turbo"
+    litellm_params:
+      model: "gpt-3.5-turbo"
+      api_key: "os.environ/OPENAI_API_KEY"
+      
+  - model_name: "gpt-4"
+    litellm_params:
+      model: "gpt-4"
+      api_key: "os.environ/OPENAI_API_KEY"
+      
+  - model_name: "claude-3-sonnet"
+    litellm_params:
+      model: "claude-3-sonnet-20240229"
+      api_key: "os.environ/ANTHROPIC_API_KEY"
+      
+  - model_name: "claude-3.5-sonnet"
+    litellm_params:
+      model: "claude-3-5-sonnet-20241022"
+      api_key: "os.environ/ANTHROPIC_API_KEY"
+
+general_settings:
+  master_key: "os.environ/LITELLM_MASTER_KEY"
+  database_url: "os.environ/DATABASE_URL"
+  
+litellm_settings:
+  drop_params: true
+  set_verbose: false
+  
+# MCP server configurations
+mcp_servers:
+  hanzo-app:
+    command: "node"
+    args: ["./dist/mcp-server.js"]
+    env:
+      HANZO_APP_PATH: "$APP_PATH"
+    enabled: true
+    
+  hanzo-mcp:
+    command: "python"
+    args: ["-m", "hanzo_mcp"]
+    env:
+      HANZO_MCP_MODE: "production"
+    enabled: true
