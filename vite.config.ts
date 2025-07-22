@@ -1,44 +1,33 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { viteCommonjs } from '@originjs/vite-plugin-commonjs';
 import path from 'path';
+import { readFileSync } from 'fs';
 
-// Mobile development support
+// Read package.json to get version
+const packageJson = JSON.parse(readFileSync('./package.json', 'utf-8'));
+
+// Mobile development support for Tauri v2
 const host = process.env.TAURI_DEV_HOST;
-
-// Custom plugin to handle nativewind JSX in .js files
-const nativewindJsxPlugin = () => {
-  return {
-    name: 'nativewind-jsx-transform',
-    transform(code, id) {
-      // Only process nativewind and react-native-css-interop files
-      if (id.includes('nativewind') || id.includes('react-native-css-interop')) {
-        // Check if the file contains JSX syntax
-        if (code.includes('<') && code.includes('>')) {
-          // Transform the code to handle JSX
-          return {
-            code: code,
-            map: null,
-          };
-        }
-      }
-      return null;
-    },
-  };
-};
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  root: 'src',
   plugins: [
-    nativewindJsxPlugin(),
-    viteCommonjs({
-      skipPreBuild: true,
-    }),
-    react({
-      // Include .js files for JSX processing
-      include: ['**/*.jsx', '**/*.tsx', '**/*.js', '**/*.ts'],
-    }),
+    react(),
   ],
+  
+  define: {
+    VERSION: JSON.stringify(packageJson.version),
+    IS_TAURI: true,
+    IS_MACOS: process.platform === 'darwin',
+    IS_WINDOWS: process.platform === 'win32',
+    IS_LINUX: process.platform === 'linux',
+    IS_IOS: false,
+    IS_ANDROID: false,
+    PLATFORM: JSON.stringify(process.platform),
+    POSTHOG_KEY: JSON.stringify(''),
+    POSTHOG_HOST: JSON.stringify(''),
+  },
   
   // Prevent Vite from obscuring Rust errors
   clearScreen: false,
@@ -62,6 +51,7 @@ export default defineConfig({
   
   resolve: {
     alias: {
+<<<<<<< HEAD
       '@': path.resolve(__dirname, './src'),
       '@components': path.resolve(__dirname, './src/components'),
       '@hooks': path.resolve(__dirname, './src/hooks'),
@@ -103,6 +93,16 @@ export default defineConfig({
       },
       jsx: 'automatic',
       jsxDev: true,
+=======
+      '@': path.resolve(__dirname, './src/ts'),
+      '@components': path.resolve(__dirname, './src/ts/components'),
+      '@hooks': path.resolve(__dirname, './src/ts/hooks'),
+      '@utils': path.resolve(__dirname, './src/ts/utils'),
+      '@services': path.resolve(__dirname, './src/ts/services'),
+      '@stores': path.resolve(__dirname, './src/ts/stores'),
+      '@widgets': path.resolve(__dirname, './src/ts/widgets'),
+      '@lib': path.resolve(__dirname, './src/ts/lib'),
+>>>>>>> mess
     },
   },
   
@@ -113,20 +113,28 @@ export default defineConfig({
     // Don't minify for debugging
     minify: process.env.TAURI_ENV_DEBUG ? false : 'esbuild',
     
-    // Produce sourcemaps for debugging
-    sourcemap: process.env.TAURI_ENV_DEBUG ? true : false,
+    // Always produce sourcemaps for better debugging
+    sourcemap: true,
     
-    commonjsOptions: {
-      transformMixedEsModules: true,
-      exclude: ['react-native'],
-    },
+    // Increase chunk size warning limit
+    chunkSizeWarningLimit: 1000,
     
     rollupOptions: {
-      input: {
-        main: path.resolve(__dirname, 'index.html'),
+      
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom'],
+          'ui-vendor': ['clsx', '@tauri-apps/api'],
+          'mobx-vendor': ['mobx', 'mobx-react-lite'],
+        },
       },
-      external: ['react-native'],
     },
+  },
+  
+  test: {
+    globals: true,
+    environment: 'happy-dom',
+    setupFiles: './src/ts/test/setup.ts',
   },
   
   // Environment variables exposed to the app

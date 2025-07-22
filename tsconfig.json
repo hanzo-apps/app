@@ -14,6 +14,8 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
+    "types": ["vitest/globals"],
+
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
@@ -23,16 +25,16 @@
     /* Path aliases */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@components/*": ["src/components/*"],
-      "@hooks/*": ["src/hooks/*"],
-      "@utils/*": ["src/utils/*"],
-      "@services/*": ["src/services/*"],
-      "@stores/*": ["src/stores/*"],
-      "@types/*": ["src/types/*"],
-      "@widgets/*": ["src/widgets/*"]
+      "@/*": ["src/ts/*"],
+      "@components/*": ["src/ts/components/*"],
+      "@hooks/*": ["src/ts/hooks/*"],
+      "@utils/*": ["src/ts/utils/*"],
+      "@services/*": ["src/ts/services/*"],
+      "@stores/*": ["src/ts/stores/*"],
+      "@types/*": ["src/ts/types/*"],
+      "@widgets/*": ["src/ts/widgets/*"]
     }
   },
-  "include": ["src"],
+  "include": ["src/ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

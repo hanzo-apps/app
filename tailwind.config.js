@@ -3,6 +3,7 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
+    "!./src/**/node_modules/**",
   ],
   darkMode: 'class',
   theme: {
@@ -36,7 +37,7 @@ export default {
         26: '112px',
       },
       colors: {
-        // Sol's colors
+        // Hanzo's colors
         darkWindowBorder: '#CCCCCC22',
         lightWindowBorder: '#FFFFFF',
         lightHighlight: 'rgba(0, 0, 0, .1)',
@@ -59,9 +60,9 @@ export default {
         'text-secondary': '#999999',
         'border': '#333333',
         
-        // Jan's colors
+        // Hanzo Chat's colors
         'main-view-bg': 'var(--main-view-bg)',
-        'main-view-fg': 'var(--main-view-fg)',
+        'main-view-fg': 'rgb(var(--main-view-fg) / <alpha-value>)',
       },
       animation: {
         'fade-in': 'fadeIn 0.2s ease-in-out',
@@ -94,7 +95,7 @@ export default {
     },
   },
   plugins: [
-    // Set a default value on the `:root` element for Sol's accent color
+    // Set a default value on the `:root` element for Hanzo's accent color
     ({addBase}) => addBase({':root': {'--color-accent': '0 102 255'}}),
   ],
 }
