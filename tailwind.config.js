@@ -60,9 +60,15 @@ export default {
         'text-secondary': '#999999',
         'border': '#333333',
         
-        // Hanzo Chat's colors
-        'main-view-bg': 'var(--main-view-bg)',
-        'main-view-fg': 'rgb(var(--main-view-fg) / <alpha-value>)',
+        // Jan theme colors
+        app: 'var(--app-bg)',
+        'left-panel-fg': 'var(--app-left-panel-fg)',
+        'main-view': 'var(--app-main-view)',
+        'main-view-fg': 'var(--app-main-view-fg)',
+        primary: 'var(--app-primary)',
+        'primary-fg': 'var(--app-primary-fg)',
+        destructive: 'var(--app-destructive)',
+        'destructive-fg': 'var(--app-destructive-fg)',
       },
       animation: {
         'fade-in': 'fadeIn 0.2s ease-in-out',

@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
-<<<<<<< HEAD
     "target": "ES2022",
     "lib": ["ES2023"],
     "module": "ESNext",
     "skipLibCheck": true,
+    "composite": true,
+    "allowSyntheticDefaultImports": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -21,13 +22,3 @@
   },
   "include": ["vite.config.ts"]
 }
-=======
-    "composite": true,
-    "skipLibCheck": true,
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "allowSyntheticDefaultImports": true
-  },
-  "include": ["vite.config.ts"]
-}
->>>>>>> mess

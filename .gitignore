@@ -57,3 +57,28 @@ src-tauri/WixTools/
 # Mobile
 src-tauri/gen/android/
 src-tauri/gen/ios/
+
+# Large files and models
+*.gguf
+*.jsbundle
+models/
+
+# Test artifacts
+test-results/
+playwright-report/
+screenshots/
+
+# Documentation build
+docs/.next/
+docs/node_modules/
+docs/out/
+
+# Build artifacts
+target/
+.turbo/
+
+# Temporary files
+*.tmp
+*.temp
+jan
+sol

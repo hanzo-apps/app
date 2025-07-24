@@ -51,7 +51,6 @@ export default defineConfig({
   
   resolve: {
     alias: {
-<<<<<<< HEAD
       '@': path.resolve(__dirname, './src'),
       '@components': path.resolve(__dirname, './src/components'),
       '@hooks': path.resolve(__dirname, './src/hooks'),
@@ -59,6 +58,8 @@ export default defineConfig({
       '@services': path.resolve(__dirname, './src/services'),
       '@stores': path.resolve(__dirname, './src/stores'),
       '@types': path.resolve(__dirname, './src/types'),
+      '@widgets': path.resolve(__dirname, './src/widgets'),
+      '@lib': path.resolve(__dirname, './src/lib'),
       'assets': path.resolve(__dirname, './src/assets'),
       'components': path.resolve(__dirname, './src/components'),
       'config': path.resolve(__dirname, './src/config'),
@@ -66,6 +67,8 @@ export default defineConfig({
       'stores': path.resolve(__dirname, './src/stores'),
       'store': path.resolve(__dirname, './src/store'),
       'hooks': path.resolve(__dirname, './src/hooks'),
+      // Check if we have ts directory
+      '@ts': path.resolve(__dirname, './src/ts'),
       // React Native Web aliases - must come after other aliases
       'react-native$': 'react-native-web',
       'react-native/Libraries/Components/View/ViewStylePropTypes$': 'react-native-web/dist/exports/View/ViewStylePropTypes',
@@ -93,22 +96,12 @@ export default defineConfig({
       },
       jsx: 'automatic',
       jsxDev: true,
-=======
-      '@': path.resolve(__dirname, './src/ts'),
-      '@components': path.resolve(__dirname, './src/ts/components'),
-      '@hooks': path.resolve(__dirname, './src/ts/hooks'),
-      '@utils': path.resolve(__dirname, './src/ts/utils'),
-      '@services': path.resolve(__dirname, './src/ts/services'),
-      '@stores': path.resolve(__dirname, './src/ts/stores'),
-      '@widgets': path.resolve(__dirname, './src/ts/widgets'),
-      '@lib': path.resolve(__dirname, './src/ts/lib'),
->>>>>>> mess
     },
   },
   
   build: {
     // Tauri uses its own protocol
-    outDir: 'dist',
+    outDir: '../dist',
     
     // Don't minify for debugging
     minify: process.env.TAURI_ENV_DEBUG ? false : 'esbuild',
@@ -134,7 +127,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'happy-dom',
-    setupFiles: './src/ts/test/setup.ts',
+    setupFiles: './src/test/setup.ts',
   },
   
   // Environment variables exposed to the app

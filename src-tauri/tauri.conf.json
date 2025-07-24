@@ -1,33 +1,6 @@
 {
-<<<<<<< HEAD
-  "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Hanzo",
-  "version": "0.0.1",
-  "identifier": "ai.hanzo.app",
-  "build": {
-    "beforeDevCommand": "pnpm dev:web",
-    "devUrl": "http://localhost:5173",
-    "beforeBuildCommand": "pnpm build:web",
-    "frontendDist": "../dist"
-  },
-  "app": {
-    "withGlobalTauri": true,
-    "windows": [
-      {
-        "title": "Hanzo",
-        "width": 720,
-        "height": 450,
-        "resizable": true,
-        "fullscreen": false,
-        "alwaysOnTop": false,
-        "decorations": false,
-        "transparent": true,
-        "skipTaskbar": true,
-        "center": true,
-        "visible": false
-=======
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "hanzo",
+  "productName": "Hanzo",
   "version": "0.1.0",
   "identifier": "com.hanzo.dev",
   "build": {
@@ -38,78 +11,31 @@
   "app": {
     "windows": [
       {
-        "title": "hanzo",
-        "width": 800,
-        "height": 600,
-        "resizable": true,
-        "fullscreen": false
->>>>>>> mess
+        "title": "Hanzo",
+        "width": 600,
+        "height": 400,
+        "resizable": false,
+        "fullscreen": false,
+        "transparent": true,
+        "decorations": false,
+        "alwaysOnTop": false,
+        "skipTaskbar": false,
+        "visible": true,
+        "center": true
       }
     ],
     "security": {
       "csp": null
-    }
+    },
+    "macOSPrivateApi": true
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": ["app"],
     "icon": [
-      "icons/32x32.png",
-      "icons/128x128.png",
-      "icons/128x128@2x.png",
       "icons/icon.icns",
-      "icons/icon.ico"
-<<<<<<< HEAD
-    ],
-    "macOS": {
-      "minimumSystemVersion": "10.15"
-    }
-  },
-  "plugins": {
-    "fs": {
-      "scope": ["$HOME/**", "$APPDATA/**", "$DESKTOP/**", "$DOWNLOAD/**"]
-    },
-    "shell": {
-      "open": true,
-      "scope": [
-        {
-          "name": "open",
-          "cmd": "open",
-          "args": true
-        }
-      ]
-    },
-    "notification": {
-      "all": true
-    },
-    "dialog": {
-      "all": true
-    },
-    "clipboard-manager": {
-      "all": true
-    },
-    "global-shortcut": {
-      "all": true
-    },
-    "process": {
-      "all": true
-    },
-    "os": {
-      "all": true
-    },
-    "http": {
-      "all": true
-    },
-    "store": {
-      "all": true
-    },
-    "log": {
-      "all": true
-    }
-  }
-}
-=======
+      "icons/icon.ico",
+      "icons"
     ]
   }
 }
->>>>>>> mess

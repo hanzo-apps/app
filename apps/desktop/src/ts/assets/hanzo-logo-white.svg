@@ -1,0 +1,25 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Hanzo H logo in white -->
+  <g transform="translate(60, 60)">
+    <!-- Outer ring -->
+    <circle cx="0" cy="0" r="45" fill="none" stroke="white" stroke-width="3" opacity="0.3"/>
+    
+    <!-- H shape -->
+    <path d="
+      M -20 -25
+      L -20 25
+      M 20 -25
+      L 20 25
+      M -20 0
+      L 20 0
+    " 
+    stroke="white" 
+    stroke-width="6" 
+    stroke-linecap="round" 
+    stroke-linejoin="round"
+    fill="none"/>
+    
+    <!-- Central dot -->
+    <circle cx="0" cy="0" r="4" fill="white"/>
+  </g>
+</svg>
