@@ -17,8 +17,57 @@ const nextConfig: NextConfig = {
       skipDefaultConversion: true,
     },
   },
+  // Bundle optimization settings
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: [
+      "@hanzo/ui",
+      "lucide-react",
+      "@radix-ui",
+      "framer-motion"
+    ],
+  },
   webpack(config, options) {
     const { isServer, dev } = options;
+
+    // Production optimizations
+    if (!dev && !isServer) {
+      config.optimization = {
+        ...config.optimization,
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            default: false,
+            vendors: false,
+            // Vendor chunk for node_modules
+            vendor: {
+              name: 'vendor',
+              chunks: 'all',
+              test: /node_modules/,
+              priority: 20,
+              reuseExistingChunk: true,
+            },
+            // Common chunk for shared code
+            common: {
+              name: 'common',
+              minChunks: 2,
+              chunks: 'all',
+              priority: 10,
+              reuseExistingChunk: true,
+              enforce: true,
+            },
+            // Separate chunk for @hanzo/ui
+            hanzoui: {
+              name: 'hanzo-ui',
+              test: /[\\/]node_modules[\\/]@hanzo[\\/]ui/,
+              chunks: 'all',
+              priority: 30,
+              reuseExistingChunk: true,
+            },
+          },
+        },
+      };
+    }
 
     // Fix utils import issue
     config.resolve.alias = {
