@@ -11,6 +11,7 @@ import { apiServer } from "@/lib/api";
 import AppContext from "@/components/contexts/app-context";
 import Script from "next/script";
 import IframeDetector from "@/components/iframe-detector";
+import { Providers } from "./providers";
 
 const inter = Inter({
   variable: "--font-inter-sans",
@@ -101,9 +102,11 @@ export default async function RootLayout({
       >
         <IframeDetector />
         <Toaster richColors position="bottom-center" />
-        <TanstackProvider>
-          <AppContext me={data}>{children}</AppContext>
-        </TanstackProvider>
+        <Providers>
+          <TanstackProvider>
+            <AppContext me={data}>{children}</AppContext>
+          </TanstackProvider>
+        </Providers>
       </body>
     </html>
   );
