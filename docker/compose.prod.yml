@@ -57,18 +57,32 @@ services:
     image: mongo:7.0
     container_name: hanzo-mongodb-prod
     restart: unless-stopped
+    command: mongod --config /etc/mongod.conf
     environment:
       - MONGO_INITDB_ROOT_USERNAME=hanzo
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-defaultpassword123}
       - MONGO_INITDB_DATABASE=hanzo_build
+      - MONGO_APP_PASSWORD=${MONGO_APP_PASSWORD:-app_password_change_me}
+      - MONGO_BACKUP_PASSWORD=${MONGO_BACKUP_PASSWORD:-backup_password_change_me}
     volumes:
+      # Data and configuration
       - mongodb_prod_data:/data/db
-      - ./docker/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-      - ./backup:/backup
+      - mongodb_prod_logs:/var/log/mongodb
+      - ./mongodb/mongod.conf:/etc/mongod.conf:ro
+      - ./mongodb/init-mongo-optimized.js:/docker-entrypoint-initdb.d/01-init-mongo.js:ro
+      # Backup scripts
+      - ./mongodb/backup.sh:/usr/local/bin/backup.sh:ro
+      - ./mongodb/restore.sh:/usr/local/bin/restore.sh:ro
+      - ./mongodb/monitor-performance.js:/usr/local/bin/monitor-performance.js:ro
+      - mongodb_prod_backup:/backup
     networks:
       - hanzo-prod
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      test: |
+        mongosh --host localhost:27017 \
+          -u hanzo -p ${MONGO_PASSWORD:-defaultpassword123} \
+          --authenticationDatabase admin --quiet \
+          --eval "db.adminCommand('ping').ok ? 'healthy' : 'unhealthy'"
       interval: 30s
       timeout: 10s
       retries: 10
@@ -76,11 +90,25 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
           memory: 1G
+    ulimits:
+      nofile:
+        soft: 64000
+        hard: 64000
+      nproc:
+        soft: 32000
+        hard: 32000
 
 volumes:
   mongodb_prod_data:
+    driver: local
+  mongodb_prod_logs:
+    driver: local
+  mongodb_prod_backup:
     driver: local
 
 networks:

@@ -1,9 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
+import { validateBody, schemas } from "@/lib/security/input-validation";
+import { env } from "@/lib/security/env-validation";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { code } = body;
+    // Validate request body
+    const validation = await validateBody(req, schemas.login);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: "Invalid request", details: validation.errors },
+        { status: 400 }
+      );
+    }
+
+    const { code } = validation.data;
 
     if (!code) {
       return NextResponse.json(
@@ -17,9 +27,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Use HF_CLIENT_ID and HF_CLIENT_SECRET environment variables
-    const clientId = process.env.HF_CLIENT_ID || process.env.OAUTH_CLIENT_ID;
-    const clientSecret = process.env.HF_CLIENT_SECRET || process.env.OAUTH_CLIENT_SECRET;
+    // Use validated environment variables
+    const clientId = env.HF_CLIENT_ID;
+    const clientSecret = env.HF_CLIENT_SECRET;
 
     if (!clientId || !clientSecret) {
       console.error("Missing HF OAuth credentials");

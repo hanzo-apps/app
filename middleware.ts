@@ -1,11 +1,32 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import MY_TOKEN_KEY from "@/lib/get-cookie-name";
+import { applySecurityHeaders, applyRateLimiting, getClientIP } from "@/lib/security/middleware";
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const headers = new Headers(request.headers);
   headers.set("x-current-host", request.nextUrl.host);
-  
+  headers.set("x-client-ip", getClientIP(request));
+
+  // Apply rate limiting based on path
+  const path = request.nextUrl.pathname;
+  let rateLimitType: 'auth' | 'api' | 'public' | 'ai' | 'payment' = 'public';
+
+  if (path.startsWith('/api/auth')) {
+    rateLimitType = 'auth';
+  } else if (path.startsWith('/api/stripe')) {
+    rateLimitType = 'payment';
+  } else if (path.startsWith('/api/ai') || path.startsWith('/api/ask-ai')) {
+    rateLimitType = 'ai';
+  } else if (path.startsWith('/api')) {
+    rateLimitType = 'api';
+  }
+
+  const rateLimitResponse = await applyRateLimiting(request, rateLimitType);
+  if (rateLimitResponse) {
+    return rateLimitResponse;
+  }
+
   // For local development, automatically set the token cookie
   if (process.env.HF_TOKEN === "local_dev_token") {
     const token = request.cookies.get(MY_TOKEN_KEY());
@@ -16,14 +37,15 @@ export function middleware(request: NextRequest) {
         value: "local_dev_token",
         httpOnly: true,
         sameSite: "lax",
-        secure: false,
+        secure: process.env.NODE_ENV === "production",
         path: "/",
       });
-      return response;
+      return applySecurityHeaders(response);
     }
   }
-  
-  return NextResponse.next({ headers });
+
+  const response = NextResponse.next({ headers });
+  return applySecurityHeaders(response);
 }
 
 export const config = {

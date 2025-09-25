@@ -1,28 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { headers } from 'next/headers';
+import { env } from '@/lib/security/env-validation';
+import { sanitizeMongoInput } from '@/lib/security/input-validation';
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+const webhookSecret = env.STRIPE_WEBHOOK_SECRET || '';
 
 async function handleCheckoutSessionCompleted(session: any) {
   console.log('Checkout session completed:', session.id);
-  
-  // Extract metadata
-  const userId = session.metadata?.userId;
+
+  // Sanitize and validate metadata
+  const userId = sanitizeMongoInput(session.metadata?.userId);
   const amount = session.amount_total / 100; // Convert from cents
-  
-  if (userId) {
+
+  // Validate userId format
+  if (userId && typeof userId === 'string' && userId.match(/^[a-zA-Z0-9_-]+$/)) {
     // Add credits to user account
-    // This would typically update your database
+    // This would typically update your database with parameterized queries
     console.log(`Adding $${amount} credits to user ${userId}`);
-    
-    // Example: Update user credits in database
+
+    // Example: Update user credits in database with proper sanitization
     // await prisma.user.update({
     //   where: { id: userId },
-    //   data: { 
+    //   data: {
     //     credits: { increment: amount }
     //   }
     // });
+  } else {
+    console.error('Invalid userId in checkout session metadata');
   }
 }
 
@@ -61,7 +66,8 @@ async function handleInvoicePaymentSucceeded(invoice: any) {
 export async function POST(req: NextRequest) {
   try {
     // Check if Stripe is configured
-    if (!stripe) {
+    if (!stripe || !webhookSecret) {
+      console.error('Stripe webhook not properly configured');
       return NextResponse.json(
         { error: 'Webhook handler not configured' },
         { status: 503 }
