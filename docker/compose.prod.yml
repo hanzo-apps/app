@@ -19,7 +19,7 @@ services:
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-https://hanzo.app}
       
       # Database
-      - MONGODB_URI=mongodb://hanzo:${MONGO_PASSWORD}@mongodb:27017/hanzo_build?authSource=admin&retryWrites=true&w=majority
+      - MONGODB_URI=mongodb://hanzo:${MONGO_PASSWORD:-defaultpassword123}@mongodb:27017/hanzo_build?authSource=admin&retryWrites=true&w=majority
       
       # Authentication
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
@@ -59,19 +59,20 @@ services:
     restart: unless-stopped
     environment:
       - MONGO_INITDB_ROOT_USERNAME=hanzo
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-defaultpassword123}
       - MONGO_INITDB_DATABASE=hanzo_build
     volumes:
       - mongodb_prod_data:/data/db
+      - ./docker/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
       - ./backup:/backup
     networks:
       - hanzo-prod
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
     deploy:
       resources:
         limits:
