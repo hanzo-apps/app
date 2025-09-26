@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     }
 
     const cache = getRedisCache();
-    const data = await cache.get(key, { namespace });
+    const data = await cache.get(key, { namespace: namespace || undefined });
 
     if (data === null) {
       return NextResponse.json(
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     }
 
     const cache = getRedisCache();
-    const success = await cache.set(key, value, { ttl, namespace });
+    const success = await cache.set(key, value, { ttl, namespace: namespace || undefined });
 
     if (!success) {
       return NextResponse.json(
@@ -89,7 +89,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     const cache = getRedisCache();
-    const success = await cache.delete(key, namespace);
+    const success = await cache.delete(key, namespace || undefined);
 
     return NextResponse.json({ success }, {
       headers: {

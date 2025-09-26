@@ -77,17 +77,20 @@ class ApiClient {
   private async handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
       let errorMessage = `HTTP error! status: ${response.status}`;
-      let errorBody = null;
+      let errorBody: any = null;
 
       try {
         const contentType = response.headers.get('content-type');
         if (contentType?.includes('application/json')) {
           errorBody = await response.json();
-          errorMessage = errorBody.message || errorBody.error || errorMessage;
+          if (errorBody && typeof errorBody === 'object') {
+            errorMessage = (errorBody as any).message || (errorBody as any).error || errorMessage;
+          }
         } else {
-          errorBody = await response.text();
-          if (errorBody) {
-            errorMessage = errorBody;
+          const textBody = await response.text();
+          errorBody = textBody;
+          if (textBody) {
+            errorMessage = textBody;
           }
         }
       } catch {

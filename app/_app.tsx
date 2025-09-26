@@ -1,10 +1,18 @@
 import { useEffect } from 'react';
-import { reportWebVitals } from '@/lib/performance/web-vitals';
 import { registerServiceWorker } from '@/lib/service-worker/register';
 import type { NextWebVitalsMetric } from 'next/app';
 
 export function reportWebVitalsMetrics(metric: NextWebVitalsMetric) {
-  reportWebVitals(metric);
+  // Report web vitals to your analytics service
+  if (process.env.NODE_ENV === 'production') {
+    console.log(metric);
+    // Send to analytics endpoint
+    fetch('/api/analytics/vitals', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(metric),
+    }).catch(() => {});
+  }
 }
 
 export function PerformanceProvider({ children }: { children: React.ReactNode }) {

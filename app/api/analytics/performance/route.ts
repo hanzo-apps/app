@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
 
     // Log critical performance issues
     const { metrics } = data;
-    const issues = [];
+    const issues: string[] = [];
 
     if (metrics.cls && metrics.cls > 0.25) {
       issues.push(`High CLS: ${metrics.cls.toFixed(3)}`);

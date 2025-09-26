@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 interface RateLimitConfig {
   windowMs: number;
@@ -194,4 +194,37 @@ export class RedisRateLimiter extends RateLimiter {
       return super.checkLimit(req);
     }
   }
+}
+
+// Helper function for easy rate limiting in API routes
+export async function applyRateLimiting(
+  req: NextRequest,
+  limiterName: keyof typeof rateLimiters = 'api'
+): Promise<{ allowed: boolean; response?: NextResponse }> {
+  const limiter = rateLimiters[limiterName];
+  const { allowed, remaining, resetTime } = await limiter.checkLimit(req);
+
+  if (!allowed) {
+    return {
+      allowed: false,
+      response: new NextResponse(
+        JSON.stringify({
+          error: 'Too many requests',
+          message: 'Rate limit exceeded. Please try again later.',
+          resetTime: new Date(resetTime).toISOString(),
+        }),
+        {
+          status: 429,
+          headers: {
+            'Content-Type': 'application/json',
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': String(resetTime),
+            'Retry-After': String(Math.ceil((resetTime - Date.now()) / 1000)),
+          },
+        }
+      ),
+    };
+  }
+
+  return { allowed: true };
 }
