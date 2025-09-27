@@ -127,7 +127,7 @@ class ApiClient {
     // Add auth token if available
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('auth_token');
-      if (token && !finalOptions.headers['Authorization']) {
+      if (token && finalOptions.headers && !finalOptions.headers['Authorization']) {
         finalOptions.headers['Authorization'] = `Bearer ${token}`;
       }
     }
