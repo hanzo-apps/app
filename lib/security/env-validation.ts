@@ -62,12 +62,16 @@ export function validateEnv(): EnvConfig {
     } else {
       console.error('❌ Environment validation error:', error);
     }
-    process.exit(1);
+    // Only exit in non-test environments
+    if (process.env.NODE_ENV !== 'test') {
+      process.exit(1);
+    }
+    throw error;
   }
 }
 
-// Export validated config
-export const env = validateEnv();
+// Export validated config (only validate if not in test mode to avoid side effects)
+export const env = process.env.NODE_ENV === 'test' ? {} as EnvConfig : validateEnv();
 
 // Helper to safely get environment variables
 export function getEnvVar(key: keyof EnvConfig): string | undefined {

@@ -22,6 +22,8 @@ describe('Auth', () => {
 
   describe('isAuthenticated', () => {
     it('returns undefined when no authentication is present', async () => {
+      delete process.env.LOCAL_API_KEY;
+
       mockHeaders.mockResolvedValue({
         get: jest.fn((key) => {
           if (key === 'host') return 'example.com';
@@ -109,6 +111,7 @@ describe('Auth', () => {
 
     it('does not return local user for localhost in production', async () => {
       process.env.NODE_ENV = 'production';
+      delete process.env.LOCAL_API_KEY;
 
       mockHeaders.mockResolvedValue({
         get: jest.fn((key) => {
