@@ -58,7 +58,8 @@ export async function withRetry<T>(
       // Check if we should retry
       const shouldRetry = shouldRetryRequest(error, attempt, finalConfig);
 
-      if (!shouldRetry) {
+      // If not retryable and we haven't exhausted attempts, throw immediately
+      if (!shouldRetry && attempt < finalConfig.maxAttempts) {
         // Log non-retryable error
         errorLogger.logError(error as Error, ErrorSeverity.HIGH, {
           action: 'ApiCall',
@@ -69,6 +70,11 @@ export async function withRetry<T>(
           },
         });
         throw error;
+      }
+
+      // If we've exhausted attempts, break out of loop to wrap in ApiError
+      if (attempt >= finalConfig.maxAttempts) {
+        break;
       }
 
       // Calculate delay with exponential backoff

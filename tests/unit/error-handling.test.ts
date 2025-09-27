@@ -71,7 +71,7 @@ describe('Error Handling System', () => {
 
     it('should throw after max attempts', async () => {
       const fn = jest.fn(async () => {
-        throw new Error('Persistent error');
+        throw new Error('Network error: connection failed');
       });
 
       await expect(

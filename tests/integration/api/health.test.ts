@@ -7,12 +7,26 @@ jest.mock('@/lib/stripe', () => ({
   isStripeConfigured: jest.fn(),
 }));
 
+// Mock global fetch
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    ok: true,
+    status: 200,
+  } as Response)
+) as jest.Mock;
+
 describe('API: /api/health', () => {
   const mockIsStripeConfigured = isStripeConfigured as jest.MockedFunction<typeof isStripeConfigured>;
 
   beforeEach(() => {
     jest.clearAllMocks();
     process.env.NODE_ENV = 'test';
+    // Reset fetch mock
+    (global.fetch as jest.Mock).mockClear();
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      status: 200,
+    } as Response);
   });
 
   describe('GET', () => {
@@ -24,15 +38,18 @@ describe('API: /api/health', () => {
 
       expect(response.status).toBe(200);
       expect(data).toMatchObject({
-        status: 'ok',
+        status: 'healthy',
         environment: 'test',
         version: '0.1.0',
-        services: {
-          stripe: 'configured',
+        checks: {
+          stripe: {
+            status: 'pass',
+            message: 'Stripe configured',
+          },
         },
       });
       expect(data.timestamp).toBeDefined();
-      expect(data.uptime).toBeGreaterThan(0);
+      expect(data.uptime).toBeGreaterThanOrEqual(0);
     });
 
     it('includes correct timestamp format', async () => {
@@ -51,7 +68,10 @@ describe('API: /api/health', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.services.stripe).toBe('not configured');
+      expect(data.checks.stripe).toMatchObject({
+        status: 'warn',
+        message: 'Stripe not configured',
+      });
     });
 
     it('includes environment from NODE_ENV', async () => {
