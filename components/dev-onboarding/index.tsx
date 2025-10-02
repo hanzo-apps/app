@@ -183,14 +183,24 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
     }
   }, [initialPrompt, stage]);
 
-  // Auto-scroll plan and thoughts
+  // Auto-scroll plan and thoughts (only when streaming, with debounce)
   useEffect(() => {
-    planEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [planLines]);
+    if (isStreaming && planLines.length > 0) {
+      const timer = setTimeout(() => {
+        planEndRef.current?.scrollIntoView({ behavior: "auto", block: "nearest" });
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [planLines.length, isStreaming]);
 
   useEffect(() => {
-    thoughtsEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [executionSteps]);
+    if (isStreaming && executionSteps.length > 0) {
+      const timer = setTimeout(() => {
+        thoughtsEndRef.current?.scrollIntoView({ behavior: "auto", block: "nearest" });
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [executionSteps.length, isStreaming]);
 
   const startPlanning = async (userPrompt: string) => {
     setStage("planning");
@@ -379,7 +389,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
 
   if (stage === "welcome") {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-6">
+      <div className="min-h-screen h-screen overflow-y-auto bg-black flex items-center justify-center p-6">
         <div className="max-w-6xl w-full">
           <div className="text-center mb-12">
             <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl flex items-center justify-center mb-6 mx-auto">
@@ -562,10 +572,10 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
 
   if (stage === "planning" || stage === "ready") {
     return (
-      <div className="min-h-screen bg-black flex">
+      <div className="h-screen overflow-hidden bg-black flex">
         {/* Left Side - AI Thinking */}
-        <div className="w-1/2 border-r border-neutral-800 p-6">
-          <div className="h-full flex flex-col">
+        <div className="w-1/2 border-r border-neutral-800 p-6 overflow-y-auto">
+          <div className="flex flex-col">
             <div className="text-center mb-6">
               <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-700 rounded-xl flex items-center justify-center mb-4 mx-auto animate-pulse">
                 <span className="text-white font-bold text-2xl">H</span>

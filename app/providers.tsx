@@ -1,6 +1,7 @@
 'use client';
 
 import { ErrorBoundary } from '@/components/error-boundary';
+import { Toaster } from '@hanzo/ui';
 import { ReactNode } from 'react';
 
 interface ProvidersProps {
@@ -9,16 +10,19 @@ interface ProvidersProps {
 
 export function Providers({ children }: ProvidersProps) {
   return (
-    <ErrorBoundary
-      onError={(error, errorInfo) => {
-        // In production, send to error tracking service
-        if (process.env.NODE_ENV === 'production') {
-          // TODO: Send to Sentry or similar
-          console.error('Production error:', error, errorInfo);
-        }
-      }}
-    >
-      {children}
-    </ErrorBoundary>
+    <>
+      <Toaster richColors position="bottom-center" />
+      <ErrorBoundary
+        onError={(error, errorInfo) => {
+          // In production, send to error tracking service
+          if (process.env.NODE_ENV === 'production') {
+            // TODO: Send to Sentry or similar
+            console.error('Production error:', error, errorInfo);
+          }
+        }}
+      >
+        {children}
+      </ErrorBoundary>
+    </>
   );
 }

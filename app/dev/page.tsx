@@ -8,11 +8,17 @@ import { TemplateLoader } from "@/components/template-loader";
 
 export default function DevPage() {
   const searchParams = useSearchParams();
-  const initialPrompt = searchParams.get("prompt") || localStorage.getItem("initialPrompt") || "";
+  const [initialPrompt, setInitialPrompt] = useState("");
   const repoUrl = searchParams.get("repo") || searchParams.get("template") || "";
   const action = searchParams.get("action") || "edit"; // edit or deploy
 
   const [showOnboarding, setShowOnboarding] = useState(!repoUrl);
+
+  // Load initialPrompt from localStorage on client-side only
+  useEffect(() => {
+    const prompt = searchParams.get("prompt") || localStorage.getItem("initialPrompt") || "";
+    setInitialPrompt(prompt);
+  }, [searchParams]);
   const [showTemplateLoader, setShowTemplateLoader] = useState(false);
   const [finalPrompt, setFinalPrompt] = useState("");
   const [generatedPlan, setGeneratedPlan] = useState("");

@@ -47,18 +47,26 @@ hanzoPaths.forEach(hanzoPath => {
   console.log('Patching:', hanzoPath);
 
   // Patch dist files
-  const distFiles = ['dist/index.mjs', 'dist/chunk-6H62JRNM.mjs'];
+  const distFiles = ['dist/index.mjs', 'dist/chunk-6H62JRNM.mjs', 'dist/chunk-GG6VGOEN.mjs'];
   distFiles.forEach(file => {
     const filePath = path.join(hanzoPath, file);
     if (fs.existsSync(filePath)) {
       let content = fs.readFileSync(filePath, 'utf8');
+
+      // Add "use client" directive for form components if not already present
+      if (file.includes('chunk') && (content.includes('FormFieldContext') || content.includes('React.createContext'))) {
+        if (!content.startsWith('\'use client\'') && !content.startsWith('"use client"')) {
+          content = '\'use client\';\n' + content;
+          console.log('  Added "use client" directive to:', file);
+        }
+      }
 
       // Comment out problematic imports
       content = content.replace(/import\s+.*?from\s+['"]@hanzo_network\/hanzo-i18n['"]/g, '// Stubbed: @hanzo_network/hanzo-i18n');
       content = content.replace(/import\s+.*?from\s+['"]@hanzo_network\/hanzo-node-state.*?['"]/g, '// Stubbed: hanzo-node-state');
       content = content.replace(/import\s+.*?from\s+['"]@tauri-apps\/plugin-dialog['"]/g, 'const dialog = {}; // Stubbed: tauri dialog');
       content = content.replace(/import\s+.*?from\s+['"]@tauri-apps\/plugin-fs['"]/g, 'const fs = {}; // Stubbed: tauri fs');
-      content = content.replace(/import\s+\{[^}]*\}\s+from\s+['"]filesize['"]/g, 'const filesize = (b) => `${b}B`; // Stubbed: filesize');
+      content = content.replace(/import\s+\{[^*]*\}\s+from\s+['"]filesize['"]/g, 'const filesize = (b) => `${b}B`; // Stubbed: filesize');
       content = content.replace(/import\s+filesize\s+from\s+['"]filesize['"]/g, 'const filesize = (b) => `${b}B`; // Stubbed: filesize');
 
       // Fix react-hook-form imports - stub them since they're causing issues

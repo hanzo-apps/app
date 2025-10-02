@@ -5,7 +5,6 @@ import { cookies } from "next/headers";
 
 import TanstackProvider from "@/components/providers/tanstack-query-provider";
 import "@/assets/globals.css";
-import { Toaster } from "@hanzo/ui";
 import MY_TOKEN_KEY from "@/lib/get-cookie-name";
 import { apiServer } from "@/lib/api";
 import AppContext from "@/components/contexts/app-context";
@@ -109,7 +108,6 @@ export default async function RootLayout({
         className={`${inter.variable} ${ptSans.variable} antialiased bg-black dark min-h-screen`}
       >
         <IframeDetector />
-        <Toaster richColors position="bottom-center" />
         <ErrorBoundary level="app">
           <Providers>
             <TanstackProvider>
