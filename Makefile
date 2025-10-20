@@ -2,16 +2,29 @@
 # Templates and Build System for @hanzo/ui Components
 
 .PHONY: help install dev build clean test templates upload-templates serve-templates list-templates validate
+.PHONY: docker-up docker-down docker-logs docker-build docker-clean docker-dev docker-prod docker-shell docker-db-shell
 
 # Default target
 help:
 	@echo "Hanzo Build System - Available targets:"
 	@echo ""
+	@echo "Development Commands:"
 	@echo "  make install          - Install dependencies"
-	@echo "  make dev              - Start development server"
+	@echo "  make dev              - Start development server (local)"
 	@echo "  make build            - Build all templates for production"
 	@echo "  make clean            - Clean build artifacts and node_modules"
 	@echo "  make test             - Run tests"
+	@echo ""
+	@echo "Docker Commands:"
+	@echo "  make docker-up        - Start all services with Docker Compose"
+	@echo "  make docker-dev       - Start development environment in background"
+	@echo "  make docker-down      - Stop all Docker services"
+	@echo "  make docker-logs      - View logs from all services"
+	@echo "  make docker-build     - Build Docker images"
+	@echo "  make docker-clean     - Remove containers and volumes"
+	@echo "  make docker-shell     - Shell into app container"
+	@echo "  make docker-db-shell  - MongoDB shell access"
+	@echo "  make docker-prod      - Start production environment"
 	@echo ""
 	@echo "Template Commands:"
 	@echo "  make templates        - Generate all template files"
@@ -181,14 +194,14 @@ package:
 	@tar -czf dist/hanzo-templates.tar.gz templates/
 	@echo "Templates packaged at dist/hanzo-templates.tar.gz"
 
-# Docker commands for containerized development
+# Docker Compose commands (legacy simple commands - use docker-* targets below for full stack)
 docker-build:
-	@echo "Building Docker image..."
-	@docker build -t hanzo-build .
+	@echo "Building Docker images with Compose..."
+	@docker compose build
 
 docker-run:
-	@echo "Running in Docker..."
-	@docker run -p 3000:3000 -v $$(pwd):/app hanzo-build
+	@echo "Use 'make docker-dev' for full stack or 'make docker-up' for foreground mode"
+	@docker compose up
 
 # Initialize Next.js project structure
 init-nextjs:
@@ -247,5 +260,163 @@ ci: check-deps install validate lint test build
 deploy: build
 	@echo "Deploying to production..."
 	@echo "Configure your deployment target in the Makefile"
+
+##############################################
+# Docker Compose Commands
+##############################################
+
+# Start all Docker services (foreground)
+docker-up:
+	@echo "Starting Docker services..."
+	docker compose up
+
+# Start Docker services in background
+docker-dev:
+	@echo "Starting Docker development environment..."
+	docker compose up -d
+	@echo ""
+	@echo "✅ Services started!"
+	@echo "   App:     http://localhost:3000"
+	@echo "   MongoDB: mongodb://localhost:27017"
+	@echo "   Redis:   redis://localhost:6379"
+	@echo ""
+	@echo "View logs with: make docker-logs"
+
+# Start with admin UI tools
+docker-dev-tools:
+	@echo "Starting Docker with admin tools..."
+	docker compose --profile tools up -d
+	@echo ""
+	@echo "✅ Services started!"
+	@echo "   App:           http://localhost:3000"
+	@echo "   Mongo Express: http://localhost:8081 (admin/admin)"
+	@echo "   Redis UI:      http://localhost:8082"
+
+# Stop all Docker services
+docker-down:
+	@echo "Stopping Docker services..."
+	docker compose down
+
+# Stop and remove volumes
+docker-down-clean:
+	@echo "Stopping Docker services and removing volumes..."
+	docker compose down -v
+
+# View logs from all services
+docker-logs:
+	docker compose logs -f
+
+# View app logs only
+docker-logs-app:
+	docker compose logs -f app
+
+# View database logs
+docker-logs-db:
+	docker compose logs -f mongodb
+
+# Build without cache
+docker-build-clean:
+	@echo "Building Docker images (no cache)..."
+	docker compose build --no-cache
+
+# Restart all services
+docker-restart:
+	docker compose restart
+
+# Restart app only
+docker-restart-app:
+	docker compose restart app
+
+# Shell into app container
+docker-shell:
+	@echo "Opening shell in app container..."
+	docker exec -it hanzo-build-app sh
+
+# MongoDB shell access
+docker-db-shell:
+	@echo "Opening MongoDB shell..."
+	docker exec -it hanzo-build-mongodb mongosh -u hanzo -p hanzo_dev_password hanzo
+
+# Redis CLI access
+docker-redis-cli:
+	@echo "Opening Redis CLI..."
+	docker exec -it hanzo-build-redis redis-cli
+
+# Show running containers
+docker-ps:
+	docker compose ps
+
+# Show container stats
+docker-stats:
+	docker stats
+
+# Health check
+docker-health:
+	@echo "Checking service health..."
+	@curl -f http://localhost:3000/api/health && echo "\n✓ App is healthy" || echo "\n✗ App is unhealthy"
+
+# Clean up Docker resources
+docker-clean:
+	@echo "Cleaning Docker resources..."
+	docker compose down -v --remove-orphans
+	docker system prune -f
+
+# Clean everything (images, containers, volumes)
+docker-clean-all:
+	@echo "⚠️  WARNING: This will remove all Docker resources!"
+	@read -p "Are you sure? [y/N] " -n 1 -r; \
+	echo; \
+	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
+		docker compose down -v --remove-orphans --rmi all; \
+		docker system prune -af --volumes; \
+		echo "✓ Cleanup complete"; \
+	fi
+
+# Backup MongoDB
+docker-db-backup:
+	@echo "Backing up MongoDB..."
+	@mkdir -p backups
+	docker exec hanzo-build-mongodb mongodump \
+		--username hanzo \
+		--password hanzo_dev_password \
+		--authenticationDatabase admin \
+		--out /data/backup
+	docker cp hanzo-build-mongodb:/data/backup ./backups/mongodb-$$(date +%Y%m%d-%H%M%S)
+	@echo "✓ Backup saved to ./backups/"
+
+# Production environment
+docker-prod:
+	@echo "Starting production environment..."
+	@if [ ! -f .env.production ]; then \
+		echo "⚠️  Warning: .env.production not found"; \
+		echo "Create it from .env.example with production values"; \
+		exit 1; \
+	fi
+	docker compose -f docker-compose.prod.yml up -d --build
+	@echo "✓ Production environment started"
+
+# Stop production
+docker-prod-down:
+	docker compose -f docker-compose.prod.yml down
+
+# Production logs
+docker-prod-logs:
+	docker compose -f docker-compose.prod.yml logs -f
+
+# Quick start: setup and run
+docker-quickstart:
+	@echo "Quick starting Docker environment..."
+	@if [ ! -f .env.local ]; then \
+		cp .env.example .env.local; \
+		echo "Created .env.local - using defaults"; \
+	fi
+	@$(MAKE) docker-dev
+	@sleep 3
+	@$(MAKE) docker-logs
+
+# Validate Docker Compose config
+docker-validate:
+	@echo "Validating Docker Compose configuration..."
+	@docker compose config --quiet && echo "✓ Configuration is valid"
 
 .DEFAULT_GOAL := help
