@@ -86,8 +86,8 @@ async function checkExternalAPI(): Promise<{ status: 'pass' | 'fail' | 'warn'; r
   }
 }
 
-export async function GET(request?: Request) {
-  const authHeader = request?.headers.get('authorization');
+export async function GET(request: Request) {
+  const authHeader = request.headers.get('authorization');
 
   // Basic authentication for detailed health checks
   const healthCheckSecret = process.env.HEALTH_CHECK_SECRET;

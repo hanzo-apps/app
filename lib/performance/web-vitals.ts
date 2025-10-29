@@ -1,4 +1,4 @@
-import { onCLS, onFCP, onFID, onLCP, onTTFB, onINP, type Metric } from 'web-vitals';
+import { onCLS, onFCP, onLCP, onTTFB, onINP, type Metric } from 'web-vitals';
 
 export interface PerformanceMetrics {
   cls: number | null;
@@ -57,7 +57,8 @@ class PerformanceMonitor {
     // Core Web Vitals
     onCLS(this.handleMetric('cls'));
     onFCP(this.handleMetric('fcp'));
-    onFID(this.handleMetric('fid'));
+    // FID deprecated in web-vitals v5, use INP instead
+    // onFID(this.handleMetric('fid'));
     onLCP(this.handleMetric('lcp'));
     onTTFB(this.handleMetric('ttfb'));
     onINP(this.handleMetric('inp'));

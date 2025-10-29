@@ -112,7 +112,7 @@ class ErrorLogger {
         scope.setLevel(this.mapSeverityToSentryLevel(severity));
 
         if (context) {
-          scope.setContext('errorContext', context);
+          scope.setContext('errorContext', context as Record<string, unknown>);
           if (context.userId) {
             scope.setUser({ id: context.userId });
           }

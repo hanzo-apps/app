@@ -14,7 +14,7 @@ if (SENTRY_DSN) {
     environment: process.env.NODE_ENV || 'production',
 
     // Server-specific settings
-    autoSessionTracking: true,
+    // Note: autoSessionTracking is only available for browser
 
     // Integrations
     integrations: [
@@ -52,12 +52,12 @@ if (SENTRY_DSN) {
         }
 
         // Remove query params that might contain sensitive data
-        if (event.request.query_string) {
+        if (event.request?.query_string && typeof event.request.query_string === 'string') {
           const sensitiveParams = ['token', 'key', 'secret', 'password', 'auth'];
           const queryString = event.request.query_string;
           sensitiveParams.forEach((param) => {
             const regex = new RegExp(`${param}=[^&]+`, 'gi');
-            event.request.query_string = queryString.replace(regex, `${param}=[REDACTED]`);
+            event.request!.query_string = queryString.replace(regex, `${param}=[REDACTED]`);
           });
         }
       }

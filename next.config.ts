@@ -34,10 +34,8 @@ const nextConfig: NextConfig = {
     ],
     // Turbopack features (beta)
     turbo: {
-      // Enable persistent caching for faster rebuilds
-      persistentCaching: true,
-      // Use Turbopack for production builds (beta)
-      useSwc: true,
+      // Turbopack configuration
+      // Note: persistentCaching was removed, using default settings
     },
   },
   webpack(config, options) {

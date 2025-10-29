@@ -141,7 +141,7 @@ describe('API: /api/auth/check', () => {
         json: async () => {
           throw new Error('Invalid JSON');
         },
-      } as Response);
+      } as unknown as Response);
 
       const request = new NextRequest('http://localhost:3000/api/auth/check');
       const response = await GET(request);

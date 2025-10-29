@@ -273,7 +273,10 @@ describe('Security Tests', () => {
     });
 
     it('should validate required environment variables', () => {
-      process.env.NODE_ENV = 'development';
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'development',
+        configurable: true,
+      });
       process.env.HF_CLIENT_ID = 'test-client-id';
       process.env.HF_CLIENT_SECRET = 'test-client-secret';
       process.env.NEXTAUTH_SECRET = 'a'.repeat(32);
@@ -283,7 +286,10 @@ describe('Security Tests', () => {
     });
 
     it('should fail on missing required variables', () => {
-      process.env.NODE_ENV = 'development';
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'development',
+        configurable: true,
+      });
       delete process.env.HF_CLIENT_ID;
 
       // Mock process.exit
@@ -298,7 +304,10 @@ describe('Security Tests', () => {
     });
 
     it('should enforce HTTPS in production', () => {
-      process.env.NODE_ENV = 'production';
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'production',
+        configurable: true,
+      });
       process.env.HF_CLIENT_ID = 'test-client-id';
       process.env.HF_CLIENT_SECRET = 'test-client-secret';
       process.env.NEXTAUTH_SECRET = 'a'.repeat(32);

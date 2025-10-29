@@ -16,7 +16,10 @@ describe('Auth', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    process.env.NODE_ENV = 'test';
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: 'test',
+      configurable: true,
+    });
     process.env.LOCAL_API_KEY = 'test-api-key';
   });
 
@@ -40,7 +43,10 @@ describe('Auth', () => {
     });
 
     it('returns local dev user for localhost in development', async () => {
-      process.env.NODE_ENV = 'development';
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'development',
+        configurable: true,
+      });
 
       mockHeaders.mockResolvedValue({
         get: jest.fn((key) => {
@@ -91,7 +97,10 @@ describe('Auth', () => {
     });
 
     it('detects localhost from origin header', async () => {
-      process.env.NODE_ENV = 'development';
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'development',
+        configurable: true,
+      });
 
       mockHeaders.mockResolvedValue({
         get: jest.fn((key) => {
@@ -110,7 +119,10 @@ describe('Auth', () => {
     });
 
     it('does not return local user for localhost in production', async () => {
-      process.env.NODE_ENV = 'production';
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'production',
+        configurable: true,
+      });
       delete process.env.LOCAL_API_KEY;
 
       mockHeaders.mockResolvedValue({

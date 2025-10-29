@@ -251,7 +251,7 @@ export async function chatCompletion(
       return data;
 
     } catch (error) {
-      lastError = error instanceof Error && 'code' in error
+      lastError = error instanceof Error && 'code' in error && 'provider' in error
         ? error as ProviderError
         : createProviderError(
             providerId,

@@ -13,7 +13,9 @@ import {
 import { ProviderId, ChatCompletionRequest } from '@/lib/llm/providers/types';
 
 // Mock fetch
-global.fetch = jest.fn() as jest.Mock;
+global.fetch = jest.fn(() =>
+  Promise.resolve({} as Response)
+) as jest.MockedFunction<typeof fetch>;
 
 describe('Provider Client', () => {
   beforeEach(() => {

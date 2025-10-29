@@ -82,7 +82,7 @@ interface ConnectionState {
 
 // Global connection cache for serverless environments
 declare global {
-  var mongoose: {
+  var mongooseOptimized: {
     conn: mongoose.Mongoose | null;
     promise: Promise<mongoose.Mongoose> | null;
     state: ConnectionState;
@@ -90,7 +90,7 @@ declare global {
   };
 }
 
-let cached = global.mongoose || {
+let cached = global.mongooseOptimized || {
   conn: null,
   promise: null,
   state: {
@@ -99,8 +99,8 @@ let cached = global.mongoose || {
   }
 };
 
-if (!global.mongoose) {
-  global.mongoose = cached;
+if (!global.mongooseOptimized) {
+  global.mongooseOptimized = cached;
 }
 
 // Health check function
@@ -123,7 +123,7 @@ export async function checkDatabaseHealth(): Promise<{
     }
 
     // Ping the database
-    await cached.conn.connection.db.admin().ping();
+    await cached.conn.connection.db?.admin().ping();
 
     // Get connection pool stats
     const client = cached.conn.connection.getClient() as any;
@@ -218,7 +218,7 @@ async function dbConnect(): Promise<mongoose.Mongoose> {
       setupEventHandlers(mongooseInstance.connection);
 
       // Store native client for advanced operations
-      cached.client = mongooseInstance.connection.getClient() as MongoClient;
+      cached.client = mongooseInstance.connection.getClient() as unknown as MongoClient;
 
       // Configure mongoose settings
       mongooseInstance.set('strictQuery', false);

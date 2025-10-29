@@ -27,7 +27,7 @@ setInterval(() => {
 }, 60000); // Clean up every minute
 
 export class RateLimiter {
-  private config: Required<RateLimitConfig>;
+  protected config: Required<RateLimitConfig>;
 
   constructor(config: RateLimitConfig) {
     this.config = {
@@ -151,7 +151,7 @@ export class RedisRateLimiter extends RateLimiter {
       return super.checkLimit(req);
     }
 
-    const key = (this.config as any).keyGenerator(req);
+    const key = this.config.keyGenerator(req);
     const now = Date.now();
     const windowStart = now - this.config.windowMs;
 

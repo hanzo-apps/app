@@ -1,4 +1,4 @@
-import { vfs, VFSFile } from '../vfs';
+import { vfs, VirtualFile } from '../vfs';
 import { ProcessedFile, Route, CompiledProject } from './types';
 
 export class VirtualServer {

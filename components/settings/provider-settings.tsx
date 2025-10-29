@@ -189,7 +189,7 @@ function ProviderCard({ provider, onValidate, onRemove, isValidating }: Provider
 export function ProviderSettings() {
   const [selectedProvider, setSelectedProviderState] = useState<ProviderId>('openai');
   const [validatingProvider, setValidatingProvider] = useState<ProviderId | null>(null);
-  const [validationResults, setValidationResults] = useState<Record<ProviderId, boolean>>({});
+  const [validationResults, setValidationResults] = useState<Record<ProviderId, boolean>>(() => ({} as Record<ProviderId, boolean>));
 
   useEffect(() => {
     const current = getSelectedProvider();

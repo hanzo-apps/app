@@ -1007,3 +1007,19 @@ curl -X POST http://localhost:3000/api/projects/secure \
 
 ### Security Score: A+
 The application now implements industry-standard security practices suitable for production deployment. All critical security vulnerabilities have been addressed with comprehensive protection mechanisms in place.
+
+## Context for All AI Assistants
+
+This file (`LLM.md`) is symlinked as:
+- `.AGENTS.md`
+- `CLAUDE.md`
+- `QWEN.md`
+- `GEMINI.md`
+
+All files reference the same knowledge base. Updates here propagate to all AI systems.
+
+## Rules for AI Assistants
+
+1. **ALWAYS** update LLM.md with significant discoveries
+2. **NEVER** commit symlinked files (.AGENTS.md, CLAUDE.md, etc.) - they're in .gitignore
+3. **NEVER** create random summary files - update THIS file

@@ -20,7 +20,11 @@ describe('API: /api/health', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    process.env.NODE_ENV = 'test';
+    // Use Object.defineProperty to modify NODE_ENV
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: 'test',
+      configurable: true,
+    });
     // Reset fetch mock
     (global.fetch as jest.Mock).mockClear();
     (global.fetch as jest.Mock).mockResolvedValue({
@@ -33,7 +37,8 @@ describe('API: /api/health', () => {
     it('returns 200 OK with health check data', async () => {
       mockIsStripeConfigured.mockReturnValue(true);
 
-      const response = await GET();
+      const request = new Request('http://localhost:3000/api/health');
+      const response = await GET(request);
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -55,7 +60,8 @@ describe('API: /api/health', () => {
     it('includes correct timestamp format', async () => {
       mockIsStripeConfigured.mockReturnValue(true);
 
-      const response = await GET();
+      const request = new Request('http://localhost:3000/api/health');
+      const response = await GET(request);
       const data = await response.json();
 
       expect(data.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
@@ -64,7 +70,8 @@ describe('API: /api/health', () => {
     it('reports stripe as not configured when not set up', async () => {
       mockIsStripeConfigured.mockReturnValue(false);
 
-      const response = await GET();
+      const request = new Request('http://localhost:3000/api/health');
+      const response = await GET(request);
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -75,10 +82,14 @@ describe('API: /api/health', () => {
     });
 
     it('includes environment from NODE_ENV', async () => {
-      process.env.NODE_ENV = 'production';
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'production',
+        configurable: true,
+      });
       mockIsStripeConfigured.mockReturnValue(true);
 
-      const response = await GET();
+      const request = new Request('http://localhost:3000/api/health');
+      const response = await GET(request);
       const data = await response.json();
 
       expect(data.environment).toBe('production');
@@ -88,7 +99,8 @@ describe('API: /api/health', () => {
       delete process.env.npm_package_version;
       mockIsStripeConfigured.mockReturnValue(true);
 
-      const response = await GET();
+      const request = new Request('http://localhost:3000/api/health');
+      const response = await GET(request);
       const data = await response.json();
 
       expect(data.version).toBe('0.1.0');
@@ -98,7 +110,8 @@ describe('API: /api/health', () => {
       process.env.npm_package_version = '2.0.0';
       mockIsStripeConfigured.mockReturnValue(true);
 
-      const response = await GET();
+      const request = new Request('http://localhost:3000/api/health');
+      const response = await GET(request);
       const data = await response.json();
 
       expect(data.version).toBe('2.0.0');
@@ -107,7 +120,8 @@ describe('API: /api/health', () => {
     it('returns valid JSON response', async () => {
       mockIsStripeConfigured.mockReturnValue(true);
 
-      const response = await GET();
+      const request = new Request('http://localhost:3000/api/health');
+      const response = await GET(request);
       const contentType = response.headers.get('content-type');
 
       expect(contentType).toContain('application/json');
@@ -119,7 +133,8 @@ describe('API: /api/health', () => {
     it('includes positive uptime value', async () => {
       mockIsStripeConfigured.mockReturnValue(true);
 
-      const response = await GET();
+      const request = new Request('http://localhost:3000/api/health');
+      const response = await GET(request);
       const data = await response.json();
 
       expect(typeof data.uptime).toBe('number');

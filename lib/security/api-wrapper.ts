@@ -21,11 +21,18 @@ interface ApiHandlerOptions {
   logErrors?: boolean;
 }
 
+interface User {
+  id: string;
+  isAdmin?: boolean;
+  email?: string;
+  [key: string]: any;
+}
+
 interface ApiContext {
   request: NextRequest;
   body?: any;
   query?: any;
-  user?: any;
+  user?: User | null;
   ip: string;
 }
 
@@ -83,19 +90,19 @@ export function secureApiHandler(
 
       // 2. Rate Limiting
       if (options.rateLimit) {
-        const rateLimitResponse = await applyRateLimiting(req, options.rateLimit);
-        if (rateLimitResponse) {
+        const rateLimitResult = await applyRateLimiting(req, options.rateLimit);
+        if (!rateLimitResult.allowed && rateLimitResult.response) {
           logSecurityEvent('rate_limit_exceeded', {
             ip,
             endpoint: req.nextUrl.pathname,
             limit: options.rateLimit,
           }, 'warn');
-          return rateLimitResponse;
+          return rateLimitResult.response;
         }
       }
 
       // 3. Authentication Check
-      let user = null;
+      let user: User | null = null;
       if (options.requireAuth) {
         const authHeader = req.headers.get('authorization');
         const sessionToken = req.cookies.get('session-token')?.value;
@@ -151,14 +158,14 @@ export function secureApiHandler(
           logSecurityEvent('validation_failed', {
             ip,
             path: req.nextUrl.pathname,
-            errors: bodyValidation.errors,
+            errors: (bodyValidation as { success: false; errors: string[] }).errors,
           });
           return NextResponse.json(
-            { error: 'Invalid request data', errors: bodyValidation.errors },
+            { error: 'Invalid request data', errors: (bodyValidation as { success: false; errors: string[] }).errors },
             { status: 400 }
           );
         }
-        context.body = bodyValidation.data;
+        context.body = (bodyValidation as { success: true; data: any }).data;
       }
 
       // Validate query parameters
@@ -171,14 +178,14 @@ export function secureApiHandler(
           logSecurityEvent('query_validation_failed', {
             ip,
             path: req.nextUrl.pathname,
-            errors: queryValidation.errors,
+            errors: (queryValidation as { success: false; errors: string[] }).errors,
           });
           return NextResponse.json(
-            { error: 'Invalid query parameters', errors: queryValidation.errors },
+            { error: 'Invalid query parameters', errors: (queryValidation as { success: false; errors: string[] }).errors },
             { status: 400 }
           );
         }
-        context.query = queryValidation.data;
+        context.query = (queryValidation as { success: true; data: any }).data;
       }
 
       // 6. Log Request (if enabled)
@@ -187,7 +194,7 @@ export function secureApiHandler(
           ip,
           method: req.method,
           path: req.nextUrl.pathname,
-          userId: user?.id,
+          userId: (user as User | null)?.id,
         });
       }
 
