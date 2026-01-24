@@ -239,9 +239,9 @@ jobs:
             echo "message=Deployment failed" >> $GITHUB_OUTPUT
           fi
 
-      # Discord webhook notification
+      # Discord webhook notification (optional)
       - name: Discord Notification
-        if: secrets.DISCORD_WEBHOOK_URL != ''
+        if: ${{ secrets.DISCORD_WEBHOOK_URL != '' }}
         run: |
           curl -H "Content-Type: application/json" \
             -d '{
@@ -277,7 +277,7 @@ jobs:
 
       # Slack webhook notification (optional)
       - name: Slack Notification
-        if: secrets.SLACK_WEBHOOK_URL != ''
+        if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
         run: |
           curl -X POST \
             -H "Content-Type: application/json" \
