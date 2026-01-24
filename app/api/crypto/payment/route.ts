@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createPublicClient, http } from 'viem'
 import { base, mainnet, arbitrum } from 'viem/chains'
-
-const TREASURY_ADDRESS = '0x4242424242424242424242424242424242424242'
+import { TREASURY_ADDRESS } from '@/lib/web3/config'
 
 const clients = {
   base: createPublicClient({ chain: base, transport: http() }),

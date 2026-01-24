@@ -3,7 +3,7 @@ import { base, mainnet, arbitrum } from 'wagmi/chains'
 import { injected, coinbaseWallet, walletConnect } from 'wagmi/connectors'
 
 // Hanzo treasury wallet for receiving payments
-export const TREASURY_ADDRESS = '0x4242424242424242424242424242424242424242' as const
+export const TREASURY_ADDRESS = '0xda93811b968ba9d3b69eef9b0178da651006cf5c' as const
 
 // USDC contract addresses
 export const USDC_ADDRESSES = {
