@@ -373,7 +373,7 @@ export default function LandingPage() {
               </p>
               <div className="flex items-center justify-center gap-4">
                 <Button
-                  onClick={() => window.open('https://huggingface.co/spaces/hanzoai/gallery', '_blank')}
+                  onClick={() => router.push('/gallery')}
                   className="bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:from-violet-700 hover:to-purple-700"
                 >
                   <Globe2 className="w-4 h-4 mr-2" />

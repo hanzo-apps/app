@@ -457,13 +457,13 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
             </Card>
           </div>
 
-          {/* Project Templates from Hugging Face */}
+          {/* Project Templates */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">
-                Templates from Hugging Face
+                Templates
               </h3>
-              <Link href="https://huggingface.co/spaces/hanzoai/templates" target="_blank">
+              <Link href="/gallery">
                 <Button variant="ghost" size="sm" className="gap-2">
                   <Globe className="w-4 h-4" />
                   View All

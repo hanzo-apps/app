@@ -98,12 +98,12 @@ export const UserMenu = ({ className }: { className?: string }) => {
               Import Project
             </DropdownMenuItem>
           </Link>
-          <a href="https://huggingface.co/spaces/hanzoai/gallery" target="_blank">
+          <Link href="/gallery">
             <DropdownMenuItem>
               <Sparkles className="size-4 text-neutral-400" />
               Gallery
             </DropdownMenuItem>
-          </a>
+          </Link>
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator />

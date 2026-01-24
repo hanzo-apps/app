@@ -17,8 +17,7 @@ const navigationLinks = [
   },
   {
     name: "Gallery",
-    href: "https://huggingface.co/spaces/hanzoai/gallery",
-    external: true,
+    href: "/gallery",
   },
   {
     name: "Features",
@@ -108,7 +107,7 @@ export default function Navigation() {
               }}
               className="inline-block font-sans text-sm"
             >
-              {link.external ? (
+              {'external' in link && link.external ? (
                 <a
                   href={link.href}
                   target="_blank"
