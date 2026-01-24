@@ -66,7 +66,7 @@ export default function LoginPage() {
           </Link>
           <div className="flex items-center gap-4">
             <Link href="/signup">
-              <Button variant="ghost" className="text-white/70 hover:text-white hover:bg-white/10">
+              <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 hover:border-white/50">
                 Sign up
               </Button>
             </Link>
