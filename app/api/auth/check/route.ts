@@ -44,6 +44,7 @@ export async function GET(req: NextRequest) {
             fullname: 'Admin',
             name: 'Admin',
             email: email,
+            avatarUrl: '',
             isPro: true,
           },
         },

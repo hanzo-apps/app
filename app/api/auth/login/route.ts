@@ -47,6 +47,7 @@ export async function POST(req: NextRequest) {
           email: email,
           fullname: 'Admin',
           name: 'Admin',
+          avatarUrl: '',
           isPro: true,
         },
       });

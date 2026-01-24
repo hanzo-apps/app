@@ -84,7 +84,7 @@ async function vfsShellExecute(
           const entries = await vfs.getAllFilesAndDirectories(projectId);
           const prefix = path === '/' ? '/' : (path.endsWith('/') ? path : path + '/');
           const res = entries
-            .filter((e: any) => e.path === path || e.path.startsWith(prefix))
+            .filter((e: any) => e && e.path && (e.path === path || e.path.startsWith(prefix)))
             .map((e: any) => e.path)
             .sort()
             .join('\n');
@@ -127,6 +127,7 @@ async function vfsShellExecute(
         const dirPrefix = path === '/' ? '/' : (path.endsWith('/') ? path : path + '/');
         const outLines: string[] = [];
         for (const e of entries) {
+          if (!e || !e.path) continue;
           if ('type' in e && e.type === 'directory') continue;
           const file = e as any;
           if (!file.path.startsWith(dirPrefix) && file.path !== path) continue;
@@ -164,7 +165,7 @@ async function vfsShellExecute(
         const toGlob = (s: string) => new RegExp('^' + s.replace(/[.+^${}()|\[\]\\]/g, '\\$&').replace(/\*/g, '.*') + '$');
         const regex = pattern ? toGlob(pattern) : null;
         const res = entries
-          .filter((e: any) => e.path === root || e.path.startsWith(prefix))
+          .filter((e: any) => e && e.path && (e.path === root || e.path.startsWith(prefix)))
           .map((e: any) => e.path)
           .filter(p => (regex ? regex.test(p.split('/').pop() || p) : true))
           .sort();
