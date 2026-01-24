@@ -39,20 +39,20 @@ export const UserMenu = ({ className }: { className?: string }) => {
           <Avatar className="size-8 mr-1">
             <AvatarImage src={user?.avatarUrl} alt="@shadcn" />
             <AvatarFallback className="text-sm">
-              {user?.fullname?.charAt(0).toUpperCase() ?? "E"}
+              {(user?.fullname || user?.name || 'U').charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <span className="max-lg:hidden">{user?.fullname}</span>
+          <span className="max-lg:hidden">{user?.fullname || user?.name || 'User'}</span>
           <span className="lg:hidden">
-            {user?.fullname.slice(0, 10)}
-            {(user?.fullname?.length ?? 0) > 10 ? "..." : ""}
+            {(user?.fullname || user?.name || 'User').slice(0, 10)}
+            {((user?.fullname || user?.name || '').length) > 10 ? "..." : ""}
           </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="start">
         <DropdownMenuLabel>
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user?.fullname}</p>
+            <p className="text-sm font-medium leading-none">{user?.fullname || user?.name || 'User'}</p>
             <p className="text-xs leading-none text-muted-foreground">
               {user?.email || user?.username}
             </p>

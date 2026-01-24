@@ -45,6 +45,7 @@ export async function POST(req: NextRequest) {
         user: {
           id: 'admin',
           email: email,
+          fullname: 'Admin',
           name: 'Admin',
           isPro: true,
         },

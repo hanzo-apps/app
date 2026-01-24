@@ -25,7 +25,7 @@ export function MyProjects({
         <header className="flex items-center justify-between max-lg:flex-col gap-4">
           <div className="text-left">
             <h1 className="text-3xl font-bold text-white">
-              <span className="capitalize">{user.fullname}</span>&apos;s
+              <span className="capitalize">{user.fullname || user.name || 'Your'}</span>&apos;s
               Hanzo Projects
             </h1>
             <p className="text-muted-foreground text-base mt-1 max-w-xl">

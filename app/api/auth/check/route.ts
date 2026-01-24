@@ -41,6 +41,7 @@ export async function GET(req: NextRequest) {
           authenticated: true,
           user: {
             id: 'admin',
+            fullname: 'Admin',
             name: 'Admin',
             email: email,
             isPro: true,
