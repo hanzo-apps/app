@@ -2,12 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { HanzoLogo } from '@/components/HanzoLogo';
 import { Button } from "@hanzo/ui";
-import { Loader2, Sparkles, ArrowRight, Monitor, Apple, Terminal, Smartphone, Zap } from 'lucide-react';
+import { Input } from "@hanzo/ui";
+import { Label } from "@hanzo/ui";
+import { Loader2, Sparkles, ArrowRight, Monitor, Apple, Terminal, Smartphone, Zap, Mail, Lock } from 'lucide-react';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [currentIdea, setCurrentIdea] = useState(0);
   const [isTyping, setIsTyping] = useState(true);
 
@@ -37,21 +44,30 @@ export default function LoginPage() {
     return () => clearInterval(interval);
   }, [ideas.length]);
 
-  const handleHuggingFaceLogin = async () => {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
     setLoading(true);
+    setError('');
+
     try {
-      const response = await fetch('/api/auth/login');
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
       const data = await response.json();
 
-      if (data.url) {
-        console.log('Auth URL received:', data.url);
-        window.location.href = data.url;
+      if (data.success) {
+        // Store user info
+        localStorage.setItem('hanzo-user', JSON.stringify(data.user));
+        router.push('/');
       } else {
-        console.error('No auth URL received');
-        setLoading(false);
+        setError(data.error || 'Login failed');
       }
-    } catch (error) {
-      console.error('Login error:', error);
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+    } finally {
       setLoading(false);
     }
   };
@@ -85,11 +101,48 @@ export default function LoginPage() {
               <p className="text-white/50 text-lg">Sign in to continue building</p>
             </div>
 
-            {/* Login Options */}
-            <div className="space-y-4">
-              {/* Hugging Face Login Button */}
+            {/* Login Form */}
+            <form onSubmit={handleLogin} className="space-y-4">
+              {error && (
+                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+                  {error}
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-white/70">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="admin@hanzo.ai"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/30"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-white/70">Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/30"
+                    required
+                  />
+                </div>
+              </div>
+
               <Button
-                onClick={handleHuggingFaceLogin}
+                type="submit"
                 disabled={loading}
                 className="w-full bg-white text-black hover:bg-white/90 h-12 font-medium relative group"
                 size="lg"
@@ -98,72 +151,66 @@ export default function LoginPage() {
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
                   <>
-                    <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-                      <circle cx="9" cy="10" r="1.5"/>
-                      <circle cx="15" cy="10" r="1.5"/>
-                      <path d="M8 15c0 2.21 1.79 4 4 4s4-1.79 4-4"/>
-                    </svg>
-                    Continue with Hugging Face
-                    <ArrowRight className="w-4 h-4 ml-auto opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                    Sign in
+                    <ArrowRight className="w-4 h-4 ml-2 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
                   </>
                 )}
               </Button>
+            </form>
 
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-white/10"></div>
-                </div>
-                <div className="relative flex justify-center text-xs">
-                  <span className="bg-black px-4 text-white/40">or</span>
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/10"></div>
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="bg-black px-4 text-white/40">or</span>
+              </div>
+            </div>
+
+            {/* Desktop App Options */}
+            <div className="space-y-4">
+              <p className="text-sm text-white/40 text-center">Run locally without login</p>
+
+              <div className="grid grid-cols-2 gap-3">
+                <a
+                  href="https://github.com/hanzoai/app/releases/latest"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 p-3.5 bg-white/[0.02] hover:bg-white/[0.06] rounded-xl border border-white/[0.06] transition-all group"
+                >
+                  <Monitor className="w-4 h-4 text-white/40 group-hover:text-white/60" />
+                  <span className="text-sm text-white/60 group-hover:text-white/80">Windows</span>
+                </a>
+
+                <a
+                  href="https://github.com/hanzoai/app/releases/latest"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 p-3.5 bg-white/[0.02] hover:bg-white/[0.06] rounded-xl border border-white/[0.06] transition-all group"
+                >
+                  <Apple className="w-4 h-4 text-white/40 group-hover:text-white/60" />
+                  <span className="text-sm text-white/60 group-hover:text-white/80">macOS</span>
+                </a>
+
+                <a
+                  href="https://github.com/hanzoai/app/releases/latest"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 p-3.5 bg-white/[0.02] hover:bg-white/[0.06] rounded-xl border border-white/[0.06] transition-all group"
+                >
+                  <Terminal className="w-4 h-4 text-white/40 group-hover:text-white/60" />
+                  <span className="text-sm text-white/60 group-hover:text-white/80">Linux</span>
+                </a>
+
+                <div className="flex items-center justify-center gap-2 p-3.5 bg-white/[0.02] rounded-xl border border-white/[0.06] opacity-40 cursor-not-allowed">
+                  <Smartphone className="w-4 h-4 text-white/30" />
+                  <span className="text-sm text-white/40">Mobile</span>
                 </div>
               </div>
 
-              {/* Desktop App Options */}
-              <div className="space-y-4 pt-2">
-                <p className="text-sm text-white/40 text-center">Or run locally without login</p>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <a
-                    href="https://github.com/hanzoai/app/releases/latest"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 p-3.5 bg-white/[0.02] hover:bg-white/[0.06] rounded-xl border border-white/[0.06] transition-all group"
-                  >
-                    <Monitor className="w-4 h-4 text-white/40 group-hover:text-white/60" />
-                    <span className="text-sm text-white/60 group-hover:text-white/80">Windows</span>
-                  </a>
-
-                  <a
-                    href="https://github.com/hanzoai/app/releases/latest"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 p-3.5 bg-white/[0.02] hover:bg-white/[0.06] rounded-xl border border-white/[0.06] transition-all group"
-                  >
-                    <Apple className="w-4 h-4 text-white/40 group-hover:text-white/60" />
-                    <span className="text-sm text-white/60 group-hover:text-white/80">macOS</span>
-                  </a>
-
-                  <a
-                    href="https://github.com/hanzoai/app/releases/latest"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 p-3.5 bg-white/[0.02] hover:bg-white/[0.06] rounded-xl border border-white/[0.06] transition-all group"
-                  >
-                    <Terminal className="w-4 h-4 text-white/40 group-hover:text-white/60" />
-                    <span className="text-sm text-white/60 group-hover:text-white/80">Linux</span>
-                  </a>
-
-                  <div className="flex items-center justify-center gap-2 p-3.5 bg-white/[0.02] rounded-xl border border-white/[0.06] opacity-40 cursor-not-allowed">
-                    <Smartphone className="w-4 h-4 text-white/30" />
-                    <span className="text-sm text-white/40">Mobile</span>
-                  </div>
-                </div>
-
-                <p className="text-xs text-white/30 text-center">
-                  Mobile coming soon • Local AI models included
-                </p>
-              </div>
+              <p className="text-xs text-white/30 text-center">
+                Mobile coming soon • Local AI models included
+              </p>
             </div>
 
           </div>

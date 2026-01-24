@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import MY_TOKEN_KEY from "@/lib/get-cookie-name";
 
 export async function GET(req: NextRequest) {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get(MY_TOKEN_KEY())?.value;
+    const token = cookieStore.get('hanzo-auth-token')?.value;
 
     if (!token) {
       return NextResponse.json(
@@ -14,35 +13,47 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Verify token with Hugging Face
-    const response = await fetch("https://huggingface.co/api/whoami-v2", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    // Decode the simple token (base64 encoded email:timestamp)
+    try {
+      const decoded = Buffer.from(token, 'base64').toString('utf-8');
+      const [email, timestamp] = decoded.split(':');
 
-    if (!response.ok) {
+      if (!email || !timestamp) {
+        return NextResponse.json(
+          { authenticated: false, message: "Invalid token format" },
+          { status: 401 }
+        );
+      }
+
+      // Check if token is expired (7 days)
+      const tokenAge = Date.now() - parseInt(timestamp);
+      const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days in ms
+
+      if (tokenAge > maxAge) {
+        return NextResponse.json(
+          { authenticated: false, message: "Token expired" },
+          { status: 401 }
+        );
+      }
+
+      return NextResponse.json(
+        {
+          authenticated: true,
+          user: {
+            id: 'admin',
+            name: 'Admin',
+            email: email,
+            isPro: true,
+          },
+        },
+        { status: 200 }
+      );
+    } catch {
       return NextResponse.json(
         { authenticated: false, message: "Invalid token" },
         { status: 401 }
       );
     }
-
-    const user = await response.json();
-
-    return NextResponse.json(
-      {
-        authenticated: true,
-        user: {
-          id: user.id,
-          name: user.name,
-          fullname: user.fullname,
-          email: user.email,
-          avatarUrl: user.avatarUrl,
-        },
-      },
-      { status: 200 }
-    );
   } catch (error) {
     console.error("Auth check error:", error);
     return NextResponse.json(
