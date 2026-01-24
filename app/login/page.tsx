@@ -166,15 +166,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Footer */}
-            <div className="mt-12 text-center">
-              <p className="text-sm text-white/40">
-                Don&apos;t have an account?{' '}
-                <Link href="/signup" className="text-white hover:text-white/80 underline underline-offset-4">
-                  Sign up
-                </Link>
-              </p>
-            </div>
           </div>
         </div>
 
