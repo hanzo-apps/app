@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useUser } from '@/hooks/useUser';
 import Header from '@/components/layout/header';
+import { CryptoPayment } from '@/components/crypto-payment';
 
 // UI Components
 import { Button } from "@hanzo/ui";
@@ -12,12 +13,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@hanz
 import { Badge } from "@hanzo/ui";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@hanzo/ui";
 import { Progress } from "@hanzo/ui";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@hanzo/ui";
-import { Input } from "@hanzo/ui";
 
 // Icons
 import {
-  CreditCard,
+  Wallet,
   Download,
   Plus,
   ExternalLink,
@@ -47,8 +46,6 @@ export default function BillingPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [creditModalOpen, setCreditModalOpen] = useState(false);
-  const [selectedCreditAmount, setSelectedCreditAmount] = useState<number | null>(null);
-  const [customCreditAmount, setCustomCreditAmount] = useState('');
 
   // Billing data
   const [credits, setCredits] = useState(0);
@@ -60,13 +57,6 @@ export default function BillingPage() {
     ai_responses: { used: 89, limit: 1000 }
   });
 
-  // Credit purchase options
-  const creditOptions = [
-    { amount: 10, credits: 10, bonus: 0 },
-    { amount: 25, credits: 27, bonus: 2, popular: true },
-    { amount: 50, credits: 55, bonus: 5 },
-    { amount: 100, credits: 115, bonus: 15 },
-  ];
 
   useEffect(() => {
     // Simple auth check - just check if we have a token
@@ -89,38 +79,23 @@ export default function BillingPage() {
 
   const fetchBillingData = async () => {
     try {
-      // Fetch all billing data in parallel
-      const [subResponse, creditsResponse, invoicesResponse, usageResponse] = await Promise.all([
-        fetch('/api/stripe/subscription'),
-        fetch('/api/stripe/credits'),
-        fetch('/api/stripe/invoices'),
-        fetch('/api/usage')
-      ]);
+      // Fetch usage data
+      const usageResponse = await fetch('/api/usage');
+      const usageData = await usageResponse.json();
 
-      const [subData, creditsData, invoicesData, usageData] = await Promise.all([
-        subResponse.json(),
-        creditsResponse.json(),
-        invoicesResponse.json(),
-        usageResponse.json()
-      ]);
-
-      // Update usage data from API
       if (usageData.usage) {
         setUsage(usageData.usage);
       }
 
-      if (subData.plan) {
-        setSubscription({
-          plan: subData.plan === 'free' ? 'Free' : subData.plan === 'pro' ? 'Pro' : 'Pay as you go',
-          status: subData.subscription?.status || 'active',
-          billingCycle: subData.billingCycle,
-          nextBillingDate: subData.subscription?.currentPeriodEnd,
-          cancelAtPeriodEnd: subData.subscription?.cancelAtPeriodEnd
-        });
-      }
+      // Set default subscription (crypto-based, no traditional subscriptions)
+      setSubscription({
+        plan: 'Pay as you go',
+        status: 'active',
+      });
 
-      setCredits(creditsData.credits || 0);
-      setInvoices(invoicesData.invoices || []);
+      // TODO: Fetch credits from user account/database
+      setCredits(0);
+      setInvoices([]);
     } catch (error) {
       console.error('Error fetching billing data:', error);
     } finally {
@@ -128,31 +103,9 @@ export default function BillingPage() {
     }
   };
 
-  const handleOpenCustomerPortal = async () => {
-    try {
-      const response = await fetch('/api/stripe/portal', { method: 'POST' });
-      const data = await response.json();
-      if (data.url) window.location.href = data.url;
-    } catch (error) {
-      console.error('Failed to open customer portal:', error);
-    }
-  };
-
-  const handlePurchaseCredits = async () => {
-    const amount = selectedCreditAmount || parseFloat(customCreditAmount);
-    if (!amount || amount < 5) return;
-
-    try {
-      const response = await fetch('/api/stripe/credits', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount }),
-      });
-      const data = await response.json();
-      if (data.url) window.location.href = data.url;
-    } catch (error) {
-      console.error('Failed to create checkout session:', error);
-    }
+  const handleCryptoPaymentSuccess = (txHash: string, creditsAdded: number) => {
+    setCredits(prev => prev + creditsAdded);
+    setCreditModalOpen(false);
   };
 
   const calculateUsagePercentage = (used: number, limit: number) => {
@@ -183,15 +136,14 @@ export default function BillingPage() {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold mb-2">Billing & Usage</h1>
-            <p className="text-white/60">Manage your subscription, credits, and monitor usage</p>
+            <p className="text-white/60">Manage your credits and monitor usage</p>
           </div>
           <Button
-            onClick={handleOpenCustomerPortal}
-            variant="outline"
-            className="border-white/20 text-white hover:bg-white/10"
+            onClick={() => setCreditModalOpen(true)}
+            className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600"
           >
-            <ExternalLink className="w-4 h-4 mr-2" />
-            Customer Portal
+            <Wallet className="w-4 h-4 mr-2" />
+            Add Credits
           </Button>
         </div>
 
@@ -295,22 +247,13 @@ export default function BillingPage() {
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
-              <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 <Button
-                  variant="outline"
-                  className="border-white/20 text-white hover:bg-white/10"
+                  className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600"
                   onClick={() => setCreditModalOpen(true)}
                 >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Credits
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-white/20 text-white hover:bg-white/10"
-                  onClick={handleOpenCustomerPortal}
-                >
-                  <CreditCard className="w-4 h-4 mr-2" />
-                  Payment
+                  <Wallet className="w-4 h-4 mr-2" />
+                  Buy with Crypto
                 </Button>
                 <Button
                   variant="outline"
@@ -318,15 +261,15 @@ export default function BillingPage() {
                   onClick={() => router.push('/pricing')}
                 >
                   <Sparkles className="w-4 h-4 mr-2" />
-                  Plans
+                  View Plans
                 </Button>
                 <Button
                   variant="outline"
                   className="border-white/20 text-white hover:bg-white/10"
-                  onClick={() => setActiveTab('invoices')}
+                  onClick={() => setActiveTab('usage')}
                 >
-                  <Download className="w-4 h-4 mr-2" />
-                  Invoices
+                  <Activity className="w-4 h-4 mr-2" />
+                  Usage Stats
                 </Button>
               </CardContent>
             </Card>
@@ -438,90 +381,12 @@ export default function BillingPage() {
         </Tabs>
       </div>
 
-      {/* Credit Purchase Modal */}
-      <Dialog open={creditModalOpen} onOpenChange={setCreditModalOpen}>
-        <DialogContent className="max-w-2xl bg-[#1a1a1a] border-white/10 text-white">
-          <DialogHeader>
-            <DialogTitle className="flex items-center text-2xl">
-              <Sparkles className="w-6 h-6 mr-2 text-yellow-500" />
-              Purchase Credits
-            </DialogTitle>
-            <DialogDescription className="text-white/60">
-              Add credits to your account for usage-based features
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4 mt-4">
-            {/* Preset Options */}
-            <div className="grid grid-cols-2 gap-3">
-              {creditOptions.map((option) => (
-                <Card
-                  key={option.amount}
-                  className={`relative p-4 cursor-pointer transition-all bg-[#0a0a0a] border-white/10 hover:border-white/30 ${
-                    selectedCreditAmount === option.amount ? 'ring-2 ring-violet-500 border-violet-500' : ''
-                  }`}
-                  onClick={() => {
-                    setSelectedCreditAmount(option.amount);
-                    setCustomCreditAmount('');
-                  }}
-                >
-                  {option.popular && (
-                    <Badge className="absolute -top-2 -right-2 bg-gradient-to-r from-violet-500 to-purple-500 text-white">
-                      Popular
-                    </Badge>
-                  )}
-                  <div className="space-y-2">
-                    <div className="text-2xl font-bold">${option.amount}</div>
-                    <div className="flex items-center text-sm text-white/60">
-                      <Zap className="w-3 h-3 mr-1" />
-                      {option.credits} credits
-                    </div>
-                    {option.bonus > 0 && (
-                      <Badge variant="secondary" className="text-xs bg-white/10">
-                        +{Math.round((option.bonus / (option.credits - option.bonus)) * 100)}% bonus
-                      </Badge>
-                    )}
-                  </div>
-                </Card>
-              ))}
-            </div>
-
-            {/* Custom Amount */}
-            <div className="border-t border-white/10 pt-4">
-              <label className="text-sm font-medium mb-2 block">Or enter custom amount</label>
-              <Input
-                type="number"
-                placeholder="Enter amount (min $5)"
-                value={customCreditAmount}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setCustomCreditAmount(e.target.value);
-                  setSelectedCreditAmount(null);
-                }}
-                className="bg-[#0a0a0a] border-white/10 text-white placeholder:text-white/40"
-                min={5}
-              />
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
-              <Button
-                variant="outline"
-                onClick={() => setCreditModalOpen(false)}
-                className="border-white/20 text-white hover:bg-white/10"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handlePurchaseCredits}
-                disabled={!selectedCreditAmount && (!customCreditAmount || parseFloat(customCreditAmount) < 5)}
-                className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600"
-              >
-                Purchase {selectedCreditAmount ? `$${selectedCreditAmount}` : customCreditAmount ? `$${customCreditAmount}` : ''}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Crypto Payment Modal */}
+      <CryptoPayment
+        open={creditModalOpen}
+        onOpenChange={setCreditModalOpen}
+        onSuccess={handleCryptoPaymentSuccess}
+      />
     </div>
   );
 }
