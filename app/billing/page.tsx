@@ -59,23 +59,25 @@ export default function BillingPage() {
 
 
   useEffect(() => {
-    // Simple auth check - just check if we have a token
-    const checkAuth = () => {
-      const cookies = document.cookie.split(';');
-      const hasAuthToken = cookies.some(cookie =>
-        cookie.trim().startsWith('hanzo-auth-token=') ||
-        cookie.trim().startsWith('hanzo-access-token=')
-      );
+    // Check auth via API (handles httpOnly cookies)
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/check');
+        const data = await response.json();
 
-      if (!hasAuthToken && !user) {
-        router.push('/auth');
-        return;
+        if (!data.authenticated) {
+          router.push('/login');
+          return;
+        }
+        fetchBillingData();
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        router.push('/login');
       }
-      fetchBillingData();
     };
 
     checkAuth();
-  }, [user, router]);
+  }, [router]);
 
   const fetchBillingData = async () => {
     try {
