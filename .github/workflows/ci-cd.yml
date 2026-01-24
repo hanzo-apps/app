@@ -10,6 +10,11 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
+# Grant GITHUB_TOKEN the permissions required for this workflow
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   # Step 1: Quick Validation - Fail fast on basic issues
   validate:
