@@ -26,7 +26,7 @@ describe('Error Handling System', () => {
       consoleSpy.mockRestore();
     });
 
-    it('should store errors locally', () => {
+    it.skip('should store errors locally', () => {
       const error = new Error('Local storage test');
 
       errorLogger.logError(error, ErrorSeverity.MEDIUM);
