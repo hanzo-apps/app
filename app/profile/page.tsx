@@ -1,15 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Save, Camera, Link as LinkIcon, Twitter, Github, Globe } from "lucide-react";
 import { Button } from "@hanzo/ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
 import { useUser } from "@/hooks/useUser";
 import { toast } from "sonner";
+import { HanzoLogo } from "@/components/HanzoLogo";
 
 export default function ProfilePage() {
-  const { user } = useUser();
+  // All hooks must be called unconditionally before any conditional returns
+  const { user, loading } = useUser();
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
 
@@ -18,9 +20,35 @@ export default function ProfilePage() {
     setIsEditing(false);
   };
 
+  // Use effect for navigation to avoid calling router.push during render
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/login");
+    }
+  }, [user, loading, router]);
+
+  // Show loading state while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="text-center">
+          <HanzoLogo className="w-12 h-12 mx-auto mb-4 animate-pulse" />
+          <p className="text-gray-500">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading state while redirecting
   if (!user) {
-    router.push("/login");
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="text-center">
+          <HanzoLogo className="w-12 h-12 mx-auto mb-4 animate-pulse" />
+          <p className="text-gray-500">Redirecting to login...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

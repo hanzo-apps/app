@@ -14,11 +14,14 @@ export function MyProjects({
 }: {
   projects: Project[];
 }) {
+  // All hooks must be called unconditionally before any conditional returns
   const { user } = useUser();
+  const [projects, setProjects] = useState<Project[]>(initialProjects || []);
+
+  // Conditional redirect after all hooks are called
   if (!user) {
     redirect("/");
   }
-  const [projects, setProjects] = useState<Project[]>(initialProjects || []);
   return (
     <>
       <section className="max-w-[86rem] py-12 px-4 mx-auto">
