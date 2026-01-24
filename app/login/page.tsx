@@ -8,6 +8,7 @@ import { Button } from "@hanzo/ui";
 import { Input } from "@hanzo/ui";
 import { Label } from "@hanzo/ui";
 import { Loader2, Sparkles, ArrowRight, Monitor, Apple, Terminal, Smartphone, Zap, Mail, Lock } from 'lucide-react';
+import { storeAuth } from '@/lib/client-auth';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -59,8 +60,11 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (data.success) {
-        // Store user info
-        localStorage.setItem('hanzo-user', JSON.stringify(data.user));
+        // Store auth data in localStorage (token is also in httpOnly cookie)
+        // Use a client-side token marker since real token is httpOnly
+        const clientToken = 'authenticated';
+        const expiresIn = 7 * 24 * 60 * 60; // 7 days in seconds
+        storeAuth(clientToken, data.user, expiresIn);
         router.push('/');
       } else {
         setError(data.error || 'Login failed');
