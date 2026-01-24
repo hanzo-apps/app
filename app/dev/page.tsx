@@ -106,6 +106,14 @@ export default function DevPage() {
     handleOnboardingComplete(prompt);
   };
 
+  // Store the prompt in localStorage for AppEditor to pick up
+  // This hook must be before any conditional returns to follow Rules of Hooks
+  useEffect(() => {
+    if (finalPrompt) {
+      localStorage.setItem("initialPrompt", finalPrompt);
+    }
+  }, [finalPrompt]);
+
   if (showTemplateLoader && repoData) {
     return (
       <TemplateLoader
@@ -124,13 +132,6 @@ export default function DevPage() {
       />
     );
   }
-
-  // Store the prompt in localStorage for AppEditor to pick up
-  useEffect(() => {
-    if (finalPrompt) {
-      localStorage.setItem("initialPrompt", finalPrompt);
-    }
-  }, [finalPrompt]);
 
   // Pass the prompt to AppEditor
   return (
