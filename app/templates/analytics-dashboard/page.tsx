@@ -99,7 +99,7 @@ export default function AnalyticsDashboard() {
                 <CardTitle className="text-sm font-medium">
                   {metric.title}
                 </CardTitle>
-                <div className="w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-500">
+                <div className="w-8 h-8 rounded-full bg-[#fd4444]/10 flex items-center justify-center text-[#fd4444]">
                   {metric.icon}
                 </div>
               </CardHeader>
@@ -155,7 +155,7 @@ export default function AnalyticsDashboard() {
                   <div className="space-y-4">
                     {recentSales.map((sale, i) => (
                       <div key={i} className="flex items-center">
-                        <div className="w-9 h-9 rounded-full bg-indigo-500/10 flex items-center justify-center text-sm font-medium text-indigo-600">
+                        <div className="w-9 h-9 rounded-full bg-[#fd4444]/10 flex items-center justify-center text-sm font-medium text-[#fd4444]">
                           {sale.name.split(" ").map(n => n[0]).join("")}
                         </div>
                         <div className="ml-4 space-y-1 flex-1">
@@ -183,7 +183,7 @@ export default function AnalyticsDashboard() {
                       <span className="text-sm">Rate</span>
                       <span className="text-sm font-medium">3.2%</span>
                     </div>
-                    <Progress value={32} className="h-2 [&>div]:bg-indigo-500" />
+                    <Progress value={32} className="h-2 [&>div]:bg-[#fd4444]" />
                     <p className="text-xs text-muted-foreground">
                       +0.5% from last month
                     </p>

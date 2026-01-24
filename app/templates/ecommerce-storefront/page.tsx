@@ -123,7 +123,7 @@ export default function EcommerceStorefront() {
       </header>
 
       {/* Hero Section - Orange/Pink Gradient Theme */}
-      <section className="bg-gradient-to-r from-orange-500 to-pink-500 text-white py-16">
+      <section className="bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] text-white py-16">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl">
             <h2 className="text-4xl font-bold mb-4">
@@ -259,8 +259,8 @@ export default function EcommerceStorefront() {
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center mx-auto mb-3">
-                <ShoppingCart className="w-6 h-6 text-orange-500" />
+              <div className="w-12 h-12 rounded-full bg-[#fd4444]/10 flex items-center justify-center mx-auto mb-3">
+                <ShoppingCart className="w-6 h-6 text-[#fd4444]" />
               </div>
               <h3 className="font-semibold mb-1">Free Shipping</h3>
               <p className="text-sm text-muted-foreground">
@@ -268,8 +268,8 @@ export default function EcommerceStorefront() {
               </p>
             </div>
             <div className="text-center">
-              <div className="w-12 h-12 rounded-full bg-pink-500/10 flex items-center justify-center mx-auto mb-3">
-                <Star className="w-6 h-6 text-pink-500" />
+              <div className="w-12 h-12 rounded-full bg-[#ff6b6b]/10 flex items-center justify-center mx-auto mb-3">
+                <Star className="w-6 h-6 text-[#ff6b6b]" />
               </div>
               <h3 className="font-semibold mb-1">Quality Products</h3>
               <p className="text-sm text-muted-foreground">
@@ -277,8 +277,8 @@ export default function EcommerceStorefront() {
               </p>
             </div>
             <div className="text-center">
-              <div className="w-12 h-12 rounded-full bg-rose-500/10 flex items-center justify-center mx-auto mb-3">
-                <Heart className="w-6 h-6 text-rose-500" />
+              <div className="w-12 h-12 rounded-full bg-[#fd4444]/10 flex items-center justify-center mx-auto mb-3">
+                <Heart className="w-6 h-6 text-[#fd4444]" />
               </div>
               <h3 className="font-semibold mb-1">24/7 Support</h3>
               <p className="text-sm text-muted-foreground">

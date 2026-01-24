@@ -178,8 +178,8 @@ export default function LandingPage() {
       {/* Gradient background - subtle but dynamic */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0a] to-[#0a0a0a]" />
-        <div className="absolute top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[800px] bg-gradient-radial from-violet-500/15 via-purple-500/5 to-transparent blur-3xl animate-pulse" />
-        <div className="absolute bottom-0 left-0 right-0 h-[600px] bg-gradient-to-t from-blue-500/10 via-purple-500/5 to-transparent blur-3xl" />
+        <div className="absolute top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[800px] bg-gradient-radial from-[#fd4444]/15 via-[#ff6b6b]/5 to-transparent blur-3xl animate-pulse" />
+        <div className="absolute bottom-0 left-0 right-0 h-[600px] bg-gradient-to-t from-blue-500/10 via-[#ff6b6b]/5 to-transparent blur-3xl" />
       </div>
 
       {/* Navigation Header */}
@@ -189,18 +189,18 @@ export default function LandingPage() {
         {/* Hero Section - Big, engaging input */}
         <section className="px-4 md:px-8 pt-16 md:pt-24 pb-20 md:pb-32">
           <div className="max-w-5xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 md:mb-8 bg-violet-500/10 border border-violet-500/20 rounded-full">
-              <Sparkles className="w-4 h-4 text-violet-400" />
-              <span className="text-sm text-violet-300">Powered by Hanzo AI</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 md:mb-8 bg-[#fd4444]/10 border border-[#fd4444]/20 rounded-full">
+              <Sparkles className="w-4 h-4 text-[#fd4444]" />
+              <span className="text-sm text-[#ff6b6b]">Powered by Hanzo AI</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6">
               Build something{" "}
               <span className="relative inline-block">
-                <span className="bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-[#fd4444] via-[#ff6b6b] to-pink-400 bg-clip-text text-transparent">
                   amazing
                 </span>
-                <div className="absolute -inset-2 bg-gradient-to-r from-violet-400/20 via-purple-400/20 to-pink-400/20 blur-2xl -z-10" />
+                <div className="absolute -inset-2 bg-gradient-to-r from-[#fd4444]/20 via-[#ff6b6b]/20 to-pink-400/20 blur-2xl -z-10" />
               </span>
             </h1>
             <p className="text-lg md:text-xl text-white/60 mb-8 md:mb-16 max-w-2xl mx-auto px-4">
@@ -210,9 +210,9 @@ export default function LandingPage() {
             {/* Large, prominent input box - responsive */}
             <div className="max-w-3xl mx-auto px-4 md:px-0">
               <div className={`relative bg-[#141414] rounded-xl md:rounded-2xl shadow-2xl border transition-all duration-300 ${
-                inputFocused ? 'border-violet-500/50 shadow-violet-500/20' : 'border-white/10'
+                inputFocused ? 'border-[#fd4444]/50 shadow-[#fd4444]/20' : 'border-white/10'
               }`}>
-                <div className="absolute -inset-[1px] bg-gradient-to-r from-violet-500/20 via-purple-500/20 to-pink-500/20 rounded-xl md:rounded-2xl blur opacity-0 transition-opacity duration-300"
+                <div className="absolute -inset-[1px] bg-gradient-to-r from-[#fd4444]/20 via-[#ff6b6b]/20 to-pink-500/20 rounded-xl md:rounded-2xl blur opacity-0 transition-opacity duration-300"
                   style={{ opacity: inputFocused ? 0.6 : 0 }}
                 />
                 <div className="relative flex flex-col md:flex-row items-stretch md:items-center gap-3 p-3 md:p-4">
@@ -243,7 +243,7 @@ export default function LandingPage() {
                     <Button
                       onClick={handleCreateProject}
                       disabled={isCreating || !prompt.trim()}
-                      className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-400 hover:to-purple-400 text-white px-4 md:px-6 py-2 md:py-2.5 rounded-lg md:rounded-xl font-semibold shadow-lg shadow-violet-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] hover:from-[#ff6b6b] hover:to-[#fd4444] text-white px-4 md:px-6 py-2 md:py-2.5 rounded-lg md:rounded-xl font-semibold shadow-lg shadow-[#fd4444]/20 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isCreating ? (
                         <Loader2 className="w-5 h-5 animate-spin" />
@@ -290,10 +290,10 @@ export default function LandingPage() {
         </section>
 
         {/* Showcase Section - Made with Hanzo */}
-        <section className="px-4 md:px-8 py-16 md:py-20 bg-gradient-to-b from-transparent via-violet-950/10 to-transparent">
+        <section className="px-4 md:px-8 py-16 md:py-20 bg-gradient-to-b from-transparent via-[#fd4444]/10 to-transparent">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-8 md:mb-12">
-              <Badge className="mb-4 bg-gradient-to-r from-violet-600 to-purple-600 text-white border-0 px-3 md:px-4 py-1.5">
+              <Badge className="mb-4 bg-gradient-to-r from-[#fd4444] to-[#e03e3e] text-white border-0 px-3 md:px-4 py-1.5">
                 <Sparkles className="w-4 h-4 mr-2" />
                 Built with Hanzo AI
               </Badge>
@@ -330,20 +330,20 @@ export default function LandingPage() {
                 >
                   {project.featured && (
                     <div className="absolute -top-2 -right-2 z-10">
-                      <div className="bg-gradient-to-r from-violet-500 to-purple-500 text-white text-xs px-2 py-1 rounded-lg font-semibold shadow-lg">
+                      <div className="bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] text-white text-xs px-2 py-1 rounded-lg font-semibold shadow-lg">
                         Featured
                       </div>
                     </div>
                   )}
-                  <div className="bg-[#1a1a1a] rounded-xl md:rounded-2xl overflow-hidden border border-white/10 hover:border-violet-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-violet-500/10 hover:-translate-y-1">
-                    <div className="aspect-video bg-gradient-to-br from-violet-900/30 via-purple-900/30 to-pink-900/30 relative overflow-hidden">
+                  <div className="bg-[#1a1a1a] rounded-xl md:rounded-2xl overflow-hidden border border-white/10 hover:border-[#fd4444]/50 transition-all duration-300 hover:shadow-2xl hover:shadow-[#fd4444]/10 hover:-translate-y-1">
+                    <div className="aspect-video bg-gradient-to-br from-[#fd4444]/30 via-[#ff6b6b]/30 to-pink-900/30 relative overflow-hidden">
                       <div className="absolute inset-0 flex items-center justify-center">
                         <span className="text-4xl md:text-6xl">{project.authorAvatar}</span>
                       </div>
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     </div>
                     <div className="p-4 md:p-5">
-                      <h3 className="font-semibold text-sm md:text-base mb-2 group-hover:text-violet-400 transition-colors">
+                      <h3 className="font-semibold text-sm md:text-base mb-2 group-hover:text-[#fd4444] transition-colors">
                         {project.title}
                       </h3>
                       <p className="text-xs md:text-sm text-white/60 mb-3 line-clamp-2">
@@ -351,7 +351,7 @@ export default function LandingPage() {
                       </p>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <div className="w-5 md:w-6 h-5 md:h-6 rounded-full bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center">
+                          <div className="w-5 md:w-6 h-5 md:h-6 rounded-full bg-gradient-to-br from-[#fd4444] to-[#ff6b6b] flex items-center justify-center">
                             <span className="text-[10px] md:text-xs">{project.authorAvatar}</span>
                           </div>
                           <span className="text-xs text-white/50">{project.author}</span>
@@ -374,7 +374,7 @@ export default function LandingPage() {
               <div className="flex items-center justify-center gap-4">
                 <Button
                   onClick={() => router.push('/gallery')}
-                  className="bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:from-violet-700 hover:to-purple-700"
+                  className="bg-gradient-to-r from-[#fd4444] to-[#e03e3e] text-white hover:from-[#e03e3e] hover:to-[#fd4444]"
                 >
                   <Globe2 className="w-4 h-4 mr-2" />
                   View Full Gallery
@@ -418,7 +418,7 @@ export default function LandingPage() {
                     onClick={() => router.push(`/projects/${project.namespace}/${project.id}`)}
                   >
                     <div className="bg-[#1a1a1a] rounded-xl md:rounded-2xl overflow-hidden border border-white/10 hover:border-white/20 transition-all hover:shadow-xl">
-                      <div className="aspect-video bg-gradient-to-br from-violet-900/20 to-purple-900/20 relative">
+                      <div className="aspect-video bg-gradient-to-br from-[#fd4444]/20 to-[#ff6b6b]/20 relative">
                         <div className="absolute inset-0 flex items-center justify-center text-4xl md:text-5xl">
                           {project.emoji || "🚀"}
                         </div>

@@ -93,13 +93,13 @@ export default function PricingPage() {
       {/* Hero Section */}
       <section className="px-4 md:px-8 py-16 md:py-24 text-center">
         <div className="max-w-4xl mx-auto">
-          <Badge className="mb-4 bg-gradient-to-r from-violet-600 to-purple-600 text-white border-0">
+          <Badge className="mb-4 bg-gradient-to-r from-[#fd4444] to-[#e03e3e] text-white border-0">
             <Sparkles className="w-4 h-4 mr-2" />
             Simple, Transparent Pricing
           </Badge>
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
             Choose the plan that{" "}
-            <span className="bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] bg-clip-text text-transparent">
               fits your needs
             </span>
           </h1>
@@ -145,13 +145,13 @@ export default function PricingPage() {
                 key={plan.name}
                 className={`relative rounded-2xl border ${
                   plan.highlighted
-                    ? "border-violet-500/50 bg-gradient-to-b from-violet-950/20 to-transparent"
+                    ? "border-[#fd4444]/50 bg-gradient-to-b from-[#fd4444]/20 to-transparent"
                     : "border-white/10 bg-[#1a1a1a]"
                 } p-8`}
               >
                 {plan.badge && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0">
+                    <Badge className="bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] text-white border-0">
                       {plan.badge}
                     </Badge>
                   </div>
@@ -159,7 +159,7 @@ export default function PricingPage() {
 
                 <div className="flex items-center gap-3 mb-4">
                   <div className={`p-2 rounded-lg ${
-                    plan.highlighted ? "bg-violet-500/20" : "bg-white/10"
+                    plan.highlighted ? "bg-[#fd4444]/20" : "bg-white/10"
                   }`}>
                     {plan.icon}
                   </div>
@@ -187,7 +187,7 @@ export default function PricingPage() {
                   onClick={() => handleCheckout(plan.planId)}
                   className={`w-full mb-8 ${
                     plan.highlighted
-                      ? "bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-400 hover:to-purple-400"
+                      ? "bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] hover:from-[#ff6b6b] hover:to-[#fd4444]"
                       : "bg-white/10 hover:bg-white/20"
                   }`}
                   size="lg"

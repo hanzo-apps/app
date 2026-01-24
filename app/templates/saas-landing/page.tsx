@@ -59,7 +59,7 @@ export default function SaaSLandingPage() {
             <Badge className="mb-4" variant="outline">
               Built with @hanzo/ui
             </Badge>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] bg-clip-text text-transparent">
               Build Better Products Faster
             </h1>
             <p className="text-xl text-muted-foreground mb-8">
@@ -100,9 +100,9 @@ export default function SaaSLandingPage() {
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             {features.map((feature, i) => (
-              <Card key={i} className="border-2 hover:border-emerald-500 transition-colors">
+              <Card key={i} className="border-2 hover:border-[#fd4444] transition-colors">
                 <CardHeader>
-                  <div className="w-12 h-12 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600 mb-4">
+                  <div className="w-12 h-12 rounded-lg bg-[#fd4444]/10 flex items-center justify-center text-[#fd4444] mb-4">
                     {feature.icon}
                   </div>
                   <CardTitle>{feature.title}</CardTitle>
@@ -127,7 +127,7 @@ export default function SaaSLandingPage() {
             {pricing.map((plan) => (
               <Card
                 key={plan.name}
-                className={plan.popular ? "border-emerald-500 shadow-lg scale-105" : ""}
+                className={plan.popular ? "border-[#fd4444] shadow-lg scale-105" : ""}
               >
                 <CardHeader>
                   {plan.popular && (
@@ -144,7 +144,7 @@ export default function SaaSLandingPage() {
                   <ul className="space-y-2">
                     {plan.features.map((feature) => (
                       <li key={feature} className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                        <CheckCircle className="w-4 h-4 text-[#fd4444] flex-shrink-0" />
                         <span className="text-sm">{feature}</span>
                       </li>
                     ))}
@@ -162,7 +162,7 @@ export default function SaaSLandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
+      <section className="py-24 bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] text-white">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
           <p className="mb-8 opacity-90">

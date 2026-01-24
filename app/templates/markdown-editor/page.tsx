@@ -124,10 +124,10 @@ Start writing your content above!
       .replace(/\*(.+?)\*/g, '<em>$1</em>')
       .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre class="bg-muted p-4 rounded-lg my-4 overflow-x-auto"><code>$2</code></pre>')
       .replace(/`(.+?)`/g, '<code class="bg-muted px-1 py-0.5 rounded text-sm">$1</code>')
-      .replace(/^> (.*$)/gim, '<blockquote class="border-l-4 border-blue-500 pl-4 my-4 italic">$1</blockquote>')
+      .replace(/^> (.*$)/gim, '<blockquote class="border-l-4 border-[#fd4444] pl-4 my-4 italic">$1</blockquote>')
       .replace(/^- (.*$)/gim, '<li class="ml-6">• $1</li>')
       .replace(/^\d+\. (.*$)/gim, '<li class="ml-6">$1</li>')
-      .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" class="text-blue-600 hover:underline">$1</a>')
+      .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" class="text-[#fd4444] hover:underline">$1</a>')
       .replace(/\n\n/g, '</p><p class="mb-4">')
       .replace(/^---$/gim, '<hr class="my-6 border-t">');
 
@@ -256,7 +256,7 @@ Start writing your content above!
                 <Download className="w-4 h-4 mr-2" />
                 Export
               </Button>
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+              <Button size="sm" className="bg-[#fd4444] hover:bg-[#e03e3e]">
                 <Save className="w-4 h-4 mr-2" />
                 Save
               </Button>

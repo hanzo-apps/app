@@ -33,7 +33,7 @@ const templates = [
     name: "AI Chat Interface",
     description: "Modern chat UI with streaming responses and markdown support",
     icon: <MessageSquare className="w-6 h-6" />,
-    color: "from-violet-500 to-purple-700",
+    color: "from-[#fd4444] to-[#e03e3e]",
     features: ["Streaming responses", "Message history", "Dark theme"],
     category: "AI",
     path: "/templates/ai-chat-interface",
@@ -55,7 +55,7 @@ const templates = [
     name: "Analytics Dashboard",
     description: "Data visualization dashboard with charts and metrics",
     icon: <BarChart className="w-6 h-6" />,
-    color: "from-indigo-500 to-indigo-600",
+    color: "from-[#fd4444] to-[#ff6b6b]",
     features: ["Metric cards", "Charts", "Real-time data"],
     category: "Analytics",
     path: "/templates/analytics-dashboard",
@@ -169,7 +169,7 @@ export default function TemplateGallery() {
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-4 mb-2">
-                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#fd4444] to-[#e03e3e] flex items-center justify-center">
                   <Sparkles className="w-7 h-7 text-white" />
                 </div>
                 <h1 className="text-3xl font-bold">Hanzo Community Gallery</h1>
@@ -183,7 +183,7 @@ export default function TemplateGallery() {
                 <Github className="w-4 h-4" />
                 View Source
               </Button>
-              <Button className="gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800">
+              <Button className="gap-2 bg-gradient-to-r from-[#fd4444] to-[#e03e3e] hover:from-[#e03e3e] hover:to-[#fd4444]">
                 <Rocket className="w-4 h-4" />
                 Deploy All
               </Button>
@@ -253,7 +253,7 @@ export default function TemplateGallery() {
 
               <CardFooter className="flex gap-2 pt-3">
                 <Button
-                  className="flex-1 gap-1 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
+                  className="flex-1 gap-1 bg-gradient-to-r from-[#fd4444] to-[#e03e3e] hover:from-[#e03e3e] hover:to-[#fd4444]"
                   size="sm"
                   onClick={() => window.location.href = `/new`}
                 >

@@ -121,7 +121,7 @@ The UI is built entirely with @hanzo/ui primitives like Card, Button, ScrollArea
           <CardHeader className="border-b">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#fd4444] to-[#ff6b6b] flex items-center justify-center">
                   <Sparkles className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -150,8 +150,8 @@ The UI is built entirely with @hanzo/ui primitives like Card, Button, ScrollArea
                 >
                   {message.role === "assistant" && (
                     <Avatar>
-                      <AvatarFallback className="bg-violet-100">
-                        <Bot className="w-5 h-5 text-violet-600" />
+                      <AvatarFallback className="bg-[#fd4444]/10">
+                        <Bot className="w-5 h-5 text-[#fd4444]" />
                       </AvatarFallback>
                     </Avatar>
                   )}
@@ -159,14 +159,14 @@ The UI is built entirely with @hanzo/ui primitives like Card, Button, ScrollArea
                   <Card className={cn(
                     "max-w-[70%]",
                     message.role === "user"
-                      ? "bg-gradient-to-r from-violet-500 to-purple-600 text-white"
+                      ? "bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] text-white"
                       : "bg-muted"
                   )}>
                     <CardContent className="p-3">
                       <p className="whitespace-pre-wrap">
                         {message.content}
                         {message.isStreaming && (
-                          <span className="inline-block w-2 h-4 ml-1 bg-violet-500 animate-pulse" />
+                          <span className="inline-block w-2 h-4 ml-1 bg-[#fd4444] animate-pulse" />
                         )}
                       </p>
                       <div className="flex items-center gap-2 mt-2">

@@ -102,7 +102,7 @@ export default function Header() {
                       variant="ghost"
                       className="gap-2 text-white/80 hover:text-white"
                     >
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center">
+                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#fd4444] to-[#ff6b6b] flex items-center justify-center">
                         <User className="w-4 h-4 text-white" />
                       </div>
                       <span className="max-w-[150px] truncate">
@@ -212,7 +212,7 @@ export default function Header() {
                 <>
                   <div className="p-3 mb-4 bg-white/5 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#fd4444] to-[#ff6b6b] flex items-center justify-center">
                         <User className="w-5 h-5 text-white" />
                       </div>
                       <div>

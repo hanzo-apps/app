@@ -48,7 +48,7 @@ export default function SignupPage() {
           <Card className="bg-[#1a1a1a] border-white/10">
             <CardHeader className="space-y-1 text-center pb-8">
               <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 bg-gradient-to-r from-violet-500 to-purple-500 rounded-2xl flex items-center justify-center relative">
+                <div className="w-16 h-16 bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] rounded-2xl flex items-center justify-center relative">
                   <HanzoLogo className="w-10 h-10 text-white" />
                   <Badge className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0">
                     Free
@@ -66,7 +66,7 @@ export default function SignupPage() {
                 <h3 className="text-sm font-semibold text-white/80 mb-3">What you'll get:</h3>
                 <div className="grid grid-cols-1 gap-2">
                   <div className="flex items-center gap-3">
-                    <Sparkles className="w-4 h-4 text-violet-400" />
+                    <Sparkles className="w-4 h-4 text-[#fd4444]" />
                     <span className="text-sm text-white/70">Access to 100+ AI models</span>
                   </div>
                   <div className="flex items-center gap-3">
@@ -133,7 +133,7 @@ export default function SignupPage() {
               <div className="pt-4 text-center space-y-2">
                 <p className="text-sm text-white/60">
                   Already have an account?{' '}
-                  <Link href="/login" className="text-violet-400 hover:text-violet-300">
+                  <Link href="/login" className="text-[#fd4444] hover:text-[#ff6b6b]">
                     Sign in
                   </Link>
                 </p>

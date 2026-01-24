@@ -127,13 +127,13 @@ export default function CommunityPage() {
       {/* Hero Section */}
       <section className="px-4 md:px-8 py-16 md:py-24 text-center">
         <div className="max-w-4xl mx-auto">
-          <Badge className="mb-4 bg-gradient-to-r from-violet-600 to-purple-600 text-white border-0">
+          <Badge className="mb-4 bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] text-white border-0">
             <Users className="w-4 h-4 mr-2" />
             50,000+ Developers Building
           </Badge>
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
             Join the Hanzo{" "}
-            <span className="bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] bg-clip-text text-transparent">
               Community
             </span>
           </h1>
@@ -141,7 +141,7 @@ export default function CommunityPage() {
             Discover amazing projects, share your creations, and collaborate with developers building the future of AI
           </p>
           <div className="flex items-center gap-4 justify-center">
-            <Button size="lg" className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-400 hover:to-purple-400">
+            <Button size="lg" className="bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] hover:from-[#e03e3e] hover:to-[#fd4444]">
               Share Your Project
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
@@ -157,25 +157,25 @@ export default function CommunityPage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
+              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] bg-clip-text text-transparent">
                 50K+
               </div>
               <div className="text-white/60 mt-2">Active Developers</div>
             </div>
             <div>
-              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
+              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] bg-clip-text text-transparent">
                 10K+
               </div>
               <div className="text-white/60 mt-2">Projects Shared</div>
             </div>
             <div>
-              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
+              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] bg-clip-text text-transparent">
                 250K+
               </div>
               <div className="text-white/60 mt-2">Components Used</div>
             </div>
             <div>
-              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
+              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] bg-clip-text text-transparent">
                 1M+
               </div>
               <div className="text-white/60 mt-2">Apps Deployed</div>
@@ -215,9 +215,9 @@ export default function CommunityPage() {
           {/* Project Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProjects.map(project => (
-              <div key={project.id} className="bg-[#1a1a1a] rounded-2xl border border-white/10 hover:border-violet-500/50 transition-all overflow-hidden group">
+              <div key={project.id} className="bg-[#1a1a1a] rounded-2xl border border-white/10 hover:border-[#fd4444]/50 transition-all overflow-hidden group">
                 {project.featured && (
-                  <div className="bg-gradient-to-r from-violet-500 to-purple-500 text-white text-xs px-3 py-1.5 flex items-center gap-1">
+                  <div className="bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] text-white text-xs px-3 py-1.5 flex items-center gap-1">
                     <Trophy className="w-3 h-3" />
                     Featured Project
                   </div>
@@ -225,7 +225,7 @@ export default function CommunityPage() {
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <h3 className="font-semibold text-lg mb-2 group-hover:text-violet-400 transition-colors">
+                      <h3 className="font-semibold text-lg mb-2 group-hover:text-[#fd4444] transition-colors">
                         {project.title}
                       </h3>
                       <p className="text-sm text-white/60 mb-4">
@@ -235,7 +235,7 @@ export default function CommunityPage() {
                   </div>
 
                   <div className="flex items-center gap-2 mb-4">
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center">
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#fd4444] to-[#ff6b6b] flex items-center justify-center">
                       <span className="text-xs">{project.authorAvatar}</span>
                     </div>
                     <span className="text-sm text-white/50">{project.author}</span>
@@ -271,10 +271,10 @@ export default function CommunityPage() {
       </section>
 
       {/* Top Contributors */}
-      <section className="px-4 md:px-8 py-16 bg-gradient-to-b from-transparent via-violet-950/10 to-transparent">
+      <section className="px-4 md:px-8 py-16 bg-gradient-to-b from-transparent via-[#fd4444]/10 to-transparent">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <Badge className="mb-4 bg-gradient-to-r from-violet-600 to-purple-600 text-white border-0">
+            <Badge className="mb-4 bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] text-white border-0">
               <Zap className="w-4 h-4 mr-2" />
               This Month
             </Badge>
@@ -286,7 +286,7 @@ export default function CommunityPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             {topContributors.map((contributor, index) => (
-              <div key={contributor.name} className="bg-[#1a1a1a] rounded-2xl p-6 text-center border border-white/10 hover:border-violet-500/50 transition-all">
+              <div key={contributor.name} className="bg-[#1a1a1a] rounded-2xl p-6 text-center border border-white/10 hover:border-[#fd4444]/50 transition-all">
                 <div className="text-2xl mb-2">{contributor.badge}</div>
                 <div className="text-4xl mb-3">{contributor.avatar}</div>
                 <div className="font-semibold mb-2">{contributor.name}</div>
