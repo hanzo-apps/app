@@ -2,7 +2,7 @@
 FROM node:20-alpine
 
 # Enable pnpm via corepack
-RUN corepack enable && corepack prepare pnpm@9.14.4 --activate
+RUN corepack enable && corepack prepare pnpm@10.17.1 --activate
 
 # Install system dependencies
 RUN apk add --no-cache libc6-compat
@@ -22,6 +22,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 ENV NODE_OPTIONS="--max-old-space-size=4096"
+ENV CI=true
 
 RUN pnpm run build && \
     # Verify build artifacts exist
