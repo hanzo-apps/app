@@ -125,11 +125,15 @@ export async function GET(request: Request) {
     }
 
     // Calculate overall status
-    const failedChecks = Object.values(checks).filter((check) => check.status === 'fail');
-    const warnChecks = Object.values(checks).filter((check) => check.status === 'warn');
+    // Note: External API and optional service failures should NOT make the app unhealthy
+    // Only critical internal failures should cause unhealthy status
+    const criticalFailures = Object.entries(checks).filter(
+      ([key, check]) => check.status === 'fail' && !['externalApi', 'stripe'].includes(key)
+    );
+    const warnChecks = Object.values(checks).filter((check) => check.status === 'warn' || check.status === 'fail');
 
     let overallStatus: 'healthy' | 'degraded' | 'unhealthy';
-    if (failedChecks.length > 0) {
+    if (criticalFailures.length > 0) {
       overallStatus = 'unhealthy';
     } else if (warnChecks.length > 0) {
       overallStatus = 'degraded';
@@ -161,6 +165,8 @@ export async function GET(request: Request) {
       };
     }
 
+    // Only return 503 for truly unhealthy state (critical internal failures)
+    // Degraded state (optional services unavailable) should still return 200
     const httpStatus = overallStatus === 'unhealthy' ? 503 : 200;
     return NextResponse.json(healthCheckResult, { status: httpStatus });
   } catch (error) {
