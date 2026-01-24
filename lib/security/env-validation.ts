@@ -49,7 +49,7 @@ export function validateEnv(): EnvConfig {
       if (!parsed.REDIS_URL) {
         throw new Error('REDIS_URL is required in production');
       }
-      if (parsed.NEXTAUTH_SECRET.length < 32) {
+      if (!parsed.NEXTAUTH_SECRET || parsed.NEXTAUTH_SECRET.length < 32) {
         throw new Error('NEXTAUTH_SECRET must be at least 32 characters in production');
       }
       // Ensure we're using HTTPS in production
