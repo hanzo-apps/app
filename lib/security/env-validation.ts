@@ -1,15 +1,19 @@
 import { z } from 'zod';
 
-// Define strict environment variable schema
+// Check if we're in a CI/build environment
+const isCI = process.env.CI === 'true' || process.env.NEXT_BUILD_ONLY === 'true';
+const isProd = process.env.NODE_ENV === 'production';
+
+// Define environment variable schema - required fields only enforced in production
 const envSchema = z.object({
   // Node environment
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 
-  // Authentication
-  HF_CLIENT_ID: z.string().min(1),
-  HF_CLIENT_SECRET: z.string().min(1),
-  NEXTAUTH_SECRET: z.string().min(32),
-  NEXTAUTH_URL: z.string().url(),
+  // Authentication - only required in production
+  HF_CLIENT_ID: isProd && !isCI ? z.string().min(1) : z.string().optional(),
+  HF_CLIENT_SECRET: isProd && !isCI ? z.string().min(1) : z.string().optional(),
+  NEXTAUTH_SECRET: isProd && !isCI ? z.string().min(32) : z.string().optional(),
+  NEXTAUTH_URL: isProd && !isCI ? z.string().url() : z.string().optional(),
 
   // Database
   DATABASE_URL: z.string().url().optional(),
@@ -70,8 +74,8 @@ export function validateEnv(): EnvConfig {
   }
 }
 
-// Export validated config (only validate if not in test mode to avoid side effects)
-export const env = process.env.NODE_ENV === 'test' ? {} as EnvConfig : validateEnv();
+// Export validated config (skip validation in test/build mode to avoid side effects)
+export const env = (process.env.NODE_ENV === 'test' || isCI) ? {} as EnvConfig : validateEnv();
 
 // Helper to safely get environment variables
 export function getEnvVar(key: keyof EnvConfig): string | undefined {
