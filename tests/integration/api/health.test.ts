@@ -1,23 +1,6 @@
-import { NextRequest } from 'next/server';
-import { GET } from '@/app/api/health/route';
-import { isStripeConfigured } from '@/lib/stripe';
-
-// Mock the stripe module
-jest.mock('@/lib/stripe', () => ({
-  isStripeConfigured: jest.fn(),
-}));
-
-// Mock global fetch
-global.fetch = jest.fn(() =>
-  Promise.resolve({
-    ok: true,
-    status: 200,
-  } as Response)
-) as jest.Mock;
+import { GET, HEAD } from '@/app/api/health/route';
 
 describe('API: /api/health', () => {
-  const mockIsStripeConfigured = isStripeConfigured as jest.MockedFunction<typeof isStripeConfigured>;
-
   beforeEach(() => {
     jest.clearAllMocks();
     // Use Object.defineProperty to modify NODE_ENV
@@ -25,18 +8,10 @@ describe('API: /api/health', () => {
       value: 'test',
       configurable: true,
     });
-    // Reset fetch mock
-    (global.fetch as jest.Mock).mockClear();
-    (global.fetch as jest.Mock).mockResolvedValue({
-      ok: true,
-      status: 200,
-    } as Response);
   });
 
   describe('GET', () => {
     it('returns 200 OK with health check data', async () => {
-      mockIsStripeConfigured.mockReturnValue(true);
-
       const request = new Request('http://localhost:3000/api/health');
       const response = await GET(request);
       const data = await response.json();
@@ -46,20 +21,12 @@ describe('API: /api/health', () => {
         status: 'healthy',
         environment: 'test',
         version: '0.1.0',
-        checks: {
-          stripe: {
-            status: 'pass',
-            message: 'Stripe configured',
-          },
-        },
       });
       expect(data.timestamp).toBeDefined();
       expect(data.uptime).toBeGreaterThanOrEqual(0);
     });
 
     it('includes correct timestamp format', async () => {
-      mockIsStripeConfigured.mockReturnValue(true);
-
       const request = new Request('http://localhost:3000/api/health');
       const response = await GET(request);
       const data = await response.json();
@@ -67,18 +34,52 @@ describe('API: /api/health', () => {
       expect(data.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
     });
 
-    it('reports stripe as not configured when not set up', async () => {
-      mockIsStripeConfigured.mockReturnValue(false);
+    it('includes memory info when authenticated', async () => {
+      process.env.HEALTH_CHECK_SECRET = 'test-secret';
+
+      const request = new Request('http://localhost:3000/api/health', {
+        headers: {
+          'authorization': 'Bearer test-secret',
+        },
+      });
+      const response = await GET(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.memory).toBeDefined();
+      expect(typeof data.memory.used).toBe('number');
+      expect(typeof data.memory.total).toBe('number');
+      expect(typeof data.memory.percentage).toBe('number');
+
+      delete process.env.HEALTH_CHECK_SECRET;
+    });
+
+    it('excludes memory info when not authenticated', async () => {
+      process.env.HEALTH_CHECK_SECRET = 'test-secret';
+
+      const request = new Request('http://localhost:3000/api/health', {
+        headers: {
+          'authorization': 'Bearer wrong-secret',
+        },
+      });
+      const response = await GET(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.memory).toBeUndefined();
+
+      delete process.env.HEALTH_CHECK_SECRET;
+    });
+
+    it('includes memory info when no secret is configured', async () => {
+      delete process.env.HEALTH_CHECK_SECRET;
 
       const request = new Request('http://localhost:3000/api/health');
       const response = await GET(request);
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.checks.stripe).toMatchObject({
-        status: 'warn',
-        message: 'Stripe not configured',
-      });
+      expect(data.memory).toBeDefined();
     });
 
     it('includes environment from NODE_ENV', async () => {
@@ -86,7 +87,6 @@ describe('API: /api/health', () => {
         value: 'production',
         configurable: true,
       });
-      mockIsStripeConfigured.mockReturnValue(true);
 
       const request = new Request('http://localhost:3000/api/health');
       const response = await GET(request);
@@ -97,7 +97,6 @@ describe('API: /api/health', () => {
 
     it('uses default version when npm_package_version not set', async () => {
       delete process.env.npm_package_version;
-      mockIsStripeConfigured.mockReturnValue(true);
 
       const request = new Request('http://localhost:3000/api/health');
       const response = await GET(request);
@@ -108,18 +107,17 @@ describe('API: /api/health', () => {
 
     it('uses npm_package_version when available', async () => {
       process.env.npm_package_version = '2.0.0';
-      mockIsStripeConfigured.mockReturnValue(true);
 
       const request = new Request('http://localhost:3000/api/health');
       const response = await GET(request);
       const data = await response.json();
 
       expect(data.version).toBe('2.0.0');
+
+      delete process.env.npm_package_version;
     });
 
     it('returns valid JSON response', async () => {
-      mockIsStripeConfigured.mockReturnValue(true);
-
       const request = new Request('http://localhost:3000/api/health');
       const response = await GET(request);
       const contentType = response.headers.get('content-type');
@@ -131,14 +129,20 @@ describe('API: /api/health', () => {
     });
 
     it('includes positive uptime value', async () => {
-      mockIsStripeConfigured.mockReturnValue(true);
-
       const request = new Request('http://localhost:3000/api/health');
       const response = await GET(request);
       const data = await response.json();
 
       expect(typeof data.uptime).toBe('number');
       expect(data.uptime).toBeGreaterThanOrEqual(0);
+    });
+  });
+
+  describe('HEAD', () => {
+    it('returns 200 OK for liveness probe', async () => {
+      const response = await HEAD();
+
+      expect(response.status).toBe(200);
     });
   });
 });

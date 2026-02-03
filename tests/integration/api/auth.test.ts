@@ -1,21 +1,14 @@
 import { NextRequest } from 'next/server';
 import { GET } from '@/app/api/auth/check/route';
 import { cookies } from 'next/headers';
-import MY_TOKEN_KEY from '@/lib/get-cookie-name';
 
 // Mock Next.js modules
 jest.mock('next/headers', () => ({
   cookies: jest.fn(),
 }));
 
-jest.mock('@/lib/get-cookie-name', () => jest.fn(() => 'hanzo-token'));
-
-// Mock global fetch
-global.fetch = jest.fn();
-
 describe('API: /api/auth/check', () => {
   const mockCookies = cookies as jest.MockedFunction<typeof cookies>;
-  const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -38,15 +31,11 @@ describe('API: /api/auth/check', () => {
       });
     });
 
-    it('returns 401 when token is invalid', async () => {
+    it('returns 401 when token format is invalid', async () => {
+      // Token without proper email:timestamp format
       mockCookies.mockResolvedValue({
-        get: jest.fn(() => ({ value: 'invalid-token' })),
+        get: jest.fn(() => ({ value: 'invalid-token-format' })),
       } as any);
-
-      mockFetch.mockResolvedValue({
-        ok: false,
-        status: 401,
-      } as Response);
 
       const request = new NextRequest('http://localhost:3000/api/auth/check');
       const response = await GET(request);
@@ -55,119 +44,92 @@ describe('API: /api/auth/check', () => {
       expect(response.status).toBe(401);
       expect(data).toEqual({
         authenticated: false,
-        message: 'Invalid token',
+        message: 'Invalid token format',
       });
+    });
 
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://huggingface.co/api/whoami-v2',
-        {
-          headers: {
-            Authorization: 'Bearer invalid-token',
-          },
-        }
-      );
+    it('returns 401 when token is malformed base64', async () => {
+      // Base64 encoded string without colon separator
+      const malformedToken = Buffer.from('no-colon-separator').toString('base64');
+      mockCookies.mockResolvedValue({
+        get: jest.fn(() => ({ value: malformedToken })),
+      } as any);
+
+      const request = new NextRequest('http://localhost:3000/api/auth/check');
+      const response = await GET(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(401);
+      expect(data).toEqual({
+        authenticated: false,
+        message: 'Invalid token format',
+      });
     });
 
     it('returns user data when token is valid', async () => {
-      const mockUser = {
-        id: 'user-123',
-        name: 'testuser',
-        fullname: 'Test User',
-        email: 'test@example.com',
-        avatarUrl: 'https://example.com/avatar.jpg',
-        otherField: 'should-be-filtered',
-      };
+      // Create a valid base64 token (email:timestamp)
+      const timestamp = Date.now().toString();
+      const email = 'test@example.com';
+      const validToken = Buffer.from(`${email}:${timestamp}`).toString('base64');
 
       mockCookies.mockResolvedValue({
-        get: jest.fn(() => ({ value: 'valid-token' })),
+        get: jest.fn(() => ({ value: validToken })),
       } as any);
-
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: async () => mockUser,
-      } as Response);
 
       const request = new NextRequest('http://localhost:3000/api/auth/check');
       const response = await GET(request);
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data).toEqual({
-        authenticated: true,
-        user: {
-          id: 'user-123',
-          name: 'testuser',
-          fullname: 'Test User',
-          email: 'test@example.com',
-          avatarUrl: 'https://example.com/avatar.jpg',
-        },
+      expect(data.authenticated).toBe(true);
+      expect(data.user).toMatchObject({
+        id: 'admin',
+        name: 'Admin',
+        fullname: 'Admin',
+        email: email,
+        isPro: true,
       });
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://huggingface.co/api/whoami-v2',
-        {
-          headers: {
-            Authorization: 'Bearer valid-token',
-          },
-        }
-      );
     });
 
-    it('handles network errors gracefully', async () => {
-      mockCookies.mockResolvedValue({
-        get: jest.fn(() => ({ value: 'token' })),
-      } as any);
+    it('returns 401 when token is expired', async () => {
+      // Create a token with an old timestamp (8 days ago)
+      const oldTimestamp = (Date.now() - 8 * 24 * 60 * 60 * 1000).toString();
+      const email = 'test@example.com';
+      const expiredToken = Buffer.from(`${email}:${oldTimestamp}`).toString('base64');
 
-      mockFetch.mockRejectedValue(new Error('Network error'));
+      mockCookies.mockResolvedValue({
+        get: jest.fn(() => ({ value: expiredToken })),
+      } as any);
 
       const request = new NextRequest('http://localhost:3000/api/auth/check');
       const response = await GET(request);
       const data = await response.json();
 
-      expect(response.status).toBe(500);
+      expect(response.status).toBe(401);
       expect(data).toEqual({
         authenticated: false,
-        message: 'Authentication check failed',
+        message: 'Token expired',
       });
     });
 
-    it('handles malformed JSON response', async () => {
+    it('does not make external API calls', async () => {
+      // The auth check uses local token validation, not external API
+      const mockFetch = jest.spyOn(global, 'fetch');
+
+      const timestamp = Date.now().toString();
+      const validToken = Buffer.from(`test@example.com:${timestamp}`).toString('base64');
+
       mockCookies.mockResolvedValue({
-        get: jest.fn(() => ({ value: 'token' })),
+        get: jest.fn(() => ({ value: validToken })),
       } as any);
-
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: async () => {
-          throw new Error('Invalid JSON');
-        },
-      } as unknown as Response);
-
-      const request = new NextRequest('http://localhost:3000/api/auth/check');
-      const response = await GET(request);
-      const data = await response.json();
-
-      expect(response.status).toBe(500);
-      expect(data).toEqual({
-        authenticated: false,
-        message: 'Authentication check failed',
-      });
-    });
-
-    it('makes only one API call to Hugging Face', async () => {
-      mockCookies.mockResolvedValue({
-        get: jest.fn(() => ({ value: 'token' })),
-      } as any);
-
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: async () => ({ id: 'user-123', name: 'test' }),
-      } as Response);
 
       const request = new NextRequest('http://localhost:3000/api/auth/check');
       await GET(request);
 
-      expect(mockFetch).toHaveBeenCalledTimes(1);
+      // No fetch calls should be made - auth is done locally
+      expect(mockFetch).not.toHaveBeenCalled();
+
+      mockFetch.mockRestore();
     });
   });
 });
