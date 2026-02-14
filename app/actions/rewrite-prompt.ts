@@ -1,3 +1,4 @@
+// InferenceClient supports multiple AI providers (not just HuggingFace)
 import { InferenceClient } from "@huggingface/inference";
 
 const START_REWRITE_PROMPT = ">>>>>>> START PROMPT >>>>>>";

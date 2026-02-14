@@ -19,7 +19,7 @@ export const ProModal = ({
     if (pages && !isTheSameHtml(pages?.[0].html)) {
       setStorage(pages);
     }
-    window.open("https://huggingface.co/subscribe/pro?from=Hanzo", "_blank");
+    window.open("/pricing", "_blank");
     onClose(false);
   };
   return (
@@ -51,7 +51,7 @@ export const ProModal = ({
           </p>
           <ul className="mt-3 space-y-1 text-neutral-500">
             <li className="text-sm text-neutral-500 space-x-2 flex items-center justify-start gap-2 mb-3">
-              You&apos;ll also unlock some Hugging Face PRO features, like:
+              You&apos;ll also unlock PRO features, like:
             </li>
             <li className="text-sm space-x-2 flex items-center justify-start gap-2">
               <CheckCheck className="text-emerald-500 size-4" />

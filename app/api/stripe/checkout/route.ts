@@ -1,37 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createCheckoutSession, getOrCreateCustomer, STRIPE_PRODUCTS, isStripeConfigured } from '@/lib/stripe';
-import { headers as getHeaders } from 'next/headers';
-import { cookies as getCookies } from 'next/headers';
-
-// Get user session (integrate with Hugging Face auth)
-async function getUserSession(req: NextRequest) {
-  const headers = await getHeaders();
-  const cookies = await getCookies();
-  const authToken = cookies.get('hanzo-auth-token')?.value || headers.get('Authorization');
-
-  if (!authToken) {
-    return null;
-  }
-
-  // Verify with Hugging Face
-  try {
-    const response = await fetch('https://huggingface.co/api/whoami-v2', {
-      headers: {
-        Authorization: authToken.startsWith('Bearer ') ? authToken : `Bearer ${authToken}`,
-      },
-    });
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const user = await response.json();
-    return user;
-  } catch (error) {
-    console.error('Error verifying user session:', error);
-    return null;
-  }
-}
+import { getUserSession } from '@/lib/session';
 
 export async function POST(req: NextRequest) {
   try {
@@ -43,7 +12,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const user = await getUserSession(req);
+    const user = await getUserSession();
 
     if (!user) {
       return NextResponse.json(
@@ -112,7 +81,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.redirect(`${origin}/pricing?error=payment_not_configured`);
     }
 
-    const user = await getUserSession(req);
+    const user = await getUserSession();
 
     if (!user) {
       return NextResponse.json(

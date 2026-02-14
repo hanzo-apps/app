@@ -12,12 +12,19 @@ export const USDC_ADDRESSES = {
   [arbitrum.id]: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
 } as const
 
-// Credit pricing in USD
+// Credit pricing in USD - amount -> credits mapping
 export const CREDIT_PRICING = {
-  10: { credits: 10, bonus: 0 },
-  25: { credits: 27, bonus: 2 },
-  50: { credits: 55, bonus: 5 },
-  100: { credits: 115, bonus: 15 },
+  10: { credits: 1000, bonus: 0 },
+  25: { credits: 2750, bonus: 250 },
+  50: { credits: 6000, bonus: 1000 },
+  100: { credits: 13000, bonus: 3000 },
+} as const
+
+// Chain metadata for UI display
+export const CHAIN_INFO = {
+  [mainnet.id]: { name: 'Ethereum', explorer: 'https://etherscan.io' },
+  [base.id]: { name: 'Base', explorer: 'https://basescan.org' },
+  [arbitrum.id]: { name: 'Arbitrum', explorer: 'https://arbiscan.io' },
 } as const
 
 export const wagmiConfig = createConfig({

@@ -37,7 +37,7 @@ const templates = [
     features: ["Streaming responses", "Message history", "Dark theme"],
     category: "AI",
     path: "/templates/ai-chat-interface",
-    hfUrl: "https://huggingface.co/spaces/hanzo-community/ai-chat-interface"
+    demoUrl: "https://hanzo.ai/templates/ai-chat-interface"
   },
   {
     id: "ecommerce-storefront",
@@ -48,7 +48,7 @@ const templates = [
     features: ["Product grid", "Shopping cart", "Filters"],
     category: "Commerce",
     path: "/templates/ecommerce-storefront",
-    hfUrl: "https://huggingface.co/spaces/hanzo-community/ecommerce-storefront"
+    demoUrl: "https://hanzo.ai/templates/ecommerce-storefront"
   },
   {
     id: "analytics-dashboard",
@@ -59,7 +59,7 @@ const templates = [
     features: ["Metric cards", "Charts", "Real-time data"],
     category: "Analytics",
     path: "/templates/analytics-dashboard",
-    hfUrl: "https://huggingface.co/spaces/hanzo-community/analytics-dashboard"
+    demoUrl: "https://hanzo.ai/templates/analytics-dashboard"
   },
   {
     id: "saas-landing",
@@ -70,7 +70,7 @@ const templates = [
     features: ["Hero section", "Pricing tiers", "CTAs"],
     category: "Marketing",
     path: "/templates/saas-landing",
-    hfUrl: "https://huggingface.co/spaces/hanzo-community/saas-landing"
+    demoUrl: "https://hanzo.ai/templates/saas-landing"
   },
   {
     id: "social-feed",
@@ -81,7 +81,7 @@ const templates = [
     features: ["Post creation", "Comments", "Real-time updates"],
     category: "Social",
     path: "/templates/social-feed",
-    hfUrl: "https://huggingface.co/spaces/hanzo-community/social-feed"
+    demoUrl: "https://hanzo.ai/templates/social-feed"
   },
   {
     id: "kanban-board",
@@ -92,7 +92,7 @@ const templates = [
     features: ["Drag & drop", "Task cards", "Multiple columns"],
     category: "Productivity",
     path: "/templates/kanban-board",
-    hfUrl: "https://huggingface.co/spaces/hanzo-community/kanban-board"
+    demoUrl: "https://hanzo.ai/templates/kanban-board"
   },
   {
     id: "markdown-editor",
@@ -103,7 +103,7 @@ const templates = [
     features: ["Live preview", "Syntax highlighting", "Export"],
     category: "Tools",
     path: "/templates/markdown-editor",
-    hfUrl: "https://huggingface.co/spaces/hanzo-community/markdown-editor"
+    demoUrl: "https://hanzo.ai/templates/markdown-editor"
   },
   {
     id: "crypto-portfolio",
@@ -114,7 +114,7 @@ const templates = [
     features: ["Holdings", "Price tracking", "Charts"],
     category: "Finance",
     path: "/templates/crypto-portfolio",
-    hfUrl: "https://huggingface.co/spaces/hanzo-community/crypto-portfolio"
+    demoUrl: "https://hanzo.ai/templates/crypto-portfolio"
   },
   {
     id: "blog-platform",
@@ -125,7 +125,7 @@ const templates = [
     features: ["Article editor", "Categories", "Comments"],
     category: "Content",
     path: "/templates/blog-platform",
-    hfUrl: "https://huggingface.co/spaces/hanzo-community/blog-platform"
+    demoUrl: "https://hanzo.ai/templates/blog-platform"
   },
   {
     id: "video-streaming",
@@ -136,7 +136,7 @@ const templates = [
     features: ["Video player", "Comments", "Related videos"],
     category: "Media",
     path: "/templates/video-streaming",
-    hfUrl: "https://huggingface.co/spaces/hanzo-community/video-streaming"
+    demoUrl: "https://hanzo.ai/templates/video-streaming"
   }
 ];
 

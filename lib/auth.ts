@@ -2,8 +2,107 @@ import { User } from "@/types";
 import { cookies, headers } from "next/headers";
 import MY_TOKEN_KEY from "./get-cookie-name";
 
+// Hanzo IAM OIDC configuration
+const IAM_ENDPOINT = process.env.IAM_ENDPOINT || "https://iam.hanzo.ai";
+const IAM_USERINFO_URL = `${IAM_ENDPOINT}/api/userinfo`;
+const IAM_INTROSPECT_URL = `${IAM_ENDPOINT}/api/login/oauth/introspect`;
+const IAM_CLIENT_ID = process.env.IAM_CLIENT_ID || "";
+const IAM_CLIENT_SECRET = process.env.IAM_CLIENT_SECRET || "";
+
+// IAM userinfo response shape (OIDC standard + IAM extensions)
+interface IamUserInfo {
+  sub: string;            // unique user id
+  name: string;           // username / login name
+  preferred_username?: string;
+  display_name?: string;  // IAM extension
+  email?: string;
+  picture?: string;       // avatar URL
+  phone?: string;
+  address?: string;
+}
+
 // UserResponse = type User & { token: string };
 type UserResponse = User & { token: string };
+
+/**
+ * Validate a token against Hanzo IAM OIDC userinfo endpoint.
+ * Returns the user profile or undefined on failure.
+ */
+async function fetchIamUser(accessToken: string): Promise<IamUserInfo | undefined> {
+  try {
+    const response = await fetch(IAM_USERINFO_URL, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      // Revalidate every 5 minutes to avoid stale sessions
+      next: { revalidate: 300 },
+    });
+
+    if (!response.ok) {
+      console.log("IAM userinfo response not OK:", response.status);
+      return undefined;
+    }
+
+    const userInfo: IamUserInfo = await response.json();
+
+    if (!userInfo || !userInfo.sub) {
+      console.log("Invalid userinfo received from IAM:", userInfo);
+      return undefined;
+    }
+
+    return userInfo;
+  } catch (error) {
+    console.error("IAM userinfo fetch error:", error);
+    return undefined;
+  }
+}
+
+/**
+ * Optionally introspect a token for active/inactive status.
+ * Useful when you need to check token validity without fetching full profile.
+ */
+async function introspectToken(token: string): Promise<boolean> {
+  try {
+    const body = new URLSearchParams({
+      token,
+      token_type_hint: "access_token",
+      client_id: IAM_CLIENT_ID,
+      client_secret: IAM_CLIENT_SECRET,
+    });
+
+    const response = await fetch(IAM_INTROSPECT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: body.toString(),
+    });
+
+    if (!response.ok) {
+      return false;
+    }
+
+    const result = await response.json();
+    return result.active === true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Map IAM user fields to our User type.
+ */
+function mapIamUser(info: IamUserInfo, token: string): UserResponse {
+  return {
+    id: info.sub,
+    name: info.preferred_username || info.name || info.sub,
+    fullname: info.display_name || info.name || info.sub,
+    email: info.email,
+    username: info.preferred_username || info.name,
+    avatarUrl: info.picture || "",
+    isPro: false, // Determine from IAM roles/groups if needed
+    token,
+  };
+}
 
 export const isAuthenticated = async (): Promise<UserResponse | undefined> => {
   const authHeaders = await headers();
@@ -29,7 +128,7 @@ export const isAuthenticated = async (): Promise<UserResponse | undefined> => {
     };
   }
 
-  // For production or non-localhost, check for API key or HF token
+  // For production or non-localhost, check for API key or IAM token
   const cookieToken = cookieStore.get(MY_TOKEN_KEY())?.value;
   const headerToken = authHeaders.get("Authorization");
   const localApiKey = authHeaders.get("X-Local-API-Key") || process.env.LOCAL_API_KEY;
@@ -48,52 +147,33 @@ export const isAuthenticated = async (): Promise<UserResponse | undefined> => {
     };
   }
 
-  let token = headerToken;
+  // Extract raw access token from either cookie or Authorization header
+  let rawToken: string | undefined;
+
   if (cookieToken) {
-    // Cookie already contains the raw token, add Bearer prefix
-    token = `Bearer ${cookieToken}`;
+    rawToken = cookieToken;
+  } else if (headerToken) {
+    // Strip "Bearer " prefix if present
+    rawToken = headerToken.startsWith("Bearer ")
+      ? headerToken.slice(7)
+      : headerToken;
   }
 
-  if (!token) {
+  if (!rawToken) {
     console.log("Auth failed: No token found and not localhost");
-    return undefined; // Return undefined instead of NextResponse for server actions
+    return undefined;
   }
 
-  console.log("Verifying token with Hugging Face API...");
+  console.log("Verifying token with Hanzo IAM (iam.hanzo.ai)...");
 
-  try {
-    const response = await fetch("https://huggingface.co/api/whoami-v2", {
-      headers: {
-        Authorization: token,
-      },
-      method: "GET",
-    });
-
-    if (!response.ok) {
-      console.log("HF API response not OK:", response.status);
-      return undefined; // Return undefined instead of NextResponse for server actions
-    }
-
-    const user = await response.json();
-
-    if (!user || !user.id) {
-      console.log("Invalid user data received:", user);
-      return undefined; // Return undefined instead of NextResponse for server actions
-    }
-
-    console.log("Auth successful for user:", user.name || user.id);
-
-    // Map HF user to our User type
-    return {
-      id: user.id,
-      name: user.name || user.id,
-      fullname: user.fullname || user.name || user.id,
-      avatarUrl: user.avatarUrl || "",
-      isPro: user.isPro || false,
-      token: token.replace("Bearer ", ""),
-    };
-  } catch (error) {
-    console.error("Auth error:", error);
-    return undefined; // Return undefined instead of NextResponse for server actions
+  // Validate via OIDC userinfo endpoint
+  const userInfo = await fetchIamUser(rawToken);
+  if (!userInfo) {
+    return undefined;
   }
+
+  console.log("Auth successful for user:", userInfo.name || userInfo.sub);
+  return mapIamUser(userInfo, rawToken);
 };
+
+export { introspectToken, fetchIamUser };

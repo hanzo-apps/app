@@ -378,11 +378,11 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
     startPlanning(template.title);
   };
 
-  const handleImportProject = (source: "github" | "huggingface") => {
+  const handleImportProject = (source: "github" | "hanzo") => {
     // This would open a dialog to enter repo URL
     const exampleUrl = source === "github"
       ? "https://github.com/username/repo"
-      : "https://huggingface.co/spaces/username/space";
+      : "https://hanzo.ai/projects/username/project";
 
     startPlanning(`Import and enhance project from ${exampleUrl}`);
   };
@@ -441,10 +441,10 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                 <Button
                   variant="outline"
                   className="w-full justify-start gap-2"
-                  onClick={() => handleImportProject("huggingface")}
+                  onClick={() => handleImportProject("hanzo")}
                 >
                   <Upload className="w-4 h-4" />
-                  Import from Hugging Face
+                  Import from Hanzo
                 </Button>
                 <Button
                   variant="outline"

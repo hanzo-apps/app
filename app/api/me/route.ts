@@ -1,6 +1,9 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
+const IAM_ENDPOINT = process.env.IAM_ENDPOINT || "https://iam.hanzo.ai";
+const IAM_USERINFO_URL = `${IAM_ENDPOINT}/api/userinfo`;
+
 export async function GET() {
   const authHeaders = await headers();
   const token = authHeaders.get("Authorization");
@@ -9,7 +12,9 @@ export async function GET() {
   }
 
   // Handle local development mode
-  if (process.env.HF_TOKEN === "local_dev_token" && token.includes("local_dev_token")) {
+  const host = authHeaders.get("host") || "";
+  const isLocalhost = host.includes("localhost") || host.includes("127.0.0.1");
+  if (isLocalhost && process.env.NODE_ENV === "development") {
     const localUser = {
       id: "local-user",
       name: "local-user",
@@ -21,9 +26,11 @@ export async function GET() {
     return NextResponse.json({ user: localUser, errCode: null }, { status: 200 });
   }
 
-  const userResponse = await fetch("https://huggingface.co/api/whoami-v2", {
+  const rawToken = token.startsWith("Bearer ") ? token.slice(7) : token;
+
+  const userResponse = await fetch(IAM_USERINFO_URL, {
     headers: {
-      Authorization: `${token}`,
+      Authorization: `Bearer ${rawToken}`,
     },
   });
 
@@ -33,6 +40,14 @@ export async function GET() {
       { status: userResponse.status }
     );
   }
-  const user = await userResponse.json();
+  const userInfo = await userResponse.json();
+  const user = {
+    id: userInfo.sub,
+    name: userInfo.preferred_username || userInfo.name || userInfo.sub,
+    fullname: userInfo.display_name || userInfo.name || userInfo.sub,
+    email: userInfo.email,
+    avatarUrl: userInfo.picture || "",
+    isPro: false,
+  };
   return NextResponse.json({ user, errCode: null }, { status: 200 });
 }

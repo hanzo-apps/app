@@ -3,7 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAccount } from "wagmi";
 import { Button } from "@hanzo/ui";
+import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,34 +17,39 @@ import {
 import {
   Menu,
   X,
-  User,
   LogOut,
   Settings,
-  FolderOpen,
   Plus,
   ChevronDown,
   Home,
-  FileText,
-  HelpCircle,
-  DollarSign
+  DollarSign,
+  Wallet,
 } from "lucide-react";
 import { HanzoLogo } from "@/components/HanzoLogo";
-import { useUser } from "@/hooks/useUser";
+import { useAuthContext } from "@/components/providers/AuthProvider";
+
+function truncateAddress(address: string): string {
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+}
 
 export default function Header() {
-  const { user, logout, openLoginWindow } = useUser();
+  const { user, isAuthenticated, login, logout } = useAuthContext();
+  const { address, isConnected } = useAccount();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
-    await logout();
     setMobileMenuOpen(false);
+    await logout();
   };
 
   const navigateTo = (path: string) => {
     router.push(path);
     setMobileMenuOpen(false);
   };
+
+  const userInitial = (user?.fullname || user?.name || "U").charAt(0).toUpperCase();
+  const displayName = user?.fullname || user?.name || "User";
 
   return (
     <>
@@ -83,8 +90,16 @@ export default function Header() {
 
         <div className="flex items-center gap-4">
           {/* Desktop User Menu */}
-          <div className="hidden md:flex items-center gap-4">
-            {user ? (
+          <div className="hidden md:flex items-center gap-3">
+            {/* Wallet badge */}
+            {isConnected && address && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white/70 text-xs font-mono">
+                <Wallet className="w-3.5 h-3.5" />
+                {truncateAddress(address)}
+              </div>
+            )}
+
+            {isAuthenticated && user ? (
               <>
                 <Button
                   onClick={() => navigateTo("/new")}
@@ -102,27 +117,32 @@ export default function Header() {
                       variant="ghost"
                       className="gap-2 text-white/80 hover:text-white"
                     >
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#fd4444] to-[#ff6b6b] flex items-center justify-center">
-                        <User className="w-4 h-4 text-white" />
-                      </div>
+                      <Avatar className="w-7 h-7">
+                        <AvatarImage src={user.avatarUrl} alt={displayName} />
+                        <AvatarFallback className="text-xs bg-gradient-to-br from-[#fd4444] to-[#ff6b6b] text-white">
+                          {userInitial}
+                        </AvatarFallback>
+                      </Avatar>
                       <span className="max-w-[150px] truncate">
-                        {user.name || user.id || "User"}
+                        {displayName}
                       </span>
                       <ChevronDown className="w-4 h-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuLabel>
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">{displayName}</p>
+                        <p className="text-xs leading-none text-muted-foreground">
+                          {user.email || user.username}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
                     <DropdownMenuSeparator />
 
                     <DropdownMenuItem onClick={() => navigateTo("/dashboard")}>
                       <Home className="mr-2 h-4 w-4" />
                       Dashboard
-                    </DropdownMenuItem>
-
-                    <DropdownMenuItem onClick={() => navigateTo("/projects")}>
-                      <FolderOpen className="mr-2 h-4 w-4" />
-                      My Projects
                     </DropdownMenuItem>
 
                     <DropdownMenuItem onClick={() => navigateTo("/settings")}>
@@ -137,18 +157,6 @@ export default function Header() {
 
                     <DropdownMenuSeparator />
 
-                    <DropdownMenuItem onClick={() => navigateTo("/docs")}>
-                      <FileText className="mr-2 h-4 w-4" />
-                      Documentation
-                    </DropdownMenuItem>
-
-                    <DropdownMenuItem onClick={() => navigateTo("/help")}>
-                      <HelpCircle className="mr-2 h-4 w-4" />
-                      Help & Support
-                    </DropdownMenuItem>
-
-                    <DropdownMenuSeparator />
-
                     <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                       <LogOut className="mr-2 h-4 w-4" />
                       Log out
@@ -159,14 +167,14 @@ export default function Header() {
             ) : (
               <>
                 <Button
-                  onClick={openLoginWindow}
+                  onClick={() => login()}
                   variant="ghost"
                   className="text-white/70 hover:text-white text-sm font-medium"
                 >
-                  Log in
+                  Sign In
                 </Button>
                 <Button
-                  onClick={openLoginWindow}
+                  onClick={() => login()}
                   className="bg-white text-black hover:bg-white/90 text-sm font-semibold px-5 py-2.5 rounded-xl"
                 >
                   Get started
@@ -208,18 +216,29 @@ export default function Header() {
 
             {/* Mobile Menu Content */}
             <div className="flex-1 overflow-y-auto p-4 space-y-2">
-              {user ? (
+              {isAuthenticated && user ? (
                 <>
                   <div className="p-3 mb-4 bg-white/5 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#fd4444] to-[#ff6b6b] flex items-center justify-center">
-                        <User className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <p className="font-medium">{user.name || "User"}</p>
-                        <p className="text-sm text-white/60">{user.email || user.id}</p>
+                      <Avatar className="w-10 h-10">
+                        <AvatarImage src={user.avatarUrl} alt={displayName} />
+                        <AvatarFallback className="bg-gradient-to-br from-[#fd4444] to-[#ff6b6b] text-white">
+                          {userInitial}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0">
+                        <p className="font-medium truncate">{displayName}</p>
+                        <p className="text-sm text-white/60 truncate">
+                          {user.email || user.username}
+                        </p>
                       </div>
                     </div>
+                    {isConnected && address && (
+                      <div className="mt-2 flex items-center gap-1.5 text-xs text-white/50 font-mono">
+                        <Wallet className="w-3.5 h-3.5" />
+                        {truncateAddress(address)}
+                      </div>
+                    )}
                   </div>
 
                   <button
@@ -239,11 +258,19 @@ export default function Header() {
                   </button>
 
                   <button
-                    onClick={() => navigateTo("/projects")}
+                    onClick={() => navigateTo("/settings")}
                     className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
                   >
-                    <FolderOpen className="w-5 h-5" />
-                    <span>My Projects</span>
+                    <Settings className="w-5 h-5" />
+                    <span>Settings</span>
+                  </button>
+
+                  <button
+                    onClick={() => navigateTo("/billing")}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
+                  >
+                    <DollarSign className="w-5 h-5" />
+                    <span>Billing</span>
                   </button>
 
                   <div className="h-px bg-white/10 my-4" />
@@ -260,14 +287,6 @@ export default function Header() {
                     className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
                   >
                     <span>Pricing</span>
-                  </button>
-
-                  <button
-                    onClick={() => navigateTo("/docs")}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
-                  >
-                    <FileText className="w-5 h-5" />
-                    <span>Documentation</span>
                   </button>
 
                   <div className="h-px bg-white/10 my-4" />
@@ -310,13 +329,13 @@ export default function Header() {
                   <div className="h-px bg-white/10 my-4" />
 
                   <button
-                    onClick={openLoginWindow}
+                    onClick={() => login()}
                     className="w-full px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
                   >
-                    Log in
+                    Sign In
                   </button>
                   <button
-                    onClick={openLoginWindow}
+                    onClick={() => login()}
                     className="w-full px-4 py-3 bg-white text-black hover:bg-white/90 rounded-lg font-semibold"
                   >
                     Get started

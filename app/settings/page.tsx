@@ -207,9 +207,9 @@ export default function SettingsPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <a href="https://huggingface.co/settings/billing" target="_blank" className="block">
+                    <a href="/billing" className="block">
                       <Button variant="outline" className="w-full justify-start">
-                        Manage Billing on Hugging Face
+                        Manage Billing
                       </Button>
                     </a>
                   </div>

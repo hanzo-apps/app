@@ -59,7 +59,7 @@ const nextConfig: NextConfig = {
   // Image optimization
   images: {
     remotePatterns: [
-      { protocol: 'https', hostname: 'huggingface.co' },
+      { protocol: 'https', hostname: 'iam.hanzo.ai' },
       { protocol: 'https', hostname: 'cdn.hanzo.ai' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
     ],

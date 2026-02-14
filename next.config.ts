@@ -153,7 +153,34 @@ const nextConfig: NextConfig = {
     return config;
   },
   images: {
-    remotePatterns: [new URL('https://huggingface.co/**')],
+    remotePatterns: [
+      new URL('https://iam.hanzo.ai/**'),
+      new URL('https://api.hanzo.ai/**'),
+      new URL('https://cdn.hanzo.ai/**'),
+    ],
+  },
+  async headers() {
+    return [
+      {
+        // Allow CORS for Hanzo IAM SSO callbacks and API
+        source: '/api/auth/:path*',
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: 'https://iam.hanzo.ai' },
+          { key: 'Access-Control-Allow-Methods', value: 'GET, POST, OPTIONS' },
+          { key: 'Access-Control-Allow-Headers', value: 'Content-Type, Authorization' },
+          { key: 'Access-Control-Allow-Credentials', value: 'true' },
+        ],
+      },
+    ];
+  },
+  async rewrites() {
+    return [
+      {
+        // Proxy IAM well-known endpoints to avoid mixed-content issues
+        source: '/.well-known/openid-configuration',
+        destination: `${process.env.IAM_ENDPOINT || 'https://iam.hanzo.ai'}/.well-known/openid-configuration`,
+      },
+    ];
   },
 };
 

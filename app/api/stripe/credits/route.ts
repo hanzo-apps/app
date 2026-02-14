@@ -5,36 +5,7 @@ import {
   getCustomerCredits,
   isStripeConfigured
 } from '@/lib/stripe';
-import { cookies } from 'next/headers';
-
-// Get user session (integrate with Hugging Face auth)
-async function getUserSession() {
-  const cookieStore = await cookies();
-  const authToken = cookieStore.get('hanzo-auth-token')?.value;
-
-  if (!authToken) {
-    return null;
-  }
-
-  // Verify with Hugging Face
-  try {
-    const response = await fetch('https://huggingface.co/api/whoami-v2', {
-      headers: {
-        Authorization: authToken.startsWith('Bearer ') ? authToken : `Bearer ${authToken}`,
-      },
-    });
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const user = await response.json();
-    return user;
-  } catch (error) {
-    console.error('Error verifying user session:', error);
-    return null;
-  }
-}
+import { getUserSession } from '@/lib/session';
 
 // GET - Get current credit balance
 export async function GET(req: NextRequest) {

@@ -14,7 +14,7 @@ export default function SignupPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const handleHuggingFaceSignup = async () => {
+  const handleSignup = async () => {
     setLoading(true);
     try {
       const authUrl = await getAuth();
@@ -84,9 +84,9 @@ export default function SignupPage() {
                 </div>
               </div>
 
-              {/* Hugging Face Signup Button */}
+              {/* Signup Button */}
               <Button
-                onClick={handleHuggingFaceSignup}
+                onClick={handleSignup}
                 disabled={loading}
                 className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-medium h-12"
                 size="lg"
@@ -95,13 +95,8 @@ export default function SignupPage() {
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
                   <>
-                    <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-                      <circle cx="9" cy="10" r="1.5"/>
-                      <circle cx="15" cy="10" r="1.5"/>
-                      <path d="M8 15c0 2.21 1.79 4 4 4s4-1.79 4 4-4"/>
-                    </svg>
-                    Sign up with Hugging Face
+                    <Rocket className="w-5 h-5 mr-2" />
+                    Sign up with Hanzo
                   </>
                 )}
               </Button>

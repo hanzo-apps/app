@@ -1,5 +1,3 @@
-import { HfInference } from '@huggingface/inference';
-
 interface GalleryProject {
   id: string;
   title: string;
@@ -23,7 +21,7 @@ interface GalleryConfig {
 
 class GalleryService {
   private spaceId = 'hanzoai/gallery';
-  private apiUrl = 'https://huggingface.co/api';
+  private apiUrl = process.env.GALLERY_API_URL || 'https://api.hanzo.ai/gallery';
 
   /**
    * Add a project to the public gallery
@@ -51,7 +49,7 @@ class GalleryService {
         thumbnail,
         tags: project.tags || ['ai-generated', 'hanzo'],
         createdAt: new Date().toISOString(),
-        url: `https://hanzo.ai/projects/${project.author}/${project.id}`,
+        url: `https://hanzo.ai/gallery/${project.author}/${project.id}`,
         remixes: 0,
         likes: 0,
       };
@@ -65,7 +63,7 @@ class GalleryService {
 
         return {
           success: true,
-          url: `https://huggingface.co/spaces/${this.spaceId}?project=${project.id}`,
+          url: `https://hanzo.ai/gallery/${project.id}`,
         };
       }
 
@@ -92,21 +90,18 @@ class GalleryService {
   }
 
   /**
-   * Store project in Hugging Face Space dataset
+   * Store project in gallery database
    */
   private async storeInGallery(project: GalleryProject): Promise<boolean> {
     try {
-      // Use Hugging Face API to append to the gallery dataset
-      // This assumes we have a dataset in the space for storing projects
-      const response = await fetch(`${this.apiUrl}/datasets/${this.spaceId}/append`, {
+      const response = await fetch(`${this.apiUrl}/projects`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.HF_TOKEN}`,
+          'Authorization': `Bearer ${process.env.HANZO_API_TOKEN}`,
         },
         body: JSON.stringify({
           data: project,
-          split: 'gallery',
         }),
       });
 
@@ -141,12 +136,12 @@ class GalleryService {
       // Keep only the latest 1000 projects
       const updatedIndex = currentIndex.slice(0, 1000);
 
-      // Update the index file in the space
-      await fetch(`${this.apiUrl}/spaces/${this.spaceId}/files/${indexPath}`, {
+      // Update the index file
+      await fetch(`${this.apiUrl}/index`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.HF_TOKEN}`,
+          'Authorization': `Bearer ${process.env.HANZO_API_TOKEN}`,
         },
         body: JSON.stringify(updatedIndex),
       });
@@ -161,7 +156,7 @@ class GalleryService {
   private async fetchGalleryIndex(): Promise<any[]> {
     try {
       const response = await fetch(
-        `https://huggingface.co/spaces/${this.spaceId}/resolve/main/index.json`
+        `${this.apiUrl}/index`
       );
 
       if (response.ok) {

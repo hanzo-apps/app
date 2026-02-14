@@ -41,14 +41,14 @@ export default function DevPage() {
             fullUrl: repoUrl
           };
         }
-      } else if (repoUrl.includes("huggingface.co")) {
-        // HuggingFace URL: https://huggingface.co/spaces/Hanzo-Community/template-name
-        const match = repoUrl.match(/huggingface\.co\/spaces\/([^\/]+)\/([^\/\?]+)/);
+      } else if (repoUrl.includes("hanzo.ai") || repoUrl.includes("hanzo.app")) {
+        // Hanzo project URL: https://hanzo.ai/projects/owner/project-name
+        const match = repoUrl.match(/hanzo\.(ai|app)\/projects\/([^\/]+)\/([^\/\?]+)/);
         if (match) {
           repoInfo = {
-            platform: "huggingface",
-            owner: match[1],
-            name: match[2],
+            platform: "hanzo",
+            owner: match[2],
+            name: match[3],
             fullUrl: repoUrl
           };
         }

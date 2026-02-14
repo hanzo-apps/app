@@ -1,34 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getOrCreateCustomer, isStripeConfigured, stripe } from '@/lib/stripe';
-import { cookies } from 'next/headers';
-
-// Get user session
-async function getUserSession() {
-  const cookieStore = await cookies();
-  const authToken = cookieStore.get('hanzo-auth-token')?.value;
-
-  if (!authToken) {
-    return null;
-  }
-
-  try {
-    const response = await fetch('https://huggingface.co/api/whoami-v2', {
-      headers: {
-        Authorization: authToken.startsWith('Bearer ') ? authToken : `Bearer ${authToken}`,
-      },
-    });
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const user = await response.json();
-    return user;
-  } catch (error) {
-    console.error('Error verifying user session:', error);
-    return null;
-  }
-}
+import { getUserSession } from '@/lib/session';
 
 export async function POST(req: NextRequest) {
   try {

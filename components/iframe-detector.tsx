@@ -11,10 +11,11 @@ export default function IframeDetector() {
     const isAllowedDomain = (hostname: string) => {
       const host = hostname.toLowerCase();
       return (
-        host.endsWith(".huggingface.co") ||
-        host.endsWith(".hf.co") ||
-        host === "huggingface.co" ||
-        host === "hf.co"
+        host.endsWith(".hanzo.ai") ||
+        host.endsWith(".hanzo.app") ||
+        host === "hanzo.ai" ||
+        host === "hanzo.app" ||
+        host === "localhost"
       );
     };
 

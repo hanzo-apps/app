@@ -4,7 +4,7 @@ export interface Template {
   description: string;
   category: "landing" | "saas" | "ecommerce" | "dashboard" | "ai" | "social" | "tool" | "game";
   thumbnail?: string;
-  huggingfaceUrl?: string;
+  demoUrl?: string;
   features: string[];
   techStack: string[];
   difficulty: "beginner" | "intermediate" | "advanced";
@@ -12,15 +12,14 @@ export interface Template {
   popular?: boolean;
 }
 
-// These templates will be fetched from hanzoai/templates on Hugging Face
-// For now, using local definitions that match the HF repository structure
+// Template definitions for the Hanzo gallery
 export const templates: Template[] = [
   {
     id: "ai-chat-interface",
     name: "AI Chat Interface",
     description: "A modern chat interface with streaming responses, markdown support, and conversation history. Features real-time AI responses with typing indicators, code syntax highlighting, and a responsive design. Built with @hanzo/ui components for a polished, professional look.",
     category: "ai",
-    huggingfaceUrl: "https://huggingface.co/spaces/hanzoai/templates/ai-chat-interface",
+    demoUrl: "https://hanzo.ai/templates/ai-chat-interface",
     features: [
       "Streaming AI responses",
       "Markdown rendering",
@@ -39,7 +38,7 @@ export const templates: Template[] = [
     name: "SaaS Landing Page",
     description: "A high-converting SaaS landing page with pricing tiers, feature comparison, testimonials, and CTAs. Includes hero section with animated graphics, benefits grid, pricing calculator, and integration showcase. Optimized for conversions with A/B testing ready components.",
     category: "landing",
-    huggingfaceUrl: "https://huggingface.co/spaces/hanzoai/templates/saas-landing",
+    demoUrl: "https://hanzo.ai/templates/saas-landing",
     features: [
       "Hero with animations",
       "Pricing table",
@@ -58,7 +57,7 @@ export const templates: Template[] = [
     name: "Analytics Dashboard",
     description: "A comprehensive analytics dashboard with real-time data visualization, charts, metrics cards, and filters. Features interactive charts using Recharts, date range selectors, export functionality, and responsive grid layouts. Perfect for data-driven applications.",
     category: "dashboard",
-    huggingfaceUrl: "https://huggingface.co/spaces/hanzoai/templates/analytics-dashboard",
+    demoUrl: "https://hanzo.ai/templates/analytics-dashboard",
     features: [
       "Real-time charts",
       "Metrics cards",
@@ -76,7 +75,7 @@ export const templates: Template[] = [
     name: "E-commerce Storefront",
     description: "A full-featured e-commerce storefront with product catalog, shopping cart, checkout flow, and payment integration. Includes product search and filtering, image galleries, reviews system, and inventory management. Stripe integration ready.",
     category: "ecommerce",
-    huggingfaceUrl: "https://huggingface.co/spaces/hanzoai/templates/ecommerce-storefront",
+    demoUrl: "https://hanzo.ai/templates/ecommerce-storefront",
     features: [
       "Product catalog",
       "Shopping cart",
@@ -95,7 +94,7 @@ export const templates: Template[] = [
     name: "Social Media Feed",
     description: "A Twitter/X-like social feed with posts, comments, likes, and real-time updates. Features infinite scroll, media uploads, user profiles, and notifications. Includes WebSocket integration for real-time updates.",
     category: "social",
-    huggingfaceUrl: "https://huggingface.co/spaces/hanzoai/templates/social-feed",
+    demoUrl: "https://hanzo.ai/templates/social-feed",
     features: [
       "Post creation",
       "Comments & likes",
@@ -113,7 +112,7 @@ export const templates: Template[] = [
     name: "AI Image Generator",
     description: "An AI-powered image generation tool with prompt engineering, style presets, and gallery. Features DALL-E or Stable Diffusion integration, prompt templates, image history, and download options. Includes rate limiting and usage tracking.",
     category: "ai",
-    huggingfaceUrl: "https://huggingface.co/spaces/hanzoai/templates/ai-image-generator",
+    demoUrl: "https://hanzo.ai/templates/ai-image-generator",
     features: [
       "Text-to-image generation",
       "Style presets",
@@ -131,7 +130,7 @@ export const templates: Template[] = [
     name: "Kanban Task Board",
     description: "A Trello-like kanban board with drag-and-drop, task management, and team collaboration. Features board creation, card details with comments, labels and due dates, and real-time collaboration. Perfect for project management tools.",
     category: "tool",
-    huggingfaceUrl: "https://huggingface.co/spaces/hanzoai/templates/kanban-board",
+    demoUrl: "https://hanzo.ai/templates/kanban-board",
     features: [
       "Drag-and-drop cards",
       "Multiple boards",
@@ -149,7 +148,7 @@ export const templates: Template[] = [
     name: "Video Streaming Platform",
     description: "A YouTube-like video streaming platform with upload, playback, and engagement features. Includes video player with quality selection, comments and likes, channel subscriptions, and recommendation algorithm. Uses HLS for adaptive streaming.",
     category: "social",
-    huggingfaceUrl: "https://huggingface.co/spaces/hanzoai/templates/video-streaming",
+    demoUrl: "https://hanzo.ai/templates/video-streaming",
     features: [
       "Video upload & processing",
       "Adaptive streaming",
@@ -167,7 +166,7 @@ export const templates: Template[] = [
     name: "Markdown Editor",
     description: "A powerful markdown editor with live preview, syntax highlighting, and export options. Features split-pane editing, custom toolbar, table editor, and diagram support with Mermaid. Includes file management and collaboration features.",
     category: "tool",
-    huggingfaceUrl: "https://huggingface.co/spaces/hanzoai/templates/markdown-editor",
+    demoUrl: "https://hanzo.ai/templates/markdown-editor",
     features: [
       "Live preview",
       "Syntax highlighting",
@@ -185,7 +184,7 @@ export const templates: Template[] = [
     name: "Crypto Portfolio Tracker",
     description: "A cryptocurrency portfolio tracker with real-time prices, charts, and P&L tracking. Features portfolio analytics, price alerts, transaction history, and tax reporting. Integrates with major exchanges via APIs.",
     category: "dashboard",
-    huggingfaceUrl: "https://huggingface.co/spaces/hanzoai/templates/crypto-portfolio",
+    demoUrl: "https://hanzo.ai/templates/crypto-portfolio",
     features: [
       "Real-time prices",
       "Portfolio analytics",
@@ -203,7 +202,7 @@ export const templates: Template[] = [
     name: "Blog Publishing Platform",
     description: "A Medium-like blog platform with writing tools, publications, and monetization. Features rich text editor, draft management, publication system, and reader engagement analytics. Includes SEO optimization and social sharing.",
     category: "social",
-    huggingfaceUrl: "https://huggingface.co/spaces/hanzoai/templates/blog-platform",
+    demoUrl: "https://hanzo.ai/templates/blog-platform",
     features: [
       "Rich text editor",
       "Draft management",
@@ -221,7 +220,7 @@ export const templates: Template[] = [
     name: "Multiplayer Game Lobby",
     description: "A real-time multiplayer game lobby with matchmaking, chat, and game rooms. Features player profiles, leaderboards, tournament system, and spectator mode. WebRTC for P2P connections and low latency gameplay.",
     category: "game",
-    huggingfaceUrl: "https://huggingface.co/spaces/hanzoai/templates/multiplayer-game",
+    demoUrl: "https://hanzo.ai/templates/multiplayer-game",
     features: [
       "Matchmaking",
       "Game rooms",
@@ -236,14 +235,12 @@ export const templates: Template[] = [
   }
 ];
 
-// Function to fetch template from Hugging Face
-export async function fetchTemplateFromHF(templateId: string): Promise<Template | null> {
+// Function to fetch template by ID
+export async function fetchTemplate(templateId: string): Promise<Template | null> {
   try {
-    // In production, this would fetch from HF API
-    // For now, return from local array
     return templates.find(t => t.id === templateId) || null;
   } catch (error) {
-    console.error('Error fetching template from Hugging Face:', error);
+    console.error('Error fetching template:', error);
     return null;
   }
 }

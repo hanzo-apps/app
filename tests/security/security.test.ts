@@ -277,8 +277,8 @@ describe('Security Tests', () => {
         value: 'development',
         configurable: true,
       });
-      process.env.HF_CLIENT_ID = 'test-client-id';
-      process.env.HF_CLIENT_SECRET = 'test-client-secret';
+      process.env.IAM_CLIENT_ID = 'test-client-id';
+      process.env.IAM_CLIENT_SECRET = 'test-client-secret';
       process.env.NEXTAUTH_SECRET = 'a'.repeat(32);
       process.env.NEXTAUTH_URL = 'http://localhost:3000';
 
@@ -290,7 +290,7 @@ describe('Security Tests', () => {
         value: 'development',
         configurable: true,
       });
-      delete process.env.HF_CLIENT_ID;
+      delete process.env.IAM_CLIENT_ID;
 
       // Mock process.exit
       const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {
@@ -308,8 +308,8 @@ describe('Security Tests', () => {
         value: 'production',
         configurable: true,
       });
-      process.env.HF_CLIENT_ID = 'test-client-id';
-      process.env.HF_CLIENT_SECRET = 'test-client-secret';
+      process.env.IAM_CLIENT_ID = 'test-client-id';
+      process.env.IAM_CLIENT_SECRET = 'test-client-secret';
       process.env.NEXTAUTH_SECRET = 'a'.repeat(32);
       process.env.NEXTAUTH_URL = 'http://localhost:3000'; // HTTP in production
       process.env.DATABASE_URL = 'postgresql://localhost/db';

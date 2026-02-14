@@ -2,6 +2,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
+// InferenceClient supports multiple AI providers (not just HuggingFace)
 import { InferenceClient } from "@huggingface/inference";
 
 import { MODELS, PROVIDERS } from "@/lib/providers";
@@ -108,7 +109,10 @@ export async function POST(request: NextRequest) {
    * and allows local testing without authentication.
    * This is useful for development and testing purposes.
    */
-  if (process.env.HF_TOKEN && process.env.HF_TOKEN.length > 0) {
+  // Use server-side inference token if available (supports any provider)
+  if (process.env.INFERENCE_API_TOKEN && process.env.INFERENCE_API_TOKEN.length > 0) {
+    token = process.env.INFERENCE_API_TOKEN;
+  } else if (process.env.HF_TOKEN && process.env.HF_TOKEN.length > 0) {
     token = process.env.HF_TOKEN;
   }
 
@@ -129,8 +133,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    token = process.env.DEFAULT_HF_TOKEN as string;
-    billTo = "huggingface";
+    token = (process.env.DEFAULT_INFERENCE_TOKEN || process.env.DEFAULT_HF_TOKEN) as string;
+    billTo = "hanzo";
   }
 
   const DEFAULT_PROVIDER = PROVIDERS.novita;
@@ -299,7 +303,10 @@ export async function PUT(request: NextRequest) {
    * and allows local testing without authentication.
    * This is useful for development and testing purposes.
    */
-  if (process.env.HF_TOKEN && process.env.HF_TOKEN.length > 0) {
+  // Use server-side inference token if available (supports any provider)
+  if (process.env.INFERENCE_API_TOKEN && process.env.INFERENCE_API_TOKEN.length > 0) {
+    token = process.env.INFERENCE_API_TOKEN;
+  } else if (process.env.HF_TOKEN && process.env.HF_TOKEN.length > 0) {
     token = process.env.HF_TOKEN;
   }
 
@@ -320,8 +327,8 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    token = process.env.DEFAULT_HF_TOKEN as string;
-    billTo = "huggingface";
+    token = (process.env.DEFAULT_INFERENCE_TOKEN || process.env.DEFAULT_HF_TOKEN) as string;
+    billTo = "hanzo";
   }
 
   const DEFAULT_PROVIDER = PROVIDERS.novita;

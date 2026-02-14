@@ -1,25 +1,60 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import MY_TOKEN_KEY from "@/lib/get-cookie-name";
 import { applySecurityHeaders, applyRateLimiting, getClientIP } from "@/lib/security/middleware";
+
+const TOKEN_COOKIE = "hanzo_token";
+
+// Routes that require authentication (prefix match).
+const PROTECTED_PREFIXES = [
+  "/dashboard",
+  "/settings",
+  "/profile",
+  "/billing",
+  "/chat",
+  "/dev",
+  "/gallery",
+];
+
+// Routes that are always accessible without a token (exact or prefix match).
+const PUBLIC_PATHS = [
+  "/login",
+  "/signup",
+  "/api/auth/callback",
+  "/api/auth/logout",
+  "/pricing",
+];
+
+function isProtectedRoute(pathname: string): boolean {
+  return PROTECTED_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(prefix + "/"),
+  );
+}
+
+function isPublicRoute(pathname: string): boolean {
+  if (pathname === "/") return true;
+  return PUBLIC_PATHS.some(
+    (p) => pathname === p || pathname.startsWith(p + "/"),
+  );
+}
 
 export async function middleware(request: NextRequest) {
   const headers = new Headers(request.headers);
   headers.set("x-current-host", request.nextUrl.host);
   headers.set("x-client-ip", getClientIP(request));
 
-  // Apply rate limiting based on path
   const path = request.nextUrl.pathname;
-  let rateLimitType: 'auth' | 'api' | 'public' | 'ai' | 'payment' = 'public';
 
-  if (path.startsWith('/api/auth')) {
-    rateLimitType = 'auth';
-  } else if (path.startsWith('/api/stripe')) {
-    rateLimitType = 'payment';
-  } else if (path.startsWith('/api/ai') || path.startsWith('/api/ask-ai')) {
-    rateLimitType = 'ai';
-  } else if (path.startsWith('/api')) {
-    rateLimitType = 'api';
+  // --- Rate limiting (unchanged) ---
+  let rateLimitType: "auth" | "api" | "public" | "ai" | "payment" = "public";
+
+  if (path.startsWith("/api/auth")) {
+    rateLimitType = "auth";
+  } else if (path.startsWith("/api/stripe")) {
+    rateLimitType = "payment";
+  } else if (path.startsWith("/api/ai") || path.startsWith("/api/ask-ai")) {
+    rateLimitType = "ai";
+  } else if (path.startsWith("/api")) {
+    rateLimitType = "api";
   }
 
   const rateLimitResponse = await applyRateLimiting(request, rateLimitType);
@@ -27,21 +62,16 @@ export async function middleware(request: NextRequest) {
     return rateLimitResponse;
   }
 
-  // For local development, automatically set the token cookie
-  if (process.env.HF_TOKEN === "local_dev_token") {
-    const token = request.cookies.get(MY_TOKEN_KEY());
-    if (!token || token.value !== "local_dev_token") {
-      const response = NextResponse.next({ headers });
-      response.cookies.set({
-        name: MY_TOKEN_KEY(),
-        value: "local_dev_token",
-        httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
-        path: "/",
-      });
-      return applySecurityHeaders(response);
+  // --- IAM token-based auth gate ---
+  // Only enforce on protected routes; public routes and assets pass through.
+  if (isProtectedRoute(path)) {
+    const token = request.cookies.get(TOKEN_COOKIE);
+    if (!token?.value) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("redirect", path);
+      return NextResponse.redirect(loginUrl);
     }
+    // Token exists – allow through. Server-side validation happens in lib/auth.ts.
   }
 
   const response = NextResponse.next({ headers });
@@ -49,5 +79,6 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  // Match all routes except static assets, images, and favicon.
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };

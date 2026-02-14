@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+// TODO: Migrate project storage from @huggingface/hub to Hanzo storage API
 import { RepoDesignation, uploadFiles } from "@huggingface/hub";
 
 import { isAuthenticated } from "@/lib/auth";
@@ -79,7 +80,7 @@ export async function POST(
       files.push(processedFile);
     }
 
-    // Upload files to HuggingFace space
+    // Upload files to project storage
     const repo: RepoDesignation = {
       type: "space",
       name: `${namespace}/${repoId}`,
@@ -95,6 +96,7 @@ export async function POST(
     return NextResponse.json({ 
       ok: true, 
       message: `Successfully uploaded ${files.length} image(s) to ${namespace}/${repoId}/images/`,
+      // TODO: Replace with Hanzo storage URLs when migration is complete
       uploadedFiles: files.map((file) => `https://huggingface.co/spaces/${namespace}/${repoId}/resolve/main/${file.name}`),
     }, { status: 200 });
 

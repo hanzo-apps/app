@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+// TODO: Migrate project storage from @huggingface/hub to Hanzo storage API
 import { createRepo, RepoDesignation, uploadFiles } from "@huggingface/hub";
 
 import { isAuthenticated } from "@/lib/auth";
@@ -91,7 +92,7 @@ tags:
   - hanzo
 ---
 
-Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference`;
+Check out the configuration reference at https://docs.hanzo.ai/spaces-config-reference`;
 
     const readmeFile = new File([readme], "README.md", {
       type: "text/markdown",

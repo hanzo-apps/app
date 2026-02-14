@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validateBody, schemas } from "@/lib/security/input-validation";
-import { env } from "@/lib/security/env-validation";
+
+const IAM_ENDPOINT = process.env.IAM_ENDPOINT || "https://iam.hanzo.ai";
+const IAM_TOKEN_URL = `${IAM_ENDPOINT}/api/login/oauth/access_token`;
+const IAM_USERINFO_URL = `${IAM_ENDPOINT}/api/userinfo`;
 
 export async function POST(req: NextRequest) {
   try {
@@ -27,49 +30,37 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Use validated environment variables
-    const clientId = env.HF_CLIENT_ID;
-    const clientSecret = env.HF_CLIENT_SECRET;
+    const clientId = process.env.IAM_CLIENT_ID;
+    const clientSecret = process.env.IAM_CLIENT_SECRET;
 
     if (!clientId || !clientSecret) {
-      console.error("Missing HF OAuth credentials");
+      console.error("Missing IAM OAuth credentials");
       return NextResponse.json(
         { error: "OAuth configuration missing" },
         { status: 500 }
       );
     }
 
-    const Authorization = `Basic ${Buffer.from(
-      `${clientId}:${clientSecret}`
-    ).toString("base64")}`;
-
-    const host =
-      req.headers.get("host") ?? req.headers.get("origin") ?? "localhost:3000";
-
-    const url = host.includes("/spaces/enzostvs")
-      ? "hanzo.ai"
-      : host;
-    const redirect_uri =
-      `${host.includes("localhost") ? "http://" : "https://"}` +
-      url +
-      "/auth/callback";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const redirect_uri = `${appUrl}/api/auth/callback`;
 
     console.log("Auth attempt with redirect_uri:", redirect_uri);
 
-    const request_auth = await fetch("https://huggingface.co/oauth/token", {
+    const request_auth = await fetch(IAM_TOKEN_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
-        Authorization,
       },
       body: new URLSearchParams({
         grant_type: "authorization_code",
+        client_id: clientId,
+        client_secret: clientSecret,
         code,
         redirect_uri,
       }),
     });
 
-      const response = await request_auth.json();
+    const response = await request_auth.json();
 
     if (!response.access_token) {
       console.error("Failed to get access token:", response);
@@ -84,7 +75,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const userResponse = await fetch("https://huggingface.co/api/whoami-v2", {
+    const userResponse = await fetch(IAM_USERINFO_URL, {
       headers: {
         Authorization: `Bearer ${response.access_token}`,
       },
@@ -98,7 +89,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const user = await userResponse.json();
+    const userInfo = await userResponse.json();
+    const user = {
+      id: userInfo.sub,
+      name: userInfo.preferred_username || userInfo.name || userInfo.sub,
+      fullname: userInfo.display_name || userInfo.name || userInfo.sub,
+      email: userInfo.email,
+      avatarUrl: userInfo.picture || "",
+    };
     console.log("Login successful for user:", user.name);
 
     return NextResponse.json(

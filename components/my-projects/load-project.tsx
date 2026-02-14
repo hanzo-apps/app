@@ -34,9 +34,9 @@ export const LoadProject = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const checkIfUrlIsValid = (url: string) => {
-    // should match a hugging face spaces URL like: https://huggingface.co/spaces/username/project or https://hf.co/spaces/username/project
+    // Match a Hanzo project URL like: https://hanzo.ai/projects/username/project or https://hanzo.app/projects/username/project
     const urlPattern = new RegExp(
-      /^(https?:\/\/)?(huggingface\.co|hf\.co)\/spaces\/([\w-]+)\/([\w-]+)$/,
+      /^(https?:\/\/)?(hanzo\.ai|hanzo\.app)\/projects\/([\w-]+)\/([\w-]+)$/,
       "i"
     );
     return urlPattern.test(url);
@@ -49,13 +49,12 @@ export const LoadProject = ({
       return;
     }
     if (!checkIfUrlIsValid(url)) {
-      toast.error("Please enter a valid Hugging Face Spaces URL.");
+      toast.error("Please enter a valid Hanzo project URL.");
       return;
     }
 
     const [username, namespace] = url
-      .replace("https://huggingface.co/spaces/", "")
-      .replace("https://hf.co/spaces/", "")
+      .replace(/https?:\/\/(hanzo\.ai|hanzo\.app)\/projects\//, "")
       .split("/");
 
     setIsLoading(true);
@@ -104,7 +103,7 @@ export const LoadProject = ({
             open={openLoginModal}
             onClose={setOpenLoginModal}
             title="Log In to load your Project"
-            description="Log In through Hugging Face to load an existing project and increase your free limit!"
+            description="Log In to load an existing project and increase your free limit!"
           />
         </>
       ) : (
@@ -140,18 +139,18 @@ export const LoadProject = ({
                 Import a Project
               </p>
               <p className="text-base text-neutral-500 mt-1.5">
-                Enter the URL of your Hugging Face Space to import an existing
+                Enter the URL of your Hanzo project to import an existing
                 project.
               </p>
             </header>
             <main className="space-y-4 px-9 pb-9 pt-2">
               <div>
                 <p className="text-sm text-neutral-700 mb-2">
-                  Enter your Hugging Face Space
+                  Enter your Hanzo project URL
                 </p>
                 <Input
                   type="text"
-                  placeholder="https://huggingface.com/spaces/username/project"
+                  placeholder="https://hanzo.ai/projects/username/project"
                   value={url}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUrl(e.target.value)}
                   onBlur={(e: React.FocusEvent<HTMLInputElement>) => {

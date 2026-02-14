@@ -1,5 +1,4 @@
 import {
-  ChartSpline,
   CirclePlus,
   FolderCode,
   Import,
@@ -9,13 +8,11 @@ import {
   MessageCircle,
   Sparkles,
   User,
-  CreditCard,
-  Palette,
-  Shield,
-  HelpCircle,
-  FileText,
+  DollarSign,
+  Wallet,
 } from "lucide-react";
 import Link from "next/link";
+import { useAccount } from "wagmi";
 
 import {
   DropdownMenu,
@@ -28,34 +25,49 @@ import {
 } from "@hanzo/ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
 import { Button } from "@hanzo/ui";
-import { useUser } from "@/hooks/useUser";
+import { useAuthContext } from "@/components/providers/AuthProvider";
+
+function truncateAddress(address: string): string {
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+}
 
 export const UserMenu = ({ className }: { className?: string }) => {
-  const { logout, user } = useUser();
+  const { logout, user } = useAuthContext();
+  const { address, isConnected } = useAccount();
+
+  const displayName = user?.fullname || user?.name || "User";
+  const userInitial = displayName.charAt(0).toUpperCase();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className={`${className}`}>
           <Avatar className="size-8 mr-1">
-            <AvatarImage src={user?.avatarUrl} alt="@shadcn" />
+            <AvatarImage src={user?.avatarUrl} alt={displayName} />
             <AvatarFallback className="text-sm">
-              {(user?.fullname || user?.name || 'U').charAt(0).toUpperCase()}
+              {userInitial}
             </AvatarFallback>
           </Avatar>
-          <span className="max-lg:hidden">{user?.fullname || user?.name || 'User'}</span>
+          <span className="max-lg:hidden">{displayName}</span>
           <span className="lg:hidden">
-            {(user?.fullname || user?.name || 'User').slice(0, 10)}
-            {((user?.fullname || user?.name || '').length) > 10 ? "..." : ""}
+            {displayName.slice(0, 10)}
+            {displayName.length > 10 ? "..." : ""}
           </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="start">
         <DropdownMenuLabel>
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user?.fullname || user?.name || 'User'}</p>
+            <p className="text-sm font-medium leading-none">{displayName}</p>
             <p className="text-xs leading-none text-muted-foreground">
               {user?.email || user?.username}
             </p>
+            {isConnected && address && (
+              <p className="text-xs leading-none text-muted-foreground font-mono flex items-center gap-1 pt-1">
+                <Wallet className="size-3" />
+                {truncateAddress(address)}
+              </p>
+            )}
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -122,12 +134,12 @@ export const UserMenu = ({ className }: { className?: string }) => {
               Profile
             </DropdownMenuItem>
           </Link>
-          <a href="https://huggingface.co/settings/billing" target="_blank">
+          <Link href="/billing">
             <DropdownMenuItem>
-              <ChartSpline className="size-4 text-neutral-400" />
-              Usage & Billing
+              <DollarSign className="size-4 text-neutral-400" />
+              Billing
             </DropdownMenuItem>
-          </a>
+          </Link>
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator />

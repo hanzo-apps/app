@@ -23,7 +23,11 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'huggingface.co',
+        hostname: 'iam.hanzo.ai',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.hanzo.ai',
       },
       {
         protocol: 'https',

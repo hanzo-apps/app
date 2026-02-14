@@ -37,7 +37,7 @@ export function SaveButton({
             label: "See Space",
             onClick: () => {
               window.open(
-                `https://huggingface.co/spaces/${namespace}/${repoId}`,
+                `/projects/${namespace}/${repoId}`,
                 "_blank"
               );
             },

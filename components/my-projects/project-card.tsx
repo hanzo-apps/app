@@ -20,7 +20,7 @@ export function ProjectCard({ project }: { project: Project }) {
         className="relative bg-neutral-900 rounded-2xl overflow-hidden h-44 w-full flex items-center justify-end flex-col px-3 border border-neutral-800"
       >
         <iframe
-          src={`https://${project.space_id.replace("/", "-")}.static.hf.space/`}
+          src={`/api/preview/${project.space_id}`}
           frameBorder="0"
           className="absolute inset-0 w-full h-full top-0 left-0 group-hover:brightness-75 transition-all duration-200 pointer-events-none"
         ></iframe>
@@ -57,8 +57,7 @@ export function ProjectCard({ project }: { project: Project }) {
           <DropdownMenuContent className="w-56" align="start">
             <DropdownMenuGroup>
               <a
-                href={`https://huggingface.co/spaces/${project.space_id}/settings`}
-                target="_blank"
+                href={`/projects/${project.space_id}/settings`}
               >
                 <DropdownMenuItem>
                   <Settings className="size-4 text-neutral-100" />

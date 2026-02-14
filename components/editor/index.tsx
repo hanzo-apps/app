@@ -136,7 +136,7 @@ export const AppEditor = ({
           label: "See Project",
           onClick: () => {
             window.open(
-              `https://huggingface.co/spaces/${project?.space_id}`,
+              `/projects/${project?.space_id}`,
               "_blank"
             );
           },

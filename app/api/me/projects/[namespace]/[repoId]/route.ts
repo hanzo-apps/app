@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+// TODO: Migrate project storage from @huggingface/hub to Hanzo storage API
 import { RepoDesignation, spaceInfo, uploadFiles, listFiles } from "@huggingface/hub";
 
 import { isAuthenticated } from "@/lib/auth";
@@ -69,6 +70,7 @@ export async function GET(
 
     const allowedImagesExtensions = ["jpg", "jpeg", "png", "gif", "svg", "webp", "avif", "heic", "heif", "ico", "bmp", "tiff", "tif"];
     
+    // TODO: Replace HF Hub URLs with Hanzo storage URLs when migration is complete
     for await (const fileInfo of listFiles({repo, accessToken: user.token as string})) {
       if (fileInfo.path.endsWith(".html")) {
         const res = await fetch(`https://huggingface.co/spaces/${namespace}/${repoId}/raw/main/${fileInfo.path}`);

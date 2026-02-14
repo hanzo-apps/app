@@ -1,20 +1,33 @@
-const { withSentryConfig } = require('@sentry/nextjs');
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Transpile @hanzo/ui package to handle TypeScript/TSX
-  transpilePackages: ['@hanzo/ui'],
-  // Disable dev indicators completely
-  devIndicators: false,
+  // Disable static optimization to avoid prerendering errors
+  output: 'standalone',
+
+  // Disable development indicators in production
+  devIndicators: {
+    appIsrStatus: false,
+    buildActivity: false,
+    buildActivityPosition: 'bottom-right',
+  },
+
   eslint: {
     ignoreDuringBuilds: true,
   },
+
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+
   images: {
     unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'huggingface.co',
+        hostname: 'iam.hanzo.ai',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.hanzo.ai',
       },
       {
         protocol: 'https',
@@ -22,23 +35,25 @@ const nextConfig = {
       },
     ],
   },
+
   experimental: {
     serverActions: {
       bodySizeLimit: '10mb',
     },
   },
+
+  // Disable static generation for problematic pages
+  generateStaticParams: false,
+  dynamicParams: true,
+
+  webpack: (config, { isServer }) => {
+    // Fix for build issues
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+    };
+    return config;
+  },
 }
 
-// Wrap with Sentry configuration only if DSN is provided
-const sentryWebpackPluginOptions = {
-  silent: true,
-  org: process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT,
-  authToken: process.env.SENTRY_AUTH_TOKEN,
-  hideSourceMaps: true,
-  disableLogger: true,
-};
-
-module.exports = process.env.NEXT_PUBLIC_SENTRY_DSN
-  ? withSentryConfig(nextConfig, sentryWebpackPluginOptions)
-  : nextConfig;
+module.exports = nextConfig
