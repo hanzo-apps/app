@@ -41,7 +41,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const host = req.headers.get("host") || "localhost:3000";
+    const protocol = host.includes("localhost") ? "http" : "https";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${host}`;
     const redirect_uri = `${appUrl}/api/auth/callback`;
 
     console.log("Auth attempt with redirect_uri:", redirect_uri);

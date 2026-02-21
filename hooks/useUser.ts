@@ -40,15 +40,33 @@ export const useUser = (initialData?: {
     useQuery({
       queryKey: ["user.me"],
       queryFn: async () => {
+        // First check localStorage
         const storedUser = getStoredUser();
         if (storedUser) {
           return { user: storedUser, errCode: null };
         }
+
+        // If no stored user, try fetching from server (cookie-based auth)
+        try {
+          const res = await fetch("/api/me", { credentials: "include" });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.user) {
+              // Persist to localStorage for future use
+              storeAuth("cookie-session", data.user, 7 * 24 * 60 * 60);
+              setLocalUser(data.user);
+              return { user: data.user, errCode: null };
+            }
+          }
+        } catch (err) {
+          console.warn("Failed to fetch user from server:", err);
+        }
+
         return { user: initialData?.user || null, errCode: initialData?.errCode || null };
       },
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
-      refetchOnMount: false,
+      refetchOnMount: true,
       retry: false,
       initialData: localUser
         ? { user: localUser, errCode: null }

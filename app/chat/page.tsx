@@ -28,7 +28,8 @@ import {
   Bot,
   User,
   ArrowUp,
-  MoreHorizontal
+  MoreHorizontal,
+  Users
 } from "lucide-react";
 import { Button } from "@hanzo/ui";
 import { Input } from "@hanzo/ui";
@@ -51,6 +52,7 @@ import {
 } from "@hanzo/ui";
 import { Textarea } from "@hanzo/ui";
 import { cn } from "@/lib/utils";
+import { type BotAgent, TEAM_PRESETS, getBotGateway } from "@/lib/bot-gateway";
 
 interface Message {
   id: string;
@@ -59,6 +61,9 @@ interface Message {
   timestamp: Date;
   attachments?: string[];
   model?: string;
+  agentId?: string;
+  agentName?: string;
+  agentEmoji?: string;
   isStreaming?: boolean;
   error?: boolean;
 }
@@ -70,6 +75,7 @@ interface Chat {
   createdAt: Date;
   updatedAt: Date;
   model: string;
+  agentId?: string;
 }
 
 export default function ChatPage() {
@@ -124,6 +130,51 @@ export default function ChatPage() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isStreaming, setIsStreaming] = useState(false);
 
+  // Agent/bot selection
+  const [agents, setAgents] = useState<BotAgent[]>(TEAM_PRESETS);
+  const [selectedAgentId, setSelectedAgentId] = useState<string>("dev");
+  const [gatewayConnected, setGatewayConnected] = useState(false);
+
+  const selectedAgent = agents.find((a) => a.id === selectedAgentId) ?? agents[0];
+
+  // Load agents from gateway
+  useEffect(() => {
+    const gw = getBotGateway();
+    gw.listAgents()
+      .then((list) => {
+        if (list.length > 0) setAgents(list);
+        setGatewayConnected(true);
+      })
+      .catch(() => {
+        // Gateway unavailable - use static presets
+        setGatewayConnected(false);
+      });
+
+    // Listen for agent streaming events
+    const unsub = gw.on("agent", (payload: unknown) => {
+      const p = payload as { text?: string; runId?: string; done?: boolean };
+      if (!p?.text) return;
+      // Update the streaming message content
+      setActiveChat((prev) => {
+        if (!prev) return prev;
+        const msgs = [...prev.messages];
+        const last = msgs[msgs.length - 1];
+        if (last?.role === "assistant" && last.isStreaming) {
+          msgs[msgs.length - 1] = {
+            ...last,
+            content: last.content + p.text,
+            isStreaming: !p.done,
+          };
+          return { ...prev, messages: msgs, updatedAt: new Date() };
+        }
+        return prev;
+      });
+      if (p.done) setIsStreaming(false);
+    });
+
+    return () => { unsub(); };
+  }, []);
+
   // Auto-scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -148,10 +199,11 @@ export default function ChatPage() {
     };
 
     // Update current chat
-    const updatedChat = {
+    const updatedChat: Chat = {
       ...activeChat,
       messages: [...activeChat.messages, newMessage],
       updatedAt: new Date(),
+      agentId: selectedAgentId,
     };
 
     setActiveChat(updatedChat);
@@ -159,13 +211,16 @@ export default function ChatPage() {
     setInputMessage("");
     setIsStreaming(true);
 
-    // Simulate streaming AI response
+    // Create streaming response placeholder
     const aiResponse: Message = {
       id: (Date.now() + 1).toString(),
       role: "assistant",
       content: "",
       timestamp: new Date(),
       model: selectedModel,
+      agentId: selectedAgentId,
+      agentName: selectedAgent?.name,
+      agentEmoji: selectedAgent?.emoji,
       isStreaming: true
     };
 
@@ -178,8 +233,24 @@ export default function ChatPage() {
     setActiveChat(chatWithStreamingResponse);
     setChats(prev => prev.map(c => c.id === activeChat.id ? chatWithStreamingResponse : c));
 
-    // Simulate streaming text
-    const fullResponse = `I'll help you with "${inputMessage}". Here's a comprehensive response:\n\nThis is a simulated streaming response that demonstrates how the chat interface handles real-time message updates. The text appears gradually, creating a more engaging user experience.\n\nKey points to consider:\n- Real-time streaming improves perceived performance\n- Users can see the response forming\n- Creates a more interactive experience`;
+    // Try bot gateway first, fall back to simulated response
+    if (gatewayConnected) {
+      try {
+        const gw = getBotGateway();
+        await gw.sendMessage({
+          message: inputMessage,
+          agentId: selectedAgentId,
+          sessionKey: `agent:${selectedAgentId}:main`,
+        });
+        // Response will come via the "agent" event listener
+        return;
+      } catch {
+        // Fall through to simulated response
+      }
+    }
+
+    // Simulated streaming response (when gateway is unavailable)
+    const fullResponse = `${selectedAgent?.emoji ?? ""} **${selectedAgent?.name ?? "Hanzo"}** here.\n\n${inputMessage.length > 20 ? `I'll help you with that.` : `I'll help you with "${inputMessage}".`}\n\nThis is a simulated response - connect to the bot gateway for real AI responses.\n\nTo start the bot gateway:\n\`\`\`\ncd ~/work/hanzo/bot && make dev\n\`\`\``;
 
     let currentText = "";
     const words = fullResponse.split(" ");
@@ -207,7 +278,6 @@ export default function ChatPage() {
         clearInterval(streamInterval);
         setIsStreaming(false);
 
-        // Final update to mark streaming as complete
         const finalResponse = {
           ...aiResponse,
           content: currentText,
@@ -399,8 +469,38 @@ export default function ChatPage() {
                 {sidebarCollapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
               </Button>
               <div className="flex items-center gap-2">
+                {/* Agent Selector */}
+                <Select value={selectedAgentId} onValueChange={setSelectedAgentId}>
+                  <SelectTrigger className="w-[160px] bg-neutral-900 border-neutral-700 text-white">
+                    <SelectValue>
+                      <span className="flex items-center gap-2">
+                        <span>{selectedAgent?.emoji}</span>
+                        <span>{selectedAgent?.name}</span>
+                      </span>
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="bg-neutral-900 border-neutral-700">
+                    <DropdownMenuLabel className="text-neutral-400 text-xs px-2 py-1">
+                      <Users className="w-3 h-3 inline mr-1" />
+                      Team Agents
+                    </DropdownMenuLabel>
+                    {agents.map((agent) => (
+                      <SelectItem key={agent.id} value={agent.id}>
+                        <span className="flex items-center gap-2">
+                          <span>{agent.emoji}</span>
+                          <span>{agent.name}</span>
+                          {agent.description && (
+                            <span className="text-xs text-neutral-500 ml-1">{agent.description}</span>
+                          )}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {/* Model Selector */}
                 <Select value={selectedModel} onValueChange={setSelectedModel}>
-                  <SelectTrigger className="w-[200px] bg-neutral-900 border-neutral-700 text-white">
+                  <SelectTrigger className="w-[180px] bg-neutral-900 border-neutral-700 text-white">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-neutral-900 border-neutral-700">
@@ -411,9 +511,12 @@ export default function ChatPage() {
                     <SelectItem value="Gemini Pro">Gemini Pro</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button variant="ghost" size="sm" className="text-neutral-400 hover:text-white">
-                  <Zap className="w-4 h-4" />
-                </Button>
+
+                {/* Gateway status indicator */}
+                <div className={cn(
+                  "w-2 h-2 rounded-full",
+                  gatewayConnected ? "bg-green-500" : "bg-neutral-600"
+                )} title={gatewayConnected ? "Bot gateway connected" : "Bot gateway offline"} />
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -448,7 +551,9 @@ export default function ChatPage() {
                     <div className="flex gap-4">
                       {message.role === "assistant" ? (
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center flex-shrink-0">
-                          <span className="text-white font-bold text-sm">H</span>
+                          <span className="text-white font-bold text-sm">
+                            {message.agentEmoji ?? "H"}
+                          </span>
                         </div>
                       ) : (
                         <div className="w-8 h-8 rounded-full bg-neutral-700 flex items-center justify-center flex-shrink-0">
@@ -458,7 +563,9 @@ export default function ChatPage() {
                       <div className="flex-1 space-y-2">
                         <div className="flex items-center gap-2">
                           <span className="font-medium text-white">
-                            {message.role === "assistant" ? "Hanzo" : "You"}
+                            {message.role === "assistant"
+                              ? (message.agentName ?? "Hanzo")
+                              : "You"}
                           </span>
                           {message.model && (
                             <span className="text-xs text-neutral-500">{message.model}</span>
@@ -503,11 +610,11 @@ export default function ChatPage() {
               <div className="flex items-center justify-center h-full">
                 <div className="text-center space-y-4">
                   <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl flex items-center justify-center mx-auto">
-                    <span className="text-white font-bold text-4xl">H</span>
+                    <span className="text-white font-bold text-4xl">{selectedAgent?.emoji ?? "H"}</span>
                   </div>
-                  <h2 className="text-2xl font-bold text-white">Welcome to Hanzo Chat</h2>
+                  <h2 className="text-2xl font-bold text-white">Chat with {selectedAgent?.name ?? "Hanzo"}</h2>
                   <p className="text-neutral-400 max-w-md">
-                    Start a new chat or select an existing one to continue your conversation
+                    {selectedAgent?.description ?? "Start a new chat or select an existing one to continue your conversation"}
                   </p>
                   <Button onClick={createNewChat} className="gap-2">
                     <Plus className="w-4 h-4" />
@@ -546,7 +653,7 @@ export default function ChatPage() {
                         sendMessage();
                       }
                     }}
-                    placeholder="Message Hanzo..."
+                    placeholder={`Message ${selectedAgent?.name ?? "Hanzo"}...`}
                     className="min-h-[44px] max-h-[200px] bg-neutral-900 border-neutral-700 text-white placeholder-neutral-500 resize-none pr-12"
                     rows={1}
                   />

@@ -60,19 +60,19 @@ const QUICK_LINKS = [
   {
     title: "Console",
     description: "Manage services and infrastructure",
-    href: "https://console.hanzo.ai",
+    href: "https://app.hanzo.bot/dashboard",
     icon: Cpu,
   },
   {
     title: "Platform",
     description: "Deploy and manage applications",
-    href: "https://platform.hanzo.ai",
+    href: "https://app.hanzo.bot/new",
     icon: Globe,
   },
   {
     title: "Analytics",
     description: "View metrics and insights",
-    href: "https://analytics.hanzo.ai",
+    href: "https://app.hanzo.bot/dashboard",
     icon: LineChart,
   },
 ];

@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       const token = Buffer.from(`${email}:${Date.now()}`).toString('base64');
 
       const cookieStore = await cookies();
-      cookieStore.set('hanzo-auth-token', token, {
+      cookieStore.set('hanzo_token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',

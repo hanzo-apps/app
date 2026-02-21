@@ -17,13 +17,16 @@ export async function GET(req: NextRequest) {
 
   const clientId = process.env.IAM_CLIENT_ID;
   const clientSecret = process.env.IAM_CLIENT_SECRET;
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
-  if (!clientId || !clientSecret || !appUrl) {
+  // Derive app URL from the request for multi-domain support
+  const host = req.headers.get("host") || "localhost:3000";
+  const protocol = host.includes("localhost") ? "http" : "https";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${host}`;
+
+  if (!clientId || !clientSecret) {
     console.error("Missing IAM OAuth configuration:", {
       hasClientId: !!clientId,
       hasClientSecret: !!clientSecret,
-      hasAppUrl: !!appUrl,
     });
     return NextResponse.json(
       { error: "OAuth configuration missing" },
@@ -68,7 +71,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const response = NextResponse.redirect(new URL("/dashboard", appUrl));
+    const response = NextResponse.redirect(new URL("/dashboard", req.nextUrl.origin));
 
     response.cookies.set({
       name: COOKIE_NAME,

@@ -161,7 +161,7 @@ export default function AuthCallback({
                 <div className="space-y-2">
                   <div className="flex items-center justify-center gap-2 text-white/60">
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <p className="text-sm">Authenticating with Hugging Face...</p>
+                    <p className="text-sm">Authenticating with Hanzo IAM...</p>
                   </div>
                   <p className="text-xs text-white/40">
                     This usually takes a few seconds

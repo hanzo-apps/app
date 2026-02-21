@@ -1,15 +1,13 @@
-import { headers } from "next/headers";
+import { headers, cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 const IAM_ENDPOINT = process.env.IAM_ENDPOINT || "https://iam.hanzo.ai";
 const IAM_USERINFO_URL = `${IAM_ENDPOINT}/api/userinfo`;
+const COOKIE_NAME = "hanzo_token";
 
 export async function GET() {
   const authHeaders = await headers();
-  const token = authHeaders.get("Authorization");
-  if (!token) {
-    return NextResponse.json({ user: null, errCode: 401 }, { status: 401 });
-  }
+  const cookieStore = await cookies();
 
   // Handle local development mode
   const host = authHeaders.get("host") || "";
@@ -26,7 +24,20 @@ export async function GET() {
     return NextResponse.json({ user: localUser, errCode: null }, { status: 200 });
   }
 
-  const rawToken = token.startsWith("Bearer ") ? token.slice(7) : token;
+  // Check Authorization header first, then cookie
+  const headerToken = authHeaders.get("Authorization");
+  const cookieToken = cookieStore.get(COOKIE_NAME)?.value;
+
+  let rawToken: string | undefined;
+  if (headerToken) {
+    rawToken = headerToken.startsWith("Bearer ") ? headerToken.slice(7) : headerToken;
+  } else if (cookieToken) {
+    rawToken = cookieToken;
+  }
+
+  if (!rawToken) {
+    return NextResponse.json({ user: null, errCode: 401 }, { status: 401 });
+  }
 
   const userResponse = await fetch(IAM_USERINFO_URL, {
     headers: {

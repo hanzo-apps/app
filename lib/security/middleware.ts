@@ -13,7 +13,7 @@ const securityHeaders = {
     "media-src 'self' blob: data:",
     "connect-src 'self' https://*.hanzo.ai https://*.stripe.com https://api.openai.com https://api.anthropic.com wss://*.hanzo.ai",
     "frame-src 'self' https://*.stripe.com https://*.hanzo.ai",
-    "frame-ancestors 'none'",
+    "frame-ancestors 'self' https://hanzo.ai https://*.hanzo.ai https://hanzo.app https://*.hanzo.app https://hanzo.bot https://*.hanzo.bot https://hanzo.team https://*.hanzo.team https://hanzo.chat https://*.hanzo.chat https://hanzo.space https://*.hanzo.space",
     "base-uri 'self'",
     "form-action 'self'",
     "upgrade-insecure-requests",
@@ -23,7 +23,7 @@ const securityHeaders = {
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
 
   // X-Frame-Options (legacy support)
-  'X-Frame-Options': 'DENY',
+  'X-Frame-Options': 'SAMEORIGIN',
 
   // X-Content-Type-Options
   'X-Content-Type-Options': 'nosniff',
@@ -125,7 +125,20 @@ export function applyCORSHeaders(response: NextResponse, origin?: string | null)
       'https://hanzo.ai',
       'https://hanzo.app',
       'https://hanzo.io',
+      'https://hanzo.bot',
+      'https://hanzo.team',
+      'https://hanzo.chat',
+      'https://hanzo.space',
+      'https://app.hanzo.bot',
+      'https://chat.hanzo.ai',
+      'https://console.hanzo.ai',
     ].filter(Boolean);
+
+    // Also allow *.hanzo.ai subdomains
+    if (origin && (origin.endsWith('.hanzo.ai') || origin.endsWith('.hanzo.app') || origin.endsWith('.hanzo.bot'))) {
+      response.headers.set('Access-Control-Allow-Origin', origin);
+      return response;
+    }
 
     if (!allowedOrigins.includes(origin)) {
       // Don't set CORS headers for unauthorized origins
