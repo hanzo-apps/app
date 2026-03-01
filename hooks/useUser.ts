@@ -92,6 +92,48 @@ export const useUser = (initialData?: {
     return router.push("/login");
   };
 
+  // Handle direct token delivery (IAM id-worker bridge flow)
+  const loginFromToken = async (accessToken: string, expiresAt?: string) => {
+    setLoadingAuth(true);
+    try {
+      // Fetch user info directly from IAM with the provided token
+      const res = await fetch("/api/auth/me", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      let user;
+      if (res.ok) {
+        user = await res.json();
+      } else {
+        // Minimal fallback user shape if userinfo fetch fails
+        user = { id: "unknown", name: "User", email: "", avatarUrl: "" };
+      }
+
+      const expiresIn = expiresAt
+        ? Math.max(0, Math.floor((parseInt(expiresAt, 10) - Date.now() / 1000)))
+        : 7 * 24 * 3600;
+
+      storeAuth(accessToken, user, expiresIn);
+      setCookie(accessToken, getAuthCookieOptions(expiresIn));
+      setLocalUser(user);
+      client.setQueryData(["user.me"], { user, errCode: null });
+
+      toast.success("Login successful!");
+
+      const redirectPath = localStorage.getItem("redirectAfterLogin");
+      if (redirectPath) {
+        localStorage.removeItem("redirectAfterLogin");
+      }
+      setTimeout(() => router.push(redirectPath || "/"), 300);
+    } catch (err) {
+      console.error("Token login error:", err);
+      toast.error("Authentication failed.");
+      setTimeout(() => router.push("/"), 2000);
+    } finally {
+      setLoadingAuth(false);
+    }
+  };
+
   const loginFromCode = async (code: string) => {
     setLoadingAuth(true);
     if (loadingAuth) return;
@@ -170,6 +212,7 @@ export const useUser = (initialData?: {
     loading: isLoading || loadingAuth,
     openLoginWindow,
     loginFromCode,
+    loginFromToken,
     logout,
   };
 };

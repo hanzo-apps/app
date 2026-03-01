@@ -5,8 +5,16 @@ const IAM_ENDPOINT = process.env.IAM_ENDPOINT || "https://iam.hanzo.ai";
 const IAM_USERINFO_URL = `${IAM_ENDPOINT}/api/userinfo`;
 
 export async function GET(_req: NextRequest) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("hanzo-auth-token")?.value;
+  // Accept token from Authorization header (for token bridge flow) or cookie
+  const bearerHeader = _req.headers.get("Authorization");
+  let token = bearerHeader?.startsWith("Bearer ")
+    ? bearerHeader.slice(7)
+    : null;
+
+  if (!token) {
+    const cookieStore = await cookies();
+    token = cookieStore.get("hanzo-auth-token")?.value ?? null;
+  }
 
   if (!token) {
     return NextResponse.json(

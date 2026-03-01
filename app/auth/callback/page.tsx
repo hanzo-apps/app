@@ -10,13 +10,13 @@ import { HanzoLogo } from "@/components/HanzoLogo";
 export default function AuthCallback({
   searchParams,
 }: {
-  searchParams: Promise<{ code: string }>;
+  searchParams: Promise<{ code?: string; access_token?: string; refresh_token?: string; expires_at?: string }>;
 }) {
   const [showButton, setShowButton] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [currentIdea, setCurrentIdea] = useState(0);
   const [isTyping, setIsTyping] = useState(true);
-  const { code } = use(searchParams);
+  const params = use(searchParams);
   const { loginFromCode } = useUser();
 
   // Fun loading messages
@@ -53,8 +53,13 @@ export default function AuthCallback({
   ];
 
   useMount(async () => {
-    if (code) {
-      await loginFromCode(code);
+    // IAM can deliver tokens two ways:
+    // 1. ?code=... (auth code flow) — exchange via /api/auth
+    // 2. ?access_token=... (implicit / id-worker bridge) — store directly
+    if (params.access_token) {
+      await loginFromToken(params.access_token, params.expires_at);
+    } else if (params.code) {
+      await loginFromCode(params.code);
     }
   });
 
