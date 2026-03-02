@@ -1,7 +1,7 @@
 // Client-side authentication using localStorage
 import { User } from "@/types";
 
-const TOKEN_KEY = "hanzo-auth-token";
+const TOKEN_KEY = "hanzo_token";
 const USER_KEY = "hanzo-user";
 const EXPIRES_KEY = "hanzo-auth-expires";
 

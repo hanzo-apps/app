@@ -9,6 +9,7 @@ import { Input } from "@hanzo/ui";
 import { Label } from "@hanzo/ui";
 import { Loader2, Sparkles, ArrowRight, Monitor, Apple, Terminal, Smartphone, Zap, Mail, Lock } from 'lucide-react';
 import { storeAuth } from '@/lib/client-auth';
+import { getAuth } from '@/app/actions/auth';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -44,6 +45,18 @@ export default function LoginPage() {
 
     return () => clearInterval(interval);
   }, [ideas.length]);
+
+  const handleHanzoLogin = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const url = await getAuth();
+      router.push(url);
+    } catch (err) {
+      setError('Failed to initiate sign-in. Please try again.');
+      setLoading(false);
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -161,6 +174,33 @@ export default function LoginPage() {
                 )}
               </Button>
             </form>
+
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/10"></div>
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="bg-black px-4 text-white/40">or</span>
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              onClick={handleHanzoLogin}
+              disabled={loading}
+              variant="outline"
+              className="w-full border-white/20 text-white hover:bg-white/10 hover:border-white/40 h-12 font-medium flex items-center justify-center gap-2"
+              size="lg"
+            >
+              {loading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <>
+                  <HanzoLogo className="w-4 h-4" />
+                  Sign in with Hanzo
+                </>
+              )}
+            </Button>
 
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">

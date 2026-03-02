@@ -13,7 +13,7 @@ export async function GET(_req: NextRequest) {
 
   if (!token) {
     const cookieStore = await cookies();
-    token = cookieStore.get("hanzo-auth-token")?.value ?? null;
+    token = cookieStore.get("hanzo_token")?.value ?? null;
   }
 
   if (!token) {

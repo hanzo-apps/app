@@ -9,7 +9,7 @@ const IAM_USERINFO_URL = `${IAM_ENDPOINT}/api/userinfo`;
  */
 export async function getUserSession() {
   const cookieStore = await cookies();
-  const authToken = cookieStore.get('hanzo-auth-token')?.value;
+  const authToken = cookieStore.get('hanzo_token')?.value;
 
   if (!authToken) {
     return null;
