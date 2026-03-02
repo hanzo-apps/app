@@ -17,7 +17,7 @@ export default function AuthCallback({
   const [currentIdea, setCurrentIdea] = useState(0);
   const [isTyping, setIsTyping] = useState(true);
   const params = use(searchParams);
-  const { loginFromCode } = useUser();
+  const { loginFromCode, loginFromToken } = useUser();
 
   // Fun loading messages
   const loadingSteps = [
