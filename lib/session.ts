@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 
-const IAM_ENDPOINT = process.env.IAM_ENDPOINT || "https://iam.hanzo.ai";
+const IAM_ENDPOINT = process.env.IAM_ENDPOINT || "https://hanzo.id";
 const IAM_USERINFO_URL = `${IAM_ENDPOINT}/api/userinfo`;
 
 /**

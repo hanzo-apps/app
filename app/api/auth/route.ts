@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validateBody, schemas } from "@/lib/security/input-validation";
 
-const IAM_ENDPOINT = process.env.IAM_ENDPOINT || "https://iam.hanzo.ai";
+const IAM_ENDPOINT = process.env.IAM_ENDPOINT || "https://hanzo.id";
 const IAM_TOKEN_URL = `${IAM_ENDPOINT}/api/login/oauth/access_token`;
 const IAM_USERINFO_URL = `${IAM_ENDPOINT}/api/userinfo`;
 

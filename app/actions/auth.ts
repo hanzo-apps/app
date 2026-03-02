@@ -2,7 +2,7 @@
 
 import { headers } from "next/headers";
 
-const IAM_ENDPOINT = process.env.IAM_ENDPOINT || "https://iam.hanzo.ai";
+const IAM_ENDPOINT = process.env.IAM_ENDPOINT || "https://hanzo.id";
 
 export async function getAuth() {
   const authList = await headers();

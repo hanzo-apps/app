@@ -3,7 +3,7 @@ import { cookies, headers } from "next/headers";
 import MY_TOKEN_KEY from "./get-cookie-name";
 
 // Hanzo IAM OIDC configuration
-const IAM_ENDPOINT = process.env.IAM_ENDPOINT || "https://iam.hanzo.ai";
+const IAM_ENDPOINT = process.env.IAM_ENDPOINT || "https://hanzo.id";
 const IAM_USERINFO_URL = `${IAM_ENDPOINT}/api/userinfo`;
 const IAM_INTROSPECT_URL = `${IAM_ENDPOINT}/api/login/oauth/introspect`;
 const IAM_CLIENT_ID = process.env.IAM_CLIENT_ID || "";
@@ -164,7 +164,7 @@ export const isAuthenticated = async (): Promise<UserResponse | undefined> => {
     return undefined;
   }
 
-  console.log("Verifying token with Hanzo IAM (iam.hanzo.ai)...");
+  console.log("Verifying token with Hanzo IAM (hanzo.id)...");
 
   // Validate via OIDC userinfo endpoint
   const userInfo = await fetchIamUser(rawToken);
