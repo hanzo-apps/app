@@ -1,22 +1,9 @@
-<<<<<<< Updated upstream
-# AI Assistant Knowledge Base
-=======
 # Scientifically-Grounded OCEAN Personality Profiles - Research Analysis
->>>>>>> Stashed changes
 
 **Last Updated**: $(date +%Y-%m-%d)
 **Project**: $(basename "$REPO_PATH")
 **Organization**: $(basename "$(dirname "$REPO_PATH")")
 
-<<<<<<< Updated upstream
-## Project Overview
-
-This repository is part of the $(basename "$(dirname "$REPO_PATH")") organization.
-
-## Essential Commands
-
-### Development
-=======
 Comprehensive analysis and correction of OCEAN personality profiles for deceased influential figures across music, architecture, film, and comedy. Assessment based on biographical evidence, documented behavioral patterns, psychological research, and peer-reviewed studies on creativity and personality.
 
 **Methodology**: Applied established personality psychology research principles, including:
@@ -1137,7 +1124,6 @@ Appropriate for current scale and team size.
 ### Immediate Actions (Week 1)
 
 1. **Security Hardening**:
->>>>>>> Stashed changes
 ```bash
 # Add common commands here
 ```
