@@ -18,7 +18,7 @@ export async function getAuth() {
     throw new Error('OAuth configuration missing');
   }
 
-  const loginRedirectUrl = `${IAM_ENDPOINT}/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirect_uri}&response_type=code&scope=openid%20profile%20email&state=1234567890`;
+  const loginRedirectUrl = `${IAM_ENDPOINT}/oauth/authorize?client_id=${clientId}&redirect_uri=${redirect_uri}&response_type=code&scope=openid%20profile%20email&state=1234567890`;
 
   console.log('Auth URL generated:', loginRedirectUrl);
   return loginRedirectUrl;

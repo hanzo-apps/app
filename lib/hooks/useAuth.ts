@@ -84,7 +84,7 @@ export function useAuth() {
       state: crypto.randomUUID(),
     });
 
-    window.location.href = `${HANZO_ID_URL}/login/oauth/authorize?${params.toString()}`;
+    window.location.href = `${HANZO_ID_URL}/oauth/authorize?${params.toString()}`;
   }, []);
 
   /**

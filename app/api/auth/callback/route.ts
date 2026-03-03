@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const IAM_ENDPOINT = process.env.IAM_ENDPOINT || "https://hanzo.id";
-const IAM_TOKEN_URL = `${IAM_ENDPOINT}/api/login/oauth/access_token`;
+const IAM_TOKEN_URL = `${IAM_ENDPOINT}/oauth/token`;
 const COOKIE_NAME = "hanzo_token";
 const COOKIE_MAX_AGE = 7 * 24 * 60 * 60; // 7 days in seconds
 
