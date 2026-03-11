@@ -77,7 +77,7 @@ async function callOpenAICompatible(
   if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
   if (provider === 'openrouter') {
     headers['HTTP-Referer'] = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
-    headers['X-Title'] = 'OSW-Studio';
+    headers['X-Title'] = 'Hanzo';
   }
 
   const response = await fetch(`${baseUrl}/chat/completions`, {

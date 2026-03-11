@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { configManager, CostSettings } from '@/lib/config/storage';
 
-const COST_SETTINGS_CHANGE_EVENT = 'osw-studio-cost-settings-changed';
+const COST_SETTINGS_CHANGE_EVENT = 'hanzo-app-cost-settings-changed';
 
 export function useCostSettings() {
   const [costSettings, setCostSettings] = useState<CostSettings>(() => 

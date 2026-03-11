@@ -67,7 +67,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
   const [focusContext, setFocusContext] = useState<FocusTarget | null>(null);
   const [chatMode, setChatMode] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('osw-studio-chat-mode');
+      const stored = localStorage.getItem('hanzo-app-chat-mode');
       return stored ? stored === 'true' : false;
     }
     return false;
@@ -394,7 +394,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
   // Persist chat mode to localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('osw-studio-chat-mode', String(chatMode));
+      localStorage.setItem('hanzo-app-chat-mode', String(chatMode));
     }
   }, [chatMode]);
 
@@ -951,13 +951,13 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
     // Determine which model to use based on chat mode
     let modelToUse = configManager.getProviderModel(currentProvider) || configManager.getDefaultModel();
     if (typeof window !== 'undefined') {
-      const useSeparateChatModel = localStorage.getItem(`osw-studio-use-separate-chat-model-${currentProvider}`) === 'true';
+      const useSeparateChatModel = localStorage.getItem(`hanzo-app-use-separate-chat-model-${currentProvider}`) === 'true';
       if (useSeparateChatModel) {
         if (chatMode) {
-          const chatModel = localStorage.getItem(`osw-studio-chat-model-${currentProvider}`);
+          const chatModel = localStorage.getItem(`hanzo-app-chat-model-${currentProvider}`);
           if (chatModel) modelToUse = chatModel;
         } else {
-          const codeModel = localStorage.getItem(`osw-studio-code-model-${currentProvider}`);
+          const codeModel = localStorage.getItem(`hanzo-app-code-model-${currentProvider}`);
           if (codeModel) modelToUse = codeModel;
         }
       }

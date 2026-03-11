@@ -272,7 +272,7 @@ export default function BillingPage() {
           </div>
           <Button
             onClick={() => setActiveTab('add-credits')}
-            className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600"
+            className="bg-white text-black hover:bg-white/90"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Credits
@@ -290,7 +290,7 @@ export default function BillingPage() {
               <div className="space-y-3">
                 <Badge className={
                   subscription?.plan === 'Pro'
-                    ? 'bg-gradient-to-r from-violet-500 to-purple-500 text-white'
+                    ? 'bg-white text-black'
                     : 'bg-white/10 text-white/70'
                 }>
                   {subscription?.plan || 'Free'}
@@ -307,7 +307,7 @@ export default function BillingPage() {
                   {(!subscription || subscription.plan === 'Pay as you go') ? (
                     <Button
                       onClick={() => router.push('/pricing')}
-                      className="w-full bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600"
+                      className="w-full bg-white text-black hover:bg-white/90"
                       size="sm"
                     >
                       <Sparkles className="w-4 h-4 mr-2" />
@@ -396,7 +396,7 @@ export default function BillingPage() {
               </CardHeader>
               <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <Button
-                  className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600"
+                  className="bg-white text-black hover:bg-white/90"
                   onClick={() => { setPaymentMethod('crypto'); setCreditModalOpen(true); }}
                 >
                   <Wallet className="w-4 h-4 mr-2" />
@@ -495,12 +495,12 @@ export default function BillingPage() {
                         key={tier.amount}
                         className={`relative p-5 rounded-xl border transition-all ${
                           tier.popular
-                            ? 'border-violet-500/50 bg-violet-500/5'
+                            ? 'border-white/30 bg-white/5'
                             : 'border-white/10 hover:border-white/30 bg-[#0a0a0a]'
                         }`}
                       >
                         {tier.popular && (
-                          <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-violet-500 to-purple-500 text-white text-xs">
+                          <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-white text-black text-xs">
                             Most Popular
                           </Badge>
                         )}
@@ -517,7 +517,7 @@ export default function BillingPage() {
                           disabled={stripeLoading !== null}
                           className={`w-full ${
                             tier.popular
-                              ? 'bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600'
+                              ? 'bg-white text-black hover:bg-white/90'
                               : 'bg-white/10 hover:bg-white/20'
                           }`}
                           size="sm"
@@ -549,12 +549,12 @@ export default function BillingPage() {
                         key={tier.amount}
                         className={`relative p-5 rounded-xl border transition-all ${
                           tier.popular
-                            ? 'border-violet-500/50 bg-violet-500/5'
+                            ? 'border-white/30 bg-white/5'
                             : 'border-white/10 hover:border-white/30 bg-[#0a0a0a]'
                         }`}
                       >
                         {tier.popular && (
-                          <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-violet-500 to-purple-500 text-white text-xs">
+                          <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-white text-black text-xs">
                             Most Popular
                           </Badge>
                         )}
@@ -570,7 +570,7 @@ export default function BillingPage() {
                           onClick={() => setCreditModalOpen(true)}
                           className={`w-full ${
                             tier.popular
-                              ? 'bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600'
+                              ? 'bg-white text-black hover:bg-white/90'
                               : 'bg-white/10 hover:bg-white/20'
                           }`}
                           size="sm"

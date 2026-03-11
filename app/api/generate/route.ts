@@ -746,7 +746,7 @@ function buildHeaders(
     
     if (provider === 'openrouter') {
       headers['HTTP-Referer'] = request.headers.get('referer') || 'http://localhost:3000';
-      headers['X-Title'] = 'OSW-Studio';
+      headers['X-Title'] = 'Hanzo';
     }
   }
   

@@ -100,8 +100,8 @@ export const updateThread = (thread: Thread) => {
             id: thread.model?.id ?? '*',
             engine: thread.model?.provider ?? 'llama.cpp',
           },
-          id: 'jan',
-          name: 'Jan',
+          id: 'hanzo',
+          name: 'Hanzo',
         },
       ],
       metadata: {

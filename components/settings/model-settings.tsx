@@ -47,7 +47,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
   const [codexAvailable, setCodexAvailable] = useState(true);
   const [useSeparateChatModel, setUseSeparateChatModel] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem(`osw-studio-use-separate-chat-model-${configManager.getSelectedProvider()}`);
+      const stored = localStorage.getItem(`hanzo-app-use-separate-chat-model-${configManager.getSelectedProvider()}`);
       return stored === 'true';
     }
     return false;
@@ -70,7 +70,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
 
     // Load separate chat model setting for this provider
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem(`osw-studio-use-separate-chat-model-${selectedProvider}`);
+      const stored = localStorage.getItem(`hanzo-app-use-separate-chat-model-${selectedProvider}`);
       setUseSeparateChatModel(stored === 'true');
     }
   }, [selectedProvider]);
@@ -78,7 +78,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
   // Persist separate chat model setting
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem(`osw-studio-use-separate-chat-model-${selectedProvider}`, String(useSeparateChatModel));
+      localStorage.setItem(`hanzo-app-use-separate-chat-model-${selectedProvider}`, String(useSeparateChatModel));
     }
   }, [useSeparateChatModel, selectedProvider]);
 
@@ -383,7 +383,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
             mode="inline"
             onChange={(modelId) => {
               if (typeof window !== 'undefined') {
-                localStorage.setItem(`osw-studio-code-model-${selectedProvider}`, modelId);
+                localStorage.setItem(`hanzo-app-code-model-${selectedProvider}`, modelId);
               }
               if (!useSeparateChatModel) {
                 onModelChange?.(modelId);
@@ -421,7 +421,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
               mode="inline"
               onChange={(modelId) => {
                 if (typeof window !== 'undefined') {
-                  localStorage.setItem(`osw-studio-chat-model-${selectedProvider}`, modelId);
+                  localStorage.setItem(`hanzo-app-chat-model-${selectedProvider}`, modelId);
                 }
                 onModelChange?.(modelId);
               }}

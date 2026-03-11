@@ -14,7 +14,7 @@ import {
 } from './config';
 import { configManager } from '@/lib/config/storage';
 
-const VISITOR_ID_KEY = 'osw-telemetry-vid';
+const VISITOR_ID_KEY = 'hanzo-telemetry-vid';
 
 function getOrCreateVisitorId(): string {
   try {

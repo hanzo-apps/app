@@ -17,7 +17,7 @@ export enum ModelCapabilities {
 
 // TODO: Remove this enum when we integrate llama.cpp extension
 export enum DefaultToolUseSupportedModels {
-  JanNano = 'jan-nano',
+  HanzoNano = 'hanzo-nano',
   Qwen3 = 'qwen3',
 }
 

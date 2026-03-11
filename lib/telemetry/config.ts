@@ -1,8 +1,8 @@
 export const TELEMETRY_ENDPOINT =
-  process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT || 'https://stats.oswstudio.com/collect';
+  process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT || 'https://console.hanzo.ai/api/public/otel/v1/traces';
 
 export const TELEMETRY_TOKEN =
-  process.env.NEXT_PUBLIC_ANALYTICS_TOKEN || 'gcBLEeGjdx8gbUMoAAlksvoKSREZlJ4l+GwKieTW2Og=';
+  process.env.NEXT_PUBLIC_ANALYTICS_TOKEN || '';
 
 export const TELEMETRY_ENABLED =
   process.env.NEXT_PUBLIC_TELEMETRY_ENABLED !== 'false';
@@ -16,9 +16,12 @@ export const MAX_RETRIES = 3;
 export const RETRY_BASE_MS = 1_000;
 export const HEARTBEAT_INTERVAL_MS = 300_000;
 
-export function detectDeploymentType(): 'hf_space' | 'server' | 'browser' {
+export function detectDeploymentType(): 'hanzo_cloud' | 'hf_space' | 'server' | 'browser' {
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
+    if (hostname.includes('hanzo.app') || hostname.includes('hanzo.ai')) {
+      return 'hanzo_cloud';
+    }
     if (hostname.includes('hf.space') || hostname.includes('huggingface.co')) {
       return 'hf_space';
     }

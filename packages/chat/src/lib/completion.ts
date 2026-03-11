@@ -138,12 +138,12 @@ export const sendCompletion = async (
     baseURL: provider.base_url,
     // Use Tauri's fetch to avoid CORS issues only for openai-compatible provider
     ...(providerName === 'openai-compatible' && { fetch: fetchTauri }),
-    // OpenRouter identification headers for Jan
+    // OpenRouter identification headers
     // ref: https://openrouter.ai/docs/api-reference/overview#headers
     ...(provider.provider === 'openrouter' && {
       defaultHeaders: {
-        'HTTP-Referer': 'https://jan.ai',
-        'X-Title': 'Jan',
+        'HTTP-Referer': 'https://hanzo.ai',
+        'X-Title': 'Hanzo',
       },
     }),
   } as ExtendedConfigOptions)
