@@ -1,73 +1,209 @@
-import { vfs, VirtualFile } from '../vfs';
+import { VirtualFileSystem } from '../vfs';
+import { VirtualFile, ProjectRuntime } from '../vfs/types';
 import { ProcessedFile, Route, CompiledProject } from './types';
+import Handlebars from 'handlebars';
+import { logger } from '@/lib/utils';
+import { beginCompilation, pushCompileError, commitCompilation } from './compile-errors';
+import { isRuntimeBundled } from '@/lib/runtimes/registry';
 
 export class VirtualServer {
+  private vfs: VirtualFileSystem;
   private projectId: string;
+  private deploymentId?: string;
+  private baseUrl: string;
   private blobUrls: Map<string, string> = new Map();
   private fileHashes: Map<string, string> = new Map();
+  private handlebars: typeof Handlebars;
+  private templateCache: Map<string, HandlebarsTemplateDelegate> = new Map();
+  private partialsRegistered: boolean = false;
+  private entryPoint: string;
+  private runtime: ProjectRuntime;
 
-  constructor(projectId: string, existingBlobUrls?: Map<string, string>) {
+  constructor(vfs: VirtualFileSystem, projectId: string, existingBlobUrls?: Map<string, string>, deploymentId?: string, entryPoint?: string, runtime?: ProjectRuntime) {
+    this.vfs = vfs;
     this.projectId = projectId;
+    this.deploymentId = deploymentId;
+    this.entryPoint = entryPoint || '/index.html';
+    this.runtime = runtime || 'static';
+    this.baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
     if (existingBlobUrls) {
       this.blobUrls = new Map(existingBlobUrls);
     }
+
+    // Initialize Handlebars instance
+    this.handlebars = Handlebars.create();
+    this.registerHelpers();
   }
 
-  private hashContent(content: string | ArrayBuffer): string {
-    const str = typeof content === 'string' ? content : new TextDecoder().decode(content);
-    // Simple hash function
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash;
-    }
-    return hash.toString(36);
-  }
+  private registerHelpers(): void {
+    // Register common comparison helpers that LLMs expect
+    this.handlebars.registerHelper('eq', (a: any, b: any) => a === b);
+    this.handlebars.registerHelper('ne', (a: any, b: any) => a !== b);
+    this.handlebars.registerHelper('lt', (a: any, b: any) => a < b);
+    this.handlebars.registerHelper('gt', (a: any, b: any) => a > b);
+    this.handlebars.registerHelper('lte', (a: any, b: any) => a <= b);
+    this.handlebars.registerHelper('gte', (a: any, b: any) => a >= b);
+    
+    // Logical helpers
+    this.handlebars.registerHelper('and', function(this: any) {
+      const args = Array.prototype.slice.call(arguments, 0, -1);
+      return args.every((arg: any) => arg);
+    });
+    this.handlebars.registerHelper('or', function(this: any) {
+      const args = Array.prototype.slice.call(arguments, 0, -1);
+      return args.some((arg: any) => arg);
+    });
+    this.handlebars.registerHelper('not', (value: any) => !value);
+    
+    // Math helpers
+    this.handlebars.registerHelper('add', (a: number, b: number) => a + b);
+    this.handlebars.registerHelper('subtract', (a: number, b: number) => a - b);
+    this.handlebars.registerHelper('multiply', (a: number, b: number) => a * b);
+    this.handlebars.registerHelper('divide', (a: number, b: number) => a / b);
+    
+    // String helpers
+    this.handlebars.registerHelper('uppercase', (str: string) => str?.toUpperCase());
+    this.handlebars.registerHelper('lowercase', (str: string) => str?.toLowerCase());
+    this.handlebars.registerHelper('concat', function(this: any) {
+      const args = Array.prototype.slice.call(arguments, 0, -1);
+      return args.join('');
+    });
+    
+    // Utility helpers
+    this.handlebars.registerHelper('json', (context: any) => JSON.stringify(context, null, 2));
+    this.handlebars.registerHelper('formatDate', (date: Date | string) => {
+      const d = new Date(date);
+      return d.toLocaleDateString();
+    });
 
-  private getMimeType(path: string): string {
-    const ext = path.split('.').pop()?.toLowerCase();
-    const mimeTypes: Record<string, string> = {
-      'html': 'text/html',
-      'css': 'text/css',
-      'js': 'application/javascript',
-      'json': 'application/json',
-      'png': 'image/png',
-      'jpg': 'image/jpeg',
-      'jpeg': 'image/jpeg',
-      'gif': 'image/gif',
-      'svg': 'image/svg+xml',
-      'webp': 'image/webp',
-      'ico': 'image/x-icon',
-      'woff': 'font/woff',
-      'woff2': 'font/woff2',
-      'ttf': 'font/ttf',
-      'eot': 'font/eot',
+    // Array helpers
+    this.handlebars.registerHelper('limit', (array: any[], max: number) =>
+      array?.slice(0, max)
+    );
+
+    // Repeat helpers - repeat content N times (times, repeat, for are all equivalent)
+    const repeatHelper = function(this: any, n: number, options: Handlebars.HelperOptions) {
+      let result = '';
+      for (let i = 0; i < n; i++) {
+        result += options.fn({ index: i, first: i === 0, last: i === n - 1 });
+      }
+      return result;
     };
-    return mimeTypes[ext || ''] || 'application/octet-stream';
+    this.handlebars.registerHelper('times', repeatHelper);
+    this.handlebars.registerHelper('repeat', repeatHelper);
+    this.handlebars.registerHelper('for', repeatHelper);
+  }
+
+  private async registerPartials(): Promise<void> {
+    if (this.partialsRegistered) {
+      return;
+    }
+
+    try {
+      // Get ALL files in the project
+      const allItems = await this.vfs.getAllFilesAndDirectories(this.projectId);
+
+      // Filter for files only (not directories) and handlebars files in /templates directory
+      const templateFiles = allItems.filter((item): item is VirtualFile =>
+        'content' in item &&
+        item.path.startsWith('/templates/') &&
+        (item.path.endsWith('.hbs') || item.path.endsWith('.handlebars'))
+      );
+
+      for (const file of templateFiles) {
+        const content = file.content as string;
+
+        // Extract path relative to /templates/
+        // e.g., /templates/components/header.hbs → components/header
+        const relativePath = file.path
+          .replace(/^\/templates\//, '')
+          .replace(/\.hbs$/, '')
+          .replace(/\.handlebars$/, '');
+
+        // Register with multiple names for maximum compatibility:
+
+        // 1. Full relative path: components/header
+        this.handlebars.registerPartial(relativePath, content);
+
+        // 2. Just filename: header (for backwards compatibility)
+        const filename = relativePath.split('/').pop();
+        if (filename) {
+          this.handlebars.registerPartial(filename, content);
+        }
+
+        // 3. Dash-separated variant: components-header (some LLMs prefer this)
+        if (relativePath.includes('/')) {
+          const dashName = relativePath.replace(/\//g, '-');
+          this.handlebars.registerPartial(dashName, content);
+        }
+      }
+
+      this.partialsRegistered = true;
+    } catch (error) {
+      // Templates directory might not exist, which is fine
+    }
+  }
+
+  private async compileTemplate(templatePath: string, context: any = {}): Promise<string> {
+    // Check cache first
+    let compiled = this.templateCache.get(templatePath);
+    
+    if (!compiled) {
+      try {
+        const file = await this.vfs.readFile(this.projectId, templatePath);
+        const templateContent = file.content as string;
+        compiled = this.handlebars.compile(templateContent);
+        this.templateCache.set(templatePath, compiled);
+      } catch (error) {
+        logger.error(`Failed to compile template ${templatePath}:`, error);
+        return '';
+      }
+    }
+    
+    return compiled(context);
   }
 
   async compileProject(incrementalUpdate = false): Promise<CompiledProject> {
-    await vfs.init();
-    const files = await vfs.listDirectory(this.projectId, '/');
+    beginCompilation();
+    try {
+    // Register partials before processing
+    await this.registerPartials();
+
+    let files = await this.vfs.listDirectory(this.projectId, '/');
+    files = await this.runBundleStep(files);
 
     const oldBlobUrls = new Map(this.blobUrls);
     const newBlobUrls = new Map<string, string>();
-    const processedFiles: ProcessedFile[] = [];
-    const routes: Route[] = [];
-
+    const rawProcessedFiles: ProcessedFile[] = [];
+    
+    // First pass: Create blob URLs for all non-HTML files (images, JS, etc.)
     for (const file of files) {
-      const mimeType = this.getMimeType(file.path);
-      const processedFile: ProcessedFile = {
-        path: file.path,
-        content: file.content,
-        mimeType,
-      };
-
+      let processedFile: ProcessedFile;
+      
+      // Skip template files and HTML files in first pass
+      if (file.type === 'template' || file.type === 'html' || file.type === 'css') {
+        continue;
+      }
+      
+      if (file.type === 'image' || file.type === 'video') {
+        processedFile = {
+          path: file.path,
+          content: file.content,
+          mimeType: file.mimeType
+        };
+      } else if (file.type === 'js') {
+        processedFile = await this.processJS(file);
+      } else {
+        processedFile = {
+          path: file.path,
+          content: file.content as string,
+          mimeType: file.mimeType
+        };
+      }
+      
       const contentHash = this.hashContent(processedFile.content);
       const previousHash = this.fileHashes.get(processedFile.path);
-
-      // Reuse existing blob URL if content hasn't changed
+      
       if (incrementalUpdate && previousHash === contentHash && oldBlobUrls.has(processedFile.path)) {
         const existingUrl = oldBlobUrls.get(processedFile.path)!;
         newBlobUrls.set(processedFile.path, existingUrl);
@@ -80,44 +216,744 @@ export class VirtualServer {
         processedFile.blobUrl = blobUrl;
         this.fileHashes.set(processedFile.path, contentHash);
       }
-
-      processedFiles.push(processedFile);
-
-      // Detect HTML files and create routes
-      if (mimeType === 'text/html') {
-        const routePath = file.path === '/index.html' ? '/' : file.path.replace(/\.html$/, '');
-        routes.push({
-          path: routePath,
-          file: file.path,
-          title: this.extractTitle(file.content),
-        });
+      
+      rawProcessedFiles.push(processedFile);
+    }
+    
+    // Second pass: Process HTML files with available blob URLs
+    for (const file of files) {
+      if (file.type !== 'html') {
+        continue;
+      }
+      
+      const processedFile = await this.processHTML(file, newBlobUrls);
+      
+      const contentHash = this.hashContent(processedFile.content);
+      const previousHash = this.fileHashes.get(processedFile.path);
+      
+      if (incrementalUpdate && previousHash === contentHash && oldBlobUrls.has(processedFile.path)) {
+        const existingUrl = oldBlobUrls.get(processedFile.path)!;
+        newBlobUrls.set(processedFile.path, existingUrl);
+        processedFile.blobUrl = existingUrl;
+        oldBlobUrls.delete(processedFile.path);
+      } else {
+        const blob = new Blob([processedFile.content], { type: processedFile.mimeType });
+        const blobUrl = URL.createObjectURL(blob);
+        newBlobUrls.set(processedFile.path, blobUrl);
+        processedFile.blobUrl = blobUrl;
+        this.fileHashes.set(processedFile.path, contentHash);
+      }
+      
+      rawProcessedFiles.push(processedFile);
+    }
+    
+    const processedFiles = [...rawProcessedFiles];
+    for (const file of files) {
+      if (file.type === 'css') {
+        const processedFile = await this.processCSS(file, newBlobUrls);
+        
+        const contentHash = this.hashContent(processedFile.content);
+        const previousHash = this.fileHashes.get(processedFile.path);
+        
+        if (incrementalUpdate && previousHash === contentHash && oldBlobUrls.has(processedFile.path)) {
+          const existingUrl = oldBlobUrls.get(processedFile.path)!;
+          newBlobUrls.set(processedFile.path, existingUrl);
+          processedFile.blobUrl = existingUrl;
+          oldBlobUrls.delete(processedFile.path);
+        } else {
+          const blob = new Blob([processedFile.content], { type: processedFile.mimeType });
+          const blobUrl = URL.createObjectURL(blob);
+          newBlobUrls.set(processedFile.path, blobUrl);
+          processedFile.blobUrl = blobUrl;
+          this.fileHashes.set(processedFile.path, contentHash);
+        }
+        
+        processedFiles.push(processedFile);
       }
     }
-
-    // Clean up old blob URLs that are no longer used
-    for (const [path, url] of oldBlobUrls) {
-      URL.revokeObjectURL(url);
-      this.fileHashes.delete(path);
+    
+    const routes = this.generateRoutes(files);
+    
+    if (incrementalUpdate) {
+      for (const [, url] of oldBlobUrls) {
+        URL.revokeObjectURL(url);
+      }
+    } else if (!incrementalUpdate) {
+      this.cleanupBlobUrls();
     }
-
-    // Update internal blob URLs map
+    
     this.blobUrls = newBlobUrls;
 
-    // Determine entry point
-    const entryPoint = routes.find(r => r.path === '/')?.file || '/index.html';
-
     return {
-      entryPoint,
+      entryPoint: this.entryPoint,
       files: processedFiles,
       routes,
-      blobUrls: newBlobUrls,
+      blobUrls: this.blobUrls
+    };
+
+    } finally {
+      commitCompilation();
+    }
+  }
+  
+  private async runBundleStep(files: VirtualFile[]): Promise<VirtualFile[]> {
+    if (!isRuntimeBundled(this.runtime)) return files;
+
+    // Lazy-import to avoid loading esbuild for non-bundleable projects
+    const { detectBundleEntryPoint, bundleProject, isBundleableSource } =
+      await import('./esbuild-bundler');
+
+    const entryPoint = detectBundleEntryPoint(files);
+    if (!entryPoint) return files;
+
+    const result = await bundleProject({ files, entryPoint, runtime: this.runtime });
+
+    // Push errors through the compile-errors system
+    for (const err of result.errors) {
+      pushCompileError(entryPoint, err);
+    }
+
+    if (result.errors.length > 0) {
+      // Bundle failed — return files unmodified so the preview shows what it can
+      return files;
+    }
+
+    // Filter out source files that were compiled into the bundle
+    const filtered = files.filter(f => !isBundleableSource(f.path));
+
+    // Inject synthetic bundle.js
+    const now = new Date();
+    filtered.push({
+      id: '__bundle_js__',
+      projectId: this.projectId,
+      path: '/bundle.js',
+      name: 'bundle.js',
+      type: 'js',
+      content: result.js,
+      mimeType: 'application/javascript',
+      size: result.js.length,
+      createdAt: now,
+      updatedAt: now,
+      metadata: { isTransient: true },
+    });
+
+    // Inject synthetic bundle.css (empty if esbuild produced no CSS, to avoid 404s
+    // from templates that reference /bundle.css unconditionally)
+    const cssContent = result.css || '';
+    filtered.push({
+      id: '__bundle_css__',
+      projectId: this.projectId,
+      path: '/bundle.css',
+      name: 'bundle.css',
+      type: 'css',
+      content: cssContent,
+      mimeType: 'text/css',
+      size: cssContent.length,
+      createdAt: now,
+      updatedAt: now,
+      metadata: { isTransient: true },
+    });
+
+    return filtered;
+  }
+
+  private hashContent(content: string | ArrayBuffer): string {
+    let hash = 0;
+    
+    if (content instanceof ArrayBuffer) {
+      const view = new Uint8Array(content);
+      for (let i = 0; i < Math.min(view.length, 10000); i++) {
+        hash = ((hash << 5) - hash) + view[i];
+        hash = hash & hash;
+      }
+    } else {
+      for (let i = 0; i < content.length; i++) {
+        const char = content.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+      }
+    }
+    
+    return hash.toString(36);
+  }
+
+  private async processHTML(file: VirtualFile, blobUrls?: Map<string, string>): Promise<ProcessedFile> {
+    let content = file.content as string;
+
+    // Process Handlebars templates first
+    content = await this.processHandlebarsTemplates(content, file.path);
+    
+    // Then process internal references with available blob URLs
+    content = await this.processInternalReferences(content, blobUrls);
+    
+    // Inject VFS asset interceptor for transparent HTTP requests
+    // Always inject the interceptor, even if no blob URLs yet (for future dynamic loading)
+    const blobUrlMap = blobUrls ? Object.fromEntries(blobUrls) : {};
+    const deploymentIdForScript = this.deploymentId || '';
+    const vfsScript = `<script>
+// VFS Asset Interceptor - Auto-injected by OSW Studio
+(function() {
+  const vfsBlobUrls = ${JSON.stringify(blobUrlMap)};
+  const deploymentId = ${JSON.stringify(deploymentIdForScript)};
+
+  // Helper function to resolve VFS paths to blob URLs
+  function resolveVfsUrl(url) {
+    if (!url || typeof url !== 'string') return url;
+    if (vfsBlobUrls[url]) {
+      return vfsBlobUrls[url];
+    }
+    return url;
+  }
+
+  // Helper function to check if a URL looks like an edge function call
+  function isEdgeFunctionUrl(url) {
+    if (!url || typeof url !== 'string' || !deploymentId) return false;
+    // Skip external URLs, blob URLs, data URLs, and hash-only URLs
+    if (url.startsWith('http://') || url.startsWith('https://') ||
+        url.startsWith('blob:') || url.startsWith('data:') ||
+        url.startsWith('//') || url.startsWith('#')) {
+      return false;
+    }
+    // Skip if already an API path
+    if (url.startsWith('/api/')) return false;
+    // Skip if it has a file extension (likely an asset)
+    const pathWithoutQuery = url.split('?')[0].split('#')[0];
+    const lastSegment = pathWithoutQuery.split('/').pop() || '';
+    if (lastSegment.includes('.')) return false;
+    // This looks like an edge function path
+    return true;
+  }
+
+  // Helper function to convert an edge function URL to the API endpoint
+  function toEdgeFunctionApiUrl(url) {
+    if (!deploymentId) return url;
+    // Normalize the path
+    let path = url;
+    if (!path.startsWith('/')) path = '/' + path;
+    // Remove leading slash for the function name
+    const functionPath = path.substring(1);
+    // Return the API endpoint URL
+    return '/api/deployments/' + deploymentId + '/functions/' + functionPath;
+  }
+  
+  // Intercept Image src setter to handle ALL image loading
+  const originalSrcDescriptor = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+  Object.defineProperty(HTMLImageElement.prototype, 'src', {
+    get: function() {
+      return originalSrcDescriptor.get.call(this);
+    },
+    set: function(value) {
+      const resolvedUrl = resolveVfsUrl(value);
+      return originalSrcDescriptor.set.call(this, resolvedUrl);
+    },
+    enumerable: true,
+    configurable: true
+  });
+  
+  // Intercept setAttribute for src attributes
+  const originalSetAttribute = Element.prototype.setAttribute;
+  Element.prototype.setAttribute = function(name, value) {
+    if ((name === 'src' || name === 'href') && this instanceof HTMLImageElement) {
+      value = resolveVfsUrl(value);
+    }
+    return originalSetAttribute.call(this, name, value);
+  };
+  
+  // Intercept innerHTML to catch template-generated images
+  const originalInnerHTMLDescriptor = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
+  Object.defineProperty(Element.prototype, 'innerHTML', {
+    get: function() {
+      return originalInnerHTMLDescriptor.get.call(this);
+    },
+    set: function(value) {
+      if (typeof value === 'string' && value.includes('/assets/')) {
+        // Replace asset URLs in the HTML string before setting
+        const srcRegex = new RegExp('src=["\\']([^"\\']*/assets/[^"\\']*)["\\']', 'g');
+        value = value.replace(srcRegex, function(match, url) {
+          const resolvedUrl = resolveVfsUrl(url);
+          if (resolvedUrl !== url) {
+            return match.replace(url, resolvedUrl);
+          }
+          return match;
+        });
+      }
+      return originalInnerHTMLDescriptor.set.call(this, value);
+    },
+    enumerable: true,
+    configurable: true
+  });
+  
+  // Intercept Image constructor
+  const OriginalImage = window.Image;
+  window.Image = function(...args) {
+    const img = new OriginalImage(...args);
+    // Override src setter for this instance too
+    const descriptor = Object.getOwnPropertyDescriptor(img, 'src') || 
+                      Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+    if (descriptor) {
+      Object.defineProperty(img, 'src', {
+        get: descriptor.get,
+        set: function(value) {
+          const resolvedUrl = resolveVfsUrl(value);
+          return originalSrcDescriptor.set.call(this, resolvedUrl);
+        },
+        enumerable: true,
+        configurable: true
+      });
+    }
+    return img;
+  };
+  // Preserve original Image properties
+  Object.setPrototypeOf(window.Image, OriginalImage);
+  window.Image.prototype = OriginalImage.prototype;
+  
+  // Intercept createElement for img elements
+  const originalCreateElement = document.createElement;
+  document.createElement = function(tagName, options) {
+    const element = originalCreateElement.call(this, tagName, options);
+    if (tagName.toLowerCase() === 'img') {
+      const originalSrcDescriptor = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+      Object.defineProperty(element, 'src', {
+        get: function() {
+          return originalSrcDescriptor.get.call(this);
+        },
+        set: function(value) {
+          const resolvedUrl = resolveVfsUrl(value);
+          return originalSrcDescriptor.set.call(this, resolvedUrl);
+        },
+        enumerable: true,
+        configurable: true
+      });
+    }
+    return element;
+  };
+  
+  // Intercept fetch requests to VFS assets and edge functions
+  const originalFetch = window.fetch;
+  window.fetch = function(input, init) {
+    const url = typeof input === 'string' ? input : input.url;
+
+    // First check if this is an edge function call
+    if (isEdgeFunctionUrl(url)) {
+      const apiUrl = toEdgeFunctionApiUrl(url);
+      // Use the parent window's origin for the API call
+      const fullApiUrl = window.parent ? window.parent.location.origin + apiUrl : apiUrl;
+      return originalFetch(fullApiUrl, init);
+    }
+
+    // Then check for VFS asset resolution
+    const resolvedUrl = resolveVfsUrl(url);
+    if (resolvedUrl !== url) {
+      return originalFetch(resolvedUrl, init);
+    }
+
+    return originalFetch(input, init);
+  };
+  
+  // Intercept XMLHttpRequest for older code and edge functions
+  const OriginalXHR = window.XMLHttpRequest;
+  window.XMLHttpRequest = function() {
+    const xhr = new OriginalXHR();
+    const originalOpen = xhr.open;
+
+    xhr.open = function(method, url, ...args) {
+      let finalUrl = url;
+
+      // Check for edge function first
+      if (isEdgeFunctionUrl(url)) {
+        const apiUrl = toEdgeFunctionApiUrl(url);
+        finalUrl = window.parent ? window.parent.location.origin + apiUrl : apiUrl;
+      } else {
+        finalUrl = resolveVfsUrl(url);
+      }
+
+      return originalOpen.call(this, method, finalUrl, ...args);
+    };
+
+    return xhr;
+  };
+
+  // Intercept form submissions for edge functions
+  if (deploymentId) {
+    document.addEventListener('submit', function(e) {
+      const form = e.target;
+      if (!(form instanceof HTMLFormElement)) return;
+
+      const action = form.getAttribute('action') || '';
+      if (isEdgeFunctionUrl(action)) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const apiUrl = toEdgeFunctionApiUrl(action);
+        const fullApiUrl = window.parent ? window.parent.location.origin + apiUrl : apiUrl;
+        const method = (form.method || 'GET').toUpperCase();
+
+        // Collect form data
+        const formData = new FormData(form);
+
+        // Convert to JSON for edge functions
+        const data = {};
+        formData.forEach(function(value, key) {
+          data[key] = value;
+        });
+
+        // Make the fetch request
+        fetch(fullApiUrl, {
+          method: method,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: method !== 'GET' ? JSON.stringify(data) : undefined
+        })
+        .then(function(response) {
+          return response.json().catch(function() {
+            return response.text();
+          });
+        })
+        .then(function(result) {
+          // Dispatch custom event with the result
+          const event = new CustomEvent('edge-function-response', {
+            detail: { action: action, result: result }
+          });
+          form.dispatchEvent(event);
+          document.dispatchEvent(event);
+
+          // Result available for custom event handlers if needed
+          void result;
+        })
+        .catch(function(error) {
+          console.error('[Edge Function] Error:', error);
+          const event = new CustomEvent('edge-function-error', {
+            detail: { action: action, error: error.message }
+          });
+          form.dispatchEvent(event);
+          document.dispatchEvent(event);
+        });
+      }
+    }, true);
+  }
+  
+  // Process any existing images in the DOM when ready
+  function processExistingImages() {
+    const images = document.querySelectorAll('img[src*="/assets/"]');
+    images.forEach(img => {
+      const currentSrc = img.src;
+      const resolvedSrc = resolveVfsUrl(currentSrc);
+      if (resolvedSrc !== currentSrc) {
+        img.src = resolvedSrc;
+      }
+    });
+  }
+  
+  // Use MutationObserver to catch dynamically added images
+  function setupMutationObserver() {
+    if (typeof MutationObserver !== 'undefined') {
+      const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          mutation.addedNodes.forEach(function(node) {
+            if (node.nodeType === 1) { // Element node
+              if (node.tagName === 'IMG' && node.src && node.src.includes('/assets/')) {
+                const resolvedSrc = resolveVfsUrl(node.src);
+                if (resolvedSrc !== node.src) {
+                  node.src = resolvedSrc;
+                }
+              }
+              // Also check children
+              const childImages = node.querySelectorAll && node.querySelectorAll('img[src*="/assets/"]');
+              if (childImages) {
+                childImages.forEach(img => {
+                  const resolvedSrc = resolveVfsUrl(img.src);
+                  if (resolvedSrc !== img.src) {
+                    img.src = resolvedSrc;
+                  }
+                });
+              }
+            }
+          });
+        });
+      });
+      
+      observer.observe(document.body || document.documentElement, {
+        childList: true,
+        subtree: true
+      });
+    }
+  }
+  
+  // Setup everything when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      processExistingImages();
+      setupMutationObserver();
+    });
+  } else {
+    processExistingImages();
+    setupMutationObserver();
+  }
+})();
+</script>`;
+      
+    // Insert in head for early execution
+    if (content.includes('</head>')) {
+      content = content.replace('</head>', vfsScript + '\n</head>');
+    } else if (content.includes('<body>')) {
+      content = content.replace('<body>', vfsScript + '\n<body>');
+    } else {
+      content = vfsScript + '\n' + content;
+    }
+
+    return {
+      path: file.path,
+      content,
+      mimeType: file.mimeType
+    };
+  }
+  
+  private extractPartialReferences(content: string): string[] {
+    // Match {{> partialName}} or {{>partialName}} syntax
+    const partialRegex = /\{\{>\s*([\w-]+)\s*(?:\s+[^}]*)?\}\}/g;
+    const partials = new Set<string>();
+    let match;
+
+    while ((match = partialRegex.exec(content)) !== null) {
+      partials.add(match[1]);
+    }
+
+    return Array.from(partials);
+  }
+
+  private registerErrorStubsForMissingPartials(partialRefs: string[]): void {
+    for (const partialName of partialRefs) {
+      // Check if partial is already registered
+      if (!this.handlebars.partials[partialName]) {
+        // Register error stub for missing partial
+        const errorStub = `<div style="border: 2px solid #f99; background: #fee; padding: 1rem; margin: 1rem 0; border-radius: 4px; font-family: monospace;">
+  <strong style="color: #c33;">⚠️ Missing partial: "${partialName}"</strong>
+  <p style="margin: 0.5rem 0 0 0; font-size: 0.9em;">Create file in /templates/ directory (e.g., /templates/${partialName}.hbs or /templates/components/${partialName}.hbs)</p>
+</div>`;
+        this.handlebars.registerPartial(partialName, errorStub);
+      }
+    }
+  }
+
+  private async processHandlebarsTemplates(content: string, filePath?: string): Promise<string> {
+    // Ensure partials are registered
+    await this.registerPartials();
+
+    try {
+      // Check for common invalid LLM-generated patterns before compilation
+      const invalidPatterns = this.detectInvalidHandlebarsPatterns(content);
+      if (invalidPatterns.length > 0) {
+        for (const p of invalidPatterns) {
+          pushCompileError(filePath || 'unknown', `${p.error} — ${p.suggestion}`);
+        }
+        const errorMessages = invalidPatterns.map(pattern => `❌ ${pattern.error}\n💡 ${pattern.suggestion}`).join('\n\n');
+        return `<!-- Handlebars Syntax Error -->\n<div style="background: #fee; border: 1px solid #f99; padding: 1rem; margin: 1rem; border-radius: 4px; font-family: monospace;">\n<h3 style="color: #c33; margin: 0 0 1rem 0;">⚠️ Handlebars Template Error</h3>\n<pre style="margin: 0; white-space: pre-wrap;">${errorMessages}</pre>\n</div>\n<!-- Original content:\n${content}\n-->`;
+      }
+
+      // Extract partial references and register error stubs for missing ones
+      const partialRefs = this.extractPartialReferences(content);
+      this.registerErrorStubsForMissingPartials(partialRefs);
+
+      // Look for a data.json file for template context
+      let context = {};
+      try {
+        if (await this.vfs.fileExists(this.projectId, '/data.json')) {
+          const dataFile = await this.vfs.readFile(this.projectId, '/data.json');
+          context = JSON.parse(dataFile.content as string);
+        }
+      } catch {
+        // Invalid data file, use empty context
+      }
+
+      // Compile the content as a Handlebars template
+      const template = this.handlebars.compile(content);
+      const result = template(context);
+      return result;
+    } catch (error) {
+      logger.error('VirtualServer: Error processing Handlebars templates:', error);
+
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      pushCompileError(filePath || 'unknown', errorMessage);
+
+      // Return a helpful error message instead of original content
+      return `<!-- Handlebars Compilation Error -->\n<div style="background: #fee; border: 1px solid #f99; padding: 1rem; margin: 1rem; border-radius: 4px; font-family: monospace;">\n<h3 style="color: #c33; margin: 0 0 1rem 0;">⚠️ Handlebars Template Error</h3>\n<p><strong>Error:</strong> ${errorMessage}</p>\n<p><strong>Common fixes:</strong></p>\n<ul>\n<li>Check for typos in helper names and partial references</li>\n<li>Ensure all opening tags have matching closing tags</li>\n<li>Verify partial names exist in /templates/ directory</li>\n<li>Use <code>{{> partialName}}</code> syntax, not <code>(> partialName)</code></li>\n</ul>\n</div>\n<!-- Original content:\n${content}\n-->`;
+    }
+  }
+
+  private detectInvalidHandlebarsPatterns(content: string): Array<{error: string, suggestion: string}> {
+    const patterns = [];
+    
+    // Pattern 1: Invalid (> partial) syntax in parameters
+    const invalidPartialInParam = /\w+\s*=\s*\(\s*>\s*[\w-]+\s*\)/g;
+    if (invalidPartialInParam.test(content)) {
+      patterns.push({
+        error: "Invalid syntax: Using (> partial) as parameter value",
+        suggestion: "Use string-based dynamic partials: content=\"partial-name\" then {{> (lookup this 'content')}}"
+      });
+    }
+    
+    // Pattern 2: Common typos in partial syntax
+    const typoPartialSyntax = /\{\{\s*>\s*\(\s*>\s*[\w-]+\s*\)\s*\}\}/g;
+    if (typoPartialSyntax.test(content)) {
+      patterns.push({
+        error: "Invalid syntax: Double partial reference {{> (> partial)}}",
+        suggestion: "Use {{> partialName}} for static partials or {{> (lookup data 'partialName')}} for dynamic"
+      });
+    }
+    
+    // Pattern 3: Missing quotes in parameter values (literal strings with spaces)
+    const unquotedParams = /\{\{\s*>\s*[\w-]+\s+\w+\s*=\s*[^"'\s}][^}]*\s[^}]*(?:\s|}})/g;
+    if (unquotedParams.test(content)) {
+      patterns.push({
+        error: "Missing quotes in parameter values",
+        suggestion: "Wrap parameter values in quotes: title=\"My Title\" not title=My Title"
+      });
+    }
+    
+    return patterns;
+  }
+
+  private async processCSS(file: VirtualFile, blobUrls: Map<string, string>): Promise<ProcessedFile> {
+    let content = file.content as string;
+
+    content = await this.processUrlReferences(content, blobUrls);
+
+    return {
+      path: file.path,
+      content,
+      mimeType: file.mimeType
     };
   }
 
-  private extractTitle(content: string | ArrayBuffer): string | undefined {
-    const html = typeof content === 'string' ? content : new TextDecoder().decode(content);
-    const titleMatch = html.match(/<title[^>]*>(.*?)<\/title>/i);
-    return titleMatch ? titleMatch[1].trim() : undefined;
+  private async processJS(file: VirtualFile): Promise<ProcessedFile> {
+    const content = file.content as string;
+
+    return {
+      path: file.path,
+      content,
+      mimeType: file.mimeType
+    };
+  }
+
+  private isAssetReference(url: string): boolean {
+    // Asset extensions that should be converted to blob URLs
+    const assetExtensions = [
+      '.css', '.js', '.jsx', '.ts', '.tsx',
+      '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.webp',
+      '.woff', '.woff2', '.ttf', '.otf', '.eot',
+      '.mp4', '.webm', '.ogg', '.mp3', '.wav',
+      '.pdf', '.zip', '.json', '.xml'
+    ];
+    
+    // Extract extension from URL (handle query params and fragments)
+    const cleanUrl = url.split('?')[0].split('#')[0];
+    const extension = cleanUrl.substring(cleanUrl.lastIndexOf('.')).toLowerCase();
+    
+    return assetExtensions.includes(extension);
+  }
+
+  private async processInternalReferences(content: string, blobUrls?: Map<string, string>): Promise<string> {
+    const files = await this.vfs.listDirectory(this.projectId, '/');
+    
+    // Use provided blob URLs or fall back to instance blob URLs
+    const urlMap = blobUrls || this.blobUrls;
+    
+    const patterns = [
+      /href="([^"]+)"/g,
+      /src="([^"]+)"/g,
+      /href='([^']+)'/g,
+      /src='([^']+)'/g
+    ];
+
+    let processed = content;
+    for (const pattern of patterns) {
+      processed = processed.replace(pattern, (match, url) => {
+        if (url.startsWith('http') || url.startsWith('data:') || url.startsWith('//') || url.startsWith('blob:') || url.startsWith('#')) {
+          return match;
+        }
+
+        // For href attributes, only convert asset references to blob URLs
+        // Leave navigation links (HTML pages and routes) as-is for proper routing
+        const isHref = match.includes('href=');
+        if (isHref && !this.isAssetReference(url)) {
+          return match; // Keep navigation links unchanged
+        }
+
+        const normalizedPath = this.normalizePath(url);
+        
+        const fileExists = files.some(f => f.path === normalizedPath);
+        if (fileExists) {
+          // Check if we have a blob URL for this file
+          const blobUrl = urlMap.get(normalizedPath);
+          if (blobUrl) {
+            // Replace the URL with the blob URL
+            return match.replace(url, blobUrl);
+          }
+        }
+
+        return match;
+      });
+    }
+
+    return processed;
+  }
+
+  private async processUrlReferences(content: string, blobUrls: Map<string, string>): Promise<string> {
+    return content.replace(/url\(['"]?([^'")]+)['"]?\)/g, (match, url) => {
+      if (url.startsWith('http') || url.startsWith('data:') || url.startsWith('//') || url.startsWith('blob:')) {
+        return match;
+      }
+
+      const normalizedPath = this.normalizePath(url);
+      
+      const blobUrl = blobUrls.get(normalizedPath);
+      if (blobUrl) {
+        return `url('${blobUrl}')`;
+      }
+
+      return match;
+    });
+  }
+
+  private normalizePath(path: string): string {
+    if (path.startsWith('./')) {
+      path = path.slice(2);
+    }
+
+    if (!path.startsWith('/')) {
+      path = '/' + path;
+    }
+
+    // If path ends with /, it's a directory - look for index.html
+    if (path.endsWith('/')) {
+      return path + 'index.html';
+    }
+
+    // If no extension, assume HTML file
+    if (!path.includes('.')) {
+      return path + '.html';
+    }
+
+    return path;
+  }
+
+  private generateRoutes(files: VirtualFile[]): Route[] {
+    const htmlFiles = files.filter(f => f.type === 'html');
+    
+    return htmlFiles.map(file => {
+      const content = file.content as string;
+      const titleMatch = content.match(/<title>([^<]+)<\/title>/i);
+      const title = titleMatch ? titleMatch[1] : file.name.replace('.html', '');
+
+      const routePath = file.path.replace('.html', '') || '/';
+
+      return {
+        path: routePath === '/index' ? '/' : routePath,
+        file: file.path,
+        title
+      };
+    });
   }
 
   cleanupBlobUrls(): void {
@@ -125,6 +961,31 @@ export class VirtualServer {
       URL.revokeObjectURL(url);
     }
     this.blobUrls.clear();
-    this.fileHashes.clear();
+    
+    // Also clear template cache and re-register partials on next compile
+    this.templateCache.clear();
+    this.partialsRegistered = false;
+  }
+
+  async getCompiledFile(path: string): Promise<ProcessedFile | null> {
+    try {
+      const file = await this.vfs.readFile(this.projectId, path);
+      
+      if (file.type === 'html') {
+        return await this.processHTML(file, this.blobUrls);
+      } else if (file.type === 'css') {
+        return await this.processCSS(file, new Map());
+      } else if (file.type === 'js') {
+        return await this.processJS(file);
+      } else {
+        return {
+          path: file.path,
+          content: file.content as string,
+          mimeType: file.mimeType
+        };
+      }
+    } catch {
+      return null;
+    }
   }
 }

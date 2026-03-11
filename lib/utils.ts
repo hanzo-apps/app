@@ -1,4 +1,3 @@
-// Define cn function locally to avoid @hanzo/ui issues
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -6,16 +5,18 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const COLORS = [
-  "red",
-  "blue",
-  "green",
-  "yellow",
-  "purple",
-  "pink",
-  "gray",
-];
+// Lightweight logger with env-controlled levels
+type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent';
+const levelOrder: Record<LogLevel, number> = { debug: 10, info: 20, warn: 30, error: 40, silent: 50 };
+const envLevel = (typeof process !== 'undefined' && (process.env.NEXT_PUBLIC_LOG_LEVEL as LogLevel)) || 'warn';
 
-export const getPTag = (repoId: string) => {
-  return `<p style="border-radius: 8px; text-align: center; font-size: 12px; color: #fff; margin-top: 16px;position: fixed; left: 8px; bottom: 8px; z-index: 10; background: rgba(0, 0, 0, 0.8); padding: 4px 8px;">Made with <img src="https://hanzo.ai/logo.svg" alt="Hanzo Logo" style="width: 16px; height: 16px; vertical-align: middle;display:inline-block;margin-right:3px;filter:brightness(0) invert(1);"><a href="https://hanzo.ai" style="color: #fff;text-decoration: underline;" target="_blank" >Hanzo</a> - 🧬 <a href="https://hanzo.ai?remix=${repoId}" style="color: #fff;text-decoration: underline;" target="_blank" >Remix</a></p>`;
+function shouldLog(threshold: LogLevel) {
+  return levelOrder[envLevel] <= levelOrder[threshold];
+}
+
+export const logger = {
+  debug: (...args: any[]) => { if (shouldLog('debug')) console.debug(...args); },
+  info:  (...args: any[]) => { if (shouldLog('info')) console.info(...args); },
+  warn:  (...args: any[]) => { if (shouldLog('warn')) console.warn(...args); },
+  error: (...args: any[]) => { if (shouldLog('error')) console.error(...args); },
 };

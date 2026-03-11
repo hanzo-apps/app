@@ -1,0 +1,486 @@
+/* Hanzo Command Bar Design System */
+
+/* Color palette */
+:root {
+  --hanzo-bg: #1c1c1e;
+  --hanzo-bg-secondary: #2c2c2e;
+  --hanzo-bg-tertiary: #3a3a3c;
+  --hanzo-border: rgba(255, 255, 255, 0.1);
+  --hanzo-text: #ffffff;
+  --hanzo-text-secondary: #999999;
+  --hanzo-text-tertiary: #666666;
+  --hanzo-accent: #FF6363;
+  --hanzo-accent-hover: #FF7373;
+  --hanzo-selection: rgba(255, 99, 99, 0.1);
+  --hanzo-selection-border: rgba(255, 99, 99, 0.3);
+}
+
+/* Main window styling */
+.hanzo-window {
+  width: 100%;
+  max-width: 750px;
+  height: 450px;
+  background: var(--hanzo-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 
+    0 0 0 1px var(--hanzo-border),
+    0 20px 70px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Search bar */
+.hanzo-search {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid var(--hanzo-border);
+  background: var(--hanzo-bg);
+}
+
+.hanzo-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: var(--hanzo-text);
+  padding: 0 12px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.hanzo-search-input::placeholder {
+  color: var(--hanzo-text-tertiary);
+}
+
+.hanzo-search-icon {
+  width: 20px;
+  height: 20px;
+  opacity: 0.5;
+}
+
+/* Results list */
+.hanzo-results {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.hanzo-results::-webkit-scrollbar {
+  width: 8px;
+}
+
+.hanzo-results::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.hanzo-results::-webkit-scrollbar-thumb {
+  background: var(--hanzo-bg-tertiary);
+  border-radius: 4px;
+}
+
+/* Result groups */
+.hanzo-group {
+  margin-bottom: 16px;
+}
+
+.hanzo-group-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--hanzo-text-tertiary);
+  padding: 8px 12px 4px 12px;
+  letter-spacing: 0.5px;
+}
+
+/* Result items */
+.hanzo-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  margin-bottom: 2px;
+}
+
+.hanzo-item:hover {
+  background: var(--hanzo-bg-secondary);
+}
+
+.hanzo-item.selected {
+  background: var(--hanzo-selection);
+  border: 1px solid var(--hanzo-selection-border);
+  padding: 7px 11px;
+}
+
+.hanzo-item-icon {
+  width: 36px;
+  height: 36px;
+  margin-right: 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.hanzo-item-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.hanzo-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.hanzo-item-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--hanzo-text);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hanzo-item-subtitle {
+  font-size: 12px;
+  color: var(--hanzo-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hanzo-item-accessories {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 12px;
+}
+
+.hanzo-item-badge {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--hanzo-bg-tertiary);
+  color: var(--hanzo-text-secondary);
+  white-space: nowrap;
+}
+
+.hanzo-item-shortcut {
+  display: flex;
+  gap: 4px;
+}
+
+/* Footer */
+.hanzo-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-top: 1px solid var(--hanzo-border);
+  background: var(--hanzo-bg);
+  font-size: 12px;
+  color: var(--hanzo-text-tertiary);
+}
+
+.hanzo-footer-hints {
+  display: flex;
+  gap: 16px;
+}
+
+.hanzo-footer-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hanzo-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Command types */
+.hanzo-command-type {
+  font-size: 11px;
+  color: var(--hanzo-text-tertiary);
+  text-align: right;
+  min-width: 80px;
+}
+
+/* AI commands */
+.hanzo-ai-icon {
+  background: linear-gradient(135deg, #FF6363, #FF8A8A);
+  color: white;
+}
+
+/* Application icons */
+.hanzo-app-icon {
+  background: var(--hanzo-bg-tertiary);
+}
+
+/* Command palette specific */
+.hanzo-command-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--hanzo-accent);
+  margin-right: 8px;
+}
+
+/* Empty state */
+.hanzo-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--hanzo-text-tertiary);
+  text-align: center;
+  padding: 32px;
+}
+
+.hanzo-empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.hanzo-empty-title {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--hanzo-text-secondary);
+}
+
+.hanzo-empty-subtitle {
+  font-size: 14px;
+}
+
+/* Loading state */
+.hanzo-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.hanzo-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--hanzo-bg-tertiary);
+  border-top-color: var(--hanzo-accent);
+  border-radius: 50%;
+  animation: hanzo-spin 0.8s linear infinite;
+}
+
+@keyframes hanzo-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Calculator result */
+.hanzo-calculator {
+  padding: 24px;
+  background: var(--hanzo-bg-secondary);
+  border-radius: 8px;
+  margin: 8px;
+}
+
+.hanzo-calculator-result {
+  font-size: 32px;
+  font-weight: 300;
+  color: var(--hanzo-text);
+  margin-bottom: 8px;
+}
+
+.hanzo-calculator-expression {
+  font-size: 14px;
+  color: var(--hanzo-text-secondary);
+}
+
+/* Action panel */
+.hanzo-action-panel {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 300px;
+  background: var(--hanzo-bg);
+  border-left: 1px solid var(--hanzo-border);
+  transform: translateX(100%);
+  transition: transform 0.2s ease;
+}
+
+.hanzo-action-panel.open {
+  transform: translateX(0);
+}
+
+/* Details panel */
+.hanzo-details {
+  padding: 16px;
+}
+
+.hanzo-details-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--hanzo-text);
+  margin-bottom: 16px;
+}
+
+.hanzo-details-section {
+  margin-bottom: 24px;
+}
+
+.hanzo-details-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--hanzo-text-tertiary);
+  margin-bottom: 8px;
+}
+
+.hanzo-details-value {
+  font-size: 14px;
+  color: var(--hanzo-text);
+}
+
+/* Forms */
+.hanzo-form {
+  padding: 16px;
+}
+
+.hanzo-form-group {
+  margin-bottom: 16px;
+}
+
+.hanzo-form-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--hanzo-text-secondary);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.hanzo-form-input {
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--hanzo-bg-secondary);
+  border: 1px solid var(--hanzo-border);
+  border-radius: 6px;
+  color: var(--hanzo-text);
+  font-size: 14px;
+  outline: none;
+  transition: all 0.1s ease;
+}
+
+.hanzo-form-input:focus {
+  border-color: var(--hanzo-accent);
+  background: var(--hanzo-bg-tertiary);
+}
+
+/* Buttons */
+.hanzo-button {
+  padding: 8px 16px;
+  background: var(--hanzo-accent);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.hanzo-button:hover {
+  background: var(--hanzo-accent-hover);
+}
+
+.hanzo-button:active {
+  transform: scale(0.98);
+}
+
+.hanzo-button.secondary {
+  background: var(--hanzo-bg-tertiary);
+  color: var(--hanzo-text);
+}
+
+.hanzo-button.secondary:hover {
+  background: var(--hanzo-bg-secondary);
+}
+
+/* Toast notifications */
+.hanzo-toast {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  padding: 12px 16px;
+  background: var(--hanzo-bg-secondary);
+  border: 1px solid var(--hanzo-border);
+  border-radius: 8px;
+  color: var(--hanzo-text);
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  animation: hanzo-slide-in 0.2s ease;
+}
+
+@keyframes hanzo-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Grid view */
+.hanzo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+  padding: 12px;
+}
+
+.hanzo-grid-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.hanzo-grid-item:hover {
+  background: var(--hanzo-bg-secondary);
+}
+
+.hanzo-grid-item.selected {
+  background: var(--hanzo-selection);
+  border: 1px solid var(--hanzo-selection-border);
+}
+
+.hanzo-grid-icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 8px;
+}
+
+.hanzo-grid-title {
+  font-size: 12px;
+  color: var(--hanzo-text);
+  text-align: center;
+  word-wrap: break-word;
+}

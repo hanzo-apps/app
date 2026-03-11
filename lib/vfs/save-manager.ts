@@ -1,12 +1,13 @@
 import { checkpointManager, Checkpoint } from './checkpoint';
-import { vfs, logger } from './index';
+import { vfs } from './index';
+import { logger } from '@/lib/utils';
 
 interface DirtyEvent {
   projectId: string;
   dirty: boolean;
 }
 
-export class SaveManager {
+class SaveManager {
   private dirtyProjects = new Set<string>();
   private listeners = new Set<(event: DirtyEvent) => void>();
   private suppressionCounts = new Map<string, number>();
@@ -87,13 +88,16 @@ export class SaveManager {
     const fallbackDescription = `Manual save @ ${new Date().toLocaleTimeString()}`;
     const checkpoint = await checkpointManager.createCheckpoint(projectId, description || fallbackDescription, {
       kind: 'manual',
-      baseRevisionId: project.lastSavedCheckpointId ?? null,
-      replaceId: project.lastSavedCheckpointId ?? null
+      baseRevisionId: project.lastSavedCheckpointId ?? null
     });
 
     project.lastSavedCheckpointId = checkpoint.id;
     project.lastSavedAt = new Date(checkpoint.timestamp);
     await vfs.updateProject(project);
+
+    // Trigger auto-sync after save (only place that should trigger sync)
+    // Use the internal triggerAutoSync method which has debouncing
+    (vfs as any).triggerAutoSync?.(projectId);
 
     this.manualCheckpoints.set(projectId, checkpoint.id);
     this.markClean(projectId);

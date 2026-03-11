@@ -1,0 +1,65 @@
+[package]
+name = "app"
+version = "0.1.0"
+description = "A Tauri App"
+authors = ["you"]
+license = ""
+repository = ""
+edition = "2021"
+rust-version = "1.77.2"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.3.0", default-features = false , features = [] }
+
+[dependencies]
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+log = "0.4"
+tauri = { version = "2.6.2", features = ["macos-private-api", "tray-icon"] }
+tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2", features = ["colored"] }
+tauri-plugin-clipboard-manager = "2"
+tauri-plugin-deep-link = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-http = "2"
+tauri-plugin-notification = "2"
+tauri-plugin-opener = "2"
+tauri-plugin-os = "2"
+tauri-plugin-shell = "2"
+tauri-plugin-store = "2"
+# tauri-plugin-updater = "2" # Temporarily disabled - needs configuration
+tauri-plugin-window-state = "2"
+tauri-plugin-global-shortcut = "2"
+tauri-plugin-process = "2"
+
+# Additional dependencies for native functionality
+# Removed cocoa/objc/core-graphics as we're using AppleScript instead
+
+# Security and storage
+security-framework = "3.0"
+base64 = "0.22"
+
+# QR code generation
+qrcode = "0.14"
+image = "0.25"
+
+# Auto launch
+auto-launch = "0.5"
+
+# Plist parsing for bookmarks
+plist = "1.7"
+
+# LLM support
+llama_cpp = "0.3"
+tokio = { version = "1", features = ["full"] }
+dirs = "5.0"
+
+# Computer control
+enigo = "0.2"
+tempfile = "3.10"
