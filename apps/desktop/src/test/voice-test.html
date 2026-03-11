@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Recording Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #000;
+            color: #fff;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 30px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        .recording {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid rgba(255, 0, 0, 0.4);
+        }
+        .transcript {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            min-height: 100px;
+            white-space: pre-wrap;
+        }
+        .instructions {
+            margin: 20px 0;
+            opacity: 0.8;
+        }
+        .error {
+            color: #ff6b6b;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Voice Recording Test</h1>
+        
+        <div class="instructions">
+            <p>Hold down the <strong>Command (⌘)</strong> key to start recording.</p>
+            <p>Release the key to stop recording.</p>
+        </div>
+        
+        <div id="status" class="status">
+            <strong>Status:</strong> Ready
+        </div>
+        
+        <div class="transcript">
+            <strong>Transcript:</strong>
+            <div id="transcript-text"></div>
+        </div>
+        
+        <div id="error" class="error" style="display: none;"></div>
+    </div>
+
+    <script>
+        let recognition = null;
+        let isRecording = false;
+        let commandKeyPressed = false;
+        let finalTranscript = '';
+        let interimTranscript = '';
+
+        // Check for Web Speech API support
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        
+        if (!SpeechRecognition) {
+            document.getElementById('error').textContent = 'Speech recognition is not supported in this browser.';
+            document.getElementById('error').style.display = 'block';
+        } else {
+            // Initialize speech recognition
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+
+            recognition.onstart = () => {
+                document.getElementById('status').innerHTML = '<strong>Status:</strong> Listening...';
+                document.getElementById('status').classList.add('recording');
+                finalTranscript = '';
+                interimTranscript = '';
+            };
+
+            recognition.onresult = (event) => {
+                interimTranscript = '';
+                
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript + ' ';
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+                
+                document.getElementById('transcript-text').textContent = 
+                    finalTranscript + (interimTranscript ? '[' + interimTranscript + ']' : '');
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                document.getElementById('error').textContent = 'Error: ' + event.error;
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('status').innerHTML = '<strong>Status:</strong> Error occurred';
+                document.getElementById('status').classList.remove('recording');
+            };
+
+            recognition.onend = () => {
+                document.getElementById('status').innerHTML = '<strong>Status:</strong> Ready';
+                document.getElementById('status').classList.remove('recording');
+                isRecording = false;
+            };
+        }
+
+        // Handle keyboard events
+        document.addEventListener('keydown', (e) => {
+            if (e.metaKey && !commandKeyPressed && recognition) {
+                commandKeyPressed = true;
+                if (!isRecording) {
+                    isRecording = true;
+                    try {
+                        recognition.start();
+                        document.getElementById('error').style.display = 'none';
+                    } catch (err) {
+                        console.error('Failed to start recognition:', err);
+                        document.getElementById('error').textContent = 'Failed to start recording: ' + err.message;
+                        document.getElementById('error').style.display = 'block';
+                    }
+                }
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (!e.metaKey && commandKeyPressed && recognition) {
+                commandKeyPressed = false;
+                if (isRecording) {
+                    recognition.stop();
+                }
+            }
+        });
+
+        // Prevent default Command key behaviors
+        document.addEventListener('keydown', (e) => {
+            if (e.metaKey) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

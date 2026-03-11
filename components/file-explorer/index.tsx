@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { VirtualFile, isFileSupported, FILE_SIZE_LIMITS, getFileTypeFromPath } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';
-import { cn } from '@/lib/utils';
+import { logger, cn } from '@/lib/utils';
 import {
   ChevronRight,
   ChevronDown,
@@ -14,16 +14,22 @@ import {
   Upload,
   Image,
   Video,
-  X
+  X,
+  Eye,
+  EyeOff,
+  Server,
+  BookOpen,
+  Home,
+  ScrollText
 } from 'lucide-react';
-import { Button } from '@hanzo/ui';
-import { Input } from '@hanzo/ui';
+import { Button } from '@/components/ui/button';
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
+import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 
 interface FileExplorerProps {
@@ -31,6 +37,9 @@ interface FileExplorerProps {
   onFileSelect?: (file: VirtualFile) => void;
   selectedPath?: string;
   onClose?: () => void;
+  entryPoint?: string;
+  onSetEntryPoint?: (path: string) => void;
+  onAddPromptFile?: () => void;
 }
 
 interface FileTreeItem {
@@ -40,7 +49,7 @@ interface FileTreeItem {
   children?: FileTreeItem[];
 }
 
-export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }: FileExplorerProps) {
+export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, entryPoint, onSetEntryPoint, onAddPromptFile }: FileExplorerProps) {
   const [files, setFiles] = useState<VirtualFile[]>([]);
   const [fileTree, setFileTree] = useState<FileTreeItem[]>([]);
   const [expandedDirs, setExpandedDirs] = useState<Set<string>>(new Set(['/']));
@@ -49,39 +58,97 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [draggedItem, setDraggedItem] = useState<FileTreeItem | null>(null);
   const [dropTarget, setDropTarget] = useState<string | null>(null);
+  const [showHidden, setShowHidden] = useState(false);
+  const [promptDismissed, setPromptDismissed] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem(`osw-prompt-dismissed-${projectId}`) === 'true';
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const loadFilesVersionRef = useRef(0);
+
+  // Check if a path is a transient/read-only path (skills or server context)
+  const isTransientPath = (path: string): boolean => {
+    return path.startsWith('/.skills/') || path.startsWith('/.server/') ||
+           path === '/.skills' || path === '/.server';
+  };
+
+  // Check if a path is a server context path
+  const isServerContextPath = (path: string): boolean => {
+    return path.startsWith('/.server/') || path === '/.server';
+  };
+
+  // Check if a path is a skills path
+  const isSkillsPath = (path: string): boolean => {
+    return path.startsWith('/.skills/') || path === '/.skills';
+  };
 
   const loadFiles = useCallback(async () => {
+    const version = ++loadFilesVersionRef.current;
     try {
       await vfs.init();
+      // Get regular files and directories
       const allItems = await vfs.getAllFilesAndDirectories(projectId);
+
+      // Add truly transient files (/.server/, /.skills/) if showHidden is true
+      // Adapter-stored dot files (/.PROMPT.md, /.renderer/) are already in allItems
+      if (showHidden) {
+        const transientFiles = await vfs.listDirectory(projectId, '/', { includeTransient: true });
+        const existingPaths = new Set(allItems.map(item => item.path));
+        const transientOnly = transientFiles.filter(f =>
+          f.path.startsWith('/.') && !existingPaths.has(f.path)
+        );
+
+        // Get enabled skills to filter /.skills/ folder
+        const { skillsService } = await import('@/lib/vfs/skills');
+        const enabledSkills = await skillsService.getEnabledSkills();
+        const enabledSkillPaths = new Set(enabledSkills.map(s => `/.skills/${s.id}.md`));
+
+        // Filter transient files: include all non-skill files, but only enabled skills
+        const filteredTransient = transientOnly.filter(file => {
+          // If it's in /.skills/, only include if it's enabled
+          if (file.path.startsWith('/.skills/')) {
+            return enabledSkillPaths.has(file.path);
+          }
+          // Include all other transient files
+          return true;
+        });
+
+        allItems.push(...filteredTransient);
+      }
+
+      // Only update state if this is still the latest call
+      if (version !== loadFilesVersionRef.current) return;
+
       const projectFiles = allItems.filter(item => item.type !== 'directory') as VirtualFile[];
       setFiles(projectFiles);
-      setFileTree(buildFileTree(allItems));
+      setFileTree(buildFileTree(allItems, showHidden));
     } catch (error) {
-      console.error('Failed to load files:', error);
+      logger.error('Failed to load files:', error);
     }
-  }, [projectId]);
+  }, [projectId, showHidden]);
 
   useEffect(() => {
     loadFiles();
-
+    
     const handleFilesChanged = () => {
       loadFiles();
     };
-
+    
     window.addEventListener('filesChanged', handleFilesChanged);
-
+    
     return () => {
       window.removeEventListener('filesChanged', handleFilesChanged);
     };
   }, [projectId, loadFiles]);
 
-  const buildFileTree = (items: Array<VirtualFile | { path: string; name: string; type: 'directory' }>): FileTreeItem[] => {
+  const buildFileTree = (items: Array<VirtualFile | { path: string; name: string; type: 'directory' }>, includeHidden: boolean): FileTreeItem[] => {
+    // Filter out hidden files/directories unless includeHidden is true
+    const filteredItems = includeHidden ? items : items.filter(item => !item.path.startsWith('/.'));
+
     const tree: FileTreeItem[] = [];
     const dirMap = new Map<string, FileTreeItem>();
 
-    items.forEach(item => {
+    filteredItems.forEach(item => {
       if (item.type === 'directory') {
         const parts = item.path.split('/').filter(Boolean);
         const dirItem: FileTreeItem = {
@@ -94,14 +161,14 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
       }
     });
 
-    items.forEach(item => {
+    filteredItems.forEach(item => {
       if (item.type !== 'directory') {
         const parts = item.path.split('/').filter(Boolean);
         let currentPath = '';
-
+        
         for (let i = 0; i < parts.length - 1; i++) {
           currentPath = currentPath + '/' + parts[i];
-
+          
           if (!dirMap.has(currentPath)) {
             const dir: FileTreeItem = {
               path: currentPath,
@@ -128,7 +195,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
       }
     });
 
-    items.forEach(item => {
+    filteredItems.forEach(item => {
       if (item.type !== 'directory') {
         const file = item as VirtualFile;
         const parts = file.path.split('/').filter(Boolean);
@@ -196,12 +263,12 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
     if (!fileName) return;
 
     const filePath = dirPath === '/' ? `/${fileName}` : `${dirPath}/${fileName}`;
-
+    
     try {
       await vfs.createFile(projectId, filePath, '');
       await loadFiles();
     } catch (error) {
-      console.error('Failed to create file:', error);
+      logger.error('Failed to create file:', error);
     }
   };
 
@@ -210,12 +277,12 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
     if (!dirName) return;
 
     const dirPath = parentPath === '/' ? `/${dirName}` : `${parentPath}/${dirName}`;
-
+    
     try {
       await vfs.createDirectory(projectId, dirPath);
       await loadFiles();
     } catch (error) {
-      console.error('Failed to create directory:', error);
+      logger.error('Failed to create directory:', error);
     }
   };
 
@@ -230,7 +297,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
       }
       await loadFiles();
     } catch (error) {
-      console.error(`Failed to delete ${type}:`, error);
+      logger.error(`Failed to delete ${type}:`, error);
     }
   };
 
@@ -251,7 +318,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
       setRenamingPath(null);
       setNewName('');
     } catch (error) {
-      console.error(`Failed to rename ${itemType}:`, error);
+      logger.error(`Failed to rename ${itemType}:`, error);
     }
   };
 
@@ -261,7 +328,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
     setIsDraggingOver(false);
 
     const items = Array.from(e.dataTransfer.items);
-
+    
     for (const item of items) {
       if (item.kind === 'file') {
         const file = item.getAsFile();
@@ -289,7 +356,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
 
     try {
       let content: string | ArrayBuffer;
-
+      
       if (fileType === 'image' || fileType === 'video' || fileType === 'binary') {
         content = await file.arrayBuffer();
       } else {
@@ -306,12 +373,12 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
             await vfs.deleteFile(projectId, filePath);
             await uploadFile(file, targetDir); // Retry
           } catch (deleteError) {
-            console.error('Failed to overwrite file:', deleteError);
+            logger.error('Failed to overwrite file:', deleteError);
             toast.error('Failed to overwrite file');
           }
         }
       } else {
-        console.error('Failed to upload file:', error);
+        logger.error('Failed to upload file:', error);
         toast.error(`Failed to upload ${file.name}: ${error.message}`);
       }
     }
@@ -326,11 +393,11 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-
+    
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX;
     const y = e.clientY;
-
+    
     if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
       setIsDraggingOver(false);
     }
@@ -350,7 +417,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
   const handleItemDragOver = (e: React.DragEvent, targetPath: string) => {
     e.preventDefault();
     e.stopPropagation();
-
+    
     if (draggedItem && targetPath !== draggedItem.path) {
       e.dataTransfer.dropEffect = 'move';
       setDropTarget(targetPath);
@@ -360,7 +427,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
   const handleItemDrop = async (e: React.DragEvent, targetItem: FileTreeItem | null) => {
     e.preventDefault();
     e.stopPropagation();
-
+    
     if (!draggedItem) {
       setDropTarget(null);
       return;
@@ -372,11 +439,11 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
     }
 
     const targetDir = targetItem ? (targetItem.type === 'directory' ? targetItem.path : '/') : '/';
-
+    
     if (draggedItem.type === 'directory') {
       const draggedDirPath = draggedItem.path.endsWith('/') ? draggedItem.path : draggedItem.path + '/';
       const targetDirPath = targetDir.endsWith('/') ? targetDir : targetDir + '/';
-
+      
       if (targetDirPath.startsWith(draggedDirPath)) {
         toast.error('Cannot move a folder into itself');
         setDropTarget(null);
@@ -389,17 +456,17 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
 
     try {
       if (draggedItem.type === 'directory') {
-        await vfs.renameDirectory(projectId, draggedItem.path, newPath);
+        await vfs.moveDirectory(projectId, draggedItem.path, newPath);
       } else {
         await vfs.moveFile(projectId, draggedItem.path, newPath);
       }
       await loadFiles();
       toast.success(`Moved ${draggedItem.name} to ${targetDir === '/' ? 'root' : targetDir}`);
     } catch (error: any) {
-      console.error('Failed to move item:', error);
+      logger.error('Failed to move item:', error);
       toast.error(`Failed to move: ${error.message}`);
     }
-
+    
     setDropTarget(null);
   };
 
@@ -408,15 +475,34 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
     const isSelected = selectedPath === item.path;
     const isRenaming = renamingPath === item.path;
     const isDropTarget = dropTarget === item.path;
+    const isTransient = isTransientPath(item.path);
+    const isServerContext = isServerContextPath(item.path);
+    const isSkills = isSkillsPath(item.path);
+    const isHiddenDotFile = !isTransient && (item.name.startsWith('.') || item.path.startsWith('/.'));
+
+    // Get the appropriate folder icon for special directories
+    const getFolderIcon = (expanded: boolean) => {
+      if (isServerContext) {
+        return <Server className="w-4 h-4 text-orange-500" />;
+      }
+      if (isSkills) {
+        return <BookOpen className="w-4 h-4 text-purple-500" />;
+      }
+      return expanded ? (
+        <FolderOpen className="w-4 h-4 text-blue-500" />
+      ) : (
+        <Folder className="w-4 h-4 text-blue-500" />
+      );
+    };
 
     return (
       <div
         key={item.path}
-        draggable={!isRenaming}
-        onDragStart={(e) => handleItemDragStart(e, item)}
+        draggable={!isRenaming && !isTransient}
+        onDragStart={(e) => !isTransient && handleItemDragStart(e, item)}
         onDragEnd={handleItemDragEnd}
-        onDragOver={(e) => item.type === 'directory' && handleItemDragOver(e, item.path)}
-        onDrop={(e) => item.type === 'directory' && handleItemDrop(e, item)}
+        onDragOver={(e) => item.type === 'directory' && !isTransient && handleItemDragOver(e, item.path)}
+        onDrop={(e) => item.type === 'directory' && !isTransient && handleItemDrop(e, item)}
       >
         <ContextMenu>
           <ContextMenuTrigger>
@@ -426,6 +512,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
               isSelected && 'bg-accent text-accent-foreground',
               isDropTarget && item.type === 'directory' && 'bg-blue-500/20 border border-blue-500',
               draggedItem?.path === item.path && 'opacity-50',
+              (isTransient || isHiddenDotFile) && 'opacity-75',
               'group'
             )}
             style={{ paddingLeft: `${level * 16 + 8}px` }}
@@ -438,16 +525,19 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
                 ) : (
                   <ChevronRight className="w-4 h-4 text-muted-foreground" />
                 )}
-                {isExpanded ? (
-                  <FolderOpen className="w-4 h-4 text-blue-500" />
-                ) : (
-                  <Folder className="w-4 h-4 text-blue-500" />
-                )}
+                {getFolderIcon(isExpanded)}
               </>
             ) : (
               <>
                 <span className="w-4" />
                 {(() => {
+                  const effectiveEntryPoint = entryPoint || '/index.html';
+                  if (item.path === effectiveEntryPoint) {
+                    return <Home className="w-4 h-4 text-emerald-500" />;
+                  }
+                  if (item.name === '.PROMPT.md') {
+                    return <ScrollText className="w-4 h-4 text-amber-500" />;
+                  }
                   const fileType = getFileTypeFromPath(item.path);
                   if (fileType === 'image') {
                     return <Image className="w-4 h-4 text-green-500" />;
@@ -477,39 +567,62 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
                 onClick={(e) => e.stopPropagation()}
               />
             ) : (
-              <span className="text-sm flex-1">{item.name}</span>
+              <span className={cn("text-sm flex-1", (isTransient || isHiddenDotFile) && "italic text-muted-foreground")}>
+                {item.name}
+                {isTransient && <span className="text-xs text-muted-foreground ml-1">(read-only)</span>}
+                {item.path === (entryPoint || '/index.html') && <span className="text-xs text-emerald-500 ml-1">(entry)</span>}
+                {item.name === '.PROMPT.md' && <span className="text-xs text-amber-500 ml-1">(AI prompt)</span>}
+              </span>
             )}
             </div>
           </ContextMenuTrigger>
           <ContextMenuContent>
-          {item.type === 'directory' && (
+          {/* Only show edit options for non-transient paths */}
+          {!isTransient && (
             <>
-              <ContextMenuItem onClick={() => handleCreateFile(item.path)}>
-                <File className="mr-2 h-4 w-4" />
-                New File
+              {item.type === 'directory' && (
+                <>
+                  <ContextMenuItem onClick={() => handleCreateFile(item.path)}>
+                    <File className="mr-2 h-4 w-4" />
+                    New File
+                  </ContextMenuItem>
+                  <ContextMenuItem onClick={() => handleCreateDirectory(item.path)}>
+                    <Folder className="mr-2 h-4 w-4" />
+                    New Folder
+                  </ContextMenuItem>
+                  <ContextMenuItem onClick={() => fileInputRef.current?.click()}>
+                    <Upload className="mr-2 h-4 w-4" />
+                    Upload Files
+                  </ContextMenuItem>
+                </>
+              )}
+              {item.type === 'file' && onSetEntryPoint && item.path !== (entryPoint || '/index.html') && (
+                <ContextMenuItem onClick={() => onSetEntryPoint(item.path)}>
+                  <Home className="mr-2 h-4 w-4" />
+                  Set as Entry Point
+                </ContextMenuItem>
+              )}
+              <ContextMenuItem onClick={() => {
+                setRenamingPath(item.path);
+                setNewName(item.name);
+              }}>
+                Rename
               </ContextMenuItem>
-              <ContextMenuItem onClick={() => handleCreateDirectory(item.path)}>
-                <Folder className="mr-2 h-4 w-4" />
-                New Folder
-              </ContextMenuItem>
-              <ContextMenuItem onClick={() => fileInputRef.current?.click()}>
-                <Upload className="mr-2 h-4 w-4" />
-                Upload Files
+              <ContextMenuItem
+                onClick={() => handleDelete(item.path, item.type)}
+                className="text-destructive"
+              >
+                Delete
               </ContextMenuItem>
             </>
           )}
-          <ContextMenuItem onClick={() => {
-            setRenamingPath(item.path);
-            setNewName(item.name);
-          }}>
-            Rename
-          </ContextMenuItem>
-          <ContextMenuItem
-            onClick={() => handleDelete(item.path, item.type)}
-            className="text-destructive"
-          >
-            Delete
-          </ContextMenuItem>
+          {/* For transient files, just show a read-only indicator */}
+          {isTransient && (
+            <ContextMenuItem disabled>
+              <Eye className="mr-2 h-4 w-4" />
+              Read-only {isServerContext ? 'server context' : 'skill'}
+            </ContextMenuItem>
+          )}
           </ContextMenuContent>
         </ContextMenu>
         {item.type === 'directory' && isExpanded && item.children && (
@@ -522,7 +635,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
   };
 
   return (
-    <div
+    <div 
       className="h-full flex flex-col"
       onDrop={handleFileDrop}
       onDragOver={handleDragOver}
@@ -545,9 +658,9 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
       />
       <div className="p-3 border-b bg-muted/70 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <FolderTree
-            className="h-4 w-4 md:hidden"
-            style={{ color: 'var(--button-files-active)' }}
+          <FolderTree 
+            className="h-4 w-4 md:hidden" 
+            style={{ color: 'var(--button-files-active)' }} 
           />
           {onClose ? (
             <button
@@ -556,16 +669,16 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
               aria-label="Hide file explorer"
               className="relative hidden h-6 w-6 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-destructive md:flex group"
             >
-              <FolderTree
-                className="h-4 w-4 transition-opacity group-hover:opacity-0"
-                style={{ color: 'var(--button-files-active)' }}
+              <FolderTree 
+                className="h-4 w-4 transition-opacity group-hover:opacity-0" 
+                style={{ color: 'var(--button-files-active)' }} 
               />
               <X className="absolute h-3 w-3 opacity-0 transition-opacity group-hover:opacity-100" />
             </button>
           ) : (
-            <FolderTree
-              className="hidden h-4 w-4 md:inline-flex"
-              style={{ color: 'var(--button-files-active)' }}
+            <FolderTree 
+              className="hidden h-4 w-4 md:inline-flex" 
+              style={{ color: 'var(--button-files-active)' }} 
             />
           )}
           <h3 className="text-sm font-medium">File Explorer</h3>
@@ -602,7 +715,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
       </div>
       <ContextMenu>
         <ContextMenuTrigger asChild>
-          <div
+          <div 
             className={cn(
               "flex-1 overflow-y-auto p-3 space-y-0.5 relative",
               isDraggingOver && "bg-blue-500/10"
@@ -658,8 +771,40 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose }:
             <Upload className="mr-2 h-4 w-4" />
             Upload Files
           </ContextMenuItem>
+          <ContextMenuItem onClick={() => setShowHidden(!showHidden)}>
+            {showHidden ? <EyeOff className="mr-2 h-4 w-4" /> : <Eye className="mr-2 h-4 w-4" />}
+            {showHidden ? 'Hide Hidden Files' : 'Show Hidden Files'}
+          </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
+      {/* Missing .PROMPT.md notification */}
+      {onAddPromptFile && !promptDismissed && files.length > 0 && !files.some(f => f.path === '/.PROMPT.md') && (
+        <div className="mx-2 mb-2 p-2 rounded-md border border-amber-500/30 bg-amber-500/5 text-xs">
+          <p className="text-amber-600 dark:text-amber-400 mb-1.5">No .PROMPT.md found</p>
+          <p className="text-muted-foreground mb-2">Add the default website prompt?</p>
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-6 text-xs px-2"
+              onClick={onAddPromptFile}
+            >
+              Add
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 text-xs px-2"
+              onClick={() => {
+                setPromptDismissed(true);
+                localStorage.setItem(`osw-prompt-dismissed-${projectId}`, 'true');
+              }}
+            >
+              Dismiss
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,0 +1,28 @@
+{
+  "name": "hanzo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean",
+    "desktop:dev": "pnpm --filter @hanzo/desktop dev",
+    "desktop:build": "pnpm --filter @hanzo/desktop build",
+    "web:dev": "pnpm --filter @hanzo/web dev",
+    "web:build": "pnpm --filter @hanzo/web build",
+    "mobile:dev": "pnpm --filter @hanzo/mobile dev",
+    "mobile:ios": "pnpm --filter @hanzo/mobile ios",
+    "mobile:android": "pnpm --filter @hanzo/mobile android"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "@changesets/cli": "^2.27.0",
+    "prettier": "^3.3.0",
+    "typescript": "^5.5.0"
+  }
+}

@@ -1,16 +1,21 @@
 /**
- * Provider-specific types and interfaces for Hanzo BYOK system
+ * Provider-specific types and interfaces
  */
 
 export type ProviderId =
+  | 'hanzo'
   | 'openrouter'
   | 'openai'
+  | 'openai-codex'
   | 'anthropic'
   | 'groq'
   | 'gemini'
+  | 'huggingface'
   | 'ollama'
   | 'lmstudio'
-  | 'sambanova';
+  | 'sambanova'
+  | 'minimax'
+  | 'llamacpp';
 
 export interface ProviderModel {
   id: string;
@@ -20,6 +25,7 @@ export interface ProviderModel {
   maxTokens?: number;
   supportsFunctions?: boolean;
   supportsVision?: boolean;
+  supportsReasoning?: boolean;  // Model supports toggleable reasoning (thinking tokens)
   pricing?: {
     input: number;  // per 1M tokens
     output: number; // per 1M tokens
@@ -31,7 +37,6 @@ export interface ProviderConfig {
   id: ProviderId;
   name: string;
   description: string;
-  icon?: string;
   apiKeyRequired: boolean;
   apiKeyPlaceholder?: string;
   apiKeyHelpUrl?: string;
@@ -42,48 +47,19 @@ export interface ProviderConfig {
   supportsFunctions?: boolean;
   supportsStreaming?: boolean;
   isLocal?: boolean;
+  usesOAuth?: boolean;
 }
 
-export interface ProviderSettings {
-  selectedProvider: ProviderId;
-  providerKeys: Partial<Record<ProviderId, string>>;
-  providerModels: Partial<Record<ProviderId, string>>;
+export interface CodexAuthData {
+  access_token: string;
+  refresh_token?: string;
+  expires_at: number; // Unix timestamp in seconds
+  user_email?: string;
 }
 
-export interface ChatMessage {
-  role: 'system' | 'user' | 'assistant';
-  content: string;
+export interface HFAuthData {
+  access_token: string;
+  username?: string;
+  expires_at?: number;  // OAuth tokens expire, API keys don't
 }
 
-export interface ChatCompletionRequest {
-  model: string;
-  messages: ChatMessage[];
-  temperature?: number;
-  max_tokens?: number;
-  stream?: boolean;
-  tools?: any[];
-}
-
-export interface ChatCompletionResponse {
-  id: string;
-  object: string;
-  created: number;
-  model: string;
-  choices: Array<{
-    index: number;
-    message: ChatMessage;
-    finish_reason: string;
-  }>;
-  usage?: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
-  };
-}
-
-export interface ProviderError {
-  code: string;
-  message: string;
-  status?: number;
-  provider: ProviderId;
-}

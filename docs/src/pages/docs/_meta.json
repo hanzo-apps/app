@@ -1,0 +1,51 @@
+{
+  "-- Switcher": {
+    "type": "separator",
+    "title": "Switcher"
+  },
+  "index": "Overview",
+  "how-to-separator": {
+    "title": "HOW TO",
+    "type": "separator"
+  },
+  "desktop": "Install 👋 Hanzo AI",
+  "threads": "Start Chatting",
+  "hanzo-models": "Use Hanzo AI Models",
+  "assistants": "Create Assistants",
+
+  "tutorials-separators": {
+    "title": "TUTORIALS",
+    "type": "separator"
+  },
+  "remote-models": "Connect to Remote Models",
+
+  "explanation-separator": {
+    "title": "EXPLANATION",
+    "type": "separator"
+  },
+  "llama-cpp": "Local AI Engine",
+  "model-parameters": "Model Parameters",
+
+  "privacy-policy": {
+    "type": "page",
+    "display": "hidden",
+    "title": "Privacy Policy"
+  },
+
+  "advanced-separator": {
+    "title": "ADVANCED",
+    "type": "separator"
+  },
+  "manage-models": "Manage Models",
+  "mcp": "Model Context Protocol",
+  "mcp-examples": "MCP Examples",
+
+  "reference-separator": {
+    "title": "REFERENCE",
+    "type": "separator"
+  },
+  "settings": "Settings",
+  "data-folder": "Hanzo AI Data Folder",
+  "troubleshooting": "Troubleshooting",
+  "privacy": "Privacy"
+}

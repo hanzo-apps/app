@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Native Plugin</title>
+</head>
+<body>
+    <h1>Testing Native Plugin</h1>
+    <button id="testApps">Test Get Apps</button>
+    <button id="testClipboard">Test Clipboard</button>
+    <button id="testSearch">Test File Search</button>
+    <div id="results"></div>
+
+    <script type="module">
+        import { invoke } from '@tauri-apps/api/core';
+        
+        const results = document.getElementById('results');
+        
+        document.getElementById('testApps').addEventListener('click', async () => {
+            try {
+                const apps = await invoke('plugin:native|get_all_applications');
+                results.innerHTML = `<h3>Apps Found: ${apps.length}</h3>
+                    <pre>${JSON.stringify(apps.slice(0, 5), null, 2)}</pre>`;
+            } catch (error) {
+                results.innerHTML = `<p style="color: red;">Error: ${error}</p>`;
+            }
+        });
+        
+        document.getElementById('testClipboard').addEventListener('click', async () => {
+            try {
+                const text = await invoke('plugin:native|read_from_clipboard');
+                results.innerHTML = `<h3>Clipboard:</h3><pre>${text}</pre>`;
+            } catch (error) {
+                results.innerHTML = `<p style="color: red;">Error: ${error}</p>`;
+            }
+        });
+        
+        document.getElementById('testSearch').addEventListener('click', async () => {
+            try {
+                const files = await invoke('plugin:native|native_search_files', { 
+                    query: 'README', 
+                    path: '/Users/z/work/hanzo' 
+                });
+                results.innerHTML = `<h3>Files Found: ${files.length}</h3>
+                    <pre>${JSON.stringify(files.slice(0, 5), null, 2)}</pre>`;
+            } catch (error) {
+                results.innerHTML = `<p style="color: red;">Error: ${error}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>

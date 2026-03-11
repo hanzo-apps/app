@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#000000" />
+    <title>Hanzo - AI Assistant</title>
+    <style>
+      /* Prevent text selection and drag */
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', 'Roboto', 
+          'Helvetica Neue', Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        /* Allow text selection in development */
+        user-select: auto;
+        -webkit-user-select: auto;
+        overflow: hidden;
+      }
+      
+      /* Dark mode by default */
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: #1a1a1a;
+          color: #ffffff;
+        }
+      }
+      
+      /* Transparent background for Tauri window */
+      html, body {
+        background: transparent;
+      }
+      
+      #root {
+        min-height: 100vh;
+        background: transparent;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // Polyfill for global (needed for React Native Web)
+      if (typeof global === 'undefined') {
+        window.global = window;
+      }
+    </script>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>

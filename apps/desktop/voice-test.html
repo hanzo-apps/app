@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hanzo Voice Test</title>
+    <style>
+        body {
+            background: #000;
+            color: #fff;
+            font-family: system-ui, -apple-system, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        button {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 12px 24px;
+            margin: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        h1 {
+            margin-bottom: 32px;
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎙️ Hanzo Voice Test</h1>
+    
+    <div>
+        <button onclick="testSpeech()">Test Voice Output</button>
+        <button onclick="testVoices()">List Available Voices</button>
+        <button onclick="testHelloDemo()">Hello Demo</button>
+        <button onclick="testDramaticDemo()">Dramatic Demo</button>
+        <button onclick="stopSpeech()">Stop Speaking</button>
+    </div>
+    
+    <div id="status"></div>
+
+    <script type="module">
+        import { invoke } from '@tauri-apps/api/core';
+        
+        const status = document.getElementById('status');
+        
+        window.testSpeech = async () => {
+            status.textContent = 'Speaking...';
+            try {
+                await invoke('speak_text', {
+                    text: 'Voice functionality is fully integrated in the Hanzo app!',
+                    voice: 'Samantha',
+                    rate: 1.0
+                });
+                status.textContent = '✅ Voice working!';
+            } catch (e) {
+                status.textContent = '❌ Error: ' + e;
+            }
+        };
+        
+        window.testVoices = async () => {
+            try {
+                const voices = await invoke('get_available_voices');
+                status.textContent = 'Available voices: ' + voices.join(', ');
+            } catch (e) {
+                status.textContent = '❌ Error: ' + e;
+            }
+        };
+        
+        window.testHelloDemo = async () => {
+            status.textContent = 'Playing hello demo...';
+            try {
+                await invoke('voice_demo_hello');
+                status.textContent = '✅ Demo completed!';
+            } catch (e) {
+                status.textContent = '❌ Error: ' + e;
+            }
+        };
+        
+        window.testDramaticDemo = async () => {
+            status.textContent = 'Playing dramatic demo...';
+            try {
+                await invoke('voice_demo_dramatic');
+                status.textContent = '✅ Dramatic demo completed!';
+            } catch (e) {
+                status.textContent = '❌ Error: ' + e;
+            }
+        };
+        
+        window.stopSpeech = async () => {
+            try {
+                await invoke('stop_speaking');
+                status.textContent = '⏹️ Stopped speaking';
+            } catch (e) {
+                status.textContent = '❌ Error: ' + e;
+            }
+        };
+        
+        // Test voice input (Speech-to-Text)
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            status.textContent = '🎤 Voice input (Speech-to-Text) is available!';
+        }
+    </script>
+</body>
+</html>

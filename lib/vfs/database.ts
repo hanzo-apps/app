@@ -1,7 +1,7 @@
-import { Project, VirtualFile, FileTreeNode } from './types';
+import { Project, VirtualFile, FileTreeNode, CustomTemplate } from './types';
 
-const DB_NAME = 'hanzo-vfs';
-const DB_VERSION = 1;
+const DB_NAME = 'osw-studio-db';
+const DB_VERSION = 4; // Incremented to add skills store
 
 export class VFSDatabase {
   private db: IDBDatabase | null = null;
@@ -19,6 +19,7 @@ export class VFSDatabase {
       request.onupgradeneeded = (event) => {
         const db = (event.target as IDBOpenDBRequest).result;
 
+        // VFS object stores
         if (!db.objectStoreNames.contains('projects')) {
           const projectStore = db.createObjectStore('projects', { keyPath: 'id' });
           projectStore.createIndex('name', 'name', { unique: false });
@@ -38,6 +39,41 @@ export class VFSDatabase {
           treeStore.createIndex('path', ['projectId', 'path'], { unique: true });
           treeStore.createIndex('parentPath', ['projectId', 'parentPath'], { unique: false });
         }
+
+        // Conversations object store
+        if (!db.objectStoreNames.contains('conversations')) {
+          const conversationStore = db.createObjectStore('conversations', { keyPath: 'id' });
+          conversationStore.createIndex('projectId', 'projectId', { unique: false });
+          conversationStore.createIndex('lastUpdated', 'lastUpdated', { unique: false });
+        }
+
+        // Checkpoints object store
+        if (!db.objectStoreNames.contains('checkpoints')) {
+          const checkpointStore = db.createObjectStore('checkpoints', { keyPath: 'id' });
+          checkpointStore.createIndex('projectId', 'projectId', { unique: false });
+          checkpointStore.createIndex('timestamp', 'timestamp', { unique: false });
+        }
+
+        // Custom Templates object store
+        if (!db.objectStoreNames.contains('customTemplates')) {
+          const templateStore = db.createObjectStore('customTemplates', { keyPath: 'id' });
+          templateStore.createIndex('name', 'name', { unique: false });
+          templateStore.createIndex('importedAt', 'importedAt', { unique: false });
+        }
+
+        // Custom Skills object store (migrated from localStorage)
+        if (!db.objectStoreNames.contains('skills')) {
+          const skillsStore = db.createObjectStore('skills', { keyPath: 'id' });
+          skillsStore.createIndex('name', 'name', { unique: false });
+          skillsStore.createIndex('isBuiltIn', 'isBuiltIn', { unique: false });
+        }
+
+        // Debug Events object store
+        if (!db.objectStoreNames.contains('debugEvents')) {
+          const debugEventsStore = db.createObjectStore('debugEvents', { keyPath: 'id' });
+          debugEventsStore.createIndex('projectId', 'projectId', { unique: false });
+          debugEventsStore.createIndex('timestamp', 'timestamp', { unique: false });
+        }
       };
     });
   }
@@ -47,6 +83,11 @@ export class VFSDatabase {
       throw new Error('Database not initialized. Call init() first.');
     }
     return this.db;
+  }
+
+  // Public getter for shared database access (used by checkpoint and conversation managers)
+  getDatabase(): IDBDatabase {
+    return this.getDB();
   }
 
   async createProject(project: Project): Promise<void> {
@@ -70,9 +111,9 @@ export class VFSDatabase {
 
   async deleteProject(id: string): Promise<void> {
     const db = this.getDB();
-
+    
     await this.deleteProjectFiles(id);
-
+    
     const tx = db.transaction(['projects'], 'readwrite');
     const store = tx.objectStore('projects');
     await this.promisify(store.delete(id));
@@ -126,7 +167,7 @@ export class VFSDatabase {
     const files = await this.listFiles(projectId);
     const tx = this.getDB().transaction(['files'], 'readwrite');
     const store = tx.objectStore('files');
-
+    
     for (const file of files) {
       await this.promisify(store.delete(file.id));
     }
@@ -191,6 +232,40 @@ export class VFSDatabase {
       createdAt: project.createdAt ? new Date(project.createdAt) : new Date(),
       updatedAt: project.updatedAt ? new Date(project.updatedAt) : new Date(),
       lastSavedAt: project.lastSavedAt ? new Date(project.lastSavedAt) : null
+    };
+  }
+
+  // Custom Templates CRUD operations
+  async saveCustomTemplate(template: CustomTemplate): Promise<void> {
+    const tx = this.getDB().transaction(['customTemplates'], 'readwrite');
+    const store = tx.objectStore('customTemplates');
+    await this.promisify(store.put(template));
+  }
+
+  async getCustomTemplate(id: string): Promise<CustomTemplate | null> {
+    const tx = this.getDB().transaction(['customTemplates'], 'readonly');
+    const store = tx.objectStore('customTemplates');
+    const result = await this.promisify(store.get(id));
+    return result ? this.hydrateCustomTemplate(result as CustomTemplate) : null;
+  }
+
+  async getAllCustomTemplates(): Promise<CustomTemplate[]> {
+    const tx = this.getDB().transaction(['customTemplates'], 'readonly');
+    const store = tx.objectStore('customTemplates');
+    const results = await this.promisify(store.getAll());
+    return results.map(t => this.hydrateCustomTemplate(t as CustomTemplate));
+  }
+
+  async deleteCustomTemplate(id: string): Promise<void> {
+    const tx = this.getDB().transaction(['customTemplates'], 'readwrite');
+    const store = tx.objectStore('customTemplates');
+    await this.promisify(store.delete(id));
+  }
+
+  private hydrateCustomTemplate(template: CustomTemplate): CustomTemplate {
+    return {
+      ...template,
+      importedAt: template.importedAt ? new Date(template.importedAt) : new Date()
     };
   }
 }

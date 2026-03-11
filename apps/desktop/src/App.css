@@ -1,0 +1,225 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Hanzo AI monochromatic color variables */
+:root {
+  --color-accent: 255, 255, 255; /* White accent for black theme */
+  --radius: 1rem; /* Larger radius for rounder corners */
+  --font-size-base: 15px;
+  
+  /* Pure black theme */
+  --app-bg: #000;
+  --app-left-panel-fg: #fff;
+  --app-main-view: #000;
+  --app-main-view-fg: #fff;
+  --app-primary: #fff;
+  --app-primary-fg: #000;
+  --app-accent: #fff;
+  --app-accent-fg: #000;
+  --app-destructive: #fff;
+  --app-destructive-fg: #000;
+}
+
+/* Light theme (optional override) */
+.light {
+  --color-accent: 0, 0, 0; /* Black accent for light theme */
+  --app-bg: rgba(255, 255, 255, 0.95);
+  --app-left-panel-fg: rgba(0, 0, 0, 0.9);
+  --app-main-view: rgba(255, 255, 255, 0.98);
+  --app-main-view-fg: rgba(0, 0, 0, 0.95);
+  --app-primary: rgb(0, 0, 0);
+  --app-primary-fg: rgb(255, 255, 255);
+  --app-accent: rgb(0, 0, 0);
+  --app-accent-fg: rgb(255, 255, 255);
+  --app-destructive: rgb(220, 38, 38);
+  --app-destructive-fg: rgb(255, 255, 255);
+}
+
+/* Hanzo AI styling with Inter font */
+@layer base {
+  body, #root {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow: hidden;
+    background: transparent !important;
+    color: #fff;
+  }
+  
+  /* Ensure window is transparent */
+  html {
+    background: transparent !important;
+  }
+  
+  /* Remove any default backgrounds */
+  .launcher-view * {
+    background-color: transparent;
+  }
+  
+  /* Main app container for launcher should be transparent */
+  .launcher-view {
+    background: transparent !important;
+  }
+
+  /* Window background with blur effect - black by default */
+  .bg-window {
+    @apply bg-black/90;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  
+  .light .bg-window {
+    @apply bg-white/90;
+  }
+
+  /* Hanzo AI text classes - white by default */
+  .text {
+    @apply text-neutral-200;
+  }
+  
+  .light .text {
+    @apply text-neutral-800;
+  }
+
+  .darker-text {
+    @apply text-neutral-400;
+  }
+  
+  .light .darker-text {
+    @apply text-neutral-700;
+  }
+
+  /* Hanzo-style highlight */
+  .highlight {
+    background-color: rgb(var(--color-accent) / 0.5);
+  }
+
+  /* Hanzo AI borders - white/10 by default */
+  .border-window {
+    @apply border-white/10;
+  }
+  
+  .light .border-window {
+    @apply border-gray-200/50;
+  }
+
+  .border-color {
+    @apply border-white/10;
+  }
+  
+  .light .border-color {
+    @apply border-gray-200/30;
+  }
+
+  /* Sub backgrounds - black by default */
+  .subBg {
+    @apply bg-black/20;
+  }
+  
+  .light .subBg {
+    @apply bg-white/50;
+  }
+}
+
+/* Jan-style scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* AI Command Menu specific styles - pure black */
+.command-bar {
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.light .command-bar {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 
+              0 10px 10px -5px rgba(0, 0, 0, 0.04),
+              inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Jan-style chat message bubbles */
+.message-user {
+  background: #fff;
+  color: #000;
+}
+
+.message-assistant {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+/* Hanzo-style animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.2s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.15s ease-out;
+}
+
+/* Jan-style markdown */
+.prose {
+  @apply text-gray-800 dark:text-gray-200;
+}
+
+.prose pre {
+  @apply bg-gray-900 rounded-lg p-4 overflow-x-auto;
+}
+
+.prose code {
+  @apply bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm;
+}
+
+.prose pre code {
+  @apply bg-transparent p-0;
+}
+
+/* Jan-style buttons */
+.btn-primary {
+  @apply bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-4 py-2 font-medium transition-colors;
+}
+
+.btn-secondary {
+  @apply bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg px-4 py-2 font-medium transition-colors;
+}
