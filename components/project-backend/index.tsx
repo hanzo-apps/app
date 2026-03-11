@@ -351,7 +351,7 @@ export function ProjectSettingsPanel({ project, onProjectUpdate, enabled }: Proj
                           Backend features require Server Mode. Deploy to a self-hosted instance to use edge functions, secrets, and database features.
                         </p>
                         <a
-                          href="https://github.com/o-stahl/osw-studio"
+                          href="https://github.com/o-stahl/hanzo-app"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-sm text-primary hover:underline"

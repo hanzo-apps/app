@@ -699,7 +699,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
               asChild
             >
               <a
-                href="https://github.com/o-stahl/osw-studio"
+                href="https://github.com/o-stahl/hanzo-app"
                 target="_blank"
                 rel="noopener noreferrer"
               >

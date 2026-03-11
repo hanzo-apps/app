@@ -25,7 +25,7 @@ export function PromptAnalytic() {
       <div className="flex items-center gap-2">
         <IconFileTextShield className="text-accent" />
         <h2 className="font-medium text-main-view-fg/80">
-          {t('helpUsImproveJan')}
+          {t('helpUsImprove')}
         </h2>
       </div>
       <p className="mt-2 text-sm text-main-view-fg/70">
@@ -35,7 +35,7 @@ export function PromptAnalytic() {
         <span className="font-medium text-main-view-fg">{`Settings > Privacy.`}</span>
       </p>
       <p className="mt-2 text-sm text-main-view-fg/80">
-        Would you like to help us to improve Jan?
+        Would you like to help us improve Hanzo?
       </p>
       <div className="mt-4 flex justify-end space-x-2">
         <Button

@@ -16,7 +16,7 @@ export function ThemeProvider({
   attribute = 'class',
   defaultTheme = 'dark',
   enableSystem = true,
-  storageKey = 'osw-studio-theme',
+  storageKey = 'hanzo-app-theme',
   ...props
 }: ThemeProviderProps) {
   return (

@@ -25,8 +25,8 @@ import {
 } from '@/components/ui/dialog'
 import {
   factoryReset,
-  getJanDataFolder,
-  relocateJanDataFolder,
+  getAppDataFolder,
+  relocateAppDataFolder,
 } from '@/services/app'
 import {
   IconBrandDiscord,
@@ -77,7 +77,7 @@ function General() {
 
   useEffect(() => {
     const fetchDataFolder = async () => {
-      const path = await getJanDataFolder()
+      const path = await getAppDataFolder()
       setJanDataFolder(path)
     }
 
@@ -104,7 +104,7 @@ function General() {
         // Create a new logs window using Tauri v2 WebviewWindow API
         const logsWindow = new WebviewWindow(windowKey.logsAppWindow, {
           url: route.appLogs,
-          title: 'App Logs - Jan',
+          title: 'App Logs - Hanzo',
           width: 800,
           height: 600,
           resizable: true,
@@ -157,7 +157,7 @@ function General() {
         emit(SystemEvent.KILL_SIDECAR)
         setTimeout(async () => {
           try {
-            await relocateJanDataFolder(selectedNewPath)
+            await relocateAppDataFolder(selectedNewPath)
             setJanDataFolder(selectedNewPath)
             // Only relaunch if relocation was successful
             window.core?.api?.relaunch()
@@ -174,7 +174,7 @@ function General() {
       } catch (error) {
         console.error('Failed to relocate data folder:', error)
         // Revert the data folder path on error
-        const originalPath = await getJanDataFolder()
+        const originalPath = await getAppDataFolder()
         setJanDataFolder(originalPath)
 
         toast.error(t('settings:general.failedToRelocateDataFolderDesc'))
@@ -470,7 +470,7 @@ function General() {
                 description={t('settings:general.documentationDesc')}
                 actions={
                   <a
-                    href="https://jan.ai/docs"
+                    href="https://hanzo.ai/docs"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -486,7 +486,7 @@ function General() {
                 description={t('settings:general.releaseNotesDesc')}
                 actions={
                   <a
-                    href="https://github.com/menloresearch/jan/releases"
+                    href="https://github.com/hanzoai/app/releases"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -506,7 +506,7 @@ function General() {
                 description={t('settings:general.githubDesc')}
                 actions={
                   <a
-                    href="https://github.com/menloresearch/jan"
+                    href="https://github.com/hanzoai/app"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -546,7 +546,7 @@ function General() {
                 description={t('settings:general.reportAnIssueDesc')}
                 actions={
                   <a
-                    href="https://github.com/menloresearch/jan/issues/new"
+                    href="https://github.com/hanzoai/app/issues/new"
                     target="_blank"
                   >
                     <div className="flex items-center gap-1">

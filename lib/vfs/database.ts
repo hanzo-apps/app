@@ -1,6 +1,6 @@
 import { Project, VirtualFile, FileTreeNode, CustomTemplate } from './types';
 
-const DB_NAME = 'osw-studio-db';
+const DB_NAME = 'hanzo-app-db';
 const DB_VERSION = 4; // Incremented to add skills store
 
 export class VFSDatabase {

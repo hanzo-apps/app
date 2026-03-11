@@ -63,27 +63,25 @@ export const parseLogLine = (line: string) => {
 }
 
 /**
- * @description This function is used to get the Jan data folder path.
- * It retrieves the path from the app configuration.
- * @returns {Promise<string | undefined>} The Jan data folder path or undefined if not found
+ * @description Get the app data folder path from configuration.
+ * @returns {Promise<string | undefined>} The data folder path or undefined if not found
  */
-export const getJanDataFolder = async (): Promise<string | undefined> => {
+export const getAppDataFolder = async (): Promise<string | undefined> => {
   try {
     const appConfiguration: AppConfiguration | undefined =
       await window.core?.api?.getAppConfigurations()
 
     return appConfiguration?.data_folder
   } catch (error) {
-    console.error('Failed to get Jan data folder:', error)
+    console.error('Failed to get app data folder:', error)
     return undefined
   }
 }
 
 /**
- * @description This function is used to relocate the Jan data folder.
- * It will change the app data folder to the specified path.
- * @param path The new path for the Jan data folder
+ * @description Relocate the app data folder to a new path.
+ * @param path The new path for the data folder
  */
-export const relocateJanDataFolder = async (path: string) => {
+export const relocateAppDataFolder = async (path: string) => {
   await window.core?.api?.changeAppDataFolder({ newDataFolder: path })
 }

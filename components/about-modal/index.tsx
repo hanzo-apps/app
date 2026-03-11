@@ -70,7 +70,7 @@ export function AboutModal({ open, onOpenChange }: AboutModalProps) {
                 <ExternalLink className="h-3 w-3" />
               </a>
               <a
-                href="https://github.com/o-stahl/osw-studio"
+                href="https://github.com/o-stahl/hanzo-app"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
@@ -80,7 +80,7 @@ export function AboutModal({ open, onOpenChange }: AboutModalProps) {
                 <ExternalLink className="h-3 w-3" />
               </a>
               <a
-                href="https://huggingface.co/spaces/otst/oswstudio"
+                href="https://hanzo.app"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"

@@ -9,7 +9,7 @@ import { Project, VirtualFile, FileTreeNode, CustomTemplate, EdgeFunction, Serve
 import { Skill } from '../skills/types';
 import { StorageAdapter } from './types';
 
-const DB_NAME = 'osw-studio-db';
+const DB_NAME = 'hanzo-app-db';
 const DB_VERSION = 5; // Incremented to add project-scoped backend feature stores
 
 export class IndexedDBAdapter implements StorageAdapter {

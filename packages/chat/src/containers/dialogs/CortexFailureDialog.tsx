@@ -35,13 +35,13 @@ export function CortexFailureDialog() {
     }
   }, [])
 
-  const handleRestartJan = async () => {
+  const handleRestart = async () => {
     try {
       await invoke('relaunch')
     } catch (error) {
       console.error('Failed to relaunch app:', error)
       alert(
-        'Failed to automatically restart. Please close and reopen Jan manually.'
+        'Failed to automatically restart. Please close and reopen Hanzo manually.'
       )
     }
   }
@@ -69,7 +69,7 @@ export function CortexFailureDialog() {
             }}
           >
             <a
-              href="https://jan.ai/support"
+              href="https://hanzo.ai/support"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -78,8 +78,8 @@ export function CortexFailureDialog() {
               </span>
             </a>
           </Button>
-          <Button onClick={handleRestartJan}>
-            {t('cortexFailureDialog.restartJan')}
+          <Button onClick={handleRestart}>
+            {t('cortexFailureDialog.restart')}
           </Button>
         </DialogFooter>
       </DialogContent>

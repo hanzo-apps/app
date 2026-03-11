@@ -33,7 +33,7 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
     : `${typeof window !== 'undefined' ? window.location.origin : ''}/deployments/${deploymentId}`;
 
   // Generate OSW Studio path URL (always show for debugging - uses deploymentId, not projectId!)
-  const oswStudioUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/deployments/${deploymentId}`;
+  const appUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/deployments/${deploymentId}`;
 
   return (
     <div className="space-y-6">
@@ -150,7 +150,7 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
               <Label className="text-xs text-muted-foreground">OSW Studio Path (Debug)</Label>
               <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg border border-dashed">
                 <Globe className="h-4 w-4 text-muted-foreground" />
-                <code className="text-xs flex-1 text-muted-foreground">{oswStudioUrl}</code>
+                <code className="text-xs flex-1 text-muted-foreground">{appUrl}</code>
               </div>
               <p className="text-xs text-muted-foreground">
                 Internal path used by reverse proxy. Map your custom domain to this URL.
