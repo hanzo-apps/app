@@ -180,15 +180,18 @@ const config: DocsThemeConfig = {
           }
         />
         <JSONLD data={structuredData} />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link 
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" 
-          rel="stylesheet" 
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="" />
+        <link
+          href="https://cdn.jsdelivr.net/npm/geist@1/dist/fonts/geist-sans/style.css"
+          rel="stylesheet"
+        />
+        <link
+          href="https://cdn.jsdelivr.net/npm/geist@1/dist/fonts/geist-mono/style.css"
+          rel="stylesheet"
         />
         <style>{`
           :root {
-            --nx-font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            --nx-font-sans: 'Geist Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Helvetica Neue', sans-serif;
           }
           
           html {
@@ -251,7 +254,7 @@ const config: DocsThemeConfig = {
           code {
             background-color: rgba(255, 255, 255, 0.1) !important;
             color: #ffffff !important;
-            font-family: 'Inter', monospace !important;
+            font-family: 'Geist Mono', monospace !important;
           }
           
           /* Tables */
@@ -355,12 +358,12 @@ const config: DocsThemeConfig = {
           
           /* All text should use Inter */
           * {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+            font-family: 'Geist Sans', system-ui, -apple-system, sans-serif !important;
           }
           
           /* Monospace code should still use a monospace font but with Inter as primary */
           pre, code, kbd, samp {
-            font-family: 'Inter', 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Fira Mono', 'Roboto Mono', 'Courier New', monospace !important;
+            font-family: 'Geist Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Courier New', monospace !important;
           }
         `}</style>
       </Fragment>
