@@ -69,4 +69,5 @@ tsconfig.tsbuildinfo
 *.tgz
 temp
 tmp
-cache
+cacheapps/desktop
+apps/extension
