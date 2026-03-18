@@ -48,7 +48,7 @@
     "docs:generate": "pnpm docs:typedoc && pnpm docs:build"
   },
   "dependencies": {
-    "@hanzo/ui": "workspace:*",
+    "@hanzo/ui": "^5.3.43",
     "@hanzo/chat": "workspace:*",
     "@hanzo/launcher": "workspace:*",
     "@hanzo/ai": "workspace:*",
