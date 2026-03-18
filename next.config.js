@@ -46,10 +46,16 @@ const nextConfig = {
   dynamicParams: true,
 
   webpack: (config, { isServer }) => {
+    const path = require('path');
     // Fix for build issues
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,
+    };
+    // Shim react-resizable-panels to re-export Group/Separator (removed in v2+)
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'react-resizable-panels': path.resolve(__dirname, 'lib/shims/react-resizable-panels.js'),
     };
     return config;
   },
