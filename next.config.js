@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Disable static optimization to avoid prerendering errors
-  output: 'standalone',
+  // Use default output mode (next start compatible)
 
   // Disable development indicators in production
   devIndicators: {
