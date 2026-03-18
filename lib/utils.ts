@@ -20,3 +20,10 @@ export const logger = {
   warn:  (...args: any[]) => { if (shouldLog('warn')) console.warn(...args); },
   error: (...args: any[]) => { if (shouldLog('error')) console.error(...args); },
 };
+
+// Brand colors for charts, avatars, and UI accents
+export const COLORS = [
+  "#8B5CF6", "#3B82F6", "#10B981", "#F59E0B", "#EF4444",
+  "#EC4899", "#6366F1", "#14B8A6", "#F97316", "#84CC16",
+] as const;
+
