@@ -24,8 +24,8 @@ ENV NODE_ENV=production
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 ENV CI=true
 
-# CI flag skips env validation at build time (validated at runtime from KMS)
-ENV CI=true
+# Skip env validation at build time (validated at runtime from KMS)
+ENV NEXT_BUILD_ONLY=true
 
 RUN pnpm run build && \
     # Verify build artifacts exist
