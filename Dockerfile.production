@@ -24,12 +24,8 @@ ENV NODE_ENV=production
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 ENV CI=true
 
-# Build-time placeholders for env validation (overridden at runtime)
-ENV NEXTAUTH_SECRET=build-time-placeholder-must-be-32-chars-long
-ENV NEXTAUTH_URL=https://hanzo.app
-ENV IAM_CLIENT_ID=hanzo-app
-ENV IAM_CLIENT_SECRET=build-placeholder
-ENV DATABASE_URL=postgresql://placeholder:placeholder@localhost:5432/placeholder
+# CI flag skips env validation at build time (validated at runtime from KMS)
+ENV CI=true
 
 RUN pnpm run build && \
     # Verify build artifacts exist
