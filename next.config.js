@@ -57,6 +57,12 @@ const nextConfig = {
       ...config.resolve.alias,
       'react-resizable-panels': path.resolve(__dirname, 'lib/shims/react-resizable-panels.js'),
     };
+    // Externalize React Native deps (MetaMask SDK brings these in but they're not needed in browser)
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      '@react-native-async-storage/async-storage': false,
+      'pino-pretty': false,
+    };
     return config;
   },
 }
