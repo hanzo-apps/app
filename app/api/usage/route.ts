@@ -4,8 +4,11 @@ import { getUserSession } from '@/lib/session';
 export async function GET() {
   try {
     const user = await getUserSession();
-    
-    // Mock usage data - always return data for demo
+    if (!user) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
+    // Mock usage data - replace with Hanzo Commerce API
     const usage = {
       api_calls: {
         used: Math.floor(Math.random() * 500) + 400, // 400-900
@@ -49,8 +52,9 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const user = await getUserSession();
-    
-    // Allow tracking even without auth for demo
+    if (!user) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
     const { event, metadata } = await req.json();
 
     // In production, save to database
