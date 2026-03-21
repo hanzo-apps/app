@@ -16,7 +16,7 @@ overrides:
   tar: '>=7.5.12'
   minimatch: '>=3.1.4'
   rollup: '>=4.59.0'
-  webpack: '>=5.105.4'
+  webpack: '>=5.104.1'
   dompurify: '>=3.3.3'
   highlight.js: '>=10.4.1'
   js-yaml: '>=4.1.1'
@@ -3531,7 +3531,7 @@ packages:
     resolution: {integrity: sha512-XgQg+t2aVrlQDfIiAEizqR/bsy6GtBygwgR+Kw11P/cYczj4W9PZ2IYqQEStBzHqnRTh5DbpyMcUNW2CujdA9A==}
     engines: {node: '>= 18'}
     peerDependencies:
-      webpack: '>=5.105.4'
+      webpack: '>=5.104.1'
 
   '@sindresorhus/is@4.6.0':
     resolution: {integrity: sha512-t09vSN3MdfsyCHoFcTRCH/iUtG7OJ0CsjzB8cjAmKc/va/kIgeDI/TxsigdncE/4be734m0cvIYwNaV4i2XqAw==}
@@ -4225,7 +4225,7 @@ packages:
       '@tanstack/react-router': ^1.128.8
       vite: '>=5.0.0 || >=6.0.0'
       vite-plugin-solid: ^2.11.2
-      webpack: '>=5.105.4'
+      webpack: '>=5.104.1'
     peerDependenciesMeta:
       '@rsbuild/core':
         optional: true
@@ -8967,7 +8967,7 @@ packages:
       '@swc/core': '*'
       esbuild: '*'
       uglify-js: '*'
-      webpack: '>=5.105.4'
+      webpack: '>=5.104.1'
     peerDependenciesMeta:
       '@swc/core':
         optional: true
