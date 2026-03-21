@@ -10,6 +10,7 @@ coverage/
 playwright-report/
 
 # Production
+.next/
 dist/
 dist-ssr/
 *.local
