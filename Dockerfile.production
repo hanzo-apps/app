@@ -22,9 +22,10 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 ENV NODE_OPTIONS="--max-old-space-size=4096"
-ENV CI=true
 
-# Skip env validation at build time (validated at runtime from KMS)
+# IMPORTANT: Do NOT set CI=true here. Next.js 15 skips clientReferenceManifest
+# generation when CI=true, causing InvariantError at runtime on every request.
+# NEXT_BUILD_ONLY signals our own code to skip env validation at build time.
 ENV NEXT_BUILD_ONLY=true
 
 RUN pnpm run build && \
