@@ -28,12 +28,19 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 # NEXT_BUILD_ONLY signals our own code to skip env validation at build time.
 ENV NEXT_BUILD_ONLY=true
 
-RUN pnpm run build && \
+# CRITICAL: Explicitly unset CI so Next.js 15 generates clientReferenceManifest.
+# GitHub Actions sets CI=true in the runner env which leaks into Docker builds.
+# Cache bust: 2026-03-21T08:30Z
+RUN CI=false pnpm run build && \
     # Verify build artifacts exist
     if [ ! -d ".next" ]; then \
       echo "ERROR: Build failed - .next directory not created" && exit 1; \
     fi && \
-    echo "Build successful - .next directory created"
+    # Verify clientReferenceManifest exists (Next.js 15 skips it when CI=true)
+    if ! find .next/server -name '*client-reference-manifest*' 2>/dev/null | head -1 | grep -q .; then \
+      echo "ERROR: clientReferenceManifest not generated (CI env leak?)" && exit 1; \
+    fi && \
+    echo "Build successful - .next directory and manifests verified"
 
 # Skip prune — node_modules already includes only what's needed for runtime
 
