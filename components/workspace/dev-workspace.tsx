@@ -32,9 +32,6 @@ export function DevWorkspace({ projectId }: DevWorkspaceProps) {
   // Example: Auto-checkpoint after AI operation
   const handleAIOperation = useCallback(async (operation: string) => {
     try {
-      // Perform AI operation here
-      console.log('Performing AI operation:', operation);
-
       // Create checkpoint after AI operation
       await checkpointManager.createCheckpoint(
         projectId,
@@ -55,18 +52,14 @@ export function DevWorkspace({ projectId }: DevWorkspaceProps) {
   const handleSave = useCallback(async () => {
     try {
       await saveManager.save(projectId, 'Manual save');
-      console.log('Project saved successfully');
     } catch (error) {
       console.error('Save failed:', error);
     }
   }, [projectId]);
 
-  const handleCheckpointRestore = useCallback((checkpointId: string, success: boolean) => {
+  const handleCheckpointRestore = useCallback((_checkpointId: string, success: boolean) => {
     if (success) {
-      console.log('Checkpoint restored:', checkpointId);
       setRefreshTrigger(prev => prev + 1);
-    } else {
-      console.error('Failed to restore checkpoint:', checkpointId);
     }
   }, []);
 

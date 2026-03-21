@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 const IAM_ENDPOINT = process.env.IAM_ENDPOINT || "https://hanzo.id";
 const IAM_TOKEN_URL = `${IAM_ENDPOINT}/oauth/token`;
 const COOKIE_NAME = "hanzo_token";
 const COOKIE_MAX_AGE = 7 * 24 * 60 * 60; // 7 days in seconds
+const OAUTH_STATE_COOKIE = "hanzo_oauth_state";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const code = searchParams.get("code");
+  const returnedState = searchParams.get("state");
 
   if (!code) {
     return NextResponse.json(
@@ -15,6 +18,20 @@ export async function GET(req: NextRequest) {
       { status: 400 }
     );
   }
+
+  // Validate OAuth state to prevent CSRF attacks
+  const cookieStore = await cookies();
+  const expectedState = cookieStore.get(OAUTH_STATE_COOKIE)?.value;
+
+  if (!returnedState || !expectedState || returnedState !== expectedState) {
+    return NextResponse.json(
+      { error: "Invalid OAuth state — possible CSRF attack" },
+      { status: 403 }
+    );
+  }
+
+  // Delete the state cookie now that it has been validated
+  cookieStore.delete(OAUTH_STATE_COOKIE);
 
   const clientId = process.env.IAM_CLIENT_ID;
   const clientSecret = process.env.IAM_CLIENT_SECRET;

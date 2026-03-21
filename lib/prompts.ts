@@ -9,9 +9,6 @@ export const NEW_PAGE_END = " >>>>>>> NEW_PAGE_END";
 export const UPDATE_PAGE_START = "<<<<<<< UPDATE_PAGE_START ";
 export const UPDATE_PAGE_END = " >>>>>>> UPDATE_PAGE_END";
 
-// TODO REVIEW LINK. MAYBE GO BACK TO SANDPACK.
-// FIX PREVIEW LINK NOT WORKING ONCE THE SITE IS DEPLOYED.
-
 export const PROMPT_FOR_IMAGE_GENERATION = `If you want to use image placeholder, http://Static.photos Usage:Format: http://static.photos/[category]/[dimensions]/[seed] where dimensions must be one of: 200x200, 320x240, 640x360, 1024x576, or 1200x630; seed can be any number (1-999+) for consistent images or omit for random; categories include: nature, office, people, technology, minimal, abstract, aerial, blurred, bokeh, gradient, monochrome, vintage, white, black, blue, red, green, yellow, cityscape, workspace, food, travel, textures, industry, indoor, outdoor, studio, finance, medical, season, holiday, event, sport, science, legal, estate, restaurant, retail, wellness, agriculture, construction, craft, cosmetic, automotive, gaming, or education.
 Examples: http://static.photos/red/320x240/133 (red-themed with seed 133), http://static.photos/640x360 (random category and image), http://static.photos/nature/1200x630/42 (nature-themed with seed 42).`
 

@@ -7,60 +7,37 @@ import { sanitizeMongoInput } from '@/lib/security/input-validation';
 const webhookSecret = env.STRIPE_WEBHOOK_SECRET || '';
 
 async function handleCheckoutSessionCompleted(session: any) {
-  console.log('Checkout session completed:', session.id);
-
   // Sanitize and validate metadata
   const userId = sanitizeMongoInput(session.metadata?.userId);
   const amount = session.amount_total / 100; // Convert from cents
 
-  // Validate userId format
-  if (userId && typeof userId === 'string' && userId.match(/^[a-zA-Z0-9_-]+$/)) {
-    // Add credits to user account
-    // This would typically update your database with parameterized queries
-    console.log(`Adding $${amount} credits to user ${userId}`);
-
-    // Example: Update user credits in database with proper sanitization
-    // await prisma.user.update({
-    //   where: { id: userId },
-    //   data: {
-    //     credits: { increment: amount }
-    //   }
-    // });
-  } else {
-    console.error('Invalid userId in checkout session metadata');
+  if (!userId || typeof userId !== 'string' || !userId.match(/^[a-zA-Z0-9_-]+$/)) {
+    console.error('Invalid userId in checkout session metadata:', session.id);
+    return;
   }
+
+  // Use Stripe customer metadata to track credits (matches lib/stripe.ts pattern)
+  const { updateCustomerCredits } = await import('@/lib/stripe');
+  await updateCustomerCredits({
+    customerId: session.customer,
+    credits: amount,
+    action: 'increment',
+  });
+
+  console.log(`Credited $${amount} to user ${userId} (customer ${session.customer})`);
 }
 
 async function handleSubscriptionUpdated(subscription: any) {
-  console.log('Subscription updated:', subscription.id);
-  
-  // Update subscription status in your database
-  const customerId = subscription.customer;
-  
-  // Example: Update subscription status
-  // await prisma.subscription.upsert({
-  //   where: { stripeCustomerId: customerId },
-  //   update: {
-  //     status: subscription.status,
-  //     currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-  //   },
-  //   create: {
-  //     stripeCustomerId: customerId,
-  //     stripeSubscriptionId: subscription.id,
-  //     status: subscription.status,
-  //     currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-  //   }
-  // });
+  // Log subscription lifecycle events.
+  // Subscription state is queried live from Stripe via getSubscriptionStatus()
+  // in lib/stripe.ts, so no local database update is needed.
+  console.log('Subscription %s status: %s', subscription.id, subscription.status);
 }
 
 async function handleInvoicePaymentSucceeded(invoice: any) {
-  console.log('Invoice payment succeeded:', invoice.id);
-  
-  // Add credits for subscription payment
   const customerId = invoice.customer;
   const amount = invoice.amount_paid / 100;
-  
-  console.log(`Payment of $${amount} received from customer ${customerId}`);
+  console.log('Invoice %s paid: $%d from customer %s', invoice.id, amount, customerId);
 }
 
 export async function POST(req: NextRequest) {

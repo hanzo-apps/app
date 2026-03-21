@@ -12,7 +12,6 @@ export async function getProjects(): Promise<{
   const user = await isAuthenticated();
 
   if (!user) {
-    console.log("getProjects: No user found, returning empty projects");
     return {
       ok: false,
       projects: [],

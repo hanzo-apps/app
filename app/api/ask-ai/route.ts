@@ -65,8 +65,6 @@ export async function POST(request: NextRequest) {
 
   if (isLocalDaemonAvailable) {
     try {
-      console.log("Using local Hanzo daemon for AI processing");
-
       // Prepare messages for local daemon
       const messages = [
         {

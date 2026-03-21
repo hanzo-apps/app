@@ -20,10 +20,10 @@ const envSchema = z.object({
   DATABASE_URL: z.string().url().optional(),
   REDIS_URL: z.string().url().optional(),
 
-  // Stripe (optional but validated if present)
-  STRIPE_SECRET_KEY: z.string().startsWith('sk_').optional(),
-  STRIPE_WEBHOOK_SECRET: z.string().startsWith('whsec_').optional(),
-  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().startsWith('pk_').optional(),
+  // Hanzo Commerce (optional but validated if present)
+  HANZO_COMMERCE_API_KEY: z.string().min(1).optional(),
+  HANZO_COMMERCE_WEBHOOK_SECRET: z.string().min(1).optional(),
+  HANZO_COMMERCE_API_URL: z.string().url().optional(),
 
   // AI Providers (optional)
   OPENAI_API_KEY: z.string().startsWith('sk-').optional(),

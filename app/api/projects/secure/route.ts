@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { secureApiHandler, apiResponse, apiError } from '@/lib/security/api-wrapper';
 import { schemas } from '@/lib/security/input-validation';
+import { logger } from '@/lib/utils';
 
 // Define validation schemas for this endpoint
 const createProjectSchema = z.object({
@@ -20,7 +21,7 @@ const querySchema = z.object({
 // GET /api/projects/secure - List projects with security
 export const GET = secureApiHandler(
   async ({ query, user, ip }) => {
-    console.log(`User ${user?.id || 'anonymous'} from ${ip} requesting projects`);
+    logger.debug(`User ${user?.id || 'anonymous'} from ${ip} requesting projects`);
 
     // Simulate database query with proper parameterization
     const projects = [
@@ -58,7 +59,7 @@ export const GET = secureApiHandler(
 // POST /api/projects/secure - Create project with full security
 export const POST = secureApiHandler(
   async ({ body, user, ip }) => {
-    console.log(`User ${user?.id} from ${ip} creating project: ${body.name}`);
+    logger.debug(`User ${user?.id} from ${ip} creating project: ${body.name}`);
 
     // Validate project name doesn't already exist
     // This would be a real database check with proper sanitization
@@ -103,7 +104,7 @@ export const DELETE = secureApiHandler(
       return apiError('Invalid project ID', 400);
     }
 
-    console.log(`User ${user?.id} from ${ip} deleting project: ${projectId}`);
+    logger.debug(`User ${user?.id} from ${ip} deleting project: ${projectId}`);
 
     // Check ownership (would be a real database query)
     const project = { id: projectId, owner: user?.id }; // Mock data

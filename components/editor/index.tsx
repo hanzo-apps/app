@@ -197,8 +197,8 @@ export const AppEditor = ({
     }
   }, [currentTab]);
 
-  const handleEditorValidation = (markers: editor.IMarker[]) => {
-    console.log("Editor validation markers:", markers);
+  const handleEditorValidation = (_markers: editor.IMarker[]) => {
+    // Validation markers available for future error display
   };
 
   const currentPageData = useMemo(() => {
@@ -432,8 +432,8 @@ export const AppEditor = ({
               editorRef={editorRef}
               isEnabled={isEditableModeEnabled}
               onToggle={setIsEditableModeEnabled}
-              onElementSelect={(info) => {
-                console.log("Element selected:", info);
+              onElementSelect={(_info) => {
+                // Element selection handled by VisualEditor
               }}
               onCodeUpdate={(newHtml, location) => {
                 // Update the current page with new HTML

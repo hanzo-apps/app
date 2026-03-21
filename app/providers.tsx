@@ -18,10 +18,8 @@ export function Providers({ children }: ProvidersProps) {
         <Web3Provider>
           <ErrorBoundary
             onError={(error, errorInfo) => {
-              // In production, send to error tracking service
               if (process.env.NODE_ENV === 'production') {
-                // TODO: Send to Sentry or similar
-                console.error('Production error:', error, errorInfo);
+                console.error('Uncaught error:', error, errorInfo);
               }
             }}
           >

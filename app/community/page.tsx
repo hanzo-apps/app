@@ -23,7 +23,7 @@ export default function CommunityPage() {
       forks: 256,
       likes: 890,
       category: "Templates",
-      tags: ["React", "Next.js", "Stripe", "PostgreSQL"],
+      tags: ["React", "Next.js", "Commerce", "PostgreSQL"],
       featured: true
     },
     {

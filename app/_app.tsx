@@ -3,9 +3,7 @@ import { registerServiceWorker } from '@/lib/service-worker/register';
 import type { NextWebVitalsMetric } from 'next/app';
 
 export function reportWebVitalsMetrics(metric: NextWebVitalsMetric) {
-  // Report web vitals to your analytics service
   if (process.env.NODE_ENV === 'production') {
-    console.log(metric);
     // Send to analytics endpoint
     fetch('/api/analytics/vitals', {
       method: 'POST',

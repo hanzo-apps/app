@@ -53,9 +53,6 @@ export async function POST(req: NextRequest) {
     // Allow tracking even without auth for demo
     const { event, metadata } = await req.json();
 
-    // Track usage event
-    console.log('Usage event:', { event, metadata, userId: user?.id || 'anonymous' });
-
     // In production, save to database
     // await trackUsageEvent(user.id, event, metadata);
 
