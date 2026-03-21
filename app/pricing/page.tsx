@@ -13,8 +13,7 @@ export default function PricingPage() {
   const router = useRouter();
 
   const handleCheckout = async (planId: string) => {
-    // TODO: Implement Stripe checkout
-    router.push(`/api/stripe/checkout?plan=${planId}&billing=${billingCycle}`);
+    router.push(`/api/commerce/checkout?plan=${planId}&billing=${billingCycle}`);
   };
 
   const plans = [

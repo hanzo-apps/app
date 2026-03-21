@@ -40,14 +40,12 @@ async function fetchIamUser(accessToken: string): Promise<IamUserInfo | undefine
     });
 
     if (!response.ok) {
-      console.log("IAM userinfo response not OK:", response.status);
       return undefined;
     }
 
     const userInfo: IamUserInfo = await response.json();
 
     if (!userInfo || !userInfo.sub) {
-      console.log("Invalid userinfo received from IAM:", userInfo);
       return undefined;
     }
 
@@ -115,7 +113,6 @@ export const isAuthenticated = async (): Promise<UserResponse | undefined> => {
                       origin.includes("localhost") || origin.includes("127.0.0.1");
 
   if (isLocalhost && process.env.NODE_ENV === "development") {
-    console.log("Local access detected - bypassing authentication");
     // Return a mock local user for development
     return {
       id: "local-dev-user",
@@ -135,7 +132,6 @@ export const isAuthenticated = async (): Promise<UserResponse | undefined> => {
 
   // Allow access with local API key for hanzod
   if (localApiKey && localApiKey === process.env.LOCAL_API_KEY) {
-    console.log("Local API key authentication successful");
     return {
       id: "api-user",
       name: "API User",
@@ -160,11 +156,8 @@ export const isAuthenticated = async (): Promise<UserResponse | undefined> => {
   }
 
   if (!rawToken) {
-    console.log("Auth failed: No token found and not localhost");
     return undefined;
   }
-
-  console.log("Verifying token with Hanzo IAM (hanzo.id)...");
 
   // Validate via OIDC userinfo endpoint
   const userInfo = await fetchIamUser(rawToken);
@@ -172,7 +165,6 @@ export const isAuthenticated = async (): Promise<UserResponse | undefined> => {
     return undefined;
   }
 
-  console.log("Auth successful for user:", userInfo.name || userInfo.sub);
   return mapIamUser(userInfo, rawToken);
 };
 

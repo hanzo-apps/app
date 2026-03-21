@@ -54,9 +54,7 @@ export function PageNavigator({ currentPath = "/", onNavigate, onReload }: PageN
 
   // Detect routes from HTML (in a real app, this would parse the actual content)
   const detectRoutes = () => {
-    // This would scan the HTML/JSX for route definitions
-    // For now using the hardcoded list above
-    console.log("Detecting routes from application...");
+    // Route detection from HTML/JSX would go here
   };
 
   const handleNavigate = (path: string) => {

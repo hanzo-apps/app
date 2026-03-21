@@ -16,13 +16,11 @@ export default function IframeDetector() {
         host.endsWith(".hanzo.bot") ||
         host.endsWith(".hanzo.team") ||
         host.endsWith(".hanzo.chat") ||
-        host.endsWith(".hanzo.space") ||
         host === "hanzo.ai" ||
         host === "hanzo.app" ||
         host === "hanzo.bot" ||
         host === "hanzo.team" ||
         host === "hanzo.chat" ||
-        host === "hanzo.space" ||
         host === "app.hanzo.bot" ||
         host === "localhost"
       );

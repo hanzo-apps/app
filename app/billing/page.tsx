@@ -44,7 +44,7 @@ interface Invoice {
   status: string;
   pdfUrl?: string;
   hostedUrl?: string;
-  type: 'stripe' | 'crypto';
+  type: 'card' | 'crypto';
   txHash?: string;
   chain?: string;
 }
@@ -67,8 +67,8 @@ interface Subscription {
   cancelAtPeriodEnd?: boolean;
 }
 
-// Credit tier options for Stripe checkout
-const STRIPE_CREDIT_TIERS = [
+// Credit tier options for checkout
+const CREDIT_TIERS = [
   { amount: 10, credits: 1000, label: 'Starter' },
   { amount: 25, credits: 2750, label: 'Popular', popular: true },
   { amount: 50, credits: 6000, label: 'Pro' },
@@ -83,8 +83,8 @@ export default function BillingPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [creditModalOpen, setCreditModalOpen] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'crypto'>('stripe');
-  const [stripeLoading, setStripeLoading] = useState<number | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'crypto'>('card');
+  const [checkoutLoading, setCheckoutLoading] = useState<number | null>(null);
 
   // Billing data
   const [credits, setCredits] = useState(0);
@@ -108,7 +108,7 @@ export default function BillingPage() {
       }
 
       // Fetch subscription status
-      const subResponse = await fetch('/api/stripe/subscription');
+      const subResponse = await fetch('/api/commerce/subscription');
       if (subResponse.ok) {
         const subData = await subResponse.json();
         if (subData.subscription) {
@@ -126,19 +126,19 @@ export default function BillingPage() {
       }
 
       // Fetch invoices from Stripe
-      const invoiceResponse = await fetch('/api/stripe/invoices');
+      const invoiceResponse = await fetch('/api/commerce/invoices');
       if (invoiceResponse.ok) {
         const invoiceData = await invoiceResponse.json();
         if (invoiceData.invoices) {
           setInvoices(invoiceData.invoices.map((inv: any) => ({
             ...inv,
-            type: 'stripe' as const,
+            type: 'card' as const,
           })));
         }
       }
 
       // Fetch credits
-      const creditsResponse = await fetch('/api/stripe/credits');
+      const creditsResponse = await fetch('/api/commerce/credits');
       if (creditsResponse.ok) {
         const creditsData = await creditsResponse.json();
         setCredits(creditsData.credits || 0);
@@ -173,10 +173,10 @@ export default function BillingPage() {
     }, ...prev]);
   };
 
-  const handleStripeCheckout = async (amount: number, credits: number) => {
-    setStripeLoading(amount);
+  const handleCardCheckout = async (amount: number, credits: number) => {
+    setCheckoutLoading(amount);
     try {
-      const response = await fetch('/api/stripe/checkout', {
+      const response = await fetch('/api/commerce/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -197,15 +197,15 @@ export default function BillingPage() {
         window.location.href = data.url;
       }
     } catch (error) {
-      console.error('Stripe checkout error:', error);
+      console.error('Checkout error:', error);
     } finally {
-      setStripeLoading(null);
+      setCheckoutLoading(null);
     }
   };
 
   const handleManageSubscription = async () => {
     try {
-      const response = await fetch('/api/stripe/portal', {
+      const response = await fetch('/api/commerce/portal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -224,7 +224,7 @@ export default function BillingPage() {
     }
   };
 
-  // Handle Stripe success redirect
+  // Handle checkout success redirect
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('success') === 'true') {
@@ -459,9 +459,9 @@ export default function BillingPage() {
             {/* Payment method toggle */}
             <div className="flex gap-2 p-1 bg-[#1a1a1a] border border-white/10 rounded-lg w-fit">
               <button
-                onClick={() => setPaymentMethod('stripe')}
+                onClick={() => setPaymentMethod('card')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  paymentMethod === 'stripe'
+                  paymentMethod === 'card'
                     ? 'bg-white/10 text-white'
                     : 'text-white/60 hover:text-white'
                 }`}
@@ -482,15 +482,15 @@ export default function BillingPage() {
               </button>
             </div>
 
-            {paymentMethod === 'stripe' ? (
+            {paymentMethod === 'card' ? (
               <Card className="bg-[#1a1a1a] border-white/10">
                 <CardHeader>
                   <CardTitle>Purchase Credits with Card</CardTitle>
-                  <CardDescription>Powered by Stripe. All major cards accepted.</CardDescription>
+                  <CardDescription>Powered by Hanzo Commerce. All major cards accepted.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {STRIPE_CREDIT_TIERS.map((tier) => (
+                    {CREDIT_TIERS.map((tier) => (
                       <div
                         key={tier.amount}
                         className={`relative p-5 rounded-xl border transition-all ${
@@ -513,8 +513,8 @@ export default function BillingPage() {
                           {tier.credits.toLocaleString()} credits
                         </div>
                         <Button
-                          onClick={() => handleStripeCheckout(tier.amount, tier.credits)}
-                          disabled={stripeLoading !== null}
+                          onClick={() => handleCardCheckout(tier.amount, tier.credits)}
+                          disabled={checkoutLoading !== null}
                           className={`w-full ${
                             tier.popular
                               ? 'bg-white text-black hover:bg-white/90'
@@ -522,7 +522,7 @@ export default function BillingPage() {
                           }`}
                           size="sm"
                         >
-                          {stripeLoading === tier.amount ? (
+                          {checkoutLoading === tier.amount ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
                           ) : (
                             <>
@@ -544,7 +544,7 @@ export default function BillingPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {STRIPE_CREDIT_TIERS.map((tier) => (
+                    {CREDIT_TIERS.map((tier) => (
                       <div
                         key={tier.amount}
                         className={`relative p-5 rounded-xl border transition-all ${
@@ -709,7 +709,7 @@ export default function BillingPage() {
         open={creditModalOpen && paymentMethod === 'crypto'}
         onOpenChange={(open) => {
           setCreditModalOpen(open);
-          if (!open) setPaymentMethod('stripe');
+          if (!open) setPaymentMethod('card');
         }}
         onSuccess={handleCryptoPaymentSuccess}
       />
@@ -760,7 +760,7 @@ function TransactionRow({ invoice }: { invoice: Invoice }) {
             <ExternalLink className="w-4 h-4" />
           </a>
         )}
-        {invoice.type === 'stripe' && (invoice.pdfUrl || invoice.hostedUrl) && (
+        {invoice.type === 'card' && (invoice.pdfUrl || invoice.hostedUrl) && (
           <Button
             variant="ghost"
             size="sm"

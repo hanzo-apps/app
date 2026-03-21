@@ -68,7 +68,6 @@ export const Uploader = ({
     onLoading(false);
   };
 
-  // TODO FIRST PUBLISH YOUR PROJECT TO UPLOAD IMAGES.
   return user?.id ? (
     <Popover open={open} onOpenChange={setOpen}>
       <form>

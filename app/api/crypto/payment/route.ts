@@ -1,52 +1,27 @@
 import { NextResponse } from 'next/server'
-import { createPublicClient, http } from 'viem'
-import { base, mainnet, arbitrum } from 'viem/chains'
-import { TREASURY_ADDRESS } from '@/lib/web3/config'
+import { getUserSession } from '@/lib/session'
 
-const clients = {
-  base: createPublicClient({ chain: base, transport: http() }),
-  mainnet: createPublicClient({ chain: mainnet, transport: http() }),
-  arbitrum: createPublicClient({ chain: arbitrum, transport: http() }),
-}
+// Crypto payment processing is not yet implemented.
+// When ready, this endpoint must:
+//   1. Verify on-chain receipt (tx confirmed, correct to-address, correct token, correct amount)
+//   2. Check for replay (tx hash not already credited)
+//   3. Store payment record in database
+//   4. Credit the user's account
+//
+// Until all of the above are in place, this endpoint returns 503.
 
-export async function POST(request: Request) {
-  try {
-    const { txHash, amount, credits, chain } = await request.json()
+export async function POST() {
+  const user = await getUserSession()
 
-    if (!txHash || !amount || !credits || !chain) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
-    }
-
-    // Verify the transaction on-chain
-    const client = clients[chain as keyof typeof clients]
-    if (!client) {
-      return NextResponse.json({ error: 'Invalid chain' }, { status: 400 })
-    }
-
-    const receipt = await client.getTransactionReceipt({ hash: txHash as `0x${string}` })
-
-    if (!receipt || receipt.status !== 'success') {
-      return NextResponse.json({ error: 'Transaction not confirmed' }, { status: 400 })
-    }
-
-    // TODO: Verify the transaction details (to address, amount, token)
-    // TODO: Store the payment in database
-    // TODO: Credit the user's account
-
-    // For now, just log the payment
-    console.log('Crypto payment received:', { txHash, amount, credits, chain })
-
-    return NextResponse.json({
-      success: true,
-      txHash,
-      credits,
-      message: 'Credits added successfully',
-    })
-  } catch (error) {
-    console.error('Crypto payment error:', error)
+  if (!user) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Payment verification failed' },
-      { status: 500 }
+      { error: 'Unauthorized' },
+      { status: 401 }
     )
   }
+
+  return NextResponse.json(
+    { error: 'Crypto payments are not yet available. Please use card payment.' },
+    { status: 503 }
+  )
 }

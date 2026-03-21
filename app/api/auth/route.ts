@@ -46,8 +46,6 @@ export async function POST(req: NextRequest) {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${host}`;
     const redirect_uri = `${appUrl}/api/auth/callback`;
 
-    console.log("Auth attempt with redirect_uri:", redirect_uri);
-
     const request_auth = await fetch(IAM_TOKEN_URL, {
       method: "POST",
       headers: {
@@ -99,8 +97,6 @@ export async function POST(req: NextRequest) {
       email: userInfo.email,
       avatarUrl: userInfo.picture || "",
     };
-    console.log("Login successful for user:", user.name);
-
     return NextResponse.json(
       {
         access_token: response.access_token,
