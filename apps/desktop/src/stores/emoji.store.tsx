@@ -104,7 +104,6 @@ export const createEmojiStore = (root: IRootStore) => {
         ? groupEmojis(minisearch.search(query) as any)
         : groupEmojis(rawEmojis)
 
-      // TODO move these from UI Store here
       let favorites = Object.entries(store.frequentlyUsedEmojis)
       if (!root.ui.query && favorites.length) {
         const mappedFavorites = favorites
