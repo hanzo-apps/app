@@ -85,7 +85,6 @@ function General() {
   }, [])
 
   const resetApp = async () => {
-    // TODO: Loading indicator
     await factoryReset()
   }
 

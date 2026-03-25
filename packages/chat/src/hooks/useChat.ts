@@ -271,7 +271,6 @@ export const useChat = () => {
             })
           : []
 
-        // TODO: Later replaced by Agent setup?
         const followUpWithToolUse = true
         while (
           !isCompleted &&
@@ -286,10 +285,6 @@ export const useChat = () => {
             availableTools,
             currentAssistant.parameters?.stream === false ? false : true,
             currentAssistant.parameters as unknown as Record<string, object>
-            // TODO: replace it with according provider setting later on
-            // selectedProvider === 'llama.cpp' && availableTools.length > 0
-            //   ? false
-            //   : true
           )
 
           if (!completion) throw new Error('No completion received')
@@ -382,7 +377,6 @@ export const useChat = () => {
               throw error
             }
           }
-          // TODO: Remove this check when integrating new llama.cpp extension
           if (
             accumulatedText.length === 0 &&
             toolCalls.length === 0 &&
