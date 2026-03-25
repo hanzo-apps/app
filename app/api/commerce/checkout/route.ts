@@ -10,14 +10,17 @@ import { getUserSession } from '@/lib/session';
 
 export async function POST(req: NextRequest) {
   try {
+    const user = await getUserSession();
+    if (!user) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
     if (!isCommerceConfigured()) {
       return NextResponse.json(
         { error: 'Payment system not configured. Please contact support.' },
         { status: 503 },
       );
     }
-
-    const user = await getUserSession();
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
