@@ -84,7 +84,6 @@ export const getProviders = async (): Promise<ModelProvider[]> => {
   const runtimeProviders: ModelProvider[] = []
 
   for (const [key, value] of EngineManager.instance().engines) {
-    // TODO: Remove this when the cortex extension is removed
     const providerName = key === 'cortex' ? 'llama.cpp' : key
 
     const models =
@@ -240,7 +239,6 @@ export const fetchModelsFromProvider = async (
 
 /**
  * Update the settings of a provider extension.
- * TODO: Later on we don't retrieve this using provider name
  * @param providerName
  * @param settings
  */

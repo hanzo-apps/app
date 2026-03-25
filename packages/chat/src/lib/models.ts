@@ -64,6 +64,5 @@ export const extractModelRepo = (model?: string) => {
  * @param provider - The provider name to normalize
  */
 export const normalizeProvider = (provider: string) => {
-  // TODO: After migrating to the new provider extension, remove this function
   return provider === 'llama.cpp' ? 'cortex' : provider
 }
