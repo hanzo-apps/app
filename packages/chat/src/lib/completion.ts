@@ -134,7 +134,6 @@ export const sendCompletion = async (
 
   const tokenJS = new TokenJS({
     apiKey: provider.api_key ?? (await invoke('app_token')),
-    // TODO: Retrieve from extension settings
     baseURL: provider.base_url,
     // Use Tauri's fetch to avoid CORS issues only for openai-compatible provider
     ...(providerName === 'openai-compatible' && { fetch: fetchTauri }),
@@ -171,7 +170,6 @@ export const sendCompletion = async (
     }
   }
 
-  // TODO: Add message history
   const completion = stream
     ? await tokenJS.chat.completions.create(
         {

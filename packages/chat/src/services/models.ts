@@ -170,7 +170,6 @@ export const deleteModel = async (id: string) => {
 
   try {
     return await extension.deleteModel(id).then(() => {
-      // TODO: This should be removed when we integrate new llama.cpp extension
       if (id.includes(':')) {
         extension.addSource(`cortexso/${id.split(':')[0]}`)
       }

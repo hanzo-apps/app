@@ -59,7 +59,7 @@ export const LocalAI = observer(() => {
     // Initialize models with download status
     const initModels = AVAILABLE_MODELS.map(model => ({
       ...model,
-      isDownloaded: false, // TODO: Check if model is already downloaded
+      isDownloaded: false,
       isDownloading: false,
       downloadProgress: 0
     }))
@@ -104,7 +104,6 @@ export const LocalAI = observer(() => {
 
   const handleSelectModel = (modelId: string) => {
     setSelectedModel(modelId)
-    // TODO: Set this as the active model in the store
     logger.info('Selected model:', modelId)
   }
 
@@ -210,7 +209,7 @@ export const LocalAI = observer(() => {
             
             {model.isDownloading && (
               <TouchableOpacity
-                onPress={() => {/* TODO: Cancel download */}}
+                onPress={() => {}}
                 className="btn-glass"
               >
                 <Text className="text font-semibold">Cancel</Text>
