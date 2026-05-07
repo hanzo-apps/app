@@ -108,7 +108,7 @@ export const rateLimiters = {
   // Strict rate limit for authentication endpoints
   auth: new RateLimiter({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    maxRequests: 5, // 5 requests per 15 minutes
+    maxRequests: 100, // 100 requests per 15 minutes
   }),
 
   // Moderate rate limit for API endpoints
