@@ -24,8 +24,8 @@ export class VirtualFileSystem {
   private generatedFiles: Map<string, VirtualFile> = new Map();
   private syncTimeouts: Map<string, NodeJS.Timeout> = new Map(); // Debounce sync calls
 
-  constructor() {
-    this.adapter = createClientAdapter();
+  constructor(adapter?: StorageAdapter) {
+    this.adapter = adapter ?? createClientAdapter();
   }
 
   async init(): Promise<void> {
@@ -1459,11 +1459,11 @@ export class VirtualFileSystem {
       throw new Error(`Project not found: ${projectId}`);
     }
 
-    if (!project.costTracking) {
+    if (!project.costTracking || !project.costTracking.providerBreakdown) {
       project.costTracking = {
-        totalCost: 0,
-        providerBreakdown: {},
-        sessionHistory: []
+        totalCost: project.costTracking?.totalCost ?? 0,
+        providerBreakdown: project.costTracking?.providerBreakdown ?? {},
+        sessionHistory: project.costTracking?.sessionHistory ?? []
       };
     }
 
@@ -2035,5 +2035,15 @@ export class VirtualFileSystem {
 }
 
 export const vfs = new VirtualFileSystem();
+
+let _contextVFSProvider: (() => VirtualFileSystem | undefined) | null = null;
+
+export function registerContextVFSProvider(provider: () => VirtualFileSystem | undefined): void {
+  _contextVFSProvider = provider;
+}
+
+export function getActiveVFS(): VirtualFileSystem {
+  return _contextVFSProvider?.() ?? vfs;
+}
 
 export * from './types';
