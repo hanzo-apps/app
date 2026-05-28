@@ -125,7 +125,7 @@ export default function BillingPage() {
         setSubscription({ plan: 'Pay as you go', status: 'active' });
       }
 
-      // Fetch invoices from Stripe
+      // Fetch invoices from Hanzo Commerce
       const invoiceResponse = await fetch('/api/commerce/invoices');
       if (invoiceResponse.ok) {
         const invoiceData = await invoiceResponse.json();
