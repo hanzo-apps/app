@@ -82,12 +82,12 @@ Create placeholder files, user sets values in Server Settings > Secrets:
 
 ` + "```" + `json
 {
-  "name": "STRIPE_API_KEY",
-  "description": "Stripe secret key for payments"
+  "name": "HANZO_COMMERCE_API_KEY",
+  "description": "Hanzo Commerce API key for payments"
 }
 ` + "```" + `
 
-Access in functions: ` + "`secrets.get('STRIPE_API_KEY')`" + `
+Access in functions: ` + "`secrets.get('HANZO_COMMERCE_API_KEY')`" + `
 
 ---
 
