@@ -51,8 +51,8 @@ Secret names must be **SCREAMING_SNAKE_CASE**.
 ### Via Shell Command
 
 ` + "```" + `bash
-# Stripe API key
-echo '{"name":"STRIPE_API_KEY","description":"Stripe secret key for payment processing"}' > /.server/secrets/STRIPE_API_KEY.json
+# Hanzo Commerce API key
+echo '{"name":"HANZO_COMMERCE_API_KEY","description":"Hanzo Commerce API key for payment processing"}' > /.server/secrets/HANZO_COMMERCE_API_KEY.json
 
 # SendGrid for email
 echo '{"name":"SENDGRID_KEY","description":"SendGrid API key for sending emails"}' > /.server/secrets/SENDGRID_KEY.json
@@ -74,20 +74,20 @@ echo '{"name":"WEBHOOK_SECRET","description":"Secret for verifying incoming webh
 ### Basic Usage
 
 ` + "```" + `javascript
-const apiKey = secrets.get('STRIPE_API_KEY');
+const apiKey = secrets.get('HANZO_COMMERCE_API_KEY');
 if (!apiKey) {
-  Response.error('Stripe not configured. Set the secret in Server Settings.', 500);
+  Response.error('Commerce not configured. Set the secret in Server Settings.', 500);
   return;
 }
 
 // Use the secret
-const response = await fetch('https://api.stripe.com/v1/charges', {
+const response = await fetch('https://api.hanzo.ai/v1/checkout/charge', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer ' + apiKey,
-    'Content-Type': 'application/x-www-form-urlencoded'
+    'Content-Type': 'application/json'
   },
-  body: 'amount=1000&currency=usd'
+  body: JSON.stringify({ amount: 1000, currency: 'usd' })
 });
 ` + "```" + `
 
@@ -107,11 +107,11 @@ if (secrets.has('OPTIONAL_FEATURE_KEY')) {
 
 ## Common Secret Patterns
 
-### Payment Processing (Stripe)
+### Payment Processing (Hanzo Commerce)
 
 ` + "```" + `bash
-echo '{"name":"STRIPE_API_KEY","description":"Stripe secret key (sk_live_... or sk_test_...)"}' > /.server/secrets/STRIPE_API_KEY.json
-echo '{"name":"STRIPE_WEBHOOK_SECRET","description":"Stripe webhook signing secret (whsec_...)"}' > /.server/secrets/STRIPE_WEBHOOK_SECRET.json
+echo '{"name":"HANZO_COMMERCE_API_KEY","description":"Hanzo Commerce API key"}' > /.server/secrets/HANZO_COMMERCE_API_KEY.json
+echo '{"name":"HANZO_COMMERCE_WEBHOOK_SECRET","description":"Hanzo Commerce webhook signing secret"}' > /.server/secrets/HANZO_COMMERCE_WEBHOOK_SECRET.json
 ` + "```" + `
 
 ### Email Services
@@ -159,7 +159,7 @@ echo '{"name":"MONGODB_URI","description":"MongoDB connection string"}' > /.serv
 ### 1. Create Secrets
 
 ` + "```" + `bash
-echo '{"name":"STRIPE_API_KEY","description":"Stripe secret key"}' > /.server/secrets/STRIPE_API_KEY.json
+echo '{"name":"HANZO_COMMERCE_API_KEY","description":"Hanzo Commerce API key"}' > /.server/secrets/HANZO_COMMERCE_API_KEY.json
 ` + "```" + `
 
 ### 2. Create Edge Function
@@ -169,13 +169,13 @@ echo '{"name":"STRIPE_API_KEY","description":"Stripe secret key"}' > /.server/se
   "name": "create-checkout",
   "method": "POST",
   "enabled": true,
-  "code": "const stripeKey = secrets.get('STRIPE_API_KEY');\nif (!stripeKey) { Response.error('Stripe not configured', 500); return; }\n\nconst { priceId, successUrl, cancelUrl } = request.body;\nif (!priceId) { Response.error('Price ID required', 400); return; }\n\nconst res = await fetch('https://api.stripe.com/v1/checkout/sessions', {\n  method: 'POST',\n  headers: {\n    'Authorization': 'Bearer ' + stripeKey,\n    'Content-Type': 'application/x-www-form-urlencoded'\n  },\n  body: new URLSearchParams({\n    'mode': 'payment',\n    'line_items[0][price]': priceId,\n    'line_items[0][quantity]': '1',\n    'success_url': successUrl || 'https://example.com/success',\n    'cancel_url': cancelUrl || 'https://example.com/cancel'\n  })\n});\n\nconst session = await res.json();\nif (!res.ok) { Response.error(session.error?.message || 'Stripe error', 400); return; }\nResponse.json({ url: session.url });"
+  "code": "const commerceKey = secrets.get('HANZO_COMMERCE_API_KEY');\nif (!commerceKey) { Response.error('Commerce not configured', 500); return; }\n\nconst { planId, successUrl, cancelUrl } = request.body;\nif (!planId) { Response.error('planId required', 400); return; }\n\nconst res = await fetch('https://api.hanzo.ai/v1/checkout/charge', {\n  method: 'POST',\n  headers: {\n    'Authorization': 'Bearer ' + commerceKey,\n    'Content-Type': 'application/json'\n  },\n  body: JSON.stringify({\n    planId,\n    mode: 'payment',\n    successUrl: successUrl || 'https://example.com/success',\n    cancelUrl: cancelUrl || 'https://example.com/cancel',\n    paymentMethod: { type: 'card' }\n  })\n});\n\nconst session = await res.json();\nif (!res.ok) { Response.error(session.error || 'Commerce error', 400); return; }\nResponse.json({ url: session.url });"
 }
 ` + "```" + `
 
 ### 3. User Sets Value
 
-User goes to **Server Settings > Secrets** and enters their Stripe API key.
+User goes to **Server Settings > Secrets** and enters their Hanzo Commerce API key.
 
 ---
 
@@ -246,7 +246,7 @@ Response.json({ configured: secrets.has('API_KEY') });
 
 | Good | Bad |
 |------|-----|
-| ` + "`STRIPE_API_KEY`" + ` | ` + "`stripeApiKey`" + ` |
+| ` + "`HANZO_COMMERCE_API_KEY`" + ` | ` + "`commerceApiKey`" + ` |
 | ` + "`SENDGRID_KEY`" + ` | ` + "`sendgrid-key`" + ` |
 | ` + "`OPENAI_API_KEY`" + ` | ` + "`OpenAI_Key`" + ` |
 | ` + "`WEBHOOK_SECRET`" + ` | ` + "`webhooksecret`" + ` |
