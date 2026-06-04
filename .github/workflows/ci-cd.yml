@@ -4,14 +4,18 @@ on:
   push:
     branches: [main, develop, dev, test]
     tags: ['v*']
+  pull_request:
+    branches: [main]
 permissions:
   contents: read
   id-token: write
   packages: write
+  id-token: write
 jobs:
   docker:
+    if: github.event_name != 'pull_request'
     uses: hanzoai/.github/.github/workflows/docker-build.yml@main
     with:
-      image: ghcr.io/hanzoai/app
+      image: ghcr.io/hanzoai/build
       dockerfile: Dockerfile.production
     secrets: inherit
