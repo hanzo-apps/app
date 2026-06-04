@@ -42,11 +42,6 @@ export const schemas = {
     sort: z.enum(['asc', 'desc']).default('desc'),
   }),
 
-  // Payment schemas
-  stripeCustomerId: z.string().startsWith('cus_', 'Invalid Stripe customer ID'),
-
-  stripePaymentIntentId: z.string().startsWith('pi_', 'Invalid payment intent ID'),
-
   // AI/LLM schemas
   aiPrompt: z
     .string()
