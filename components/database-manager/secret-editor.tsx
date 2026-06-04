@@ -106,7 +106,7 @@ export function SecretEditor({
               id="name"
               value={name}
               onChange={handleNameChange}
-              placeholder="STRIPE_API_KEY"
+              placeholder="HANZO_COMMERCE_API_KEY"
               disabled={!!secret}
               className="font-mono"
             />
@@ -126,7 +126,7 @@ export function SecretEditor({
                 type={showValue ? 'text' : 'password'}
                 value={value}
                 onChange={e => setValue(e.target.value)}
-                placeholder={secret ? 'Enter new value to change...' : 'sk_live_...'}
+                placeholder={secret ? 'Enter new value to change...' : 'hzc_live_...'}
                 className="pr-10 font-mono"
               />
               <Button
@@ -157,7 +157,7 @@ export function SecretEditor({
               id="description"
               value={description}
               onChange={e => setDescription(e.target.value)}
-              placeholder="Production Stripe API key"
+              placeholder="Production Hanzo Commerce API key"
             />
           </div>
 
@@ -169,15 +169,15 @@ export function SecretEditor({
             </div>
             <pre className="text-xs font-mono bg-background p-2 rounded overflow-x-auto">
 {`// Get secret value
-const apiKey = secrets.get('${name || 'STRIPE_API_KEY'}');
+const apiKey = secrets.get('${name || 'HANZO_COMMERCE_API_KEY'}');
 
 // Check if secret exists
-if (secrets.has('${name || 'STRIPE_API_KEY'}')) {
+if (secrets.has('${name || 'HANZO_COMMERCE_API_KEY'}')) {
   // Use the secret
 }
 
 // List all available secrets
-const allSecrets = secrets.list(); // ['${name || 'STRIPE_API_KEY'}', ...]`}
+const allSecrets = secrets.list(); // ['${name || 'HANZO_COMMERCE_API_KEY'}', ...]`}
             </pre>
           </div>
 
