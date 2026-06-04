@@ -428,7 +428,7 @@ export interface ServerFunction {
 export interface Secret {
   id: string;
   projectId: string;
-  name: string;          // e.g., 'STRIPE_API_KEY', 'SENDGRID_KEY'
+  name: string;          // e.g., 'HANZO_COMMERCE_API_KEY', 'SENDGRID_KEY'
   description?: string;
   hasValue: boolean;     // true if user has set a value, false if placeholder
   value?: string;        // Cleartext value for project-level storage (never sent to client in API responses)

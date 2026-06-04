@@ -73,7 +73,7 @@ export const templates: Template[] = [
   {
     id: "ecommerce-storefront",
     name: "E-commerce Storefront",
-    description: "A full-featured e-commerce storefront with product catalog, shopping cart, checkout flow, and payment integration. Includes product search and filtering, image galleries, reviews system, and inventory management. Stripe integration ready.",
+    description: "A full-featured e-commerce storefront with product catalog, shopping cart, checkout flow, and payment integration. Includes product search and filtering, image galleries, reviews system, and inventory management. Hanzo Commerce integration ready.",
     category: "ecommerce",
     demoUrl: "https://hanzo.ai/templates/ecommerce-storefront",
     features: [
