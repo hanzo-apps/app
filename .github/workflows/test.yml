@@ -16,7 +16,7 @@ env:
 jobs:
   unit-integration-tests:
     name: Unit & Integration Tests
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
 
     strategy:
       matrix:
@@ -73,7 +73,7 @@ jobs:
 
   e2e-tests:
     name: E2E Tests
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
 
     services:
       postgres:
@@ -140,7 +140,7 @@ jobs:
 
   visual-regression:
     name: Visual Regression Tests
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
     if: github.event_name == 'pull_request'
 
     steps:
@@ -189,7 +189,7 @@ jobs:
 
   performance-tests:
     name: Performance Tests
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
 
     steps:
       - name: Checkout code
@@ -233,7 +233,7 @@ jobs:
 
   security-scan:
     name: Security Scan
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
 
     steps:
       - name: Checkout code
@@ -268,7 +268,7 @@ jobs:
   test-matrix-complete:
     name: All Tests Complete
     needs: [unit-integration-tests, e2e-tests, performance-tests, security-scan]
-    runs-on: ubuntu-latest
+    runs-on: hanzo-build-linux-amd64
     if: always()
 
     steps:
