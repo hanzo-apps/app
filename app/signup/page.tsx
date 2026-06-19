@@ -2,27 +2,26 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useIam } from '@hanzo/iam/react';
 import { HanzoLogo } from '@/components/HanzoLogo';
-import { Button } from "@hanzo/ui";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@hanzo/ui";
-import { Badge } from "@hanzo/ui";
-import { getAuth } from '@/app/actions/auth';
+import { Button } from '@hanzo/ui';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@hanzo/ui';
+import { Badge } from '@hanzo/ui';
 import { Loader2, Sparkles, Zap, Shield, Rocket } from 'lucide-react';
 
+/**
+ * /signup — HIP-0111 canonical. There is no local credential form: Hanzo IAM
+ * owns every credential interaction. "Sign up with Hanzo" starts the same
+ * @hanzo/iam OAuth2 PKCE flow as /login (IAM presents register on its
+ * authorize page). Monochrome, on-brand — no red, no off-brand gradients.
+ */
 export default function SignupPage() {
-  const router = useRouter();
+  const { login } = useIam();
   const [loading, setLoading] = useState(false);
 
-  const handleSignup = async () => {
+  const handleSignup = () => {
     setLoading(true);
-    try {
-      const authUrl = await getAuth();
-      window.location.href = authUrl;
-    } catch (error) {
-      console.error('Signup error:', error);
-      setLoading(false);
-    }
+    login();
   };
 
   return (
@@ -48,9 +47,9 @@ export default function SignupPage() {
           <Card className="bg-[#1a1a1a] border-white/10">
             <CardHeader className="space-y-1 text-center pb-8">
               <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] rounded-2xl flex items-center justify-center relative">
+                <div className="w-16 h-16 bg-white/[0.06] border border-white/10 rounded-2xl flex items-center justify-center relative">
                   <HanzoLogo className="w-10 h-10 text-white" />
-                  <Badge className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0">
+                  <Badge className="absolute -top-2 -right-2 bg-white text-black border-0">
                     Free
                   </Badge>
                 </div>
@@ -66,29 +65,29 @@ export default function SignupPage() {
                 <h3 className="text-sm font-semibold text-white/80 mb-3">What you'll get:</h3>
                 <div className="grid grid-cols-1 gap-2">
                   <div className="flex items-center gap-3">
-                    <Sparkles className="w-4 h-4 text-[#fd4444]" />
+                    <Sparkles className="w-4 h-4 text-white/70" />
                     <span className="text-sm text-white/70">Access to 100+ AI models</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Zap className="w-4 h-4 text-yellow-400" />
+                    <Zap className="w-4 h-4 text-white/70" />
                     <span className="text-sm text-white/70">$5 free cloud credits to start</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Shield className="w-4 h-4 text-green-400" />
+                    <Shield className="w-4 h-4 text-white/70" />
                     <span className="text-sm text-white/70">Secure cloud infrastructure</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Rocket className="w-4 h-4 text-blue-400" />
+                    <Rocket className="w-4 h-4 text-white/70" />
                     <span className="text-sm text-white/70">Deploy instantly to production</span>
                   </div>
                 </div>
               </div>
 
-              {/* Signup Button */}
+              {/* Signup Button — Hanzo IAM, the only way */}
               <Button
                 onClick={handleSignup}
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-medium h-12"
+                className="w-full bg-white text-black hover:bg-white/90 font-medium h-12"
                 size="lg"
               >
                 {loading ? (
@@ -115,11 +114,11 @@ export default function SignupPage() {
               {/* Trust badges */}
               <div className="flex items-center justify-center gap-6 pt-2">
                 <div className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-green-500" />
+                  <Shield className="w-4 h-4 text-white/60" />
                   <span className="text-xs text-white/60">SOC 2 Compliant</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-green-500" />
+                  <Shield className="w-4 h-4 text-white/60" />
                   <span className="text-xs text-white/60">GDPR Ready</span>
                 </div>
               </div>
@@ -128,7 +127,7 @@ export default function SignupPage() {
               <div className="pt-4 text-center space-y-2">
                 <p className="text-sm text-white/60">
                   Already have an account?{' '}
-                  <Link href="/login" className="text-[#fd4444] hover:text-[#ff6b6b]">
+                  <Link href="/login" className="text-white hover:text-white/70 underline">
                     Sign in
                   </Link>
                 </p>
