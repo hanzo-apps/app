@@ -17,8 +17,9 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 /**
- * Auth context provider. Wraps children with Hanzo IAM auth state.
- * Auto-fetches user on mount via /api/auth/me.
+ * Auth context provider. Exposes Hanzo IAM auth state (HIP-0111) derived from
+ * the canonical `@hanzo/iam` SDK via `useAuth()`. Must render inside
+ * `IamClientProvider`.
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
   const auth = useAuth();
