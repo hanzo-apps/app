@@ -1,0 +1,24 @@
+# TRANSITIONAL BRIDGE — identical to hanzo.yml.
+#
+# hanzo.yml is the canonical config name. The LIVE platform still reads
+# `.platform.yml` (the build-scheduler dual-read that prefers hanzo.yml is
+# landed but not yet deployed). This file exists only so the live platform
+# can build+deploy hanzo.app now. DELETE it once the platform reads hanzo.yml.
+build:
+  matrix:
+    - { os: linux, arch: amd64 }
+    - { os: linux, arch: arm64 }
+  dockerfile: ./Dockerfile.production
+  context: .
+  image: ghcr.io/hanzoai/app
+  tag-pattern: "{{git.sha}}"
+  push: true
+deploy:
+  on:
+    - main
+  target:
+    cluster: hanzo-k8s
+    namespace: hanzo
+    operator: hanzo-operator
+    crd: Service
+    name: hanzo-app
