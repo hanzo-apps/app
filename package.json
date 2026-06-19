@@ -4,8 +4,8 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "cp node_modules/esbuild-wasm/esbuild.wasm public/esbuild.wasm 2>/dev/null || true"
