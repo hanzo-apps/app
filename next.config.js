@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Use default output mode (next start compatible)
+  // Standalone output — Next traces only the server deps actually used, so the
+  // runtime image is a fraction of the full node_modules (see Dockerfile.production).
+  output: "standalone",
 
   // Disable development indicators in production
   devIndicators: {
