@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hanzo/iam": "^0.12.2",
     "@hanzo/ui": "^5.3.36",
     "@hookform/resolvers": "^3.9.0",
     "@paper-design/shaders-react": "^0.0.71",
