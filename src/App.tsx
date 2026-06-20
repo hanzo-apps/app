@@ -11,6 +11,7 @@ import AccountLayout from "./components/account/AccountLayout";
 import Account from "./pages/Account";
 import Organization from "./pages/Organization";
 import LoginPage from "./pages/LoginPage";
+import AuthCallback from "./components/auth/AuthCallback";
 import SignUpPage from "./pages/SignUpPage";
 import BillingPage from "./pages/Billing";
 import { BillingProvider } from "./contexts/BillingContext";
@@ -139,6 +140,7 @@ const MarketingRoutes = () => {
       <Route path="/index" element={<Index />} />
       <Route path="/pricing" element={<Pricing />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/status" element={<StatusPage />} />
       <Route path="/leadership" element={<Leadership />} />
