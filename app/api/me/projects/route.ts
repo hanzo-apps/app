@@ -3,8 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createRepo, RepoDesignation, uploadFiles } from "@huggingface/hub";
 
 import { isAuthenticated } from "@/lib/auth";
-import Project from "@/models/Project";
-import dbConnect from "@/lib/mongodb";
+import { listProjects, createProject } from "@/lib/db/projects";
 import { COLORS } from "@/lib/utils";
 import { Page } from "@/types";
 
@@ -15,28 +14,8 @@ export async function GET() {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  await dbConnect();
-
-  const projects = await Project.find({
-    user_id: user?.id,
-  })
-    .sort({ _createdAt: -1 })
-    .limit(100)
-    .lean();
-  if (!projects) {
-    return NextResponse.json(
-      {
-        ok: false,
-        projects: [],
-      },
-      { status: 404 }
-    );
-  }
   return NextResponse.json(
-    {
-      ok: true,
-      projects,
-    },
+    { ok: true, projects: await listProjects(user.token, user.id) },
     { status: 200 }
   );
 }
@@ -56,8 +35,6 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     );
   }
-
-  await dbConnect();
 
   try {
     let readme = "";
@@ -112,9 +89,9 @@ Check out the configuration reference at https://docs.hanzo.ai/spaces-config-ref
       commitTitle: `${prompts[prompts.length - 1]} - Initial Deployment`,
     });
     const path = repoUrl.split("/").slice(-2).join("/");
-    const project = await Project.create({
-      user_id: user.id,
-      space_id: path,
+    const project = await createProject(user.token, {
+      userId: user.id,
+      spaceId: path,
       prompts,
     });
     return NextResponse.json({ project, path, ok: true }, { status: 201 });
