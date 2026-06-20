@@ -1,8 +1,11 @@
 "use server";
 
 import { isAuthenticated } from "@/lib/auth";
-import dbConnect from "@/lib/mongodb";
-import Project from "@/models/Project";
+import {
+  listProjects,
+  getProject as getProjectRow,
+  spaceId,
+} from "@/lib/db/projects";
 import { Project as ProjectType } from "@/types";
 
 export async function getProjects(): Promise<{
@@ -10,30 +13,15 @@ export async function getProjects(): Promise<{
   projects: ProjectType[];
 }> {
   const user = await isAuthenticated();
-
   if (!user) {
-    return {
-      ok: false,
-      projects: [],
-    };
-  }
-
-  await dbConnect();
-  const projects = await Project.find({
-    user_id: user?.id,
-  })
-    .sort({ _createdAt: -1 })
-    .limit(100)
-    .lean();
-  if (!projects) {
-    return {
-      ok: false,
-      projects: [],
-    };
+    return { ok: false, projects: [] };
   }
   return {
     ok: true,
-    projects: JSON.parse(JSON.stringify(projects)) as ProjectType[],
+    projects: (await listProjects(
+      user.token,
+      user.id
+    )) as unknown as ProjectType[],
   };
 }
 
@@ -42,21 +30,12 @@ export async function getProject(
   repoId: string
 ): Promise<ProjectType | null> {
   const user = await isAuthenticated();
-
   if (!user) {
     return null;
   }
-
-  await dbConnect();
-  const project = await Project.findOne({
-    user_id: user.id,
-    namespace,
-    repoId,
-  }).lean();
-
-  if (!project) {
-    return null;
-  }
-
-  return JSON.parse(JSON.stringify(project)) as ProjectType;
+  return (await getProjectRow(
+    user.token,
+    user.id,
+    spaceId(namespace, repoId)
+  )) as unknown as ProjectType | null;
 }

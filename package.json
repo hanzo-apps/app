@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@base-org/account": "^2.5.6",
+    "@hanzo/base": "^0.2.0",
     "@hanzo/iam": "^0.11.0",
     "@hanzo/ui": "^5.5.1",
     "@huggingface/hub": "^2.11.0",
@@ -52,7 +53,6 @@
     "lucide-react": "^0.577.0",
     "lz-string": "^1.5.0",
     "monaco-editor": "^0.55.1",
-    "mongoose": "^9.3.1",
     "next": "^16.2.1",
     "next-themes": "^0.4.6",
     "postcss": "^8.5.8",

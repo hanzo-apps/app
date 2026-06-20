@@ -10,7 +10,7 @@ build:
     - { os: linux, arch: arm64 }
   dockerfile: ./Dockerfile.production
   context: .
-  image: ghcr.io/hanzoai/app
+  image: ghcr.io/hanzoai/hanzo-app
   tag-pattern: "{{git.sha}}"
   push: true
 deploy:
