@@ -1,58 +1,53 @@
-# Production Dockerfile - Optimized single-stage build
-FROM node:20-alpine
+# Multi-stage production build — Next.js standalone output for a small runtime
+# image (traces only the server deps actually used, not all of node_modules).
 
-# Enable pnpm via corepack
+# ── Build stage ─────────────────────────────────────────────
+FROM node:20-alpine AS builder
 RUN corepack enable && corepack prepare pnpm@10.17.1 --activate
-
-# Install system dependencies
 RUN apk add --no-cache libc6-compat
-
 WORKDIR /app
 
-# Copy package files
 COPY package.json pnpm-lock.yaml* ./
-
-# Install all dependencies (including dev for build)
 RUN pnpm install --no-frozen-lockfile
 
-# Copy application source
 COPY . .
 
-# Build Next.js application
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 ENV NODE_OPTIONS="--max-old-space-size=4096"
-
-# IMPORTANT: Do NOT set CI=true here. Next.js 15 skips clientReferenceManifest
-# generation when CI=true, causing InvariantError at runtime on every request.
 # NEXT_BUILD_ONLY signals our own code to skip env validation at build time.
 ENV NEXT_BUILD_ONLY=true
 
-# CRITICAL: Explicitly unset CI so Next.js 15 generates clientReferenceManifest.
-# GitHub Actions sets CI=true in the runner env which leaks into Docker builds.
-# Cache bust: 2026-03-21T08:30Z
+# CI=false so Next generates the clientReferenceManifest (it skips it when
+# CI=true, which GitHub Actions sets and leaks into the Docker build).
 RUN CI=false pnpm run build && \
-    # Verify build artifacts exist
-    if [ ! -d ".next" ]; then \
-      echo "ERROR: Build failed - .next directory not created" && exit 1; \
+    if [ ! -d ".next/standalone" ]; then \
+      echo "ERROR: standalone output missing (is output:'standalone' set?)" && exit 1; \
     fi && \
-    # Verify clientReferenceManifest exists (Next.js 15 skips it when CI=true)
     if ! find .next/server -name '*client-reference-manifest*' 2>/dev/null | head -1 | grep -q .; then \
       echo "ERROR: clientReferenceManifest not generated (CI env leak?)" && exit 1; \
     fi && \
-    echo "Build successful - .next directory and manifests verified"
+    echo "Build OK — standalone output verified"
 
-# Skip prune — node_modules already includes only what's needed for runtime
+# ── Runtime stage — minimal ─────────────────────────────────
+FROM node:20-alpine AS runner
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
 
-# Runtime configuration
-EXPOSE 3000
 ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Health check
+# Next standalone: the traced server (server.js + minimal node_modules), plus
+# the static assets and public/ it serves.
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+
+EXPOSE 3000
+
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD node -e "require('http').get('http://localhost:3000/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }).on('error', () => { process.exit(1); })" || exit 1
 
-# Start production server
-CMD ["pnpm", "start"]
+CMD ["node", "server.js"]
