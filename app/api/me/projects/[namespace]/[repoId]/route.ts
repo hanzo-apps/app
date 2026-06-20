@@ -3,8 +3,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { RepoDesignation, spaceInfo, uploadFiles, listFiles } from "@huggingface/hub";
 
 import { isAuthenticated } from "@/lib/auth";
-import Project from "@/models/Project";
-import dbConnect from "@/lib/mongodb";
+import {
+  getProject,
+  createProject,
+  updateProject,
+  deleteProject,
+  spaceId,
+} from "@/lib/db/projects";
 import { Page } from "@/types";
 
 export async function GET(
@@ -17,14 +22,10 @@ export async function GET(
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  await dbConnect();
   const param = await params;
   const { namespace, repoId } = param;
 
-  const project = await Project.findOne({
-    user_id: user.id,
-    space_id: `${namespace}/${repoId}`,
-  }).lean();
+  const project = await getProject(user.token, user.id, spaceId(namespace, repoId));
   if (!project) {
     return NextResponse.json(
       {
@@ -69,7 +70,7 @@ export async function GET(
     const images: string[] = [];
 
     const allowedImagesExtensions = ["jpg", "jpeg", "png", "gif", "svg", "webp", "avif", "heic", "heif", "ico", "bmp", "tiff", "tif"];
-    
+
     // TODO: Replace HF Hub URLs with Hanzo storage URLs when migration is complete
     for await (const fileInfo of listFiles({repo, accessToken: user.token as string})) {
       if (fileInfo.path.endsWith(".html")) {
@@ -123,10 +124,7 @@ export async function GET(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.statusCode === 404) {
-      await Project.deleteOne({
-        user_id: user.id,
-        space_id: `${namespace}/${repoId}`,
-      });
+      await deleteProject(user.token, user.id, spaceId(namespace, repoId));
       return NextResponse.json(
         { error: "Space not found", ok: false },
         { status: 404 }
@@ -149,15 +147,11 @@ export async function PUT(
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  await dbConnect();
   const param = await params;
   const { namespace, repoId } = param;
   const { pages, prompts } = await req.json();
 
-  const project = await Project.findOne({
-    user_id: user.id,
-    space_id: `${namespace}/${repoId}`,
-  }).lean();
+  const project = await getProject(user.token, user.id, spaceId(namespace, repoId));
   if (!project) {
     return NextResponse.json(
       {
@@ -189,16 +183,9 @@ export async function PUT(
     commitTitle: `${prompts[prompts.length - 1]} - Follow Up Deployment`,
   });
 
-  await Project.updateOne(
-    { user_id: user.id, space_id: `${namespace}/${repoId}` },
-    {
-      $set: {
-        prompts: [
-          ...prompts,
-        ],
-      },
-    }
-  );
+  await updateProject(user.token, user.id, spaceId(namespace, repoId), {
+    prompts: [...prompts],
+  });
   return NextResponse.json({ ok: true }, { status: 200 });
 }
 
@@ -212,7 +199,6 @@ export async function POST(
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  await dbConnect();
   const param = await params;
   const { namespace, repoId } = param;
 
@@ -241,11 +227,8 @@ export async function POST(
     );
   }
 
-  const project = await Project.findOne({
-    user_id: user.id,
-    space_id: `${namespace}/${repoId}`,
-  }).lean();
-  if (project) {
+  const existing = await getProject(user.token, user.id, spaceId(namespace, repoId));
+  if (existing) {
     // redirect to the project page if it already exists
     return NextResponse.json(
       {
@@ -257,13 +240,12 @@ export async function POST(
     );
   }
 
-  const newProject = new Project({
-    user_id: user.id,
-    space_id: `${namespace}/${repoId}`,
+  const newProject = await createProject(user.token, {
+    userId: user.id,
+    spaceId: spaceId(namespace, repoId),
     prompts: [],
   });
 
-  await newProject.save();
   return NextResponse.json(
     {
       ok: true,

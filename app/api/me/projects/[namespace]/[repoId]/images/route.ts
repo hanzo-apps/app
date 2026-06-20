@@ -3,8 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { RepoDesignation, uploadFiles } from "@huggingface/hub";
 
 import { isAuthenticated } from "@/lib/auth";
-import Project from "@/models/Project";
-import dbConnect from "@/lib/mongodb";
+import { getProject, spaceId } from "@/lib/db/projects";
 
 // No longer need the ImageUpload interface since we're handling FormData with File objects
 
@@ -19,15 +18,12 @@ export async function POST(
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    await dbConnect();
     const param = await params;
     const { namespace, repoId } = param;
 
-    const project = await Project.findOne({
-      user_id: user.id,
-      space_id: `${namespace}/${repoId}`,
-    }).lean();
-    
+    const project = await getProject(user.token, user.id, spaceId(namespace, repoId));
+
+
     if (!project) {
       return NextResponse.json(
         {
