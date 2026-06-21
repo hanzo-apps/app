@@ -1,0 +1,12 @@
+app
+Copyright (c) 2024 Hanzo AI
+
+This product includes software from Jan (https://github.com/menloresearch/jan), licensed under AGPL-3.0:
+
+    Copyright (c) Menlo Research
+
+This product includes software from Sol (https://github.com/ospfranco/sol), licensed under MIT:
+
+    Copyright (c) Oscar Franco
+
+The combined work is licensed under AGPL-3.0 to comply with Jan's license terms.
