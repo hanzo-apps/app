@@ -78,6 +78,36 @@ export const BUILT_IN_TEMPLATES: BuiltInTemplateMetadata[] = [
     },
   },
   {
+    id: 'hanzo-fullstack',
+    name: 'Hanzo Full-Stack (Base + IAM + AI)',
+    description: 'AI app pre-wired to Hanzo Base (data), IAM (auth), and the Hanzo LLM API.',
+    isBuiltIn: true,
+    runtime: 'static',
+    updatedAt: new Date('2025-01-01T00:00:00Z'),
+    backendFeatures: {
+      edgeFunctions: [
+        {
+          name: 'ask',
+          method: 'POST',
+          code: `// Calls the Hanzo LLM API (api.hanzo.ai, 51 models) with a HANZO_API_KEY secret.\nconst body = typeof request.body === 'string' ? JSON.parse(request.body) : request.body;\nconst prompt = body && body.prompt;\nif (!prompt) { Response.json({ error: 'Missing prompt' }, 400); return; }\nif (!secrets.has('HANZO_API_KEY')) { Response.json({ error: 'Set HANZO_API_KEY in Secrets to enable AI.' }, 503); return; }\nconst model = (body && body.model) || 'gpt-4o-mini';\nconst res = await fetch('https://api.hanzo.ai/v1/chat/completions', {\n  method: 'POST',\n  headers: { 'Authorization': 'Bearer ' + secrets.get('HANZO_API_KEY'), 'Content-Type': 'application/json' },\n  body: JSON.stringify({ model, messages: [{ role: 'user', content: prompt }] })\n});\nconst data = await res.json();\nconst text = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;\nResponse.json({ text: text || '', model });`,
+          description: 'Ask the Hanzo LLM API — returns a completion for a prompt',
+          enabled: true,
+          timeoutMs: 30000,
+        },
+      ],
+      serverFunctions: [],
+      secrets: [
+        { name: 'HANZO_API_KEY', description: 'Hanzo API key (hk-…) for api.hanzo.ai — create one in the Hanzo console' },
+      ],
+      // Provisioned into Hanzo Base as the `notes` collection (persistent, per-user).
+      databaseSchema: `CREATE TABLE IF NOT EXISTS notes (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  body TEXT NOT NULL,\n  created_at DATETIME DEFAULT CURRENT_TIMESTAMP\n);`,
+    },
+    metadata: {
+      author: 'Hanzo',
+      tags: ['fullstack', 'base', 'iam', 'ai', 'server-mode'],
+    },
+  },
+  {
     id: 'react-starter',
     name: 'Starter (React + TypeScript)',
     description: 'Minimal React app with TypeScript and auto-bundling',

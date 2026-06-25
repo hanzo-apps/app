@@ -40,6 +40,7 @@ import {
   BAREBONES_PROJECT_TEMPLATE,
   DEMO_PROJECT_TEMPLATE,
   CONTACT_LANDING_PROJECT_TEMPLATE,
+  HANZO_FULLSTACK_PROJECT_TEMPLATE,
   BLOG_PROJECT_TEMPLATE,
   REACT_STARTER_PROJECT_TEMPLATE,
   REACT_DEMO_PROJECT_TEMPLATE,
@@ -318,6 +319,9 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
           case 'contact-landing':
             await createProjectFromTemplate(vfs, finalProject.id, CONTACT_LANDING_PROJECT_TEMPLATE);
             break;
+          case 'hanzo-fullstack':
+            await createProjectFromTemplate(vfs, finalProject.id, HANZO_FULLSTACK_PROJECT_TEMPLATE);
+            break;
           case 'blog':
             await createProjectFromTemplate(vfs, finalProject.id, BLOG_PROJECT_TEMPLATE);
             break;
@@ -353,6 +357,26 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
           } catch (provisionError) {
             logger.error('Failed to provision backend features:', provisionError);
             toast.warning('Project created but backend features provisioning failed.');
+          }
+
+          // In Server Mode, also provision the schema into Hanzo Base so the
+          // generated app gets a persistent, IAM-native data layer.
+          if (process.env.NEXT_PUBLIC_SERVER_MODE === 'true' && backendFeatures.databaseSchema) {
+            try {
+              const res = await fetch(`/api/projects/${finalProject.id}/base`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ schema: backendFeatures.databaseSchema }),
+              });
+              if (res.ok) {
+                const data = await res.json();
+                if (data.created?.length) toast.success(`Base backend ready: ${data.created.join(', ')}`);
+              } else if (res.status !== 503) {
+                logger.warn('[Base] provisioning returned', res.status);
+              }
+            } catch (baseError) {
+              logger.error('Failed to provision Base backend:', baseError);
+            }
           }
         }
       }
