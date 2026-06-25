@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validateBody, schemas } from "@/lib/security/input-validation";
+import { OIDC_PATHS } from "@hanzo/iam/paths";
 
 const IAM_ENDPOINT = process.env.IAM_ENDPOINT || "https://hanzo.id";
 const IAM_TOKEN_URL = `${IAM_ENDPOINT}/oauth/token`;
-const IAM_USERINFO_URL = `${IAM_ENDPOINT}/api/userinfo`;
+const IAM_USERINFO_URL = `${IAM_ENDPOINT}${OIDC_PATHS.userinfo}`;
 
 export async function POST(req: NextRequest) {
   try {
