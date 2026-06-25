@@ -23,15 +23,25 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
+# Server Mode wires generated apps to the Hanzo cloud backend (Base, edge
+# functions, secrets). Baked at build time because it is a NEXT_PUBLIC_ flag.
+ARG NEXT_PUBLIC_SERVER_MODE=true
+ENV NEXT_PUBLIC_SERVER_MODE=$NEXT_PUBLIC_SERVER_MODE
+
+# Public path generated apps call to reach their Base backend (builder-origin proxy).
+ARG NEXT_PUBLIC_BASE_URL=/api/base
+ENV NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
+
 # IMPORTANT: Do NOT set CI=true here. Next.js 15 skips clientReferenceManifest
 # generation when CI=true, causing InvariantError at runtime on every request.
 # NEXT_BUILD_ONLY signals our own code to skip env validation at build time.
 ENV NEXT_BUILD_ONLY=true
 
-# CRITICAL: Explicitly unset CI so Next.js 15 generates clientReferenceManifest.
+# CRITICAL: Explicitly unset CI so Next.js generates clientReferenceManifest.
 # GitHub Actions sets CI=true in the runner env which leaks into Docker builds.
-# Cache bust: 2026-03-21T08:30Z
-RUN CI=false pnpm run build && \
+# --webpack: Next 16 defaults to Turbopack, but this app's webpack config
+# (@hanzo/ui transpile + handlebars/react-resizable-panels shims) needs webpack.
+RUN CI=false pnpm run build --webpack && \
     # Verify build artifacts exist
     if [ ! -d ".next" ]; then \
       echo "ERROR: Build failed - .next directory not created" && exit 1; \
