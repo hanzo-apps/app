@@ -14,13 +14,26 @@ import { BaseClient } from "@hanzo/base";
 const BASE_URL =
   process.env.HANZO_BASE_URL || "http://hanzo-app-base.hanzo.svc:8090";
 
+/** The Base instance URL (no trailing slash). Single source of truth. */
+export function baseUrl(): string {
+  return BASE_URL.replace(/\/+$/, "");
+}
+
+/**
+ * Whether a Base data plane is available. Defaults true (the in-cluster
+ * companion); set HANZO_BASE_URL="" to explicitly disable Base features.
+ */
+export function isBaseConfigured(): boolean {
+  return baseUrl().length > 0;
+}
+
 /**
  * A Base client acting as the signed-in user, carrying their hanzo.id IAM
  * token. BaseClient sends `authStore.token` verbatim as the Authorization
  * header, and Base wants `Bearer <jwt>`.
  */
 export function baseAs(iamToken: string): BaseClient {
-  const client = new BaseClient(BASE_URL);
+  const client = new BaseClient(baseUrl());
   client.authStore.save(`Bearer ${iamToken}`, null);
   return client;
 }
