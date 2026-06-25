@@ -5,6 +5,9 @@ import { applySecurityHeaders, applyRateLimiting, getClientIP } from "@/lib/secu
 const TOKEN_COOKIE = "hanzo_token";
 
 // Routes that require authentication (prefix match).
+// Login is gated only at the *build / save / deploy* step. The public catalog
+// (/gallery, /templates/*, /new, /pricing) is a showcase and must browse
+// without a token — auth is prompted when a visitor enters the builder (/dev).
 const PROTECTED_PREFIXES = [
   "/dashboard",
   "/settings",
@@ -12,16 +15,21 @@ const PROTECTED_PREFIXES = [
   "/billing",
   "/chat",
   "/dev",
-  "/gallery",
 ];
 
 // Routes that are always accessible without a token (exact or prefix match).
+// The catalog/showcase surfaces live here so logged-out visitors can browse
+// templates and previews; clicking "Launch/Build" sends them to /dev, which is
+// protected, so the login prompt appears at build time — not before.
 const PUBLIC_PATHS = [
   "/login",
   "/signup",
   "/api/auth/callback",
   "/api/auth/logout",
   "/pricing",
+  "/gallery",
+  "/templates",
+  "/new",
 ];
 
 function isProtectedRoute(pathname: string): boolean {

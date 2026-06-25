@@ -146,9 +146,11 @@ export default function NewProjectPage() {
   const handleTemplate = (templateId: string) => {
     setLoading(true);
 
-    // Navigate to /dev with the template
+    // Open the template in the builder. We pass the canonical local template
+    // id (resolved from lib/templates.ts inside /dev) — NOT a GitHub URL. The
+    // old `github.com/Hanzo-Community/template-*` path was vaporware (404).
     const url = new URL("/dev", window.location.origin);
-    url.searchParams.set("template", `https://github.com/Hanzo-Community/template-${templateId}`);
+    url.searchParams.set("template", templateId);
     url.searchParams.set("action", "deploy");
 
     router.push(url.toString());

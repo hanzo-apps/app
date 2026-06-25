@@ -255,7 +255,7 @@ export default function TemplateGallery() {
                 <Button
                   className="flex-1 gap-1 bg-gradient-to-r from-[#fd4444] to-[#e03e3e] hover:from-[#e03e3e] hover:to-[#fd4444]"
                   size="sm"
-                  onClick={() => window.location.href = `/new`}
+                  onClick={() => window.location.href = `/dev?template=${template.id}&action=deploy`}
                 >
                   <Zap className="w-3 h-3" />
                   Deploy
@@ -264,10 +264,19 @@ export default function TemplateGallery() {
                   variant="outline"
                   size="sm"
                   className="flex-1 gap-1"
-                  onClick={() => window.location.href = `/new`}
+                  onClick={() => window.location.href = `/dev?template=${template.id}&action=edit`}
                 >
                   <Code className="w-3 h-3" />
                   Edit
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-1"
+                  onClick={() => window.location.href = template.path}
+                >
+                  <ExternalLink className="w-3 h-3" />
+                  Preview
                 </Button>
               </CardFooter>
             </Card>

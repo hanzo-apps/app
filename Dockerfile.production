@@ -20,7 +20,13 @@ ENV NEXT_BUILD_ONLY=true
 
 # CI=false so Next generates the clientReferenceManifest (it skips it when
 # CI=true, which GitHub Actions sets and leaks into the Docker build).
-RUN CI=false pnpm run build && \
+#
+# `--webpack` is MANDATORY: Next 16 defaults to Turbopack, which ignores the
+# `webpack:` config function in next.config.js — and that function carries the
+# react-resizable-panels v2 shim alias + RN/fs externals the app needs. A
+# Turbopack build silently produces a broken image. We invoke next directly
+# (not `pnpm run build`) so the flag is enforced here regardless of the script.
+RUN CI=false pnpm exec next build --webpack && \
     if [ ! -d ".next/standalone" ]; then \
       echo "ERROR: standalone output missing (is output:'standalone' set?)" && exit 1; \
     fi && \
