@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { OIDC_PATHS } from "@hanzo/iam/paths";
 
 const IAM_ENDPOINT = process.env.IAM_ENDPOINT || "https://hanzo.id";
-const IAM_USERINFO_URL = `${IAM_ENDPOINT}/api/userinfo`;
+const IAM_USERINFO_URL = `${IAM_ENDPOINT}${OIDC_PATHS.userinfo}`;
 
 export async function GET(_req: NextRequest) {
   // Accept token from Authorization header (for token bridge flow) or cookie

@@ -1,7 +1,8 @@
 import { cookies } from 'next/headers';
+import { OIDC_PATHS } from "@hanzo/iam/paths";
 
 const IAM_ENDPOINT = process.env.IAM_ENDPOINT || "https://hanzo.id";
-const IAM_USERINFO_URL = `${IAM_ENDPOINT}/api/userinfo`;
+const IAM_USERINFO_URL = `${IAM_ENDPOINT}${OIDC_PATHS.userinfo}`;
 
 /**
  * Get the current user session by verifying the auth token with Hanzo IAM.
