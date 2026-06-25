@@ -9,7 +9,7 @@
 import "server-only";
 import { cookies, headers } from "next/headers";
 import type { BaseClient } from "@hanzo/base";
-import { baseAs, isBaseConfigured } from "@/lib/base";
+import { baseAs, baseAsService, isBaseConfigured } from "@/lib/base";
 
 const COOKIE_NAME = "hanzo_token";
 
@@ -31,6 +31,29 @@ export async function resolveIamToken(): Promise<string | undefined> {
  */
 export async function baseClientForRequest(): Promise<BaseClient | null> {
   if (!isBaseConfigured()) return null;
+  const token = await resolveIamToken();
+  if (!token) return null;
+  return baseAs(token);
+}
+
+/**
+ * Build a Base client for SCHEMA provisioning (creating/listing collections).
+ *
+ * Prefers the service identity (admin) so any signed-in builder — including
+ * non-admins — can provision a backend; collection management requires
+ * `_superusers` authority in Base 1.x and the end-user JWT lacks it. Falls
+ * back to the signed-in user when no service identity is configured, which
+ * still works for admin builders and preserves the prior behavior with no
+ * regression.
+ *
+ * Returns null when Base is unconfigured (→ 503) or, in the fallback path,
+ * when the request is unauthenticated (→ 401).
+ */
+export async function baseClientForProvisioning(): Promise<BaseClient | null> {
+  if (!isBaseConfigured()) return null;
+  const svc = await baseAsService();
+  if (svc) return svc;
+  // No service identity configured — fall back to the caller's own token.
   const token = await resolveIamToken();
   if (!token) return null;
   return baseAs(token);

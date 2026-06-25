@@ -10,7 +10,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { baseClientForRequest } from "@/lib/base/server";
+import { baseClientForProvisioning } from "@/lib/base/server";
 import { isBaseConfigured } from "@/lib/base";
 import { provisionBaseFromDDL } from "@/lib/base/provision";
 import { logger } from "@/lib/utils";
@@ -19,7 +19,9 @@ export async function GET(): Promise<NextResponse> {
   if (!isBaseConfigured()) {
     return NextResponse.json({ configured: false, collections: [] });
   }
-  const client = await baseClientForRequest();
+  // Listing collections is a schema op (RequireSuperuserAuth in Base) — use
+  // the service identity so non-admin builders can see their backend.
+  const client = await baseClientForProvisioning();
   if (!client) {
     return NextResponse.json({ configured: true, authenticated: false, collections: [] }, { status: 401 });
   }
@@ -45,7 +47,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   if (!isBaseConfigured()) {
     return NextResponse.json({ error: "Base backend is not configured for this deployment." }, { status: 503 });
   }
-  const client = await baseClientForRequest();
+  // Provisioning creates collections (schema) — run as the service identity
+  // so non-admin builders can provision; falls back to the caller when no
+  // service identity is configured (admins still work).
+  const client = await baseClientForProvisioning();
   if (!client) {
     return NextResponse.json({ error: "Authentication required." }, { status: 401 });
   }
