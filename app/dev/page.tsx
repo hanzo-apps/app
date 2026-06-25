@@ -5,12 +5,22 @@ import { useSearchParams } from "next/navigation";
 import { AppEditor } from "@/components/editor";
 import { DevOnboarding } from "@/components/dev-onboarding";
 import { TemplateLoader } from "@/components/template-loader";
+import { templates as localTemplates, generatePlanFromTemplate } from "@/lib/templates";
 
 export default function DevPage() {
   const searchParams = useSearchParams();
   const [initialPrompt, setInitialPrompt] = useState("");
-  const repoUrl = searchParams.get("repo") || searchParams.get("template") || "";
+  const templateParam = searchParams.get("template") || "";
+  const repoUrl = searchParams.get("repo") || templateParam || "";
   const action = searchParams.get("action") || "edit"; // edit or deploy
+
+  // A "template" param that is a bare catalog id (no slash / not a URL) refers
+  // to a built-in template in lib/templates.ts — resolve it locally instead of
+  // trying to git-clone a (non-existent) GitHub repo.
+  const localTemplate =
+    templateParam && !templateParam.includes("/")
+      ? localTemplates.find((t) => t.id === templateParam) || null
+      : null;
 
   const [showOnboarding, setShowOnboarding] = useState(!repoUrl);
 
@@ -25,6 +35,25 @@ export default function DevPage() {
   const [repoData, setRepoData] = useState<any>(null);
 
   useEffect(() => {
+    // Built-in catalog template (e.g. ?template=ai-chat-interface): seed the
+    // builder from the local plan — no clone, no 404. The TemplateLoader shows
+    // the edit/fork/deploy choice and handleTemplateAction wires the prompt.
+    if (localTemplate) {
+      const repoInfo = {
+        platform: "hanzo",
+        owner: "hanzo",
+        name: localTemplate.id,
+        title: localTemplate.name,
+        plan: generatePlanFromTemplate(localTemplate).join("\n"),
+        fullUrl: `/templates/${localTemplate.id}`,
+      };
+      setRepoData(repoInfo);
+      setShowTemplateLoader(true);
+      setShowOnboarding(false);
+      (window as any).__templateRepo = repoInfo;
+      return;
+    }
+
     if (repoUrl) {
       // Parse repo URL to extract info
       let repoInfo: any = {};
@@ -72,7 +101,7 @@ export default function DevPage() {
         (window as any).__templateRepo = repoInfo;
       }
     }
-  }, [repoUrl, action]);
+  }, [repoUrl, action, localTemplate]);
 
   const handleOnboardingComplete = (prompt: string, plan?: string) => {
     setFinalPrompt(prompt);
@@ -89,7 +118,24 @@ export default function DevPage() {
   };
 
   const handleTemplateAction = (mode: "fork" | "edit" | "deploy") => {
+    const label = repoData?.title || repoData?.name;
     let prompt = "";
+
+    // Built-in catalog templates carry a generated build plan — scaffold the
+    // app from it rather than referencing an external repo.
+    if (repoData?.plan) {
+      switch (mode) {
+        case "edit":
+        case "fork":
+          prompt = `Build the "${label}" app and open it for editing.\n\n${repoData.plan}`;
+          break;
+        case "deploy":
+          prompt = `Build the "${label}" app and deploy it to Hanzo Cloud with automatic SSL and a custom subdomain.\n\n${repoData.plan}`;
+          break;
+      }
+      handleOnboardingComplete(prompt, repoData.plan);
+      return;
+    }
 
     switch(mode) {
       case "edit":
