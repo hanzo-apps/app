@@ -1,6 +1,7 @@
 export { DEMO_PROJECT_TEMPLATE } from './demo';
 export { BAREBONES_PROJECT_TEMPLATE } from './barebones';
 export { CONTACT_LANDING_PROJECT_TEMPLATE } from './contact-landing';
+export { HANZO_FULLSTACK_PROJECT_TEMPLATE } from './hanzo-fullstack';
 export { BLOG_PROJECT_TEMPLATE } from './blog';
 export { REACT_STARTER_PROJECT_TEMPLATE } from './react-starter';
 export { REACT_DEMO_PROJECT_TEMPLATE } from './react-demo';

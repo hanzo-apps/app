@@ -28,7 +28,7 @@ export const templates: Template[] = [
       "Dark/light theme",
       "Export conversations"
     ],
-    techStack: ["Next.js 14", "React 18", "@hanzo/ui", "Tailwind CSS", "OpenAI API"],
+    techStack: ["Next.js", "React", "@hanzo/ui", "Tailwind CSS", "Hanzo LLM"],
     difficulty: "intermediate",
     estimatedTime: "2-3 hours",
     popular: true
@@ -47,7 +47,7 @@ export const templates: Template[] = [
       "Newsletter signup",
       "SEO optimized"
     ],
-    techStack: ["Next.js 14", "@hanzo/ui", "Framer Motion", "React Hook Form"],
+    techStack: ["Next.js", "@hanzo/ui", "Framer Motion", "React Hook Form"],
     difficulty: "beginner",
     estimatedTime: "1-2 hours",
     popular: true
@@ -66,14 +66,14 @@ export const templates: Template[] = [
       "Responsive grid",
       "Dark mode"
     ],
-    techStack: ["Next.js 14", "@hanzo/ui", "Recharts", "Tanstack Query", "Zustand"],
+    techStack: ["Next.js", "@hanzo/ui", "Recharts", "Tanstack Query", "Zustand"],
     difficulty: "intermediate",
     estimatedTime: "3-4 hours"
   },
   {
     id: "ecommerce-storefront",
     name: "E-commerce Storefront",
-    description: "A full-featured e-commerce storefront with product catalog, shopping cart, checkout flow, and payment integration. Includes product search and filtering, image galleries, reviews system, and inventory management. Stripe integration ready.",
+    description: "A full-featured e-commerce storefront with product catalog, shopping cart, checkout flow, and payment integration. Includes product search and filtering, image galleries, reviews system, and inventory management. Hanzo Commerce integration ready.",
     category: "ecommerce",
     demoUrl: "https://hanzo.ai/templates/ecommerce-storefront",
     features: [
@@ -84,7 +84,7 @@ export const templates: Template[] = [
       "Search & filters",
       "User accounts"
     ],
-    techStack: ["Next.js 14", "@hanzo/ui", "Stripe", "Prisma", "PostgreSQL"],
+    techStack: ["Next.js", "@hanzo/ui", "Hanzo Commerce", "Hanzo Base"],
     difficulty: "advanced",
     estimatedTime: "4-5 hours",
     popular: true
@@ -103,14 +103,14 @@ export const templates: Template[] = [
       "Media uploads",
       "Notifications"
     ],
-    techStack: ["Next.js 14", "@hanzo/ui", "Socket.io", "Uploadthing", "Clerk"],
+    techStack: ["Next.js", "@hanzo/ui", "Hanzo Base", "Hanzo S3", "Hanzo IAM"],
     difficulty: "advanced",
     estimatedTime: "4-5 hours"
   },
   {
     id: "ai-image-generator",
     name: "AI Image Generator",
-    description: "An AI-powered image generation tool with prompt engineering, style presets, and gallery. Features DALL-E or Stable Diffusion integration, prompt templates, image history, and download options. Includes rate limiting and usage tracking.",
+    description: "An AI-powered image generation tool with prompt engineering, style presets, and gallery. Features Hanzo LLM image-model integration, prompt templates, image history, and download options. Includes rate limiting and usage tracking.",
     category: "ai",
     demoUrl: "https://hanzo.ai/templates/ai-image-generator",
     features: [
@@ -121,7 +121,7 @@ export const templates: Template[] = [
       "Download & share",
       "Usage tracking"
     ],
-    techStack: ["Next.js 14", "@hanzo/ui", "OpenAI DALL-E", "Cloudinary", "Redis"],
+    techStack: ["Next.js", "@hanzo/ui", "Hanzo LLM", "Hanzo S3"],
     difficulty: "intermediate",
     estimatedTime: "2-3 hours"
   },
@@ -139,7 +139,7 @@ export const templates: Template[] = [
       "Team collaboration",
       "Activity feed"
     ],
-    techStack: ["Next.js 14", "@hanzo/ui", "@dnd-kit", "Prisma", "Pusher"],
+    techStack: ["Next.js", "@hanzo/ui", "@dnd-kit", "Hanzo Base", "Hanzo IAM"],
     difficulty: "intermediate",
     estimatedTime: "3-4 hours"
   },
@@ -157,7 +157,7 @@ export const templates: Template[] = [
       "Recommendations",
       "Search & discovery"
     ],
-    techStack: ["Next.js 14", "@hanzo/ui", "Video.js", "FFmpeg", "AWS S3"],
+    techStack: ["Next.js", "@hanzo/ui", "Video.js", "Hanzo S3", "Hanzo Base"],
     difficulty: "advanced",
     estimatedTime: "5-6 hours"
   },
@@ -175,7 +175,7 @@ export const templates: Template[] = [
       "File management",
       "Collaboration"
     ],
-    techStack: ["Next.js 14", "@hanzo/ui", "Monaco Editor", "Remark", "Mermaid"],
+    techStack: ["Next.js", "@hanzo/ui", "Monaco Editor", "Remark", "Mermaid"],
     difficulty: "intermediate",
     estimatedTime: "2-3 hours"
   },
@@ -193,7 +193,7 @@ export const templates: Template[] = [
       "Tax reporting",
       "Exchange integration"
     ],
-    techStack: ["Next.js 14", "@hanzo/ui", "CoinGecko API", "Recharts", "WebSocket"],
+    techStack: ["Next.js", "@hanzo/ui", "Recharts", "Hanzo Base", "WebSocket"],
     difficulty: "intermediate",
     estimatedTime: "3-4 hours"
   },
@@ -211,7 +211,7 @@ export const templates: Template[] = [
       "Monetization",
       "SEO tools"
     ],
-    techStack: ["Next.js 14", "@hanzo/ui", "TipTap", "Prisma", "Algolia"],
+    techStack: ["Next.js", "@hanzo/ui", "TipTap", "Hanzo Base", "Hanzo Search"],
     difficulty: "intermediate",
     estimatedTime: "3-4 hours"
   },
@@ -229,7 +229,7 @@ export const templates: Template[] = [
       "Tournaments",
       "Spectator mode"
     ],
-    techStack: ["Next.js 14", "@hanzo/ui", "Socket.io", "WebRTC", "Redis"],
+    techStack: ["Next.js", "@hanzo/ui", "WebRTC", "Hanzo Base", "WebSocket"],
     difficulty: "advanced",
     estimatedTime: "5-6 hours"
   }
