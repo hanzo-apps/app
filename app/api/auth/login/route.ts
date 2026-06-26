@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { OIDC_PATHS } from '@hanzo/iam/paths';
 
 const IAM_ENDPOINT = process.env.IAM_ENDPOINT || 'https://hanzo.id';
 const OAUTH_STATE_COOKIE = 'hanzo_oauth_state';
@@ -31,7 +32,7 @@ export async function GET(req: NextRequest) {
   });
 
   const redirectUri = `${appUrl}/api/auth/callback`;
-  const authorizeUrl = new URL(`${IAM_ENDPOINT}/oauth/authorize`);
+  const authorizeUrl = new URL(`${IAM_ENDPOINT}${OIDC_PATHS.authorize}`);
   authorizeUrl.searchParams.set('client_id', clientId);
   authorizeUrl.searchParams.set('redirect_uri', redirectUri);
   authorizeUrl.searchParams.set('response_type', 'code');

@@ -6,7 +6,7 @@ import { OIDC_PATHS } from "@hanzo/iam/paths";
 // Hanzo IAM OIDC configuration
 const IAM_ENDPOINT = process.env.IAM_ENDPOINT || "https://hanzo.id";
 const IAM_USERINFO_URL = `${IAM_ENDPOINT}${OIDC_PATHS.userinfo}`;
-const IAM_INTROSPECT_URL = `${IAM_ENDPOINT}/oauth/introspect`;
+const IAM_INTROSPECT_URL = `${IAM_ENDPOINT}/v1/iam/oauth/introspect`;
 const IAM_CLIENT_ID = process.env.IAM_CLIENT_ID || "";
 const IAM_CLIENT_SECRET = process.env.IAM_CLIENT_SECRET || "";
 
