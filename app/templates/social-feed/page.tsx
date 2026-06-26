@@ -219,7 +219,7 @@ export default function SocialFeed() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-[#fd4444]" />
+                <TrendingUp className="w-5 h-5 text-[#171717]" />
                 Trending Now
               </CardTitle>
             </CardHeader>
@@ -256,13 +256,13 @@ export default function SocialFeed() {
                         <div className="flex items-center gap-1">
                           <p className="font-medium text-sm">{user.name}</p>
                           {user.verified && (
-                            <Badge variant="outline" className="h-4 px-1 text-xs border-[#fd4444] text-[#fd4444]">✓</Badge>
+                            <Badge variant="outline" className="h-4 px-1 text-xs border-[#171717] text-[#171717]">✓</Badge>
                           )}
                         </div>
                         <p className="text-xs text-muted-foreground">{user.username}</p>
                       </div>
                     </div>
-                    <Button size="sm" className="bg-[#fd4444] hover:bg-[#e03e3e]">Follow</Button>
+                    <Button size="sm" className="bg-[#171717] hover:bg-[#000000]">Follow</Button>
                   </div>
                 ))}
               </div>
