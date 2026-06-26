@@ -24,7 +24,14 @@ export const useUser = (initialData?: {
   errCode: number | null;
 }) => {
   const router = useRouter();
-  const { user: iamUser, isLoading, login, logout: iamLogout, handleCallback } = useIam();
+  const {
+    user: iamUser,
+    isAuthenticated,
+    isLoading,
+    login,
+    logout: iamLogout,
+    handleCallback,
+  } = useIam();
 
   const user = useMemo<User | null>(() => {
     if (!iamUser) return initialData?.user ?? null;
@@ -48,25 +55,32 @@ export const useUser = (initialData?: {
     await login();
   }, [login]);
 
-  // Back-compat: the OAuth bridge used to deliver a bare `code`/`token`. The
-  // canonical callback (/auth/callback) now drives `handleCallback()` over the
-  // full redirect URL with PKCE. These remain as thin delegations so any
-  // residual caller keeps compiling and resolves through the one SDK path.
-  const loginFromCode = useCallback(async () => {
+  // Complete the OAuth2 PKCE callback: the SDK reads the full redirect URL
+  // (`?code=&state=`), validates state, exchanges the code, and persists the
+  // tokens. Returns whether a session was established so the /auth/callback
+  // page can redirect deterministically (success) or surface an error.
+  const completeLogin = useCallback(async (): Promise<boolean> => {
     try {
-      await handleCallback();
+      const token = await handleCallback();
+      return Boolean(token?.accessToken);
     } catch {
-      /* handled by the SDK error state */
+      return false;
     }
   }, [handleCallback]);
 
-  const loginFromToken = useCallback(async () => {
-    try {
-      await handleCallback();
-    } catch {
-      /* handled by the SDK error state */
-    }
-  }, [handleCallback]);
+  // Back-compat: the OAuth bridge used to deliver a bare `code`/`token`. Both
+  // now resolve through the one SDK path. Args are accepted but ignored — the
+  // SDK reads them from the URL. They return the same success signal.
+  const loginFromCode = useCallback(
+    async (_code?: string): Promise<boolean> => completeLogin(),
+    [completeLogin]
+  );
+
+  const loginFromToken = useCallback(
+    async (_token?: string, _expiresAt?: string): Promise<boolean> =>
+      completeLogin(),
+    [completeLogin]
+  );
 
   const logout = useCallback(async () => {
     iamLogout();
@@ -78,9 +92,11 @@ export const useUser = (initialData?: {
 
   return {
     user,
+    isAuthenticated,
     errCode: null as number | null,
     loading: isLoading,
     openLoginWindow,
+    completeLogin,
     loginFromCode,
     loginFromToken,
     logout,
