@@ -129,7 +129,7 @@ export default function BlogPlatform() {
                   className="pl-9 w-[250px]"
                 />
               </div>
-              <Button className="bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] hover:from-[#e03e3e] hover:to-[#fd4444]">
+              <Button className="bg-gradient-to-r from-[#171717] to-[#404040] hover:from-[#000000] hover:to-[#171717]">
                 <Edit className="w-4 h-4 mr-2" />
                 Write
               </Button>
@@ -150,7 +150,7 @@ export default function BlogPlatform() {
               />
             </AspectRatio>
             <div className="p-6 flex flex-col justify-center">
-              <Badge className="w-fit mb-4 bg-[#fd4444]/10 text-[#fd4444] border-[#fd4444]/20">{featuredArticle.category}</Badge>
+              <Badge className="w-fit mb-4 bg-[#171717]/10 text-[#171717] border-[#171717]/20">{featuredArticle.category}</Badge>
               <h2 className="text-3xl font-bold mb-4">{featuredArticle.title}</h2>
               <p className="text-muted-foreground mb-6">{featuredArticle.excerpt}</p>
 
@@ -170,7 +170,7 @@ export default function BlogPlatform() {
               </div>
 
               <div className="flex items-center gap-4">
-                <Button className="bg-[#fd4444] hover:bg-[#e03e3e]">Read Article</Button>
+                <Button className="bg-[#171717] hover:bg-[#000000]">Read Article</Button>
                 <Button variant="ghost" size="icon">
                   <Bookmark className="w-4 h-4" />
                 </Button>
