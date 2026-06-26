@@ -26,7 +26,10 @@ function IamCookieBridge() {
     if (typeof document === 'undefined') return;
     const secure = window.location.protocol === 'https:' ? '; Secure' : '';
     if (token) {
-      document.cookie = `${TOKEN_COOKIE}=${token}; Path=/; SameSite=Lax${secure}`;
+      // Durable (7-day) cookie, not a session cookie: server route guards +
+      // edge middleware read identity from this cookie, so it must outlive a
+      // tab close / reload to keep the user signed in after navigation.
+      document.cookie = `${TOKEN_COOKIE}=${token}; Path=/; Max-Age=604800; SameSite=Lax${secure}`;
     } else {
       document.cookie = `${TOKEN_COOKIE}=; Path=/; Max-Age=0; SameSite=Lax${secure}`;
     }
