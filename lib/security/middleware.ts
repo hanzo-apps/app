@@ -11,8 +11,12 @@ const securityHeaders = {
     "font-src 'self' https://fonts.gstatic.com data:",
     "img-src 'self' data: blob: https: http:",
     "media-src 'self' blob: data:",
-    "connect-src 'self' https://*.hanzo.ai https://api.openai.com https://api.anthropic.com wss://*.hanzo.ai",
-    "frame-src 'self' https://*.hanzo.ai",
+    // IdP login domains (hanzo.id et al) are NOT *.hanzo.ai — the OIDC
+    // discovery + PKCE token exchange (POST https://hanzo.id/v1/iam/oauth/token)
+    // is a cross-origin fetch and MUST be allowed here or the SSO callback
+    // silently fails and the session never persists.
+    "connect-src 'self' https://*.hanzo.ai https://hanzo.id https://lux.id https://zoo.id https://pars.id https://api.openai.com https://api.anthropic.com wss://*.hanzo.ai",
+    "frame-src 'self' https://*.hanzo.ai https://hanzo.id https://lux.id https://zoo.id https://pars.id",
     "frame-ancestors 'self' https://hanzo.ai https://*.hanzo.ai https://hanzo.app https://*.hanzo.app https://hanzo.bot https://*.hanzo.bot https://hanzo.team https://*.hanzo.team https://hanzo.chat https://*.hanzo.chat https://s3.hanzo.ai",
     "base-uri 'self'",
     "form-action 'self'",
@@ -64,7 +68,7 @@ const devSecurityHeaders = {
     "font-src 'self' data:",
     "img-src 'self' data: blob: http: https:",
     "media-src 'self' blob: data:",
-    "connect-src 'self' http://localhost:* ws://localhost:* wss://localhost:* https://*.hanzo.ai",
+    "connect-src 'self' http://localhost:* ws://localhost:* wss://localhost:* https://*.hanzo.ai https://hanzo.id https://lux.id https://zoo.id https://pars.id",
     "frame-src 'self' http://localhost:*",
     "frame-ancestors 'self' http://localhost:*",
   ].join('; '),
