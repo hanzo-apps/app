@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { OIDC_PATHS } from "@hanzo/iam/paths";
 
 const IAM_ENDPOINT = process.env.IAM_ENDPOINT || "https://hanzo.id";
-const IAM_TOKEN_URL = `${IAM_ENDPOINT}/oauth/token`;
+const IAM_TOKEN_URL = `${IAM_ENDPOINT}${OIDC_PATHS.token}`;
 const COOKIE_NAME = "hanzo_token";
 const COOKIE_MAX_AGE = 7 * 24 * 60 * 60; // 7 days in seconds
 const OAUTH_STATE_COOKIE = "hanzo_oauth_state";
