@@ -52,5 +52,10 @@ export const iamConfig: IAMConfig = {
   appName: 'hanzo-app',
   redirectUri: REDIRECT_URI,
   scope: 'openid profile email',
-  storage: typeof window !== 'undefined' ? window.sessionStorage : memoryStorage(),
+  // localStorage (not sessionStorage): the PKCE verifier/state and the
+  // resulting tokens must survive the cross-site round-trip to hanzo.id and
+  // any reload / new tab, so the session persists after "Go to Dashboard".
+  // sessionStorage is per-tab and is the reason the app dropped back to
+  // "Sign In" after the OAuth redirect.
+  storage: typeof window !== 'undefined' ? window.localStorage : memoryStorage(),
 };
