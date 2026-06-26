@@ -727,8 +727,8 @@ export class VirtualServer {
       // Check if partial is already registered
       if (!this.handlebars.partials[partialName]) {
         // Register error stub for missing partial
-        const errorStub = `<div style="border: 2px solid #f99; background: #fee; padding: 1rem; margin: 1rem 0; border-radius: 4px; font-family: monospace;">
-  <strong style="color: #c33;">⚠️ Missing partial: "${partialName}"</strong>
+        const errorStub = `<div style="border: 2px solid #bbbbbb; background: #f5f5f5; padding: 1rem; margin: 1rem 0; border-radius: 4px; font-family: monospace;">
+  <strong style="color: #444444;">⚠️ Missing partial: "${partialName}"</strong>
   <p style="margin: 0.5rem 0 0 0; font-size: 0.9em;">Create file in /templates/ directory (e.g., /templates/${partialName}.hbs or /templates/components/${partialName}.hbs)</p>
 </div>`;
         this.handlebars.registerPartial(partialName, errorStub);
@@ -748,7 +748,7 @@ export class VirtualServer {
           pushCompileError(filePath || 'unknown', `${p.error} — ${p.suggestion}`);
         }
         const errorMessages = invalidPatterns.map(pattern => `❌ ${pattern.error}\n💡 ${pattern.suggestion}`).join('\n\n');
-        return `<!-- Handlebars Syntax Error -->\n<div style="background: #fee; border: 1px solid #f99; padding: 1rem; margin: 1rem; border-radius: 4px; font-family: monospace;">\n<h3 style="color: #c33; margin: 0 0 1rem 0;">⚠️ Handlebars Template Error</h3>\n<pre style="margin: 0; white-space: pre-wrap;">${errorMessages}</pre>\n</div>\n<!-- Original content:\n${content}\n-->`;
+        return `<!-- Handlebars Syntax Error -->\n<div style="background: #f5f5f5; border: 1px solid #bbbbbb; padding: 1rem; margin: 1rem; border-radius: 4px; font-family: monospace;">\n<h3 style="color: #444444; margin: 0 0 1rem 0;">⚠️ Handlebars Template Error</h3>\n<pre style="margin: 0; white-space: pre-wrap;">${errorMessages}</pre>\n</div>\n<!-- Original content:\n${content}\n-->`;
       }
 
       // Extract partial references and register error stubs for missing ones
@@ -777,7 +777,7 @@ export class VirtualServer {
       pushCompileError(filePath || 'unknown', errorMessage);
 
       // Return a helpful error message instead of original content
-      return `<!-- Handlebars Compilation Error -->\n<div style="background: #fee; border: 1px solid #f99; padding: 1rem; margin: 1rem; border-radius: 4px; font-family: monospace;">\n<h3 style="color: #c33; margin: 0 0 1rem 0;">⚠️ Handlebars Template Error</h3>\n<p><strong>Error:</strong> ${errorMessage}</p>\n<p><strong>Common fixes:</strong></p>\n<ul>\n<li>Check for typos in helper names and partial references</li>\n<li>Ensure all opening tags have matching closing tags</li>\n<li>Verify partial names exist in /templates/ directory</li>\n<li>Use <code>{{> partialName}}</code> syntax, not <code>(> partialName)</code></li>\n</ul>\n</div>\n<!-- Original content:\n${content}\n-->`;
+      return `<!-- Handlebars Compilation Error -->\n<div style="background: #f5f5f5; border: 1px solid #bbbbbb; padding: 1rem; margin: 1rem; border-radius: 4px; font-family: monospace;">\n<h3 style="color: #444444; margin: 0 0 1rem 0;">⚠️ Handlebars Template Error</h3>\n<p><strong>Error:</strong> ${errorMessage}</p>\n<p><strong>Common fixes:</strong></p>\n<ul>\n<li>Check for typos in helper names and partial references</li>\n<li>Ensure all opening tags have matching closing tags</li>\n<li>Verify partial names exist in /templates/ directory</li>\n<li>Use <code>{{> partialName}}</code> syntax, not <code>(> partialName)</code></li>\n</ul>\n</div>\n<!-- Original content:\n${content}\n-->`;
     }
   }
 

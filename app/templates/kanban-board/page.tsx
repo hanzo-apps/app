@@ -149,17 +149,17 @@ const priorityColors = {
 };
 
 const labelColors = {
-  feature: "bg-[#fd4444]/10 text-[#fd4444]",
+  feature: "bg-[#171717]/10 text-[#171717]",
   auth: "bg-sky-100 text-sky-800",
   design: "bg-pink-100 text-pink-800",
-  ui: "bg-[#fd4444]/10 text-[#fd4444]",
+  ui: "bg-[#171717]/10 text-[#171717]",
   backend: "bg-amber-100 text-amber-800",
   api: "bg-teal-100 text-teal-800",
   docs: "bg-slate-100 text-slate-800",
   performance: "bg-rose-100 text-rose-800",
   optimization: "bg-yellow-100 text-yellow-800",
   setup: "bg-emerald-100 text-emerald-800",
-  devops: "bg-[#ff6b6b]/10 text-[#ff6b6b]",
+  devops: "bg-[#404040]/10 text-[#404040]",
   "ci/cd": "bg-cyan-100 text-cyan-800"
 };
 
@@ -184,7 +184,7 @@ export default function KanbanBoard() {
             </Button>
             <Dialog>
               <DialogTrigger asChild>
-                <Button className="bg-[#fd4444] hover:bg-[#e03e3e]">
+                <Button className="bg-[#171717] hover:bg-[#000000]">
                   <Plus className="w-4 h-4 mr-2" />
                   New Task
                 </Button>
@@ -224,7 +224,7 @@ export default function KanbanBoard() {
                     <label className="text-sm font-medium">Description</label>
                     <Textarea placeholder="Task description (optional)" />
                   </div>
-                  <Button className="w-full bg-[#fd4444] hover:bg-[#e03e3e]">Create Task</Button>
+                  <Button className="w-full bg-[#171717] hover:bg-[#000000]">Create Task</Button>
                 </div>
               </DialogContent>
             </Dialog>
