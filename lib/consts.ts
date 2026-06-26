@@ -19,7 +19,7 @@ export const defaultHTML = `<!DOCTYPE html>
       animation: pulse 1.5s ease-in-out infinite;
     }
     .gradient-animate {
-      background: linear-gradient(90deg, #9333ea, #ec4899, #3b82f6, #9333ea);
+      background: linear-gradient(90deg, #9333ea, #737373, #3b82f6, #9333ea);
       background-size: 300% 300%;
       animation: gradient 8s ease infinite;
     }

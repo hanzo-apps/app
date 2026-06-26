@@ -303,12 +303,12 @@ export default function CryptoPortfolio() {
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
                           tx.type === "buy" ? "bg-green-100" :
                           tx.type === "sell" ? "bg-red-100" :
-                          tx.type === "receive" ? "bg-[#fd4444]/10" :
+                          tx.type === "receive" ? "bg-[#171717]/10" :
                           "bg-orange-100"
                         }`}>
                           {tx.type === "buy" || tx.type === "receive" ? (
                             <ArrowDownRight className={`w-4 h-4 ${
-                              tx.type === "buy" ? "text-emerald-600" : "text-[#fd4444]"
+                              tx.type === "buy" ? "text-emerald-600" : "text-[#171717]"
                             }`} />
                           ) : (
                             <ArrowUpRight className={`w-4 h-4 ${

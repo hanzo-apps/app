@@ -53,7 +53,7 @@ const templates = [
     name: "Analytics Dashboard",
     description: "Data visualization and metrics dashboard",
     icon: <BarChart3 className="w-5 h-5" />,
-    color: "from-[#fd4444] to-[#ff6b6b]",
+    color: "from-[#171717] to-[#404040]",
     category: "Analytics"
   },
   {
@@ -69,7 +69,7 @@ const templates = [
     name: "Blog Platform",
     description: "Content management and blogging platform",
     icon: <FileText className="w-5 h-5" />,
-    color: "from-[#fd4444] to-[#ff6b6b]",
+    color: "from-[#171717] to-[#404040]",
     category: "Content"
   },
   {

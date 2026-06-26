@@ -56,11 +56,8 @@ export const metadata: Metadata = {
     title: "Hanzo AI",
     statusBarStyle: "black-translucent",
   },
-  icons: {
-    icon: "/logo.svg",
-    shortcut: "/logo.svg",
-    apple: "/logo.svg",
-  },
+  // Icons come from the Next file-convention: app/favicon.ico, app/icon.svg
+  // (adaptive monochrome Hanzo H, transparent bg), app/apple-icon.png.
 };
 
 export const viewport: Viewport = {

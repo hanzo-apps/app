@@ -166,7 +166,7 @@ export default function VideoStreaming() {
                       <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
                         <Button
                           size="icon"
-                          className="h-16 w-16 rounded-full bg-[#fd4444] hover:bg-[#e03e3e]"
+                          className="h-16 w-16 rounded-full bg-[#171717] hover:bg-[#000000]"
                           onClick={() => setIsPlaying(true)}
                         >
                           <Play className="w-8 h-8 ml-1" />
@@ -258,14 +258,14 @@ export default function VideoStreaming() {
                       <div className="flex items-center gap-2">
                         <p className="font-semibold">{currentVideo.channel.name}</p>
                         {currentVideo.channel.verified && (
-                          <Badge variant="outline" className="h-5 px-1 border-[#fd4444] text-[#fd4444]">✓</Badge>
+                          <Badge variant="outline" className="h-5 px-1 border-[#171717] text-[#171717]">✓</Badge>
                         )}
                       </div>
                       <p className="text-sm text-muted-foreground">
                         {currentVideo.channel.subscribers} subscribers
                       </p>
                     </div>
-                    <Button className="bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] hover:from-[#e03e3e] hover:to-[#fd4444]">
+                    <Button className="bg-gradient-to-r from-[#171717] to-[#404040] hover:from-[#000000] hover:to-[#171717]">
                       <Bell className="w-4 h-4 mr-2" />
                       Subscribe
                     </Button>
@@ -306,7 +306,7 @@ export default function VideoStreaming() {
                     />
                     <div className="flex justify-end gap-2 mt-2">
                       <Button variant="ghost" onClick={() => setComment("")}>Cancel</Button>
-                      <Button disabled={!comment.trim()} className="bg-[#fd4444] hover:bg-[#e03e3e]">Comment</Button>
+                      <Button disabled={!comment.trim()} className="bg-[#171717] hover:bg-[#000000]">Comment</Button>
                     </div>
                   </div>
                 </div>
@@ -339,7 +339,7 @@ export default function VideoStreaming() {
                           </Button>
                         </div>
                         {comment.replies > 0 && (
-                          <Button variant="ghost" size="sm" className="mt-2 p-0 text-[#fd4444]">
+                          <Button variant="ghost" size="sm" className="mt-2 p-0 text-[#171717]">
                             View {comment.replies} replies
                           </Button>
                         )}

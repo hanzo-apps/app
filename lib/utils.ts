@@ -23,7 +23,7 @@ export const logger = {
 
 // Brand colors for charts, avatars, and UI accents
 export const COLORS = [
-  "#8B5CF6", "#3B82F6", "#10B981", "#F59E0B", "#EF4444",
-  "#EC4899", "#6366F1", "#14B8A6", "#F97316", "#84CC16",
+  "#171717", "#2e2e2e", "#454545", "#5c5c5c", "#737373",
+  "#8a8a8a", "#a1a1a1", "#b8b8b8", "#cfcfcf", "#e6e6e6",
 ] as const;
 

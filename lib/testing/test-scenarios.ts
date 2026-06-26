@@ -234,11 +234,11 @@ export const testScenarios: TestScenario[] = [
     id: 'shell-sed-inline',
     name: 'In-place substitution with sed',
     category: 'shell-text',
-    prompt: "Use sed to change all occurrences of '#007bff' to '#e74c3c' in styles.css.",
+    prompt: "Use sed to change all occurrences of '#007bff' to '#6b6b6b' in styles.css.",
     setupFiles: standardSetup,
     assertions: [
       { type: 'file_not_contains', path: '/styles.css', value: '#007bff', description: 'Old color removed' },
-      { type: 'file_contains', path: '/styles.css', value: '#e74c3c', description: 'New color applied' },
+      { type: 'file_contains', path: '/styles.css', value: '#6b6b6b', description: 'New color applied' },
     ],
   },
   {
