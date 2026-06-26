@@ -326,7 +326,7 @@ export default function NodesPage() {
           ctx.beginPath();
           ctx.arc(pos.x, pos.y, 30, 0, Math.PI * 2);
           ctx.fillStyle = node.status === "online" ? "#10b981" :
-                         node.status === "degraded" ? "#f97316" : "#ef4444";
+                         node.status === "degraded" ? "#737373" : "#737373";
           ctx.fill();
 
           // Node label

@@ -161,8 +161,8 @@ export async function runGuidedDemoEdit({
   });
 
   const updatedCss = cssContent
-    .replace('--primary: #ea580c;', '--primary: #22c55e;')
-    .replace('--primary-dark: #c2410c;', '--primary-dark: #16a34a;');
+    .replace('--primary: #525252;', '--primary: #22c55e;')
+    .replace('--primary-dark: #525252;', '--primary-dark: #16a34a;');
 
   result.updatedCss = updatedCss;
 
