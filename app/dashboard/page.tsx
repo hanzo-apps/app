@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@hanzo/ui";
@@ -23,56 +23,33 @@ import { formatUnits } from "viem";
 import { useUser } from "@/hooks/useUser";
 import Header from "@/components/layout/header";
 import { HanzoLogo } from "@/components/HanzoLogo";
+import { getProjects } from "@/app/actions/projects";
+import {
+  toDashboardProject,
+  relativeTime,
+  type DashboardProject,
+  type BaseProjectRow,
+} from "@/lib/projects-view";
+import { buildUsage } from "@/lib/usage";
 
-// Placeholder project data
-const PLACEHOLDER_PROJECTS = [
-  {
-    _id: "proj_1",
-    title: "Landing Page Builder",
-    status: "active" as const,
-    updatedAt: "2 hours ago",
-    deploys: 12,
-  },
-  {
-    _id: "proj_2",
-    title: "E-commerce Dashboard",
-    status: "active" as const,
-    updatedAt: "1 day ago",
-    deploys: 5,
-  },
-  {
-    _id: "proj_3",
-    title: "AI Chat Widget",
-    status: "draft" as const,
-    updatedAt: "3 days ago",
-    deploys: 0,
-  },
-];
-
-// Placeholder usage data
-const USAGE_STATS = [
-  { label: "API Calls", value: "12,847", limit: "50,000", percent: 26 },
-  { label: "Compute Hours", value: "34.2", limit: "100", percent: 34 },
-  { label: "Storage", value: "2.1 GB", limit: "10 GB", percent: 21 },
-];
-
+// Real Hanzo surfaces — the same control plane the console links to.
 const QUICK_LINKS = [
   {
     title: "Console",
-    description: "Manage services and infrastructure",
-    href: "https://app.hanzo.bot/dashboard",
+    description: "Manage your Hanzo Cloud projects",
+    href: "https://console.hanzo.ai",
     icon: Cpu,
   },
   {
     title: "Platform",
-    description: "Deploy and manage applications",
-    href: "https://app.hanzo.bot/new",
+    description: "Deploy and operate services",
+    href: "https://platform.hanzo.ai",
     icon: Globe,
   },
   {
     title: "Analytics",
-    description: "View metrics and insights",
-    href: "https://app.hanzo.bot/dashboard",
+    description: "Product metrics and insights",
+    href: "https://analytics.hanzo.ai",
     icon: LineChart,
   },
 ];
@@ -93,8 +70,8 @@ function WalletSection() {
   return (
     <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6">
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-          <Wallet className="w-5 h-5 text-emerald-400" />
+        <div className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center">
+          <Wallet className="w-5 h-5 text-white/70" />
         </div>
         <h3 className="text-lg font-semibold text-white">Wallet</h3>
       </div>
@@ -112,20 +89,12 @@ function WalletSection() {
   );
 }
 
-function UsageBar({ percent }: { percent: number }) {
-  return (
-    <div className="h-1.5 w-full rounded-full bg-white/10">
-      <div
-        className="h-1.5 rounded-full bg-gradient-to-r from-blue-500 to-violet-500 transition-all"
-        style={{ width: `${percent}%` }}
-      />
-    </div>
-  );
-}
-
 export default function DashboardPage() {
-  const { user, loading, logout } = useUser();
+  const { user, loading } = useUser();
   const router = useRouter();
+
+  // null = still loading; [] = loaded, none. Never fabricated.
+  const [projects, setProjects] = useState<DashboardProject[] | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -133,12 +102,30 @@ export default function DashboardPage() {
     }
   }, [user, loading, router]);
 
+  useEffect(() => {
+    if (loading || !user) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await getProjects();
+        if (cancelled) return;
+        const rows = (res?.ok ? res.projects : []) as unknown as BaseProjectRow[];
+        setProjects(rows.map(toDashboardProject));
+      } catch {
+        if (!cancelled) setProjects([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [loading, user]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-neutral-950">
         <div className="text-center">
-          <HanzoLogo className="w-12 h-12 mx-auto mb-4 animate-pulse" />
-          <p className="text-gray-500">Loading your workspace...</p>
+          <HanzoLogo className="w-12 h-12 mx-auto mb-4 animate-pulse text-white" />
+          <p className="text-white/40">Loading your workspace...</p>
         </div>
       </div>
     );
@@ -148,12 +135,14 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-neutral-950">
         <div className="text-center">
-          <HanzoLogo className="w-12 h-12 mx-auto mb-4 animate-pulse" />
-          <p className="text-gray-500">Redirecting to login...</p>
+          <HanzoLogo className="w-12 h-12 mx-auto mb-4 animate-pulse text-white" />
+          <p className="text-white/40">Redirecting to login...</p>
         </div>
       </div>
     );
   }
+
+  const usage = buildUsage(projects?.length ?? 0);
 
   return (
     <div className="min-h-screen bg-neutral-950">
@@ -164,13 +153,14 @@ export default function DashboardPage() {
         <div className="mb-10">
           <div className="flex items-center gap-4 mb-2">
             {user.avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={user.avatarUrl}
                 alt={user.name}
                 className="w-12 h-12 rounded-full border border-white/10"
               />
             ) : (
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#fd4444] to-[#ff6b6b] flex items-center justify-center text-white text-lg font-bold">
+              <div className="w-12 h-12 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-white text-lg font-bold">
                 {(user.fullname || user.name || "U").charAt(0).toUpperCase()}
               </div>
             )}
@@ -181,7 +171,7 @@ export default function DashboardPage() {
               <p className="text-white/50 text-sm">
                 {user.email || user.username || user.id}
                 {user.isPro && (
-                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-violet-500/20 text-violet-300 border border-violet-500/30">
+                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-white/10 text-white/80 border border-white/20">
                     PRO
                   </span>
                 )}
@@ -235,76 +225,87 @@ export default function DashboardPage() {
               </Button>
             </div>
 
-            <div className="space-y-3">
-              {PLACEHOLDER_PROJECTS.map((project) => (
-                <Link
-                  key={project._id}
-                  href={`/projects/${project._id}`}
-                  className="group flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] p-4 hover:bg-white/[0.06] hover:border-white/20 transition-all"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors">
-                      <FolderOpen className="w-5 h-5 text-white/60" />
-                    </div>
-                    <div>
-                      <h3 className="text-white font-medium group-hover:text-white/90">
-                        {project.title}
-                      </h3>
-                      <div className="flex items-center gap-3 mt-1">
-                        <span
-                          className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ${
-                            project.status === "active"
-                              ? "bg-emerald-500/15 text-emerald-400"
-                              : "bg-white/10 text-white/50"
-                          }`}
-                        >
-                          {project.status}
-                        </span>
-                        <span className="text-xs text-white/30 flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {project.updatedAt}
-                        </span>
+            {projects === null ? (
+              <ProjectsSkeleton />
+            ) : projects.length === 0 ? (
+              <EmptyProjects onCreate={() => router.push("/new")} />
+            ) : (
+              <div className="space-y-3">
+                {projects.map((project) => (
+                  <Link
+                    key={project.id}
+                    href={`/projects/${project.spaceId || project.id}`}
+                    className="group flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] p-4 hover:bg-white/[0.06] hover:border-white/20 transition-all"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors">
+                        <FolderOpen className="w-5 h-5 text-white/60" />
+                      </div>
+                      <div>
+                        <h3 className="text-white font-medium group-hover:text-white/90">
+                          {project.name}
+                        </h3>
+                        <div className="flex items-center gap-3 mt-1">
+                          {project.spaceId && (
+                            <span className="text-xs text-white/40 font-mono">
+                              {project.spaceId}
+                            </span>
+                          )}
+                          <span className="text-xs text-white/30 flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {relativeTime(project.updatedAt)}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <ArrowUpRight className="w-4 h-4 text-white/20 group-hover:text-white/50 transition-colors" />
-                </Link>
-              ))}
+                    <ArrowUpRight className="w-4 h-4 text-white/20 group-hover:text-white/50 transition-colors" />
+                  </Link>
+                ))}
 
-              <Link
-                href="/projects"
-                className="block text-center py-3 text-sm text-white/40 hover:text-white/60 transition-colors"
-              >
-                View all projects
-              </Link>
-            </div>
+                <Link
+                  href="/projects"
+                  className="block text-center py-3 text-sm text-white/40 hover:text-white/60 transition-colors"
+                >
+                  View all projects
+                </Link>
+              </div>
+            )}
           </section>
 
           {/* Right sidebar */}
           <aside className="space-y-6">
-            {/* Usage / Billing Summary */}
+            {/* Usage / Plan Summary */}
             <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6">
               <div className="flex items-center gap-3 mb-5">
-                <div className="w-9 h-9 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                  <BarChart3 className="w-5 h-5 text-blue-400" />
+                <div className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center">
+                  <BarChart3 className="w-5 h-5 text-white/70" />
                 </div>
                 <h3 className="text-lg font-semibold text-white">Usage</h3>
               </div>
 
               <div className="space-y-4">
-                {USAGE_STATS.map((stat) => (
-                  <div key={stat.label}>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-sm text-white/60">{stat.label}</span>
-                      <span className="text-sm text-white/80">
-                        {stat.value}{" "}
-                        <span className="text-white/30">/ {stat.limit}</span>
-                      </span>
-                    </div>
-                    <UsageBar percent={stat.percent} />
+                {usage.metrics.map((metric) => (
+                  <div
+                    key={metric.label}
+                    className="flex items-center justify-between"
+                  >
+                    <span className="text-sm text-white/60">{metric.label}</span>
+                    <span className="text-sm text-white/80">
+                      {metric.value}
+                      {metric.limit != null && (
+                        <span className="text-white/30"> / {metric.limit}</span>
+                      )}
+                      {metric.unit ? ` ${metric.unit}` : ""}
+                    </span>
                   </div>
                 ))}
               </div>
+
+              {!usage.metered && usage.note && (
+                <p className="mt-4 text-xs text-white/35 leading-relaxed">
+                  {usage.note}
+                </p>
+              )}
 
               <div className="mt-5 pt-4 border-t border-white/10">
                 <div className="flex items-center justify-between mb-1">
@@ -333,6 +334,44 @@ export default function DashboardPage() {
           </aside>
         </div>
       </main>
+    </div>
+  );
+}
+
+function ProjectsSkeleton() {
+  return (
+    <div className="space-y-3" aria-hidden>
+      {[0, 1, 2].map((i) => (
+        <div
+          key={i}
+          className="flex items-center gap-4 rounded-xl border border-white/10 bg-white/[0.03] p-4"
+        >
+          <div className="w-10 h-10 rounded-lg bg-white/[0.06] animate-pulse" />
+          <div className="flex-1 space-y-2">
+            <div className="h-3.5 w-40 rounded bg-white/[0.06] animate-pulse" />
+            <div className="h-3 w-24 rounded bg-white/[0.04] animate-pulse" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function EmptyProjects({ onCreate }: { onCreate: () => void }) {
+  return (
+    <div className="rounded-xl border border-dashed border-white/15 bg-white/[0.02] p-10 text-center">
+      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-white/5">
+        <FolderOpen className="h-6 w-6 text-white/50" />
+      </div>
+      <h3 className="text-white font-medium">No projects yet</h3>
+      <p className="mx-auto mt-1 max-w-xs text-sm text-white/40">
+        Describe what you want to build and Hanzo will generate it. Your projects
+        will appear here.
+      </p>
+      <Button onClick={onCreate} size="sm" variant="outline" className="mt-5 gap-1.5">
+        <Plus className="w-4 h-4" />
+        Create your first project
+      </Button>
     </div>
   );
 }

@@ -119,7 +119,7 @@ export default function Header() {
                     >
                       <Avatar className="w-7 h-7">
                         <AvatarImage src={user.avatarUrl} alt={displayName} />
-                        <AvatarFallback className="text-xs bg-gradient-to-br from-[#fd4444] to-[#ff6b6b] text-white">
+                        <AvatarFallback className="text-xs bg-white/10 text-white">
                           {userInitial}
                         </AvatarFallback>
                       </Avatar>
@@ -157,7 +157,7 @@ export default function Header() {
 
                     <DropdownMenuSeparator />
 
-                    <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                    <DropdownMenuItem onClick={handleLogout} className="text-white/70">
                       <LogOut className="mr-2 h-4 w-4" />
                       Log out
                     </DropdownMenuItem>
@@ -222,7 +222,7 @@ export default function Header() {
                     <div className="flex items-center gap-3">
                       <Avatar className="w-10 h-10">
                         <AvatarImage src={user.avatarUrl} alt={displayName} />
-                        <AvatarFallback className="bg-gradient-to-br from-[#fd4444] to-[#ff6b6b] text-white">
+                        <AvatarFallback className="bg-white/10 text-white">
                           {userInitial}
                         </AvatarFallback>
                       </Avatar>
@@ -293,7 +293,7 @@ export default function Header() {
 
                   <button
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors text-red-500"
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors text-white/70"
                   >
                     <LogOut className="w-5 h-5" />
                     <span>Log out</span>
