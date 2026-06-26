@@ -1,254 +1,107 @@
 "use client";
 
-import { use, useState, useEffect } from "react";
-import { useUser } from "@/hooks/useUser";
-import { useMount, useTimeoutFn } from "react-use";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Loader2, CheckCircle2, Sparkles, Zap, Rocket, Code2, Brain, Palette } from "lucide-react";
+import { Loader2 } from "lucide-react";
+
+import { useUser } from "@/hooks/useUser";
+import { loginRedirectDestination } from "@/lib/auth/redirect";
 import { HanzoLogo } from "@/components/HanzoLogo";
 
-export default function AuthCallback({
-  searchParams,
-}: {
-  searchParams: Promise<{ code?: string; access_token?: string; refresh_token?: string; expires_at?: string }>;
-}) {
-  const [showButton, setShowButton] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [currentIdea, setCurrentIdea] = useState(0);
-  const [isTyping, setIsTyping] = useState(true);
-  const params = use(searchParams);
-  const { loginFromCode, loginFromToken } = useUser();
+const REDIRECT_KEY = "redirectAfterLogin";
 
-  // Fun loading messages
-  const loadingSteps = [
-    { icon: "🔐", text: "Verifying your identity...", completed: false },
-    { icon: "🎫", text: "Validating access token...", completed: false },
-    { icon: "🚀", text: "Setting up your workspace...", completed: false },
-    { icon: "✨", text: "Loading AI models...", completed: false },
-    { icon: "🎉", text: "Almost there...", completed: false },
-  ];
+/**
+ * OAuth2 PKCE callback.
+ *
+ * Completes the hanzo.id exchange and redirects to the workspace the instant a
+ * session is established — no manual click, no indefinite spinner. The previous
+ * screen ran a decorative step timer and only ever navigated via a button the
+ * user had to press; this drives the real `completeLogin()` promise and calls
+ * `router.replace()` on resolve.
+ */
+export default function AuthCallback() {
+  const router = useRouter();
+  const { completeLogin, isAuthenticated } = useUser();
+  const [error, setError] = useState(false);
+  const ran = useRef(false);
 
-  const [steps, setSteps] = useState(loadingSteps);
-
-  // Animated ideas for the right side
-  const ideas = [
-    "Build a real-time collaborative editor",
-    "Create an AI-powered code reviewer",
-    "Design a machine learning dashboard",
-    "Develop a blockchain explorer interface",
-    "Build a 3D visualization tool",
-    "Create a voice-controlled smart home app",
-    "Design a social media analytics platform",
-    "Build an automated trading bot interface",
-    "Create a virtual reality workspace",
-    "Design a quantum computing simulator"
-  ];
-
-  // Features to showcase
-  const features = [
-    { icon: <Zap className="w-5 h-5" />, title: "Instant Generation", desc: "50ms response time" },
-    { icon: <Brain className="w-5 h-5" />, title: "100+ AI Models", desc: "Latest LLMs available" },
-    { icon: <Code2 className="w-5 h-5" />, title: "Full-Stack Apps", desc: "Frontend to backend" },
-    { icon: <Palette className="w-5 h-5" />, title: "Beautiful UIs", desc: "Tailwind & shadcn/ui" },
-  ];
-
-  useMount(async () => {
-    // IAM can deliver tokens two ways:
-    // 1. ?code=... (auth code flow) — exchange via /api/auth
-    // 2. ?access_token=... (implicit / id-worker bridge) — store directly
-    if (params.access_token) {
-      await loginFromToken(params.access_token, params.expires_at);
-    } else if (params.code) {
-      await loginFromCode(params.code);
-    }
-  });
-
-  // Animate loading steps
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentStep((prev) => {
-        if (prev < steps.length - 1) {
-          setSteps((s) => {
-            const newSteps = [...s];
-            newSteps[prev].completed = true;
-            return newSteps;
-          });
-          return prev + 1;
-        }
-        return prev;
-      });
-    }, 1000);
+    if (ran.current) return;
+    ran.current = true;
 
-    return () => clearInterval(interval);
-  }, [steps.length]);
+    const destination = () => {
+      let stored: string | null = null;
+      try {
+        stored = window.localStorage.getItem(REDIRECT_KEY);
+        window.localStorage.removeItem(REDIRECT_KEY);
+      } catch {
+        /* storage unavailable */
+      }
+      return loginRedirectDestination(stored);
+    };
 
-  // Cycle through ideas
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIsTyping(false);
-      setTimeout(() => {
-        setCurrentIdea((prev) => (prev + 1) % ideas.length);
-        setIsTyping(true);
-      }, 500);
-    }, 3500);
+    (async () => {
+      // Already signed in (revisit / token already exchanged): go straight in.
+      if (isAuthenticated) {
+        router.replace(destination());
+        return;
+      }
 
-    return () => clearInterval(interval);
-  }, [ideas.length]);
+      const params = new URLSearchParams(window.location.search);
+      const hasCallback = params.has("code") || params.has("access_token");
 
-  useTimeoutFn(
-    () => setShowButton(true),
-    7000 // Show button after 7 seconds
-  );
+      // Hit directly without an auth response — nothing to complete.
+      if (!hasCallback) {
+        router.replace("/login");
+        return;
+      }
+
+      const ok = await completeLogin();
+      if (ok) {
+        router.replace(destination());
+      } else {
+        setError(true);
+      }
+    })();
+  }, [completeLogin, isAuthenticated, router]);
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="min-h-screen flex">
-        {/* Left Side - Login Progress */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-20">
-          <div className="w-full max-w-md">
-            {/* Logo */}
-            <div className="flex justify-center mb-12">
-              <HanzoLogo className="w-12 h-12 text-white" />
-            </div>
+    <div className="min-h-screen flex items-center justify-center bg-black text-white px-6">
+      <div className="w-full max-w-sm text-center">
+        <div className="flex justify-center mb-10">
+          <HanzoLogo className="w-11 h-11 text-white" />
+        </div>
 
-            {/* Main Card */}
-            <div className="text-center mb-10">
-              <h1 className="text-4xl font-bold mb-4 tracking-tight">
-                {currentStep < steps.length - 1 ? "Logging you in..." : "Almost ready!"}
+        {error ? (
+          <div className="space-y-5">
+            <div>
+              <h1 className="text-xl font-semibold tracking-tight">
+                Sign-in didn&apos;t complete
               </h1>
-              <p className="text-white/50 text-lg">
-                Setting up your AI workspace
+              <p className="mt-2 text-sm text-white/50">
+                Your session couldn&apos;t be established. Please try signing in
+                again.
               </p>
             </div>
-
-            {/* Progress Steps */}
-            <div className="space-y-4 mb-10">
-              {steps.map((step, index) => (
-                <div
-                  key={index}
-                  className={`flex items-center gap-4 p-4 rounded-xl border transition-all duration-500 ${
-                    index === currentStep
-                      ? "bg-white/10 border-white/20 scale-105"
-                      : step.completed
-                      ? "bg-green-500/10 border-green-500/20"
-                      : "bg-white/5 border-white/10 opacity-50"
-                  }`}
-                >
-                  <div className="text-2xl">
-                    {step.completed ? <CheckCircle2 className="w-6 h-6 text-green-400" /> :
-                     index === currentStep ? <Loader2 className="w-6 h-6 text-white animate-spin" /> :
-                     <span>{step.icon}</span>}
-                  </div>
-                  <div className="flex-1 text-left">
-                    <p className={`text-sm ${index === currentStep ? "text-white" : step.completed ? "text-green-400" : "text-white/50"}`}>
-                      {step.text}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Action Button */}
-            <div className="text-center">
-              {showButton ? (
-                <div className="space-y-4">
-                  <Link href="/">
-                    <button className="w-full bg-white text-black px-6 py-3 rounded-xl font-medium hover:bg-white/90 transition-all flex items-center justify-center gap-2">
-                      <Sparkles className="w-4 h-4" />
-                      Go to Dashboard
-                    </button>
-                  </Link>
-                  <p className="text-xs text-white/40">
-                    You should be redirected automatically
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-center gap-2 text-white/60">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <p className="text-sm">Authenticating with Hanzo IAM...</p>
-                  </div>
-                  <p className="text-xs text-white/40">
-                    This usually takes a few seconds
-                  </p>
-                </div>
-              )}
-            </div>
+            <Link
+              href="/login"
+              className="inline-flex w-full items-center justify-center rounded-lg bg-white px-5 py-2.5 text-sm font-medium text-black transition-colors hover:bg-white/90"
+            >
+              Back to sign in
+            </Link>
           </div>
-        </div>
-
-        {/* Right Side - Animated Content */}
-        <div className="hidden lg:block w-1/2 relative overflow-hidden bg-gradient-to-br from-black via-gray-900 to-black">
-          {/* Grid Background */}
-          <div className="absolute inset-0 opacity-20">
-            <div
-              className="absolute inset-0"
-              style={{
-                backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
-                backgroundSize: '40px 40px'
-              }}
-            />
+        ) : (
+          <div className="space-y-3">
+            <div className="flex items-center justify-center gap-2.5 text-white/70">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span className="text-sm">Signing you in…</span>
+            </div>
+            <p className="text-xs text-white/35">
+              Completing secure sign-in with Hanzo
+            </p>
           </div>
-
-          {/* Animated Gradient Orbs */}
-          <div className="absolute top-1/4 -right-32 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-1/4 -left-32 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
-
-          {/* Content */}
-          <div className="relative z-10 h-full flex flex-col justify-center px-16">
-            {/* Welcome Message */}
-            <div className="mb-10">
-              <h2 className="text-3xl font-bold mb-4">
-                Welcome to Hanzo AI ✨
-              </h2>
-              <p className="text-white/60 text-lg">
-                Your AI-powered development platform is getting ready
-              </p>
-            </div>
-
-            {/* Animated Idea Display */}
-            <div className="bg-white/[0.03] backdrop-blur-sm rounded-2xl border border-white/[0.08] p-6 mb-10">
-              <div className="flex items-start gap-3">
-                <Rocket className="w-5 h-5 text-purple-400 mt-1 flex-shrink-0" />
-                <div className="flex-1">
-                  <p className="text-white/30 text-xs uppercase tracking-wider mb-3">Next, you could build</p>
-                  <div className="min-h-[60px]">
-                    <p className={`text-xl text-white/90 transition-all duration-500 font-light ${isTyping ? 'opacity-100' : 'opacity-0'}`}>
-                      {ideas[currentIdea]}
-                      <span className="inline-block w-0.5 h-6 bg-white/60 ml-1 animate-pulse" />
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Features Grid */}
-            <div className="grid grid-cols-2 gap-4">
-              {features.map((feature, index) => (
-                <div
-                  key={index}
-                  className="bg-white/[0.02] backdrop-blur-sm rounded-xl border border-white/[0.06] p-4 hover:bg-white/[0.04] transition-all"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="text-purple-400">{feature.icon}</div>
-                    <h3 className="text-sm font-medium text-white/80">{feature.title}</h3>
-                  </div>
-                  <p className="text-xs text-white/40">{feature.desc}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* Bottom Stats */}
-            <div className="mt-10 flex items-center justify-between text-xs text-white/30">
-              <div>10,000+ apps built</div>
-              <div>•</div>
-              <div>50ms generation</div>
-              <div>•</div>
-              <div>100+ AI models</div>
-            </div>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
