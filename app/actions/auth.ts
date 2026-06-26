@@ -1,6 +1,7 @@
 "use server";
 
 import { headers, cookies } from "next/headers";
+import { OIDC_PATHS } from "@hanzo/iam/paths";
 
 const IAM_ENDPOINT = process.env.IAM_ENDPOINT || "https://hanzo.id";
 const OAUTH_STATE_COOKIE = "hanzo_oauth_state";
@@ -32,7 +33,7 @@ export async function getAuth() {
     maxAge: 600, // 10 minutes — enough time to complete login
   });
 
-  const loginRedirectUrl = `${IAM_ENDPOINT}/oauth/authorize?client_id=${clientId}&redirect_uri=${redirect_uri}&response_type=code&scope=openid%20profile%20email&state=${state}`;
+  const loginRedirectUrl = `${IAM_ENDPOINT}${OIDC_PATHS.authorize}?client_id=${clientId}&redirect_uri=${redirect_uri}&response_type=code&scope=openid%20profile%20email&state=${state}`;
 
   return loginRedirectUrl;
 }
