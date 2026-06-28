@@ -15,12 +15,13 @@ export async function GET() {
     }
 
     const customer = await getOrCreateCustomer({
+      token: user.token,
       userId: user.id,
       email: user.email,
       name: user.name,
     });
 
-    const subscription = await getSubscriptionStatus(customer.id);
+    const subscription = await getSubscriptionStatus(user.token, customer.id);
 
     return NextResponse.json({ subscription });
   } catch (error) {

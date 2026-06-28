@@ -20,8 +20,9 @@ const envSchema = z.object({
   DATABASE_URL: z.string().url().optional(),
   REDIS_URL: z.string().url().optional(),
 
-  // Hanzo Commerce (optional but validated if present)
-  HANZO_COMMERCE_API_KEY: z.string().min(1).optional(),
+  // Hanzo Commerce — IAM-native, per-user. No admin API key: each request is
+  // authorized by the caller's own IAM token. Webhook secret verifies inbound
+  // webhooks (HMAC); API URL is the Commerce base.
   HANZO_COMMERCE_WEBHOOK_SECRET: z.string().min(1).optional(),
   HANZO_COMMERCE_API_URL: z.string().url().optional(),
 
