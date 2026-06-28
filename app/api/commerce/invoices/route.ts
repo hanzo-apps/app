@@ -15,12 +15,14 @@ export async function GET() {
     }
 
     const customer = await getOrCreateCustomer({
+      token: user.token,
       userId: user.id,
       email: user.email,
       name: user.name,
     });
 
     const { invoices } = await getCustomerInvoices({
+      token: user.token,
       customerId: customer.id,
       limit: 10,
     });

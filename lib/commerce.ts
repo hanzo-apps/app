@@ -1,15 +1,27 @@
 // Server-side Hanzo Commerce client.
 // All payment processing flows through the Hanzo Commerce API (api.hanzo.ai/v1),
 // which supports Square as the fiat payment processor and multiple crypto backends.
-// Secrets are fetched from KMS -- never hardcoded.
+//
+// IAM-native, per-user, fail-closed:
+//   Every user-scoped call is made AS the logged-in user by forwarding that
+//   user's IAM access token (from the `hanzo_token` cookie via getUserSession()).
+//   There is NO shared service/admin API key in this surface — Commerce is
+//   already IAM-native and meters/credits the token's `sub`. A call with no
+//   user token throws (fail-closed) rather than silently acting as an admin.
+//   The only remaining server secret is the webhook HMAC secret (KMS-sourced),
+//   used solely to VERIFY inbound webhooks — never as an identity.
 
 const COMMERCE_API_URL = process.env.HANZO_COMMERCE_API_URL || 'https://api.hanzo.ai/v1';
-const COMMERCE_API_KEY = process.env.HANZO_COMMERCE_API_KEY || '';
 const COMMERCE_WEBHOOK_SECRET = process.env.HANZO_COMMERCE_WEBHOOK_SECRET || '';
 
-/** Check if Commerce is configured. */
+/**
+ * Whether the Commerce integration is wired for this deployment. Gated on the
+ * webhook secret (provisioned from KMS in prod) — the one server-side secret
+ * the integration requires end-to-end. NOT gated on any admin API key: there
+ * is none. Per-request authorization is the user's own IAM token.
+ */
 export function isCommerceConfigured(): boolean {
-  return !!(COMMERCE_API_KEY && COMMERCE_WEBHOOK_SECRET);
+  return !!COMMERCE_WEBHOOK_SECRET;
 }
 
 // Plan product IDs managed in Commerce backend
@@ -36,17 +48,35 @@ export const COMMERCE_PRODUCTS = {
 };
 
 // ---------------------------------------------------------------------------
-// HTTP helper
+// HTTP helper — per-user, fail-closed
 // ---------------------------------------------------------------------------
 
+/** Raised when a user-scoped Commerce call is attempted without an IAM token. */
+export class CommerceAuthError extends Error {
+  constructor(message = 'Commerce requires an authenticated user token') {
+    super(message);
+    this.name = 'CommerceAuthError';
+  }
+}
+
+/**
+ * Make a Commerce request AS the given user. `token` is the user's IAM access
+ * token; it is forwarded verbatim as the bearer so Commerce attributes the
+ * request to that user. An empty token fails closed.
+ */
 async function commerceRequest<T = unknown>(
+  token: string,
   method: string,
   path: string,
   body?: unknown,
 ): Promise<T> {
+  if (!token) {
+    throw new CommerceAuthError();
+  }
+
   const url = `${COMMERCE_API_URL}${path}`;
   const headers: Record<string, string> = {
-    Authorization: `Bearer ${COMMERCE_API_KEY}`,
+    Authorization: `Bearer ${token}`,
     'Content-Type': 'application/json',
   };
 
@@ -75,31 +105,38 @@ interface CommerceCustomer {
   metadata?: Record<string, string>;
 }
 
-/** Get or create a customer in Commerce. */
+/**
+ * Get or create the Commerce customer for the calling user. Runs as the user
+ * (their IAM token), so Commerce resolves/creates the record keyed to the
+ * token's `sub` — no cross-user lookups, no admin key.
+ */
 export async function getOrCreateCustomer({
+  token,
   userId,
   email,
   name,
 }: {
+  token: string;
   userId: string;
   email: string;
   name?: string;
 }): Promise<CommerceCustomer> {
-  // Search by email first
+  // Resolve the caller's own customer record first.
   try {
     const results = await commerceRequest<CommerceCustomer[]>(
+      token,
       'GET',
       `/user?email=${encodeURIComponent(email)}&count=1`,
     );
     if (results && results.length > 0) {
       return results[0];
     }
-  } catch {
+  } catch (err) {
+    if (err instanceof CommerceAuthError) throw err;
     // Customer not found -- create below
   }
 
-  // Create new customer
-  return commerceRequest<CommerceCustomer>('POST', '/user', {
+  return commerceRequest<CommerceCustomer>(token, 'POST', '/user', {
     email,
     name,
     metadata: { userId },
@@ -115,8 +152,9 @@ interface CheckoutSession {
   id: string;
 }
 
-/** Create a checkout session for subscription plans. */
+/** Create a checkout session for subscription plans (as the user). */
 export async function createCheckoutSession({
+  token,
   customerId,
   priceId,
   mode = 'subscription',
@@ -124,6 +162,7 @@ export async function createCheckoutSession({
   cancelUrl,
   metadata = {},
 }: {
+  token: string;
   customerId?: string;
   priceId: string;
   mode?: 'payment' | 'subscription';
@@ -131,7 +170,7 @@ export async function createCheckoutSession({
   cancelUrl: string;
   metadata?: Record<string, string>;
 }): Promise<CheckoutSession> {
-  return commerceRequest<CheckoutSession>('POST', '/checkout/charge', {
+  return commerceRequest<CheckoutSession>(token, 'POST', '/checkout/charge', {
     customerId,
     planId: priceId,
     mode,
@@ -142,14 +181,16 @@ export async function createCheckoutSession({
   });
 }
 
-/** Create a checkout session for credit purchases. */
+/** Create a checkout session for credit purchases (as the user). */
 export async function createCreditsCheckoutSession({
+  token,
   customerId,
   amount,
   successUrl,
   cancelUrl,
   metadata = {},
 }: {
+  token: string;
   customerId?: string;
   customerEmail?: string;
   amount: number;
@@ -157,7 +198,7 @@ export async function createCreditsCheckoutSession({
   cancelUrl: string;
   metadata?: Record<string, string>;
 }): Promise<CheckoutSession> {
-  return commerceRequest<CheckoutSession>('POST', '/checkout/charge', {
+  return commerceRequest<CheckoutSession>(token, 'POST', '/checkout/charge', {
     customerId,
     items: [
       {
@@ -186,14 +227,20 @@ interface PortalSession {
   expiresAt: string;
 }
 
-/** Get a billing portal URL for the customer. */
+/** Get a billing portal URL for the calling user. */
 export async function createPortalSession({
+  token,
   returnUrl,
 }: {
+  token: string;
   customerId: string;
   returnUrl: string;
 }): Promise<PortalSession> {
-  return commerceRequest<PortalSession>('GET', `/billing/portal?returnUrl=${encodeURIComponent(returnUrl)}`);
+  return commerceRequest<PortalSession>(
+    token,
+    'GET',
+    `/billing/portal?returnUrl=${encodeURIComponent(returnUrl)}`,
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -208,8 +255,11 @@ interface SubscriptionStatus {
   priceId: string;
 }
 
-/** Get active subscription for a customer. */
-export async function getSubscriptionStatus(customerId: string): Promise<SubscriptionStatus | null> {
+/** Get active subscription for the calling user. */
+export async function getSubscriptionStatus(
+  token: string,
+  customerId: string,
+): Promise<SubscriptionStatus | null> {
   try {
     const subs = await commerceRequest<Array<{
       id: string;
@@ -217,7 +267,7 @@ export async function getSubscriptionStatus(customerId: string): Promise<Subscri
       currentPeriodEnd: string;
       cancelAtPeriodEnd: boolean;
       planId: string;
-    }>>('GET', `/subscribe?customerId=${encodeURIComponent(customerId)}&count=1`);
+    }>>(token, 'GET', `/subscribe?customerId=${encodeURIComponent(customerId)}&count=1`);
 
     if (!subs || subs.length === 0) {
       return null;
@@ -231,7 +281,8 @@ export async function getSubscriptionStatus(customerId: string): Promise<Subscri
       cancelAtPeriodEnd: sub.cancelAtPeriodEnd || false,
       priceId: sub.planId,
     };
-  } catch {
+  } catch (err) {
+    if (err instanceof CommerceAuthError) throw err;
     return null;
   }
 }
@@ -252,10 +303,12 @@ interface FormattedInvoice {
   period: { start: Date; end: Date } | null;
 }
 
-/** List invoices for the current authenticated user. */
+/** List invoices for the calling user. */
 export async function getCustomerInvoices({
+  token,
   limit = 10,
 }: {
+  token: string;
   customerId: string;
   limit?: number;
 }): Promise<{ invoices: FormattedInvoice[]; hasMore: boolean }> {
@@ -268,7 +321,7 @@ export async function getCustomerInvoices({
       paidAt?: string;
       dueDate?: string;
       createdAt: string;
-    }>>('GET', `/invoices?count=${limit}`);
+    }>>(token, 'GET', `/invoices?count=${limit}`);
 
     return {
       invoices: (invoices || []).map((inv) => ({
@@ -284,7 +337,8 @@ export async function getCustomerInvoices({
       })),
       hasMore: invoices.length >= limit,
     };
-  } catch {
+  } catch (err) {
+    if (err instanceof CommerceAuthError) throw err;
     return { invoices: [], hasMore: false };
   }
 }
@@ -293,47 +347,24 @@ export async function getCustomerInvoices({
 // Credits
 // ---------------------------------------------------------------------------
 
-/** Get customer credit balance from Commerce. */
-export async function getCustomerCredits(customerId: string): Promise<{ credits: number }> {
+/** Get the calling user's credit balance from Commerce. */
+export async function getCustomerCredits(
+  token: string,
+  customerId: string,
+): Promise<{ credits: number }> {
   try {
-    const usage = await commerceRequest<{ messages: number; tokens: number; cost: number }>(
-      'GET',
-      '/usage',
-    );
-    // Credits are tracked as the inverse of cost in cents
-    // The Commerce API returns usage; credit balance is managed via credit grants
     const grants = await commerceRequest<Array<{ remainingCents: number }>>(
+      token,
       'GET',
       `/user/${encodeURIComponent(customerId)}/credits`,
-    ).catch(() => []);
+    );
 
     const totalCredits = (grants || []).reduce((sum, g) => sum + (g.remainingCents || 0), 0);
     return { credits: Math.round(totalCredits / 100) };
-  } catch {
+  } catch (err) {
+    if (err instanceof CommerceAuthError) throw err;
     return { credits: 0 };
   }
-}
-
-/** Update customer credits (add/remove). */
-export async function updateCustomerCredits({
-  customerId,
-  credits,
-  action = 'set',
-}: {
-  customerId: string;
-  credits: number;
-  action?: 'set' | 'increment' | 'decrement';
-}): Promise<{ credits: number }> {
-  const result = await commerceRequest<{ remainingCents: number }>(
-    'POST',
-    `/user/${encodeURIComponent(customerId)}/credits`,
-    {
-      amountCents: credits * 100,
-      action,
-    },
-  );
-
-  return { credits: Math.round(result.remainingCents / 100) };
 }
 
 // ---------------------------------------------------------------------------

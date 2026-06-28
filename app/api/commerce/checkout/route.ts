@@ -30,6 +30,7 @@ export async function POST(req: NextRequest) {
     const { plan, billing, amount, type } = body;
 
     const customer = await getOrCreateCustomer({
+      token: user.token,
       userId: user.id,
       email: user.email,
       name: user.name,
@@ -44,6 +45,7 @@ export async function POST(req: NextRequest) {
       }
 
       const session = await createCreditsCheckoutSession({
+        token: user.token,
         customerId: customer.id,
         amount,
         successUrl: body.successUrl || `${origin}/billing?credits_added=true&amount=${amount}`,
@@ -73,6 +75,7 @@ export async function POST(req: NextRequest) {
     }
 
     const session = await createCheckoutSession({
+      token: user.token,
       customerId: customer.id,
       priceId,
       mode: 'subscription',
@@ -114,6 +117,7 @@ export async function GET(req: NextRequest) {
     }
 
     const customer = await getOrCreateCustomer({
+      token: user.token,
       userId: user.id,
       email: user.email,
       name: user.name,
@@ -134,6 +138,7 @@ export async function GET(req: NextRequest) {
 
     const origin = req.headers.get('origin') || 'http://localhost:3000';
     const session = await createCheckoutSession({
+      token: user.token,
       customerId: customer.id,
       priceId,
       mode: 'subscription',
