@@ -15,6 +15,7 @@ export async function POST(req: NextRequest) {
     }
 
     const customer = await getOrCreateCustomer({
+      token: user.token,
       userId: user.id,
       email: user.email,
       name: user.name,
@@ -23,6 +24,7 @@ export async function POST(req: NextRequest) {
     const origin = req.headers.get('origin') || 'http://localhost:3000';
 
     const session = await createPortalSession({
+      token: user.token,
       customerId: customer.id,
       returnUrl: `${origin}/billing`,
     });

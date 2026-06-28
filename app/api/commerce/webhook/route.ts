@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyWebhookSignature, updateCustomerCredits } from '@/lib/commerce';
+import { verifyWebhookSignature } from '@/lib/commerce';
 
+// Observe-only. The credit ledger lives in Commerce and is mutated by Commerce
+// when the user's JWT-authenticated checkout is paid — there is NO admin-keyed
+// write-back from here (that was the non-IAM-native double-entry path). The
+// webhook is authenticated by HMAC and used for side effects/observability.
 async function handleCheckoutCompleted(data: Record<string, unknown>) {
   const userId = data.userId as string | undefined;
-  const customerId = data.customerId as string | undefined;
   const amount = typeof data.amount === 'number' ? data.amount / 100 : 0;
 
   if (!userId || typeof userId !== 'string' || !userId.match(/^[a-zA-Z0-9_-]+$/)) {
@@ -11,15 +14,7 @@ async function handleCheckoutCompleted(data: Record<string, unknown>) {
     return;
   }
 
-  if (customerId) {
-    await updateCustomerCredits({
-      customerId,
-      credits: amount,
-      action: 'increment',
-    });
-  }
-
-  console.log(`Credited $${amount} to user ${userId}`);
+  console.log(`payment.completed: $${amount} for user ${userId} (credited by Commerce)`);
 }
 
 async function handleSubscriptionUpdated(data: Record<string, unknown>) {
