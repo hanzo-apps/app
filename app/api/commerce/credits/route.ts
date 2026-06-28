@@ -27,12 +27,13 @@ export async function GET() {
     }
 
     const customer = await getOrCreateCustomer({
+      token: user.token,
       userId: user.id,
       email: user.email,
       name: user.name,
     });
 
-    const { credits } = await getCustomerCredits(customer.id);
+    const { credits } = await getCustomerCredits(user.token, customer.id);
 
     return NextResponse.json({ credits });
   } catch (error) {
@@ -65,6 +66,7 @@ export async function POST(req: NextRequest) {
     }
 
     const customer = await getOrCreateCustomer({
+      token: user.token,
       userId: user.id,
       email: user.email,
       name: user.name,
@@ -73,6 +75,7 @@ export async function POST(req: NextRequest) {
     const origin = req.headers.get('origin') || 'http://localhost:3000';
 
     const session = await createCreditsCheckoutSession({
+      token: user.token,
       customerId: customer.id,
       amount,
       successUrl: `${origin}/billing?credits_added=true&amount=${amount}`,
