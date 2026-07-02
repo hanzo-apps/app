@@ -29,6 +29,14 @@ const COMMERCE_STORE_URL = (
 /** Per-org storefront `Published` key (KMS-injected). Empty when unset. */
 const STOREFRONT_TOKEN = process.env.HANZO_COMMERCE_STOREFRONT_TOKEN || "";
 
+/**
+ * When true, the storefront runs commerce in TEST mode (X-Hanzo-Test): checkout
+ * hits Square SANDBOX and orders write the test ledger — no real money. Use for
+ * demos / pre-launch. Absent/false ⇒ the org's own live/test mode applies.
+ */
+const STORE_TEST_MODE =
+  (process.env.HANZO_STORE_TEST_MODE || "").toLowerCase() === "true";
+
 // ---------------------------------------------------------------------------
 // Public storefront shapes (normalized from commerce's Listing/Order models).
 // ---------------------------------------------------------------------------
@@ -138,6 +146,7 @@ async function commerceFetch<T>(
   // whose `owner` claim already scopes the org also works. We send both.
   if (org) headers.set("X-Org-Id", org);
   if (token) headers.set("Authorization", `Bearer ${token}`);
+  if (STORE_TEST_MODE) headers.set("X-Hanzo-Test", "true");
 
   const res = await fetch(`${COMMERCE_STORE_URL}${path}`, {
     ...rest,
@@ -201,20 +210,38 @@ function normalizeListing(key: string, l: RawListing, currency: string): StorePr
   };
 }
 
+interface RawStore {
+  id?: string;
+  slug?: string;
+  currency?: string;
+  listings?: Record<string, RawListing> | null;
+}
+
+/**
+ * Fetch the org's store (per-org isolated) with its embedded catalog. We read
+ * `GET /v1/store/{storeIdOrSlug}` — the org-namespaced REST route that reads the
+ * SAME per-org physical store writes land in — rather than the `/listing`
+ * sub-route (which resolves against the pooled store and is invisible to
+ * per-org stores). The catalog travels embedded in the store's `listings` map.
+ */
+async function fetchStore(binding: StoreBinding): Promise<RawStore> {
+  return commerceFetch<RawStore>(
+    `/v1/store/${encodeURIComponent(binding.storeId)}`,
+    { org: binding.org, token: readAuthToken(binding), method: "GET" },
+  );
+}
+
 /**
  * List the org's real catalog for a store. Returns [] honestly when the
  * catalog is empty (never a fixture). Throws CommerceError on auth/other
  * failures so callers can map 401 → "connect a storefront key", etc.
  */
 export async function listProducts(binding: StoreBinding): Promise<StoreProduct[]> {
-  // GET /v1/store/{storeid}/listing → map[key]Listing
-  const listings = await commerceFetch<Record<string, RawListing>>(
-    `/v1/store/${encodeURIComponent(binding.storeId)}/listing`,
-    { org: binding.org, token: readAuthToken(binding), method: "GET" },
-  );
-  return Object.entries(listings || {})
+  const store = await fetchStore(binding);
+  const currency = (store.currency || binding.currency || "USD").toUpperCase();
+  return Object.entries(store.listings || {})
     .filter(([, l]) => l.hidden !== true)
-    .map(([key, l]) => normalizeListing(key, l, binding.currency));
+    .map(([key, l]) => normalizeListing(key, l, currency));
 }
 
 /** Fetch one product listing by key. Returns null when not found. */
@@ -223,11 +250,11 @@ export async function getProduct(
   key: string,
 ): Promise<StoreProduct | null> {
   try {
-    const l = await commerceFetch<RawListing>(
-      `/v1/store/${encodeURIComponent(binding.storeId)}/listing/${encodeURIComponent(key)}`,
-      { org: binding.org, token: readAuthToken(binding), method: "GET" },
-    );
-    return normalizeListing(key, l, binding.currency);
+    const store = await fetchStore(binding);
+    const l = (store.listings || {})[key];
+    if (!l) return null;
+    const currency = (store.currency || binding.currency || "USD").toUpperCase();
+    return normalizeListing(key, l, currency);
   } catch (e) {
     if (e instanceof CommerceError && e.status === 404) return null;
     throw e;
