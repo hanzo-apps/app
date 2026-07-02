@@ -125,6 +125,9 @@
       "@smithy/config-resolver": ">=4.4.0",
       "serialize-javascript": ">=6.0.3",
       "prismjs": ">=1.30.0"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "better-sqlite3"
+    ]
   }
 }
