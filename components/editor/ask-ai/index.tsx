@@ -9,7 +9,7 @@ import { FaStopCircle } from "react-icons/fa";
 
 import ProModal from "@/components/pro-modal";
 import { Button } from "@hanzo/ui";
-import { MODELS } from "@/lib/providers";
+import { useModels } from "@/lib/hooks/use-models";
 import { HtmlHistory, Page, Project } from "@/types";
 // import { InviteFriends } from "@/components/invite-friends";
 import { Settings } from "@/components/editor/ask-ai/settings";
@@ -71,10 +71,12 @@ export function AskAI({
 }) {
   const refThink = useRef<HTMLDivElement | null>(null);
 
+  const { models, defaultModel, loading: modelsLoading } = useModels();
+
   const [open, setOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [provider, setProvider] = useLocalStorage("provider", "auto");
-  const [model, setModel] = useLocalStorage("model", MODELS[0].value);
+  const [model, setModel] = useLocalStorage("model", defaultModel);
   const [openProvider, setOpenProvider] = useState(false);
   const [providerError, setProviderError] = useState("");
   const [openProModal, setOpenProModal] = useState(false);
@@ -107,9 +109,19 @@ export function AskAI({
     setisAiWorking,
   });
 
-  const selectedModel = useMemo(() => {
-    return MODELS.find((m: { value: string }) => m.value === model);
-  }, [model]);
+  // Keep the persisted selection valid against the live gateway list: if the
+  // stored model is no longer served (or a fresh session has none), fall back to
+  // the gateway's default. This is the ONE place the selection is reconciled.
+  useEffect(() => {
+    if (
+      !modelsLoading &&
+      models.length > 0 &&
+      (!model || !models.some((m) => m.value === model))
+    ) {
+      setModel(defaultModel);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modelsLoading, models, model, defaultModel]);
 
   const callAi = async (redesignMarkdown?: string, queuedPrompt?: string) => {
     // If AI is working, add to queue instead of blocking
@@ -195,9 +207,6 @@ export function AskAI({
       if (result?.success) {
         if (!queuedPrompt) {
           setPrompt("");
-        }
-        if (selectedModel?.isThinker) {
-          setModel(MODELS[0].value);
         }
       }
     }
@@ -578,7 +587,6 @@ export function AskAI({
               onModelChange={setModel}
               open={openProvider}
               error={providerError}
-              isFollowUp={!isSameHtml && isFollowUp}
               onClose={setOpenProvider}
             />
             {isAiWorking ? (
@@ -628,9 +636,6 @@ export function AskAI({
                 id="diff-patch-checkbox"
                 checked={isFollowUp}
                 onCheckedChange={(e: boolean | "indeterminate") => {
-                  if (e === true && !isSameHtml && selectedModel?.isThinker) {
-                    setModel(MODELS[0].value);
-                  }
                   setIsFollowUp(e === true);
                 }}
               />
