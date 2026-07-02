@@ -183,8 +183,8 @@ export const useCallAi = ({
     
     try {
       onNewPrompt(prompt);
-      
-      const request = await fetch("/api/ask-ai", {
+
+      const request = await fetch("/v1/generate", {
         method: "POST",
         body: JSON.stringify({
           prompt,
@@ -286,8 +286,8 @@ export const useCallAi = ({
     
     try {
       onNewPrompt(prompt);
-      
-      const request = await fetch("/api/ask-ai", {
+
+      const request = await fetch("/v1/generate", {
         method: "POST",
         body: JSON.stringify({
           prompt,
@@ -392,8 +392,8 @@ export const useCallAi = ({
     
     try {
       onNewPrompt(prompt);
-      
-      const request = await fetch("/api/ask-ai", {
+
+      const request = await fetch("/v1/generate", {
         method: "PUT",
         body: JSON.stringify({
           prompt,
