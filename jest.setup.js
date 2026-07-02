@@ -7,6 +7,11 @@ import { TextEncoder, TextDecoder } from 'util';
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
 
+// Web Fetch API globals (Request/Response/Headers/fetch) come from Node 20's
+// built-in undici under the `node` test environment; `next/server`
+// (NextRequest/NextResponse) extends the global Request, which jsdom lacks.
+// Server route-handler tests therefore run under `@jest-environment node`.
+
 // Set test environment
 process.env.NODE_ENV = 'test';
 
@@ -38,20 +43,23 @@ global.IntersectionObserver = class IntersectionObserver {
   }
 };
 
-// Mock matchMedia
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: jest.fn().mockImplementation(query => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: jest.fn(),
-    removeListener: jest.fn(),
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
-  })),
-});
+// Mock matchMedia — browser-only, so guard for the node test environment
+// (server route-handler tests run under `@jest-environment node`).
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: jest.fn().mockImplementation(query => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: jest.fn(),
+      removeListener: jest.fn(),
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+      dispatchEvent: jest.fn(),
+    })),
+  });
+}
 
 // Add custom matchers
 expect.extend({
