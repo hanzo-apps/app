@@ -1,291 +1,298 @@
 "use client";
 
-import { useState } from "react";
+// Ecommerce storefront — the REAL per-org store surface.
+//
+// This template used to render a hardcoded fixture array. It now BINDS to the
+// org's cloud commerce catalog via the BFF (/api/store/*): it reads the real
+// catalog, builds a real cart, and turns checkout into a real Square-hosted
+// session. Honest-empty when the catalog is empty; nothing is faked.
+// See universe/docs/architecture/hanzo-app-cloud-integration.md §6.
+
+import { useCallback, useEffect, useState } from "react";
 import { Card, CardContent, CardFooter } from "@hanzo/ui";
 import { Button } from "@hanzo/ui";
 import { Badge } from "@hanzo/ui";
 import { Input } from "@hanzo/ui";
 import { AspectRatio } from "@hanzo/ui";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@hanzo/ui";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
-import { ShoppingCart, Search, Star, Filter, Heart, Share2 } from "lucide-react";
+import { ShoppingCart, Search, Store as StoreIcon, Loader2 } from "lucide-react";
 
-const products = [
-  {
-    id: "1",
-    name: "Premium Wireless Headphones",
-    price: 299.99,
-    image: "/api/placeholder/400/400",
-    rating: 4.5,
-    reviews: 234,
-    badge: "Best Seller",
-    variants: ["Black", "White", "Blue"]
-  },
-  {
-    id: "2",
-    name: "Smart Watch Pro",
-    price: 399.99,
-    image: "/api/placeholder/400/400",
-    rating: 4.8,
-    reviews: 567,
-    badge: "New",
-    variants: ["Silver", "Gold", "Space Gray"]
-  },
-  {
-    id: "3",
-    name: "Portable Speaker",
-    price: 149.99,
-    image: "/api/placeholder/400/400",
-    rating: 4.3,
-    reviews: 189,
-    badge: null,
-    variants: ["Red", "Black", "Green"]
-  },
-  {
-    id: "4",
-    name: "Laptop Stand",
-    price: 79.99,
-    image: "/api/placeholder/400/400",
-    rating: 4.6,
-    reviews: 432,
-    badge: "Sale",
-    variants: ["Aluminum", "Wood"]
+interface StoreProduct {
+  key: string;
+  productId?: string;
+  slug?: string;
+  variantSku?: string;
+  name: string;
+  headline?: string;
+  description?: string;
+  image?: string;
+  images: string[];
+  priceCents: number;
+  listPriceCents?: number;
+  currency: string;
+  available: boolean;
+}
+
+interface ProductsResponse {
+  org: string;
+  storeId: string;
+  currency: string;
+  products: StoreProduct[];
+}
+
+interface CartLineRef {
+  productId?: string;
+  productSlug?: string;
+  variantSku?: string;
+  quantity: number;
+}
+
+function money(cents: number, currency: string): string {
+  try {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency || "USD",
+    }).format(cents / 100);
+  } catch {
+    return `$${(cents / 100).toFixed(2)}`;
   }
-];
+}
 
-const categories = ["All Products", "Electronics", "Accessories", "Audio", "Computing"];
+function itemRef(p: StoreProduct): CartLineRef {
+  return p.productId
+    ? { productId: p.productId, quantity: 1 }
+    : p.slug
+      ? { productSlug: p.slug, quantity: 1 }
+      : { variantSku: p.variantSku || p.key, quantity: 1 };
+}
 
 export default function EcommerceStorefront() {
-  const [selectedCategory, setSelectedCategory] = useState("All Products");
-  const [cart, setCart] = useState<{ id: string; quantity: number }[]>([]);
+  const [data, setData] = useState<ProductsResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [cart, setCart] = useState<Record<string, number>>({});
+  const [cartId, setCartId] = useState<string | null>(null);
+  const [checkingOut, setCheckingOut] = useState(false);
 
-  const addToCart = (productId: string) => {
-    setCart(prev => {
-      const existing = prev.find(item => item.id === productId);
-      if (existing) {
-        return prev.map(item =>
-          item.id === productId
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const res = await fetch("/api/store/products", { cache: "no-store" });
+        const body = await res.json();
+        if (!alive) return;
+        if (!res.ok) {
+          setError(
+            body?.message ||
+              (res.status === 409
+                ? "This project isn't bound to a store yet."
+                : "Could not load the catalog."),
+          );
+          setData(null);
+        } else {
+          setData(body);
+        }
+      } catch {
+        if (alive) setError("Could not reach the store.");
+      } finally {
+        if (alive) setLoading(false);
       }
-      return [...prev, { id: productId, quantity: 1 }];
-    });
-  };
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
 
-  const cartItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const ensureCart = useCallback(async (): Promise<string> => {
+    if (cartId) return cartId;
+    const res = await fetch("/api/store/cart", { method: "POST" });
+    const body = await res.json();
+    if (!res.ok) throw new Error(body?.message || "Could not create a cart");
+    const id = body?.cart?.id as string;
+    setCartId(id);
+    return id;
+  }, [cartId]);
+
+  const addToCart = useCallback(
+    async (p: StoreProduct) => {
+      const nextQty = (cart[p.key] || 0) + 1;
+      setCart((prev) => ({ ...prev, [p.key]: nextQty }));
+      try {
+        const id = await ensureCart();
+        const ref = itemRef(p);
+        await fetch(`/api/store/cart/${encodeURIComponent(id)}/items`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...ref, quantity: nextQty }),
+        });
+      } catch {
+        // Revert optimistic add on failure.
+        setCart((prev) => ({ ...prev, [p.key]: Math.max(0, nextQty - 1) }));
+      }
+    },
+    [cart, ensureCart],
+  );
+
+  const checkout = useCallback(async () => {
+    if (!data) return;
+    const items = data.products
+      .filter((p) => (cart[p.key] || 0) > 0)
+      .map((p) => ({ ...itemRef(p), quantity: cart[p.key], name: p.name }));
+    if (items.length === 0) return;
+    setCheckingOut(true);
+    try {
+      const res = await fetch("/api/store/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items }),
+      });
+      const body = await res.json();
+      if (res.ok && body?.checkoutUrl) {
+        window.location.href = body.checkoutUrl; // real Square-hosted page
+      } else {
+        setError(body?.message || "Checkout is not available yet.");
+      }
+    } catch {
+      setError("Checkout failed to start.");
+    } finally {
+      setCheckingOut(false);
+    }
+  }, [cart, data]);
+
+  const cartCount = Object.values(cart).reduce((s, q) => s + q, 0);
+  const products = (data?.products || []).filter((p) =>
+    query ? p.name.toLowerCase().includes(query.toLowerCase()) : true,
+  );
+  const currency = data?.currency || "USD";
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-8">
-              <h1 className="text-2xl font-bold">Store</h1>
-              <nav className="hidden md:flex items-center gap-6">
-                {categories.map(category => (
-                  <button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    className={`text-sm font-medium transition-colors hover:text-primary ${
-                      selectedCategory === category
-                        ? "text-primary"
-                        : "text-muted-foreground"
-                    }`}
-                  >
-                    {category}
-                  </button>
-                ))}
-              </nav>
+      <header className="border-b sticky top-0 bg-background/95 backdrop-blur z-50">
+        <div className="container mx-auto px-6 py-4 flex items-center justify-between gap-4">
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <StoreIcon className="w-6 h-6" /> Store
+          </h1>
+          <div className="flex items-center gap-4">
+            <div className="relative hidden md:block">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Search products..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="pl-9 w-[200px] lg:w-[300px]"
+              />
             </div>
-
-            <div className="flex items-center gap-4">
-              <div className="relative hidden md:block">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search products..."
-                  className="pl-9 w-[200px] lg:w-[300px]"
-                />
-              </div>
-
-              <Button variant="ghost" size="icon" className="relative">
+            <Button
+              onClick={checkout}
+              disabled={cartCount === 0 || checkingOut}
+              className="relative gap-2"
+            >
+              {checkingOut ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
                 <ShoppingCart className="w-5 h-5" />
-                {cartItemsCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center">
-                    {cartItemsCount}
-                  </Badge>
-                )}
-              </Button>
-            </div>
+              )}
+              {cartCount > 0 ? `Checkout (${cartCount})` : "Cart"}
+            </Button>
           </div>
         </div>
       </header>
 
-      {/* Hero Section - Orange/Pink Gradient Theme */}
-      <section className="bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] text-white py-16">
-        <div className="container mx-auto px-6">
-          <div className="max-w-3xl">
-            <h2 className="text-4xl font-bold mb-4">
-              Summer Collection
-            </h2>
-            <p className="text-xl mb-6 opacity-90">
-              Discover our latest products built with @hanzo/ui components
-            </p>
-            <Button size="lg" variant="secondary">
-              Shop Now
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Filters Bar */}
-      <div className="border-b">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="outline" className="gap-2">
-                <Filter className="w-4 h-4" />
-                Filters
-              </Button>
-              <Select defaultValue="featured">
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="featured">Featured</SelectItem>
-                  <SelectItem value="price-low">Price: Low to High</SelectItem>
-                  <SelectItem value="price-high">Price: High to Low</SelectItem>
-                  <SelectItem value="rating">Highest Rated</SelectItem>
-                  <SelectItem value="newest">Newest</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Showing {products.length} products
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Products Grid */}
       <section className="py-12">
         <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {products.map(product => (
-              <Card key={product.id} className="overflow-hidden group">
-                <div className="relative">
-                  <AspectRatio ratio={1}>
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="object-cover w-full h-full group-hover:scale-105 transition-transform"
-                    />
-                  </AspectRatio>
-                  {product.badge && (
-                    <Badge className="absolute top-2 left-2">
-                      {product.badge}
-                    </Badge>
-                  )}
-                  <div className="absolute top-2 right-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button size="icon" variant="secondary" className="h-8 w-8">
-                      <Heart className="w-4 h-4" />
-                    </Button>
-                    <Button size="icon" variant="secondary" className="h-8 w-8">
-                      <Share2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
+          {loading && (
+            <div className="flex items-center justify-center py-24 text-muted-foreground">
+              <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading catalog…
+            </div>
+          )}
 
-                <CardContent className="p-4">
-                  <h3 className="font-semibold mb-2">{product.name}</h3>
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-4 h-4 ${
-                            i < Math.floor(product.rating)
-                              ? "fill-yellow-400 text-yellow-400"
-                              : "text-muted-foreground"
-                          }`}
-                        />
-                      ))}
+          {!loading && error && (
+            <div className="max-w-md mx-auto text-center py-24">
+              <StoreIcon className="w-10 h-10 mx-auto mb-4 text-muted-foreground" />
+              <p className="text-muted-foreground">{error}</p>
+            </div>
+          )}
+
+          {!loading && !error && products.length === 0 && (
+            <div className="max-w-md mx-auto text-center py-24">
+              <StoreIcon className="w-10 h-10 mx-auto mb-4 text-muted-foreground" />
+              <h2 className="text-lg font-semibold mb-1">No products yet</h2>
+              <p className="text-muted-foreground">
+                This store is connected but its catalog is empty. Add a product
+                to see it here.
+              </p>
+            </div>
+          )}
+
+          {!loading && !error && products.length > 0 && (
+            <>
+              <p className="text-sm text-muted-foreground mb-6">
+                Showing {products.length} product{products.length === 1 ? "" : "s"}
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {products.map((product) => (
+                  <Card key={product.key} className="overflow-hidden group">
+                    <div className="relative">
+                      <AspectRatio ratio={1}>
+                        {product.image ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className="object-cover w-full h-full group-hover:scale-105 transition-transform"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-muted">
+                            <StoreIcon className="w-8 h-8 text-muted-foreground" />
+                          </div>
+                        )}
+                      </AspectRatio>
+                      {product.listPriceCents &&
+                        product.listPriceCents > product.priceCents && (
+                          <Badge className="absolute top-2 left-2">Sale</Badge>
+                        )}
                     </div>
-                    <span className="text-sm text-muted-foreground">
-                      ({product.reviews})
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-2xl font-bold">
-                      ${product.price}
-                    </span>
-                  </div>
-
-                  {/* Variant Selector */}
-                  <div className="mb-3">
-                    <Select defaultValue={product.variants[0]}>
-                      <SelectTrigger className="w-full h-8 text-sm">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {product.variants.map(variant => (
-                          <SelectItem key={variant} value={variant}>
-                            {variant}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </CardContent>
-
-                <CardFooter className="p-4 pt-0">
-                  <Button
-                    className="w-full"
-                    onClick={() => addToCart(product.id)}
-                  >
-                    <ShoppingCart className="w-4 h-4 mr-2" />
-                    Add to Cart
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="py-12 bg-muted">
-        <div className="container mx-auto px-6">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-12 h-12 rounded-full bg-[#fd4444]/10 flex items-center justify-center mx-auto mb-3">
-                <ShoppingCart className="w-6 h-6 text-[#fd4444]" />
+                    <CardContent className="p-4">
+                      <h3 className="font-semibold mb-1">{product.name}</h3>
+                      {product.headline && (
+                        <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+                          {product.headline}
+                        </p>
+                      )}
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-2xl font-bold">
+                          {money(product.priceCents, product.currency || currency)}
+                        </span>
+                        {product.listPriceCents &&
+                          product.listPriceCents > product.priceCents && (
+                            <span className="text-sm text-muted-foreground line-through">
+                              {money(
+                                product.listPriceCents,
+                                product.currency || currency,
+                              )}
+                            </span>
+                          )}
+                      </div>
+                    </CardContent>
+                    <CardFooter className="p-4 pt-0">
+                      <Button
+                        className="w-full"
+                        disabled={!product.available}
+                        onClick={() => addToCart(product)}
+                      >
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        {product.available
+                          ? (cart[product.key] || 0) > 0
+                            ? `In cart (${cart[product.key]})`
+                            : "Add to Cart"
+                          : "Unavailable"}
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
               </div>
-              <h3 className="font-semibold mb-1">Free Shipping</h3>
-              <p className="text-sm text-muted-foreground">
-                On orders over $100
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 rounded-full bg-[#ff6b6b]/10 flex items-center justify-center mx-auto mb-3">
-                <Star className="w-6 h-6 text-[#ff6b6b]" />
-              </div>
-              <h3 className="font-semibold mb-1">Quality Products</h3>
-              <p className="text-sm text-muted-foreground">
-                100% authentic brands
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 rounded-full bg-[#fd4444]/10 flex items-center justify-center mx-auto mb-3">
-                <Heart className="w-6 h-6 text-[#fd4444]" />
-              </div>
-              <h3 className="font-semibold mb-1">24/7 Support</h3>
-              <p className="text-sm text-muted-foreground">
-                Dedicated customer service
-              </p>
-            </div>
-          </div>
+            </>
+          )}
         </div>
       </section>
     </div>
