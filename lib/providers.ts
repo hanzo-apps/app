@@ -3,23 +3,27 @@
  *
  * The builder POSTs to the single Hanzo AI gateway (api.hanzo.ai/v1, an
  * OpenAI-compatible endpoint) via /v1/generate. The gateway owns ALL provider
- * routing (Zen/DO internal, BYOK, linked HuggingFace/other clouds, custom
- * providers), so from the app's point of view there is exactly ONE provider:
- * `hanzo`. Model `value`s here are gateway model IDs.
+ * routing (Zen/DO internal, BYOK, linked clouds, custom providers), so from the
+ * app's point of view there is exactly ONE provider: `hanzo`. Model `value`s are
+ * gateway model IDs.
  *
- * For the fully dynamic list, /v1/models proxies the gateway's GET /v1/models.
- * This static list is the curated builder default set used to seed the
- * settings picker; DEFAULT_MODEL is the coder model the builder opens with.
+ * The picker list is FULLY DYNAMIC: /v1/models proxies the gateway's live
+ * `GET /v1/models`, filters it to the Zen build ladder, and labels it — read on
+ * the client via useModels(). This module owns only the *rules* for that shaping
+ * (which ids are build models, how an id becomes a label) plus the offline
+ * last-resort list. There is NO hand-maintained model catalog here — the gateway
+ * is the source of truth.
  */
 
-// The builder opens on the Zen coder model. We offer ONLY the current Zen5
-// ladder — the gateway-exposed SKUs (zen-gateway `gateway/config.yaml`), which
-// map to the latest OSS weights internally (zen5/zen5-coder → glm-5.2,
-// zen5-pro → deepseek-v4-pro, zen5-max → qwen3.5-397b). Deprecated ids
-// (zen3-coder, zen4-*) and raw upstream names (qwen/*, deepseek/*, kimi/*) are
-// NOT offered — the gateway serves the Zen SKU name, not the upstream id, so
-// those 502. The dynamic /v1/models list stays authoritative; this is the
-// curated builder default set.
+// One presentational shape for a selectable model, shared by the /v1/models
+// route, the useModels() hook, and the picker components. One shape, one place.
+export type ModelOption = {
+  value: string; // gateway model id, e.g. "zen5-coder"
+  label: string; // prettified id, e.g. "Zen 5 Coder"
+  description?: string; // optional subtitle, passed through from the gateway
+};
+
+// The model the builder opens on when neither storage nor the gateway pick one.
 export const DEFAULT_MODEL = "zen5-coder";
 
 // One provider from the app's perspective: the Hanzo gateway.
@@ -31,55 +35,70 @@ export const PROVIDERS = {
   },
 };
 
-// The curated Zen5 builder ladder — every entry is a gateway-served Zen SKU
-// backed by the latest OSS weights (see zen-gateway `gateway/config.yaml`):
-//   zen5-nano  → nemotron-nano-12b   (fastest / cheapest)
-//   zen5-flash → deepseek-4-flash    (fast)
-//   zen5-coder → glm-5.2             (default — code)
-//   zen5       → glm-5.2             (balanced)
-//   zen5-pro   → deepseek-v4-pro     (reasoning)
-//   zen5-max   → qwen3.5-397b        (largest OSS)
-// zen5-ultra (→ Claude Opus, non-OSS) is intentionally omitted; embeddings
-// (zen5-embedding-*) and specialty SKUs (zen3-vl/asr/tts/omni) are other
-// surfaces, not the code builder.
-export const MODELS = [
-  {
-    value: "zen5-coder",
-    label: "Zen 5 Coder",
-    providers: ["hanzo"],
-    autoProvider: "hanzo",
-    isNew: true,
-  },
-  {
-    value: "zen5-flash",
-    label: "Zen 5 Flash",
-    providers: ["hanzo"],
-    autoProvider: "hanzo",
-  },
-  {
-    value: "zen5",
-    label: "Zen 5",
-    providers: ["hanzo"],
-    autoProvider: "hanzo",
-  },
-  {
-    value: "zen5-pro",
-    label: "Zen 5 Pro",
-    providers: ["hanzo"],
-    autoProvider: "hanzo",
-    isNew: true,
-    isThinker: true,
-  },
-  {
-    value: "zen5-max",
-    label: "Zen 5 Max",
-    providers: ["hanzo"],
-    autoProvider: "hanzo",
-  },
-  {
-    value: "zen5-nano",
-    label: "Zen 5 Nano",
-    providers: ["hanzo"],
-    autoProvider: "hanzo",
-  },
+// Hyphen/underscore segments that mark a NON-build Zen surface: embeddings, ASR,
+// TTS, the guard classifier and vision-only (vl) SKUs are separate products, not
+// the code builder. `omni` (general multimodal chat) and the text/code ladder
+// stay in.
+const NON_BUILD_SEGMENTS = new Set([
+  "embedding",
+  "embeddings",
+  "asr",
+  "tts",
+  "guard",
+  "vl",
+]);
+
+// A build model is a Zen chat/code SKU: id starts with `zen` and carries none of
+// the non-build segments. Pure rule — the LIST of ids stays dynamic (it comes
+// from the gateway); this only decides membership.
+export function isBuildModel(id: string): boolean {
+  if (!id.startsWith("zen")) return false;
+  return !id
+    .toLowerCase()
+    .split(/[-_]/)
+    .some((seg) => NON_BUILD_SEGMENTS.has(seg));
+}
+
+// Prettify a gateway id into a human label: "zen5-coder" → "Zen 5 Coder",
+// "zen3-omni" → "Zen 3 Omni". Pure derivation — no per-model table.
+export function prettifyModelLabel(id: string): string {
+  const cap = (s: string) => (s ? s[0].toUpperCase() + s.slice(1) : s);
+  return id
+    .split(/[-_]/)
+    .map((seg) => {
+      const zen = /^zen(\d.*)$/.exec(seg);
+      return zen ? `Zen ${cap(zen[1])}` : cap(seg);
+    })
+    .join(" ");
+}
+
+// Shape a gateway `GET /v1/models` `data[]` payload into the builder's dynamic
+// picker list: keep only build models, label them, pass any description through.
+// This is the single application of the catalog rules above.
+export function buildModelsFrom(
+  raw: Array<{ id?: string; description?: string }>
+): ModelOption[] {
+  return raw
+    .filter(
+      (m): m is { id: string; description?: string } =>
+        typeof m.id === "string" && isBuildModel(m.id)
+    )
+    .map((m) => ({
+      value: m.id,
+      label: prettifyModelLabel(m.id),
+      ...(m.description ? { description: m.description } : {}),
+    }));
+}
+
+// OFFLINE LAST-RESORT ONLY. This is the sole hardcoded list, used solely when
+// the live gateway list is unreachable — the server /v1/models offline path and
+// the client useModels() fallback — so the picker never breaks. It is NOT the
+// source of truth; the gateway is. Keep it to the current Zen 5 ladder.
+export const FALLBACK_MODELS: ModelOption[] = [
+  { value: "zen5-coder", label: "Zen 5 Coder" },
+  { value: "zen5-flash", label: "Zen 5 Flash" },
+  { value: "zen5", label: "Zen 5" },
+  { value: "zen5-pro", label: "Zen 5 Pro" },
+  { value: "zen5-max", label: "Zen 5 Max" },
+  { value: "zen5-nano", label: "Zen 5 Nano" },
 ];
