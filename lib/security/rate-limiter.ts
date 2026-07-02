@@ -123,10 +123,22 @@ export const rateLimiters = {
     maxRequests: 200, // 200 requests per minute
   }),
 
-  // Strict rate limit for AI endpoints (expensive operations)
+  // Rate limit for AI endpoints (expensive operations). Keyed PER-USER, not
+  // per-IP: /v1/generate is authenticated (hanzo_token cookie), and behind the
+  // shared cluster ingress an IP key collapses EVERY user into one global bucket
+  // (so one person's builds 429 everyone). Per-user gives each builder their own
+  // headroom; 30/min covers interactive iterate-and-rebuild while still guarding
+  // cost. Falls back to IP only for unauthenticated callers.
   ai: new RateLimiter({
     windowMs: 60 * 1000, // 1 minute
-    maxRequests: 10, // 10 requests per minute
+    maxRequests: 30, // per authenticated user
+    keyGenerator: (req) => {
+      const tok = req.cookies.get('hanzo_token')?.value;
+      if (tok) return `rate-limit:ai:user:${tok.slice(-24)}`;
+      const fwd = req.headers.get('x-forwarded-for');
+      const ip = fwd ? fwd.split(',')[0] : req.headers.get('x-real-ip') || 'unknown';
+      return `rate-limit:ai:ip:${ip}`;
+    },
   }),
 
   // Very strict rate limit for payment endpoints
