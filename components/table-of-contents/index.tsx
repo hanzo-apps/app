@@ -58,7 +58,7 @@ export function TableOfContents({ items, activeId, visibleIds = [], onItemClick 
                 activeId === item.index.toString()
                   ? 'border-primary text-foreground font-medium'
                   : visibleIds.includes(item.index.toString())
-                  ? 'border-blue-400/50 text-foreground/80'
+                  ? 'border-foreground/40 text-foreground/80'
                   : 'border-transparent'
               )}
             >
@@ -78,7 +78,7 @@ export function TableOfContents({ items, activeId, visibleIds = [], onItemClick 
                         activeId === child.index.toString()
                           ? 'border-primary text-foreground font-medium'
                           : visibleIds.includes(child.index.toString())
-                          ? 'border-blue-400/50 text-foreground/80'
+                          ? 'border-foreground/40 text-foreground/80'
                           : 'border-transparent'
                       )}
                       style={{ paddingLeft: 'calc(0.75rem * 1.67)' }}

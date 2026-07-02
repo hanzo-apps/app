@@ -62,8 +62,8 @@ export default function GlobalError({
                     unexpected error and needs to restart. Our team has been notified.
                   </p>
                   {error.digest && (
-                    <div className="mt-4 p-3 bg-blue-900/20 rounded-lg border border-blue-800">
-                      <p className="text-sm text-blue-300">
+                    <div className="mt-4 p-3 bg-white/5 rounded-lg border border-white/10">
+                      <p className="text-sm text-white/70">
                         <strong>Error Reference:</strong> {error.digest}
                       </p>
                     </div>
@@ -93,7 +93,7 @@ export default function GlobalError({
                 <div className="space-y-3">
                   <button
                     onClick={reset}
-                    className="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition-colors"
+                    className="w-full flex items-center justify-center space-x-2 bg-white hover:bg-white/90 text-black py-3 px-4 rounded-lg transition-colors"
                   >
                     <svg
                       className="w-4 h-4"

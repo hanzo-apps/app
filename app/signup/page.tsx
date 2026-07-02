@@ -78,7 +78,7 @@ export default function SignupPage() {
                     <span className="text-sm text-white/70">Secure cloud infrastructure</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Rocket className="w-4 h-4 text-blue-400" />
+                    <Rocket className="w-4 h-4 text-white/80" />
                     <span className="text-sm text-white/70">Deploy instantly to production</span>
                   </div>
                 </div>

@@ -59,7 +59,7 @@ export function PublicDeployment({ projectId }: PublicDeploymentProps) {
             {error}
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-500">
-            Go to <a href="/admin" className="text-blue-600 hover:underline">/admin</a> to publish a project.
+            Go to <a href="/admin" className="text-foreground underline hover:no-underline">/admin</a> to publish a project.
           </p>
         </div>
       </div>

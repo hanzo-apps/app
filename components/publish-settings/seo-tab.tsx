@@ -264,12 +264,12 @@ export function SeoTab({ settings, onChange }: SeoTabProps) {
 
         <div className="p-4 border rounded-lg bg-muted/50">
           <div className="flex gap-2 mb-2">
-            <Search className="h-5 w-5 text-blue-600" />
+            <Search className="h-5 w-5 text-foreground" />
             <div className="flex-1">
-              <div className="text-sm text-blue-600 mb-1">
+              <div className="text-sm text-foreground mb-1">
                 https://your-domain.com
               </div>
-              <h3 className="text-lg text-blue-800 dark:text-blue-400 font-medium mb-1">
+              <h3 className="text-lg text-foreground font-medium mb-1">
                 {settings.seo.title || settings.seo.ogTitle || 'Your Deployment Title'}
               </h3>
               <p className="text-sm text-muted-foreground">

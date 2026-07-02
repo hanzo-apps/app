@@ -952,17 +952,17 @@ export default function TestGenerationPage() {
         <div className="max-w-6xl mx-auto">
 
         {/* Info Banner */}
-        <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+        <div className="bg-muted dark:bg-white/5 border border-border rounded-lg p-4 mb-6">
           <div className="flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+            <AlertCircle className="h-5 w-5 text-foreground mt-0.5" />
             <div className="flex-1">
-              <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-1">How to Interpret Benchmark Results</h3>
-              <p className="text-sm text-blue-800 dark:text-blue-200">
+              <h3 className="font-medium text-foreground mb-1">How to Interpret Benchmark Results</h3>
+              <p className="text-sm text-muted-foreground">
                 This benchmark evaluates how well a model performs with OSW Studio&apos;s agentic tools (shell, write, evaluation).
                 A <strong>passing test</strong> means the model completed the task using the right tools.
                 A <strong>failing test</strong> means the model couldn&apos;t complete the task or encountered errors.
               </p>
-              <div className="mt-2 text-xs text-blue-700 dark:text-blue-300">
+              <div className="mt-2 text-xs text-muted-foreground">
                 <strong>Tip:</strong> Select your preferred provider and model below to benchmark specific configurations.
                 The generation output will show you what the AI is doing during execution.
               </div>
@@ -990,7 +990,7 @@ export default function TestGenerationPage() {
 
         {/* Round progress indicator */}
         {totalRounds > 1 && activeTrack && (
-          <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg px-4 py-2 mb-4 text-sm text-blue-800 dark:text-blue-200">
+          <div className="bg-muted dark:bg-white/5 border border-border rounded-lg px-4 py-2 mb-4 text-sm text-muted-foreground">
             Round {currentRound + 1} of {totalRounds} ({roundHistory.length} completed)
           </div>
         )}

@@ -63,7 +63,7 @@ export function AboutModal({ open, onOpenChange }: AboutModalProps) {
                 href="https://discord.gg/mAJ8Ss4u"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                className="inline-flex items-center gap-2 text-sm text-foreground hover:underline"
               >
                 <DiscordIcon className="h-4 w-4" />
                 Discord Community
@@ -73,7 +73,7 @@ export function AboutModal({ open, onOpenChange }: AboutModalProps) {
                 href="https://github.com/o-stahl/hanzo-app"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                className="inline-flex items-center gap-2 text-sm text-foreground hover:underline"
               >
                 <Github className="h-4 w-4" />
                 GitHub repo
@@ -83,7 +83,7 @@ export function AboutModal({ open, onOpenChange }: AboutModalProps) {
                 href="https://hanzo.app"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                className="inline-flex items-center gap-2 text-sm text-foreground hover:underline"
               >
                 <svg fill="currentColor" fillRule="evenodd" height="1em" style={{flex:'none',lineHeight:1}} viewBox="0 0 24 24" width="1em" xmlns="http://www.w3.org/2000/svg" className="h-4 w-4">
                   <title>HuggingFace</title>

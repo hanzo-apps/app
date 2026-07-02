@@ -613,7 +613,7 @@ export function AISupervisor({
                 {task.status === "running" && (
                   <div className="w-20 h-1 bg-neutral-700 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-blue-400 transition-all"
+                      className="h-full bg-foreground transition-all"
                       style={{ width: `${task.progress}%` }}
                     />
                   </div>

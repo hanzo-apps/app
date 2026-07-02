@@ -57,7 +57,7 @@ export default function DocsPage() {
       name: "API Reference",
       icon: <Terminal className="w-5 h-5" />,
       description: "Complete API documentation",
-      color: "text-blue-400"
+      color: "text-white/80"
     },
     {
       id: "guides",
@@ -98,7 +98,7 @@ export default function DocsPage() {
       link: "/docs/quickstart/first-project"
     },
     {
-      icon: <Code className="w-6 h-6 text-blue-400" />,
+      icon: <Code className="w-6 h-6 text-white/80" />,
       title: "AI Code Generation",
       description: "Learn how to use natural language to generate code",
       time: "10 min",
@@ -166,7 +166,7 @@ export default function DocsPage() {
       method: "GET",
       endpoint: "/api/projects/{id}",
       description: "Get project details",
-      methodColor: "text-blue-400"
+      methodColor: "text-white/80"
     },
     {
       method: "PUT",
@@ -222,7 +222,7 @@ export default function DocsPage() {
       {/* Gradient background */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0a] to-[#0a0a0a]" />
-        <div className="absolute top-[20%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-gradient-radial from-blue-500/8 via-purple-500/4 to-transparent blur-3xl" />
+        <div className="absolute top-[20%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-gradient-radial from-white/[0.06] via-white/[0.03] to-transparent blur-3xl" />
       </div>
 
       {/* Navigation */}
@@ -345,18 +345,18 @@ export default function DocsPage() {
         {/* Hero Section */}
         <section className="px-4 md:px-8 pt-16 md:pt-24 pb-16 md:pb-20">
           <div className="max-w-5xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 md:mb-8 bg-blue-500/10 border border-blue-500/20 rounded-full">
-              <BookOpen className="w-4 h-4 text-blue-400" />
-              <span className="text-sm text-blue-300">Documentation Hub</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 md:mb-8 bg-white/5 border border-white/10 rounded-full">
+              <BookOpen className="w-4 h-4 text-white/80" />
+              <span className="text-sm text-white/70">Documentation Hub</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 md:mb-6">
               Everything you need to{" "}
               <span className="relative inline-block">
-                <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-violet-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-white via-white/80 to-white bg-clip-text text-transparent">
                   get started
                 </span>
-                <div className="absolute -inset-2 bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-violet-400/20 blur-2xl -z-10" />
+                <div className="absolute -inset-2 bg-gradient-to-r from-white/10 via-white/10 to-white/10 blur-2xl -z-10" />
               </span>
             </h1>
             <p className="text-lg md:text-xl text-white/60 mb-12 max-w-3xl mx-auto">
@@ -372,11 +372,11 @@ export default function DocsPage() {
                   value={searchQuery}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                   placeholder="Search documentation..."
-                  className="pl-12 pr-4 py-3 bg-[#141414] border-white/20 rounded-xl text-white placeholder:text-white/40 focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20"
+                  className="pl-12 pr-4 py-3 bg-[#141414] border-white/20 rounded-xl text-white placeholder:text-white/40 focus:border-white/40 focus:ring-2 focus:ring-white/10"
                 />
                 <Button
                   size="sm"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-500 hover:bg-blue-600 text-white"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground hover:bg-white/90 text-white"
                 >
                   Search
                 </Button>
@@ -386,7 +386,7 @@ export default function DocsPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button
                 onClick={() => router.push('/docs/quickstart')}
-                className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-400 hover:to-purple-400 text-white px-8 py-3 rounded-xl font-semibold text-lg"
+                className="bg-gradient-to-r from-neutral-600 to-neutral-800 hover:from-neutral-500 hover:to-neutral-700 text-white px-8 py-3 rounded-xl font-semibold text-lg"
               >
                 <Play className="w-5 h-5 mr-2" />
                 Quick Start
@@ -404,10 +404,10 @@ export default function DocsPage() {
         </section>
 
         {/* Documentation Categories */}
-        <section className="px-4 md:px-8 py-16 md:py-20 bg-gradient-to-b from-transparent via-blue-950/5 to-transparent">
+        <section className="px-4 md:px-8 py-16 md:py-20 bg-gradient-to-b from-transparent via-white/5 to-transparent">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
-              <Badge className="mb-4 bg-gradient-to-r from-blue-600 to-violet-600 text-white border-0 px-4 py-1.5">
+              <Badge className="mb-4 bg-gradient-to-r from-neutral-600 to-neutral-800 text-white border-0 px-4 py-1.5">
                 <FileText className="w-4 h-4 mr-2" />
                 Documentation Categories
               </Badge>
@@ -429,7 +429,7 @@ export default function DocsPage() {
                       <div className={`${category.color}`}>
                         {category.icon}
                       </div>
-                      <CardTitle className="text-xl text-white group-hover:text-blue-400 transition-colors">
+                      <CardTitle className="text-xl text-white group-hover:text-white transition-colors">
                         {category.name}
                       </CardTitle>
                       <ChevronRight className="w-4 h-4 text-white/40 ml-auto group-hover:text-white/60 transition-colors" />
@@ -448,7 +448,7 @@ export default function DocsPage() {
         <section className="px-4 md:px-8 py-16 md:py-20">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
-              <Badge className="mb-4 bg-gradient-to-r from-green-600 to-blue-600 text-white border-0 px-4 py-1.5">
+              <Badge className="mb-4 bg-gradient-to-r from-neutral-600 to-neutral-800 text-white border-0 px-4 py-1.5">
                 <Rocket className="w-4 h-4 mr-2" />
                 Quick Start
               </Badge>
@@ -467,7 +467,7 @@ export default function DocsPage() {
                 >
                   <CardHeader>
                     <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 p-2 bg-gradient-to-br from-green-500/10 to-blue-500/10 rounded-xl border border-green-500/20">
+                      <div className="flex-shrink-0 p-2 bg-gradient-to-br from-white/5 to-white/5 rounded-xl border border-green-500/20">
                         {item.icon}
                       </div>
                       <div className="flex-1">
@@ -547,7 +547,7 @@ export default function DocsPage() {
         <section className="px-4 md:px-8 py-16 md:py-20">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
-              <Badge className="mb-4 bg-gradient-to-r from-cyan-600 to-blue-600 text-white border-0 px-4 py-1.5">
+              <Badge className="mb-4 bg-gradient-to-r from-neutral-600 to-neutral-800 text-white border-0 px-4 py-1.5">
                 <Terminal className="w-4 h-4 mr-2" />
                 API Reference
               </Badge>
@@ -683,9 +683,9 @@ export default function DocsPage() {
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="bg-[#141414] border-white/10 hover:border-blue-500/30 transition-all cursor-pointer">
+              <Card className="bg-[#141414] border-white/10 hover:border-white/20 transition-all cursor-pointer">
                 <CardHeader className="text-center">
-                  <Users className="w-8 h-8 text-blue-400 mx-auto mb-3" />
+                  <Users className="w-8 h-8 text-white/80 mx-auto mb-3" />
                   <CardTitle className="text-lg text-white">Community</CardTitle>
                   <CardDescription className="text-white/60">
                     Join our Discord community for discussions and help

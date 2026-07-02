@@ -179,7 +179,7 @@ export default function LandingPage() {
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0a] to-[#0a0a0a]" />
         <div className="absolute top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[800px] bg-gradient-radial from-[#fd4444]/15 via-[#ff6b6b]/5 to-transparent blur-3xl animate-pulse" />
-        <div className="absolute bottom-0 left-0 right-0 h-[600px] bg-gradient-to-t from-blue-500/10 via-[#ff6b6b]/5 to-transparent blur-3xl" />
+        <div className="absolute bottom-0 left-0 right-0 h-[600px] bg-gradient-to-t from-white/[0.04] via-[#ff6b6b]/5 to-transparent blur-3xl" />
       </div>
 
       {/* Navigation Header */}

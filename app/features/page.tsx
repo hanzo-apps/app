@@ -48,7 +48,7 @@ export default function FeaturesPage() {
       features: ["GPT-4 Turbo integration", "Custom code patterns", "Context-aware generation", "Multi-language support"]
     },
     {
-      icon: <Code className="w-6 h-6 text-blue-400" />,
+      icon: <Code className="w-6 h-6 text-white/80" />,
       title: "Smart Development Tools",
       description: "Intelligent development environment with advanced debugging and optimization",
       features: ["Real-time code analysis", "Auto-completion", "Error detection", "Performance optimization"]
@@ -86,7 +86,7 @@ export default function FeaturesPage() {
       description: "Describe what you want in plain English, and our AI will generate the complete application with all necessary components, styling, and functionality."
     },
     {
-      icon: <GitBranch className="w-8 h-8 text-blue-400" />,
+      icon: <GitBranch className="w-8 h-8 text-white/80" />,
       title: "Smart Code Evolution",
       description: "AI continuously learns from your codebase to suggest improvements, refactor legacy code, and maintain consistency across your projects."
     },
@@ -381,7 +381,7 @@ export default function FeaturesPage() {
         <section className="px-4 md:px-8 py-16 md:py-20">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
-              <Badge className="mb-4 bg-gradient-to-r from-blue-600 to-violet-600 text-white border-0 px-4 py-1.5">
+              <Badge className="mb-4 bg-gradient-to-r from-neutral-600 to-neutral-800 text-white border-0 px-4 py-1.5">
                 <Brain className="w-4 h-4 mr-2" />
                 AI Capabilities
               </Badge>
@@ -425,8 +425,8 @@ export default function FeaturesPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="text-center">
-                <div className="inline-flex p-4 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-2xl border border-blue-500/20 mb-4">
-                  <Cloud className="w-8 h-8 text-blue-400" />
+                <div className="inline-flex p-4 bg-gradient-to-br from-white/5 to-white/5 rounded-2xl border border-white/10 mb-4">
+                  <Cloud className="w-8 h-8 text-white/80" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2 text-white">Cloud Infrastructure</h3>
                 <p className="text-white/60">Global CDN, edge computing, and auto-scaling infrastructure</p>
@@ -453,7 +453,7 @@ export default function FeaturesPage() {
         <section className="px-4 md:px-8 py-16 md:py-20">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
-              <Badge className="mb-4 bg-gradient-to-r from-green-600 to-blue-600 text-white border-0 px-4 py-1.5">
+              <Badge className="mb-4 bg-gradient-to-r from-neutral-600 to-neutral-800 text-white border-0 px-4 py-1.5">
                 <BarChart className="w-4 h-4 mr-2" />
                 Simple Pricing
               </Badge>

@@ -231,8 +231,8 @@ function OnboardingPanel() {
 
   return (
     <div className="mx-auto max-w-md px-4 py-16 text-center">
-      <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#fd4444] to-[#ff6b6b]">
-        <Sparkles className="h-7 w-7 text-white" />
+      <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-foreground text-background">
+        <Sparkles className="h-7 w-7" />
       </div>
       <h1 className="mb-2 text-2xl font-bold">Set up your workspace</h1>
       <p className="mb-8 text-sm text-white/60">

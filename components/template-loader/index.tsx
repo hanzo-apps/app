@@ -57,8 +57,8 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
     <div className="min-h-screen bg-gradient-to-b from-background to-muted flex items-center justify-center p-4">
       <Card className="max-w-2xl w-full shadow-2xl">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-gradient-to-br from-[#fd4444] to-[#ff6b6b] flex items-center justify-center">
-            <Sparkles className="w-9 h-9 text-white" />
+          <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-foreground text-background flex items-center justify-center">
+            <Sparkles className="w-9 h-9" />
           </div>
           <CardTitle className="text-3xl font-bold">{templateTitle}</CardTitle>
           <CardDescription className="text-lg mt-2">
@@ -87,8 +87,8 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
 
               <TabsContent value="edit" className="mt-4 space-y-3">
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
-                    <Code className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  <div className="w-10 h-10 rounded-lg bg-muted dark:bg-white/10 flex items-center justify-center flex-shrink-0">
+                    <Code className="w-5 h-5 text-foreground" />
                   </div>
                   <div>
                     <h4 className="font-semibold">Edit in Hanzo Cloud IDE</h4>
