@@ -66,6 +66,7 @@ describe("BFF: GET /v1/agents", () => {
     expect(res.status).toBe(200);
     expect(seenAuth).toBe("Bearer tok-abc");
     expect(seenOrg).toBeNull(); // tenancy is gateway-minted, not client-supplied
+    expect(res.headers.get("cache-control")).toBe("no-store"); // no shared-cache tenant leak
     expect(body.ok).toBe(true);
     expect(body.agents).toHaveLength(1);
     expect(body.agents[0].name).toBe("helper");
@@ -177,5 +178,62 @@ describe("BFF: POST /v1/agents/:name/run", () => {
     expect(res.status).toBe(502);
     expect(body.status).toBe("error");
     expect(body.error).toBe("upstream down");
+  });
+
+  it("refuses a cross-site Origin (CSRF) before touching the token or gateway", async () => {
+    let hitGateway = false;
+    server.use(
+      http.post(`${GATEWAY}/agents/helper/run`, () => {
+        hitGateway = true;
+        return HttpResponse.json({ id: "run_x", status: "ok" });
+      })
+    );
+    const res = await runAgent(
+      req("http://localhost/v1/agents/helper/run", {
+        method: "POST",
+        token: "tok-abc", // valid cookie present — the CSRF guard must still win
+        headers: { origin: "https://evil.example", "x-forwarded-host": "localhost" },
+        body: JSON.stringify({ input: "hi" }),
+      }),
+      params("helper")
+    );
+    expect(res.status).toBe(403);
+    expect(hitGateway).toBe(false); // the victim's run was never executed
+  });
+
+  it("allows a same-origin Origin and forwards the run", async () => {
+    server.use(
+      http.post(`${GATEWAY}/agents/helper/run`, () =>
+        HttpResponse.json({ id: "run_ok", status: "ok", output: "ran", durationMs: 1, createdAt: "" })
+      )
+    );
+    const res = await runAgent(
+      req("http://localhost/v1/agents/helper/run", {
+        method: "POST",
+        token: "tok-abc",
+        headers: { origin: "http://localhost", "x-forwarded-host": "localhost" },
+        body: JSON.stringify({ input: "hi" }),
+      }),
+      params("helper")
+    );
+    expect(res.status).toBe(200);
+    expect((await res.json()).output).toBe("ran");
+  });
+
+  it("marks per-user responses no-store (no shared-cache tenant leak)", async () => {
+    server.use(
+      http.post(`${GATEWAY}/agents/helper/run`, () =>
+        HttpResponse.json({ id: "run_ok", status: "ok", output: "ran", durationMs: 1, createdAt: "" })
+      )
+    );
+    const res = await runAgent(
+      req("http://localhost/v1/agents/helper/run", {
+        method: "POST",
+        token: "tok-abc",
+        body: JSON.stringify({ input: "hi" }),
+      }),
+      params("helper")
+    );
+    expect(res.headers.get("cache-control")).toBe("no-store");
   });
 });
