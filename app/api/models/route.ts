@@ -1,3 +1,11 @@
+/**
+ * @deprecated for the WEBSITE BUILDER. Builder model discovery is now
+ * Hanzo-native via `/v1/models` (app/v1/models/route.ts), which proxies the
+ * single gateway's GET /v1/models. This per-provider fan-out remains ONLY for
+ * the multi-agent workspace/chat feature (components/model-selector,
+ * components/settings/model-settings via lib/llm/llm-client). Do NOT add
+ * builder model discovery here — use `/v1/models`.
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { ProviderId } from '@/lib/llm/providers/types';
 import { getProvider } from '@/lib/llm/providers/registry';
