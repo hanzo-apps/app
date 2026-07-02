@@ -2,7 +2,6 @@
 // appends its own order/transaction params to the redirect URL; we surface a
 // clear confirmation and a path back to the store.
 import Link from "next/link";
-import { Button } from "@hanzo/ui";
 import { CheckCircle2 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -18,9 +17,12 @@ export default function StoreSuccessPage() {
         <p className="text-muted-foreground mb-6">
           Payment completed on Square. A receipt has been sent to your email.
         </p>
-        <Button asChild>
-          <Link href="/store">Back to store</Link>
-        </Button>
+        <Link
+          href="/store"
+          className="inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+        >
+          Back to store
+        </Link>
       </div>
     </div>
   );
