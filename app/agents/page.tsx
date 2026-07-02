@@ -1,15 +1,20 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+/**
+ * /agents — the console's agent registry, backed by the canonical Hanzo Cloud
+ * `/v1/agents` surface (via the same-origin BFF at app/v1/agents/*). No mock
+ * data: the page shows exactly what the caller's org has, an honest empty
+ * state when there are none, and real errors when the service is unreachable.
+ * Running an agent POSTs to `/v1/agents/:name/run` and surfaces the real,
+ * recorded run output (or the recorded upstream failure).
+ */
+
+import { useCallback, useEffect, useState } from "react";
 import {
   Activity,
   Play,
-  Pause,
-  StopCircle,
   RefreshCw,
   Terminal,
-  Clock,
   CheckCircle2,
   XCircle,
   AlertCircle,
@@ -17,707 +22,492 @@ import {
   ChevronRight,
   ChevronDown,
   Search,
-  Filter,
-  Download,
-  Trash2,
-  MoreHorizontal,
   Cpu,
-  MemoryStick,
-  HardDrive,
   Network,
-  Zap,
   Code2,
-  FileText,
-  GitBranch,
-  Package,
-  Database,
-  Shield,
-  Eye,
-  Copy
+  Bot,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@hanzo/ui";
 import { Input } from "@hanzo/ui";
 import { Badge } from "@hanzo/ui";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@hanzo/ui";
-import { Progress } from "@hanzo/ui";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-  DropdownMenuLabel
-} from "@hanzo/ui";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-interface AgentTask {
+// The canonical cloud agentView shape (cloud/clients/agents/agents.go).
+interface Agent {
   id: string;
   name: string;
-  type: "code-generation" | "testing" | "deployment" | "analysis" | "build" | "security";
-  status: "queued" | "pending" | "running" | "completed" | "failed" | "cancelled";
-  progress: number;
-  agent: string;
-  priority: "low" | "medium" | "high" | "critical";
-  queuePosition?: number;
-  assignedNode?: string;
-  startTime?: Date;
-  endTime?: Date;
-  estimatedTime?: number;
+  model: string;
+  description?: string;
+  tools: string[];
+  status: string;
+  runs: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// The canonical cloud runView shape returned by POST /v1/agents/:name/run.
+interface RunResult {
+  id: string;
+  status: string; // "ok" | "error"
+  model: string;
+  input: string;
   output?: string;
   error?: string;
-  resources: {
-    cpu: number;
-    memory: number;
-    network: number;
-  };
-  subtasks?: SubTask[];
-  logs: LogEntry[];
+  durationMs: number;
+  createdAt: string;
 }
 
-interface SubTask {
-  id: string;
-  name: string;
-  status: "pending" | "running" | "completed" | "failed";
-  progress: number;
+type LoadState =
+  | { kind: "loading" }
+  | { kind: "ready"; agents: Agent[] }
+  | { kind: "unauthenticated" }
+  | { kind: "error"; message: string };
+
+function statusColor(status: string) {
+  switch (status) {
+    case "ready":
+      return "text-green-500";
+    case "running":
+      return "text-blue-500";
+    case "error":
+      return "text-red-500";
+    default:
+      return "text-gray-400";
+  }
 }
 
-interface LogEntry {
-  timestamp: Date;
-  level: "info" | "warning" | "error" | "debug";
-  message: string;
+function statusIcon(status: string) {
+  switch (status) {
+    case "ready":
+      return <CheckCircle2 className="w-4 h-4" />;
+    case "running":
+      return <Loader2 className="w-4 h-4 animate-spin" />;
+    case "error":
+      return <XCircle className="w-4 h-4" />;
+    default:
+      return <AlertCircle className="w-4 h-4" />;
+  }
 }
 
 export default function AgentsPage() {
-  const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState<string>("all");
-  const [selectedType, setSelectedType] = useState<string>("all");
-  const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set());
-  const [autoRefresh, setAutoRefresh] = useState(true);
-  const logsEndRef = useRef<HTMLDivElement>(null);
+  const [state, setState] = useState<LoadState>({ kind: "loading" });
+  const [search, setSearch] = useState("");
+  const [expanded, setExpanded] = useState<string | null>(null);
+  // Per-agent transient run I/O, keyed by agent name.
+  const [inputs, setInputs] = useState<Record<string, string>>({});
+  const [running, setRunning] = useState<Record<string, boolean>>({});
+  const [results, setResults] = useState<Record<string, RunResult>>({});
 
-  // Mock data with queue management
-  const [queuedTasks, setQueuedTasks] = useState<AgentTask[]>([
-    {
-      id: "queue-1",
-      name: "Optimize Database Queries",
-      type: "analysis",
-      status: "queued",
-      progress: 0,
-      agent: "Optimizer-Agent-04",
-      priority: "medium",
-      queuePosition: 1,
-      estimatedTime: 25,
-      resources: { cpu: 0, memory: 0, network: 0 },
-      logs: [
-        { timestamp: new Date(), level: "info", message: "Task queued, waiting for available node" }
-      ]
-    },
-    {
-      id: "queue-2",
-      name: "Generate API Documentation",
-      type: "code-generation",
-      status: "queued",
-      progress: 0,
-      agent: "DocGen-Agent-02",
-      priority: "low",
-      queuePosition: 2,
-      estimatedTime: 15,
-      resources: { cpu: 0, memory: 0, network: 0 },
-      logs: [
-        { timestamp: new Date(), level: "info", message: "Task queued, position #2" }
-      ]
-    },
-    {
-      id: "queue-3",
-      name: "Build Docker Images",
-      type: "build",
-      status: "queued",
-      priority: "high",
-      queuePosition: 3,
-      progress: 0,
-      agent: "Builder-Agent-01",
-      estimatedTime: 30,
-      resources: { cpu: 0, memory: 0, network: 0 },
-      logs: [
-        { timestamp: new Date(), level: "info", message: "Task queued, waiting for build resources" }
-      ]
+  const load = useCallback(async () => {
+    setState({ kind: "loading" });
+    try {
+      const res = await fetch("/v1/agents", { cache: "no-store" });
+      if (res.status === 401) {
+        setState({ kind: "unauthenticated" });
+        return;
+      }
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.ok) {
+        setState({
+          kind: "error",
+          message: data?.message || `Failed to load agents (${res.status}).`,
+        });
+        return;
+      }
+      setState({ kind: "ready", agents: data.agents as Agent[] });
+    } catch {
+      setState({
+        kind: "error",
+        message: "Unable to reach the agents service.",
+      });
     }
-  ]);
-
-  const [tasks, setTasks] = useState<AgentTask[]>([
-    {
-      id: "task-1",
-      name: "Generate React Dashboard Components",
-      type: "code-generation",
-      status: "running",
-      progress: 65,
-      agent: "CodeGen-Agent-01",
-      priority: "high",
-      assignedNode: "node-gpu-01",
-      startTime: new Date(Date.now() - 1000 * 60 * 5),
-      estimatedTime: 10,
-      resources: { cpu: 45, memory: 62, network: 15 },
-      subtasks: [
-        { id: "sub-1", name: "Generate layout components", status: "completed", progress: 100 },
-        { id: "sub-2", name: "Create data visualization widgets", status: "running", progress: 60 },
-        { id: "sub-3", name: "Build form components", status: "pending", progress: 0 }
-      ],
-      logs: [
-        { timestamp: new Date(Date.now() - 1000 * 60 * 5), level: "info", message: "Task initialized" },
-        { timestamp: new Date(Date.now() - 1000 * 60 * 4), level: "info", message: "Analyzing requirements..." },
-        { timestamp: new Date(Date.now() - 1000 * 60 * 3), level: "info", message: "Generating layout components" },
-        { timestamp: new Date(Date.now() - 1000 * 60 * 2), level: "info", message: "Layout components completed" },
-        { timestamp: new Date(Date.now() - 1000 * 60), level: "info", message: "Creating visualization widgets..." }
-      ]
-    },
-    {
-      id: "task-2",
-      name: "Run Integration Tests",
-      type: "testing",
-      status: "completed",
-      progress: 100,
-      agent: "Test-Runner-02",
-      priority: "medium",
-      assignedNode: "node-cpu-03",
-      startTime: new Date(Date.now() - 1000 * 60 * 30),
-      endTime: new Date(Date.now() - 1000 * 60 * 10),
-      resources: { cpu: 20, memory: 35, network: 5 },
-      output: "All 156 tests passed successfully",
-      logs: [
-        { timestamp: new Date(Date.now() - 1000 * 60 * 30), level: "info", message: "Starting test suite" },
-        { timestamp: new Date(Date.now() - 1000 * 60 * 25), level: "info", message: "Running unit tests" },
-        { timestamp: new Date(Date.now() - 1000 * 60 * 20), level: "info", message: "Running integration tests" },
-        { timestamp: new Date(Date.now() - 1000 * 60 * 15), level: "info", message: "All tests passed" }
-      ]
-    },
-    {
-      id: "task-3",
-      name: "Security Vulnerability Scan",
-      type: "security",
-      status: "running",
-      progress: 30,
-      agent: "Security-Scanner-01",
-      priority: "critical",
-      assignedNode: "node-security-01",
-      startTime: new Date(Date.now() - 1000 * 60 * 2),
-      estimatedTime: 15,
-      resources: { cpu: 60, memory: 45, network: 80 },
-      logs: [
-        { timestamp: new Date(Date.now() - 1000 * 60 * 2), level: "info", message: "Initiating security scan" },
-        { timestamp: new Date(Date.now() - 1000 * 60), level: "warning", message: "Scanning dependencies for vulnerabilities" }
-      ]
-    },
-    {
-      id: "task-4",
-      name: "Deploy to Production",
-      type: "deployment",
-      status: "pending",
-      progress: 0,
-      agent: "Deploy-Agent-03",
-      priority: "high",
-      estimatedTime: 20,
-      resources: { cpu: 0, memory: 0, network: 0 },
-      logs: [
-        { timestamp: new Date(), level: "info", message: "Waiting for security scan completion" }
-      ]
-    },
-    {
-      id: "task-5",
-      name: "Code Analysis and Optimization",
-      type: "analysis",
-      status: "failed",
-      progress: 85,
-      agent: "Analyzer-Agent-02",
-      priority: "low",
-      startTime: new Date(Date.now() - 1000 * 60 * 45),
-      endTime: new Date(Date.now() - 1000 * 60 * 15),
-      error: "Memory limit exceeded during AST parsing",
-      resources: { cpu: 10, memory: 95, network: 2 },
-      logs: [
-        { timestamp: new Date(Date.now() - 1000 * 60 * 45), level: "info", message: "Starting code analysis" },
-        { timestamp: new Date(Date.now() - 1000 * 60 * 30), level: "info", message: "Analyzing code patterns" },
-        { timestamp: new Date(Date.now() - 1000 * 60 * 15), level: "error", message: "Memory limit exceeded" }
-      ]
-    }
-  ]);
-
-  const allTasks = [...queuedTasks, ...tasks];
-
-  const taskStats = {
-    total: allTasks.length,
-    queued: queuedTasks.length,
-    running: tasks.filter(t => t.status === "running").length,
-    completed: tasks.filter(t => t.status === "completed").length,
-    failed: tasks.filter(t => t.status === "failed").length,
-    pending: tasks.filter(t => t.status === "pending").length
-  };
-
-  const availableNodes = 5;
-  const maxConcurrency = 3;
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "running": return "text-blue-500";
-      case "completed": return "text-green-500";
-      case "failed": return "text-red-500";
-      case "cancelled": return "text-gray-500";
-      case "pending": return "text-yellow-500";
-      case "queued": return "text-purple-500";
-      default: return "text-gray-400";
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "running": return <Loader2 className="w-4 h-4 animate-spin" />;
-      case "completed": return <CheckCircle2 className="w-4 h-4" />;
-      case "failed": return <XCircle className="w-4 h-4" />;
-      case "cancelled": return <XCircle className="w-4 h-4" />;
-      case "pending": return <Clock className="w-4 h-4" />;
-      case "queued": return <Activity className="w-4 h-4" />;
-      default: return <AlertCircle className="w-4 h-4" />;
-    }
-  };
-
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case "code-generation": return <Code2 className="w-4 h-4" />;
-      case "testing": return <FileText className="w-4 h-4" />;
-      case "deployment": return <Package className="w-4 h-4" />;
-      case "analysis": return <Eye className="w-4 h-4" />;
-      case "build": return <GitBranch className="w-4 h-4" />;
-      case "security": return <Shield className="w-4 h-4" />;
-      default: return <Activity className="w-4 h-4" />;
-    }
-  };
-
-  const toggleTaskExpansion = (taskId: string) => {
-    const newExpanded = new Set(expandedTasks);
-    if (newExpanded.has(taskId)) {
-      newExpanded.delete(taskId);
-    } else {
-      newExpanded.add(taskId);
-    }
-    setExpandedTasks(newExpanded);
-  };
-
-  const filteredTasks = allTasks.filter(task => {
-    const matchesSearch = task.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         task.agent.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = selectedStatus === "all" || task.status === selectedStatus;
-    const matchesType = selectedType === "all" || task.type === selectedType;
-    return matchesSearch && matchesStatus && matchesType;
-  });
+  }, []);
 
   useEffect(() => {
-    if (autoRefresh) {
-      const interval = setInterval(() => {
-        // Simulate task progress updates
-        setTasks(prev => prev.map(task => {
-          if (task.status === "running" && task.progress < 100) {
-            return {
-              ...task,
-              progress: Math.min(100, task.progress + Math.random() * 10)
-            };
-          }
-          return task;
-        }));
-      }, 2000);
+    load();
+  }, [load]);
 
-      return () => clearInterval(interval);
-    }
-  }, [autoRefresh]);
+  const runAgent = useCallback(
+    async (name: string) => {
+      const input = (inputs[name] || "").trim();
+      setRunning((r) => ({ ...r, [name]: true }));
+      try {
+        const res = await fetch(`/v1/agents/${encodeURIComponent(name)}/run`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ input }),
+        });
+        if (res.status === 401) {
+          setState({ kind: "unauthenticated" });
+          return;
+        }
+        const run = (await res.json().catch(() => null)) as RunResult | null;
+        if (run && (run.status === "ok" || run.status === "error")) {
+          setResults((m) => ({ ...m, [name]: run }));
+          setExpanded(name);
+          if (run.status === "ok") {
+            toast.success(`${name} ran in ${run.durationMs}ms`);
+          } else {
+            toast.error(run.error || `${name} failed`);
+          }
+        } else {
+          const message =
+            (run as { message?: string } | null)?.message ||
+            `Run failed (${res.status}).`;
+          toast.error(message);
+        }
+      } catch {
+        toast.error("Unable to reach the agents service.");
+      } finally {
+        setRunning((r) => ({ ...r, [name]: false }));
+      }
+    },
+    [inputs]
+  );
+
+  const agents = state.kind === "ready" ? state.agents : [];
+  const filtered = agents.filter((a) => {
+    const q = search.toLowerCase();
+    return (
+      a.name.toLowerCase().includes(q) ||
+      a.model.toLowerCase().includes(q) ||
+      (a.description || "").toLowerCase().includes(q)
+    );
+  });
+
+  const stats = {
+    total: agents.length,
+    ready: agents.filter((a) => a.status === "ready").length,
+    runs: agents.reduce((n, a) => n + (a.runs || 0), 0),
+    models: new Set(agents.map((a) => a.model)).size,
+  };
 
   return (
     <div className="min-h-screen bg-black">
       {/* Header */}
-      <header className="border-b border-neutral-800 px-6 py-4">
+      <header className="border-b border-neutral-800 px-4 py-4 sm:px-6">
         <div className="container mx-auto">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-wrap items-center gap-3">
               <Link href="/" className="flex items-center gap-2">
                 <HanzoLogo className="w-8 h-8 text-purple-500" />
                 <span className="text-xl font-bold text-white">Agents</span>
               </Link>
-              <div className="flex items-center gap-2">
+              {state.kind === "ready" && (
                 <Badge variant="outline" className="gap-1">
                   <Activity className="w-3 h-3" />
-                  {taskStats.running} Running
+                  {stats.total} {stats.total === 1 ? "agent" : "agents"}
                 </Badge>
-                <Badge variant="outline" className="gap-1 border-purple-500/50 text-purple-400">
-                  <Clock className="w-3 h-3" />
-                  {taskStats.queued} Queued
-                </Badge>
-                <Badge variant="outline" className="gap-1">
-                  <Zap className="w-3 h-3" />
-                  {taskStats.running}/{maxConcurrency} Slots
-                </Badge>
-              </div>
+              )}
             </div>
 
-            <div className="flex items-center gap-4">
-              <Link href="/nodes">
-                <Button variant="outline" className="gap-2">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <Link href="/nodes" className="flex-1 sm:flex-none">
+                <Button variant="outline" className="w-full gap-2 sm:w-auto">
                   <Network className="w-4 h-4" />
-                  View Nodes
+                  Nodes
                 </Button>
               </Link>
-              <Link href="/dev">
-                <Button variant="outline" className="gap-2">
+              <Link href="/dev" className="flex-1 sm:flex-none">
+                <Button variant="outline" className="w-full gap-2 sm:w-auto">
                   <Code2 className="w-4 h-4" />
-                  Dev Mode
+                  Dev
                 </Button>
               </Link>
               <Button
-                variant={autoRefresh ? "default" : "outline"}
+                variant="outline"
                 size="sm"
-                onClick={() => setAutoRefresh(!autoRefresh)}
+                onClick={load}
+                disabled={state.kind === "loading"}
                 className="gap-2"
               >
-                <RefreshCw className={cn("w-4 h-4", autoRefresh && "animate-spin")} />
-                Auto-refresh
+                <RefreshCw
+                  className={cn(
+                    "w-4 h-4",
+                    state.kind === "loading" && "animate-spin"
+                  )}
+                />
+                Refresh
               </Button>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-6 py-6">
-        {/* Queue Status */}
-        {taskStats.queued > 0 && (
-          <Card className="bg-gradient-to-r from-purple-900/20 to-purple-800/10 border-purple-500/30 mb-6">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-white">Queue Status</CardTitle>
-                  <CardDescription className="mt-1">
-                    {taskStats.queued} tasks waiting • {availableNodes} nodes available • Max {maxConcurrency} concurrent tasks
-                  </CardDescription>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="text-right">
-                    <p className="text-sm text-gray-400">Est. wait time</p>
-                    <p className="text-lg font-bold text-purple-400">~{Math.ceil(taskStats.queued * 5 / maxConcurrency)} min</p>
-                  </div>
-                  <Button variant="outline" className="gap-2">
-                    <Zap className="w-4 h-4" />
-                    Scale Up
-                  </Button>
-                </div>
+      <div className="container mx-auto px-4 py-6 sm:px-6">
+        {/* Loading */}
+        {state.kind === "loading" && (
+          <div className="flex flex-col items-center justify-center py-24 text-gray-400">
+            <Loader2 className="w-8 h-8 animate-spin mb-4" />
+            <p>Loading agents…</p>
+          </div>
+        )}
+
+        {/* Unauthenticated */}
+        {state.kind === "unauthenticated" && (
+          <Card className="bg-neutral-900 border-neutral-800 mx-auto max-w-lg mt-12">
+            <CardHeader className="text-center">
+              <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-purple-500/10">
+                <Bot className="w-6 h-6 text-purple-400" />
               </div>
+              <CardTitle className="text-white">Sign in to view agents</CardTitle>
+              <CardDescription>
+                Your agents are scoped to your organization. Sign in to see and
+                run them.
+              </CardDescription>
             </CardHeader>
+            <CardContent className="flex justify-center">
+              <Link href="/">
+                <Button className="gap-2">Sign in</Button>
+              </Link>
+            </CardContent>
           </Card>
         )}
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-6 gap-4 mb-6">
-          <Card className="bg-neutral-900 border-neutral-800">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-gray-400">Total</CardTitle>
+        {/* Error */}
+        {state.kind === "error" && (
+          <Card className="bg-red-950/20 border-red-900/50 mx-auto max-w-lg mt-12">
+            <CardHeader className="text-center">
+              <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10">
+                <AlertCircle className="w-6 h-6 text-red-400" />
+              </div>
+              <CardTitle className="text-white">
+                Couldn&apos;t load agents
+              </CardTitle>
+              <CardDescription className="text-red-300">
+                {state.message}
+              </CardDescription>
             </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-white">{taskStats.total}</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-neutral-900 border-neutral-800">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-purple-400">Queued</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-purple-400">{taskStats.queued}</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-neutral-900 border-neutral-800">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-blue-400">Running</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-blue-400">{taskStats.running}</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-neutral-900 border-neutral-800">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-green-400">Completed</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-green-400">{taskStats.completed}</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-neutral-900 border-neutral-800">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-red-400">Failed</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-red-400">{taskStats.failed}</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-neutral-900 border-neutral-800">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-yellow-400">Pending</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-yellow-400">{taskStats.pending}</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Filters */}
-        <div className="flex items-center gap-4 mb-6">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-            <Input
-              placeholder="Search tasks or agents..."
-              className="pl-10 bg-neutral-900 border-neutral-800"
-              value={searchQuery}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-            />
-          </div>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2">
-                <Filter className="w-4 h-4" />
-                Status: {selectedStatus === "all" ? "All" : selectedStatus}
+            <CardContent className="flex justify-center">
+              <Button variant="outline" onClick={load} className="gap-2">
+                <RefreshCw className="w-4 h-4" />
+                Try again
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setSelectedStatus("all")}>All</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSelectedStatus("queued")}>Queued</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSelectedStatus("running")}>Running</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSelectedStatus("completed")}>Completed</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSelectedStatus("failed")}>Failed</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSelectedStatus("pending")}>Pending</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </CardContent>
+          </Card>
+        )}
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2">
-                <Filter className="w-4 h-4" />
-                Type: {selectedType === "all" ? "All" : selectedType}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setSelectedType("all")}>All</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSelectedType("code-generation")}>Code Generation</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSelectedType("testing")}>Testing</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSelectedType("deployment")}>Deployment</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSelectedType("analysis")}>Analysis</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSelectedType("security")}>Security</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        {state.kind === "ready" && (
+          <>
+            {/* Stats — responsive: 2 cols on phones, 4 on larger */}
+            <div className="grid grid-cols-2 gap-3 mb-6 sm:grid-cols-4 sm:gap-4">
+              {[
+                { label: "Total", value: stats.total, tone: "text-white" },
+                { label: "Ready", value: stats.ready, tone: "text-green-400" },
+                { label: "Runs", value: stats.runs, tone: "text-blue-400" },
+                { label: "Models", value: stats.models, tone: "text-purple-400" },
+              ].map((s) => (
+                <Card key={s.label} className="bg-neutral-900 border-neutral-800">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm text-gray-400">
+                      {s.label}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className={cn("text-2xl font-bold", s.tone)}>{s.value}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
 
-        {/* Tasks List */}
-        <div className="space-y-4">
-          {filteredTasks.map(task => (
-            <Card key={task.id} className="bg-neutral-900 border-neutral-800">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start gap-3">
-                    <button
-                      onClick={() => toggleTaskExpansion(task.id)}
-                      className="mt-1"
+            {/* Search */}
+            {agents.length > 0 && (
+              <div className="relative mb-6 w-full max-w-md">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                <Input
+                  placeholder="Search agents…"
+                  className="pl-10 bg-neutral-900 border-neutral-800"
+                  value={search}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setSearch(e.target.value)
+                  }
+                />
+              </div>
+            )}
+
+            {/* Empty — no agents at all */}
+            {agents.length === 0 && (
+              <Card className="bg-neutral-900 border-neutral-800 mx-auto max-w-lg mt-12">
+                <CardHeader className="text-center">
+                  <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-purple-500/10">
+                    <Bot className="w-6 h-6 text-purple-400" />
+                  </div>
+                  <CardTitle className="text-white">
+                    Create your first agent
+                  </CardTitle>
+                  <CardDescription>
+                    An agent is a model plus instructions and tools. Once you
+                    create one, it shows up here to run on command.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            )}
+
+            {/* No search matches */}
+            {agents.length > 0 && filtered.length === 0 && (
+              <p className="py-12 text-center text-gray-500">
+                No agents match “{search}”.
+              </p>
+            )}
+
+            {/* Agent grid — 1 col on phones, 2 on tablets, 3 on desktop */}
+            {filtered.length > 0 && (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {filtered.map((agent) => {
+                  const isOpen = expanded === agent.name;
+                  const result = results[agent.name];
+                  const isRunning = !!running[agent.name];
+                  return (
+                    <Card
+                      key={agent.id}
+                      className="bg-neutral-900 border-neutral-800 flex flex-col"
                     >
-                      {expandedTasks.has(task.id) ? (
-                        <ChevronDown className="w-4 h-4 text-gray-400" />
-                      ) : (
-                        <ChevronRight className="w-4 h-4 text-gray-400" />
-                      )}
-                    </button>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        {getTypeIcon(task.type)}
-                        <CardTitle className="text-lg text-white">{task.name}</CardTitle>
-                        <Badge
-                          variant={task.priority === "critical" ? "destructive" : "outline"}
-                          className="text-xs"
-                        >
-                          {task.priority}
-                        </Badge>
-                      </div>
-                      <CardDescription className="flex items-center gap-4">
-                        <span className="flex items-center gap-1">
-                          <Terminal className="w-3 h-3" />
-                          {task.agent}
-                        </span>
-                        {task.assignedNode && (
-                          <span className="flex items-center gap-1">
-                            <Network className="w-3 h-3" />
-                            {task.assignedNode}
-                          </span>
-                        )}
-                        {task.queuePosition && (
-                          <span className="flex items-center gap-1">
-                            <Activity className="w-3 h-3" />
-                            Queue #{task.queuePosition}
-                          </span>
-                        )}
-                        {task.startTime && (
-                          <span className="flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            Started {new Date(task.startTime).toLocaleTimeString()}
-                          </span>
-                        )}
-                      </CardDescription>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <div className={cn("flex items-center gap-1", getStatusColor(task.status))}>
-                      {getStatusIcon(task.status)}
-                      <span className="text-sm font-medium capitalize">{task.status}</span>
-                    </div>
-
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="w-4 h-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        {task.status === "running" && (
-                          <>
-                            <DropdownMenuItem>
-                              <Pause className="w-4 h-4 mr-2" />
-                              Pause
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="text-red-500">
-                              <StopCircle className="w-4 h-4 mr-2" />
-                              Stop
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                          </>
-                        )}
-                        {task.status === "failed" && (
-                          <>
-                            <DropdownMenuItem>
-                              <RefreshCw className="w-4 h-4 mr-2" />
-                              Retry
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                          </>
-                        )}
-                        <DropdownMenuItem>
-                          <Copy className="w-4 h-4 mr-2" />
-                          Copy Task ID
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Download className="w-4 h-4 mr-2" />
-                          Export Logs
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-red-500">
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </div>
-
-                {/* Progress Bar */}
-                {task.status === "running" && (
-                  <div className="mt-4">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm text-gray-400">Progress</span>
-                      <span className="text-sm text-gray-400">{Math.round(task.progress)}%</span>
-                    </div>
-                    <Progress value={task.progress} className="h-2" />
-                  </div>
-                )}
-
-                {/* Resource Usage */}
-                <div className="mt-4 flex items-center gap-6">
-                  <div className="flex items-center gap-2">
-                    <Cpu className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm text-gray-400">CPU: {task.resources.cpu}%</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <MemoryStick className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm text-gray-400">Memory: {task.resources.memory}%</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Network className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm text-gray-400">Network: {task.resources.network}%</span>
-                  </div>
-                </div>
-              </CardHeader>
-
-              {expandedTasks.has(task.id) && (
-                <CardContent>
-                  <Tabs defaultValue="subtasks" className="w-full">
-                    <TabsList className="grid w-full grid-cols-3">
-                      <TabsTrigger value="subtasks">Subtasks</TabsTrigger>
-                      <TabsTrigger value="logs">Logs</TabsTrigger>
-                      <TabsTrigger value="output">Output</TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="subtasks" className="mt-4">
-                      {task.subtasks && task.subtasks.length > 0 ? (
-                        <div className="space-y-2">
-                          {task.subtasks.map(subtask => (
-                            <div key={subtask.id} className="flex items-center justify-between p-2 bg-neutral-800 rounded">
-                              <div className="flex items-center gap-2">
-                                {getStatusIcon(subtask.status)}
-                                <span className="text-sm text-gray-300">{subtask.name}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Progress value={subtask.progress} className="h-1 w-20" />
-                                <span className="text-xs text-gray-500">{subtask.progress}%</span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-gray-500">No subtasks</p>
-                      )}
-                    </TabsContent>
-
-                    <TabsContent value="logs" className="mt-4">
-                      <div className="bg-neutral-950 rounded p-3 max-h-64 overflow-y-auto font-mono text-xs">
-                        {task.logs.map((log, i) => (
-                          <div key={i} className="flex gap-2 mb-1">
-                            <span className="text-gray-600">{log.timestamp.toLocaleTimeString()}</span>
-                            <span className={cn(
-                              "uppercase",
-                              log.level === "error" && "text-red-500",
-                              log.level === "warning" && "text-yellow-500",
-                              log.level === "info" && "text-blue-500",
-                              log.level === "debug" && "text-gray-500"
-                            )}>
-                              [{log.level}]
-                            </span>
-                            <span className="text-gray-300">{log.message}</span>
+                      <CardHeader className="pb-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0 space-y-1">
+                            <CardTitle className="text-base text-white truncate">
+                              {agent.name}
+                            </CardTitle>
+                            <CardDescription className="flex items-center gap-1 text-xs">
+                              <Terminal className="w-3 h-3 shrink-0" />
+                              <span className="truncate">{agent.model}</span>
+                            </CardDescription>
                           </div>
-                        ))}
-                        <div ref={logsEndRef} />
-                      </div>
-                    </TabsContent>
+                          <div
+                            className={cn(
+                              "flex items-center gap-1 shrink-0",
+                              statusColor(agent.status)
+                            )}
+                          >
+                            {statusIcon(agent.status)}
+                            <span className="text-xs font-medium capitalize">
+                              {agent.status}
+                            </span>
+                          </div>
+                        </div>
+                        {agent.description && (
+                          <p className="mt-2 text-sm text-gray-400 line-clamp-2">
+                            {agent.description}
+                          </p>
+                        )}
+                      </CardHeader>
 
-                    <TabsContent value="output" className="mt-4">
-                      {task.output ? (
-                        <div className="bg-neutral-950 rounded p-3">
-                          <pre className="text-sm text-gray-300">{task.output}</pre>
+                      <CardContent className="flex flex-1 flex-col gap-3 pt-0">
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+                          <span className="flex items-center gap-1">
+                            <Cpu className="w-3 h-3" />
+                            {agent.runs} {agent.runs === 1 ? "run" : "runs"}
+                          </span>
+                          {agent.tools.length > 0 && (
+                            <span className="flex flex-wrap gap-1">
+                              {agent.tools.slice(0, 3).map((t) => (
+                                <Badge
+                                  key={t}
+                                  variant="outline"
+                                  className="text-[10px] py-0"
+                                >
+                                  {t}
+                                </Badge>
+                              ))}
+                              {agent.tools.length > 3 && (
+                                <span className="text-gray-600">
+                                  +{agent.tools.length - 3}
+                                </span>
+                              )}
+                            </span>
+                          )}
                         </div>
-                      ) : task.error ? (
-                        <div className="bg-red-950/20 border border-red-900/50 rounded p-3">
-                          <pre className="text-sm text-red-400">{task.error}</pre>
+
+                        {/* Run input + action */}
+                        <div className="mt-auto flex flex-col gap-2 sm:flex-row">
+                          <Input
+                            placeholder="Message this agent…"
+                            className="bg-neutral-950 border-neutral-800 text-sm"
+                            value={inputs[agent.name] || ""}
+                            disabled={isRunning}
+                            onChange={(
+                              e: React.ChangeEvent<HTMLInputElement>
+                            ) =>
+                              setInputs((m) => ({
+                                ...m,
+                                [agent.name]: e.target.value,
+                              }))
+                            }
+                            onKeyDown={(
+                              e: React.KeyboardEvent<HTMLInputElement>
+                            ) => {
+                              if (e.key === "Enter" && !isRunning)
+                                runAgent(agent.name);
+                            }}
+                          />
+                          <Button
+                            size="sm"
+                            className="gap-2 shrink-0"
+                            disabled={isRunning}
+                            onClick={() => runAgent(agent.name)}
+                          >
+                            {isRunning ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Play className="w-4 h-4" />
+                            )}
+                            Run
+                          </Button>
                         </div>
-                      ) : (
-                        <p className="text-sm text-gray-500">No output available yet</p>
-                      )}
-                    </TabsContent>
-                  </Tabs>
-                </CardContent>
-              )}
-            </Card>
-          ))}
-        </div>
+
+                        {/* View / collapse the latest run output */}
+                        {result && (
+                          <div>
+                            <button
+                              onClick={() =>
+                                setExpanded(isOpen ? null : agent.name)
+                              }
+                              className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-200"
+                            >
+                              {isOpen ? (
+                                <ChevronDown className="w-3 h-3" />
+                              ) : (
+                                <ChevronRight className="w-3 h-3" />
+                              )}
+                              Latest run
+                              <span
+                                className={cn(
+                                  "ml-1",
+                                  statusColor(
+                                    result.status === "ok" ? "ready" : "error"
+                                  )
+                                )}
+                              >
+                                ({result.status}, {result.durationMs}ms)
+                              </span>
+                            </button>
+                            {isOpen && (
+                              <div className="mt-2 rounded bg-neutral-950 p-3">
+                                {result.status === "ok" ? (
+                                  <pre className="whitespace-pre-wrap break-words text-xs text-gray-300 max-h-64 overflow-y-auto">
+                                    {result.output || "(empty response)"}
+                                  </pre>
+                                ) : (
+                                  <pre className="whitespace-pre-wrap break-words text-xs text-red-400 max-h-64 overflow-y-auto">
+                                    {result.error || "Run failed"}
+                                  </pre>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
