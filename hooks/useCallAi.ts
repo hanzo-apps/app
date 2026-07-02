@@ -1,6 +1,5 @@
 import { useState, useRef } from "react";
 import { toast } from "sonner";
-import { MODELS } from "@/lib/providers";
 import { Page } from "@/types";
 
 interface UseCallAiProps {
@@ -202,9 +201,6 @@ export const useCallAi = ({
       if (request && request.body) {
         const reader = request.body.getReader();
         const decoder = new TextDecoder("utf-8");
-        const selectedModel = MODELS.find(
-          (m: { value: string }) => m.value === model
-        );
         let contentResponse = "";
 
         const read = async () => {
@@ -214,7 +210,7 @@ export const useCallAi = ({
               contentResponse.trim().startsWith("{") &&
               contentResponse.trim().endsWith("}");
             const jsonResponse = isJson ? JSON.parse(contentResponse) : null;
-            
+
             if (jsonResponse && !jsonResponse.ok) {
               if (jsonResponse.openLogin) {
                 // Handle login required
@@ -234,7 +230,7 @@ export const useCallAi = ({
 
             toast.success("AI responded successfully");
             setisAiWorking(false);
-            
+
             if (audio.current) audio.current.play();
 
             const newPages = formatPages(contentResponse);
@@ -245,13 +241,13 @@ export const useCallAi = ({
 
           const chunk = decoder.decode(value, { stream: true });
           contentResponse += chunk;
-          
-          if (selectedModel?.isThinker) {
-            const thinkMatch = contentResponse.match(/<think>[\s\S]*/)?.[0];
-            if (thinkMatch && !contentResponse?.includes("</think>")) {
-              handleThink?.(thinkMatch.replace("<think>", "").trim());
-              return read();
-            }
+
+          // The stream itself signals a reasoning model: route any open <think>
+          // block to the thinking panel. No static model flag needed.
+          const thinkMatch = contentResponse.match(/<think>[\s\S]*/)?.[0];
+          if (thinkMatch && !contentResponse?.includes("</think>")) {
+            handleThink?.(thinkMatch.replace("<think>", "").trim());
+            return read();
           }
 
           if (contentResponse.includes("</think>")) {
@@ -306,9 +302,6 @@ export const useCallAi = ({
       if (request && request.body) {
         const reader = request.body.getReader();
         const decoder = new TextDecoder("utf-8");
-        const selectedModel = MODELS.find(
-          (m: { value: string }) => m.value === model
-        );
         let contentResponse = "";
 
         const read = async () => {
@@ -338,12 +331,7 @@ export const useCallAi = ({
 
             toast.success("AI responded successfully");
             setisAiWorking(false);
-            
-            if (selectedModel?.isThinker) {
-              // Reset to default model if using thinker model
-              // Note: You might want to add a callback for this
-            }
-            
+
             if (audio.current) audio.current.play();
 
             const newPage = formatPage(contentResponse, currentPagePath);
@@ -355,13 +343,11 @@ export const useCallAi = ({
 
           const chunk = decoder.decode(value, { stream: true });
           contentResponse += chunk;
-          
-          if (selectedModel?.isThinker) {
-            const thinkMatch = contentResponse.match(/<think>[\s\S]*/)?.[0];
-            if (thinkMatch && !contentResponse?.includes("</think>")) {
-              // contentThink += chunk;
-              return read();
-            }
+
+          // Skip rendering a page while an unterminated <think> block streams.
+          const thinkMatch = contentResponse.match(/<think>[\s\S]*/)?.[0];
+          if (thinkMatch && !contentResponse?.includes("</think>")) {
+            return read();
           }
 
           formatPage(contentResponse, currentPagePath);
