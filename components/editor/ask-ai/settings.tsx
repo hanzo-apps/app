@@ -7,7 +7,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@hanzo/ui";
-import { PROVIDERS, MODELS } from "@/lib/providers";
+import { PROVIDERS } from "@/lib/providers";
+import { useModels } from "@/lib/hooks/use-models";
 import { Button } from "@hanzo/ui";
 import {
   Select,
@@ -28,7 +29,6 @@ export function Settings({
   provider,
   model,
   error,
-  isFollowUp = false,
   onChange,
   onModelChange,
 }: {
@@ -36,26 +36,22 @@ export function Settings({
   provider: string;
   model: string;
   error?: string;
-  isFollowUp?: boolean;
   onClose: React.Dispatch<React.SetStateAction<boolean>>;
   onChange: (provider: string) => void;
   onModelChange: (model: string) => void;
 }) {
-  const modelAvailableProviders = useMemo(() => {
-    const availableProviders = MODELS.find(
-      (m: { value: string }) => m.value === model
-    )?.providers;
-    if (!availableProviders) return Object.keys(PROVIDERS);
-    return Object.keys(PROVIDERS).filter((id) =>
-      availableProviders.includes(id)
-    );
-  }, [model]);
+  // The list is live from the gateway (via /v1/models); never a static catalog.
+  const { models } = useModels();
+
+  // Every gateway model is served by the single `hanzo` provider, so the
+  // available providers are simply the provider set.
+  const modelAvailableProviders = useMemo(() => Object.keys(PROVIDERS), []);
 
   useUpdateEffect(() => {
     if (provider !== "auto" && !modelAvailableProviders.includes(provider)) {
       onChange("auto");
     }
-  }, [model, provider]);
+  }, [provider]);
 
   return (
     <div className="">
@@ -88,43 +84,20 @@ export function Settings({
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Models</SelectLabel>
-                    {MODELS.map(
-                      ({
-                        value,
-                        label,
-                        isNew = false,
-                        isThinker = false,
-                      }: {
-                        value: string;
-                        label: string;
-                        isNew?: boolean;
-                        isThinker?: boolean;
-                      }) => (
-                        <SelectItem
-                          key={value}
-                          value={value}
-                          className=""
-                          disabled={isThinker && isFollowUp}
-                        >
-                          {label}
-                          {isNew && (
-                            <span className="text-xs bg-gradient-to-br from-sky-400 to-sky-600 text-white rounded-full px-1.5 py-0.5">
-                              New
-                            </span>
-                          )}
-                        </SelectItem>
-                      )
-                    )}
+                    {models.map(({ value, label, description }) => (
+                      <SelectItem key={value} value={value}>
+                        {label}
+                        {description && (
+                          <span className="ml-2 text-xs text-neutral-400">
+                            {description}
+                          </span>
+                        )}
+                      </SelectItem>
+                    ))}
                   </SelectGroup>
                 </SelectContent>
               </Select>
             </label>
-            {isFollowUp && (
-              <div className="bg-amber-500/10 border-amber-500/10 p-3 text-xs text-amber-500 border rounded-lg">
-                Note: You can&apos;t use a Thinker model for follow-up requests.
-                We automatically switch to the default model for you.
-              </div>
-            )}
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
                 <div>
@@ -144,14 +117,9 @@ export function Settings({
                     }
                   )}
                   onClick={() => {
-                    const foundModel = MODELS.find(
-                      (m: { value: string }) => m.value === model
+                    onChange(
+                      provider === "auto" ? modelAvailableProviders[0] : "auto"
                     );
-                    if (provider === "auto" && foundModel?.autoProvider) {
-                      onChange(foundModel.autoProvider);
-                    } else {
-                      onChange("auto");
-                    }
                   }}
                 >
                   <div
