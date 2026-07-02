@@ -9,9 +9,12 @@ const envSchema = z.object({
   // Node environment
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
 
-  // Authentication (Hanzo IAM) - only required in production
-  IAM_CLIENT_ID: isProd && !isCI ? z.string().min(1) : z.string().optional(),
-  IAM_CLIENT_SECRET: isProd && !isCI ? z.string().min(1) : z.string().optional(),
+  // Authentication (Hanzo IAM). HIP-0111: the browser runs the OAuth2 PKCE
+  // flow as a PUBLIC client via @hanzo/iam (NEXT_PUBLIC_HANZO_CLIENT_ID). There
+  // is no confidential server-side flow, so no client secret is required or
+  // used — both are optional and kept only for legacy/self-host overrides.
+  IAM_CLIENT_ID: z.string().optional(),
+  IAM_CLIENT_SECRET: z.string().optional(),
   IAM_ENDPOINT: z.string().url().optional(),
   NEXTAUTH_SECRET: isProd && !isCI ? z.string().min(32) : z.string().optional(),
   NEXTAUTH_URL: isProd && !isCI ? z.string().url() : z.string().optional(),
