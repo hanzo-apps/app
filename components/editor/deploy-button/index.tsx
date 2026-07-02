@@ -71,7 +71,7 @@ export function DeployButton({
           onClose={() => setOpen(false)}
           pages={pages}
           title="Log In to publish your Project"
-          description="Log In through your Hugging Face account to publish your project and increase your monthly free limit."
+          description="Log in with your Hanzo account to publish your project and increase your monthly free limit."
         />
       </div>
     </div>

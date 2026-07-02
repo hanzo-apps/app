@@ -1,95 +1,54 @@
-export const PROVIDERS = {
-  "fireworks-ai": {
-    name: "Fireworks AI",
-    max_tokens: 131_000,
-    id: "fireworks-ai",
-  },
-  nebius: {
-    name: "Nebius AI Studio",
-    max_tokens: 131_000,
-    id: "nebius",
-  },
-  sambanova: {
-    name: "SambaNova",
-    max_tokens: 32_000,
-    id: "sambanova",
-  },
-  novita: {
-    name: "NovitaAI",
-    max_tokens: 16_000,
-    id: "novita",
-  },
-  hyperbolic: {
-    name: "Hyperbolic",
-    max_tokens: 131_000,
-    id: "hyperbolic",
-  },
-  together: {
-    name: "Together AI",
-    max_tokens: 128_000,
-    id: "together",
-  },
-  groq: {
-    name: "Groq",
-    max_tokens: 16_384,
-    id: "groq",
-  },
-};
+/**
+ * Zen model catalogue for the hanzo.app builder.
+ *
+ * These are the ONLY model ids the UI exposes — the Hanzo Zen family. Never
+ * surface upstream architecture names. The gateway (api.hanzo.ai) resolves each
+ * id to the underlying weights; `/api/ask-ai` sends `model: <value>` straight
+ * through. See `~/work/hanzo/CLAUDE.md` (Brand Policy: No Upstream References).
+ */
 
-export const MODELS = [
+export interface ZenModel {
+  value: string; // gateway model id, e.g. "zen5-coder"
+  label: string; // human label shown in the picker
+  description?: string;
+  isNew?: boolean;
+  isThinker?: boolean;
+}
+
+export const MODELS: ZenModel[] = [
   {
-    value: "Qwen/Qwen3-Next-80B-A3B-Thinking",
-    label: "Qwen3 Next 80B A3B Thinking",
-    providers: ["hyperbolic"],
-    autoProvider: "hyperbolic",
-    isNew: true,
-    isThinker: true,
-  },
-  {
-    value: "deepseek-ai/DeepSeek-V3-0324",
-    label: "DeepSeek V3 O324",
-    providers: ["fireworks-ai", "nebius", "sambanova", "novita", "hyperbolic"],
-    autoProvider: "novita",
-  },
-  {
-    value: "deepseek-ai/DeepSeek-R1-0528",
-    label: "DeepSeek R1 0528",
-    providers: [
-      "fireworks-ai",
-      "novita",
-      "hyperbolic",
-      "nebius",
-      "together",
-      "sambanova",
-    ],
-    autoProvider: "novita",
-    isThinker: true,
-  },
-  {
-    value: "Qwen/Qwen3-Coder-480B-A35B-Instruct",
-    label: "Qwen3 Coder 480B A35B Instruct",
-    providers: ["novita", "hyperbolic"],
-    autoProvider: "novita",
+    value: "zen5-coder",
+    label: "Zen 5 Coder",
+    description: "Frontier code generation — the default for building apps.",
     isNew: true,
   },
   {
-    value: "moonshotai/Kimi-K2-Instruct",
-    label: "Kimi K2 Instruct",
-    providers: ["together", "novita", "groq"],
-    autoProvider: "groq",
+    value: "zen5",
+    label: "Zen 5",
+    description: "Next-generation agentic model with native chain-of-thought.",
+    isNew: true,
   },
   {
-    value: "deepseek-ai/DeepSeek-V3.1",
-    label: "DeepSeek V3.1",
-    providers: ["fireworks-ai", "novita"],
-    isNew: true,
-    autoProvider: "fireworks-ai",
+    value: "zen5-pro",
+    label: "Zen 5 Pro",
+    description: "Higher-capability reasoning for complex builds.",
   },
   {
-    value: "moonshotai/Kimi-K2-Instruct-0905",
-    label: "Kimi K2 Instruct 0905",
-    providers: ["together", "groq", "novita"],
-    isNew: true,
-    autoProvider: "groq"
-  }
+    value: "zen5-max",
+    label: "Zen 5 Max",
+    description: "Maximum capability for the hardest tasks.",
+  },
+  {
+    value: "zen5-flash",
+    label: "Zen 5 Flash",
+    description: "Fast, cost-efficient generation for quick iterations.",
+  },
+  {
+    value: "zen5-mini",
+    label: "Zen 5 Mini",
+    description: "Lightweight model for small edits.",
+  },
 ];
+
+/** The default model id (code generation). */
+export const DEFAULT_MODEL = MODELS[0].value;
