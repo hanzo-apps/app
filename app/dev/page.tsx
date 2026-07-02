@@ -12,8 +12,14 @@ export default function DevPage() {
   const repoUrl = searchParams.get("repo") || searchParams.get("template") || "";
   const action = searchParams.get("action") || "edit"; // edit or deploy
   const seedPrompt = searchParams.get("prompt") || ""; // fork → builder seed
+  // Stable deep-link into the builder for an existing org-scoped project
+  // (console.hanzo.ai's "Edit in hanzo.app" links here). Opening a project by
+  // slug skips onboarding and reuses the same shared record on re-publish.
+  const projectSlug = searchParams.get("project") || "";
 
-  const [showOnboarding, setShowOnboarding] = useState(!repoUrl);
+  // Onboarding shows only when we're not opening a repo/template fork AND not a
+  // deep-linked existing project.
+  const [showOnboarding, setShowOnboarding] = useState(!repoUrl && !projectSlug);
   // Fork → builder auto-start: when the console's "Open in builder" deep-links
   // here with ?template=&prompt=&action=edit, hold the editor until the seed is
   // staged for AskAI (which reads window.__initialPrompt on mount) so the first
@@ -25,6 +31,22 @@ export default function DevPage() {
     const prompt = searchParams.get("prompt") || localStorage.getItem("initialPrompt") || "";
     setInitialPrompt(prompt);
   }, [searchParams]);
+
+  // Open an existing org-scoped project by slug: validate it exists in the
+  // shared store, prefill its name, and stash the slug so a re-publish updates
+  // the SAME record (not a new one). Honest: if the slug is unknown we still open
+  // the builder (a new project keyed by that slug).
+  useEffect(() => {
+    if (!projectSlug) return;
+    (window as any).__projectSlug = projectSlug;
+    setShowOnboarding(false);
+    fetch(`/v1/projects/${encodeURIComponent(projectSlug)}`, { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((p) => {
+        if (p?.name) (window as any).__projectName = p.name;
+      })
+      .catch(() => {});
+  }, [projectSlug]);
   const [showTemplateLoader, setShowTemplateLoader] = useState(false);
   const [finalPrompt, setFinalPrompt] = useState("");
   const [generatedPlan, setGeneratedPlan] = useState("");

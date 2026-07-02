@@ -1,4 +1,4 @@
-import { Rocket } from "lucide-react";
+import { Rocket, ExternalLink } from "lucide-react";
 import Image from "next/image";
 
 import Loading from "@/components/loading";
@@ -6,9 +6,11 @@ import { Button } from "@hanzo/ui";
 import { Input } from "@hanzo/ui";
 import SpaceIcon from "@/assets/space.svg";
 import { Page } from "@/types";
-import { api } from "@/lib/api";
+import { builderLink } from "@/lib/api/projects";
+import { currentOrg } from "@/lib/org-scope";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export const DeployButtonContent = ({
   pages,
@@ -22,60 +24,77 @@ export const DeployButtonContent = ({
   };
   prompts: string[];
 }) => {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [config, setConfig] = useState({ title: "" });
+  // When the builder was opened on an existing project (`/dev?project=<slug>`),
+  // reuse its slug + name so re-publishing updates the SAME shared record.
+  const [existingSlug, setExistingSlug] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    const w = window as unknown as { __projectSlug?: string; __projectName?: string };
+    if (w.__projectSlug) setExistingSlug(w.__projectSlug);
+    if (w.__projectName) setConfig((c) => (c.title ? c : { title: w.__projectName as string }));
+  }, []);
 
-  const [config, setConfig] = useState({
-    title: "",
-  });
-
-  const createSpace = async () => {
-    if (!config.title) {
-      toast.error("Please enter a title for your space.");
+  /**
+   * Publish to the ONE org-scoped shared store (`/v1/publish` → cloud
+   * projectsvc). The org is resolved server-side from the user's bearer, so the
+   * project is created + billed under their organization with a real name + slug
+   * (never `name: None`) and is visible in console.hanzo.ai from the SAME store.
+   */
+  const publish = async () => {
+    if (!config.title.trim()) {
+      toast.error("Please enter a title for your project.");
       return;
     }
     setLoading(true);
 
     try {
-      const res = await api.post("/me/projects", {
-        title: config.title,
-        pages,
-        prompts,
+      const selectedOrg = currentOrg();
+      const res = await fetch("/v1/publish", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          ...(selectedOrg ? { "X-Org-Id": selectedOrg } : {}),
+        },
+        body: JSON.stringify({
+          name: config.title.trim(),
+          slug: existingSlug,
+          description: prompts?.[prompts.length - 1] || "",
+          framework: "static",
+          pages,
+        }),
       });
-      if (res.data.ok && res.data.url) {
-        // Add to public gallery
-        try {
-          const mainHtml = pages.find(p => p.path === 'index.html')?.html || pages[0]?.html || '';
-          await api.post("/gallery", {
-            project: {
-              id: res.data.path || config.title.toLowerCase().replace(/\s+/g, '-'),
-              name: config.title,
-              prompt: prompts[0] || '',
-              emoji: '🚀',
-              html: mainHtml,
-              tags: ['ai-generated', 'hanzo'],
-            }
-          });
-          toast.success("Project added to public gallery!");
-        } catch (galleryError) {
-          console.error("Failed to add to gallery:", galleryError);
-          // Don't fail the main operation if gallery fails
-        }
+      const data = await res.json().catch(() => ({}));
 
-        toast.success("Published to Hanzo Cloud! 🎉", {
-          action: {
-            label: "View Site",
-            onClick: () => window.open(res.data.url, "_blank"),
-          },
-        });
-        // The published site is a static route handler, not a React page —
-        // navigate with a full document load.
-        window.location.href = res.data.url;
-      } else {
-        toast.error(res?.data?.error || "Failed to publish project");
+      if (!res.ok) {
+        if (res.status === 409 && data?.needsOnboarding) {
+          toast.error("Set up your organization first.");
+          router.push("/new");
+          return;
+        }
+        toast.error(data?.error || "Failed to publish project");
+        return;
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      toast.error(err.response?.data?.error || err.message);
+
+      const liveUrl: string | undefined =
+        data?.project?.liveUrl || data?.deployment?.liveUrl;
+      if (data?.deployError && !liveUrl) {
+        toast.success("Project saved to your organization.", {
+          description: "The live deploy is finishing — open it from Projects.",
+        });
+      } else {
+        toast.success("Your project is published! 🎉", {
+          description: liveUrl ? "Your site is live." : undefined,
+        });
+      }
+
+      // Deep-link back into the builder by the stable project slug (the same
+      // link console.hanzo.ai uses for "Edit in hanzo.app").
+      router.push(builderLink(data.slug));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to publish project");
     } finally {
       setLoading(false);
     }
@@ -89,46 +108,46 @@ export const DeployButtonContent = ({
             🚀
           </div>
           <div className="size-11 rounded-full bg-red-200 shadow-2xl flex items-center justify-center z-2">
-            <Image src={SpaceIcon} alt="Space Icon" className="size-7" />
+            <Image src={SpaceIcon} alt="Project Icon" className="size-7" />
           </div>
           <div className="size-9 rounded-full bg-sky-200 shadow-2xs flex items-center justify-center text-xl opacity-50">
             👻
           </div>
         </div>
-        <p className="text-xl font-semibold text-neutral-950">
-          Publish to Hanzo Cloud
-        </p>
+        <p className="text-xl font-semibold text-neutral-950">Publish your project</p>
         <p className="text-sm text-neutral-500 mt-1.5">
           {options?.description ??
-            "Save and publish your project to Hanzo Cloud — a fast way to share your app with the world on a live URL."}
+            "Publish to your organization on Hanzo Cloud. Your project is billed to your org and appears across your Hanzo tools."}
         </p>
       </header>
       <main className="space-y-4 p-6">
         <div>
-          <p className="text-sm text-neutral-700 mb-2">
-            Choose a title for your project:
-          </p>
+          <p className="text-sm text-neutral-700 mb-2">Choose a title for your project:</p>
           <Input
             type="text"
             placeholder="My Awesome Website"
             value={config.title}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfig({ ...config, title: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setConfig({ ...config, title: e.target.value })
+            }
             className="!bg-white !border-neutral-300 !text-neutral-800 !placeholder:text-neutral-400 selection:!bg-blue-100"
           />
         </div>
         <div>
-          <p className="text-sm text-neutral-700 mb-2">
-            Then, let&apos;s publish it!
-          </p>
+          <p className="text-sm text-neutral-700 mb-2">Then, let&apos;s publish it!</p>
           <Button
             variant="black"
-            onClick={createSpace}
+            onClick={publish}
             className="relative w-full"
             disabled={loading}
           >
-            Publish to Hanzo Cloud <Rocket className="size-4" />
+            Publish <Rocket className="size-4" />
             {loading && <Loading className="ml-2 size-4 animate-spin" />}
           </Button>
+          <p className="mt-3 flex items-center gap-1 text-xs text-neutral-400">
+            <ExternalLink className="size-3" />
+            Manage every project at console.hanzo.ai — the same shared store.
+          </p>
         </div>
       </main>
     </>
