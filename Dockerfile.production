@@ -4,7 +4,11 @@
 # ── Build stage ─────────────────────────────────────────────
 FROM node:20-alpine AS builder
 RUN corepack enable && corepack prepare pnpm@10.17.1 --activate
-RUN apk add --no-cache libc6-compat
+# libc6-compat for glibc-linked prebuilds; python3/make/g++ so native modules
+# (better-sqlite3 — the VFS/deployment store) compile a musl binding from source
+# when no alpine prebuild exists. Without these the binding is missing and the
+# native site-deploy path 500s at runtime ("Could not locate the bindings file").
+RUN apk add --no-cache libc6-compat python3 make g++
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml* ./
@@ -44,6 +48,12 @@ ENV HOSTNAME="0.0.0.0"
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
+
+# Next's file-tracing copies better-sqlite3's JS into the standalone but NOT its
+# compiled native binding (build/better_sqlite3.node) — so the VFS/site-deploy
+# store 500s at runtime. Overlay the compiled build dir from the builder into the
+# traced package path so the standalone runtime can load it.
+COPY --from=builder /app/node_modules/.pnpm/better-sqlite3@12.8.0/node_modules/better-sqlite3/build ./node_modules/.pnpm/better-sqlite3@12.8.0/node_modules/better-sqlite3/build
 
 EXPOSE 3000
 
