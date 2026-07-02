@@ -11,8 +11,14 @@ export default function DevPage() {
   const [initialPrompt, setInitialPrompt] = useState("");
   const repoUrl = searchParams.get("repo") || searchParams.get("template") || "";
   const action = searchParams.get("action") || "edit"; // edit or deploy
+  const seedPrompt = searchParams.get("prompt") || ""; // fork → builder seed
 
   const [showOnboarding, setShowOnboarding] = useState(!repoUrl);
+  // Fork → builder auto-start: when the console's "Open in builder" deep-links
+  // here with ?template=&prompt=&action=edit, hold the editor until the seed is
+  // staged for AskAI (which reads window.__initialPrompt on mount) so the first
+  // generation starts automatically — no manual TemplateLoader click.
+  const [seedReady, setSeedReady] = useState(false);
 
   // Load initialPrompt from localStorage on client-side only
   useEffect(() => {
@@ -65,14 +71,40 @@ export default function DevPage() {
 
       setRepoData(repoInfo);
 
-      // If we have repo data, show the template loader
+      // Keep the template provenance for the deploy path.
       if (repoInfo.name) {
-        setShowTemplateLoader(true);
-        setShowOnboarding(false);
         (window as any).__templateRepo = repoInfo;
       }
+
+      // Show the manual template loader ONLY when we did NOT arrive with a seed
+      // prompt. With a seed (fork → builder) we auto-start below instead of
+      // gating on a click, so the /new template deploy flow (no prompt) is
+      // unchanged while the console "Open in builder" flow lands on a first
+      // edition directly.
+      if (repoInfo.name && !seedPrompt.trim()) {
+        setShowTemplateLoader(true);
+        setShowOnboarding(false);
+      }
     }
-  }, [repoUrl, action]);
+  }, [repoUrl, action, seedPrompt]);
+
+  // Stage the fork → builder seed for the editor. The seed already carries the
+  // template context (title/framework/description + the user's ask), so we hand
+  // it straight to AskAI via window.__initialPrompt (+ localStorage as backup)
+  // and flip seedReady so AppEditor mounts AFTER the global is set — AskAI's
+  // mount effect then auto-starts callAiNewProject with no extra click.
+  useEffect(() => {
+    if (seedReady || !repoUrl || !seedPrompt.trim()) return;
+    setShowTemplateLoader(false);
+    setShowOnboarding(false);
+    (window as any).__initialPrompt = seedPrompt;
+    try {
+      localStorage.setItem("initialPrompt", seedPrompt);
+    } catch {
+      // localStorage may be unavailable; window.__initialPrompt is sufficient.
+    }
+    setSeedReady(true);
+  }, [repoUrl, seedPrompt, seedReady]);
 
   const handleOnboardingComplete = (prompt: string, plan?: string) => {
     setFinalPrompt(prompt);
@@ -130,6 +162,17 @@ export default function DevPage() {
         initialPrompt={initialPrompt}
         onComplete={handleOnboardingComplete}
       />
+    );
+  }
+
+  // Fork → builder: while the seed is being staged, hold a brief splash so the
+  // editor mounts only AFTER window.__initialPrompt is set — AskAI reads it on
+  // mount to auto-start the first generation.
+  if (repoUrl && seedPrompt.trim() && !seedReady) {
+    return (
+      <div className="h-[100dvh] bg-neutral-950 flex items-center justify-center text-neutral-400 text-sm">
+        Preparing your first edition…
+      </div>
     );
   }
 
