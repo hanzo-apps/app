@@ -1,3 +1,12 @@
+/**
+ * @deprecated for the WEBSITE BUILDER. The builder now converges on the single
+ * Hanzo AI gateway via `/v1/generate` (app/v1/generate/route.ts). This route
+ * remains ONLY for the multi-agent workspace/chat feature (lib/llm/*,
+ * components/workspace, components/chat-panel, app/test-generation), which
+ * still does its own per-provider fan-out. New builder inference must NOT be
+ * added here — use `/v1/generate`. Fold this into the gateway when the
+ * workspace feature is migrated.
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { ProviderId } from '@/lib/llm/providers/types';
 import { getProvider, getDefaultModel } from '@/lib/llm/providers/registry';

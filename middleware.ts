@@ -51,7 +51,7 @@ export async function middleware(request: NextRequest) {
     rateLimitType = "auth";
   } else if (path.startsWith("/api/commerce")) {
     rateLimitType = "payment";
-  } else if (path.startsWith("/api/ai") || path.startsWith("/api/ask-ai")) {
+  } else if (path.startsWith("/api/ai") || path.startsWith("/v1/generate")) {
     rateLimitType = "ai";
   } else if (path.startsWith("/api")) {
     rateLimitType = "api";
