@@ -90,17 +90,17 @@ export const DeployButtonContent = ({
           </div>
         </div>
         <p className="text-xl font-semibold text-neutral-950">
-          Publish as Space!
+          Publish to Hanzo Cloud
         </p>
         <p className="text-sm text-neutral-500 mt-1.5">
           {options?.description ??
-            "Save and Publish your project to a Space on the Hub. Spaces are a way to share your project with the world."}
+            "Save and publish your project to Hanzo Cloud — a fast way to share your app with the world on a live URL."}
         </p>
       </header>
       <main className="space-y-4 p-6">
         <div>
           <p className="text-sm text-neutral-700 mb-2">
-            Choose a title for your space:
+            Choose a title for your project:
           </p>
           <Input
             type="text"
@@ -120,7 +120,7 @@ export const DeployButtonContent = ({
             className="relative w-full"
             disabled={loading}
           >
-            Publish Space <Rocket className="size-4" />
+            Publish to Hanzo Cloud <Rocket className="size-4" />
             {loading && <Loading className="ml-2 size-4 animate-spin" />}
           </Button>
         </div>

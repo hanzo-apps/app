@@ -79,7 +79,10 @@ export default function LandingPage() {
     }
 
     setIsCreating(true);
-    router.push("/new");
+    // Route into the builder ("Hanzo Dev" IDE), which reads
+    // localStorage.initialPrompt and starts generating immediately. `/new` is
+    // the Git-import surface and never reads the prompt (dead-ends generation).
+    router.push("/dev");
   };
 
   const showcaseProjects = [
