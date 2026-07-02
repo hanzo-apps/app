@@ -9,7 +9,6 @@ import { Page } from "@/types";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 export const DeployButtonContent = ({
   pages,
@@ -23,7 +22,6 @@ export const DeployButtonContent = ({
   };
   prompts: string[];
 }) => {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const [config, setConfig] = useState({
@@ -43,13 +41,13 @@ export const DeployButtonContent = ({
         pages,
         prompts,
       });
-      if (res.data.ok) {
+      if (res.data.ok && res.data.url) {
         // Add to public gallery
         try {
           const mainHtml = pages.find(p => p.path === 'index.html')?.html || pages[0]?.html || '';
           await api.post("/gallery", {
             project: {
-              id: res.data.path?.split('/').pop() || config.title.toLowerCase().replace(/\s+/g, '-'),
+              id: res.data.path || config.title.toLowerCase().replace(/\s+/g, '-'),
               name: config.title,
               prompt: prompts[0] || '',
               emoji: '🚀',
@@ -63,9 +61,17 @@ export const DeployButtonContent = ({
           // Don't fail the main operation if gallery fails
         }
 
-        router.push(`/projects/${res.data.path}?deploy=true`);
+        toast.success("Published to Hanzo Cloud! 🎉", {
+          action: {
+            label: "View Site",
+            onClick: () => window.open(res.data.url, "_blank"),
+          },
+        });
+        // The published site is a static route handler, not a React page —
+        // navigate with a full document load.
+        window.location.href = res.data.url;
       } else {
-        toast.error(res?.data?.error || "Failed to create space");
+        toast.error(res?.data?.error || "Failed to publish project");
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
