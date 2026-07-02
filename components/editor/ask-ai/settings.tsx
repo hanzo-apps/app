@@ -1,13 +1,11 @@
-import classNames from "classnames";
 import { PiGearSixFill } from "react-icons/pi";
-import { RiCheckboxCircleFill } from "react-icons/ri";
 
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@hanzo/ui";
-import { PROVIDERS, MODELS } from "@/lib/providers";
+import { MODELS } from "@/lib/providers";
 import { Button } from "@hanzo/ui";
 import {
   Select,
@@ -18,45 +16,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@hanzo/ui";
-import { useMemo } from "react";
-import { useUpdateEffect } from "react-use";
-import Image from "next/image";
 
 export function Settings({
   open,
   onClose,
-  provider,
   model,
   error,
   isFollowUp = false,
-  onChange,
   onModelChange,
 }: {
   open: boolean;
-  provider: string;
+  provider?: string;
   model: string;
   error?: string;
   isFollowUp?: boolean;
   onClose: React.Dispatch<React.SetStateAction<boolean>>;
-  onChange: (provider: string) => void;
+  onChange?: (provider: string) => void;
   onModelChange: (model: string) => void;
 }) {
-  const modelAvailableProviders = useMemo(() => {
-    const availableProviders = MODELS.find(
-      (m: { value: string }) => m.value === model
-    )?.providers;
-    if (!availableProviders) return Object.keys(PROVIDERS);
-    return Object.keys(PROVIDERS).filter((id) =>
-      availableProviders.includes(id)
-    );
-  }, [model]);
-
-  useUpdateEffect(() => {
-    if (provider !== "auto" && !modelAvailableProviders.includes(provider)) {
-      onChange("auto");
-    }
-  }, [model, provider]);
-
   return (
     <div className="">
       <Popover open={open} onOpenChange={onClose}>
@@ -80,14 +57,14 @@ export function Settings({
               </p>
             )}
             <label className="block">
-              <p className="text-neutral-300 text-sm mb-2.5">Choose a model</p>
+              <p className="text-neutral-300 text-sm mb-2.5">Choose a Zen model</p>
               <Select defaultValue={model} onValueChange={onModelChange}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a model" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Models</SelectLabel>
+                    <SelectLabel>Zen Models</SelectLabel>
                     {MODELS.map(
                       ({
                         value,
@@ -118,82 +95,10 @@ export function Settings({
                   </SelectGroup>
                 </SelectContent>
               </Select>
+              <p className="text-xs text-neutral-400/70 mt-2">
+                Powered by Hanzo AI. All inference runs on the Hanzo Cloud gateway.
+              </p>
             </label>
-            {isFollowUp && (
-              <div className="bg-amber-500/10 border-amber-500/10 p-3 text-xs text-amber-500 border rounded-lg">
-                Note: You can&apos;t use a Thinker model for follow-up requests.
-                We automatically switch to the default model for you.
-              </div>
-            )}
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-neutral-300 text-sm mb-1.5">
-                    Use auto-provider
-                  </p>
-                  <p className="text-xs text-neutral-400/70">
-                    We&apos;ll automatically select the best provider for you
-                    based on your prompt.
-                  </p>
-                </div>
-                <div
-                  className={classNames(
-                    "bg-neutral-700 rounded-full min-w-10 w-10 h-6 flex items-center justify-between p-1 cursor-pointer transition-all duration-200",
-                    {
-                      "!bg-sky-500": provider === "auto",
-                    }
-                  )}
-                  onClick={() => {
-                    const foundModel = MODELS.find(
-                      (m: { value: string }) => m.value === model
-                    );
-                    if (provider === "auto" && foundModel?.autoProvider) {
-                      onChange(foundModel.autoProvider);
-                    } else {
-                      onChange("auto");
-                    }
-                  }}
-                >
-                  <div
-                    className={classNames(
-                      "w-4 h-4 rounded-full shadow-md transition-all duration-200 bg-neutral-200",
-                      {
-                        "translate-x-4": provider === "auto",
-                      }
-                    )}
-                  />
-                </div>
-              </div>
-              <label className="block">
-                <p className="text-neutral-300 text-sm mb-2">
-                  Inference Provider
-                </p>
-                <div className="grid grid-cols-2 gap-1.5">
-                  {modelAvailableProviders.map((id: string) => (
-                    <Button
-                      key={id}
-                      variant={id === provider ? "default" : "secondary"}
-                      size="sm"
-                      onClick={() => {
-                        onChange(id);
-                      }}
-                    >
-                      <Image
-                        src={`/providers/${id}.svg`}
-                        alt={PROVIDERS[id as keyof typeof PROVIDERS].name}
-                        className="size-5 mr-2"
-                        width={20}
-                        height={20}
-                      />
-                      {PROVIDERS[id as keyof typeof PROVIDERS].name}
-                      {id === provider && (
-                        <RiCheckboxCircleFill className="ml-2 size-4 text-blue-500" />
-                      )}
-                    </Button>
-                  ))}
-                </div>
-              </label>
-            </div>
           </main>
         </PopoverContent>
       </Popover>
