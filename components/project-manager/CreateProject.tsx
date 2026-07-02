@@ -9,11 +9,10 @@ import { Check, ChevronDown, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   createProject,
-  PROJECT_TYPES,
-  REGIONS,
-  type ProjectType,
+  FRAMEWORKS,
+  type Framework,
   type CreateProjectPayload,
-  type ManagedProject,
+  type Project,
 } from '@/lib/api/projects';
 
 // --- Radix wrappers (matching project conventions) ---
@@ -126,22 +125,20 @@ SelectItem.displayName = 'SelectItem';
 interface CreateProjectProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreated: (project: ManagedProject) => void;
+  onCreated: (project: Project) => void;
 }
 
 export function CreateProject({ open, onOpenChange, onCreated }: CreateProjectProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [type, setType] = useState<ProjectType>('web-app');
-  const [region, setRegion] = useState('us-east-1');
+  const [framework, setFramework] = useState<Framework>('static');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const resetForm = () => {
     setName('');
     setDescription('');
-    setType('web-app');
-    setRegion('us-east-1');
+    setFramework('static');
     setError(null);
   };
 
@@ -159,8 +156,7 @@ export function CreateProject({ open, onOpenChange, onCreated }: CreateProjectPr
       const payload: CreateProjectPayload = {
         name: trimmedName,
         description: description.trim(),
-        type,
-        region,
+        framework,
       };
       const project = await createProject(payload);
       resetForm();
@@ -225,43 +221,24 @@ export function CreateProject({ open, onOpenChange, onCreated }: CreateProjectPr
             <span className="text-xs text-muted-foreground">{description.length}/256</span>
           </div>
 
-          {/* Type */}
+          {/* Framework */}
           <div>
-            <label className="text-sm font-medium">Project Type</label>
-            <Select value={type} onValueChange={(v) => setType(v as ProjectType)} disabled={submitting}>
+            <label className="text-sm font-medium">Framework</label>
+            <Select value={framework} onValueChange={(v) => setFramework(v as Framework)} disabled={submitting}>
               <SelectTrigger className="mt-1.5 bg-card">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {PROJECT_TYPES.map((t) => (
-                  <SelectItem key={t.value} value={t.value}>
-                    <span className="flex flex-col">
-                      <span>{t.label}</span>
-                    </span>
+                {FRAMEWORKS.map((f) => (
+                  <SelectItem key={f.value} value={f.value}>
+                    {f.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground mt-1">
-              {PROJECT_TYPES.find((t) => t.value === type)?.description}
+              How the site is built. &quot;Static&quot; means it&apos;s already built.
             </p>
-          </div>
-
-          {/* Region */}
-          <div>
-            <label className="text-sm font-medium">Region</label>
-            <Select value={region} onValueChange={setRegion} disabled={submitting}>
-              <SelectTrigger className="mt-1.5 bg-card">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {REGIONS.map((r) => (
-                  <SelectItem key={r.value} value={r.value}>
-                    {r.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
 
           {/* Error */}

@@ -1,102 +1,169 @@
-import { apiClient } from '@/lib/api-client';
+/**
+ * Cloud projects client — the ONE client for the org-scoped shared store.
+ *
+ * Talks to the SAME-ORIGIN `/v1/projects` BFF (app/v1/projects/[[...path]]),
+ * which forwards to the cloud projectsvc as the signed-in user. The org is
+ * derived server-side from the bearer owner claim, so every record is org-scoped
+ * and billed to the right org — and the httpOnly `hanzo_token` is NEVER read by
+ * browser JS (the cookie rides the same-origin request; least privilege).
+ *
+ * Shape mirrors the projectsvc CONTRACT.md exactly (name + slug + framework +
+ * status + liveUrl) so hanzo.app and console.hanzo.ai render the SAME records
+ * from the SAME store. No fabricated fields (no cpu/memory/region mock).
+ */
 
-// --- Types ---
+// --- Types (projectsvc CONTRACT.md) ---
 
-export type ProjectStatus = 'active' | 'paused' | 'stopped';
-export type ProjectType = 'web-app' | 'api' | 'ai-model' | 'static-site';
+export type ProjectStatus = 'draft' | 'building' | 'live' | 'error';
 
-export interface ResourceUsage {
-  cpu: number;    // percentage 0-100
-  memory: number; // percentage 0-100
-  storage: number; // bytes used
-  storageLimit: number; // bytes limit
-  bandwidth: number; // bytes used this period
+export type Framework =
+  | 'static'
+  | 'vite'
+  | 'next'
+  | 'react'
+  | 'astro'
+  | 'svelte'
+  | 'vue'
+  | 'remix'
+  | 'nuxt';
+
+export interface ProjectRepo {
+  url?: string;
+  branch?: string;
+  provider?: string;
 }
 
-export interface ManagedProject {
+export interface Project {
   id: string;
+  org: string;
+  slug: string;
   name: string;
-  description: string;
-  type: ProjectType;
+  description?: string;
+  repo: ProjectRepo;
+  framework: string;
   status: ProjectStatus;
-  region: string;
-  resources: ResourceUsage;
-  url?: string;
-  createdAt: string;
-  updatedAt: string;
+  liveUrl?: string;
+  bucket?: string;
+  currentDeploymentId?: string;
+  createdAt: number; // unix seconds
+  updatedAt: number;
+}
+
+export interface Deployment {
+  id: string;
+  projectId: string;
+  version: number;
+  status: 'queued' | 'building' | 'uploading' | 'live' | 'error';
+  source: 'upload' | 'git';
+  commit?: string;
+  liveUrl?: string;
+  files: number;
+  bytes: number;
+  message?: string;
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface CreateProjectPayload {
   name: string;
-  description: string;
-  type: ProjectType;
-  region: string;
+  slug?: string;
+  description?: string;
+  framework?: string;
+  repo?: { url?: string; branch?: string };
 }
 
 export interface UpdateProjectPayload {
   name?: string;
   description?: string;
-  status?: ProjectStatus;
-  region?: string;
+  framework?: string;
+  repo?: { url?: string; branch?: string };
 }
 
 // --- Constants ---
 
-export const PROJECT_TYPES: { value: ProjectType; label: string; description: string }[] = [
-  { value: 'web-app', label: 'Web App', description: 'Full-stack web application' },
-  { value: 'api', label: 'API', description: 'Backend API service' },
-  { value: 'ai-model', label: 'AI Model', description: 'Machine learning model endpoint' },
-  { value: 'static-site', label: 'Static Site', description: 'Static HTML/CSS/JS site' },
+export const FRAMEWORKS: { value: Framework; label: string }[] = [
+  { value: 'static', label: 'Static (no build)' },
+  { value: 'next', label: 'Next.js' },
+  { value: 'react', label: 'React' },
+  { value: 'vite', label: 'Vite' },
+  { value: 'astro', label: 'Astro' },
+  { value: 'svelte', label: 'Svelte' },
+  { value: 'vue', label: 'Vue' },
+  { value: 'remix', label: 'Remix' },
+  { value: 'nuxt', label: 'Nuxt' },
 ];
 
-export const REGIONS: { value: string; label: string }[] = [
-  { value: 'us-east-1', label: 'US East (Virginia)' },
-  { value: 'us-west-2', label: 'US West (Oregon)' },
-  { value: 'eu-west-1', label: 'EU West (Ireland)' },
-  { value: 'ap-southeast-1', label: 'Asia Pacific (Singapore)' },
-];
+// --- Transport (same-origin BFF; cookie carries auth) ---
 
-// --- API Functions ---
+import { currentOrg } from '@/lib/org-scope';
 
-const API_BASE = 'https://api.hanzo.ai/v1/projects';
+const BASE = '/v1/projects';
 
-function getAuthHeaders(): Record<string, string> {
-  if (typeof document === 'undefined') return {};
-  const match = document.cookie.match(/(?:^|;\s*)hanzo_token=([^;]*)/);
-  const token = match ? decodeURIComponent(match[1]) : null;
-  if (!token) return {};
-  return { Authorization: `Bearer ${token}` };
+/** Stamp the selected org as X-Org-Id (console2's baseHeaders pattern). Honored
+ *  server-side only for a global admin; ignored for a normal user (owner-pinned). */
+function orgHeader(): Record<string, string> {
+  const org = currentOrg();
+  return org ? { 'X-Org-Id': org } : {};
 }
 
-export async function fetchProjects(): Promise<ManagedProject[]> {
-  return apiClient.get<ManagedProject[]>(API_BASE, {
-    headers: getAuthHeaders(),
+async function req<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(`${BASE}${path}`, {
+    ...init,
+    credentials: 'include',
+    headers: { Accept: 'application/json', ...orgHeader(), ...(init?.headers || {}) },
   });
+  if (!res.ok) {
+    let msg = `Request failed (${res.status})`;
+    try {
+      const body = await res.json();
+      msg = body?.error || body?.msg || msg;
+    } catch {
+      /* non-JSON error body */
+    }
+    throw new Error(msg);
+  }
+  if (res.status === 204) return undefined as T;
+  return (await res.json()) as T;
 }
 
-export async function fetchProject(id: string): Promise<ManagedProject> {
-  return apiClient.get<ManagedProject>(`${API_BASE}/${id}`, {
-    headers: getAuthHeaders(),
-  });
+// --- API ---
+
+export async function fetchProjects(): Promise<Project[]> {
+  return req<Project[]>('');
 }
 
-export async function createProject(payload: CreateProjectPayload): Promise<ManagedProject> {
-  return apiClient.post<ManagedProject>(API_BASE, payload, {
-    headers: getAuthHeaders(),
+export async function fetchProject(slug: string): Promise<Project> {
+  return req<Project>(`/${encodeURIComponent(slug)}`);
+}
+
+export async function createProject(payload: CreateProjectPayload): Promise<Project> {
+  return req<Project>('', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
   });
 }
 
 export async function updateProject(
-  id: string,
-  payload: UpdateProjectPayload
-): Promise<ManagedProject> {
-  return apiClient.patch<ManagedProject>(`${API_BASE}/${id}`, payload, {
-    headers: getAuthHeaders(),
+  slug: string,
+  payload: UpdateProjectPayload,
+): Promise<Project> {
+  return req<Project>(`/${encodeURIComponent(slug)}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
   });
 }
 
-export async function deleteProject(id: string): Promise<void> {
-  return apiClient.delete<void>(`${API_BASE}/${id}`, {
-    headers: getAuthHeaders(),
-  });
+export async function deleteProject(slug: string): Promise<void> {
+  return req<void>(`/${encodeURIComponent(slug)}`, { method: 'DELETE' });
+}
+
+export async function listDeployments(slug: string): Promise<Deployment[]> {
+  return req<Deployment[]>(`/${encodeURIComponent(slug)}/deployments`);
+}
+
+/** The stable deep-link that opens a project in the builder (console can link here). */
+export function builderLink(slug: string): string {
+  return `/dev?project=${encodeURIComponent(slug)}`;
 }
