@@ -33,6 +33,22 @@ RUN CI=false pnpm run build && \
     fi && \
     echo "Build OK — standalone output verified"
 
+# better-sqlite3 is a native module (the VFS/site-deploy store). Force-compile a
+# musl binding (build tools are present above), then overlay the compiled
+# better_sqlite3.node into the TRACED standalone package — Next's file-tracing
+# copies the JS but drops the .node, so the deploy path 500s at runtime. Uses
+# `find` (robust to the exact pnpm dir name) and FAILS LOUD if the binding never
+# compiled or the package isn't in the standalone, so a broken deploy can't ship.
+RUN set -eux; \
+    pnpm rebuild better-sqlite3; \
+    SRC="$(find node_modules -type f -name better_sqlite3.node | head -1)"; \
+    test -n "$SRC"; \
+    PKG="$(find .next/standalone/node_modules -type d -path '*/better-sqlite3' | head -1)"; \
+    test -n "$PKG"; \
+    mkdir -p "$PKG/build"; \
+    cp "$SRC" "$PKG/build/better_sqlite3.node"; \
+    ls -la "$PKG/build/better_sqlite3.node"
+
 # ── Runtime stage — minimal ─────────────────────────────────
 FROM node:20-alpine AS runner
 RUN apk add --no-cache libc6-compat
@@ -48,12 +64,6 @@ ENV HOSTNAME="0.0.0.0"
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-
-# Next's file-tracing copies better-sqlite3's JS into the standalone but NOT its
-# compiled native binding (build/better_sqlite3.node) — so the VFS/site-deploy
-# store 500s at runtime. Overlay the compiled build dir from the builder into the
-# traced package path so the standalone runtime can load it.
-COPY --from=builder /app/node_modules/.pnpm/better-sqlite3@12.8.0/node_modules/better-sqlite3/build ./node_modules/.pnpm/better-sqlite3@12.8.0/node_modules/better-sqlite3/build
 
 EXPOSE 3000
 
