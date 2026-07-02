@@ -213,8 +213,8 @@ export async function listProducts(binding: StoreBinding): Promise<StoreProduct[
     { org: binding.org, token: readAuthToken(binding), method: "GET" },
   );
   return Object.entries(listings || {})
-    .map(([key, l]) => normalizeListing(key, l, binding.currency))
-    .filter((p) => !p.hidden);
+    .filter(([, l]) => l.hidden !== true)
+    .map(([key, l]) => normalizeListing(key, l, binding.currency));
 }
 
 /** Fetch one product listing by key. Returns null when not found. */
