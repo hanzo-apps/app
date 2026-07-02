@@ -12,8 +12,14 @@
  * settings picker; DEFAULT_MODEL is the coder model the builder opens with.
  */
 
-// The builder's default is a Zen coder model. `zen3-coder` is not yet on the
-// gateway; `zen5-coder` is the best available Zen coder id.
+// The builder opens on the Zen coder model. We offer ONLY the current Zen5
+// ladder — the gateway-exposed SKUs (zen-gateway `gateway/config.yaml`), which
+// map to the latest OSS weights internally (zen5/zen5-coder → glm-5.2,
+// zen5-pro → deepseek-v4-pro, zen5-max → qwen3.5-397b). Deprecated ids
+// (zen3-coder, zen4-*) and raw upstream names (qwen/*, deepseek/*, kimi/*) are
+// NOT offered — the gateway serves the Zen SKU name, not the upstream id, so
+// those 502. The dynamic /v1/models list stays authoritative; this is the
+// curated builder default set.
 export const DEFAULT_MODEL = "zen5-coder";
 
 // One provider from the app's perspective: the Hanzo gateway.
@@ -25,6 +31,17 @@ export const PROVIDERS = {
   },
 };
 
+// The curated Zen5 builder ladder — every entry is a gateway-served Zen SKU
+// backed by the latest OSS weights (see zen-gateway `gateway/config.yaml`):
+//   zen5-nano  → nemotron-nano-12b   (fastest / cheapest)
+//   zen5-flash → deepseek-4-flash    (fast)
+//   zen5-coder → glm-5.2             (default — code)
+//   zen5       → glm-5.2             (balanced)
+//   zen5-pro   → deepseek-v4-pro     (reasoning)
+//   zen5-max   → qwen3.5-397b        (largest OSS)
+// zen5-ultra (→ Claude Opus, non-OSS) is intentionally omitted; embeddings
+// (zen5-embedding-*) and specialty SKUs (zen3-vl/asr/tts/omni) are other
+// surfaces, not the code builder.
 export const MODELS = [
   {
     value: "zen5-coder",
@@ -32,6 +49,12 @@ export const MODELS = [
     providers: ["hanzo"],
     autoProvider: "hanzo",
     isNew: true,
+  },
+  {
+    value: "zen5-flash",
+    label: "Zen 5 Flash",
+    providers: ["hanzo"],
+    autoProvider: "hanzo",
   },
   {
     value: "zen5",
@@ -45,36 +68,18 @@ export const MODELS = [
     providers: ["hanzo"],
     autoProvider: "hanzo",
     isNew: true,
-  },
-  {
-    value: "zen3-omni",
-    label: "Zen 3 Omni",
-    providers: ["hanzo"],
-    autoProvider: "hanzo",
-  },
-  {
-    value: "qwen/qwen3-coder",
-    label: "Qwen3 Coder",
-    providers: ["hanzo"],
-    autoProvider: "hanzo",
-  },
-  {
-    value: "deepseek/deepseek-v3.2",
-    label: "DeepSeek V3.2",
-    providers: ["hanzo"],
-    autoProvider: "hanzo",
-  },
-  {
-    value: "moonshotai/kimi-k2.5",
-    label: "Kimi K2.5",
-    providers: ["hanzo"],
-    autoProvider: "hanzo",
-  },
-  {
-    value: "deepseek/deepseek-r1-0528",
-    label: "DeepSeek R1",
-    providers: ["hanzo"],
-    autoProvider: "hanzo",
     isThinker: true,
+  },
+  {
+    value: "zen5-max",
+    label: "Zen 5 Max",
+    providers: ["hanzo"],
+    autoProvider: "hanzo",
+  },
+  {
+    value: "zen5-nano",
+    label: "Zen 5 Nano",
+    providers: ["hanzo"],
+    autoProvider: "hanzo",
   },
 ];
