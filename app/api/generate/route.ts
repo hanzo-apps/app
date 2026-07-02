@@ -13,6 +13,7 @@ import { getProvider, getDefaultModel } from '@/lib/llm/providers/registry';
 import { LLMMessage, ToolDefinition, ContentBlock, TextContentBlock, ImageContentBlock } from '@/lib/llm/types';
 import { logger } from '@/lib/utils';
 import { handleCodexGeneration } from '@/lib/llm/codex-adapter';
+import { resolveOrgIdentity, effectiveOrg } from '@/lib/org/server';
 
 // Helper to extract text content from string or ContentBlock[]
 function getTextContent(content: string | ContentBlock[]): string {
@@ -257,7 +258,22 @@ Habits:
     }
 
     const headers = buildHeaders(selectedProvider, apiKey, request, providerConfig);
-    
+
+    // Billing attribution: when the generation goes through the Hanzo gateway,
+    // carry the caller's org so the per-org balance is charged to the right
+    // organization (the gateway also derives it from the key owner; this is the
+    // explicit attribution for shared-key + future metering). Best-effort —
+    // never blocks a generation.
+    if (selectedProvider === 'hanzo') {
+      try {
+        const oid = await resolveOrgIdentity(request);
+        const org = oid ? effectiveOrg(request, oid) : '';
+        if (org) headers['X-Org-Id'] = org;
+      } catch {
+        /* attribution is best-effort */
+      }
+    }
+
     let processedMessages = chatMessages;
     let anthropicSystemPrompt = '';
     
