@@ -4,6 +4,7 @@ import { getProvider, getDefaultModel } from '@/lib/llm/providers/registry';
 import { LLMMessage, ToolDefinition, ContentBlock, TextContentBlock, ImageContentBlock } from '@/lib/llm/types';
 import { logger } from '@/lib/utils';
 import { handleCodexGeneration } from '@/lib/llm/codex-adapter';
+import { resolveCloudBearer, HANZO_CLOUD_PROVIDER } from '@/lib/hanzo/cloud';
 
 // Helper to extract text content from string or ContentBlock[]
 function getTextContent(content: string | ContentBlock[]): string {
@@ -156,10 +157,20 @@ export async function POST(request: NextRequest) {
   try {
     const { prompt, apiKey: clientApiKey, model, tools, context, messages, tool_choice, provider, max_tokens, reasoning, stream: requestStream } = await request.json();
 
-    const selectedProvider: ProviderId = provider || 'openrouter';
+    // Hanzo Cloud is the zero-config default for signed-in users: when the
+    // caller brings no explicit provider key, route AI through api.hanzo.ai/v1
+    // (provider `hanzo`) authenticated by their IAM session JWT, which the
+    // gateway debits against the org in the token's `owner` claim (org==tenant).
+    // An explicit provider selection or BYO key always wins.
+    const cloudBearer = resolveCloudBearer(request);
+    const selectedProvider: ProviderId =
+      provider || (!clientApiKey && cloudBearer ? HANZO_CLOUD_PROVIDER : 'openrouter');
     const providerConfig = getProvider(selectedProvider);
 
     let apiKey = clientApiKey;
+    if (!apiKey && selectedProvider === HANZO_CLOUD_PROVIDER && cloudBearer) {
+      apiKey = cloudBearer;
+    }
 
     if (!prompt && !messages) {
       return NextResponse.json(
