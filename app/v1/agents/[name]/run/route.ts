@@ -12,6 +12,12 @@
  * IAM token (the `hanzo_token` cookie); the gateway mints `X-Org-Id`
  * (HIP-0026) from it, so one org can never run another's agent. No token →
  * 401 with `openLogin`.
+ *
+ * CSRF: this method mutates state (executes a run, consumes the org's quota)
+ * under an ambient cookie, so a same-origin check gates it — a cross-site
+ * page cannot drive a signed-in user's account even if the token cookie is
+ * ever served SameSite=None (the iframe/CHIPS auth-cookie mode this app
+ * ships). The safe read (GET /v1/agents) needs no such gate.
  */
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
@@ -21,20 +27,46 @@ import MY_TOKEN_KEY from "@/lib/get-cookie-name";
 const HANZO_AI_BASE_URL =
   process.env.HANZO_AI_BASE_URL || "https://api.hanzo.ai/v1";
 
+// Per-user response — never let a shared/edge cache serve it to another org.
+const NO_STORE = { "Cache-Control": "no-store" } as const;
+
 // Matches the cloud's org-unique handle AND the URL path segment — the
 // traversal guard at the boundary (mirrors agents.nameRE server-side).
 const NAME_RE = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
 
+// A browser sends `Origin` on every cross-origin (and same-origin) POST. If it
+// is present and its host is not our own, the request originates off-site —
+// refuse it. Absence of Origin means a non-browser caller with no ambient
+// cookie to abuse, so it is allowed through.
+function isCrossSite(request: NextRequest): boolean {
+  const origin = request.headers.get("origin");
+  if (!origin) return false;
+  const host =
+    request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+  try {
+    return new URL(origin).host !== host;
+  } catch {
+    return true;
+  }
+}
+
 const unauthorized = () =>
   NextResponse.json(
     { ok: false, openLogin: true, message: "Sign in to run agents" },
-    { status: 401 }
+    { status: 401, headers: NO_STORE }
   );
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ name: string }> }
 ) {
+  if (isCrossSite(request)) {
+    return NextResponse.json(
+      { ok: false, message: "Cross-origin request refused" },
+      { status: 403, headers: NO_STORE }
+    );
+  }
+
   const token = request.cookies.get(MY_TOKEN_KEY())?.value;
   if (!token) return unauthorized();
 
@@ -42,7 +74,7 @@ export async function POST(
   if (!NAME_RE.test(name)) {
     return NextResponse.json(
       { ok: false, message: "Invalid agent name" },
-      { status: 400 }
+      { status: 400, headers: NO_STORE }
     );
   }
 
@@ -66,7 +98,7 @@ export async function POST(
   } catch {
     return NextResponse.json(
       { ok: false, message: "Unable to reach the agents service." },
-      { status: 502 }
+      { status: 502, headers: NO_STORE }
     );
   }
 
@@ -78,10 +110,10 @@ export async function POST(
   // cloud's honest message.
   const run = await gateway.json().catch(() => null);
   if (run) {
-    return NextResponse.json(run, { status: gateway.status });
+    return NextResponse.json(run, { status: gateway.status, headers: NO_STORE });
   }
   return NextResponse.json(
     { ok: false, message: `Gateway error (${gateway.status})` },
-    { status: gateway.status >= 400 ? gateway.status : 502 }
+    { status: gateway.status >= 400 ? gateway.status : 502, headers: NO_STORE }
   );
 }
