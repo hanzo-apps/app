@@ -30,6 +30,8 @@ import Link from "next/link";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { UserMenu } from "@/components/user-menu";
 import { useUser } from "@/hooks/useUser";
+import { OrgProvider } from "@/lib/org/client";
+import { OrgGate, OrgSwitcher } from "@/components/org-switcher";
 
 const templates = [
   {
@@ -124,6 +126,19 @@ const frameworks = [
 ];
 
 export default function NewProjectPage() {
+  // Establish an org BEFORE any project is created: a zero-org user is gated
+  // into onboarding (personal workspace by default); everyone else picks/sees
+  // their org via the selector in the header.
+  return (
+    <OrgProvider>
+      <OrgGate>
+        <NewProjectInner />
+      </OrgGate>
+    </OrgProvider>
+  );
+}
+
+function NewProjectInner() {
   const router = useRouter();
   const { user } = useUser();
   const [repoUrl, setRepoUrl] = useState("");
@@ -181,7 +196,10 @@ export default function NewProjectPage() {
 
             <div className="flex items-center gap-4">
               {user ? (
-                <UserMenu />
+                <>
+                  <OrgSwitcher />
+                  <UserMenu />
+                </>
               ) : (
                 <div className="flex items-center gap-3">
                   <Button variant="ghost" onClick={() => router.push("/login")}>

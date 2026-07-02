@@ -26,6 +26,9 @@ import {
 import { DiscordIcon } from '@/components/ui/discord-icon';
 import { DOCS_ITEMS } from '@/lib/constants/docs';
 import { cn } from '@/lib/utils';
+import { OrgProvider } from '@/lib/org/client';
+import { OrgSwitcher } from '@/components/org-switcher';
+import { SidebarWallet } from '@/components/SidebarWallet';
 import { useRouter, useSearchParams } from 'next/navigation';
 import pkg from '@/package.json';
 
@@ -395,6 +398,16 @@ function SidebarContent({
         )}
       </button>
 
+      {/* Org selector — the org every project/deploy/credit is scoped to.
+          Wrapped in OrgProvider so it also SEEDS the active-org scope
+          (lib/org-scope) for the whole app (projects list, publish, wallet). */}
+      <OrgProvider>
+        {!collapsed && (
+          <div className="border-b px-2 py-2">
+            <OrgSwitcher />
+          </div>
+        )}
+
       {/* Main Navigation - Single scrollable container */}
       <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
         {visibleSidebarItems.map((item) => {
@@ -604,6 +617,10 @@ function SidebarContent({
         </div>
       )}
 
+      {/* Per-org wallet: identity + the credit balance the gateway debits for
+          the ACTIVE org, with Top up + Sign out. Honest states, org-scoped. */}
+      <SidebarWallet collapsed={collapsed} />
+
       {/* Pin/Unpin Toggle (desktop only) */}
       <div className="hidden md:block border-t p-2">
         <Button
@@ -629,6 +646,7 @@ function SidebarContent({
           )}
         </Button>
       </div>
+      </OrgProvider>
     </div>
     </>
   );

@@ -11,14 +11,34 @@ export default function DevPage() {
   const [initialPrompt, setInitialPrompt] = useState("");
   const repoUrl = searchParams.get("repo") || searchParams.get("template") || "";
   const action = searchParams.get("action") || "edit"; // edit or deploy
+  // Stable deep-link into the builder for an existing org-scoped project
+  // (console.hanzo.ai's "Edit in hanzo.app" links here). Opening a project by
+  // slug skips onboarding and reuses the same shared record on re-publish.
+  const projectSlug = searchParams.get("project") || "";
 
-  const [showOnboarding, setShowOnboarding] = useState(!repoUrl);
+  const [showOnboarding, setShowOnboarding] = useState(!repoUrl && !projectSlug);
 
   // Load initialPrompt from localStorage on client-side only
   useEffect(() => {
     const prompt = searchParams.get("prompt") || localStorage.getItem("initialPrompt") || "";
     setInitialPrompt(prompt);
   }, [searchParams]);
+
+  // Open an existing org-scoped project by slug: validate it exists in the
+  // shared store, prefill its name, and stash the slug so a re-publish updates
+  // the SAME record (not a new one). Honest: if the slug is unknown we still open
+  // the builder (a new project keyed by that slug).
+  useEffect(() => {
+    if (!projectSlug) return;
+    (window as any).__projectSlug = projectSlug;
+    setShowOnboarding(false);
+    fetch(`/v1/projects/${encodeURIComponent(projectSlug)}`, { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((p) => {
+        if (p?.name) (window as any).__projectName = p.name;
+      })
+      .catch(() => {});
+  }, [projectSlug]);
   const [showTemplateLoader, setShowTemplateLoader] = useState(false);
   const [finalPrompt, setFinalPrompt] = useState("");
   const [generatedPlan, setGeneratedPlan] = useState("");
