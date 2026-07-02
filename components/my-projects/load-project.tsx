@@ -165,7 +165,7 @@ export const LoadProject = ({
                     }
                     setUrl(inputUrl);
                   }}
-                  className="!bg-white !border-neutral-300 !text-neutral-800 !placeholder:text-neutral-400 selection:!bg-blue-100"
+                  className="!bg-white !border-neutral-300 !text-neutral-800 !placeholder:text-neutral-400 selection:!bg-muted"
                 />
               </div>
               <div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@hanzo/ui";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@hanzo/ui";
@@ -32,98 +32,11 @@ import { UserMenu } from "@/components/user-menu";
 import { useUser } from "@/hooks/useUser";
 import { OrgProvider } from "@/lib/org/client";
 import { OrgGate, OrgSwitcher } from "@/components/org-switcher";
-
-const templates = [
-  {
-    id: "ai-chat-interface",
-    name: "AI Chatbot",
-    description: "Interactive chat interface with AI capabilities",
-    icon: <Bot className="w-5 h-5" />,
-    color: "from-blue-500 to-purple-600",
-    category: "AI"
-  },
-  {
-    id: "ecommerce-storefront",
-    name: "Commerce",
-    description: "Modern e-commerce storefront with cart",
-    icon: <ShoppingCart className="w-5 h-5" />,
-    color: "from-green-500 to-emerald-600",
-    category: "Commerce"
-  },
-  {
-    id: "analytics-dashboard",
-    name: "Analytics Dashboard",
-    description: "Data visualization and metrics dashboard",
-    icon: <BarChart3 className="w-5 h-5" />,
-    color: "from-[#fd4444] to-[#ff6b6b]",
-    category: "Analytics"
-  },
-  {
-    id: "video-streaming",
-    name: "Video Platform",
-    description: "Video streaming platform with playlists",
-    icon: <Video className="w-5 h-5" />,
-    color: "from-red-500 to-orange-600",
-    category: "Media"
-  },
-  {
-    id: "blog-platform",
-    name: "Blog Platform",
-    description: "Content management and blogging platform",
-    icon: <FileText className="w-5 h-5" />,
-    color: "from-[#fd4444] to-[#ff6b6b]",
-    category: "Content"
-  },
-  {
-    id: "kanban-board",
-    name: "Kanban Board",
-    description: "Project management with drag-and-drop",
-    icon: <Layers className="w-5 h-5" />,
-    color: "from-yellow-500 to-orange-600",
-    category: "Productivity"
-  },
-  {
-    id: "social-feed",
-    name: "Social Feed",
-    description: "Social media feed with interactions",
-    icon: <MessageCircle className="w-5 h-5" />,
-    color: "from-pink-500 to-rose-600",
-    category: "Social"
-  },
-  {
-    id: "crypto-portfolio",
-    name: "Crypto Portfolio",
-    description: "Cryptocurrency portfolio tracker",
-    icon: <Bitcoin className="w-5 h-5" />,
-    color: "from-orange-500 to-red-600",
-    category: "Finance"
-  },
-  {
-    id: "markdown-editor",
-    name: "Markdown Editor",
-    description: "Real-time markdown editor with preview",
-    icon: <PenTool className="w-5 h-5" />,
-    color: "from-gray-600 to-gray-800",
-    category: "Tools"
-  },
-  {
-    id: "saas-landing",
-    name: "SaaS Landing",
-    description: "Modern SaaS landing page template",
-    icon: <Globe className="w-5 h-5" />,
-    color: "from-teal-500 to-cyan-600",
-    category: "Marketing"
-  }
-];
-
-const frameworks = [
-  { id: "next", name: "Next.js", icon: "▲" },
-  { id: "react", name: "React", icon: "⚛️" },
-  { id: "vue", name: "Vue", icon: "🟢" },
-  { id: "svelte", name: "Svelte", icon: "🔥" },
-  { id: "astro", name: "Astro", icon: "🚀" },
-  { id: "remix", name: "Remix", icon: "💿" },
-];
+import {
+  fetchGalleryTemplates,
+  templateBuilderLink,
+  type GalleryTemplate,
+} from "@/lib/api/templates";
 
 export default function NewProjectPage() {
   // Establish an org BEFORE any project is created: a zero-org user is gated
@@ -143,7 +56,48 @@ function NewProjectInner() {
   const { user } = useUser();
   const [repoUrl, setRepoUrl] = useState("");
   const [loading, setLoading] = useState(false);
-  const [selectedFramework, setSelectedFramework] = useState("next");
+  const [selectedFramework, setSelectedFramework] = useState("all");
+
+  // The REAL hanzoai/gallery catalog (same-origin /v1/templates BFF → cloud
+  // clients/templates), with a graceful built-in fallback. No placeholder cards.
+  const [templates, setTemplates] = useState<GalleryTemplate[]>([]);
+  const [templatesLive, setTemplatesLive] = useState(true);
+  const [templatesLoading, setTemplatesLoading] = useState(true);
+
+  useEffect(() => {
+    const ac = new AbortController();
+    fetchGalleryTemplates(ac.signal)
+      .then(({ templates, live }) => {
+        setTemplates(templates);
+        setTemplatesLive(live);
+      })
+      .finally(() => setTemplatesLoading(false));
+    return () => ac.abort();
+  }, []);
+
+  const frameworks = useMemo(() => {
+    const set = new Set<string>();
+    for (const t of templates) {
+      const fw = (t.framework || "").split(/[\s+]/)[0].trim();
+      if (fw) set.add(fw);
+    }
+    return Array.from(set).sort();
+  }, [templates]);
+
+  const visibleTemplates = useMemo(
+    () =>
+      selectedFramework === "all"
+        ? templates
+        : templates.filter((t) =>
+            t.framework.toLowerCase().startsWith(selectedFramework.toLowerCase()),
+          ),
+    [templates, selectedFramework],
+  );
+
+  const handleTemplate = (t: GalleryTemplate) => {
+    setLoading(true);
+    router.push(templateBuilderLink(t));
+  };
 
   const handleImport = (provider: string) => {
     if (!repoUrl.trim()) return;
@@ -154,17 +108,6 @@ function NewProjectInner() {
     const url = new URL("/dev", window.location.origin);
     url.searchParams.set("repo", repoUrl);
     url.searchParams.set("action", "edit");
-
-    router.push(url.toString());
-  };
-
-  const handleTemplate = (templateId: string) => {
-    setLoading(true);
-
-    // Navigate to /dev with the template
-    const url = new URL("/dev", window.location.origin);
-    url.searchParams.set("template", `https://github.com/Hanzo-Community/template-${templateId}`);
-    url.searchParams.set("action", "deploy");
 
     router.push(url.toString());
   };
@@ -268,7 +211,7 @@ function NewProjectInner() {
 
                   <Button
                     onClick={() => handleImport("gitlab")}
-                    className="w-full bg-purple-600/10 hover:bg-purple-600/20 text-purple-400 border border-purple-600/20"
+                    className="w-full bg-white/5 hover:bg-white/10 text-white/80 border border-white/10"
                     disabled={loading || !repoUrl.trim()}
                   >
                     {loading ? (
@@ -281,7 +224,7 @@ function NewProjectInner() {
 
                   <Button
                     onClick={() => handleImport("bitbucket")}
-                    className="w-full bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 border border-blue-600/20"
+                    className="w-full bg-white/5 hover:bg-white/10 text-white/80 border border-white/10"
                     disabled={loading || !repoUrl.trim()}
                   >
                     {loading ? (
@@ -310,52 +253,66 @@ function NewProjectInner() {
           <div>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold">Clone Template</h2>
-              <select
-                className="bg-gray-900 border border-gray-800 text-white text-sm rounded-lg px-3 py-1.5 focus:border-gray-700 outline-none"
-                value={selectedFramework}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedFramework(e.target.value)}
-              >
-                <option value="all">All Frameworks</option>
-                {frameworks.map((fw) => (
-                  <option key={fw.id} value={fw.id}>
-                    {fw.icon} {fw.name}
-                  </option>
-                ))}
-              </select>
+              {frameworks.length > 0 && (
+                <select
+                  className="bg-gray-900 border border-gray-800 text-white text-sm rounded-lg px-3 py-1.5 focus:border-gray-700 outline-none"
+                  value={selectedFramework}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedFramework(e.target.value)}
+                >
+                  <option value="all">All Frameworks</option>
+                  {frameworks.map((fw) => (
+                    <option key={fw} value={fw}>
+                      {fw}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
 
+            {!templatesLive && !templatesLoading && (
+              <div className="mb-4 flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-400">
+                <Globe className="h-4 w-4 shrink-0" />
+                Showing built-in starters — the gallery is unreachable right now.
+              </div>
+            )}
+
             <div className="grid md:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-              {templates.map((template) => (
-                <Card
-                  key={template.id}
-                  className="bg-gray-900/50 border-gray-800 backdrop-blur-sm hover:border-gray-700 transition-all cursor-pointer group"
-                  onClick={() => handleTemplate(template.id)}
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <div className={`p-2 rounded-lg bg-gradient-to-br ${template.color} bg-opacity-10`}>
-                        {template.icon}
+              {templatesLoading ? (
+                Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="h-40 rounded-xl border border-gray-800 bg-gray-900/50 animate-pulse" />
+                ))
+              ) : (
+                visibleTemplates.map((template) => (
+                  <Card
+                    key={template.slug}
+                    className="bg-gray-900/50 border-gray-800 backdrop-blur-sm hover:border-gray-700 transition-all cursor-pointer group"
+                    onClick={() => handleTemplate(template)}
+                  >
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between">
+                        <div className="p-2 rounded-lg bg-white/5 border border-white/10 text-white">
+                          <Layers className="w-5 h-5" />
+                        </div>
+                        <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-white transition-colors" />
                       </div>
-                      <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-white transition-colors" />
-                    </div>
-                    <CardTitle className="text-base">{template.name}</CardTitle>
-                    <CardDescription className="text-xs text-gray-400">
-                      {template.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-500">{template.category}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-500 flex items-center gap-1">
-                          <Sparkles className="w-3 h-3" />
-                          AI Enhanced
-                        </span>
+                      <CardTitle className="text-base line-clamp-1">{template.title}</CardTitle>
+                      <CardDescription className="text-xs text-gray-400 line-clamp-2">
+                        {template.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-500">{template.category || template.useCase}</span>
+                        {template.framework && (
+                          <span className="text-xs text-gray-500 flex items-center gap-1">
+                            {template.framework}
+                          </span>
+                        )}
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </div>
 
             <div className="mt-6">

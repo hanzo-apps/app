@@ -105,7 +105,7 @@ function ProviderCard({ provider, onValidate, onRemove, isValidating }: Provider
                     href={provider.apiKeyHelpUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-blue-500 hover:text-blue-600 flex items-center gap-1"
+                    className="text-xs text-foreground hover:text-foreground flex items-center gap-1"
                   >
                     Get API Key
                     <ExternalLink className="w-3 h-3" />

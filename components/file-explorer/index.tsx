@@ -489,9 +489,9 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
         return <BookOpen className="w-4 h-4 text-purple-500" />;
       }
       return expanded ? (
-        <FolderOpen className="w-4 h-4 text-blue-500" />
+        <FolderOpen className="w-4 h-4 text-muted-foreground" />
       ) : (
-        <Folder className="w-4 h-4 text-blue-500" />
+        <Folder className="w-4 h-4 text-muted-foreground" />
       );
     };
 
@@ -510,7 +510,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
             className={cn(
               'flex items-center gap-2 px-2 py-1.5 hover:bg-accent hover:text-accent-foreground cursor-pointer rounded-md transition-colors',
               isSelected && 'bg-accent text-accent-foreground',
-              isDropTarget && item.type === 'directory' && 'bg-blue-500/20 border border-blue-500',
+              isDropTarget && item.type === 'directory' && 'bg-accent border border-foreground/40',
               draggedItem?.path === item.path && 'opacity-50',
               (isTransient || isHiddenDotFile) && 'opacity-75',
               'group'
@@ -718,7 +718,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
           <div 
             className={cn(
               "flex-1 overflow-y-auto p-3 space-y-0.5 relative",
-              isDraggingOver && "bg-blue-500/10"
+              isDraggingOver && "bg-accent/50"
             )}
             onDragOver={(e) => {
               if (draggedItem) {
@@ -735,9 +735,9 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
           >
             {isDraggingOver && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="bg-blue-500/20 border-2 border-dashed border-blue-500 rounded-lg p-8">
-                  <Upload className="h-12 w-12 text-blue-500 mx-auto mb-2" />
-                  <p className="text-sm text-blue-600">Drop files here to upload</p>
+                <div className="bg-accent border-2 border-dashed border-foreground/40 rounded-lg p-8">
+                  <Upload className="h-12 w-12 text-foreground mx-auto mb-2" />
+                  <p className="text-sm text-foreground">Drop files here to upload</p>
                 </div>
               </div>
             )}

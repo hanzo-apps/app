@@ -58,7 +58,7 @@ export default function DevVFSPage() {
 }
 
 h1 {
-  color: #2563eb;
+  color: currentColor;
   border-bottom: 2px solid #e5e7eb;
   padding-bottom: 0.5rem;
 }

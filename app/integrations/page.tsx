@@ -370,7 +370,7 @@ export default function IntegrationsPage() {
                       <span className="text-gray-400">892 / 1000</span>
                     </div>
                     <div className="w-full bg-neutral-800 rounded-full h-2">
-                      <div className="bg-blue-500 h-2 rounded-full" style={{ width: "89%" }} />
+                      <div className="bg-foreground h-2 rounded-full" style={{ width: "89%" }} />
                     </div>
                   </div>
                 </CardContent>

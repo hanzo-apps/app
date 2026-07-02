@@ -55,8 +55,9 @@ export default function Header() {
     <>
       <nav className="relative z-20 flex items-center justify-between px-4 md:px-8 py-4 md:py-5 bg-black/80 backdrop-blur-sm border-b border-white/10">
         <div className="flex items-center gap-6 md:gap-10">
-          <Link href="/" className="flex items-center">
-            <HanzoLogo className="w-8 md:w-9 h-8 md:h-9 text-white" />
+          <Link href="/" className="flex items-center gap-2 text-white">
+            <HanzoLogo className="w-7 md:w-8 h-7 md:h-8" />
+            <span className="text-base md:text-lg font-bold tracking-tight">Hanzo</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -119,7 +120,7 @@ export default function Header() {
                     >
                       <Avatar className="w-7 h-7">
                         <AvatarImage src={user.avatarUrl} alt={displayName} />
-                        <AvatarFallback className="text-xs bg-gradient-to-br from-[#fd4444] to-[#ff6b6b] text-white">
+                        <AvatarFallback className="text-xs bg-white/10 text-white">
                           {userInitial}
                         </AvatarFallback>
                       </Avatar>
@@ -222,7 +223,7 @@ export default function Header() {
                     <div className="flex items-center gap-3">
                       <Avatar className="w-10 h-10">
                         <AvatarImage src={user.avatarUrl} alt={displayName} />
-                        <AvatarFallback className="bg-gradient-to-br from-[#fd4444] to-[#ff6b6b] text-white">
+                        <AvatarFallback className="bg-white/10 text-white">
                           {userInitial}
                         </AvatarFallback>
                       </Avatar>

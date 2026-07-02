@@ -99,7 +99,7 @@ const templates = [
     name: "Markdown Editor",
     description: "Live markdown editor with preview and export",
     icon: <FileText className="w-6 h-6" />,
-    color: "from-blue-500 to-blue-600",
+    color: "from-neutral-600 to-neutral-800",
     features: ["Live preview", "Syntax highlighting", "Export"],
     category: "Tools",
     path: "/templates/markdown-editor",

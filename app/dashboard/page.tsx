@@ -116,7 +116,7 @@ function UsageBar({ percent }: { percent: number }) {
   return (
     <div className="h-1.5 w-full rounded-full bg-white/10">
       <div
-        className="h-1.5 rounded-full bg-gradient-to-r from-blue-500 to-violet-500 transition-all"
+        className="h-1.5 rounded-full bg-gradient-to-r from-neutral-500 to-neutral-300 transition-all"
         style={{ width: `${percent}%` }}
       />
     </div>
@@ -285,8 +285,8 @@ export default function DashboardPage() {
             {/* Usage / Billing Summary */}
             <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6">
               <div className="flex items-center gap-3 mb-5">
-                <div className="w-9 h-9 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                  <BarChart3 className="w-5 h-5 text-blue-400" />
+                <div className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center">
+                  <BarChart3 className="w-5 h-5 text-white/80" />
                 </div>
                 <h3 className="text-lg font-semibold text-white">Usage</h3>
               </div>

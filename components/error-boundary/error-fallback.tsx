@@ -113,8 +113,8 @@ export function ErrorFallback({
                   We apologize for the inconvenience. The error has been logged and our team will
                   investigate the issue.
                 </p>
-                <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                  <p className="text-sm text-blue-800 dark:text-blue-200">
+                <div className="mt-4 p-3 bg-muted dark:bg-white/5 rounded-lg">
+                  <p className="text-sm text-foreground/80">
                     <strong>Error ID:</strong> {generateErrorId()}
                   </p>
                 </div>
@@ -125,7 +125,7 @@ export function ErrorFallback({
               {!isPermanent && (
                 <button
                   onClick={resetErrorBoundary}
-                  className="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition-colors"
+                  className="w-full flex items-center justify-center space-x-2 bg-foreground hover:bg-foreground/90 text-background py-3 px-4 rounded-lg transition-colors"
                 >
                   <RefreshCw className="w-4 h-4" />
                   <span>Try Again</span>
@@ -135,7 +135,7 @@ export function ErrorFallback({
               {isPermanent && (
                 <button
                   onClick={() => window.location.reload()}
-                  className="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition-colors"
+                  className="w-full flex items-center justify-center space-x-2 bg-foreground hover:bg-foreground/90 text-background py-3 px-4 rounded-lg transition-colors"
                 >
                   <RefreshCw className="w-4 h-4" />
                   <span>Refresh Page</span>

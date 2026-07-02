@@ -247,14 +247,14 @@ export function ComplianceTab({ settings, onChange }: ComplianceTabProps) {
             </div>
 
             {settings.compliance.mode === 'opt-in' && (
-              <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <div className="p-4 bg-muted dark:bg-white/5 border border-border rounded-lg">
                 <div className="flex gap-3">
-                  <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                  <Shield className="h-5 w-5 text-foreground flex-shrink-0 mt-0.5" />
                   <div className="space-y-1">
-                    <h4 className="font-semibold text-blue-900 dark:text-blue-100">
+                    <h4 className="font-semibold text-foreground">
                       GDPR Compliance Mode
                     </h4>
-                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                    <p className="text-sm text-muted-foreground">
                       In opt-in mode, cookies and tracking are blocked by default until
                       the user explicitly accepts. This is required for GDPR compliance.
                     </p>
