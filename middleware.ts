@@ -19,7 +19,7 @@ const PROTECTED_PREFIXES = [
 const PUBLIC_PATHS = [
   "/login",
   "/signup",
-  "/api/auth/callback",
+  "/auth/callback",
   "/api/auth/logout",
   "/pricing",
 ];

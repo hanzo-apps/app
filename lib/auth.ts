@@ -6,9 +6,6 @@ import { OIDC_PATHS } from "@hanzo/iam/paths";
 // Hanzo IAM OIDC configuration
 const IAM_ENDPOINT = process.env.IAM_ENDPOINT || "https://hanzo.id";
 const IAM_USERINFO_URL = `${IAM_ENDPOINT}${OIDC_PATHS.userinfo}`;
-const IAM_INTROSPECT_URL = `${IAM_ENDPOINT}/v1/iam/oauth/introspect`;
-const IAM_CLIENT_ID = process.env.IAM_CLIENT_ID || "";
-const IAM_CLIENT_SECRET = process.env.IAM_CLIENT_SECRET || "";
 
 // IAM userinfo response shape (OIDC standard + IAM extensions)
 interface IamUserInfo {
@@ -54,36 +51,6 @@ async function fetchIamUser(accessToken: string): Promise<IamUserInfo | undefine
   } catch (error) {
     console.error("IAM userinfo fetch error:", error);
     return undefined;
-  }
-}
-
-/**
- * Optionally introspect a token for active/inactive status.
- * Useful when you need to check token validity without fetching full profile.
- */
-async function introspectToken(token: string): Promise<boolean> {
-  try {
-    const body = new URLSearchParams({
-      token,
-      token_type_hint: "access_token",
-      client_id: IAM_CLIENT_ID,
-      client_secret: IAM_CLIENT_SECRET,
-    });
-
-    const response = await fetch(IAM_INTROSPECT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: body.toString(),
-    });
-
-    if (!response.ok) {
-      return false;
-    }
-
-    const result = await response.json();
-    return result.active === true;
-  } catch {
-    return false;
   }
 }
 
@@ -169,4 +136,4 @@ export const isAuthenticated = async (): Promise<UserResponse | undefined> => {
   return mapIamUser(userInfo, rawToken);
 };
 
-export { introspectToken, fetchIamUser };
+export { fetchIamUser };
