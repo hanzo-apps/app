@@ -9,10 +9,8 @@ import {
   Sparkles,
   User,
   DollarSign,
-  Wallet,
 } from "lucide-react";
 import Link from "next/link";
-import { useAccount } from "wagmi";
 
 import {
   DropdownMenu,
@@ -27,13 +25,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
 import { Button } from "@hanzo/ui";
 import { useAuthContext } from "@/components/providers/AuthProvider";
 
-function truncateAddress(address: string): string {
-  return `${address.slice(0, 6)}...${address.slice(-4)}`;
-}
-
 export const UserMenu = ({ className }: { className?: string }) => {
   const { logout, user } = useAuthContext();
-  const { address, isConnected } = useAccount();
 
   const displayName = user?.fullname || user?.name || "User";
   const userInitial = displayName.charAt(0).toUpperCase();
@@ -62,12 +55,6 @@ export const UserMenu = ({ className }: { className?: string }) => {
             <p className="text-xs leading-none text-muted-foreground">
               {user?.email || user?.username}
             </p>
-            {isConnected && address && (
-              <p className="text-xs leading-none text-muted-foreground font-mono flex items-center gap-1 pt-1">
-                <Wallet className="size-3" />
-                {truncateAddress(address)}
-              </p>
-            )}
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
