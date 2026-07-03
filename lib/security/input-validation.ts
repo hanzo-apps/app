@@ -100,27 +100,6 @@ export function sanitizeSQLInput(input: string): string {
     .trim();
 }
 
-// NoSQL injection prevention for MongoDB
-export function sanitizeMongoInput(input: any): any {
-  if (typeof input === 'string') {
-    // Remove MongoDB operators
-    return input.replace(/[$]/g, '');
-  }
-
-  if (typeof input === 'object' && input !== null) {
-    const sanitized: any = {};
-    for (const key in input) {
-      // Skip keys that start with $ (MongoDB operators)
-      if (!key.startsWith('$')) {
-        sanitized[key] = sanitizeMongoInput(input[key]);
-      }
-    }
-    return sanitized;
-  }
-
-  return input;
-}
-
 // Validation middleware
 export async function validateRequest<T>(
   data: unknown,
@@ -250,7 +229,6 @@ export const validation = {
   schemas,
   sanitizeInput,
   sanitizeSQLInput,
-  sanitizeMongoInput,
   validateRequest,
   validateBody,
   validateQuery,

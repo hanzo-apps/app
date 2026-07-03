@@ -16,7 +16,6 @@ global.TextDecoder = TextDecoder;
 process.env.NODE_ENV = 'test';
 
 // Mock environment variables for tests
-process.env.MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/test';
 process.env.NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET || 'test-secret';
 process.env.NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 

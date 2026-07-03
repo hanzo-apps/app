@@ -12,7 +12,7 @@ The Hanzo Build application is an AI-powered web development platform built with
 - Comprehensive CI/CD pipeline with GitHub Actions
 
 ### Critical Issues Requiring Immediate Attention
-1. **Database Connection Management**: MongoDB connection pooling needs optimization
+1. **Data Layer**: state spans Hanzo Base (SQLite) + cloud `/v1/` — keep writes idempotent and scoped per user/org
 2. **Security Architecture**: Authentication bypass in development poses risks
 3. **Type Safety**: Extensive use of `@typescript-eslint/no-explicit-any` undermines type safety
 4. **Error Handling**: Inconsistent error boundaries and fallback strategies
@@ -35,7 +35,7 @@ The application follows a **Modular Monolith** pattern with clear domain boundar
 │    (Server Actions + Service Modules)   │
 ├─────────────────────────────────────────┤
 │           Data Access Layer             │
-│     (MongoDB + Mongoose + LanceDB)      │
+│         (Hanzo Base + LanceDB)          │
 └─────────────────────────────────────────┘
 ```
 
@@ -65,20 +65,19 @@ The application follows a **Modular Monolith** pattern with clear domain boundar
 
 ### Backend Stack
 - **Runtime**: Node.js 20 ✅
-- **Database**: MongoDB + Mongoose ⚠️
+- **Database**: Hanzo Base (SQLite) + cloud `/v1/` ✅
 - **Vector DB**: LanceDB (local) ⚠️
 - **Authentication**: HuggingFace OAuth + Custom ⚠️
 - **Payments**: Stripe ✅
 
-**Critical Issue**: MongoDB without proper connection pooling and transaction support.
+**Data plane**: Hanzo Base (SQLite) locally, PostgreSQL for production multi-instance; cloud `/v1/` APIs are the source of truth for shared state.
 
 ## 3. Scalability & Performance Analysis
 
 ### Current Bottlenecks
 
 1. **Database Layer**:
-   - Single MongoDB instance without replica sets
-   - No connection pooling optimization
+   - Base/SQLite is single-writer — use PostgreSQL for production multi-instance
    - Missing indexes on frequently queried fields
 
 2. **AI Processing**:
@@ -94,17 +93,6 @@ The application follows a **Modular Monolith** pattern with clear domain boundar
 ### Scalability Recommendations
 
 ```typescript
-// Implement connection pooling with proper configuration
-const mongooseOptions = {
-  maxPoolSize: 10,
-  minPoolSize: 2,
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000,
-  family: 4,
-  retryWrites: true,
-  w: 'majority'
-};
-
 // Add Redis for caching
 const cacheStrategy = {
   aiResponses: '1h',
@@ -362,7 +350,7 @@ Appropriate for current scale and team size.
 ### Technical Debt Priority List
 
 **P0 - Critical (This Week)**:
-1. Fix MongoDB connection pooling
+1. Add indexes on hot Base/SQLite queries
 2. Remove development auth bypass
 3. Add error boundaries
 4. Implement rate limiting
