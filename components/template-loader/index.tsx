@@ -62,7 +62,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
           </div>
           <CardTitle className="text-3xl font-bold">{templateTitle}</CardTitle>
           <CardDescription className="text-lg mt-2">
-            From {templateRepo.platform === "github" ? "GitHub" : "Hugging Face"}: {templateRepo.owner}/{templateRepo.name}
+            From {templateRepo.platform === "github" ? "GitHub" : "Hanzo Gallery"}: {templateRepo.owner}/{templateRepo.name}
           </CardDescription>
         </CardHeader>
 
