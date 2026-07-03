@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/core'
-import { 
-  Search, 
-  MessageCircle, 
+import {
+  PanelLeft,
+  MessageCircle,
   Settings, 
   Mail, 
   Users, 
@@ -212,22 +212,22 @@ export const App: React.FC = () => {
 
   // Full assistant mode with sidebar
   return (
-    <div className="flex h-screen bg-gray-100 dark:bg-gray-900 relative">
+    <div className="flex h-screen bg-black relative">
       {/* Sidebar */}
-      <div className={`${sidebarCollapsed ? 'w-16' : 'w-64'} bg-white dark:bg-gray-800 shadow-lg transition-all duration-300`}>
-        <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
+      <div className={`${sidebarCollapsed ? 'w-16' : 'w-64'} bg-[#0a0a0a] border-r border-white/10 transition-all duration-300`}>
+        <div className="flex items-center justify-between p-4 border-b border-white/10">
           {!sidebarCollapsed && (
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Hanzo</h1>
+            <h1 className="text-xl font-bold text-white">Hanzo</h1>
           )}
           <button
             onClick={() => setShowLauncher(true)}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="p-2 rounded-lg hover:bg-white/10"
             title="Open Launcher (⌘K)"
           >
-            <Command className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            <Command className="w-5 h-5 text-white/70" />
           </button>
         </div>
-        
+
         <nav className="p-2">
           {menuItems.map((item) => (
             <button
@@ -235,8 +235,8 @@ export const App: React.FC = () => {
               onClick={() => setActiveWidget(item.id)}
               className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                 activeWidget === item.id
-                  ? 'bg-blue-500 text-white'
-                  : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+                  ? 'bg-white/10 text-white'
+                  : 'hover:bg-white/5 text-white/70'
               }`}
               title={sidebarCollapsed ? `${item.label} ${item.shortcut || ''}` : undefined}
             >
@@ -251,18 +251,18 @@ export const App: React.FC = () => {
           ))}
         </nav>
 
-        <div className="absolute bottom-0 left-0 right-0 p-2 border-t dark:border-gray-700">
+        <div className="absolute bottom-0 left-0 right-0 p-2 border-t border-white/10">
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 text-white/70"
             title="Toggle Sidebar"
           >
-            <Search className="w-5 h-5" />
+            <PanelLeft className="w-5 h-5" />
             {!sidebarCollapsed && <span>Toggle Sidebar</span>}
           </button>
           <button
             onClick={() => setActiveWidget('settings')}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 mt-1"
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 text-white/70 mt-1"
             title={sidebarCollapsed ? 'Settings' : undefined}
           >
             <Settings className="w-5 h-5" />
