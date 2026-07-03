@@ -44,6 +44,7 @@ import { PageNavigator } from "./page-navigator";
 import { ShareModal } from "./share-modal";
 import { VisualEditor } from "./visual-editor";
 import { AISupervisor } from "./ai-supervisor";
+import { OrgProvider } from "@/lib/org/client";
 import { Button, TooltipProvider } from "@hanzo/ui";
 
 export const AppEditor = ({
@@ -224,6 +225,7 @@ export const AppEditor = ({
   }, [pages, currentPage]);
 
   return (
+    <OrgProvider>
     <TooltipProvider>
     <section className="h-[100dvh] bg-neutral-950 flex flex-col">
       <Header tab={currentTab} onNewTab={setCurrentTab}>
@@ -533,5 +535,6 @@ export const AppEditor = ({
       />
     </section>
     </TooltipProvider>
+    </OrgProvider>
   );
 };
