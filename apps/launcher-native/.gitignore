@@ -1,0 +1,8 @@
+node_modules
+.expo
+dist-export
+web-build
+*.log
+.DS_Store
+ios
+android
