@@ -1,2 +1,15 @@
 packages:
+  - 'apps/*'
+  - '!apps/desktop'
+  - '!apps/extension'
+  # Launcher case-study targets self-install (like apps/desktop) so the shared
+  # Next.js + packages/* lockfile stays untouched. They pull heavy, isolated
+  # toolchains (react-native-web/Vite/Tauri, and Expo/Metro for native).
+  - '!apps/launcher'
+  - '!apps/launcher-native'
   - 'packages/*'
+  # @hanzo/launcher builds on @hanzo/gui (Tamagui) — a react-native/Expo graph.
+  # With .npmrc auto-install-peers, keeping it in the shared workspace would drag
+  # that whole graph into the root lockfile. It is consumed only by the excluded
+  # target apps (via file:), so it self-installs there.
+  - '!packages/launcher'
