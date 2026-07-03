@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
+import { useUser } from '@/hooks/useUser';
 import Header from '@/components/layout/header';
 import { CryptoPayment } from '@/components/crypto-payment';
 import { WalletBoundary } from '@/components/providers/WalletBoundary';
@@ -77,8 +77,16 @@ const CREDIT_TIERS = [
 ];
 
 export default function BillingPage() {
-  const { user, authenticated, loading: authLoading } = useAuth({ redirectTo: '/login' });
+  // Auth is the ONE canonical source: the @hanzo/iam SDK (useUser), not a
+  // hand-rolled /api/auth/check probe. `/billing` is also middleware-protected
+  // (hanzo_token cookie required), so the client redirect below is only a
+  // belt-and-suspenders gate once the SDK has resolved.
+  const { user, isAuthenticated: authenticated, loading: authLoading } = useUser();
   const router = useRouter();
+
+  useEffect(() => {
+    if (!authLoading && !authenticated) router.push('/login');
+  }, [authLoading, authenticated, router]);
 
   // State
   const [loading, setLoading] = useState(true);
