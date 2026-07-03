@@ -70,7 +70,7 @@ export function AboutModal({ open, onOpenChange }: AboutModalProps) {
                 <ExternalLink className="h-3 w-3" />
               </a>
               <a
-                href="https://github.com/o-stahl/hanzo-app"
+                href="https://github.com/hanzoai/app"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
