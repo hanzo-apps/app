@@ -69,6 +69,19 @@ export default function DevPage() {
             fullUrl: repoUrl
           };
         }
+      } else if (repoUrl.includes("gallery.hanzo.ai")) {
+        // Starter-kit gallery template: https://gallery.hanzo.ai/templates/<slug>
+        // (checked BEFORE the hanzo.ai project branch — the gallery host also
+        // contains the "hanzo.ai" substring.)
+        const match = repoUrl.match(/gallery\.hanzo\.ai\/templates\/([^\/\?]+)/);
+        if (match) {
+          repoInfo = {
+            platform: "gallery",
+            owner: "hanzoai/gallery",
+            name: match[1],
+            fullUrl: repoUrl
+          };
+        }
       } else if (repoUrl.includes("hanzo.ai") || repoUrl.includes("hanzo.app")) {
         // Hanzo project URL: https://hanzo.ai/projects/owner/project-name
         const match = repoUrl.match(/hanzo\.(ai|app)\/projects\/([^\/]+)\/([^\/\?]+)/);
