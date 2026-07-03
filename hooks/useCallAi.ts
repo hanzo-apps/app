@@ -1,6 +1,18 @@
 import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { Page } from "@/types";
+import { parsePages, parseSinglePage } from "@/lib/format-pages";
+
+// Guarded JSON parse: the stream-done handler only treats the response as a
+// JSON error envelope when it actually parses, so a malformed `{…}` never
+// throws (it falls through to page parsing instead).
+const safeJsonParse = (text: string): any | null => {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+};
 
 interface UseCallAiProps {
   onNewPrompt: (prompt: string) => void;
@@ -206,12 +218,13 @@ export const useCallAi = ({
         const read = async () => {
           const { done, value } = await reader.read();
           if (done) {
+            const trimmed = contentResponse.trim();
             const isJson =
-              contentResponse.trim().startsWith("{") &&
-              contentResponse.trim().endsWith("}");
-            const jsonResponse = isJson ? JSON.parse(contentResponse) : null;
+              trimmed.startsWith("{") && trimmed.endsWith("}");
+            const jsonResponse = isJson ? safeJsonParse(trimmed) : null;
 
             if (jsonResponse && !jsonResponse.ok) {
+              setisAiWorking(false);
               if (jsonResponse.openLogin) {
                 // Handle login required
                 return { error: "login_required" };
@@ -223,9 +236,22 @@ export const useCallAi = ({
                 return { error: "pro_required" };
               } else {
                 toast.error(jsonResponse.message);
-                setisAiWorking(false);
                 return { error: "api_error", message: jsonResponse.message };
               }
+            }
+
+            const newPages = formatPages(contentResponse);
+
+            // No renderable page came back (empty/garbled model output). Fail
+            // honestly (handleError surfaces the toast) instead of silently
+            // leaving a dead editor.
+            if (newPages.length === 0) {
+              setisAiWorking(false);
+              return {
+                error: "empty_response",
+                message:
+                  "The model didn't return a usable page. Please try again.",
+              };
             }
 
             toast.success("AI responded successfully");
@@ -233,7 +259,6 @@ export const useCallAi = ({
 
             if (audio.current) audio.current.play();
 
-            const newPages = formatPages(contentResponse);
             onSuccess(newPages, prompt);
 
             return { success: true, pages: newPages };
@@ -307,12 +332,13 @@ export const useCallAi = ({
         const read = async () => {
           const { done, value } = await reader.read();
           if (done) {
+            const trimmed = contentResponse.trim();
             const isJson =
-              contentResponse.trim().startsWith("{") &&
-              contentResponse.trim().endsWith("}");
-            const jsonResponse = isJson ? JSON.parse(contentResponse) : null;
-            
+              trimmed.startsWith("{") && trimmed.endsWith("}");
+            const jsonResponse = isJson ? safeJsonParse(trimmed) : null;
+
             if (jsonResponse && !jsonResponse.ok) {
+              setisAiWorking(false);
               if (jsonResponse.openLogin) {
                 // Handle login required
                 return { error: "login_required" };
@@ -324,9 +350,18 @@ export const useCallAi = ({
                 return { error: "pro_required" };
               } else {
                 toast.error(jsonResponse.message);
-                setisAiWorking(false);
                 return { error: "api_error", message: jsonResponse.message };
               }
+            }
+
+            const newPage = formatPage(contentResponse, currentPagePath);
+            if (!newPage) {
+              setisAiWorking(false);
+              return {
+                error: "empty_response",
+                message:
+                  "The model didn't return a usable page. Please try again.",
+              };
             }
 
             toast.success("AI responded successfully");
@@ -334,8 +369,6 @@ export const useCallAi = ({
 
             if (audio.current) audio.current.play();
 
-            const newPage = formatPage(contentResponse, currentPagePath);
-            if (!newPage) { return { error: "api_error", message: "Failed to format page" } }
             onSuccess([...pages, newPage], prompt);
 
             return { success: true, pages: [...pages, newPage] };
@@ -447,137 +480,46 @@ export const useCallAi = ({
     }
   };
 
-  const formatPages = (content: string) => {
-    const pages: Page[] = [];
-    if (!content.match(/<<<<<<< START_TITLE (.*?) >>>>>>> END_TITLE/)) {
-      return pages;
-    }
-
-    const cleanedContent = content.replace(
-      /[\s\S]*?<<<<<<< START_TITLE (.*?) >>>>>>> END_TITLE/,
-      "<<<<<<< START_TITLE $1 >>>>>>> END_TITLE"
-    );
-    const htmlChunks = cleanedContent.split(
-      /<<<<<<< START_TITLE (.*?) >>>>>>> END_TITLE/
-    );
-    const processedChunks = new Set<number>();
-
-    htmlChunks.forEach((chunk, index) => {
-      if (processedChunks.has(index) || !chunk?.trim()) {
-        return;
+  // Parse the raw stream into pages (pure logic lives in lib/format-pages) and
+  // push them into the editor. Returns the parsed pages so the caller can tell
+  // a good generation from an empty/failed one. Handles the multi-file
+  // START_TITLE format, a bare single-file HTML document, a leading <think>
+  // block, and a JSON error envelope — always an array, never a throw.
+  const formatPages = (content: string): Page[] => {
+    const parsed = parsePages(content);
+    if (parsed.length > 0) {
+      setPages(parsed);
+      const last = parsed[parsed.length - 1];
+      setCurrentPage(last?.path || "index.html");
+      if (last && last.html.length > 200) {
+        onScrollToBottom();
       }
-      const htmlContent = extractHtmlContent(htmlChunks[index + 1]);
-
-      if (htmlContent) {
-        const page: Page = {
-          path: chunk.trim(),
-          html: htmlContent,
-        };
-        pages.push(page);
-
-        if (htmlContent.length > 200) {
-          onScrollToBottom();
-        }
-
-        processedChunks.add(index);
-        processedChunks.add(index + 1);
-      }
-    });
-    if (pages.length > 0) {
-      setPages(pages);
-      const lastPagePath = pages[pages.length - 1]?.path;
-      setCurrentPage(lastPagePath || "index.html");
     }
-
-    return pages;
+    return parsed;
   };
 
-  const formatPage = (content: string, currentPagePath: string) => {
-    if (!content.match(/<<<<<<< START_TITLE (.*?) >>>>>>> END_TITLE/)) {
-      return null;
-    }
+  const formatPage = (content: string, currentPagePath: string): Page | null => {
+    const page = parseSinglePage(content, currentPagePath);
+    if (!page) return null;
 
-    const cleanedContent = content.replace(
-      /[\s\S]*?<<<<<<< START_TITLE (.*?) >>>>>>> END_TITLE/,
-      "<<<<<<< START_TITLE $1 >>>>>>> END_TITLE"
-    );
-
-    const htmlChunks = cleanedContent.split(
-      /<<<<<<< START_TITLE (.*?) >>>>>>> END_TITLE/
-    )?.filter(Boolean);
-
-    const pagePath = htmlChunks[0]?.trim() || "";
-    const htmlContent = extractHtmlContent(htmlChunks[1]);
-
-    if (!pagePath || !htmlContent) {
-      return null;
-    }
-
-    const page: Page = {
-      path: pagePath,
-      html: htmlContent,
-    };
-
-    setPages(prevPages => {
-      const existingPageIndex = prevPages.findIndex(p => p.path === currentPagePath || p.path === pagePath);
-      
+    setPages((prevPages) => {
+      const existingPageIndex = prevPages.findIndex(
+        (p) => p.path === currentPagePath || p.path === page.path
+      );
       if (existingPageIndex !== -1) {
         const updatedPages = [...prevPages];
         updatedPages[existingPageIndex] = page;
         return updatedPages;
-      } else {
-        return [...prevPages, page];
       }
+      return [...prevPages, page];
     });
 
-    setCurrentPage(pagePath);
-
-    if (htmlContent.length > 200) {
+    setCurrentPage(page.path);
+    if (page.html.length > 200) {
       onScrollToBottom();
     }
 
     return page;
-  };
-
-  // Helper function to extract and clean HTML content
-  const extractHtmlContent = (chunk: string): string => {
-    if (!chunk) return "";
-
-    // Extract HTML content
-    const htmlMatch = chunk.trim().match(/<!DOCTYPE html>[\s\S]*/);
-    if (!htmlMatch) return "";
-
-    let htmlContent = htmlMatch[0];
-
-    // Ensure proper HTML structure
-    htmlContent = ensureCompleteHtml(htmlContent);
-
-    // Remove markdown code blocks if present
-    htmlContent = htmlContent.replace(/```/g, "");
-
-    return htmlContent;
-  };
-
-  // Helper function to ensure HTML has complete structure
-  const ensureCompleteHtml = (html: string): string => {
-    let completeHtml = html;
-
-    // Add missing head closing tag
-    if (completeHtml.includes("<head>") && !completeHtml.includes("</head>")) {
-      completeHtml += "\n</head>";
-    }
-
-    // Add missing body closing tag
-    if (completeHtml.includes("<body") && !completeHtml.includes("</body>")) {
-      completeHtml += "\n</body>";
-    }
-
-    // Add missing html closing tag
-    if (!completeHtml.includes("</html>")) {
-      completeHtml += "\n</html>";
-    }
-
-    return completeHtml;
   };
 
   return {
