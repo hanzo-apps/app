@@ -19,6 +19,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import MY_TOKEN_KEY from "@/lib/get-cookie-name";
+import { isCrossSite } from "@/lib/csrf";
 
 const HANZO_AI_BASE_URL =
   process.env.HANZO_AI_BASE_URL || "https://api.hanzo.ai/v1";
@@ -61,4 +62,69 @@ export async function GET(request: NextRequest) {
   const data = await gateway.json().catch(() => ({ agents: [] }));
   const agents = Array.isArray(data?.agents) ? data.agents : [];
   return NextResponse.json({ ok: true, agents }, { headers: NO_STORE });
+}
+
+// POST /v1/agents — create one agent in the caller's org, proxying the
+// canonical cloud `POST /v1/agents {name, model, instructions}`. Mutates state
+// under the ambient token cookie, so it carries the same same-site (CSRF) gate
+// as the run route. On success it returns the created agent verbatim.
+export async function POST(request: NextRequest) {
+  if (isCrossSite(request)) {
+    return NextResponse.json(
+      { ok: false, message: "Cross-origin request refused" },
+      { status: 403, headers: NO_STORE }
+    );
+  }
+
+  const token = request.cookies.get(MY_TOKEN_KEY())?.value;
+  if (!token) return unauthorized();
+
+  const body = await request.json().catch(() => ({}));
+  const name = typeof body?.name === "string" ? body.name.trim() : "";
+  const model = typeof body?.model === "string" ? body.model.trim() : "";
+  const instructions =
+    typeof body?.instructions === "string" ? body.instructions : "";
+  if (!name || !model) {
+    return NextResponse.json(
+      { ok: false, message: "Name and model are required." },
+      { status: 400, headers: NO_STORE }
+    );
+  }
+
+  let gateway: Response;
+  try {
+    gateway = await fetch(`${HANZO_AI_BASE_URL}/agents`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ name, model, instructions }),
+      cache: "no-store",
+    });
+  } catch {
+    return NextResponse.json(
+      { ok: false, message: "Unable to reach the agents service." },
+      { status: 502, headers: NO_STORE }
+    );
+  }
+
+  if (gateway.status === 401 || gateway.status === 403) return unauthorized();
+
+  const created = await gateway.json().catch(() => null);
+  if (created && gateway.ok) {
+    return NextResponse.json(
+      { ok: true, agent: created },
+      { status: 201, headers: NO_STORE }
+    );
+  }
+  return NextResponse.json(
+    {
+      ok: false,
+      message:
+        (created as { message?: string } | null)?.message ||
+        `Gateway error (${gateway.status})`,
+    },
+    { status: gateway.status >= 400 ? gateway.status : 502, headers: NO_STORE }
+  );
 }
