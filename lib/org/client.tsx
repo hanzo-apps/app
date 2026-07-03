@@ -74,9 +74,19 @@ export function OrgProvider({ children }: { children: React.ReactNode }) {
     // re-auth to mint a token carrying the new owner. An ADDITIONAL org (they
     // already had one) needs no re-auth; scope into it (persists + reloads so
     // every module refetches under the new X-Org-Id) — mirrors console2.
+    //
+    // Re-auth through the ONE active path (`@hanzo/iam` PKCE at `/login` →
+    // registered `/auth/callback`). The callback restores `redirectAfterLogin`,
+    // so stash where we were. Never the legacy `/api/auth/login` BFF — its
+    // `/api/auth/callback` redirect_uri is unregistered and bounces the user.
     if (!data.additional && typeof window !== 'undefined') {
       const here = window.location.pathname + window.location.search;
-      window.location.href = `/api/auth/login?redirect=${encodeURIComponent(here)}`;
+      try {
+        window.localStorage.setItem('redirectAfterLogin', here);
+      } catch {
+        /* storage unavailable — fall through to a bare re-login */
+      }
+      window.location.href = '/login';
       return;
     }
     if (data.org) switchOrg(data.org);
