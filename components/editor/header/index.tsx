@@ -33,7 +33,7 @@ export function Header({
     <header className="border-b bg-slate-200 border-slate-300 dark:bg-neutral-950 dark:border-neutral-800 px-3 lg:px-6 py-2 flex items-center max-lg:gap-3 justify-between lg:grid lg:grid-cols-3 z-20">
       <div className="flex items-center justify-start gap-3">
         <Link href="/" className="flex items-center gap-2 group">
-          <HanzoLogo className="w-8 h-8 text-purple-500 group-hover:text-purple-400 transition-colors" />
+          <HanzoLogo className="w-8 h-8 text-white group-hover:text-white/80 transition-colors" />
           <span className="hidden md:inline font-semibold text-white">Hanzo Dev</span>
         </Link>
         <div className="h-6 w-px bg-neutral-700 hidden md:block" />
