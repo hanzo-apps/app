@@ -113,7 +113,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
   );
   useEffect(() => {
     let alive = true;
-    fetch("/api/templates")
+    fetch("/v1/gallery")
       .then((r) => r.json())
       .then((d) => {
         if (alive && Array.isArray(d.templates) && d.templates.length) {

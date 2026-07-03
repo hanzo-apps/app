@@ -46,7 +46,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
   } | null>(null);
   useEffect(() => {
     let alive = true;
-    fetch("/api/templates")
+    fetch("/v1/gallery")
       .then((r) => r.json())
       .then((d) => {
         const m = (d.templates || []).find((t: any) => t.slug === templateRepo.name);

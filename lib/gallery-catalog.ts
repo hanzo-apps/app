@@ -5,7 +5,7 @@
 // server-side (no CORS) and falls back to a committed build-time snapshot so the
 // app works offline / if the gallery is briefly unreachable.
 //
-// Consumers: /api/templates (same-origin proxy) -> the gallery page + the /dev
+// Consumers: /v1/gallery (same-origin proxy) -> the gallery page + the /dev
 // onboarding "Popular templates". Never hardcode a fake template list again.
 
 import snapshotJson from './gallery-snapshot.json';

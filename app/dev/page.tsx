@@ -162,7 +162,7 @@ export default function DevPage() {
     // actual template as an editable starting point — not a generic stub.
     let meta: any = null;
     try {
-      const res = await fetch("/api/templates");
+      const res = await fetch("/v1/gallery");
       const data = await res.json();
       meta = (data.templates || []).find(
         (t: any) => t.slug === repoData.name || t.slug === `${repoData.name}`,
