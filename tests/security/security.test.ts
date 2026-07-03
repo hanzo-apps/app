@@ -7,7 +7,6 @@ import {
   validateQuery,
   sanitizeInput,
   sanitizeSQLInput,
-  sanitizeMongoInput,
   validateFileUpload,
   schemas,
 } from '@/lib/security/input-validation';
@@ -140,26 +139,6 @@ describe('Security Tests', () => {
           expect(sanitized).not.toContain('--');
           expect(sanitized).not.toContain(';');
         });
-      });
-    });
-
-    describe('sanitizeMongoInput', () => {
-      it('should remove MongoDB operators', () => {
-        const input = { username: 'admin', password: { $ne: null } };
-        const sanitized = sanitizeMongoInput(input);
-        expect(sanitized.password).not.toHaveProperty('$ne');
-      });
-
-      it('should handle nested objects', () => {
-        const input = {
-          user: {
-            $where: 'this.password == null',
-            name: 'test',
-          },
-        };
-        const sanitized = sanitizeMongoInput(input);
-        expect(sanitized.user).not.toHaveProperty('$where');
-        expect(sanitized.user.name).toBe('test');
       });
     });
 

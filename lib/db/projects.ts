@@ -2,7 +2,7 @@ import { baseAs } from "@/lib/base";
 
 /**
  * Project metadata, stored in Hanzo Base (the `projects` collection) — the one
- * data plane, replacing the former MongoDB `Project` collection.
+ * data plane for project metadata.
  *
  * Every function acts as the signed-in user (their hanzo.id IAM token) and
  * scopes by `user_id` (their IAM `sub`) for per-user isolation. Thin wrapper
