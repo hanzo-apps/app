@@ -233,6 +233,11 @@ export function AskAI({
       case "api_error":
         toast.error(message || "An error occurred");
         break;
+      case "empty_response":
+        toast.error(
+          message || "The model didn't return a usable page. Please try again."
+        );
+        break;
       case "network_error":
         toast.error(message || "Network error occurred");
         break;
