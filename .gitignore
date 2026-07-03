@@ -100,3 +100,7 @@ docs/public/assets/images/changelog/
 docs/public/assets/videos/
 *.jsbundle
 public/esbuild.wasm
+
+# TS incremental build cache (regenerated)
+tsconfig.tsbuildinfo
+*.tsbuildinfo

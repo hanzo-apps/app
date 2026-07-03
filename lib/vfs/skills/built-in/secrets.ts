@@ -149,7 +149,7 @@ echo '{"name":"GITHUB_CLIENT_SECRET","description":"GitHub OAuth client secret"}
 ` + "```" + `bash
 echo '{"name":"SUPABASE_URL","description":"Supabase project URL"}' > /.server/secrets/SUPABASE_URL.json
 echo '{"name":"SUPABASE_KEY","description":"Supabase anon/service key"}' > /.server/secrets/SUPABASE_KEY.json
-echo '{"name":"MONGODB_URI","description":"MongoDB connection string"}' > /.server/secrets/MONGODB_URI.json
+echo '{"name":"DATABASE_URL","description":"Database connection string"}' > /.server/secrets/DATABASE_URL.json
 ` + "```" + `
 
 ---

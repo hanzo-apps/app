@@ -55,9 +55,6 @@ We provide three Dockerfile options:
 
 ### Required for Production
 ```env
-# Database
-MONGODB_URI=mongodb://mongo:27017/hanzo
-
 # Authentication (Hugging Face OAuth)
 HF_CLIENT_ID=your_client_id
 HF_CLIENT_SECRET=your_client_secret
@@ -111,7 +108,6 @@ HANZO_COMMERCE_WEBHOOK_SECRET=...
 
 3. **Health check failures**:
    - Ensure `/api/health` endpoint is accessible
-   - Check MongoDB connection
    - Verify environment variables are set
 
 ## Monitoring
