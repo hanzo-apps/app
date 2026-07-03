@@ -1,0 +1,29 @@
+{
+  "name": "@hanzo/launcher",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Portable ⌘Space launcher UI — one @hanzo/gui codebase for desktop (Tauri), web and native (Expo).",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./gui.config": "./gui.config.ts"
+  },
+  "files": [
+    "src",
+    "gui.config.ts"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "fuse.js": "^7.0.0"
+  },
+  "peerDependencies": {
+    "@hanzo/gui": ">=7.3.0",
+    "@hanzogui/config": ">=7.3.0",
+    "@hanzogui/lucide-icons-2": ">=7.3.0",
+    "react": ">=19",
+    "react-native": "*"
+  }
+}
