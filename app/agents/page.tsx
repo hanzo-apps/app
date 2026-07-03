@@ -26,6 +26,7 @@ import {
   Network,
   Code2,
   Bot,
+  Plus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@hanzo/ui";
@@ -101,6 +102,10 @@ export default function AgentsPage() {
   const [inputs, setInputs] = useState<Record<string, string>>({});
   const [running, setRunning] = useState<Record<string, boolean>>({});
   const [results, setResults] = useState<Record<string, RunResult>>({});
+  // Create-agent form (name + model + instructions).
+  const [creating, setCreating] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState({ name: "", model: "", instructions: "" });
 
   const load = useCallback(async () => {
     setState({ kind: "loading" });
@@ -169,6 +174,40 @@ export default function AgentsPage() {
     [inputs]
   );
 
+  const createAgent = useCallback(async () => {
+    const name = form.name.trim();
+    const model = form.model.trim();
+    if (!name || !model) {
+      toast.error("Name and model are required.");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await fetch("/v1/agents", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, model, instructions: form.instructions }),
+      });
+      if (res.status === 401) {
+        setState({ kind: "unauthenticated" });
+        return;
+      }
+      const data = await res.json().catch(() => null);
+      if (res.ok && data?.ok) {
+        toast.success(`Created ${name}`);
+        setCreating(false);
+        setForm({ name: "", model: "", instructions: "" });
+        load();
+      } else {
+        toast.error(data?.message || `Failed to create agent (${res.status}).`);
+      }
+    } catch {
+      toast.error("Unable to reach the agents service.");
+    } finally {
+      setSubmitting(false);
+    }
+  }, [form, load]);
+
   const agents = state.kind === "ready" ? state.agents : [];
   const filtered = agents.filter((a) => {
     const q = search.toLowerCase();
@@ -218,6 +257,23 @@ export default function AgentsPage() {
                   Dev
                 </Button>
               </Link>
+              {state.kind === "ready" && (
+                <Button
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => {
+                    setForm({
+                      name: "",
+                      model: agents[0]?.model || "zen5",
+                      instructions: "",
+                    });
+                    setCreating(true);
+                  }}
+                >
+                  <Plus className="w-4 h-4" />
+                  New Agent
+                </Button>
+              )}
               <Button
                 variant="outline"
                 size="sm"
@@ -293,6 +349,71 @@ export default function AgentsPage() {
 
         {state.kind === "ready" && (
           <>
+            {/* Create agent — name + model + instructions */}
+            {creating && (
+              <Card className="bg-neutral-900 border-neutral-800 mb-6">
+                <CardHeader>
+                  <CardTitle className="text-base text-white">
+                    New agent
+                  </CardTitle>
+                  <CardDescription>
+                    A model plus instructions. It appears below to run on
+                    command.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-3">
+                  <Input
+                    placeholder="Name (e.g. release-notes)"
+                    className="bg-neutral-950 border-neutral-800"
+                    value={form.name}
+                    disabled={submitting}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setForm((f) => ({ ...f, name: e.target.value }))
+                    }
+                  />
+                  <Input
+                    placeholder="Model (e.g. zen5)"
+                    className="bg-neutral-950 border-neutral-800"
+                    value={form.model}
+                    disabled={submitting}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setForm((f) => ({ ...f, model: e.target.value }))
+                    }
+                  />
+                  <textarea
+                    placeholder="Instructions — the agent's system prompt (optional)"
+                    className="min-h-24 rounded-md border border-neutral-800 bg-neutral-950 p-3 text-sm text-white placeholder:text-gray-500 focus:outline-none"
+                    value={form.instructions}
+                    disabled={submitting}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                      setForm((f) => ({ ...f, instructions: e.target.value }))
+                    }
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      className="gap-2"
+                      disabled={submitting}
+                      onClick={createAgent}
+                    >
+                      {submitting ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Plus className="w-4 h-4" />
+                      )}
+                      Create
+                    </Button>
+                    <Button
+                      variant="outline"
+                      disabled={submitting}
+                      onClick={() => setCreating(false)}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Stats — responsive: 2 cols on phones, 4 on larger */}
             <div className="grid grid-cols-2 gap-3 mb-6 sm:grid-cols-4 sm:gap-4">
               {[

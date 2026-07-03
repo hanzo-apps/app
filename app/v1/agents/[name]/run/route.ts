@@ -23,6 +23,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import MY_TOKEN_KEY from "@/lib/get-cookie-name";
+import { isCrossSite } from "@/lib/csrf";
 
 const HANZO_AI_BASE_URL =
   process.env.HANZO_AI_BASE_URL || "https://api.hanzo.ai/v1";
@@ -33,22 +34,6 @@ const NO_STORE = { "Cache-Control": "no-store" } as const;
 // Matches the cloud's org-unique handle AND the URL path segment — the
 // traversal guard at the boundary (mirrors agents.nameRE server-side).
 const NAME_RE = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
-
-// A browser sends `Origin` on every cross-origin (and same-origin) POST. If it
-// is present and its host is not our own, the request originates off-site —
-// refuse it. Absence of Origin means a non-browser caller with no ambient
-// cookie to abuse, so it is allowed through.
-function isCrossSite(request: NextRequest): boolean {
-  const origin = request.headers.get("origin");
-  if (!origin) return false;
-  const host =
-    request.headers.get("x-forwarded-host") ?? request.headers.get("host");
-  try {
-    return new URL(origin).host !== host;
-  } catch {
-    return true;
-  }
-}
 
 const unauthorized = () =>
   NextResponse.json(
