@@ -1,1 +1,0 @@
-export { ChatWidget as AIWidget } from './ChatWidget'
