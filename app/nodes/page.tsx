@@ -238,7 +238,7 @@ export default function NodesPage() {
       case "degraded": return "text-orange-500";
       case "healthy": return "text-green-500";
       case "critical": return "text-red-500";
-      default: return "text-gray-400";
+      default: return "text-neutral-400";
     }
   };
 
@@ -396,20 +396,20 @@ export default function NodesPage() {
         <div className="grid grid-cols-4 gap-4 mb-6">
           <Card className="bg-neutral-900 border-neutral-800">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-gray-400">Total Resources</CardTitle>
+              <CardTitle className="text-sm text-neutral-400">Total Resources</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500">CPU</span>
+                  <span className="text-xs text-neutral-500">CPU</span>
                   <span className="text-sm font-bold text-white">{totalStats.totalCpu} cores</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500">Memory</span>
+                  <span className="text-xs text-neutral-500">Memory</span>
                   <span className="text-sm font-bold text-white">{totalStats.totalMemory} GB</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500">Storage</span>
+                  <span className="text-xs text-neutral-500">Storage</span>
                   <span className="text-sm font-bold text-white">{totalStats.totalStorage.toFixed(1)} TB</span>
                 </div>
               </div>
@@ -418,21 +418,21 @@ export default function NodesPage() {
 
           <Card className="bg-neutral-900 border-neutral-800">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-gray-400">Average Usage</CardTitle>
+              <CardTitle className="text-sm text-neutral-400">Average Usage</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 <div>
                   <div className="flex justify-between text-xs mb-1">
-                    <span className="text-gray-500">CPU</span>
-                    <span className="text-gray-400">{totalStats.avgCpuUsage}%</span>
+                    <span className="text-neutral-500">CPU</span>
+                    <span className="text-neutral-400">{totalStats.avgCpuUsage}%</span>
                   </div>
                   <Progress value={totalStats.avgCpuUsage} className="h-1" />
                 </div>
                 <div>
                   <div className="flex justify-between text-xs mb-1">
-                    <span className="text-gray-500">Memory</span>
-                    <span className="text-gray-400">{totalStats.avgMemoryUsage}%</span>
+                    <span className="text-neutral-500">Memory</span>
+                    <span className="text-neutral-400">{totalStats.avgMemoryUsage}%</span>
                   </div>
                   <Progress value={totalStats.avgMemoryUsage} className="h-1" />
                 </div>
@@ -442,14 +442,14 @@ export default function NodesPage() {
 
           <Card className="bg-neutral-900 border-neutral-800">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-gray-400">Network Activity</CardTitle>
+              <CardTitle className="text-sm text-neutral-400">Network Activity</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl font-bold text-white">
                   {(totalStats.totalRequests / 1000).toFixed(1)}k
                 </span>
-                <span className="text-xs text-gray-500">req/s</span>
+                <span className="text-xs text-neutral-500">req/s</span>
               </div>
               <div className="flex items-center gap-1 mt-1">
                 <TrendingUp className="w-3 h-3 text-green-500" />
@@ -460,12 +460,12 @@ export default function NodesPage() {
 
           <Card className="bg-neutral-900 border-neutral-800">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-gray-400">Clusters</CardTitle>
+              <CardTitle className="text-sm text-neutral-400">Clusters</CardTitle>
             </CardHeader>
             <CardContent>
               {clusters.map(cluster => (
                 <div key={cluster.id} className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-gray-400">{cluster.name}</span>
+                  <span className="text-xs text-neutral-400">{cluster.name}</span>
                   <div className={cn("flex items-center gap-1", getStatusColor(cluster.status))}>
                     {getStatusIcon(cluster.status)}
                     <span className="text-xs capitalize">{cluster.status}</span>
@@ -547,15 +547,15 @@ export default function NodesPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <div className="flex justify-between text-xs mb-1">
-                        <span className="text-gray-500">CPU</span>
-                        <span className="text-gray-400">{node.usage.cpu}%</span>
+                        <span className="text-neutral-500">CPU</span>
+                        <span className="text-neutral-400">{node.usage.cpu}%</span>
                       </div>
                       <Progress value={node.usage.cpu} className="h-1" />
                     </div>
                     <div>
                       <div className="flex justify-between text-xs mb-1">
-                        <span className="text-gray-500">Memory</span>
-                        <span className="text-gray-400">{node.usage.memory}%</span>
+                        <span className="text-neutral-500">Memory</span>
+                        <span className="text-neutral-400">{node.usage.memory}%</span>
                       </div>
                       <Progress value={node.usage.memory} className="h-1" />
                     </div>
@@ -564,7 +564,7 @@ export default function NodesPage() {
                     <Badge variant="outline" className="text-xs">
                       {node.type}
                     </Badge>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-neutral-500">
                       {node.services.length} services
                     </span>
                   </div>
@@ -580,15 +580,15 @@ export default function NodesPage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-neutral-800">
-                    <th className="text-left p-4 text-sm font-medium text-gray-400">Node</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-400">Status</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-400">Type</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-400">Region</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-400">CPU</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-400">Memory</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-400">Network</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-400">Services</th>
-                    <th className="text-left p-4 text-sm font-medium text-gray-400">Actions</th>
+                    <th className="text-left p-4 text-sm font-medium text-neutral-400">Node</th>
+                    <th className="text-left p-4 text-sm font-medium text-neutral-400">Status</th>
+                    <th className="text-left p-4 text-sm font-medium text-neutral-400">Type</th>
+                    <th className="text-left p-4 text-sm font-medium text-neutral-400">Region</th>
+                    <th className="text-left p-4 text-sm font-medium text-neutral-400">CPU</th>
+                    <th className="text-left p-4 text-sm font-medium text-neutral-400">Memory</th>
+                    <th className="text-left p-4 text-sm font-medium text-neutral-400">Network</th>
+                    <th className="text-left p-4 text-sm font-medium text-neutral-400">Services</th>
+                    <th className="text-left p-4 text-sm font-medium text-neutral-400">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -599,7 +599,7 @@ export default function NodesPage() {
                           {getNodeIcon(node.type)}
                           <div>
                             <p className="text-sm font-medium text-white">{node.name}</p>
-                            <p className="text-xs text-gray-500">{node.ip}</p>
+                            <p className="text-xs text-neutral-500">{node.ip}</p>
                           </div>
                         </div>
                       </td>
@@ -614,27 +614,27 @@ export default function NodesPage() {
                           {node.type}
                         </Badge>
                       </td>
-                      <td className="p-4 text-sm text-gray-400">{node.region}</td>
+                      <td className="p-4 text-sm text-neutral-400">{node.region}</td>
                       <td className="p-4">
                         <div className="flex items-center gap-2">
                           <Progress value={node.usage.cpu} className="h-1 w-16" />
-                          <span className="text-xs text-gray-400">{node.usage.cpu}%</span>
+                          <span className="text-xs text-neutral-400">{node.usage.cpu}%</span>
                         </div>
                       </td>
                       <td className="p-4">
                         <div className="flex items-center gap-2">
                           <Progress value={node.usage.memory} className="h-1 w-16" />
-                          <span className="text-xs text-gray-400">{node.usage.memory}%</span>
+                          <span className="text-xs text-neutral-400">{node.usage.memory}%</span>
                         </div>
                       </td>
                       <td className="p-4">
                         <div className="flex items-center gap-2">
                           <Progress value={node.usage.network} className="h-1 w-16" />
-                          <span className="text-xs text-gray-400">{node.usage.network}%</span>
+                          <span className="text-xs text-neutral-400">{node.usage.network}%</span>
                         </div>
                       </td>
                       <td className="p-4">
-                        <span className="text-xs text-gray-400">{node.services.length} active</span>
+                        <span className="text-xs text-neutral-400">{node.services.length} active</span>
                       </td>
                       <td className="p-4">
                         <DropdownMenu>
@@ -713,23 +713,23 @@ export default function NodesPage() {
                 <TabsContent value="overview" className="space-y-4 mt-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-3">
-                      <h3 className="text-sm font-medium text-gray-400">Specifications</h3>
+                      <h3 className="text-sm font-medium text-neutral-400">Specifications</h3>
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className="text-sm text-gray-500">CPU Cores</span>
+                          <span className="text-sm text-neutral-500">CPU Cores</span>
                           <span className="text-sm text-white">{selectedNode.specs.cpu}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-sm text-gray-500">Memory</span>
+                          <span className="text-sm text-neutral-500">Memory</span>
                           <span className="text-sm text-white">{selectedNode.specs.memory} GB</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-sm text-gray-500">Storage</span>
+                          <span className="text-sm text-neutral-500">Storage</span>
                           <span className="text-sm text-white">{selectedNode.specs.storage} GB</span>
                         </div>
                         {selectedNode.specs.gpu && (
                           <div className="flex justify-between">
-                            <span className="text-sm text-gray-500">GPU Units</span>
+                            <span className="text-sm text-neutral-500">GPU Units</span>
                             <span className="text-sm text-white">{selectedNode.specs.gpu}</span>
                           </div>
                         )}
@@ -737,25 +737,25 @@ export default function NodesPage() {
                     </div>
 
                     <div className="space-y-3">
-                      <h3 className="text-sm font-medium text-gray-400">Current Usage</h3>
+                      <h3 className="text-sm font-medium text-neutral-400">Current Usage</h3>
                       <div className="space-y-2">
                         <div>
                           <div className="flex justify-between text-sm mb-1">
-                            <span className="text-gray-500">CPU</span>
+                            <span className="text-neutral-500">CPU</span>
                             <span className="text-white">{selectedNode.usage.cpu}%</span>
                           </div>
                           <Progress value={selectedNode.usage.cpu} className="h-2" />
                         </div>
                         <div>
                           <div className="flex justify-between text-sm mb-1">
-                            <span className="text-gray-500">Memory</span>
+                            <span className="text-neutral-500">Memory</span>
                             <span className="text-white">{selectedNode.usage.memory}%</span>
                           </div>
                           <Progress value={selectedNode.usage.memory} className="h-2" />
                         </div>
                         <div>
                           <div className="flex justify-between text-sm mb-1">
-                            <span className="text-gray-500">Storage</span>
+                            <span className="text-neutral-500">Storage</span>
                             <span className="text-white">{selectedNode.usage.storage}%</span>
                           </div>
                           <Progress value={selectedNode.usage.storage} className="h-2" />
@@ -763,7 +763,7 @@ export default function NodesPage() {
                         {selectedNode.usage.gpu !== undefined && (
                           <div>
                             <div className="flex justify-between text-sm mb-1">
-                              <span className="text-gray-500">GPU</span>
+                              <span className="text-neutral-500">GPU</span>
                               <span className="text-white">{selectedNode.usage.gpu}%</span>
                             </div>
                             <Progress value={selectedNode.usage.gpu} className="h-2" />
@@ -774,7 +774,7 @@ export default function NodesPage() {
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-medium text-gray-400 mb-2">Connections</h3>
+                    <h3 className="text-sm font-medium text-neutral-400 mb-2">Connections</h3>
                     <div className="flex flex-wrap gap-2">
                       {selectedNode.connections.map(conn => {
                         const connNode = nodes.find(n => n.id === conn);
@@ -839,7 +839,7 @@ export default function NodesPage() {
                     {selectedNode.services.map((service, i) => (
                       <div key={i} className="flex items-center justify-between p-3 bg-neutral-800 rounded">
                         <div className="flex items-center gap-2">
-                          <Cloud className="w-4 h-4 text-gray-400" />
+                          <Cloud className="w-4 h-4 text-neutral-400" />
                           <span className="text-sm text-white">{service}</span>
                         </div>
                         <Badge variant="outline" className="text-xs">
@@ -867,7 +867,7 @@ export default function NodesPage() {
                     </div>
                     <div className="flex items-center justify-between p-3 bg-neutral-800 rounded">
                       <div className="flex items-center gap-2">
-                        <Shield className="w-4 h-4 text-gray-400" />
+                        <Shield className="w-4 h-4 text-neutral-400" />
                         <span className="text-sm text-white">Firewall</span>
                       </div>
                       <Badge variant={selectedNode.security.firewall ? "default" : "destructive"}>
@@ -876,10 +876,10 @@ export default function NodesPage() {
                     </div>
                     <div className="flex items-center justify-between p-3 bg-neutral-800 rounded">
                       <div className="flex items-center gap-2">
-                        <RefreshCw className="w-4 h-4 text-gray-400" />
+                        <RefreshCw className="w-4 h-4 text-neutral-400" />
                         <span className="text-sm text-white">Last Security Update</span>
                       </div>
-                      <span className="text-sm text-gray-400">
+                      <span className="text-sm text-neutral-400">
                         {selectedNode.security.lastUpdate.toLocaleString()}
                       </span>
                     </div>

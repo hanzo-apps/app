@@ -61,9 +61,9 @@ export function ErrorFallback({
 
   // Page or App level error - full page error
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+        <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl overflow-hidden">
           <div className="bg-gradient-to-r from-red-500 to-red-600 p-6">
             <div className="flex items-center space-x-3">
               <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
@@ -85,21 +85,21 @@ export function ErrorFallback({
           <div className="p-6">
             {isDevelopment && (
               <div className="mb-6">
-                <div className="bg-gray-100 dark:bg-gray-900 rounded-lg p-4 mb-4">
-                  <h2 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">
+                <div className="bg-neutral-100 dark:bg-neutral-900 rounded-lg p-4 mb-4">
+                  <h2 className="text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2">
                     Error Details (Development Only)
                   </h2>
-                  <p className="text-sm text-gray-800 dark:text-gray-200 font-mono break-all">
+                  <p className="text-sm text-neutral-800 dark:text-neutral-200 font-mono break-all">
                     {error.message}
                   </p>
                 </div>
 
                 {error.stack && (
                   <details className="text-xs">
-                    <summary className="cursor-pointer text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+                    <summary className="cursor-pointer text-neutral-600 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200">
                       View Stack Trace
                     </summary>
-                    <pre className="mt-2 bg-gray-100 dark:bg-gray-900 rounded p-3 overflow-x-auto text-gray-700 dark:text-gray-300">
+                    <pre className="mt-2 bg-neutral-100 dark:bg-neutral-900 rounded p-3 overflow-x-auto text-neutral-700 dark:text-neutral-300">
                       {error.stack}
                     </pre>
                   </details>
@@ -109,7 +109,7 @@ export function ErrorFallback({
 
             {!isDevelopment && (
               <div className="mb-6">
-                <p className="text-gray-600 dark:text-gray-300">
+                <p className="text-neutral-600 dark:text-neutral-300">
                   We apologize for the inconvenience. The error has been logged and our team will
                   investigate the issue.
                 </p>
@@ -144,7 +144,7 @@ export function ErrorFallback({
 
               <button
                 onClick={handleGoHome}
-                className="w-full flex items-center justify-center space-x-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 py-3 px-4 rounded-lg transition-colors"
+                className="w-full flex items-center justify-center space-x-2 bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 text-neutral-800 dark:text-neutral-200 py-3 px-4 rounded-lg transition-colors"
               >
                 <Home className="w-4 h-4" />
                 <span>Go to Homepage</span>
@@ -153,7 +153,7 @@ export function ErrorFallback({
               {!isDevelopment && (
                 <button
                   onClick={handleReportBug}
-                  className="w-full flex items-center justify-center space-x-2 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-lg transition-colors"
+                  className="w-full flex items-center justify-center space-x-2 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 py-3 px-4 rounded-lg transition-colors"
                 >
                   <Bug className="w-4 h-4" />
                   <span>Report This Issue</span>
@@ -164,7 +164,7 @@ export function ErrorFallback({
         </div>
 
         {isDevelopment && (
-          <div className="mt-4 text-center text-xs text-gray-500 dark:text-gray-400">
+          <div className="mt-4 text-center text-xs text-neutral-500 dark:text-neutral-400">
             This detailed error view is only shown in development mode.
           </div>
         )}

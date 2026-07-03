@@ -107,7 +107,7 @@ export function DeploymentCard({
         {/* Status Badge Overlay */}
         <div className="absolute top-2 right-2 flex gap-2">
           {!deployment.enabled && (
-            <Badge variant="outline" className="bg-gray-100 dark:bg-gray-950 border-gray-300 dark:border-gray-800">
+            <Badge variant="outline" className="bg-neutral-100 dark:bg-neutral-950 border-neutral-300 dark:border-neutral-800">
               <EyeOff className="h-3 w-3 mr-1" />
               Disabled
             </Badge>

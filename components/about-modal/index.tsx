@@ -41,7 +41,7 @@ export function AboutModal({ open, onOpenChange }: AboutModalProps) {
 
         <div className="space-y-6 overflow-y-auto max-h-[60vh] pr-4">
           <section>
-            <div className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed space-y-3">
+            <div className="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed space-y-3">
               <p>
                 OSW Studio is a BYOK (Bring Your Own Key) agentic browser-based website builder where you describe what you want and an agent writes the code. Originally forked from @enzostvs and @victor's DeepSite v2, it has evolved into a full-featured development environment.
               </p>

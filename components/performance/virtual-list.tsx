@@ -307,7 +307,7 @@ export function InfiniteVirtualList<T>({
       if (item.__loader) {
         return (
           <div className="flex items-center justify-center p-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-100" />
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-900 dark:border-neutral-100" />
           </div>
         );
       }
@@ -365,7 +365,7 @@ export function VirtualTable<T>({
         <div
           style={style}
           className={cn(
-            'flex items-center border-b border-gray-200 dark:border-gray-700',
+            'flex items-center border-b border-neutral-200 dark:border-neutral-700',
             rowClass
           )}
         >
@@ -385,11 +385,11 @@ export function VirtualTable<T>({
   );
 
   return (
-    <div className={cn('border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden', className)}>
+    <div className={cn('border border-neutral-200 dark:border-neutral-700 rounded-lg overflow-hidden', className)}>
       {/* Header */}
       <div
         className={cn(
-          'flex items-center bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 font-semibold',
+          'flex items-center bg-neutral-50 dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700 font-semibold',
           headerClassName
         )}
         style={{ height: rowHeight, width: totalWidth }}
@@ -411,7 +411,7 @@ export function VirtualTable<T>({
         height={height}
         itemHeight={rowHeight}
         renderItem={renderRow}
-        className="scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600"
+        className="scrollbar-thin scrollbar-thumb-neutral-400 dark:scrollbar-thumb-neutral-600"
       />
     </div>
   );
