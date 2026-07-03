@@ -36,17 +36,12 @@ function openTopUp(): void {
   if (typeof window !== 'undefined') window.open(`${BILLING_URL}/topup`, '_blank', 'noopener');
 }
 
-async function signOut(): Promise<void> {
-  try {
-    await fetch('/api/auth/logout', { method: 'POST' });
-  } catch {
-    /* best-effort */
-  }
-  if (typeof window !== 'undefined') window.location.href = '/';
-}
-
 export function SidebarWallet({ collapsed }: { collapsed: boolean }) {
-  const { user } = useUser();
+  // ONE logout: the @hanzo/iam SDK (useUser().logout) clears the SDK token
+  // store, which lets IamCookieBridge clear the hanzo_token cookie and lands
+  // the user on `/`. A server-only /api/auth/logout cleared the cookie but not
+  // the SDK store, so the bridge resurrected it on the next mount.
+  const { user, logout } = useUser();
   const router = useRouter();
   const { phase, balance } = useCloudBalance();
   const cents = spendableCents(balance);
@@ -77,7 +72,7 @@ export function SidebarWallet({ collapsed }: { collapsed: boolean }) {
         <button onClick={openTopUp} className="p-1.5 text-muted-foreground hover:text-foreground" title={`Wallet ${balanceText} — top up`}>
           <Wallet className="h-4 w-4" />
         </button>
-        <button onClick={() => void signOut()} className="p-1.5 text-muted-foreground hover:text-foreground" title="Sign out">
+        <button onClick={() => void logout()} className="p-1.5 text-muted-foreground hover:text-foreground" title="Sign out">
           <LogOut className="h-4 w-4" />
         </button>
       </div>
@@ -118,7 +113,7 @@ export function SidebarWallet({ collapsed }: { collapsed: boolean }) {
         <button onClick={openTopUp} className="w-full rounded-md bg-foreground px-2 py-1.5 text-sm font-medium text-background hover:opacity-90">
           Top up
         </button>
-        <button onClick={() => void signOut()} className="flex w-full items-center justify-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-accent">
+        <button onClick={() => void logout()} className="flex w-full items-center justify-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-accent">
           <LogOut className="h-3.5 w-3.5" />
           Sign out
         </button>

@@ -16,7 +16,16 @@ export const DEFAULT_DESTINATION = "/dashboard";
 export function loginRedirectDestination(
   stored: string | null | undefined
 ): string {
-  if (!stored || !stored.startsWith("/") || NON_DESTINATIONS.has(stored)) {
+  // Same-origin absolute paths only. Reject protocol-relative (`//host`,
+  // `/\host`) targets — they start with `/` but navigate off-origin (open
+  // redirect). Everything must be a single-slash in-app path.
+  if (
+    !stored ||
+    !stored.startsWith("/") ||
+    stored.startsWith("//") ||
+    stored.startsWith("/\\") ||
+    NON_DESTINATIONS.has(stored)
+  ) {
     return DEFAULT_DESTINATION;
   }
   return stored;
