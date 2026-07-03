@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Metadata, Viewport } from "next";
-import { Inter, PT_Sans } from "next/font/google";
+import localFont from "next/font/local";
+import { Geist_Mono } from "next/font/google";
 import { cookies } from "next/headers";
 
 import TanstackProvider from "@/components/providers/tanstack-query-provider";
@@ -14,15 +15,20 @@ import { Providers } from "./providers";
 import { ErrorBoundary } from "@/components/error-boundary/error-boundary";
 import { errorLogger } from "@/lib/error-handling/error-logger";
 
-const inter = Inter({
-  variable: "--font-inter-sans",
-  subsets: ["latin"],
+// Canonical Hanzo typography: Basel Grotesk (UI/body/display/heading, self-hosted)
+// + Geist Mono (code/data).
+const basel = localFont({
+  src: [
+    { path: "./fonts/Basel-Grotesk-Book.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/Basel-Grotesk-Medium.woff2", weight: "500", style: "normal" },
+  ],
+  variable: "--font-basel-sans",
+  display: "swap",
 });
 
-const ptSans = PT_Sans({
-  variable: "--font-ptSans-mono",
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
   subsets: ["latin"],
-  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
@@ -102,7 +108,7 @@ export default async function RootLayout({
         src="https://plausible.io/js/script.js"
       ></Script>
       <body
-        className={`${inter.variable} ${ptSans.variable} antialiased bg-black dark min-h-screen`}
+        className={`${basel.variable} ${geistMono.variable} antialiased bg-black dark min-h-screen`}
       >
         <IframeDetector />
         <ErrorBoundary level="app">
