@@ -17,10 +17,22 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
 import { cloudBase, effectiveOrg, resolveOrgIdentity } from '@/lib/org/server';
+import { requireSameOrigin } from '@/lib/org/csrf';
 import { slugifyProject } from '@/lib/org/policy';
 import { buildTarGz, type TarEntry } from '@/lib/org/targz';
 
 export const runtime = 'nodejs';
+
+// Artifact budget — bound the in-memory tar.gz build (Buffer.concat + gzipSync)
+// so a malicious/huge payload can't OOM the server. A static site far exceeds
+// these only by abuse; over-budget is rejected 413.
+const MAX_PAGES = 500;
+const MAX_PAGE_BYTES = 2 * 1024 * 1024; // 2 MiB per file
+const MAX_TOTAL_BYTES = 12 * 1024 * 1024; // 12 MiB total uncompressed
+// Rough pre-read guard on the raw JSON body (HTML is JSON-escaped, so the wire
+// body runs larger than the artifact). The ingress/platform enforces its own
+// hard body limit too; this is defense in depth.
+const MAX_REQUEST_BYTES = 24 * 1024 * 1024;
 
 interface PageIn {
   path: string;
@@ -36,6 +48,18 @@ function safeRel(p: string): string | null {
 }
 
 export async function POST(req: NextRequest) {
+  // CSRF: publishing creates a project + deploys a site + bills the org — refuse a
+  // cross-origin POST before any identity/backend work.
+  const csrf = requireSameOrigin(req);
+  if (csrf) return csrf;
+
+  // Pre-read guard: reject an over-large body early (best-effort on content-length;
+  // the parsed caps below are the authoritative bound).
+  const clen = Number(req.headers.get('content-length') || 0);
+  if (clen && clen > MAX_REQUEST_BYTES) {
+    return NextResponse.json({ error: 'Payload too large.' }, { status: 413 });
+  }
+
   const id = await resolveOrgIdentity(req, { validate: true });
   if (!id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   if (!id.homeOrg) {
@@ -61,15 +85,35 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Nothing to publish (no pages).' }, { status: 400 });
   }
 
+  // Size caps → 413. Bound page count, per-page bytes, and total bytes BEFORE
+  // building the artifact so the tar/gzip can never blow memory.
+  if (pages.length > MAX_PAGES) {
+    return NextResponse.json({ error: `Too many pages (max ${MAX_PAGES}).` }, { status: 413 });
+  }
+  let totalBytes = 0;
+  for (const pg of pages) {
+    const bytes = Buffer.byteLength(typeof pg?.html === 'string' ? pg.html : '', 'utf8');
+    if (bytes > MAX_PAGE_BYTES) {
+      return NextResponse.json({ error: 'A page exceeds the 2 MiB limit.' }, { status: 413 });
+    }
+    totalBytes += bytes;
+    if (totalBytes > MAX_TOTAL_BYTES) {
+      return NextResponse.json({ error: 'Site exceeds the 12 MiB limit.' }, { status: 413 });
+    }
+  }
+
   const slug = slugifyProject(body.slug || name);
   if (!slug) return NextResponse.json({ error: 'Could not derive a valid slug.' }, { status: 400 });
 
+  // Org gating: `id` is VALIDATED (validate:true above), so effectiveOrg honors a
+  // cross-org X-Org-Id ONLY for a genuine global admin; a normal user is pinned to
+  // their home org (a forged/unauthorized header is ignored).
   const org = effectiveOrg(req, id);
   const bearer: Record<string, string> = {
     Authorization: `Bearer ${id.token}`,
     Accept: 'application/json',
   };
-  if (id.isGlobalAdmin && org && org !== id.homeOrg) bearer['X-Org-Id'] = org;
+  if (org && org !== id.homeOrg) bearer['X-Org-Id'] = org; // only reachable for a validated admin
   const base = cloudBase();
 
   // 1) Ensure the org-scoped record (idempotent: reuse an existing slug, else
