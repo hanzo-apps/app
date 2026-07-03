@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Images, Upload } from "lucide-react";
+import { Images, Upload, Sparkles } from "lucide-react";
 import Image from "next/image";
 
 import {
@@ -37,35 +37,71 @@ export const Uploader = ({
   const { user } = useUser();
 
   const [open, setOpen] = useState(false);
+  const [prompt, setPrompt] = useState("");
+  const [generating, setGenerating] = useState(false);
+  const [genError, setGenError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Persist image File(s) to the project's own storage and add the returned
+  // durable URLs to the builder's image list. Shared by upload + AI generation.
+  const persistFiles = async (images: File[]) => {
+    if (!project?.space_id || images.length === 0) return;
+    const data = new FormData();
+    images.forEach((image) => data.append("images", image));
+    const response = await fetch(
+      `/api/me/projects/${project.space_id}/images`,
+      { method: "POST", body: data }
+    );
+    if (response.ok) {
+      const d = await response.json();
+      onFiles((prev) => [...prev, ...d.uploadedFiles]);
+    }
+  };
 
   const uploadFiles = async (files: FileList | null) => {
     if (!files) return;
     if (!project) return;
-
     onLoading(true);
-
-    const images = Array.from(files).filter((file) => {
-      return file.type.startsWith("image/");
-    });
-
-    const data = new FormData();
-    images.forEach((image) => {
-      data.append("images", image);
-    });
-
-    const response = await fetch(
-      `/api/me/projects/${project.space_id}/images`,
-      {
-        method: "POST",
-        body: data,
-      }
+    const images = Array.from(files).filter((file) =>
+      file.type.startsWith("image/")
     );
-    if (response.ok) {
-      const data = await response.json();
-      onFiles((prev) => [...prev, ...data.uploadedFiles]);
-    }
+    await persistFiles(images);
     onLoading(false);
+  };
+
+  // Generate an image from a prompt via the per-user metered /v1/images BFF, then
+  // persist it to the project so the published site embeds a durable Hanzo asset.
+  const generateImage = async () => {
+    if (!prompt.trim() || !project?.space_id) return;
+    setGenerating(true);
+    setGenError(null);
+    onLoading(true);
+    try {
+      const res = await fetch("/v1/images", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: prompt.trim() }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json?.b64_json) {
+        throw new Error(json?.message || `Generation failed (${res.status}).`);
+      }
+      const bin = atob(json.b64_json);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      const mime: string = json.mime_type || "image/png";
+      const ext = mime.includes("jpeg") ? "jpg" : mime.split("/")[1] || "png";
+      const file = new File([bytes], `generated-${Date.now()}.${ext}`, {
+        type: mime,
+      });
+      await persistFiles([file]);
+      setPrompt("");
+    } catch (e) {
+      setGenError(e instanceof Error ? e.message : "Generation failed.");
+    } finally {
+      setGenerating(false);
+      onLoading(false);
+    }
   };
 
   return user?.id ? (
@@ -132,6 +168,48 @@ export const Uploader = ({
                       </div>
                     ))}
                   </div>
+                </div>
+                <div>
+                  <p className="text-xs text-left text-neutral-700 mb-2">
+                    Generate an image with AI
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={prompt}
+                      onChange={(e) => setPrompt(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !generating) {
+                          e.preventDefault();
+                          void generateImage();
+                        }
+                      }}
+                      placeholder="Describe an image…"
+                      disabled={generating}
+                      className="flex-1 min-w-0 rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-400"
+                    />
+                    <Button
+                      variant="black"
+                      onClick={() => void generateImage()}
+                      disabled={generating || !prompt.trim()}
+                      className="shrink-0"
+                    >
+                      {generating ? (
+                        <Loading
+                          overlay={false}
+                          className="size-4 animate-spin"
+                        />
+                      ) : (
+                        <Sparkles className="size-4" />
+                      )}
+                      Generate
+                    </Button>
+                  </div>
+                  {genError && (
+                    <p className="text-xs text-left text-red-500 mt-1.5">
+                      {genError}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <p className="text-xs text-left text-neutral-700 mb-2">
