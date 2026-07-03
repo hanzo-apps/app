@@ -478,7 +478,7 @@ export function VisualEditor({
                 <X className="w-4 h-4" />
               </Button>
             </div>
-            <div className="space-y-1 text-xs text-gray-400">
+            <div className="space-y-1 text-xs text-neutral-400">
               <div className="flex items-center gap-2">
                 <Box className="w-3 h-3" />
                 <span className="font-mono">{selectedElement.tagName}</span>
@@ -487,7 +487,7 @@ export function VisualEditor({
                 )}
               </div>
               {selectedElement.className && (
-                <div className="text-xs text-gray-500 truncate">
+                <div className="text-xs text-neutral-500 truncate">
                   .{selectedElement.className.split(' ').join('.')}
                 </div>
               )}
@@ -510,7 +510,7 @@ export function VisualEditor({
             <div className="overflow-y-auto max-h-[400px]">
               <TabsContent value="content" className="p-4 space-y-4">
                 <div>
-                  <Label className="text-xs text-gray-400">Text Content</Label>
+                  <Label className="text-xs text-neutral-400">Text Content</Label>
                   <div className="flex gap-2 mt-1">
                     <Input
                       value={elementText}
@@ -524,7 +524,7 @@ export function VisualEditor({
                 </div>
 
                 <div>
-                  <Label className="text-xs text-gray-400">CSS Selector</Label>
+                  <Label className="text-xs text-neutral-400">CSS Selector</Label>
                   <code className="block mt-1 p-2 bg-neutral-800 rounded text-xs text-purple-400 font-mono">
                     {selectedElement.selector}
                   </code>
@@ -533,7 +533,7 @@ export function VisualEditor({
 
               <TabsContent value="styles" className="p-4 space-y-4">
                 <div>
-                  <Label className="text-xs text-gray-400">Text Color</Label>
+                  <Label className="text-xs text-neutral-400">Text Color</Label>
                   <div className="flex gap-2 mt-1">
                     <div
                       className="w-10 h-10 rounded border border-neutral-700 cursor-pointer"
@@ -552,7 +552,7 @@ export function VisualEditor({
                 </div>
 
                 <div>
-                  <Label className="text-xs text-gray-400">Background</Label>
+                  <Label className="text-xs text-neutral-400">Background</Label>
                   <div className="flex gap-2 mt-1">
                     <div
                       className="w-10 h-10 rounded border border-neutral-700 cursor-pointer"
@@ -571,7 +571,7 @@ export function VisualEditor({
                 </div>
 
                 <div>
-                  <Label className="text-xs text-gray-400">Font Size</Label>
+                  <Label className="text-xs text-neutral-400">Font Size</Label>
                   <Input
                     value={elementStyles.fontSize}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("fontSize", e.target.value)}
@@ -580,7 +580,7 @@ export function VisualEditor({
                 </div>
 
                 <div>
-                  <Label className="text-xs text-gray-400">Font Weight</Label>
+                  <Label className="text-xs text-neutral-400">Font Weight</Label>
                   <select
                     value={elementStyles.fontWeight}
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => applyStyleChange("fontWeight", e.target.value)}
@@ -604,7 +604,7 @@ export function VisualEditor({
               <TabsContent value="layout" className="p-4 space-y-4">
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label className="text-xs text-gray-400">Width</Label>
+                    <Label className="text-xs text-neutral-400">Width</Label>
                     <Input
                       value={elementStyles.width}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("width", e.target.value)}
@@ -613,7 +613,7 @@ export function VisualEditor({
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-gray-400">Height</Label>
+                    <Label className="text-xs text-neutral-400">Height</Label>
                     <Input
                       value={elementStyles.height}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("height", e.target.value)}
@@ -624,7 +624,7 @@ export function VisualEditor({
                 </div>
 
                 <div>
-                  <Label className="text-xs text-gray-400">Padding</Label>
+                  <Label className="text-xs text-neutral-400">Padding</Label>
                   <Input
                     value={elementStyles.padding}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("padding", e.target.value)}
@@ -634,7 +634,7 @@ export function VisualEditor({
                 </div>
 
                 <div>
-                  <Label className="text-xs text-gray-400">Margin</Label>
+                  <Label className="text-xs text-neutral-400">Margin</Label>
                   <Input
                     value={elementStyles.margin}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("margin", e.target.value)}
@@ -644,7 +644,7 @@ export function VisualEditor({
                 </div>
 
                 <div>
-                  <Label className="text-xs text-gray-400">Display</Label>
+                  <Label className="text-xs text-neutral-400">Display</Label>
                   <select
                     value={elementStyles.display}
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => applyStyleChange("display", e.target.value)}
@@ -660,7 +660,7 @@ export function VisualEditor({
                 </div>
 
                 <div>
-                  <Label className="text-xs text-gray-400">Position</Label>
+                  <Label className="text-xs text-neutral-400">Position</Label>
                   <select
                     value={elementStyles.position}
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => applyStyleChange("position", e.target.value)}

@@ -40,7 +40,7 @@ export default function SettingsPage() {
       <div className="min-h-screen flex items-center justify-center bg-black">
         <div className="text-center">
           <HanzoLogo className="w-12 h-12 mx-auto mb-4 animate-pulse" />
-          <p className="text-gray-500">Loading settings...</p>
+          <p className="text-neutral-500">Loading settings...</p>
         </div>
       </div>
     );
@@ -52,7 +52,7 @@ export default function SettingsPage() {
       <div className="min-h-screen flex items-center justify-center bg-black">
         <div className="text-center">
           <HanzoLogo className="w-12 h-12 mx-auto mb-4 animate-pulse" />
-          <p className="text-gray-500">Redirecting to login...</p>
+          <p className="text-neutral-500">Redirecting to login...</p>
         </div>
       </div>
     );
@@ -74,7 +74,7 @@ export default function SettingsPage() {
                   className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-sm transition-colors ${
                     activeTab === tab.id
                       ? "bg-purple-500/10 text-purple-400 border border-purple-500/20"
-                      : "text-gray-400 hover:text-white hover:bg-neutral-800"
+                      : "text-neutral-400 hover:text-white hover:bg-neutral-800"
                   }`}
                 >
                   {tab.icon}
@@ -93,7 +93,7 @@ export default function SettingsPage() {
 
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                      <label className="block text-sm font-medium text-neutral-300 mb-2">
                         Theme
                       </label>
                       <select className="w-full bg-neutral-800 text-white border border-neutral-700 rounded-lg px-4 py-2">
@@ -104,7 +104,7 @@ export default function SettingsPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                      <label className="block text-sm font-medium text-neutral-300 mb-2">
                         Language
                       </label>
                       <select className="w-full bg-neutral-800 text-white border border-neutral-700 rounded-lg px-4 py-2">
@@ -115,7 +115,7 @@ export default function SettingsPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                      <label className="block text-sm font-medium text-neutral-300 mb-2">
                         Default AI Model
                       </label>
                       <select className="w-full bg-neutral-800 text-white border border-neutral-700 rounded-lg px-4 py-2">
@@ -135,26 +135,26 @@ export default function SettingsPage() {
                   <div className="space-y-4">
                     <div className="bg-neutral-800/50 rounded-lg p-4 border border-neutral-700">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-300">OpenAI API Key</span>
+                        <span className="text-sm font-medium text-neutral-300">OpenAI API Key</span>
                         <Button size="sm" variant="outline">Configure</Button>
                       </div>
-                      <p className="text-xs text-gray-500">Connect your OpenAI API key for GPT models</p>
+                      <p className="text-xs text-neutral-500">Connect your OpenAI API key for GPT models</p>
                     </div>
 
                     <div className="bg-neutral-800/50 rounded-lg p-4 border border-neutral-700">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-300">Anthropic API Key</span>
+                        <span className="text-sm font-medium text-neutral-300">Anthropic API Key</span>
                         <Button size="sm" variant="outline">Configure</Button>
                       </div>
-                      <p className="text-xs text-gray-500">Connect your Anthropic API key for Claude models</p>
+                      <p className="text-xs text-neutral-500">Connect your Anthropic API key for Claude models</p>
                     </div>
 
                     <div className="bg-neutral-800/50 rounded-lg p-4 border border-neutral-700">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-300">Google AI API Key</span>
+                        <span className="text-sm font-medium text-neutral-300">Google AI API Key</span>
                         <Button size="sm" variant="outline">Configure</Button>
                       </div>
-                      <p className="text-xs text-gray-500">Connect your Google AI API key for Gemini models</p>
+                      <p className="text-xs text-neutral-500">Connect your Google AI API key for Gemini models</p>
                     </div>
                   </div>
                 </div>
@@ -167,7 +167,7 @@ export default function SettingsPage() {
                   <div className="space-y-4">
                     {["Email notifications", "Push notifications", "Project updates", "Marketing emails"].map((item) => (
                       <label key={item} className="flex items-center justify-between p-4 bg-neutral-800/50 rounded-lg border border-neutral-700">
-                        <span className="text-sm text-gray-300">{item}</span>
+                        <span className="text-sm text-neutral-300">{item}</span>
                         <input type="checkbox" className="toggle" defaultChecked />
                       </label>
                     ))}
@@ -202,7 +202,7 @@ export default function SettingsPage() {
 
                   <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-4">
                     <p className="text-sm text-purple-300 mb-2">Current Plan: Free</p>
-                    <p className="text-xs text-gray-400 mb-4">0 / 100 AI generations used this month</p>
+                    <p className="text-xs text-neutral-400 mb-4">0 / 100 AI generations used this month</p>
                     <Button className="w-full">Upgrade to Pro</Button>
                   </div>
 

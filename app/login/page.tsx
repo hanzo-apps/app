@@ -140,7 +140,7 @@ export default function LoginPage() {
         </div>
 
         {/* Right Side - Animated Ideas */}
-        <div className="hidden lg:flex w-1/2 items-center justify-center px-6 py-20 bg-gradient-to-br from-gray-900 via-black to-gray-900 relative overflow-hidden">
+        <div className="hidden lg:flex w-1/2 items-center justify-center px-6 py-20 bg-gradient-to-br from-neutral-900 via-black to-neutral-900 relative overflow-hidden">
           <div className="absolute inset-0 opacity-20">
             <div
               className="absolute inset-0"

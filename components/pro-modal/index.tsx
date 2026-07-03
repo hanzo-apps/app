@@ -85,7 +85,7 @@ export const ProModal = ({
 
 const ProTag = ({ className }: { className?: string }) => (
   <span
-    className={`${className} bg-linear-to-br shadow-green-500/10 dark:shadow-green-500/20 inline-block -skew-x-12 border border-gray-200 from-pink-300 via-green-200 to-yellow-200 text-xs font-bold text-black shadow-lg rounded-md px-2.5 py-0.5`}
+    className={`${className} bg-linear-to-br shadow-green-500/10 dark:shadow-green-500/20 inline-block -skew-x-12 border border-neutral-200 from-pink-300 via-green-200 to-yellow-200 text-xs font-bold text-black shadow-lg rounded-md px-2.5 py-0.5`}
   >
     PRO
   </span>

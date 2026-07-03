@@ -32,7 +32,7 @@ export function Header({
   children?: ReactNode;
 }) {
   return (
-    <header className="border-b bg-slate-200 border-slate-300 dark:bg-neutral-950 dark:border-neutral-800 px-3 lg:px-6 py-2 flex items-center max-lg:gap-3 justify-between lg:grid lg:grid-cols-3 z-20">
+    <header className="border-b bg-neutral-200 border-neutral-300 dark:bg-neutral-950 dark:border-neutral-800 px-3 lg:px-6 py-2 flex items-center max-lg:gap-3 justify-between lg:grid lg:grid-cols-3 z-20">
       <div className="flex items-center justify-start gap-3 min-w-0">
         <Link href="/" className="flex items-center gap-2 group shrink-0">
           <HanzoLogo className="w-8 h-8 text-white group-hover:text-white/80 transition-colors" />
