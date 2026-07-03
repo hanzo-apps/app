@@ -723,7 +723,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
               asChild
             >
               <a
-                href="https://github.com/o-stahl/hanzo-app"
+                href="https://github.com/hanzoai/app"
                 target="_blank"
                 rel="noopener noreferrer"
               >
