@@ -389,7 +389,7 @@ export function VirtualTable<T>({
       {/* Header */}
       <div
         className={cn(
-          'flex items-center bg-neutral-50 dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700 font-semibold',
+          'flex items-center bg-neutral-50 dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700 font-medium',
           headerClassName
         )}
         style={{ height: rowHeight, width: totalWidth }}

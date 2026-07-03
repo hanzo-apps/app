@@ -66,7 +66,7 @@ export function Settings({
           className="!rounded-2xl p-0 !w-96 overflow-hidden !bg-neutral-900"
           align="center"
         >
-          <header className="flex items-center justify-center text-sm px-4 py-3 border-b gap-2 bg-neutral-950 border-neutral-800 font-semibold text-neutral-200">
+          <header className="flex items-center justify-center text-sm px-4 py-3 border-b gap-2 bg-neutral-950 border-neutral-800 font-medium text-neutral-200">
             Customize Settings
           </header>
           <main className="px-4 pt-5 pb-6 space-y-5">

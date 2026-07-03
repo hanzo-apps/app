@@ -97,19 +97,19 @@ export function SessionViewer({ deploymentId }: SessionViewerProps) {
         <div className="grid grid-cols-4 gap-4">
           <div className="border rounded-lg p-4">
             <div className="text-sm text-muted-foreground">Total Sessions</div>
-            <div className="text-2xl font-bold">{(data.summary.totalSessions || 0).toLocaleString()}</div>
+            <div className="text-2xl font-medium">{(data.summary.totalSessions || 0).toLocaleString()}</div>
           </div>
           <div className="border rounded-lg p-4">
             <div className="text-sm text-muted-foreground">Bounce Rate</div>
-            <div className="text-2xl font-bold">{((data.summary.bounceRate || 0) * 100).toFixed(1)}%</div>
+            <div className="text-2xl font-medium">{((data.summary.bounceRate || 0) * 100).toFixed(1)}%</div>
           </div>
           <div className="border rounded-lg p-4">
             <div className="text-sm text-muted-foreground">Avg. Duration</div>
-            <div className="text-2xl font-bold">{formatDuration(data.summary.averageDuration || 0)}</div>
+            <div className="text-2xl font-medium">{formatDuration(data.summary.averageDuration || 0)}</div>
           </div>
           <div className="border rounded-lg p-4">
             <div className="text-sm text-muted-foreground">Avg. Pages/Session</div>
-            <div className="text-2xl font-bold">{(data.summary.averagePageCount || 0).toFixed(1)}</div>
+            <div className="text-2xl font-medium">{(data.summary.averagePageCount || 0).toFixed(1)}</div>
           </div>
         </div>
       )}

@@ -52,7 +52,7 @@ export function PublicDeployment({ projectId }: PublicDeploymentProps) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-neutral-900">
         <div className="text-center max-w-md px-4">
-          <h1 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
+          <h1 className="text-2xl font-medium text-neutral-900 dark:text-white mb-2">
             No Published Deployment
           </h1>
           <p className="text-neutral-600 dark:text-neutral-400 mb-4">

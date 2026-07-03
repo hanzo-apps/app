@@ -36,7 +36,7 @@ export function Header({
       <div className="flex items-center justify-start gap-3 min-w-0">
         <Link href="/" className="flex items-center gap-2 group shrink-0">
           <HanzoLogo className="w-8 h-8 text-white group-hover:text-white/80 transition-colors" />
-          <span className="hidden md:inline font-semibold text-white">Hanzo Dev</span>
+          <span className="hidden md:inline font-medium text-white">Hanzo Dev</span>
         </Link>
         <div className="h-6 w-px bg-neutral-700 hidden sm:block" />
         {/* Active org context — the builder is always scoped to one org. */}

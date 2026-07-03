@@ -362,7 +362,7 @@ export default function NodesPage() {
             <div className="flex items-center gap-4">
               <Link href="/" className="flex items-center gap-2">
                 <HanzoLogo className="w-8 h-8 text-purple-500" />
-                <span className="text-xl font-bold text-white">Node Infrastructure</span>
+                <span className="text-xl font-medium text-white">Node Infrastructure</span>
               </Link>
               <Badge variant="outline" className="gap-1">
                 <Signal className="w-3 h-3" />
@@ -402,15 +402,15 @@ export default function NodesPage() {
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-neutral-500">CPU</span>
-                  <span className="text-sm font-bold text-white">{totalStats.totalCpu} cores</span>
+                  <span className="text-sm font-medium text-white">{totalStats.totalCpu} cores</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-neutral-500">Memory</span>
-                  <span className="text-sm font-bold text-white">{totalStats.totalMemory} GB</span>
+                  <span className="text-sm font-medium text-white">{totalStats.totalMemory} GB</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-neutral-500">Storage</span>
-                  <span className="text-sm font-bold text-white">{totalStats.totalStorage.toFixed(1)} TB</span>
+                  <span className="text-sm font-medium text-white">{totalStats.totalStorage.toFixed(1)} TB</span>
                 </div>
               </div>
             </CardContent>
@@ -446,7 +446,7 @@ export default function NodesPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-white">
+                <span className="text-2xl font-medium text-white">
                   {(totalStats.totalRequests / 1000).toFixed(1)}k
                 </span>
                 <span className="text-xs text-neutral-500">req/s</span>
@@ -796,7 +796,7 @@ export default function NodesPage() {
                         <CardTitle className="text-sm">Requests/Second</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-2xl font-bold text-white">
+                        <p className="text-2xl font-medium text-white">
                           {selectedNode.metrics.requestsPerSecond}
                         </p>
                       </CardContent>
@@ -806,7 +806,7 @@ export default function NodesPage() {
                         <CardTitle className="text-sm">Latency</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-2xl font-bold text-white">
+                        <p className="text-2xl font-medium text-white">
                           {selectedNode.metrics.latency}ms
                         </p>
                       </CardContent>
@@ -816,7 +816,7 @@ export default function NodesPage() {
                         <CardTitle className="text-sm">Error Rate</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-2xl font-bold text-white">
+                        <p className="text-2xl font-medium text-white">
                           {selectedNode.metrics.errorRate}%
                         </p>
                       </CardContent>
@@ -826,7 +826,7 @@ export default function NodesPage() {
                         <CardTitle className="text-sm">Throughput</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-2xl font-bold text-white">
+                        <p className="text-2xl font-medium text-white">
                           {selectedNode.metrics.throughput} MB/s
                         </p>
                       </CardContent>

@@ -67,7 +67,7 @@ export function Footer({
         {user ? (
           user?.isLocalUse ? (
             <>
-              <div className="max-w-max bg-amber-500/10 rounded-full px-3 py-1 text-amber-500 border border-amber-500/20 text-sm font-semibold">
+              <div className="max-w-max bg-amber-500/10 rounded-full px-3 py-1 text-amber-500 border border-amber-500/20 text-sm font-medium">
                 Local Usage
               </div>
             </>

@@ -109,7 +109,7 @@ export function SkillEditor({ skill, mode, onSave, onCancel }: SkillEditorProps)
               <ArrowLeft className="w-4 h-4" />
             </Button>
             <div>
-              <h1 className="text-2xl font-bold">
+              <h1 className="text-2xl font-medium">
                 {mode === 'create' ? 'Create New Skill' : 'Edit Skill'}
               </h1>
               <p className="text-sm text-muted-foreground">
@@ -202,7 +202,7 @@ export function SkillEditor({ skill, mode, onSave, onCancel }: SkillEditorProps)
               </div>
 
               <div className="bg-muted/50 rounded-lg p-4">
-                <h3 className="font-semibold mb-2 flex items-center gap-2">
+                <h3 className="font-medium mb-2 flex items-center gap-2">
                   <FileText className="w-4 h-4" />
                   Tips for Writing Skills
                 </h3>

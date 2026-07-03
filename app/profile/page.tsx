@@ -66,7 +66,7 @@ export default function ProfilePage() {
               <ArrowLeft className="w-4 h-4" />
               Back
             </Button>
-            <h1 className="text-2xl font-bold text-white">Profile</h1>
+            <h1 className="text-2xl font-medium text-white">Profile</h1>
           </div>
           <div className="flex items-center gap-2">
             {isEditing ? (
@@ -112,10 +112,10 @@ export default function ProfilePage() {
                   <input
                     type="text"
                     defaultValue={user?.fullname}
-                    className="text-3xl font-bold bg-transparent text-white border-b border-neutral-600 focus:border-purple-500 outline-none pb-2 mb-2"
+                    className="text-3xl font-medium bg-transparent text-white border-b border-neutral-600 focus:border-purple-500 outline-none pb-2 mb-2"
                   />
                 ) : (
-                  <h2 className="text-3xl font-bold text-white mb-2">{user?.fullname}</h2>
+                  <h2 className="text-3xl font-medium text-white mb-2">{user?.fullname}</h2>
                 )}
                 <p className="text-neutral-400">@{user?.username || user?.email?.split('@')[0]}</p>
               </div>
@@ -127,7 +127,7 @@ export default function ProfilePage() {
             <div className="grid grid-cols-2 gap-6">
               {/* Basic Info */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-white mb-4">Basic Information</h3>
+                <h3 className="text-lg font-medium text-white mb-4">Basic Information</h3>
 
                 <div>
                   <label className="block text-sm font-medium text-neutral-400 mb-1">
@@ -177,7 +177,7 @@ export default function ProfilePage() {
 
               {/* Bio & Links */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-white mb-4">Bio & Links</h3>
+                <h3 className="text-lg font-medium text-white mb-4">Bio & Links</h3>
 
                 <div>
                   <label className="block text-sm font-medium text-neutral-400 mb-1">
@@ -242,22 +242,22 @@ export default function ProfilePage() {
 
             {/* Stats */}
             <div className="mt-8 pt-6 border-t border-neutral-800">
-              <h3 className="text-lg font-semibold text-white mb-4">Statistics</h3>
+              <h3 className="text-lg font-medium text-white mb-4">Statistics</h3>
               <div className="grid grid-cols-4 gap-4">
                 <div className="bg-neutral-800/50 rounded-lg p-4 text-center">
-                  <p className="text-2xl font-bold text-purple-400">12</p>
+                  <p className="text-2xl font-medium text-purple-400">12</p>
                   <p className="text-sm text-neutral-400">Projects</p>
                 </div>
                 <div className="bg-neutral-800/50 rounded-lg p-4 text-center">
-                  <p className="text-2xl font-bold text-purple-400">342</p>
+                  <p className="text-2xl font-medium text-purple-400">342</p>
                   <p className="text-sm text-neutral-400">AI Generations</p>
                 </div>
                 <div className="bg-neutral-800/50 rounded-lg p-4 text-center">
-                  <p className="text-2xl font-bold text-purple-400">89</p>
+                  <p className="text-2xl font-medium text-purple-400">89</p>
                   <p className="text-sm text-neutral-400">Deployments</p>
                 </div>
                 <div className="bg-neutral-800/50 rounded-lg p-4 text-center">
-                  <p className="text-2xl font-bold text-purple-400">2.3k</p>
+                  <p className="text-2xl font-medium text-purple-400">2.3k</p>
                   <p className="text-sm text-neutral-400">Views</p>
                 </div>
               </div>

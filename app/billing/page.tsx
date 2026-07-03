@@ -273,7 +273,7 @@ export default function BillingPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">Billing & Usage</h1>
+            <h1 className="text-3xl md:text-4xl font-medium mb-2">Billing & Usage</h1>
             <p className="text-white/60">
               Manage your credits, subscriptions, and monitor usage
               {user?.email && <span className="ml-2 text-white/40">({user.email})</span>}
@@ -345,7 +345,7 @@ export default function BillingPage() {
             <CardContent>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold">{credits.toLocaleString()}</span>
+                  <span className="text-2xl font-medium">{credits.toLocaleString()}</span>
                   <TrendingUp className="w-5 h-5 text-green-500" />
                 </div>
                 <p className="text-xs text-white/40">
@@ -514,7 +514,7 @@ export default function BillingPage() {
                           </Badge>
                         )}
                         <div className="text-center mb-4">
-                          <div className="text-3xl font-bold">${tier.amount}</div>
+                          <div className="text-3xl font-medium">${tier.amount}</div>
                           <div className="text-sm text-white/60 mt-1">{tier.label}</div>
                         </div>
                         <div className="flex items-center justify-center text-sm text-white/80 mb-4">
@@ -568,7 +568,7 @@ export default function BillingPage() {
                           </Badge>
                         )}
                         <div className="text-center mb-4">
-                          <div className="text-3xl font-bold">${tier.amount}</div>
+                          <div className="text-3xl font-medium">${tier.amount}</div>
                           <div className="text-sm text-white/60 mt-1">USDC</div>
                         </div>
                         <div className="flex items-center justify-center text-sm text-white/80 mb-4">
@@ -690,15 +690,15 @@ export default function BillingPage() {
                   <h4 className="text-sm font-medium text-white/60 mb-3">Credit Consumption</h4>
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div className="p-3 rounded-lg bg-[#0a0a0a] border border-white/10">
-                      <div className="text-lg font-bold">{usage.ai_responses.used}</div>
+                      <div className="text-lg font-medium">{usage.ai_responses.used}</div>
                       <div className="text-xs text-white/60">AI credits used</div>
                     </div>
                     <div className="p-3 rounded-lg bg-[#0a0a0a] border border-white/10">
-                      <div className="text-lg font-bold">{credits.toLocaleString()}</div>
+                      <div className="text-lg font-medium">{credits.toLocaleString()}</div>
                       <div className="text-xs text-white/60">Credits remaining</div>
                     </div>
                     <div className="p-3 rounded-lg bg-[#0a0a0a] border border-white/10">
-                      <div className="text-lg font-bold">
+                      <div className="text-lg font-medium">
                         {credits > 0 && usage.ai_responses.used > 0
                           ? Math.ceil(credits / (usage.ai_responses.used / 30))
                           : '--'}
