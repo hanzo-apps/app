@@ -743,7 +743,7 @@ export function ChatPanel({
               style={{ color: 'var(--button-assistant-active)' }}
             />
           )}
-          <span className="font-semibold text-sm">Chat</span>
+          <span className="font-medium text-sm">Chat</span>
         </div>
         <div className="flex items-center gap-1">
           {onClearChat && (
@@ -1033,7 +1033,7 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
           case 'user':
             return (
               <div key={item.id} className="text-sm text-foreground bg-primary/10 px-3 py-2 rounded border border-primary/20">
-                <div className="font-semibold text-primary mb-1 text-xs">User</div>
+                <div className="font-medium text-primary mb-1 text-xs">User</div>
                 <UserMessageContent content={item.data} />
               </div>
             );
@@ -1057,7 +1057,7 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
                 <div className="flex items-start gap-2">
                   <XCircle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
                   <div className="flex-1">
-                    <div className="font-semibold text-destructive mb-1">Error</div>
+                    <div className="font-medium text-destructive mb-1">Error</div>
                     <div className="text-destructive/90 whitespace-pre-wrap font-mono text-xs">
                       {item.data?.message || JSON.stringify(item.data, null, 2)}
                     </div>

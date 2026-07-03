@@ -89,7 +89,7 @@ export default function SettingsPage() {
             <div className="bg-neutral-900 rounded-lg border border-neutral-800 p-6">
               {activeTab === "general" && (
                 <div className="space-y-6">
-                  <h2 className="text-xl font-semibold text-white mb-4">General Settings</h2>
+                  <h2 className="text-xl font-medium text-white mb-4">General Settings</h2>
 
                   <div className="space-y-4">
                     <div>
@@ -130,7 +130,7 @@ export default function SettingsPage() {
 
               {activeTab === "api-keys" && (
                 <div className="space-y-6">
-                  <h2 className="text-xl font-semibold text-white mb-4">API Keys</h2>
+                  <h2 className="text-xl font-medium text-white mb-4">API Keys</h2>
 
                   <div className="space-y-4">
                     <div className="bg-neutral-800/50 rounded-lg p-4 border border-neutral-700">
@@ -162,7 +162,7 @@ export default function SettingsPage() {
 
               {activeTab === "notifications" && (
                 <div className="space-y-6">
-                  <h2 className="text-xl font-semibold text-white mb-4">Notification Preferences</h2>
+                  <h2 className="text-xl font-medium text-white mb-4">Notification Preferences</h2>
 
                   <div className="space-y-4">
                     {["Email notifications", "Push notifications", "Project updates", "Marketing emails"].map((item) => (
@@ -177,7 +177,7 @@ export default function SettingsPage() {
 
               {activeTab === "security" && (
                 <div className="space-y-6">
-                  <h2 className="text-xl font-semibold text-white mb-4">Security Settings</h2>
+                  <h2 className="text-xl font-medium text-white mb-4">Security Settings</h2>
 
                   <div className="space-y-4">
                     <Button variant="outline" className="w-full justify-start">
@@ -198,7 +198,7 @@ export default function SettingsPage() {
 
               {activeTab === "billing" && (
                 <div className="space-y-6">
-                  <h2 className="text-xl font-semibold text-white mb-4">Billing & Usage</h2>
+                  <h2 className="text-xl font-medium text-white mb-4">Billing & Usage</h2>
 
                   <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-4">
                     <p className="text-sm text-purple-300 mb-2">Current Plan: Free</p>

@@ -35,7 +35,7 @@ export function HanzoBrand({
     <span className={`inline-flex items-center gap-2 ${className}`}>
       <HanzoLogo className={markClassName} />
       {showWordmark && (
-        <span className={`font-semibold text-lg tracking-tight ${wordmarkClassName}`}>
+        <span className={`font-medium text-lg tracking-tight ${wordmarkClassName}`}>
           {label}
         </span>
       )}

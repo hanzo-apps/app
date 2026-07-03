@@ -121,7 +121,7 @@ export default function LaunchedPage() {
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-2.5">
               <HanzoLogo className="w-8 h-8 text-white" />
-              <span className="text-xl font-bold">Hanzo</span>
+              <span className="text-xl font-medium">Hanzo</span>
             </Link>
             <div className="hidden md:flex items-center gap-6">
               <Link href="/community" className="text-white/70 hover:text-white">Community</Link>
@@ -145,7 +145,7 @@ export default function LaunchedPage() {
             <Rocket className="w-4 h-4 mr-2" />
             Product Hunt for AI
           </Badge>
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+          <h1 className="text-4xl md:text-6xl font-medium mb-6">
             Discover the latest{" "}
             <span className="bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
               AI innovations
@@ -185,7 +185,7 @@ export default function LaunchedPage() {
             {/* Launches List */}
             <div className="lg:col-span-2">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold">Top Launches</h2>
+                <h2 className="text-2xl font-medium">Top Launches</h2>
                 <div className="flex items-center gap-2">
                   <Calendar className="w-5 h-5 text-white/40" />
                   <span className="text-white/60">{selectedPeriod}</span>
@@ -197,7 +197,7 @@ export default function LaunchedPage() {
                   <div key={launch.id} className="bg-[#1a1a1a] rounded-2xl p-6 border border-white/10 hover:border-violet-500/50 transition-all">
                     <div className="flex items-start gap-4">
                       <div className="text-center">
-                        <div className="text-3xl font-bold text-violet-400">#{launch.rank}</div>
+                        <div className="text-3xl font-medium text-violet-400">#{launch.rank}</div>
                         <button className="mt-2 p-2 hover:bg-white/10 rounded-lg transition-colors">
                           <TrendingUp className="w-5 h-5 text-white/60" />
                         </button>
@@ -212,7 +212,7 @@ export default function LaunchedPage() {
                           </Badge>
                         )}
 
-                        <h3 className="text-xl font-semibold mb-1 hover:text-violet-400 transition-colors">
+                        <h3 className="text-xl font-medium mb-1 hover:text-violet-400 transition-colors">
                           <a href={launch.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
                             {launch.title}
                             <ExternalLink className="w-4 h-4 opacity-50" />
@@ -254,7 +254,7 @@ export default function LaunchedPage() {
             <div className="space-y-6">
               {/* Top Makers */}
               <div className="bg-[#1a1a1a] rounded-2xl p-6 border border-white/10">
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
                   <Star className="w-5 h-5 text-yellow-400" />
                   Top Makers
                 </h3>
@@ -262,7 +262,7 @@ export default function LaunchedPage() {
                   {topMakers.map((maker, index) => (
                     <div key={maker.name} className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="text-lg font-bold text-white/40">#{index + 1}</div>
+                        <div className="text-lg font-medium text-white/40">#{index + 1}</div>
                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center">
                           <span className="text-sm">{maker.avatar}</span>
                         </div>
@@ -279,7 +279,7 @@ export default function LaunchedPage() {
 
               {/* Categories */}
               <div className="bg-[#1a1a1a] rounded-2xl p-6 border border-white/10">
-                <h3 className="text-lg font-semibold mb-4">Categories</h3>
+                <h3 className="text-lg font-medium mb-4">Categories</h3>
                 <div className="flex flex-wrap gap-2">
                   {categories.map(category => (
                     <Badge
@@ -294,7 +294,7 @@ export default function LaunchedPage() {
 
               {/* Launch CTA */}
               <div className="bg-gradient-to-br from-violet-950/50 to-purple-950/50 rounded-2xl p-6 border border-violet-500/30">
-                <h3 className="text-lg font-semibold mb-2">Ready to launch?</h3>
+                <h3 className="text-lg font-medium mb-2">Ready to launch?</h3>
                 <p className="text-sm text-white/60 mb-4">
                   Share your project with the community and get feedback
                 </p>
@@ -306,23 +306,23 @@ export default function LaunchedPage() {
 
               {/* Stats */}
               <div className="bg-[#1a1a1a] rounded-2xl p-6 border border-white/10">
-                <h3 className="text-lg font-semibold mb-4">Platform Stats</h3>
+                <h3 className="text-lg font-medium mb-4">Platform Stats</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-white/60">Launches Today</span>
-                    <span className="font-semibold">24</span>
+                    <span className="font-medium">24</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-white/60">Active Makers</span>
-                    <span className="font-semibold">1,234</span>
+                    <span className="font-medium">1,234</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-white/60">Total Products</span>
-                    <span className="font-semibold">10,567</span>
+                    <span className="font-medium">10,567</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-white/60">Community Votes</span>
-                    <span className="font-semibold">489K</span>
+                    <span className="font-medium">489K</span>
                   </div>
                 </div>
               </div>

@@ -114,7 +114,7 @@ export const DeployButtonContent = ({
             👻
           </div>
         </div>
-        <p className="text-xl font-semibold text-neutral-950">Publish your project</p>
+        <p className="text-xl font-medium text-neutral-950">Publish your project</p>
         <p className="text-sm text-neutral-500 mt-1.5">
           {options?.description ??
             "Publish to your organization on Hanzo Cloud. Your project is billed to your org and appears across your Hanzo tools."}

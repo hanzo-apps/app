@@ -59,7 +59,7 @@ export function SidebarWallet({ collapsed }: { collapsed: boolean }) {
       <div className="flex flex-col items-center gap-2 border-t p-2">
         <button
           onClick={() => router.push('/profile')}
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-bold"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-medium"
           title={name}
         >
           {avatar ? (
@@ -91,12 +91,12 @@ export function SidebarWallet({ collapsed }: { collapsed: boolean }) {
             // eslint-disable-next-line @next/next/no-img-element
             <img src={avatar} alt={name} className="h-9 w-9 rounded-full object-cover" />
           ) : (
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-xs font-bold">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-xs font-medium">
               {initials(name)}
             </span>
           )}
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-sm font-semibold">{name}</span>
+            <span className="block truncate text-sm font-medium">{name}</span>
             <span className="block truncate text-[11px] text-muted-foreground">{user.email || 'View profile'}</span>
           </span>
         </button>

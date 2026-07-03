@@ -135,7 +135,7 @@ export const LoadProject = ({
                   💎
                 </div>
               </div>
-              <p className="text-2xl font-semibold text-neutral-950">
+              <p className="text-2xl font-medium text-neutral-950">
                 Import a Project
               </p>
               <p className="text-base text-neutral-500 mt-1.5">

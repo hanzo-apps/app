@@ -76,7 +76,7 @@ export default function TemplateGallery() {
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center">
               <Sparkles className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-3xl font-bold">Hanzo Templates</h1>
+            <h1 className="text-3xl font-medium">Hanzo Templates</h1>
             <Badge variant="secondary" className="ml-1">
               {templates.length} templates
             </Badge>
@@ -180,7 +180,7 @@ export default function TemplateGallery() {
               </a>
 
               <div className="flex flex-col flex-1 p-4">
-                <h3 className="font-semibold text-white">{t.displayName}</h3>
+                <h3 className="font-medium text-white">{t.displayName}</h3>
                 <p className="text-xs text-neutral-500 mt-1 line-clamp-2 flex-1">
                   {t.description || t.useCase || `${t.framework} template`}
                 </p>
@@ -233,7 +233,7 @@ export default function TemplateGallery() {
       {/* Footer CTA */}
       <section className="border-t border-neutral-900 bg-neutral-950">
         <div className="container mx-auto px-6 py-10 text-center">
-          <h2 className="text-xl font-bold mb-2">Don&apos;t see the right fit?</h2>
+          <h2 className="text-xl font-medium mb-2">Don&apos;t see the right fit?</h2>
           <p className="text-neutral-400 mb-5">
             Describe your app and Hanzo builds it from scratch — deployed live in minutes.
           </p>

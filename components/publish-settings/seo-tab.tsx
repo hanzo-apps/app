@@ -60,7 +60,7 @@ export function SeoTab({ settings, onChange }: SeoTabProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold">SEO Configuration</h3>
+        <h3 className="text-lg font-medium">SEO Configuration</h3>
         <p className="text-sm text-muted-foreground">
           Optimize your deployment for search engines and social sharing
         </p>
@@ -69,7 +69,7 @@ export function SeoTab({ settings, onChange }: SeoTabProps) {
       {/* Basic Meta Tags */}
       <div className="space-y-4">
         <div>
-          <h4 className="font-semibold mb-4">Basic Meta Tags</h4>
+          <h4 className="font-medium mb-4">Basic Meta Tags</h4>
         </div>
 
         <div className="space-y-2">
@@ -167,7 +167,7 @@ export function SeoTab({ settings, onChange }: SeoTabProps) {
       {/* Open Graph */}
       <div className="space-y-4">
         <div>
-          <h4 className="font-semibold mb-4">Open Graph (Facebook, LinkedIn)</h4>
+          <h4 className="font-medium mb-4">Open Graph (Facebook, LinkedIn)</h4>
         </div>
 
         <div className="space-y-2">
@@ -229,7 +229,7 @@ export function SeoTab({ settings, onChange }: SeoTabProps) {
       {/* Twitter Card */}
       <div className="space-y-4">
         <div>
-          <h4 className="font-semibold mb-4">Twitter Card</h4>
+          <h4 className="font-medium mb-4">Twitter Card</h4>
         </div>
 
         <div className="space-y-2">
@@ -259,7 +259,7 @@ export function SeoTab({ settings, onChange }: SeoTabProps) {
       {/* Preview */}
       <div className="space-y-4">
         <div>
-          <h4 className="font-semibold mb-4">Search Result Preview</h4>
+          <h4 className="font-medium mb-4">Search Result Preview</h4>
         </div>
 
         <div className="p-4 border rounded-lg bg-muted/50">
@@ -286,7 +286,7 @@ export function SeoTab({ settings, onChange }: SeoTabProps) {
       {(settings.seo.ogTitle || settings.seo.ogImage) && (
         <div className="space-y-4">
           <div>
-            <h4 className="font-semibold mb-4">Social Share Preview</h4>
+            <h4 className="font-medium mb-4">Social Share Preview</h4>
           </div>
 
           <div className="p-4 border rounded-lg bg-muted/50">
@@ -307,7 +307,7 @@ export function SeoTab({ settings, onChange }: SeoTabProps) {
                 <div className="text-xs text-muted-foreground">
                   your-domain.com
                 </div>
-                <h4 className="font-semibold">
+                <h4 className="font-medium">
                   {settings.seo.ogTitle || settings.seo.title || 'Your Deployment Title'}
                 </h4>
                 <p className="text-sm text-muted-foreground">

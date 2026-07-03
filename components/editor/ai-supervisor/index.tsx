@@ -441,7 +441,7 @@ export function AISupervisor({
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Shield className="w-5 h-5 text-purple-400" />
-          <h3 className="text-lg font-semibold text-white">AI Supervisor</h3>
+          <h3 className="text-lg font-medium text-white">AI Supervisor</h3>
           <div className="flex items-center gap-1">
             {sandboxStatus === "running" && (
               <span className="flex items-center gap-1 text-xs text-green-400">

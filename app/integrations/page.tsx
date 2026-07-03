@@ -296,7 +296,7 @@ export default function IntegrationsPage() {
                 <ArrowLeft className="w-4 h-4" />
                 Back
               </Button>
-              <h1 className="text-2xl font-bold text-white">Integrations</h1>
+              <h1 className="text-2xl font-medium text-white">Integrations</h1>
               <Badge variant="outline">
                 {connectedCount} connected
               </Badge>

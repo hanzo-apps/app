@@ -115,7 +115,7 @@ export function CdnTab({ settings, onChange }: CdnTabProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold">CDN Resources</h3>
+          <h3 className="text-lg font-medium">CDN Resources</h3>
           <p className="text-sm text-muted-foreground">
             Add external CSS and JavaScript libraries
           </p>
@@ -129,7 +129,7 @@ export function CdnTab({ settings, onChange }: CdnTabProps) {
       {settings.cdnLinks.length === 0 ? (
         <div className="text-center p-8 border-2 border-dashed rounded-lg">
           <Link2 className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
-          <h3 className="text-lg font-semibold mb-2">No CDN Resources</h3>
+          <h3 className="text-lg font-medium mb-2">No CDN Resources</h3>
           <p className="text-sm text-muted-foreground mb-4">
             Add libraries like Bootstrap, Tailwind, or custom stylesheets
           </p>
@@ -147,7 +147,7 @@ export function CdnTab({ settings, onChange }: CdnTabProps) {
             >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-2">
-                  <h4 className="font-semibold truncate">{cdn.name}</h4>
+                  <h4 className="font-medium truncate">{cdn.name}</h4>
                   <Badge variant={cdn.type === 'css' ? 'default' : 'secondary'}>
                     {cdn.type.toUpperCase()}
                   </Badge>
