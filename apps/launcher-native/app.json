@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "Hanzo Launcher",
+    "slug": "hanzo-launcher",
+    "scheme": "hanzo-launcher",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "bundleIdentifier": "ai.hanzo.launcher",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "ai.hanzo.launcher"
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
