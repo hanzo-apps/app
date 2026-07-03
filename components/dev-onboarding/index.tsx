@@ -658,7 +658,11 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
 
           <div className="flex-1 overflow-y-auto bg-neutral-950 p-4">
             <pre className="font-mono text-xs leading-relaxed">
-              {planLines.map((line, i) => (
+              {planLines.map((rawLine, i) => {
+                // Guard a missing/odd streamed line so the plan panel never
+                // throws (`.startsWith` on undefined) and take down the builder.
+                const line = rawLine ?? "";
+                return (
                 <div
                   key={i}
                   className={cn(
@@ -675,7 +679,8 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                 >
                   {line || "\u00A0"}
                 </div>
-              ))}
+                );
+              })}
               {isStreaming && (
                 <span className="inline-block w-2 h-3 bg-[#171717] animate-pulse ml-1" />
               )}
