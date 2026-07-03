@@ -260,6 +260,11 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Consume the Basel Grotesk var (set on <body> via next/font) as the default
+       body font. Tailwind v4 preflight otherwise leaves <body> on the system
+       stack — @theme inline defines the `font-sans` utility but never applies it
+       to <body>, so body text fell back to system-ui. */
+    font-family: var(--font-basel-sans), ui-sans-serif, system-ui, sans-serif;
   }
   html {
     @apply scroll-smooth;
