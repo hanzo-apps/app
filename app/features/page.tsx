@@ -69,7 +69,7 @@ export default function FeaturesPage() {
       icon: <Database className="w-6 h-6 text-orange-400" />,
       title: "Integrated Database",
       description: "Managed databases with automatic backups and scaling",
-      features: ["PostgreSQL & MongoDB", "Auto-backups", "Query optimization", "Real-time sync"]
+      features: ["PostgreSQL & SQLite", "Auto-backups", "Query optimization", "Real-time sync"]
     },
     {
       icon: <Rocket className="w-6 h-6 text-pink-400" />,
@@ -436,7 +436,7 @@ export default function FeaturesPage() {
                   <Server className="w-8 h-8 text-green-400" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2 text-white">Database Solutions</h3>
-                <p className="text-white/60">Managed PostgreSQL, MongoDB, and Redis with auto-backups</p>
+                <p className="text-white/60">Managed PostgreSQL, SQLite, and Redis with auto-backups</p>
               </div>
               <div className="text-center">
                 <div className="inline-flex p-4 bg-gradient-to-br from-purple-500/10 to-violet-500/10 rounded-2xl border border-purple-500/20 mb-4">
