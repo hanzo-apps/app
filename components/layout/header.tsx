@@ -25,7 +25,7 @@ import {
   DollarSign,
   Wallet,
 } from "lucide-react";
-import { HanzoLogo } from "@/components/HanzoLogo";
+import { HanzoBrand } from "@/components/HanzoLogo";
 import { useAuthContext } from "@/components/providers/AuthProvider";
 
 function truncateAddress(address: string): string {
@@ -56,7 +56,7 @@ export default function Header() {
       <nav className="relative z-20 flex items-center justify-between px-4 md:px-8 py-4 md:py-5 bg-black/80 backdrop-blur-sm border-b border-white/10">
         <div className="flex items-center gap-6 md:gap-10">
           <Link href="/" className="flex items-center">
-            <HanzoLogo className="w-8 md:w-9 h-8 md:h-9 text-white" />
+            <HanzoBrand className="text-white" markClassName="w-8 md:w-9 h-8 md:h-9" />
           </Link>
 
           {/* Desktop Navigation */}
@@ -204,7 +204,7 @@ export default function Header() {
             {/* Mobile Menu Header */}
             <div className="flex items-center justify-between p-4 border-b border-white/10">
               <Link href="/" className="flex items-center">
-                <HanzoLogo className="w-8 h-8 text-white" />
+                <HanzoBrand className="text-white" markClassName="w-8 h-8" />
               </Link>
               <button
                 onClick={() => setMobileMenuOpen(false)}

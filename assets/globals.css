@@ -60,56 +60,27 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* Monochrome enforcement — Hanzo is monochrome (black/white/grays).
-   Remap every chromatic Tailwind palette onto the neutral lightness ramp so
-   all *-red/orange/amber/.../rose-* utilities render grayscale. One place, no
-   per-file edits. Semantic state (error/success) stays distinguishable via
-   lightness + icons + borders, not hue. */
+/* Tasteful monochrome — the brand CHROME (header/sidebar/footer, primary CTAs,
+   links, focus rings, logo) is neutral by construction: those surfaces use
+   black/white/neutral utilities directly (see components/layout, page chrome).
+   We DON'T force the whole palette to gray — that greys out meaning.
+
+   So we keep exactly TWO kinds of color:
+     1. FUNCTIONAL / SEMANTIC hue stays real  → red (error/destructive),
+        amber+yellow (warning/building), orange (invalid), green+emerald
+        (success/live/online), blue+sky (running/active/info + search-match).
+        These are NOT remapped below — they render their true Tailwind color,
+        so a status dot, badge, or diff stays legible.
+     2. DECORATIVE cool hue is neutralized  → the violet/purple/indigo/pink/…
+        gradients that were pure decoration collapse onto the neutral ramp in
+        ONE place (below), so the hero + marketing stay clean and de-blued with
+        no per-file edits and no half-colored gradients.
+
+   Result: not a greyscale wireframe — a monochrome-forward product that still
+   signals state in color. (Charts + destructive get real hue via the tokens in
+   :root/.dark, not utilities.) */
 @theme {
-  --color-red-50: oklch(0.985 0 0);
-  --color-red-100: oklch(0.97 0 0);
-  --color-red-200: oklch(0.922 0 0);
-  --color-red-300: oklch(0.87 0 0);
-  --color-red-400: oklch(0.708 0 0);
-  --color-red-500: oklch(0.556 0 0);
-  --color-red-600: oklch(0.439 0 0);
-  --color-red-700: oklch(0.371 0 0);
-  --color-red-800: oklch(0.269 0 0);
-  --color-red-900: oklch(0.205 0 0);
-  --color-red-950: oklch(0.145 0 0);
-  --color-orange-50: oklch(0.985 0 0);
-  --color-orange-100: oklch(0.97 0 0);
-  --color-orange-200: oklch(0.922 0 0);
-  --color-orange-300: oklch(0.87 0 0);
-  --color-orange-400: oklch(0.708 0 0);
-  --color-orange-500: oklch(0.556 0 0);
-  --color-orange-600: oklch(0.439 0 0);
-  --color-orange-700: oklch(0.371 0 0);
-  --color-orange-800: oklch(0.269 0 0);
-  --color-orange-900: oklch(0.205 0 0);
-  --color-orange-950: oklch(0.145 0 0);
-  --color-amber-50: oklch(0.985 0 0);
-  --color-amber-100: oklch(0.97 0 0);
-  --color-amber-200: oklch(0.922 0 0);
-  --color-amber-300: oklch(0.87 0 0);
-  --color-amber-400: oklch(0.708 0 0);
-  --color-amber-500: oklch(0.556 0 0);
-  --color-amber-600: oklch(0.439 0 0);
-  --color-amber-700: oklch(0.371 0 0);
-  --color-amber-800: oklch(0.269 0 0);
-  --color-amber-900: oklch(0.205 0 0);
-  --color-amber-950: oklch(0.145 0 0);
-  --color-yellow-50: oklch(0.985 0 0);
-  --color-yellow-100: oklch(0.97 0 0);
-  --color-yellow-200: oklch(0.922 0 0);
-  --color-yellow-300: oklch(0.87 0 0);
-  --color-yellow-400: oklch(0.708 0 0);
-  --color-yellow-500: oklch(0.556 0 0);
-  --color-yellow-600: oklch(0.439 0 0);
-  --color-yellow-700: oklch(0.371 0 0);
-  --color-yellow-800: oklch(0.269 0 0);
-  --color-yellow-900: oklch(0.205 0 0);
-  --color-yellow-950: oklch(0.145 0 0);
+  /* Decorative-only cool hues → neutral ramp (keeps gradients tasteful). */
   --color-lime-50: oklch(0.985 0 0);
   --color-lime-100: oklch(0.97 0 0);
   --color-lime-200: oklch(0.922 0 0);
@@ -121,28 +92,6 @@
   --color-lime-800: oklch(0.269 0 0);
   --color-lime-900: oklch(0.205 0 0);
   --color-lime-950: oklch(0.145 0 0);
-  --color-green-50: oklch(0.985 0 0);
-  --color-green-100: oklch(0.97 0 0);
-  --color-green-200: oklch(0.922 0 0);
-  --color-green-300: oklch(0.87 0 0);
-  --color-green-400: oklch(0.708 0 0);
-  --color-green-500: oklch(0.556 0 0);
-  --color-green-600: oklch(0.439 0 0);
-  --color-green-700: oklch(0.371 0 0);
-  --color-green-800: oklch(0.269 0 0);
-  --color-green-900: oklch(0.205 0 0);
-  --color-green-950: oklch(0.145 0 0);
-  --color-emerald-50: oklch(0.985 0 0);
-  --color-emerald-100: oklch(0.97 0 0);
-  --color-emerald-200: oklch(0.922 0 0);
-  --color-emerald-300: oklch(0.87 0 0);
-  --color-emerald-400: oklch(0.708 0 0);
-  --color-emerald-500: oklch(0.556 0 0);
-  --color-emerald-600: oklch(0.439 0 0);
-  --color-emerald-700: oklch(0.371 0 0);
-  --color-emerald-800: oklch(0.269 0 0);
-  --color-emerald-900: oklch(0.205 0 0);
-  --color-emerald-950: oklch(0.145 0 0);
   --color-teal-50: oklch(0.985 0 0);
   --color-teal-100: oklch(0.97 0 0);
   --color-teal-200: oklch(0.922 0 0);
@@ -165,28 +114,6 @@
   --color-cyan-800: oklch(0.269 0 0);
   --color-cyan-900: oklch(0.205 0 0);
   --color-cyan-950: oklch(0.145 0 0);
-  --color-sky-50: oklch(0.985 0 0);
-  --color-sky-100: oklch(0.97 0 0);
-  --color-sky-200: oklch(0.922 0 0);
-  --color-sky-300: oklch(0.87 0 0);
-  --color-sky-400: oklch(0.708 0 0);
-  --color-sky-500: oklch(0.556 0 0);
-  --color-sky-600: oklch(0.439 0 0);
-  --color-sky-700: oklch(0.371 0 0);
-  --color-sky-800: oklch(0.269 0 0);
-  --color-sky-900: oklch(0.205 0 0);
-  --color-sky-950: oklch(0.145 0 0);
-  --color-blue-50: oklch(0.985 0 0);
-  --color-blue-100: oklch(0.97 0 0);
-  --color-blue-200: oklch(0.922 0 0);
-  --color-blue-300: oklch(0.87 0 0);
-  --color-blue-400: oklch(0.708 0 0);
-  --color-blue-500: oklch(0.556 0 0);
-  --color-blue-600: oklch(0.439 0 0);
-  --color-blue-700: oklch(0.371 0 0);
-  --color-blue-800: oklch(0.269 0 0);
-  --color-blue-900: oklch(0.205 0 0);
-  --color-blue-950: oklch(0.145 0 0);
   --color-indigo-50: oklch(0.985 0 0);
   --color-indigo-100: oklch(0.97 0 0);
   --color-indigo-200: oklch(0.922 0 0);
@@ -271,15 +198,18 @@
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.45 0 0);
+  /* Destructive keeps a real red — a delete/danger action must read as danger,
+     not as another neutral button. (Chrome + primary stay neutral above.) */
+  --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0 0);
-  --chart-2: oklch(0.5 0 0);
-  --chart-3: oklch(0.398 0 0);
-  --chart-4: oklch(0.828 0 0);
-  --chart-5: oklch(0.27 0 0);
+  /* Charts carry real, distinguishable hue — data series must be told apart. */
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -305,15 +235,15 @@
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.7 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.7 0 0);
-  --chart-2: oklch(0.6 0 0);
-  --chart-3: oklch(0.5 0 0);
-  --chart-4: oklch(0.8 0 0);
-  --chart-5: oklch(0.4 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.922 0 0);
