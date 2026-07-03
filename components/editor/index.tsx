@@ -31,7 +31,7 @@ import { PageNavigator } from "./page-navigator";
 import { ShareModal } from "./share-modal";
 import { VisualEditor } from "./visual-editor";
 import { AISupervisor } from "./ai-supervisor";
-import { Button } from "@hanzo/ui";
+import { Button, TooltipProvider } from "@hanzo/ui";
 
 export const AppEditor = ({
   project,
@@ -211,6 +211,7 @@ export const AppEditor = ({
   }, [pages, currentPage]);
 
   return (
+    <TooltipProvider>
     <section className="h-[100dvh] bg-neutral-950 flex flex-col">
       <Header tab={currentTab} onNewTab={setCurrentTab}>
         {currentTab === "preview" && (
@@ -518,5 +519,6 @@ export const AppEditor = ({
         projectName={project?.title || "Untitled Project"}
       />
     </section>
+    </TooltipProvider>
   );
 };
