@@ -344,7 +344,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
       <div className="min-h-screen h-screen overflow-y-auto bg-black flex items-center justify-center p-6">
         <div className="max-w-6xl w-full">
           <div className="text-center mb-12">
-            <div className="w-20 h-20 bg-gradient-to-br from-[#fd4444] to-[#ff6b6b] rounded-2xl flex items-center justify-center mb-6 mx-auto">
+            <div className="w-20 h-20 bg-gradient-to-br from-neutral-700 to-neutral-800 rounded-2xl flex items-center justify-center mb-6 mx-auto">
               <span className="text-white font-bold text-4xl">H</span>
             </div>
             <h1 className="text-4xl font-bold text-white mb-4">
@@ -428,7 +428,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                 <button
                   key={template.slug}
                   onClick={() => handleTemplateSelect(template)}
-                  className="flex flex-col overflow-hidden rounded-lg border border-neutral-800 bg-neutral-900 hover:border-[#fd4444]/50 hover:-translate-y-0.5 transition-all text-left group"
+                  className="flex flex-col overflow-hidden rounded-lg border border-neutral-800 bg-neutral-900 hover:border-white/50 hover:-translate-y-0.5 transition-all text-left group"
                 >
                   <div className="relative aspect-[16/10] bg-neutral-950 overflow-hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -460,7 +460,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {features.map((feature, i) => (
               <div key={i} className="text-center">
-                <div className="w-12 h-12 bg-neutral-900 rounded-lg flex items-center justify-center text-[#fd4444] mb-2 mx-auto">
+                <div className="w-12 h-12 bg-neutral-900 rounded-lg flex items-center justify-center text-white mb-2 mx-auto">
                   {feature.icon}
                 </div>
                 <p className="text-white text-sm font-medium">{feature.title}</p>
@@ -472,15 +472,15 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
           {/* Stats */}
           <div className="flex justify-center gap-8 mt-8 text-center">
             <div>
-              <p className="text-2xl font-bold text-[#fd4444]">10,000+</p>
+              <p className="text-2xl font-bold text-white">10,000+</p>
               <p className="text-xs text-gray-500">apps built</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-[#fd4444]">5ms</p>
+              <p className="text-2xl font-bold text-white">5ms</p>
               <p className="text-xs text-gray-500">generation</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-[#fd4444]">100+</p>
+              <p className="text-2xl font-bold text-white">100+</p>
               <p className="text-xs text-gray-500">AI models</p>
             </div>
           </div>
@@ -496,7 +496,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
         <div className="w-1/2 border-r border-neutral-800 p-6 overflow-y-auto">
           <div className="flex flex-col">
             <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#fd4444] to-[#ff6b6b] rounded-xl flex items-center justify-center mb-4 mx-auto animate-pulse">
+              <div className="w-16 h-16 bg-gradient-to-br from-neutral-700 to-neutral-800 rounded-xl flex items-center justify-center mb-4 mx-auto animate-pulse">
                 <span className="text-white font-bold text-2xl">H</span>
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">
@@ -512,7 +512,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
               <div className="mb-6">
                 <div className="flex justify-between text-sm mb-2">
                   <span className="text-gray-400">Progress</span>
-                  <span className="text-[#fd4444]">{Math.round(progress)}%</span>
+                  <span className="text-white">{Math.round(progress)}%</span>
                 </div>
                 <Progress value={progress} className="h-2" />
               </div>
@@ -527,18 +527,18 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                     className={cn(
                       "flex items-center gap-3 p-3 rounded-lg transition-all",
                       step.status === "thinking"
-                        ? "bg-[#fd4444]/10 border border-[#fd4444]/30"
+                        ? "bg-white/10 border border-white/30"
                         : "bg-neutral-900 border border-neutral-800 opacity-60"
                     )}
                   >
                     {step.status === "thinking" ? (
-                      <Loader2 className="w-4 h-4 text-[#fd4444] animate-spin" />
+                      <Loader2 className="w-4 h-4 text-white animate-spin" />
                     ) : (
                       <CheckCircle className="w-4 h-4 text-green-400" />
                     )}
                     <p className={cn(
                       "text-sm",
-                      step.status === "thinking" ? "text-[#ff6b6b]" : "text-gray-400"
+                      step.status === "thinking" ? "text-neutral-300" : "text-gray-400"
                     )}>
                       {step.text}
                     </p>
@@ -567,7 +567,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
         <div className="w-1/2 flex flex-col">
           <div className="p-4 border-b border-neutral-800">
             <div className="flex items-center gap-3">
-              <Terminal className="w-5 h-5 text-[#fd4444]" />
+              <Terminal className="w-5 h-5 text-white" />
               <div>
                 <h3 className="text-white font-medium">Development Plan</h3>
                 <p className="text-xs text-gray-500">Streaming line by line</p>
@@ -582,7 +582,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                   key={i}
                   className={cn(
                     "animate-fadeIn",
-                    line.startsWith("━") && "text-[#fd4444]",
+                    line.startsWith("━") && "text-white",
                     line.startsWith("  •") && "text-gray-400",
                     line.startsWith("  ✓") && "text-green-400",
                     line.startsWith("  →") && "text-blue-400",
@@ -596,7 +596,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                 </div>
               ))}
               {isStreaming && (
-                <span className="inline-block w-2 h-3 bg-[#fd4444] animate-pulse ml-1" />
+                <span className="inline-block w-2 h-3 bg-white animate-pulse ml-1" />
               )}
               <div ref={planEndRef} />
             </pre>
