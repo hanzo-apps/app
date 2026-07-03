@@ -468,7 +468,7 @@ export function VisualEditor({
         <div className="absolute top-20 right-4 z-50 w-80 bg-neutral-900/95 backdrop-blur-sm rounded-lg border border-purple-500/30 max-h-[600px] overflow-hidden flex flex-col">
           <div className="p-4 border-b border-neutral-800">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-semibold text-white">Element Properties</h3>
+              <h3 className="text-sm font-medium text-white">Element Properties</h3>
               <Button
                 variant="ghost"
                 size="sm"

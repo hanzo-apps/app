@@ -234,7 +234,7 @@ export default function AgentsPage() {
             <div className="flex flex-wrap items-center gap-3">
               <Link href="/" className="flex items-center gap-2">
                 <HanzoLogo className="w-8 h-8 text-purple-500" />
-                <span className="text-xl font-bold text-white">Agents</span>
+                <span className="text-xl font-medium text-white">Agents</span>
               </Link>
               {state.kind === "ready" && (
                 <Badge variant="outline" className="gap-1">
@@ -429,7 +429,7 @@ export default function AgentsPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className={cn("text-2xl font-bold", s.tone)}>{s.value}</p>
+                    <p className={cn("text-2xl font-medium", s.tone)}>{s.value}</p>
                   </CardContent>
                 </Card>
               ))}

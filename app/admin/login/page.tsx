@@ -80,7 +80,7 @@ export default function LoginPage() {
         </div>
 
         {/* Title */}
-        <h1 className="text-3xl font-semibold mb-2 tracking-tight">OSW Studio Admin</h1>
+        <h1 className="text-3xl font-medium mb-2 tracking-tight">OSW Studio Admin</h1>
         <p className="text-zinc-400 mb-8">Enter your password to continue</p>
 
         {/* Login Form */}

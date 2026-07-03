@@ -70,7 +70,7 @@ export function ErrorFallback({
                 <AlertCircle className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">
+                <h1 className="text-2xl font-medium text-white">
                   {level === 'app' ? 'Application Error' : 'Page Error'}
                 </h1>
                 <p className="text-red-100 text-sm mt-1">
@@ -86,7 +86,7 @@ export function ErrorFallback({
             {isDevelopment && (
               <div className="mb-6">
                 <div className="bg-neutral-100 dark:bg-neutral-900 rounded-lg p-4 mb-4">
-                  <h2 className="text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2">
+                  <h2 className="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
                     Error Details (Development Only)
                   </h2>
                   <p className="text-sm text-neutral-800 dark:text-neutral-200 font-mono break-all">

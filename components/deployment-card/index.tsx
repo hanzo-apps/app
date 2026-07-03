@@ -131,7 +131,7 @@ export function DeploymentCard({
       <div className="p-4">
         {/* Title and Description */}
         <div className="mb-3">
-          <h3 className="font-semibold text-lg truncate mb-1">{deployment.name}</h3>
+          <h3 className="font-medium text-lg truncate mb-1">{deployment.name}</h3>
           {project && (
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <Folder className="h-3 w-3" />

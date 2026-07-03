@@ -298,7 +298,7 @@ export default function PlaygroundPage() {
                 <ArrowLeft className="w-4 h-4" />
                 Back
               </Button>
-              <h1 className="text-2xl font-bold text-white">Playground</h1>
+              <h1 className="text-2xl font-medium text-white">Playground</h1>
               <Badge variant="outline">Compare Models</Badge>
             </div>
 

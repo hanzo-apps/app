@@ -196,7 +196,7 @@ function NewProjectInner() {
         />
 
         <section className="relative pt-16 text-center sm:pt-20">
-          <h1 className="text-balance text-4xl font-semibold tracking-[-0.02em] sm:text-5xl">
+          <h1 className="text-balance text-4xl font-medium tracking-[-0.02em] sm:text-5xl">
             Let&rsquo;s build something new
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-pretty text-base text-white/50 sm:text-lg">
@@ -282,7 +282,7 @@ function NewProjectInner() {
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 sm:p-6">
             <div className="mb-1 flex items-center gap-2">
               <Github className="h-[18px] w-[18px] text-white/70" />
-              <h2 className="text-[15px] font-semibold">Import Git Repository</h2>
+              <h2 className="text-[15px] font-medium">Import Git Repository</h2>
             </div>
             <p className="mb-5 text-sm text-white/45">
               Connect a repository and deploy it as a service, container, or
@@ -347,7 +347,7 @@ function NewProjectInner() {
             <div className="mb-4 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <Boxes className="h-[18px] w-[18px] text-white/70" />
-                <h2 className="text-[15px] font-semibold">Clone a Template</h2>
+                <h2 className="text-[15px] font-medium">Clone a Template</h2>
               </div>
               <div className="relative hidden w-40 sm:block">
                 <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/30" />

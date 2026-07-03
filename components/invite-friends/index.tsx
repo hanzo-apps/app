@@ -42,7 +42,7 @@ export function InviteFriends() {
                 😜
               </div>
             </div>
-            <p className="text-xl font-semibold text-neutral-950 max-w-[200px]">
+            <p className="text-xl font-medium text-neutral-950 max-w-[200px]">
               Invite your friends to join us!
             </p>
             <p className="text-sm text-neutral-500 mt-2 max-w-sm">

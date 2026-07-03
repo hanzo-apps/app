@@ -47,7 +47,7 @@ export default function GlobalError({
                     </svg>
                   </div>
                   <div>
-                    <h1 className="text-2xl font-bold text-white">Critical Error</h1>
+                    <h1 className="text-2xl font-medium text-white">Critical Error</h1>
                     <p className="text-red-100 text-sm mt-1">
                       The application encountered a critical error
                     </p>

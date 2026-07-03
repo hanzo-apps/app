@@ -74,7 +74,7 @@ export default function PricingPage() {
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-2.5">
               <HanzoLogo className="w-8 h-8 text-white" />
-              <span className="text-xl font-bold">Hanzo</span>
+              <span className="text-xl font-medium">Hanzo</span>
             </Link>
             <div className="hidden md:flex items-center gap-6">
               <Link href="/community" className="text-white/70 hover:text-white">Community</Link>
@@ -96,7 +96,7 @@ export default function PricingPage() {
             <Sparkles className="w-4 h-4 mr-2" />
             Simple, Transparent Pricing
           </Badge>
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+          <h1 className="text-4xl md:text-6xl font-medium mb-6">
             Choose the plan that{" "}
             <span className="bg-gradient-to-r from-[#171717] to-[#404040] bg-clip-text text-transparent">
               fits your needs
@@ -162,7 +162,7 @@ export default function PricingPage() {
                   }`}>
                     {plan.icon}
                   </div>
-                  <h3 className="text-2xl font-bold">{plan.name}</h3>
+                  <h3 className="text-2xl font-medium">{plan.name}</h3>
                 </div>
 
                 <p className="text-white/60 mb-6">{plan.description}</p>
@@ -170,7 +170,7 @@ export default function PricingPage() {
                 <div className="mb-8">
                   {typeof plan.price[billingCycle] === "number" ? (
                     <div className="flex items-baseline gap-2">
-                      <span className="text-4xl font-bold">
+                      <span className="text-4xl font-medium">
                         ${plan.price[billingCycle]}
                       </span>
                       <span className="text-white/60">
@@ -178,7 +178,7 @@ export default function PricingPage() {
                       </span>
                     </div>
                   ) : (
-                    <div className="text-4xl font-bold">{plan.price[billingCycle]}</div>
+                    <div className="text-4xl font-medium">{plan.price[billingCycle]}</div>
                   )}
                 </div>
 
@@ -214,30 +214,30 @@ export default function PricingPage() {
       {/* FAQ Section */}
       <section className="px-4 md:px-8 py-20 border-t border-white/10">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-medium text-center mb-12">
             Frequently Asked Questions
           </h2>
           <div className="space-y-6">
             <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-              <h3 className="text-xl font-semibold mb-3">Can I change plans anytime?</h3>
+              <h3 className="text-xl font-medium mb-3">Can I change plans anytime?</h3>
               <p className="text-white/60">
                 Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately, and we'll prorate any charges or credits.
               </p>
             </div>
             <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-              <h3 className="text-xl font-semibold mb-3">What payment methods do you accept?</h3>
+              <h3 className="text-xl font-medium mb-3">What payment methods do you accept?</h3>
               <p className="text-white/60">
                 We accept all major credit cards (Visa, MasterCard, American Express), as well as PayPal and wire transfers for enterprise customers.
               </p>
             </div>
             <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-              <h3 className="text-xl font-semibold mb-3">Is there a free trial for Pro plans?</h3>
+              <h3 className="text-xl font-medium mb-3">Is there a free trial for Pro plans?</h3>
               <p className="text-white/60">
                 Yes! All Pro plans come with a 14-day free trial. No credit card required to start.
               </p>
             </div>
             <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-              <h3 className="text-xl font-semibold mb-3">What happens if I exceed my limits?</h3>
+              <h3 className="text-xl font-medium mb-3">What happens if I exceed my limits?</h3>
               <p className="text-white/60">
                 We'll notify you when you're approaching your limits. You can upgrade your plan anytime to get more resources.
               </p>
@@ -249,7 +249,7 @@ export default function PricingPage() {
       {/* CTA Section */}
       <section className="px-4 md:px-8 py-20 text-center">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+          <h2 className="text-3xl md:text-4xl font-medium mb-6">
             Ready to build something amazing?
           </h2>
           <p className="text-xl text-white/60 mb-8">
@@ -269,7 +269,7 @@ export default function PricingPage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-8 mb-8 md:mb-12">
             {/* Product Column */}
             <div>
-              <h3 className="text-white font-semibold text-sm mb-3 md:mb-4">Product</h3>
+              <h3 className="text-white font-medium text-sm mb-3 md:mb-4">Product</h3>
               <ul className="space-y-2 md:space-y-3">
                 <li><Link href="/features" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Features</Link></li>
                 <li><Link href="/integrations" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Integrations</Link></li>
@@ -281,7 +281,7 @@ export default function PricingPage() {
 
             {/* Solutions Column */}
             <div>
-              <h3 className="text-white font-semibold text-sm mb-3 md:mb-4">Solutions</h3>
+              <h3 className="text-white font-medium text-sm mb-3 md:mb-4">Solutions</h3>
               <ul className="space-y-2 md:space-y-3">
                 <li><Link href="/startups" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">For Startups</Link></li>
                 <li><Link href="/enterprise" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">For Enterprise</Link></li>
@@ -293,7 +293,7 @@ export default function PricingPage() {
 
             {/* Resources Column */}
             <div>
-              <h3 className="text-white font-semibold text-sm mb-3 md:mb-4">Resources</h3>
+              <h3 className="text-white font-medium text-sm mb-3 md:mb-4">Resources</h3>
               <ul className="space-y-2 md:space-y-3">
                 <li><Link href="/docs" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Documentation</Link></li>
                 <li><Link href="/tutorials" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Tutorials</Link></li>
@@ -305,7 +305,7 @@ export default function PricingPage() {
 
             {/* Company Column */}
             <div>
-              <h3 className="text-white font-semibold text-sm mb-3 md:mb-4">Company</h3>
+              <h3 className="text-white font-medium text-sm mb-3 md:mb-4">Company</h3>
               <ul className="space-y-2 md:space-y-3">
                 <li><Link href="/about" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">About</Link></li>
                 <li><Link href="/careers" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Careers</Link></li>
@@ -317,7 +317,7 @@ export default function PricingPage() {
 
             {/* Support Column */}
             <div>
-              <h3 className="text-white font-semibold text-sm mb-3 md:mb-4">Support</h3>
+              <h3 className="text-white font-medium text-sm mb-3 md:mb-4">Support</h3>
               <ul className="space-y-2 md:space-y-3">
                 <li><Link href="/help" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Help Center</Link></li>
                 <li><Link href="/status" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Status</Link></li>
@@ -329,7 +329,7 @@ export default function PricingPage() {
 
             {/* Legal Column */}
             <div>
-              <h3 className="text-white font-semibold text-sm mb-3 md:mb-4">Legal</h3>
+              <h3 className="text-white font-medium text-sm mb-3 md:mb-4">Legal</h3>
               <ul className="space-y-2 md:space-y-3">
                 <li><Link href="/privacy" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Privacy</Link></li>
                 <li><Link href="/terms" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Terms</Link></li>
@@ -347,7 +347,7 @@ export default function PricingPage() {
               <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 text-center md:text-left">
                 <div className="flex items-center gap-3">
                   <HanzoLogo className="w-6 md:w-7 h-6 md:h-7 text-white" />
-                  <span className="text-base md:text-lg font-bold">Hanzo</span>
+                  <span className="text-base md:text-lg font-medium">Hanzo</span>
                 </div>
                 <span className="text-xs md:text-sm text-white/40">
                   © 2025 Hanzo AI, Inc. All rights reserved.

@@ -160,7 +160,7 @@ export default function Header() {
                 </Button>
                 <Button
                   onClick={() => login()}
-                  className="bg-white text-black hover:bg-white/90 text-sm font-semibold px-5 py-2.5 rounded-xl"
+                  className="bg-white text-black hover:bg-white/90 text-sm font-medium px-5 py-2.5 rounded-xl"
                 >
                   Get started
                 </Button>
@@ -315,7 +315,7 @@ export default function Header() {
                   </button>
                   <button
                     onClick={() => login()}
-                    className="w-full px-4 py-3 bg-white text-black hover:bg-white/90 rounded-lg font-semibold"
+                    className="w-full px-4 py-3 bg-white text-black hover:bg-white/90 rounded-lg font-medium"
                   >
                     Get started
                   </button>

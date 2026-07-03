@@ -91,7 +91,7 @@ export default function Navigation() {
       <nav className="grid grid-cols-2 p-4 container mx-auto">
         <Link href="/" className="flex items-center gap-2">
           <HanzoLogo className="w-9 h-9 text-white" />
-          <p className="font-sans text-white text-xl font-bold">Hanzo</p>
+          <p className="font-sans text-white text-xl font-medium">Hanzo</p>
         </Link>
         <ul className="items-center justify-center gap-6 hidden">
           {navigationLinks.map((link) => (

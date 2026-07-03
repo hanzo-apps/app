@@ -57,7 +57,7 @@ export function AboutModal({ open, onOpenChange }: AboutModalProps) {
           </section>
 
           <section>
-            <h3 className="font-semibold text-lg mb-3">Links & Community</h3>
+            <h3 className="font-medium text-lg mb-3">Links & Community</h3>
             <div className="flex flex-col gap-2">
               <a
                 href="https://discord.gg/mAJ8Ss4u"

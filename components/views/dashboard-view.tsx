@@ -761,7 +761,7 @@ export function DashboardView({ onNavigate, onProjectSelect, onStartTour }: Dash
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-xl font-semibold text-zinc-100">Dashboard</h1>
+            <h1 className="text-xl font-medium text-zinc-100">Dashboard</h1>
             {lastUpdated && (
               <p className="text-xs text-zinc-500 mt-0.5">
                 Updated {lastUpdated.toLocaleTimeString()}
@@ -802,7 +802,7 @@ export function DashboardView({ onNavigate, onProjectSelect, onStartTour }: Dash
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-xl font-semibold text-zinc-100">Dashboard</h1>
+            <h1 className="text-xl font-medium text-zinc-100">Dashboard</h1>
             {lastUpdated && (
               <p className="text-xs text-zinc-500 mt-0.5">
                 Updated {lastUpdated.toLocaleTimeString()}

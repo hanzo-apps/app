@@ -166,7 +166,7 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
           ) : (
             <Bug className="hidden h-4 w-4 md:inline-flex" />
           )}
-          <span className="font-semibold text-sm">Debug Events</span>
+          <span className="font-medium text-sm">Debug Events</span>
           <span className="text-xs text-muted-foreground">
             ({filteredEvents.length}/{events.length})
           </span>
@@ -334,7 +334,7 @@ function EventItem({ event }: { event: DebugEvent }) {
         <div className="flex items-center gap-2 p-1.5 rounded hover:bg-muted/50 text-xs">
           {isOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
           <span className="text-muted-foreground font-mono">{time}</span>
-          <span className={`font-semibold ${getEventColor(event.event)}`}>
+          <span className={`font-medium ${getEventColor(event.event)}`}>
             {event.event}
           </span>
           {event.count && event.count > 1 && (
