@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useIam } from '@hanzo/iam/react';
-import { HanzoLogo } from '@/components/HanzoLogo';
+import { HanzoBrand } from '@/components/HanzoLogo';
 import { Loader2, Sparkles, Zap, Monitor, Apple, Terminal, Smartphone } from 'lucide-react';
 
 /**
@@ -53,7 +53,7 @@ export default function LoginPage() {
       <nav className="absolute top-0 left-0 right-0 z-50">
         <div className="max-w-[1400px] mx-auto px-6 py-5 flex items-center justify-between">
           <Link href="/" className="flex items-center">
-            <HanzoLogo className="w-8 h-8 text-white" />
+            <HanzoBrand className="text-white" markClassName="w-8 h-8" />
           </Link>
         </div>
       </nav>
@@ -64,7 +64,11 @@ export default function LoginPage() {
         <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-20">
           <div className="w-full max-w-md text-center">
             <div className="flex justify-center mb-10">
-              <HanzoLogo className="w-12 h-12 text-white" />
+              <HanzoBrand
+                className="text-white"
+                markClassName="w-11 h-11"
+                wordmarkClassName="text-3xl"
+              />
             </div>
 
             <h1 className="text-4xl font-bold mb-4 tracking-tight">Welcome back</h1>

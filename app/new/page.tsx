@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@hanzo/ui";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@hanzo/ui";
@@ -12,118 +12,21 @@ import {
   GitlabIcon,
   Globe,
   ArrowRight,
-  Sparkles,
-  ShoppingCart,
-  Bot,
-  BarChart3,
-  Video,
-  PenTool,
-  FileText,
-  Layers,
-  MessageCircle,
-  Bitcoin,
   Loader2,
   ChevronRight,
-  ExternalLink
+  CloudOff,
 } from "lucide-react";
 import Link from "next/link";
-import { HanzoLogo } from "@/components/HanzoLogo";
+import { HanzoBrand } from "@/components/HanzoLogo";
+import {
+  fetchGalleryTemplates,
+  templateBuilderLink,
+  type GalleryTemplate,
+} from "@/lib/api/templates";
 import { UserMenu } from "@/components/user-menu";
 import { useUser } from "@/hooks/useUser";
 import { OrgProvider } from "@/lib/org/client";
 import { OrgGate, OrgSwitcher } from "@/components/org-switcher";
-
-const templates = [
-  {
-    id: "ai-chat-interface",
-    name: "AI Chatbot",
-    description: "Interactive chat interface with AI capabilities",
-    icon: <Bot className="w-5 h-5" />,
-    color: "from-blue-500 to-purple-600",
-    category: "AI"
-  },
-  {
-    id: "ecommerce-storefront",
-    name: "Commerce",
-    description: "Modern e-commerce storefront with cart",
-    icon: <ShoppingCart className="w-5 h-5" />,
-    color: "from-green-500 to-emerald-600",
-    category: "Commerce"
-  },
-  {
-    id: "analytics-dashboard",
-    name: "Analytics Dashboard",
-    description: "Data visualization and metrics dashboard",
-    icon: <BarChart3 className="w-5 h-5" />,
-    color: "from-[#171717] to-[#404040]",
-    category: "Analytics"
-  },
-  {
-    id: "video-streaming",
-    name: "Video Platform",
-    description: "Video streaming platform with playlists",
-    icon: <Video className="w-5 h-5" />,
-    color: "from-red-500 to-orange-600",
-    category: "Media"
-  },
-  {
-    id: "blog-platform",
-    name: "Blog Platform",
-    description: "Content management and blogging platform",
-    icon: <FileText className="w-5 h-5" />,
-    color: "from-[#171717] to-[#404040]",
-    category: "Content"
-  },
-  {
-    id: "kanban-board",
-    name: "Kanban Board",
-    description: "Project management with drag-and-drop",
-    icon: <Layers className="w-5 h-5" />,
-    color: "from-yellow-500 to-orange-600",
-    category: "Productivity"
-  },
-  {
-    id: "social-feed",
-    name: "Social Feed",
-    description: "Social media feed with interactions",
-    icon: <MessageCircle className="w-5 h-5" />,
-    color: "from-pink-500 to-rose-600",
-    category: "Social"
-  },
-  {
-    id: "crypto-portfolio",
-    name: "Crypto Portfolio",
-    description: "Cryptocurrency portfolio tracker",
-    icon: <Bitcoin className="w-5 h-5" />,
-    color: "from-orange-500 to-red-600",
-    category: "Finance"
-  },
-  {
-    id: "markdown-editor",
-    name: "Markdown Editor",
-    description: "Real-time markdown editor with preview",
-    icon: <PenTool className="w-5 h-5" />,
-    color: "from-gray-600 to-gray-800",
-    category: "Tools"
-  },
-  {
-    id: "saas-landing",
-    name: "SaaS Landing",
-    description: "Modern SaaS landing page template",
-    icon: <Globe className="w-5 h-5" />,
-    color: "from-teal-500 to-cyan-600",
-    category: "Marketing"
-  }
-];
-
-const frameworks = [
-  { id: "next", name: "Next.js", icon: "▲" },
-  { id: "react", name: "React", icon: "⚛️" },
-  { id: "vue", name: "Vue", icon: "🟢" },
-  { id: "svelte", name: "Svelte", icon: "🔥" },
-  { id: "astro", name: "Astro", icon: "🚀" },
-  { id: "remix", name: "Remix", icon: "💿" },
-];
 
 export default function NewProjectPage() {
   // Establish an org BEFORE any project is created: a zero-org user is gated
@@ -143,7 +46,25 @@ function NewProjectInner() {
   const { user } = useUser();
   const [repoUrl, setRepoUrl] = useState("");
   const [loading, setLoading] = useState(false);
-  const [selectedFramework, setSelectedFramework] = useState("next");
+
+  // Real starter-kit gallery (hanzoai/gallery via the /v1/templates BFF). Always
+  // resolves — an unreachable/empty gallery yields the honest local fallback.
+  const [templates, setTemplates] = useState<GalleryTemplate[]>([]);
+  const [galleryLive, setGalleryLive] = useState(true);
+  const [galleryLoading, setGalleryLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    fetchGalleryTemplates().then(({ templates, live }) => {
+      if (!active) return;
+      setTemplates(templates);
+      setGalleryLive(live);
+      setGalleryLoading(false);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleImport = (provider: string) => {
     if (!repoUrl.trim()) return;
@@ -158,15 +79,11 @@ function NewProjectInner() {
     router.push(url.toString());
   };
 
-  const handleTemplate = (templateId: string) => {
+  // Seed the builder from a real gallery template via the existing
+  // /dev?template=<source> wire (source = the template's gallery URL).
+  const handleTemplate = (source: string) => {
     setLoading(true);
-
-    // Navigate to /dev with the template
-    const url = new URL("/dev", window.location.origin);
-    url.searchParams.set("template", `https://github.com/Hanzo-Community/template-${templateId}`);
-    url.searchParams.set("action", "deploy");
-
-    router.push(url.toString());
+    router.push(templateBuilderLink(source));
   };
 
   return (
@@ -177,8 +94,7 @@ function NewProjectInner() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-8">
               <Link href="/" className="flex items-center gap-2">
-                <HanzoLogo className="w-8 h-8" />
-                <span className="font-semibold text-lg">Hanzo</span>
+                <HanzoBrand markClassName="w-8 h-8" />
               </Link>
 
               <nav className="hidden md:flex items-center gap-6">
@@ -268,7 +184,7 @@ function NewProjectInner() {
 
                   <Button
                     onClick={() => handleImport("gitlab")}
-                    className="w-full bg-purple-600/10 hover:bg-purple-600/20 text-purple-400 border border-purple-600/20"
+                    className="w-full bg-white/5 hover:bg-white/10 text-white/80 border border-white/10"
                     disabled={loading || !repoUrl.trim()}
                   >
                     {loading ? (
@@ -281,7 +197,7 @@ function NewProjectInner() {
 
                   <Button
                     onClick={() => handleImport("bitbucket")}
-                    className="w-full bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 border border-blue-600/20"
+                    className="w-full bg-white/5 hover:bg-white/10 text-white/80 border border-white/10"
                     disabled={loading || !repoUrl.trim()}
                   >
                     {loading ? (
@@ -310,52 +226,72 @@ function NewProjectInner() {
           <div>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold">Clone Template</h2>
-              <select
-                className="bg-gray-900 border border-gray-800 text-white text-sm rounded-lg px-3 py-1.5 focus:border-gray-700 outline-none"
-                value={selectedFramework}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedFramework(e.target.value)}
-              >
-                <option value="all">All Frameworks</option>
-                {frameworks.map((fw) => (
-                  <option key={fw.id} value={fw.id}>
-                    {fw.icon} {fw.name}
-                  </option>
-                ))}
-              </select>
+              <span className="text-xs text-gray-500">
+                {galleryLoading
+                  ? "Loading gallery…"
+                  : `${templates.length} starter${templates.length === 1 ? "" : "s"}`}
+              </span>
             </div>
 
+            {!galleryLoading && !galleryLive && (
+              <div className="mb-4 flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2.5 text-xs text-amber-300">
+                <CloudOff className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>
+                  Showing built-in starters — the live template gallery is
+                  unreachable right now.
+                </span>
+              </div>
+            )}
+
             <div className="grid md:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-              {templates.map((template) => (
-                <Card
-                  key={template.id}
-                  className="bg-gray-900/50 border-gray-800 backdrop-blur-sm hover:border-gray-700 transition-all cursor-pointer group"
-                  onClick={() => handleTemplate(template.id)}
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <div className={`p-2 rounded-lg bg-gradient-to-br ${template.color} bg-opacity-10`}>
-                        {template.icon}
-                      </div>
-                      <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-white transition-colors" />
-                    </div>
-                    <CardTitle className="text-base">{template.name}</CardTitle>
-                    <CardDescription className="text-xs text-gray-400">
-                      {template.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-500">{template.category}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-500 flex items-center gap-1">
-                          <Sparkles className="w-3 h-3" />
-                          AI Enhanced
-                        </span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+              {galleryLoading
+                ? Array.from({ length: 6 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-40 rounded-xl border border-gray-800 bg-gray-900/50 animate-pulse"
+                    />
+                  ))
+                : templates.map((template) => (
+                    <Card
+                      key={template.slug}
+                      className="bg-gray-900/50 border-gray-800 backdrop-blur-sm hover:border-gray-600 transition-all cursor-pointer group overflow-hidden"
+                      onClick={() => handleTemplate(template.source)}
+                    >
+                      <CardHeader className="pb-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <CardTitle className="text-base leading-tight">
+                            {template.title}
+                          </CardTitle>
+                          <ArrowRight className="w-4 h-4 shrink-0 text-gray-500 group-hover:text-white transition-colors" />
+                        </div>
+                        {template.description && (
+                          <CardDescription className="text-xs text-gray-400 line-clamp-2">
+                            {template.description}
+                          </CardDescription>
+                        )}
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        {template.features.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5">
+                            {template.features.slice(0, 3).map((f) => (
+                              <span
+                                key={f}
+                                className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-gray-300"
+                              >
+                                {f}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-xs text-gray-500 truncate">{template.category}</span>
+                          {template.framework && (
+                            <span className="text-xs text-gray-500 truncate">{template.framework}</span>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
             </div>
 
             <div className="mt-6">
