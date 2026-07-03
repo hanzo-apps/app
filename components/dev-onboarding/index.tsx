@@ -30,6 +30,7 @@ import { Badge } from "@hanzo/ui";
 import { Progress } from "@hanzo/ui";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { HanzoLogo } from "@/components/HanzoLogo";
 
 interface DevOnboardingProps {
   initialPrompt?: string;
@@ -393,7 +394,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
         <div className="max-w-6xl w-full">
           <div className="text-center mb-12">
             <div className="w-20 h-20 bg-gradient-to-br from-[#171717] to-[#404040] rounded-2xl flex items-center justify-center mb-6 mx-auto">
-              <span className="text-white font-bold text-4xl">H</span>
+              <HanzoLogo className="w-10 h-10 text-white" />
             </div>
             <h1 className="text-4xl font-bold text-white mb-4">
               Welcome to Hanzo AI ✨
@@ -578,7 +579,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
           <div className="flex flex-col">
             <div className="text-center mb-6">
               <div className="w-16 h-16 bg-gradient-to-br from-[#171717] to-[#404040] rounded-xl flex items-center justify-center mb-4 mx-auto animate-pulse">
-                <span className="text-white font-bold text-2xl">H</span>
+                <HanzoLogo className="w-8 h-8 text-white" />
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">
                 {stage === "planning" ? "Building your app..." : "Ready to build! 🚀"}
