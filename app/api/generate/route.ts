@@ -13,7 +13,8 @@ import { getProvider, getDefaultModel } from '@/lib/llm/providers/registry';
 import { LLMMessage, ToolDefinition, ContentBlock, TextContentBlock, ImageContentBlock } from '@/lib/llm/types';
 import { logger } from '@/lib/utils';
 import { handleCodexGeneration } from '@/lib/llm/codex-adapter';
-import { resolveOrgIdentity, effectiveOrg } from '@/lib/org/server';
+import { resolveScope } from '@/lib/org/server';
+import { requireSameOrigin } from '@/lib/org/csrf';
 
 // Helper to extract text content from string or ContentBlock[]
 function getTextContent(content: string | ContentBlock[]): string {
@@ -163,6 +164,10 @@ function extractOllamaImages(messages: LLMMessage[]): { processedMessages: LLMMe
 }
 
 export async function POST(request: NextRequest) {
+  // CSRF: a mutating, org-attributed generation — refuse a cross-origin POST.
+  const csrf = requireSameOrigin(request);
+  if (csrf) return csrf;
+
   try {
     const { prompt, apiKey: clientApiKey, model, tools, context, messages, tool_choice, provider, max_tokens, reasoning, stream: requestStream } = await request.json();
 
@@ -266,9 +271,11 @@ Habits:
     // never blocks a generation.
     if (selectedProvider === 'hanzo') {
       try {
-        const oid = await resolveOrgIdentity(request);
-        const org = oid ? effectiveOrg(request, oid) : '';
-        if (org) headers['X-Org-Id'] = org;
+        // Stamp X-Org-Id ONLY for a validated global admin acting cross-org — never
+        // from an unverified same-org claim (the gateway derives the org from the
+        // key/token owner for a normal user). Best-effort; never blocks generation.
+        const scope = await resolveScope(request);
+        if (scope?.crossOrg) headers['X-Org-Id'] = scope.org;
       } catch {
         /* attribution is best-effort */
       }

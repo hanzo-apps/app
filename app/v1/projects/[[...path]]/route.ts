@@ -24,6 +24,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
 import { forwardProjects } from '@/lib/org/server';
+import { requireSameOrigin } from '@/lib/org/csrf';
 
 export const runtime = 'nodejs';
 
@@ -31,18 +32,28 @@ interface Ctx {
   params: Promise<{ path?: string[] }>;
 }
 
-/** Reject any traversal/escape so the forward stays under /v1/projects. */
+/** Reject any traversal/escape so the forward stays under /v1/projects. A
+ *  malformed percent-escape (decodeURIComponent throws) is treated as hostile
+ *  → rejected as invalid (400), never a 500. */
 function cleanSubpath(segments: string[] | undefined): string | null {
   if (!segments || segments.length === 0) return '';
   for (const s of segments) {
     if (!s) continue;
-    const lower = decodeURIComponent(s).toLowerCase();
+    let decoded: string;
+    try {
+      decoded = decodeURIComponent(s);
+    } catch {
+      return null; // malformed % escape → reject
+    }
+    const lower = decoded.toLowerCase();
+    const raw = s.toLowerCase();
     if (
       lower === '..' ||
       lower.includes('/') ||
       lower.includes('\\') ||
-      lower.includes('%2e') ||
-      lower.includes('%2f')
+      raw.includes('%2e') ||
+      raw.includes('%2f') ||
+      raw.includes(';')
     ) {
       return null;
     }
@@ -60,6 +71,11 @@ async function subpathOf(req: NextRequest, ctx: Ctx): Promise<string | null> {
 }
 
 async function proxy(req: NextRequest, ctx: Ctx, method: string, withBody: boolean) {
+  // CSRF: a cross-origin mutating request (POST/PATCH/DELETE) is refused BEFORE
+  // any identity/forward work. GET is a no-op here.
+  const csrf = requireSameOrigin(req);
+  if (csrf) return csrf;
+
   const sub = await subpathOf(req, ctx);
   if (sub === null) return NextResponse.json({ error: 'invalid path' }, { status: 400 });
 
