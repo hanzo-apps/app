@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@hanzo/ui";
 import { Badge } from "@hanzo/ui";
 import Link from "next/link";
-import { HanzoLogo } from "@/components/HanzoLogo";
+import { HanzoBrand } from "@/components/HanzoLogo";
 import Header from "@/components/layout/header";
 import { UserMenu } from "@/components/user-menu";
 import {
@@ -182,7 +182,7 @@ export default function LandingPage() {
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0a] to-[#0a0a0a]" />
         <div className="absolute top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[800px] bg-gradient-radial from-[#171717]/15 via-[#404040]/5 to-transparent blur-3xl animate-pulse" />
-        <div className="absolute bottom-0 left-0 right-0 h-[600px] bg-gradient-to-t from-blue-500/10 via-[#404040]/5 to-transparent blur-3xl" />
+        <div className="absolute bottom-0 left-0 right-0 h-[600px] bg-gradient-to-t from-white/[0.06] via-white/[0.02] to-transparent blur-3xl" />
       </div>
 
       {/* Navigation Header */}
@@ -200,10 +200,10 @@ export default function LandingPage() {
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6">
               Build something{" "}
               <span className="relative inline-block">
-                <span className="bg-gradient-to-r from-[#171717] via-[#404040] to-pink-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-white via-white to-white/60 bg-clip-text text-transparent">
                   amazing
                 </span>
-                <div className="absolute -inset-2 bg-gradient-to-r from-[#171717]/20 via-[#404040]/20 to-pink-400/20 blur-2xl -z-10" />
+                <div className="absolute -inset-2 bg-gradient-to-r from-white/10 via-white/10 to-white/5 blur-2xl -z-10" />
               </span>
             </h1>
             <p className="text-lg md:text-xl text-white/60 mb-8 md:mb-16 max-w-2xl mx-auto px-4">
@@ -215,7 +215,7 @@ export default function LandingPage() {
               <div className={`relative bg-[#141414] rounded-xl md:rounded-2xl shadow-2xl border transition-all duration-300 ${
                 inputFocused ? 'border-[#171717]/50 shadow-[#171717]/20' : 'border-white/10'
               }`}>
-                <div className="absolute -inset-[1px] bg-gradient-to-r from-[#171717]/20 via-[#404040]/20 to-pink-500/20 rounded-xl md:rounded-2xl blur opacity-0 transition-opacity duration-300"
+                <div className="absolute -inset-[1px] bg-gradient-to-r from-white/20 via-white/10 to-white/20 rounded-xl md:rounded-2xl blur opacity-0 transition-opacity duration-300"
                   style={{ opacity: inputFocused ? 0.6 : 0 }}
                 />
                 <div className="relative flex flex-col md:flex-row items-stretch md:items-center gap-3 p-3 md:p-4">
@@ -339,7 +339,7 @@ export default function LandingPage() {
                     </div>
                   )}
                   <div className="bg-[#1a1a1a] rounded-xl md:rounded-2xl overflow-hidden border border-white/10 hover:border-[#171717]/50 transition-all duration-300 hover:shadow-2xl hover:shadow-[#171717]/10 hover:-translate-y-1">
-                    <div className="aspect-video bg-gradient-to-br from-[#171717]/30 via-[#404040]/30 to-pink-900/30 relative overflow-hidden">
+                    <div className="aspect-video bg-gradient-to-br from-white/10 via-white/[0.04] to-white/10 relative overflow-hidden">
                       <div className="absolute inset-0 flex items-center justify-center">
                         <span className="text-4xl md:text-6xl">{project.authorAvatar}</span>
                       </div>
@@ -532,8 +532,11 @@ export default function LandingPage() {
               {/* Logo and Copyright */}
               <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 text-center md:text-left">
                 <div className="flex items-center gap-3">
-                  <HanzoLogo className="w-6 md:w-7 h-6 md:h-7 text-white" />
-                  <span className="text-base md:text-lg font-bold">Hanzo</span>
+                  <HanzoBrand
+                    className="text-white"
+                    markClassName="w-6 md:w-7 h-6 md:h-7"
+                    wordmarkClassName="text-base md:text-lg font-bold"
+                  />
                 </div>
                 <span className="text-xs md:text-sm text-white/40">
                   © 2025 Hanzo AI, Inc. All rights reserved.
