@@ -73,7 +73,7 @@ export default function TemplateGallery() {
       <header className="border-b border-neutral-900 bg-gradient-to-b from-neutral-950 to-black">
         <div className="container mx-auto px-6 py-10">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#fd4444] to-[#e03e3e] flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center">
               <Sparkles className="w-6 h-6 text-white" />
             </div>
             <h1 className="text-3xl font-bold">Hanzo Templates</h1>
@@ -100,7 +100,7 @@ export default function TemplateGallery() {
               />
             </div>
             <Button
-              className="h-12 gap-2 bg-gradient-to-r from-[#fd4444] to-[#e03e3e] hover:from-[#e03e3e] hover:to-[#fd4444]"
+              className="h-12 gap-2 bg-gradient-to-r from-neutral-700 to-neutral-900 hover:from-neutral-900 hover:to-neutral-700"
               onClick={startFromPrompt}
               disabled={!prompt.trim()}
             >
@@ -132,7 +132,7 @@ export default function TemplateGallery() {
                   onClick={() => setSelectedCategory(cat)}
                   className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                     selectedCategory === cat
-                      ? "bg-[#fd4444] text-white"
+                      ? "bg-white text-black"
                       : "bg-neutral-900 text-neutral-400 hover:bg-neutral-800 hover:text-white"
                   }`}
                 >
@@ -153,7 +153,7 @@ export default function TemplateGallery() {
           {filtered.map((t) => (
             <div
               key={t.slug}
-              className="group flex flex-col overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/50 hover:border-[#fd4444]/50 hover:-translate-y-1 transition-all"
+              className="group flex flex-col overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/50 hover:border-white/50 hover:-translate-y-1 transition-all"
             >
               {/* Real preview screenshot */}
               <a
@@ -190,7 +190,7 @@ export default function TemplateGallery() {
                   <a href={forkHref(t)} className="flex-1">
                     <Button
                       size="sm"
-                      className="w-full gap-1 bg-gradient-to-r from-[#fd4444] to-[#e03e3e] hover:from-[#e03e3e] hover:to-[#fd4444]"
+                      className="w-full gap-1 bg-gradient-to-r from-neutral-700 to-neutral-900 hover:from-neutral-900 hover:to-neutral-700"
                     >
                       <Code className="w-3 h-3" />
                       Fork &amp; Edit
@@ -220,7 +220,7 @@ export default function TemplateGallery() {
                     setSelectedCategory("All");
                     setSearchQuery("");
                   }}
-                  className="mt-2 text-[#fd4444]"
+                  className="mt-2 text-white"
                 >
                   Clear filters
                 </Button>
@@ -238,7 +238,7 @@ export default function TemplateGallery() {
             Describe your app and Hanzo builds it from scratch — deployed live in minutes.
           </p>
           <Button
-            className="gap-2 bg-gradient-to-r from-[#fd4444] to-[#e03e3e] hover:from-[#e03e3e] hover:to-[#fd4444]"
+            className="gap-2 bg-gradient-to-r from-neutral-700 to-neutral-900 hover:from-neutral-900 hover:to-neutral-700"
             onClick={() => router.push("/dev")}
           >
             <Rocket className="w-4 h-4" />
