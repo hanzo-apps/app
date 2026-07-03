@@ -58,16 +58,34 @@ export interface OrgIdentity {
   homeOrg: string;
   /** Human display name for the home org, when the token carries it. */
   homeOrgDisplay: string;
-  /** True for an `admin`-org member (may act across tenants). */
+  /**
+   * True for an `admin`-org member (may act across tenants). ONLY ever true on
+   * the VALIDATED path (IAM userinfo proved the bearer genuinely IAM-signed) —
+   * NEVER set from an unverified `decodeJwt`, so a forged unsigned JWT
+   * `{"owner":"admin","isGlobalAdmin":true}` can never drive a privileged
+   * decision here.
+   */
   isGlobalAdmin: boolean;
+  /** True once the bearer was validated against IAM (userinfo). */
+  validated: boolean;
 }
 
-/** Read the IAM bearer from the httpOnly cookie or an Authorization header. */
+/**
+ * Read the IAM bearer. In PRODUCTION the BFFs are COOKIE-ONLY (the httpOnly
+ * `hanzo_token` set by our OAuth callback) — a client-supplied `Authorization`
+ * header is IGNORED, so a caller can never inject a bearer to make this server a
+ * confused deputy that stamps a privileged cross-org header on its behalf. The
+ * header is honored ONLY outside production, for local curl/testing. (Note: even
+ * so, a value read here is NEVER trusted for privilege — admin status requires
+ * IAM validation; see resolveOrgIdentity.)
+ */
 export function readBearer(req: NextRequest): string | null {
   const cookie = req.cookies.get(TOKEN_COOKIE)?.value;
   if (cookie) return cookie;
-  const header = req.headers.get('authorization');
-  if (header) return header.startsWith('Bearer ') ? header.slice(7) : header;
+  if (process.env.NODE_ENV !== 'production') {
+    const header = req.headers.get('authorization');
+    if (header) return header.startsWith('Bearer ') ? header.slice(7) : header;
+  }
   return null;
 }
 
@@ -128,6 +146,7 @@ export async function resolveOrgIdentity(
         homeOrg: 'local',
         homeOrgDisplay: 'Local Workspace',
         isGlobalAdmin: false,
+        validated: false,
       };
     }
     return null;
@@ -135,11 +154,13 @@ export async function resolveOrgIdentity(
 
   const claims = decodeOwner(token);
 
-  // Optional authoritative liveness check (revocation-aware). On the hot path we
-  // trust the httpOnly-cookie provenance + the gateway's downstream verify.
+  // Authoritative liveness check (revocation-aware). On the hot path (validate
+  // off) we do NOT round-trip IAM — but then we also do NOT trust any privileged
+  // claim: isGlobalAdmin stays FALSE unless the bearer was validated here.
   let sub = claims?.name || '';
   let email = claims?.email || '';
   let name = claims?.name || '';
+  let validated = false;
   if (opts.validate) {
     const info = await fetchIamUser(token);
     if (!info) {
@@ -153,17 +174,23 @@ export async function resolveOrgIdentity(
           homeOrg: 'local',
           homeOrgDisplay: 'Local Workspace',
           isGlobalAdmin: false,
+          validated: false,
         };
       }
       return null;
     }
+    // userinfo 200 ⇒ the bearer is genuinely IAM-signed + not revoked, so the
+    // claims decoded from that SAME token are authoritative.
+    validated = true;
     sub = info.sub;
     name = info.preferred_username || info.name || info.sub;
     email = info.email || email;
   }
 
   const homeOrg = (claims?.owner || '').trim();
-  const isGlobalAdmin = homeOrg === ADMIN_ORG || claims?.isGlobalAdmin === true;
+  // Privilege is granted ONLY from a validated bearer — never from an
+  // unverified decodeJwt (a forged unsigned JWT decodes fine but fails userinfo).
+  const isGlobalAdmin = validated && (homeOrg === ADMIN_ORG || claims?.isGlobalAdmin === true);
 
   return {
     token,
@@ -173,20 +200,56 @@ export async function resolveOrgIdentity(
     homeOrg,
     homeOrgDisplay: claims?.displayName || homeOrg,
     isGlobalAdmin,
+    validated,
   };
 }
 
 /**
- * The effective org for a request — what every scoped call attributes to.
+ * The scoping decision for a BFF request — the ONE place cross-org is authorized.
  *
- * The client stamps its selected org as `X-Org-Id` (from `lib/org-scope`, exactly
- * like console2's client). A NORMAL user is PINNED to their home org — the header
- * is IGNORED — which is exactly what the cloud gateway enforces, so we never lie
- * about scope. Only a GLOBAL ADMIN may override the scope via `X-Org-Id` (cloud
- * honors it only for admin-org members). Returns '' for a zero-org user.
+ * Default scope is the caller's home org (the bearer owner; the gateway re-derives
+ * it, so this is always safe). A DIFFERENT org (`X-Org-Id`) is honored ONLY after
+ * IAM validation proves the caller is a global admin — so a forged unsigned JWT or
+ * a client-set header can never make this server stamp `X-Org-Id: victim-org`. The
+ * common case (no header / own org) pays NO validation round-trip; only an actual
+ * cross-org request triggers the authoritative check.
+ */
+export interface Scope {
+  /** The bearer to forward upstream. */
+  token: string;
+  /** The caller's home org (bearer owner). */
+  homeOrg: string;
+  /** The org to scope/attribute this call to (owner, or a validated admin's target). */
+  org: string;
+  /** True only when a validated global admin is acting cross-org. */
+  crossOrg: boolean;
+}
+
+export async function resolveScope(req: NextRequest): Promise<Scope | null> {
+  const base = await resolveOrgIdentity(req); // hot path: isGlobalAdmin=false
+  if (!base) return null;
+  const requested = req.headers.get('x-org-id')?.trim();
+  if (!requested || requested === base.homeOrg) {
+    return { token: base.token, homeOrg: base.homeOrg, org: base.homeOrg, crossOrg: false };
+  }
+  // A cross-org request MUST be a validated global admin.
+  const v = await resolveOrgIdentity(req, { validate: true });
+  if (v?.isGlobalAdmin) {
+    return { token: v.token, homeOrg: v.homeOrg, org: requested, crossOrg: true };
+  }
+  // Forged / unauthorized cross-org header — ignore it, pin to owner.
+  return { token: base.token, homeOrg: base.homeOrg, org: base.homeOrg, crossOrg: false };
+}
+
+/**
+ * The effective org for an ALREADY-VALIDATED identity (used by routes that call
+ * `resolveOrgIdentity({validate:true})` — /v1/orgs, /onboard, /v1/publish). A
+ * cross-org `X-Org-Id` is honored only when the VALIDATED identity is a global
+ * admin. NEVER call this with a non-validated identity (isGlobalAdmin is false
+ * there, so it fail-closes to the home org anyway). Hot paths use `resolveScope`.
  */
 export function effectiveOrg(req: NextRequest, id: OrgIdentity): string {
-  if (id.isGlobalAdmin) {
+  if (id.validated && id.isGlobalAdmin) {
     const override = req.headers.get('x-org-id')?.trim();
     if (override) return override;
   }
@@ -242,18 +305,17 @@ export async function forwardProjects(
   subpath: string,
   init: { method: string; body?: BodyInit | null; contentType?: string },
 ): Promise<Response> {
-  const id = await resolveOrgIdentity(req);
-  if (!id) return jsonError('Unauthorized', 401);
+  const scope = await resolveScope(req);
+  if (!scope) return jsonError('Unauthorized', 401);
 
   const headers: Record<string, string> = {
-    Authorization: `Bearer ${id.token}`,
+    Authorization: `Bearer ${scope.token}`,
     Accept: 'application/json',
   };
   if (init.contentType) headers['Content-Type'] = init.contentType;
 
-  const org = effectiveOrg(req, id);
-  // Only meaningful for a global admin; ignored (re-pinned to owner) otherwise.
-  if (id.isGlobalAdmin && org && org !== id.homeOrg) headers['X-Org-Id'] = org;
+  // Stamp X-Org-Id ONLY for a validated global admin acting cross-org.
+  if (scope.crossOrg) headers['X-Org-Id'] = scope.org;
 
   const url = `${cloudBase()}/v1/projects${subpath}`;
   try {
