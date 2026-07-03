@@ -170,8 +170,8 @@ export default function TemplateGallery() {
                     (e.currentTarget as HTMLImageElement).style.display = "none";
                   }}
                 />
-                <div className="absolute top-2 left-2 flex items-center gap-1 rounded-full bg-black/70 px-2 py-0.5 text-[11px] text-amber-300">
-                  <Star className="w-3 h-3 fill-amber-300" />
+                <div className="absolute top-2 left-2 flex items-center gap-1 rounded-full bg-black/70 px-2 py-0.5 text-[11px] text-neutral-200">
+                  <Star className="w-3 h-3 fill-neutral-200" />
                   {t.rating}
                 </div>
                 <Badge className="absolute top-2 right-2 bg-black/70 text-white border-neutral-700 text-[11px]">
