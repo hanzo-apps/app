@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+target/
+*.app
+*.dmg
+*.exe
+*.deb
+*.AppImage
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Turbo
+.turbo/
+
+# Test coverage
+coverage/
+
+# Mobile
+*.ipa
+*.apk
+*.aab
+ios/Pods/
+android/.gradle/
+android/app/build/
+
+# Rust
+Cargo.lock
+target/
+**/*.rs.bk
+
+# Misc
+.cache/
+tmp/

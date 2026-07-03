@@ -1,0 +1,22 @@
+# TRANSITIONAL BRIDGE — identical to hanzo.yml.
+#
+# hanzo.yml is the canonical config name. The LIVE platform still reads
+# `.platform.yml` (the build-scheduler dual-read that prefers hanzo.yml is
+# landed but not yet deployed). This file exists only so the live platform
+# can build+deploy hanzo.app now. DELETE it once the platform reads hanzo.yml.
+#
+# ONE WAY (decomplected, see memory one-way-build-deploy):
+#   push a vX.Y.Z tag -> platform BuildKit builds ghcr.io/hanzoai/hanzo-app:X.Y.Z
+#   (semver, leading v stripped) -> bump the operator Service CR
+#   (services.hanzo.ai/hanzo-app) to that tag -> operator rolls it.
+# No {{git.sha}}, no deploy-on-main auto-roll — deploy is the CR bump ALONE,
+# so build and release are separate, verifiable steps (semver, never a sha).
+build:
+  # amd64-only: DOKS has no arm64 droplets (Docker Build Standard 2026-04-27).
+  matrix:
+    - { os: linux, arch: amd64 }
+  dockerfile: ./Dockerfile.production
+  context: .
+  image: ghcr.io/hanzoai/hanzo-app
+  tag-pattern: "{{git.tag}}"
+  push: true

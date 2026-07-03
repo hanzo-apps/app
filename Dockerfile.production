@@ -1,0 +1,73 @@
+# Multi-stage production build — Next.js standalone output for a small runtime
+# image (traces only the server deps actually used, not all of node_modules).
+
+# ── Build stage ─────────────────────────────────────────────
+FROM node:20-alpine AS builder
+RUN corepack enable && corepack prepare pnpm@10.17.1 --activate
+# libc6-compat for glibc-linked prebuilds; python3/make/g++ so native modules
+# (better-sqlite3 — the VFS/deployment store) compile a musl binding from source
+# when no alpine prebuild exists. Without these the binding is missing and the
+# native site-deploy path 500s at runtime ("Could not locate the bindings file").
+RUN apk add --no-cache libc6-compat python3 make g++
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml* ./
+RUN pnpm install --no-frozen-lockfile
+
+COPY . .
+
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+# NEXT_BUILD_ONLY signals our own code to skip env validation at build time.
+ENV NEXT_BUILD_ONLY=true
+
+# CI=false so Next generates the clientReferenceManifest (it skips it when
+# CI=true, which GitHub Actions sets and leaks into the Docker build).
+RUN CI=false pnpm run build && \
+    if [ ! -d ".next/standalone" ]; then \
+      echo "ERROR: standalone output missing (is output:'standalone' set?)" && exit 1; \
+    fi && \
+    if ! find .next/server -name '*client-reference-manifest*' 2>/dev/null | head -1 | grep -q .; then \
+      echo "ERROR: clientReferenceManifest not generated (CI env leak?)" && exit 1; \
+    fi && \
+    echo "Build OK — standalone output verified"
+
+# better-sqlite3 is a native module (the VFS/site-deploy store). Force-compile a
+# musl binding (build tools are present above), then overlay the compiled
+# better_sqlite3.node into the TRACED standalone package — Next's file-tracing
+# copies the JS but drops the .node, so the deploy path 500s at runtime. Uses
+# `find` (robust to the exact pnpm dir name) and FAILS LOUD if the binding never
+# compiled or the package isn't in the standalone, so a broken deploy can't ship.
+RUN set -eux; \
+    pnpm rebuild better-sqlite3; \
+    SRC="$(find node_modules -type f -name better_sqlite3.node | head -1)"; \
+    test -n "$SRC"; \
+    PKG="$(find .next/standalone/node_modules -type d -path '*/better-sqlite3' | head -1)"; \
+    test -n "$PKG"; \
+    mkdir -p "$PKG/build"; \
+    cp "$SRC" "$PKG/build/better_sqlite3.node"; \
+    ls -la "$PKG/build/better_sqlite3.node"
+
+# ── Runtime stage — minimal ─────────────────────────────────
+FROM node:20-alpine AS runner
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+# Next standalone: the traced server (server.js + minimal node_modules), plus
+# the static assets and public/ it serves.
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+
+EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:3000/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }).on('error', () => { process.exit(1); })" || exit 1
+
+CMD ["node", "server.js"]

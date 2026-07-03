@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dev
+    container_name: hanzo-build-dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      # Node configuration
+      - NODE_ENV=development
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+      
+      # Database
+      - MONGODB_URI=mongodb://hanzo:hanzo_dev@mongodb:27017/hanzo_build?authSource=admin&retryWrites=true&w=majority
+      
+      # Authentication (use test/dev values)
+      - NEXTAUTH_SECRET=dev_secret_change_in_production
+      - NEXTAUTH_URL=http://localhost:3000
+      
+      # Optional: Add your API keys for testing
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - HF_TOKEN=${HF_TOKEN:-}
+      
+    volumes:
+      # Mount source for hot reload in development
+      - ../src:/app/src
+      - ../public:/app/public
+      - ../styles:/app/styles
+      
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - hanzo-dev
+
+  mongodb:
+    image: mongo:7.0
+    container_name: hanzo-mongodb-dev
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=hanzo
+      - MONGO_INITDB_ROOT_PASSWORD=hanzo_dev
+      - MONGO_INITDB_DATABASE=hanzo_build
+    volumes:
+      - mongodb_dev_data:/data/db
+    networks:
+      - hanzo-dev
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  mongodb_dev_data:
+    driver: local
+
+networks:
+  hanzo-dev:
+    driver: bridge
