@@ -1,20 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@hanzo/ui";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@hanzo/ui";
 import { Input } from "@hanzo/ui";
-import { Label } from "@hanzo/ui";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
 import {
   Github,
   GitlabIcon,
   Globe,
   ArrowRight,
+  ArrowUp,
   Loader2,
   ChevronRight,
   CloudOff,
+  Search,
+  Paperclip,
+  LayoutDashboard,
+  Bot,
+  FileCode2,
+  Boxes,
 } from "lucide-react";
 import Link from "next/link";
 import { HanzoBrand } from "@/components/HanzoLogo";
@@ -41,11 +45,45 @@ export default function NewProjectPage() {
   );
 }
 
+/** A git repository URL (github/gitlab/bitbucket https, ssh, or bare owner/repo). */
+function isGitUrl(v: string): boolean {
+  const s = v.trim();
+  if (!s) return false;
+  if (/^git@[\w.-]+:[\w./-]+/i.test(s)) return true;
+  if (/\.git$/i.test(s)) return true;
+  return /^(https?:\/\/)?(www\.)?(github|gitlab|bitbucket)\.(com|org)\/[\w.-]+\/[\w.-]+/i.test(s);
+}
+
+const QUICK_STARTS: { label: string; icon: typeof LayoutDashboard; prompt: string }[] = [
+  {
+    label: "SaaS Dashboard",
+    icon: LayoutDashboard,
+    prompt: "Build a SaaS dashboard with authentication, a metrics overview, and a billing page.",
+  },
+  {
+    label: "AI Chatbot",
+    icon: Bot,
+    prompt: "Build an AI chatbot app with a streaming chat UI, conversation history, and a model picker.",
+  },
+  {
+    label: "Landing Page",
+    icon: FileCode2,
+    prompt: "Build a modern marketing landing page with a hero, feature grid, pricing, and a waitlist form.",
+  },
+  {
+    label: "Internal Tool",
+    icon: Boxes,
+    prompt: "Build an internal admin tool with a data table, filters, and a record detail drawer.",
+  },
+];
+
 function NewProjectInner() {
   const router = useRouter();
   const { user } = useUser();
-  const [repoUrl, setRepoUrl] = useState("");
+  const [value, setValue] = useState("");
   const [loading, setLoading] = useState(false);
+  const [repoFilter, setRepoFilter] = useState("");
+  const taRef = useRef<HTMLTextAreaElement>(null);
 
   // Real starter-kit gallery (hanzoai/gallery via the /v1/templates BFF). Always
   // resolves — an unreachable/empty gallery yields the honest local fallback.
@@ -66,18 +104,28 @@ function NewProjectInner() {
     };
   }, []);
 
-  const handleImport = (provider: string) => {
-    if (!repoUrl.trim()) return;
+  // One composer, two destinations: a git URL deploys the repo as a service;
+  // anything else is a natural-language brief the AI builder turns into an app.
+  const submit = useCallback(
+    (raw?: string) => {
+      const text = (raw ?? value).trim();
+      if (!text || loading) return;
+      setLoading(true);
+      if (isGitUrl(text)) {
+        const url = new URL("/dev", window.location.origin);
+        url.searchParams.set("repo", text);
+        url.searchParams.set("action", "edit");
+        router.push(url.toString());
+      } else {
+        const url = new URL("/dev", window.location.origin);
+        url.searchParams.set("prompt", text);
+        router.push(url.toString());
+      }
+    },
+    [value, loading, router],
+  );
 
-    setLoading(true);
-
-    // Navigate to /dev with the repo URL
-    const url = new URL("/dev", window.location.origin);
-    url.searchParams.set("repo", repoUrl);
-    url.searchParams.set("action", "edit");
-
-    router.push(url.toString());
-  };
+  const importRepo = () => submit();
 
   // Seed the builder from a real gallery template via the existing
   // /dev?template=<source> wire (source = the template's gallery URL).
@@ -86,225 +134,282 @@ function NewProjectInner() {
     router.push(templateBuilderLink(source));
   };
 
+  const looksLikeRepo = isGitUrl(value);
+  const filteredTemplates = templates.filter((t) =>
+    repoFilter.trim()
+      ? (t.title + " " + t.category + " " + t.framework)
+          .toLowerCase()
+          .includes(repoFilter.trim().toLowerCase())
+      : true,
+  );
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-950 to-black text-white">
+    <div className="min-h-screen bg-black text-white antialiased">
       {/* Header */}
-      <header className="border-b border-white/10 backdrop-blur-xl bg-black/50">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-8">
-              <Link href="/" className="flex items-center gap-2">
-                <HanzoBrand markClassName="w-8 h-8" />
-              </Link>
+      <header className="sticky top-0 z-20 border-b border-white/10 bg-black/70 backdrop-blur-xl">
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
+          <div className="flex items-center gap-6">
+            <Link href="/" className="flex items-center gap-2">
+              <HanzoBrand markClassName="h-7 w-7" />
+            </Link>
+            <nav className="hidden items-center gap-1 md:flex">
+              {[
+                { href: "/dashboard", label: "Dashboard" },
+                { href: "/projects", label: "Projects" },
+                { href: "/gallery", label: "Gallery" },
+              ].map((l) => (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className="rounded-md px-3 py-1.5 text-sm text-white/55 transition-colors hover:bg-white/5 hover:text-white"
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
 
-              <nav className="hidden md:flex items-center gap-6">
-                <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors text-sm">
-                  Dashboard
-                </Link>
-                <Link href="/projects" className="text-gray-400 hover:text-white transition-colors text-sm">
-                  Projects
-                </Link>
-                <Link href="/gallery" className="text-gray-400 hover:text-white transition-colors text-sm">
-                  Gallery
-                </Link>
-              </nav>
-            </div>
-
-            <div className="flex items-center gap-4">
-              {user ? (
-                <>
-                  <OrgSwitcher />
-                  <UserMenu />
-                </>
-              ) : (
-                <div className="flex items-center gap-3">
-                  <Button variant="ghost" onClick={() => router.push("/login")}>
-                    Login
-                  </Button>
-                  <Button onClick={() => router.push("/login")}>
-                    Sign Up
-                  </Button>
-                </div>
-              )}
-            </div>
+          <div className="flex items-center gap-3">
+            {user ? (
+              <>
+                <OrgSwitcher />
+                <UserMenu />
+              </>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" onClick={() => router.push("/login")}>
+                  Log In
+                </Button>
+                <Button onClick={() => router.push("/login")}>Sign Up</Button>
+              </div>
+            )}
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-12 max-w-6xl">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">
-            Let's build something new
+      {/* Hero + composer */}
+      <main className="relative mx-auto max-w-6xl px-4 pb-24 sm:px-6">
+        {/* ambient glow behind the composer */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 mx-auto h-[420px] max-w-3xl bg-[radial-gradient(60%_60%_at_50%_0%,rgba(255,255,255,0.08),transparent_70%)]"
+        />
+
+        <section className="relative pt-16 text-center sm:pt-20">
+          <h1 className="text-balance text-4xl font-semibold tracking-[-0.02em] sm:text-5xl">
+            Let&rsquo;s build something new
           </h1>
-          <p className="text-gray-400 text-lg">
-            To deploy a new Project, import an existing Git Repository or get started with one of our Templates.
+          <p className="mx-auto mt-4 max-w-xl text-pretty text-base text-white/50 sm:text-lg">
+            Describe an app to build, or paste a Git repository to deploy as a
+            service. Hanzo builds, ships, and manages it.
           </p>
-        </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Import Section */}
-          <div>
-            <h2 className="text-xl font-semibold mb-6">Import Git Repository</h2>
-
-            <Card className="bg-gray-900/50 border-gray-800 backdrop-blur-sm">
-              <CardHeader>
-                <CardDescription className="text-gray-400">
-                  Select a Git provider to import an existing project from a Git Repository.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="repo-url" className="text-gray-300">
-                    Repository URL
-                  </Label>
-                  <Input
-                    id="repo-url"
-                    type="url"
-                    placeholder="https://github.com/username/repository"
-                    value={repoUrl}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRepoUrl(e.target.value)}
-                    className="bg-gray-950 border-gray-800 text-white placeholder:text-gray-500"
-                  />
+          {/* Composer */}
+          <div className="mx-auto mt-8 max-w-2xl text-left">
+            <div className="group rounded-2xl border border-white/12 bg-white/[0.03] p-2 shadow-2xl shadow-black/40 transition-colors focus-within:border-white/25">
+              <textarea
+                ref={taRef}
+                rows={2}
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && (e.metaKey || e.ctrlKey || !e.shiftKey)) {
+                    e.preventDefault();
+                    submit();
+                  }
+                }}
+                placeholder="Describe the app you want, or paste a GitHub / GitLab repository URL…"
+                className="max-h-40 min-h-[52px] w-full resize-none bg-transparent px-3 pt-2 text-[15px] leading-relaxed text-white placeholder:text-white/35 focus:outline-none"
+              />
+              <div className="flex items-center justify-between px-2 pb-1 pt-1">
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    title="Attach a file or folder"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-white/40 transition-colors hover:bg-white/5 hover:text-white/80"
+                  >
+                    <Paperclip className="h-[18px] w-[18px]" />
+                  </button>
+                  <span className="ml-1 hidden text-xs text-white/35 sm:inline">
+                    {looksLikeRepo
+                      ? "Deploys this repository as a service"
+                      : "Press ⏎ to build · ⇧⏎ for a new line"}
+                  </span>
                 </div>
+                <Button
+                  onClick={() => submit()}
+                  disabled={loading || !value.trim()}
+                  className="h-9 gap-1.5 rounded-xl px-4"
+                >
+                  {loading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      {looksLikeRepo ? "Deploy" : "Build"}
+                      <ArrowUp className="h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
 
-                <div className="space-y-3">
-                  <Button
-                    onClick={() => handleImport("github")}
-                    className="w-full bg-gray-950 hover:bg-gray-900 text-white border border-gray-800"
-                    disabled={loading || !repoUrl.trim()}
+            {/* Quick starts */}
+            <div className="mt-3 flex flex-wrap justify-center gap-2">
+              {QUICK_STARTS.map((q) => {
+                const Icon = q.icon;
+                return (
+                  <button
+                    key={q.label}
+                    type="button"
+                    onClick={() => {
+                      setValue(q.prompt);
+                      taRef.current?.focus();
+                    }}
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1.5 text-sm text-white/70 transition-all hover:-translate-y-px hover:border-white/20 hover:bg-white/[0.06] hover:text-white"
                   >
-                    {loading ? (
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                    ) : (
-                      <Github className="w-4 h-4 mr-2" />
-                    )}
-                    Continue with GitHub
-                  </Button>
+                    <Icon className="h-4 w-4 text-white/45" />
+                    {q.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </section>
 
-                  <Button
-                    onClick={() => handleImport("gitlab")}
-                    className="w-full bg-white/5 hover:bg-white/10 text-white/80 border border-white/10"
-                    disabled={loading || !repoUrl.trim()}
-                  >
-                    {loading ? (
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                    ) : (
-                      <GitlabIcon className="w-4 h-4 mr-2" />
-                    )}
-                    Continue with GitLab
-                  </Button>
+        {/* Import / Templates */}
+        <section className="relative mt-16 grid gap-6 lg:mt-20 lg:grid-cols-2">
+          {/* Import Git Repository */}
+          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 sm:p-6">
+            <div className="mb-1 flex items-center gap-2">
+              <Github className="h-[18px] w-[18px] text-white/70" />
+              <h2 className="text-[15px] font-semibold">Import Git Repository</h2>
+            </div>
+            <p className="mb-5 text-sm text-white/45">
+              Connect a repository and deploy it as a service, container, or
+              site — with automatic builds on every push.
+            </p>
 
-                  <Button
-                    onClick={() => handleImport("bitbucket")}
-                    className="w-full bg-white/5 hover:bg-white/10 text-white/80 border border-white/10"
-                    disabled={loading || !repoUrl.trim()}
-                  >
-                    {loading ? (
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                    ) : (
-                      <Globe className="w-4 h-4 mr-2" />
-                    )}
-                    Continue with Bitbucket
-                  </Button>
-                </div>
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
+                <Input
+                  type="url"
+                  placeholder="github.com/org/repo  ·  or paste a repository URL"
+                  value={value}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value)}
+                  onKeyDown={(e: React.KeyboardEvent) => {
+                    if (e.key === "Enter") importRepo();
+                  }}
+                  className="h-10 border-white/12 bg-black/40 pl-9 text-sm text-white placeholder:text-white/30 focus-visible:ring-white/20"
+                />
+              </div>
+              <Button
+                onClick={importRepo}
+                disabled={loading || !isGitUrl(value)}
+                className="h-10 shrink-0 px-4"
+              >
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Import"}
+              </Button>
+            </div>
 
-                <div className="pt-4">
-                  <Link
-                    href="/import/third-party"
-                    className="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-1"
+            <div className="mt-4 grid grid-cols-3 gap-2">
+              {[
+                { icon: Github, label: "GitHub" },
+                { icon: GitlabIcon, label: "GitLab" },
+                { icon: Globe, label: "Bitbucket" },
+              ].map((p) => {
+                const Icon = p.icon;
+                return (
+                  <button
+                    key={p.label}
+                    type="button"
+                    onClick={() => taRef.current?.focus()}
+                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.02] py-2.5 text-sm text-white/70 transition-colors hover:border-white/20 hover:bg-white/[0.05] hover:text-white"
                   >
-                    Import Third-Party Git Repository
-                    <ChevronRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
+                    <Icon className="h-4 w-4" />
+                    <span className="hidden sm:inline">{p.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <Link
+              href="/import/third-party"
+              className="mt-5 inline-flex items-center gap-1 text-sm text-white/45 transition-colors hover:text-white"
+            >
+              Import a third-party repository
+              <ChevronRight className="h-4 w-4" />
+            </Link>
           </div>
 
-          {/* Templates Section */}
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold">Clone Template</h2>
-              <span className="text-xs text-gray-500">
-                {galleryLoading
-                  ? "Loading gallery…"
-                  : `${templates.length} starter${templates.length === 1 ? "" : "s"}`}
-              </span>
+          {/* Clone Template */}
+          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 sm:p-6">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <Boxes className="h-[18px] w-[18px] text-white/70" />
+                <h2 className="text-[15px] font-semibold">Clone a Template</h2>
+              </div>
+              <div className="relative hidden w-40 sm:block">
+                <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/30" />
+                <input
+                  value={repoFilter}
+                  onChange={(e) => setRepoFilter(e.target.value)}
+                  placeholder="Filter"
+                  className="h-8 w-full rounded-lg border border-white/10 bg-black/40 pl-8 pr-2 text-xs text-white placeholder:text-white/30 focus:border-white/25 focus:outline-none"
+                />
+              </div>
             </div>
 
             {!galleryLoading && !galleryLive && (
-              <div className="mb-4 flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2.5 text-xs text-amber-300">
-                <CloudOff className="w-4 h-4 shrink-0 mt-0.5" />
-                <span>
-                  Showing built-in starters — the live template gallery is
-                  unreachable right now.
-                </span>
+              <div className="mb-4 flex items-start gap-2 rounded-lg border border-amber-500/25 bg-amber-500/10 px-3 py-2.5 text-xs text-amber-300/90">
+                <CloudOff className="mt-0.5 h-4 w-4 shrink-0" />
+                <span>Showing built-in starters — the live gallery is unreachable right now.</span>
               </div>
             )}
 
-            <div className="grid md:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="custom-scrollbar -mr-2 max-h-[420px] space-y-2 overflow-y-auto pr-2">
               {galleryLoading
-                ? Array.from({ length: 6 }).map((_, i) => (
+                ? Array.from({ length: 5 }).map((_, i) => (
                     <div
                       key={i}
-                      className="h-40 rounded-xl border border-gray-800 bg-gray-900/50 animate-pulse"
+                      className="h-[68px] animate-pulse rounded-xl border border-white/10 bg-white/[0.03]"
                     />
                   ))
-                : templates.map((template) => (
-                    <Card
-                      key={template.slug}
-                      className="bg-gray-900/50 border-gray-800 backdrop-blur-sm hover:border-gray-600 transition-all cursor-pointer group overflow-hidden"
-                      onClick={() => handleTemplate(template.source)}
+                : filteredTemplates.map((t) => (
+                    <button
+                      key={t.slug}
+                      type="button"
+                      onClick={() => handleTemplate(t.source)}
+                      className="group flex w-full items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] px-3.5 py-3 text-left transition-all hover:-translate-y-px hover:border-white/20 hover:bg-white/[0.05]"
                     >
-                      <CardHeader className="pb-3">
-                        <div className="flex items-start justify-between gap-3">
-                          <CardTitle className="text-base leading-tight">
-                            {template.title}
-                          </CardTitle>
-                          <ArrowRight className="w-4 h-4 shrink-0 text-gray-500 group-hover:text-white transition-colors" />
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-white/60">
+                        <FileCode2 className="h-[18px] w-[18px]" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate text-sm font-medium text-white">{t.title}</div>
+                        <div className="truncate text-xs text-white/40">
+                          {[t.framework, t.category].filter(Boolean).join(" · ") || "Starter"}
                         </div>
-                        {template.description && (
-                          <CardDescription className="text-xs text-gray-400 line-clamp-2">
-                            {template.description}
-                          </CardDescription>
-                        )}
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        {template.features.length > 0 && (
-                          <div className="flex flex-wrap gap-1.5">
-                            {template.features.slice(0, 3).map((f) => (
-                              <span
-                                key={f}
-                                className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-gray-300"
-                              >
-                                {f}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-xs text-gray-500 truncate">{template.category}</span>
-                          {template.framework && (
-                            <span className="text-xs text-gray-500 truncate">{template.framework}</span>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
+                      </div>
+                      <ArrowRight className="h-4 w-4 shrink-0 text-white/30 transition-colors group-hover:text-white" />
+                    </button>
                   ))}
+              {!galleryLoading && filteredTemplates.length === 0 && (
+                <div className="py-10 text-center text-sm text-white/40">
+                  No templates match &ldquo;{repoFilter}&rdquo;.
+                </div>
+              )}
             </div>
 
-            <div className="mt-6">
-              <Link
-                href="/gallery"
-                className="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-1"
-              >
-                Browse All Templates
-                <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
+            <Link
+              href="/gallery"
+              className="mt-4 inline-flex items-center gap-1 text-sm text-white/45 transition-colors hover:text-white"
+            >
+              Browse all templates
+              <ChevronRight className="h-4 w-4" />
+            </Link>
           </div>
-        </div>
+        </section>
       </main>
 
       <style jsx>{`
@@ -312,15 +417,14 @@ function NewProjectInner() {
           width: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(0, 0, 0, 0.1);
-          border-radius: 3px;
+          background: transparent;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.2);
+          background: rgba(255, 255, 255, 0.12);
           border-radius: 3px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.3);
+          background: rgba(255, 255, 255, 0.22);
         }
       `}</style>
     </div>
