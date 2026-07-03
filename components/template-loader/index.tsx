@@ -36,10 +36,34 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
     action === "deploy" ? "deploy" : "edit"
   );
 
-  const templateTitle = templateRepo.name
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (l) => l.toUpperCase())
-    .replace("Template ", "");
+  // Real gallery metadata (preview screenshot + description) for this slug.
+  const [meta, setMeta] = useState<{
+    displayName?: string;
+    description?: string;
+    category?: string;
+    framework?: string;
+    screenshotUrl?: string;
+  } | null>(null);
+  useEffect(() => {
+    let alive = true;
+    fetch("/api/templates")
+      .then((r) => r.json())
+      .then((d) => {
+        const m = (d.templates || []).find((t: any) => t.slug === templateRepo.name);
+        if (alive && m) setMeta(m);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [templateRepo.name]);
+
+  const templateTitle =
+    meta?.displayName ||
+    templateRepo.name
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (l) => l.toUpperCase())
+      .replace("Template ", "");
 
   const handleCopyCommand = () => {
     const command = `npx create-hanzo-app@latest my-app --template ${templateRepo.owner}/${templateRepo.name}`;
@@ -57,12 +81,27 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
     <div className="min-h-screen bg-gradient-to-b from-background to-muted flex items-center justify-center p-4">
       <Card className="max-w-2xl w-full shadow-2xl">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-gradient-to-br from-[#171717] to-[#404040] flex items-center justify-center">
-            <Sparkles className="w-9 h-9 text-white" />
-          </div>
+          {meta?.screenshotUrl ? (
+            <div className="mx-auto mb-4 w-full max-w-md aspect-[16/10] overflow-hidden rounded-lg border border-neutral-800 bg-neutral-950">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={meta.screenshotUrl}
+                alt={`${templateTitle} preview`}
+                className="w-full h-full object-cover object-top"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).style.display = "none";
+                }}
+              />
+            </div>
+          ) : (
+            <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-gradient-to-br from-[#fd4444] to-[#ff6b6b] flex items-center justify-center">
+              <Sparkles className="w-9 h-9 text-white" />
+            </div>
+          )}
           <CardTitle className="text-3xl font-bold">{templateTitle}</CardTitle>
           <CardDescription className="text-lg mt-2">
-            From {templateRepo.platform === "github" ? "GitHub" : "Hanzo Gallery"}: {templateRepo.owner}/{templateRepo.name}
+            {meta?.description ||
+              `From ${templateRepo.platform === "github" ? "GitHub" : "Hanzo Gallery"}: ${templateRepo.owner}/${templateRepo.name}`}
           </CardDescription>
         </CardHeader>
 
@@ -107,8 +146,8 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
 
               <TabsContent value="fork" className="mt-4 space-y-3">
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-[#171717]/20 flex items-center justify-center flex-shrink-0">
-                    <Copy className="w-5 h-5 text-[#171717] dark:text-[#404040]" />
+                  <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-[#fd4444]/20 flex items-center justify-center flex-shrink-0">
+                    <Copy className="w-5 h-5 text-[#fd4444] dark:text-[#ff6b6b]" />
                   </div>
                   <div>
                     <h4 className="font-semibold">Fork to Your Account</h4>
@@ -207,7 +246,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
           </Button>
           <Button
             onClick={handleProceed}
-            className="flex-1 bg-gradient-to-r from-[#171717] to-[#404040] hover:from-[#000000] hover:to-[#171717]"
+            className="flex-1 bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] hover:from-[#e03e3e] hover:to-[#fd4444]"
             disabled={loading}
           >
             {loading ? (

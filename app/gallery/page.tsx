@@ -1,321 +1,249 @@
 "use client";
 
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@hanzo/ui";
+import { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@hanzo/ui";
 import { Badge } from "@hanzo/ui";
 import { Input } from "@hanzo/ui";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
+import { Sparkles, Star, Code, Eye, Search, Rocket, ArrowRight, Loader2 } from "lucide-react";
 import {
-  Sparkles,
-  ShoppingCart,
-  BarChart,
-  Megaphone,
-  MessageSquare,
-  Layout,
-  FileText,
-  Bitcoin,
-  BookOpen,
-  Play,
-  ExternalLink,
-  Github,
-  Rocket,
-  Code,
-  Eye,
-  Copy,
-  Check,
-  Zap
-} from "lucide-react";
+  type GalleryTemplate,
+  catalogCategories,
+  snapshotCatalog,
+} from "@/lib/gallery-catalog";
 
-const templates = [
-  {
-    id: "ai-chat-interface",
-    name: "AI Chat Interface",
-    description: "Modern chat UI with streaming responses and markdown support",
-    icon: <MessageSquare className="w-6 h-6" />,
-    color: "from-[#171717] to-[#000000]",
-    features: ["Streaming responses", "Message history", "Dark theme"],
-    category: "AI",
-    path: "/templates/ai-chat-interface",
-    demoUrl: "https://hanzo.ai/templates/ai-chat-interface"
-  },
-  {
-    id: "ecommerce-storefront",
-    name: "E-commerce Storefront",
-    description: "Complete online store with cart and product management",
-    icon: <ShoppingCart className="w-6 h-6" />,
-    color: "from-orange-500 to-pink-500",
-    features: ["Product grid", "Shopping cart", "Filters"],
-    category: "Commerce",
-    path: "/templates/ecommerce-storefront",
-    demoUrl: "https://hanzo.ai/templates/ecommerce-storefront"
-  },
-  {
-    id: "analytics-dashboard",
-    name: "Analytics Dashboard",
-    description: "Data visualization dashboard with charts and metrics",
-    icon: <BarChart className="w-6 h-6" />,
-    color: "from-[#171717] to-[#404040]",
-    features: ["Metric cards", "Charts", "Real-time data"],
-    category: "Analytics",
-    path: "/templates/analytics-dashboard",
-    demoUrl: "https://hanzo.ai/templates/analytics-dashboard"
-  },
-  {
-    id: "saas-landing",
-    name: "SaaS Landing Page",
-    description: "High-converting landing page with pricing and features",
-    icon: <Megaphone className="w-6 h-6" />,
-    color: "from-emerald-600 to-teal-600",
-    features: ["Hero section", "Pricing tiers", "CTAs"],
-    category: "Marketing",
-    path: "/templates/saas-landing",
-    demoUrl: "https://hanzo.ai/templates/saas-landing"
-  },
-  {
-    id: "social-feed",
-    name: "Social Media Feed",
-    description: "Twitter/X-like social feed with posts and interactions",
-    icon: <Sparkles className="w-6 h-6" />,
-    color: "from-cyan-500 to-cyan-600",
-    features: ["Post creation", "Comments", "Real-time updates"],
-    category: "Social",
-    path: "/templates/social-feed",
-    demoUrl: "https://hanzo.ai/templates/social-feed"
-  },
-  {
-    id: "kanban-board",
-    name: "Kanban Board",
-    description: "Trello-like task board with drag-and-drop",
-    icon: <Layout className="w-6 h-6" />,
-    color: "from-amber-500 to-amber-600",
-    features: ["Drag & drop", "Task cards", "Multiple columns"],
-    category: "Productivity",
-    path: "/templates/kanban-board",
-    demoUrl: "https://hanzo.ai/templates/kanban-board"
-  },
-  {
-    id: "markdown-editor",
-    name: "Markdown Editor",
-    description: "Live markdown editor with preview and export",
-    icon: <FileText className="w-6 h-6" />,
-    color: "from-blue-500 to-blue-600",
-    features: ["Live preview", "Syntax highlighting", "Export"],
-    category: "Tools",
-    path: "/templates/markdown-editor",
-    demoUrl: "https://hanzo.ai/templates/markdown-editor"
-  },
-  {
-    id: "crypto-portfolio",
-    name: "Crypto Portfolio",
-    description: "Cryptocurrency portfolio tracker with live prices",
-    icon: <Bitcoin className="w-6 h-6" />,
-    color: "from-yellow-500 to-orange-500",
-    features: ["Holdings", "Price tracking", "Charts"],
-    category: "Finance",
-    path: "/templates/crypto-portfolio",
-    demoUrl: "https://hanzo.ai/templates/crypto-portfolio"
-  },
-  {
-    id: "blog-platform",
-    name: "Blog Platform",
-    description: "Medium-like blog with articles and authors",
-    icon: <BookOpen className="w-6 h-6" />,
-    color: "from-rose-500 to-pink-500",
-    features: ["Article editor", "Categories", "Comments"],
-    category: "Content",
-    path: "/templates/blog-platform",
-    demoUrl: "https://hanzo.ai/templates/blog-platform"
-  },
-  {
-    id: "video-streaming",
-    name: "Video Streaming",
-    description: "YouTube-like video platform with player and comments",
-    icon: <Play className="w-6 h-6" />,
-    color: "from-red-600 to-red-500",
-    features: ["Video player", "Comments", "Related videos"],
-    category: "Media",
-    path: "/templates/video-streaming",
-    demoUrl: "https://hanzo.ai/templates/video-streaming"
-  }
-];
-
-const categories = ["All", "AI", "Commerce", "Analytics", "Marketing", "Social", "Productivity", "Tools", "Finance", "Content", "Media"];
+// Fork a real template into the editor: /dev parses ?template=owner/repo and the
+// TemplateLoader clones github.com/hanzo-apps/<slug>.
+function forkHref(t: GalleryTemplate, action: "edit" | "deploy" = "edit") {
+  return `/dev?template=hanzo-apps/${t.slug}&action=${action}`;
+}
 
 export default function TemplateGallery() {
+  const router = useRouter();
+  // Seed from the bundled snapshot so first paint is instant + never empty,
+  // then refresh from the live gallery via the same-origin proxy.
+  const [templates, setTemplates] = useState<GalleryTemplate[]>(
+    () => snapshotCatalog().templates,
+  );
+  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [prompt, setPrompt] = useState("");
 
-  const filteredTemplates = templates.filter(template => {
-    const matchesCategory = selectedCategory === "All" || template.category === selectedCategory;
-    const matchesSearch = template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          template.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  useEffect(() => {
+    let alive = true;
+    fetch("/api/templates")
+      .then((r) => r.json())
+      .then((d) => {
+        if (alive && Array.isArray(d.templates) && d.templates.length) {
+          setTemplates(d.templates);
+        }
+      })
+      .catch(() => {})
+      .finally(() => alive && setLoading(false));
+    return () => {
+      alive = false;
+    };
+  }, []);
 
-  const handleCopy = async (templateId: string) => {
-    const command = `npx create-hanzo-app@latest my-app --template ${templateId}`;
-    await navigator.clipboard.writeText(command);
-    setCopiedId(templateId);
-    setTimeout(() => setCopiedId(null), 2000);
+  const categories = useMemo(() => catalogCategories(templates), [templates]);
+
+  const filtered = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    return templates.filter((t) => {
+      const matchesCat = selectedCategory === "All" || t.category === selectedCategory;
+      const matchesSearch =
+        !q ||
+        t.displayName.toLowerCase().includes(q) ||
+        (t.description || "").toLowerCase().includes(q) ||
+        t.category.toLowerCase().includes(q) ||
+        t.features.some((f) => f.toLowerCase().includes(q));
+      return matchesCat && matchesSearch;
+    });
+  }, [templates, selectedCategory, searchQuery]);
+
+  const startFromPrompt = () => {
+    if (!prompt.trim()) return;
+    router.push(`/dev?prompt=${encodeURIComponent(prompt.trim())}`);
   };
 
   return (
-    <div className="h-screen overflow-y-auto bg-gradient-to-b from-background to-muted">
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-6 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-4 mb-2">
-                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#171717] to-[#000000] flex items-center justify-center">
-                  <Sparkles className="w-7 h-7 text-white" />
-                </div>
-                <h1 className="text-3xl font-bold">Hanzo Community Gallery</h1>
-              </div>
-              <p className="text-muted-foreground ml-16">
-                Community AI-edited templates showcasing the power of Hanzo Cloud - Deploy & edit instantly!
-              </p>
+    <div className="h-screen overflow-y-auto bg-black text-white">
+      {/* Hero: prompt-first onboarding */}
+      <header className="border-b border-neutral-900 bg-gradient-to-b from-neutral-950 to-black">
+        <div className="container mx-auto px-6 py-10">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#fd4444] to-[#e03e3e] flex items-center justify-center">
+              <Sparkles className="w-6 h-6 text-white" />
             </div>
-            <div className="flex items-center gap-4">
-              <Button variant="outline" className="gap-2" onClick={() => window.open('https://github.com/hanzoai/ui', '_blank')}>
-                <Github className="w-4 h-4" />
-                View Source
-              </Button>
-              <Button className="gap-2 bg-gradient-to-r from-[#171717] to-[#000000] hover:from-[#000000] hover:to-[#171717]">
-                <Rocket className="w-4 h-4" />
-                Deploy All
-              </Button>
+            <h1 className="text-3xl font-bold">Hanzo Templates</h1>
+            <Badge variant="secondary" className="ml-1">
+              {templates.length} templates
+            </Badge>
+          </div>
+          <p className="text-neutral-400 max-w-2xl mb-6">
+            Start from a real, production-grade template — or describe your app and let
+            Hanzo generate it. Every template forks into the editor and deploys to a
+            live <code className="text-neutral-300">*.hanzo.app</code> URL.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-3 max-w-3xl">
+            <div className="relative flex-1">
+              <Input
+                placeholder="Describe what you want to build…"
+                value={prompt}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPrompt(e.target.value)}
+                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                  if (e.key === "Enter") startFromPrompt();
+                }}
+                className="h-12 bg-neutral-900 border-neutral-800 text-white pl-4"
+              />
             </div>
+            <Button
+              className="h-12 gap-2 bg-gradient-to-r from-[#fd4444] to-[#e03e3e] hover:from-[#e03e3e] hover:to-[#fd4444]"
+              onClick={startFromPrompt}
+              disabled={!prompt.trim()}
+            >
+              <Sparkles className="w-4 h-4" />
+              Generate with AI
+              <ArrowRight className="w-4 h-4" />
+            </Button>
           </div>
         </div>
       </header>
 
       {/* Filters */}
-      <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center gap-4">
-            <Input
-              placeholder="Search templates..."
-              value={searchQuery}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-              className="w-64"
-            />
-            <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
-              <TabsList className="grid grid-flow-col auto-cols-fr">
-                {categories.map(cat => (
-                  <TabsTrigger key={cat} value={cat}>
-                    {cat}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </Tabs>
+      <div className="sticky top-0 z-40 border-b border-neutral-900 bg-black/95 backdrop-blur">
+        <div className="container mx-auto px-6 py-3">
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
+              <Input
+                placeholder="Search templates…"
+                value={searchQuery}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+                className="w-64 pl-9 bg-neutral-900 border-neutral-800 text-white"
+              />
+            </div>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                    selectedCategory === cat
+                      ? "bg-[#fd4444] text-white"
+                      : "bg-neutral-900 text-neutral-400 hover:bg-neutral-800 hover:text-white"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
             <Badge variant="secondary" className="ml-auto">
-              {filteredTemplates.length} templates
+              {filtered.length} shown{loading ? " · syncing…" : ""}
             </Badge>
           </div>
         </div>
       </div>
 
-      {/* Template Grid */}
+      {/* Grid */}
       <div className="container mx-auto px-6 py-8">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredTemplates.map(template => (
-            <Card key={template.id} className="group overflow-hidden hover:shadow-xl transition-all duration-200 hover:-translate-y-1">
-              {/* Color bar */}
-              <div className={`h-1 bg-gradient-to-r ${template.color}`} />
-
-              <CardHeader>
-                <div className="flex items-center justify-between mb-3">
-                  <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${template.color} flex items-center justify-center text-white shadow-lg`}>
-                    {template.icon}
-                  </div>
-                  <Badge variant="outline" className="text-xs">
-                    {template.category}
-                  </Badge>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          {filtered.map((t) => (
+            <div
+              key={t.slug}
+              className="group flex flex-col overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/50 hover:border-[#fd4444]/50 hover:-translate-y-1 transition-all"
+            >
+              {/* Real preview screenshot */}
+              <a
+                href={forkHref(t)}
+                className="relative block aspect-[16/10] bg-neutral-950 overflow-hidden"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={t.screenshotUrl}
+                  alt={`${t.displayName} preview`}
+                  loading="lazy"
+                  className="w-full h-full object-cover object-top group-hover:scale-[1.03] transition-transform duration-300"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).style.display = "none";
+                  }}
+                />
+                <div className="absolute top-2 left-2 flex items-center gap-1 rounded-full bg-black/70 px-2 py-0.5 text-[11px] text-amber-300">
+                  <Star className="w-3 h-3 fill-amber-300" />
+                  {t.rating}
                 </div>
-                <CardTitle className="text-lg">{template.name}</CardTitle>
-                <CardDescription className="text-sm line-clamp-2">
-                  {template.description}
-                </CardDescription>
-              </CardHeader>
+                <Badge className="absolute top-2 right-2 bg-black/70 text-white border-neutral-700 text-[11px]">
+                  {t.category}
+                </Badge>
+              </a>
 
-              <CardContent className="pb-3">
-                <div className="flex flex-wrap gap-1">
-                  {template.features.map(feature => (
-                    <Badge key={feature} variant="secondary" className="text-xs px-2 py-0">
-                      {feature}
-                    </Badge>
-                  ))}
+              <div className="flex flex-col flex-1 p-4">
+                <h3 className="font-semibold text-white">{t.displayName}</h3>
+                <p className="text-xs text-neutral-500 mt-1 line-clamp-2 flex-1">
+                  {t.description || t.useCase || `${t.framework} template`}
+                </p>
+                <p className="text-[11px] text-neutral-600 mt-2">{t.framework}</p>
+
+                <div className="flex gap-2 mt-3">
+                  <a href={forkHref(t)} className="flex-1">
+                    <Button
+                      size="sm"
+                      className="w-full gap-1 bg-gradient-to-r from-[#fd4444] to-[#e03e3e] hover:from-[#e03e3e] hover:to-[#fd4444]"
+                    >
+                      <Code className="w-3 h-3" />
+                      Fork &amp; Edit
+                    </Button>
+                  </a>
+                  <a href={t.templateUrl} target="_blank" rel="noreferrer">
+                    <Button size="sm" variant="outline" className="gap-1 border-neutral-700">
+                      <Eye className="w-3 h-3" />
+                    </Button>
+                  </a>
                 </div>
-              </CardContent>
-
-              <CardFooter className="flex gap-2 pt-3">
-                <Button
-                  className="flex-1 gap-1 bg-gradient-to-r from-[#171717] to-[#000000] hover:from-[#000000] hover:to-[#171717]"
-                  size="sm"
-                  onClick={() => window.location.href = `/new`}
-                >
-                  <Zap className="w-3 h-3" />
-                  Deploy
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 gap-1"
-                  onClick={() => window.location.href = `/new`}
-                >
-                  <Code className="w-3 h-3" />
-                  Edit
-                </Button>
-              </CardFooter>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
 
-        {/* Empty state */}
-        {filteredTemplates.length === 0 && (
+        {filtered.length === 0 && (
           <div className="text-center py-20">
-            <p className="text-muted-foreground text-lg">No templates found matching your criteria.</p>
-            <Button
-              variant="link"
-              onClick={() => {
-                setSelectedCategory("All");
-                setSearchQuery("");
-              }}
-              className="mt-2"
-            >
-              Clear filters
-            </Button>
+            {loading ? (
+              <Loader2 className="w-6 h-6 animate-spin mx-auto text-neutral-500" />
+            ) : (
+              <>
+                <p className="text-neutral-400 text-lg">No templates match your search.</p>
+                <Button
+                  variant="link"
+                  onClick={() => {
+                    setSelectedCategory("All");
+                    setSearchQuery("");
+                  }}
+                  className="mt-2 text-[#fd4444]"
+                >
+                  Clear filters
+                </Button>
+              </>
+            )}
           </div>
         )}
       </div>
 
-      {/* Quick Start Section */}
-      <section className="border-t bg-muted/50">
-        <div className="container mx-auto px-6 py-12">
-          <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-2xl font-bold mb-4">Quick Start</h2>
-            <p className="text-muted-foreground mb-6">
-              Get started with any template in seconds. All templates are built with @hanzo/ui components and can be customized to fit your needs.
-            </p>
-            <div className="bg-background rounded-lg p-6 border">
-              <code className="text-sm font-mono">
-                npx create-hanzo-app@latest my-app --template [template-name]
-              </code>
-            </div>
-            <div className="flex items-center justify-center gap-4 mt-6">
-              <Button variant="outline" size="sm" onClick={() => window.open('https://hanzo.ai/docs', '_blank')}>
-                <BookOpen className="w-4 h-4 mr-2" />
-                Documentation
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => window.open('https://github.com/hanzoai/ui', '_blank')}>
-                <Code className="w-4 h-4 mr-2" />
-                Component Library
-              </Button>
-            </div>
-          </div>
+      {/* Footer CTA */}
+      <section className="border-t border-neutral-900 bg-neutral-950">
+        <div className="container mx-auto px-6 py-10 text-center">
+          <h2 className="text-xl font-bold mb-2">Don&apos;t see the right fit?</h2>
+          <p className="text-neutral-400 mb-5">
+            Describe your app and Hanzo builds it from scratch — deployed live in minutes.
+          </p>
+          <Button
+            className="gap-2 bg-gradient-to-r from-[#fd4444] to-[#e03e3e] hover:from-[#e03e3e] hover:to-[#fd4444]"
+            onClick={() => router.push("/dev")}
+          >
+            <Rocket className="w-4 h-4" />
+            Start building
+          </Button>
         </div>
       </section>
     </div>
