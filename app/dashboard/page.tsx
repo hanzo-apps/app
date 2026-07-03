@@ -21,6 +21,7 @@ import { useAccount, useBalance } from "wagmi";
 import { formatUnits } from "viem";
 
 import { useUser } from "@/hooks/useUser";
+import { WalletBoundary } from "@/components/providers/WalletBoundary";
 import Header from "@/components/layout/header";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { getProjects } from "@/app/actions/projects";
@@ -329,8 +330,10 @@ export default function DashboardPage() {
               </Link>
             </div>
 
-            {/* Wallet (conditional on Web3 connection) */}
-            <WalletSection />
+            {/* Wallet (conditional on Web3 connection) — web3 stack scoped here */}
+            <WalletBoundary>
+              <WalletSection />
+            </WalletBoundary>
           </aside>
         </div>
       </main>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import Header from '@/components/layout/header';
 import { CryptoPayment } from '@/components/crypto-payment';
+import { WalletBoundary } from '@/components/providers/WalletBoundary';
 
 // UI Components
 import { Button } from "@hanzo/ui";
@@ -704,15 +705,17 @@ export default function BillingPage() {
         </Tabs>
       </div>
 
-      {/* Crypto Payment Modal */}
-      <CryptoPayment
-        open={creditModalOpen && paymentMethod === 'crypto'}
-        onOpenChange={(open) => {
-          setCreditModalOpen(open);
-          if (!open) setPaymentMethod('card');
-        }}
-        onSuccess={handleCryptoPaymentSuccess}
-      />
+      {/* Crypto Payment Modal — web3 stack (wagmi/WalletConnect/Coinbase) scoped here */}
+      <WalletBoundary>
+        <CryptoPayment
+          open={creditModalOpen && paymentMethod === 'crypto'}
+          onOpenChange={(open) => {
+            setCreditModalOpen(open);
+            if (!open) setPaymentMethod('card');
+          }}
+          onSuccess={handleCryptoPaymentSuccess}
+        />
+      </WalletBoundary>
     </div>
   );
 }
