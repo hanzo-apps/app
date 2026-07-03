@@ -12,7 +12,7 @@
  * is owned by the gateway's provider registry, NOT re-implemented here.
  *
  * Auth is per-user (BYOK-style): we forward the signed-in user's IAM token
- * (the `hanzo_token` cookie set by /api/auth/callback) as `Authorization:
+ * (the `hanzo_token` cookie mirrored from the @hanzo/iam SDK) as `Authorization:
  * Bearer <token>`. No signed-in user → honest 401 "Sign in to build". We do
  * NOT fall back to a shared server key — billing is per-user by design.
  */

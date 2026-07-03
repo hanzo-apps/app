@@ -16,11 +16,12 @@ const PROTECTED_PREFIXES = [
 ];
 
 // Routes that are always accessible without a token (exact or prefix match).
+// `/auth/callback` is the ONE OAuth return (the `@hanzo/iam` PKCE callback);
+// the legacy `/api/auth/*` login BFF has been removed.
 const PUBLIC_PATHS = [
   "/login",
   "/signup",
-  "/api/auth/callback",
-  "/api/auth/logout",
+  "/auth/callback",
   "/pricing",
 ];
 
