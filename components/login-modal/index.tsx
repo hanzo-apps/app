@@ -10,7 +10,7 @@ export const LoginModal = ({
   pages,
   onClose,
   title = "Log In to use Hanzo for free",
-  description = "Log In through your Hugging Face account to continue using Hanzo and increase your monthly free limit.",
+  description = "Sign in with your Hanzo account to continue building and increase your monthly limit.",
 }: {
   open: boolean;
   pages?: Page[];

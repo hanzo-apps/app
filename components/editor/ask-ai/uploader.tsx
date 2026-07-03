@@ -195,7 +195,7 @@ export const Uploader = ({
         onClose={() => setOpen(false)}
         pages={pages}
         title="Log In to add Custom Images"
-        description="Log In through your Hugging Face account to publish your project and increase your monthly free limit."
+        description="Sign in with your Hanzo account to publish your project and increase your monthly limit."
       />
     </>
   );
