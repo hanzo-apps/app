@@ -52,7 +52,11 @@ export async function middleware(request: NextRequest) {
     rateLimitType = "auth";
   } else if (path.startsWith("/api/commerce")) {
     rateLimitType = "payment";
-  } else if (path.startsWith("/api/ai") || path.startsWith("/v1/generate")) {
+  } else if (
+    path.startsWith("/api/ai") ||
+    path.startsWith("/v1/generate") ||
+    path.startsWith("/v1/images")
+  ) {
     rateLimitType = "ai";
   } else if (path.startsWith("/api")) {
     rateLimitType = "api";
