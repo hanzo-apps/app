@@ -6,7 +6,7 @@ const securityHeaders = {
   // Content Security Policy
   'Content-Security-Policy': [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://*.hanzo.ai https://plausible.io",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://*.hanzo.ai",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com data:",
     "img-src 'self' data: blob: https: http:",
@@ -15,7 +15,7 @@ const securityHeaders = {
     // discovery + PKCE token exchange (POST https://hanzo.id/v1/iam/oauth/token)
     // is a cross-origin fetch and MUST be allowed here or the SSO callback
     // silently fails and the session never persists.
-    "connect-src 'self' https://*.hanzo.ai https://hanzo.id https://lux.id https://zoo.id https://pars.id https://api.openai.com https://api.anthropic.com https://plausible.io wss://*.hanzo.ai",
+    "connect-src 'self' https://*.hanzo.ai https://hanzo.id https://lux.id https://zoo.id https://pars.id https://api.openai.com https://api.anthropic.com wss://*.hanzo.ai",
     "frame-src 'self' https://*.hanzo.ai https://hanzo.id https://lux.id https://zoo.id https://pars.id",
     "frame-ancestors 'self' https://hanzo.ai https://*.hanzo.ai https://hanzo.app https://*.hanzo.app https://hanzo.bot https://*.hanzo.bot https://hanzo.team https://*.hanzo.team https://hanzo.chat https://*.hanzo.chat https://s3.hanzo.ai",
     "base-uri 'self'",
