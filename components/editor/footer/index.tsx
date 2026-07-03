@@ -62,7 +62,7 @@ export function Footer({
   };
 
   return (
-    <footer className="border-t bg-slate-200 border-slate-300 dark:bg-neutral-950 dark:border-neutral-800 px-3 py-2 flex items-center justify-between sticky bottom-0 z-20">
+    <footer className="border-t bg-neutral-200 border-neutral-300 dark:bg-neutral-950 dark:border-neutral-800 px-3 py-2 flex items-center justify-between sticky bottom-0 z-20">
       <div className="flex items-center gap-2">
         {user ? (
           user?.isLocalUse ? (

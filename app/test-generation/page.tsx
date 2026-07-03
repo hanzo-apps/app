@@ -605,7 +605,7 @@ export default function TestGenerationPage() {
       case 'failed': return <XCircle className="h-4 w-4 text-red-500" />;
       case 'stopped': return <Square className="h-4 w-4 text-orange-500" />;
       case 'running': return <RefreshCw className="h-4 w-4 text-blue-500 animate-spin" />;
-      default: return <Clock className="h-4 w-4 text-gray-400" />;
+      default: return <Clock className="h-4 w-4 text-neutral-400" />;
     }
   };
 

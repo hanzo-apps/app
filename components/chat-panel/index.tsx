@@ -116,7 +116,7 @@ const toolIcons: Record<string, React.ReactNode> = {
 };
 
 const statusIcons: Record<string, React.ReactNode> = {
-  pending: <Loader2 className="h-3 w-3 animate-spin text-gray-400" />,
+  pending: <Loader2 className="h-3 w-3 animate-spin text-neutral-400" />,
   executing: <Loader2 className="h-3 w-3 animate-spin text-blue-500" />,
   completed: <CheckCircle className="h-3 w-3 text-green-500" />,
   failed: <XCircle className="h-3 w-3 text-red-500" />,

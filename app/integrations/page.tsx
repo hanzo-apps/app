@@ -321,7 +321,7 @@ export default function IntegrationsPage() {
             <div className="sticky top-6 space-y-4">
               {/* Search */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
                 <Input
                   placeholder="Search integrations..."
                   className="pl-10 bg-neutral-900 border-neutral-800"
@@ -340,7 +340,7 @@ export default function IntegrationsPage() {
                       "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors",
                       selectedCategory === category.id
                         ? "bg-purple-500/10 text-purple-400 border border-purple-500/20"
-                        : "text-gray-400 hover:text-white hover:bg-neutral-900"
+                        : "text-neutral-400 hover:text-white hover:bg-neutral-900"
                     )}
                   >
                     <span>{category.label}</span>
@@ -357,8 +357,8 @@ export default function IntegrationsPage() {
                 <CardContent className="space-y-3">
                   <div>
                     <div className="flex justify-between text-xs mb-1">
-                      <span className="text-gray-400">API Calls</span>
-                      <span className="text-gray-400">15.7k / 50k</span>
+                      <span className="text-neutral-400">API Calls</span>
+                      <span className="text-neutral-400">15.7k / 50k</span>
                     </div>
                     <div className="w-full bg-neutral-800 rounded-full h-2">
                       <div className="bg-purple-500 h-2 rounded-full" style={{ width: "31%" }} />
@@ -366,8 +366,8 @@ export default function IntegrationsPage() {
                   </div>
                   <div>
                     <div className="flex justify-between text-xs mb-1">
-                      <span className="text-gray-400">Webhooks</span>
-                      <span className="text-gray-400">892 / 1000</span>
+                      <span className="text-neutral-400">Webhooks</span>
+                      <span className="text-neutral-400">892 / 1000</span>
                     </div>
                     <div className="w-full bg-neutral-800 rounded-full h-2">
                       <div className="bg-blue-500 h-2 rounded-full" style={{ width: "89%" }} />
@@ -396,7 +396,7 @@ export default function IntegrationsPage() {
                           </div>
                           <CardDescription>{integration.description}</CardDescription>
                           {integration.lastSync && (
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-neutral-500">
                               Last synced {new Date(integration.lastSync).toLocaleTimeString()}
                             </p>
                           )}
@@ -464,7 +464,7 @@ export default function IntegrationsPage() {
                     <CardContent>
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <p className="text-sm font-medium text-gray-400">Features</p>
+                          <p className="text-sm font-medium text-neutral-400">Features</p>
                           <div className="flex flex-wrap gap-1">
                             {integration.features.map(feature => (
                               <Badge key={feature} variant="outline" className="text-xs">
@@ -475,10 +475,10 @@ export default function IntegrationsPage() {
                         </div>
                         {integration.usage && (
                           <div className="space-y-2">
-                            <p className="text-sm font-medium text-gray-400">Usage</p>
+                            <p className="text-sm font-medium text-neutral-400">Usage</p>
                             <div className="space-y-1">
                               <div className="flex justify-between text-sm">
-                                <span className="text-gray-500">Events</span>
+                                <span className="text-neutral-500">Events</span>
                                 <span className="text-white">
                                   {integration.usage.events.toLocaleString()} / {integration.usage.quota.toLocaleString()}
                                 </span>

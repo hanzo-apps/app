@@ -39,10 +39,10 @@ export function PublicDeployment({ projectId }: PublicDeploymentProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-neutral-900">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-gray-100 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading deployment...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-neutral-900 dark:border-neutral-100 mx-auto mb-4"></div>
+          <p className="text-neutral-600 dark:text-neutral-400">Loading deployment...</p>
         </div>
       </div>
     );
@@ -50,15 +50,15 @@ export function PublicDeployment({ projectId }: PublicDeploymentProps) {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-neutral-900">
         <div className="text-center max-w-md px-4">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
             No Published Deployment
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
+          <p className="text-neutral-600 dark:text-neutral-400 mb-4">
             {error}
           </p>
-          <p className="text-sm text-gray-500 dark:text-gray-500">
+          <p className="text-sm text-neutral-500 dark:text-neutral-500">
             Go to <a href="/admin" className="text-blue-600 hover:underline">/admin</a> to publish a project.
           </p>
         </div>

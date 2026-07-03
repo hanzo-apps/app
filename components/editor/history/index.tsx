@@ -34,11 +34,11 @@ export function History({
             {history?.map((item, index) => (
               <li
                 key={index}
-                className="text-gray-300 text-xs py-2 border-b border-gray-800 last:border-0 flex items-center justify-between gap-2"
+                className="text-neutral-300 text-xs py-2 border-b border-neutral-800 last:border-0 flex items-center justify-between gap-2"
               >
                 <div className="">
                   <span className="line-clamp-1">{item.prompt}</span>
-                  <span className="text-gray-500 text-[10px]">
+                  <span className="text-neutral-500 text-[10px]">
                     {new Date(item.createdAt).toLocaleDateString("en-US", {
                       month: "2-digit",
                       day: "2-digit",
