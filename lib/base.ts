@@ -7,7 +7,7 @@ import { BaseClient } from "@hanzo/base";
  * against hanzo.id JWKS (the same IdP hanzo.app already authenticates against).
  * The server forwards the signed-in user's IAM access token; per-user
  * isolation is enforced by the caller scoping every query to the user's `sub`.
- * SQLite-backed — the only data plane, no mongo / pg / kv.
+ * SQLite-backed — the only data plane, no external database.
  *
  * Uses the @hanzo/base core client (BaseClient) — no compat layer.
  */
