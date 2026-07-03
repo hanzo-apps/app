@@ -26,7 +26,7 @@ import { Label } from "@hanzo/ui";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
 import { cn } from "@/lib/utils";
 import { HexColorPicker } from "react-colorful";
-import { editor } from "monaco-editor";
+import type { editor } from "monaco-editor";
 
 interface SourceLocation {
   file: string;

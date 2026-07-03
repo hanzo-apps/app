@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAccount } from "wagmi";
 import { Button } from "@hanzo/ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
 import {
@@ -23,18 +22,12 @@ import {
   ChevronDown,
   Home,
   DollarSign,
-  Wallet,
 } from "lucide-react";
 import { HanzoBrand } from "@/components/HanzoLogo";
 import { useAuthContext } from "@/components/providers/AuthProvider";
 
-function truncateAddress(address: string): string {
-  return `${address.slice(0, 6)}...${address.slice(-4)}`;
-}
-
 export default function Header() {
   const { user, isAuthenticated, login, logout } = useAuthContext();
-  const { address, isConnected } = useAccount();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -91,14 +84,6 @@ export default function Header() {
         <div className="flex items-center gap-4">
           {/* Desktop User Menu */}
           <div className="hidden md:flex items-center gap-3">
-            {/* Wallet badge */}
-            {isConnected && address && (
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white/70 text-xs font-mono">
-                <Wallet className="w-3.5 h-3.5" />
-                {truncateAddress(address)}
-              </div>
-            )}
-
             {isAuthenticated && user ? (
               <>
                 <Button
@@ -233,12 +218,6 @@ export default function Header() {
                         </p>
                       </div>
                     </div>
-                    {isConnected && address && (
-                      <div className="mt-2 flex items-center gap-1.5 text-xs text-white/50 font-mono">
-                        <Wallet className="w-3.5 h-3.5" />
-                        {truncateAddress(address)}
-                      </div>
-                    )}
                   </div>
 
                   <button
