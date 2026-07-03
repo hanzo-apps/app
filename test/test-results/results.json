@@ -1,0 +1,204 @@
+{
+  "config": {
+    "configFile": "/Users/z/work/hanzo/app/playwright.config.ts",
+    "rootDir": "/Users/z/work/hanzo/app/src/ts/__tests__/e2e",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report"
+        }
+      ],
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/z/work/hanzo/app/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/z/work/hanzo/app/src/ts/__tests__/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.e2e.test.ts"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.54.1",
+    "workers": 5,
+    "webServer": {
+      "command": "pnpm dev:web",
+      "port": 5173,
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "test-with-fixture-model.e2e.test.ts",
+      "file": "test-with-fixture-model.e2e.test.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Hanzo Model Inference with Fixture",
+          "file": "test-with-fixture-model.e2e.test.ts",
+          "line": 5,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Load pre-downloaded model and test inference",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 300000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 31819,
+                      "error": {
+                        "message": "TypeError: fetch failed",
+                        "stack": "TypeError: fetch failed\n    at /Users/z/work/hanzo/app/src/ts/__tests__/e2e/test-with-fixture-model.e2e.test.ts:176:22",
+                        "cause": {
+                          "message": "AggregateError: ",
+                          "stack": "AggregateError: "
+                        },
+                        "location": {
+                          "file": "/Users/z/work/hanzo/app/src/ts/__tests__/e2e/test-with-fixture-model.e2e.test.ts",
+                          "column": 22,
+                          "line": 176
+                        },
+                        "snippet": "  174 |     // Test model info endpoint\n  175 |     console.log('🔍 Testing model info endpoint...')\n> 176 |     const response = await fetch('http://localhost:1337/v1/models')\n      |                      ^\n  177 |     if (response.ok) {\n  178 |       const models = await response.json()\n  179 |       console.log('📊 Available models:', JSON.stringify(models, null, 2))"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/z/work/hanzo/app/src/ts/__tests__/e2e/test-with-fixture-model.e2e.test.ts",
+                            "column": 22,
+                            "line": 176
+                          },
+                          "message": "TypeError: fetch failed\n\n  174 |     // Test model info endpoint\n  175 |     console.log('🔍 Testing model info endpoint...')\n> 176 |     const response = await fetch('http://localhost:1337/v1/models')\n      |                      ^\n  177 |     if (response.ok) {\n  178 |       const models = await response.json()\n  179 |       console.log('📊 Available models:', JSON.stringify(models, null, 2))\n    at /Users/z/work/hanzo/app/src/ts/__tests__/e2e/test-with-fixture-model.e2e.test.ts:176:22\n[cause]: AggregateError: "
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "✅ Model fixture found at: /Users/z/work/hanzo/app/test/fixtures/models/qwen-0.5b-gguf\n"
+                        },
+                        {
+                          "text": "🚀 Starting model inference test with fixture\n"
+                        },
+                        {
+                          "text": "📁 Creating Hanzo models directory...\n"
+                        },
+                        {
+                          "text": "📋 Copying model to Hanzo data directory...\n"
+                        },
+                        {
+                          "text": "📱 Opening AI chat interface...\n"
+                        },
+                        {
+                          "text": "⚙️ Opening settings...\n"
+                        },
+                        {
+                          "text": "🧪 Testing model inference...\n"
+                        },
+                        {
+                          "text": "❌ Could not find chat input\n"
+                        },
+                        {
+                          "text": "🔍 Testing model info endpoint...\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-07-20T01:53:11.640Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/z/work/hanzo/app/test-results/test-with-fixture-model.e2-0d055-ed-model-and-test-inference-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/z/work/hanzo/app/test-results/test-with-fixture-model.e2-0d055-ed-model-and-test-inference-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/z/work/hanzo/app/test-results/test-with-fixture-model.e2-0d055-ed-model-and-test-inference-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/z/work/hanzo/app/src/ts/__tests__/e2e/test-with-fixture-model.e2e.test.ts",
+                        "column": 22,
+                        "line": 176
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "759c2e509d4157fa5a45-e7b089a3010eda4532d6",
+              "file": "test-with-fixture-model.e2e.test.ts",
+              "line": 17,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-07-20T01:53:10.327Z",
+    "duration": 33280.845,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

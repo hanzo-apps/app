@@ -1,0 +1,4 @@
+# Windows files should use crlf line endings
+# https://help.github.com/articles/dealing-with-line-endings/
+*.bat text eol=crlf
+# *.gguf models should not be committed — use HF hub

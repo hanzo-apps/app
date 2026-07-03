@@ -1,0 +1,24 @@
+{
+  "*": {
+    "display": "hidden",
+    "theme": {
+      "breadcrumb": false,
+      "pagination": false
+    }
+  },
+  "all-categories": {
+    "title": "All Categories",
+    "display": "normal",
+    "href": "/blog"
+  },
+  "building-hanzo": {
+    "title": "Building Hanzo AI",
+    "display": "normal",
+    "href": "/blog?category=building-hanzo"
+  },
+  "research-cat": {
+    "title": "Research",
+    "display": "normal",
+    "href": "/blog?category=research"
+  }
+}

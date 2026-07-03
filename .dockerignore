@@ -1,0 +1,73 @@
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+.pnpm-store
+
+# Next.js
+.next
+out
+build
+dist
+
+# Testing
+coverage
+.nyc_output
+*.test.js
+*.spec.js
+__tests__
+test
+
+# Development
+.env.local
+.env.development
+.env*.local
+*.log
+.DS_Store
+Thumbs.db
+
+# Version control
+.git
+.gitignore
+.github
+.gitlab
+.gitattributes
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.project
+.classpath
+.c9
+.settings
+
+# Documentation
+README.md
+CHANGELOG.md
+LICENSE
+docs
+*.md
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+Jenkinsfile
+
+# Docker
+.dockerignore
+
+# Misc
+.eslintrc*
+.prettierrc*
+.editorconfig
+.nvmrc
+tsconfig.tsbuildinfo
+*.tgz
+temp
+tmp
+cacheapps/desktop
+apps/extension

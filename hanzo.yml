@@ -1,0 +1,25 @@
+# Platform-native CI/CD — hanzoai/app
+#
+# Build + deploy are owned by platform.hanzo.ai (NOT GitHub Actions). On the
+# repo webhook, platform schedules these builds onto self-hosted arcd pools
+# and (on main) rolls the resulting image onto the hanzo operator's `hanzo-app`
+# Service CR. There is no GHA build path for this repo — platform is the only
+# way. Schema reference: platform docs/PLATFORM_CI.md.
+build:
+  matrix:
+    - { os: linux, arch: amd64 }
+    - { os: linux, arch: arm64 }
+  dockerfile: ./Dockerfile.production
+  context: .
+  image: ghcr.io/hanzoai/hanzo-app
+  tag-pattern: "{{git.sha}}"
+  push: true
+deploy:
+  on:
+    - main
+  target:
+    cluster: hanzo-k8s
+    namespace: hanzo
+    operator: hanzo-operator
+    crd: Service
+    name: hanzo-app

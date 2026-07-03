@@ -1,0 +1,113 @@
+import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { OIDC_PATHS } from "@hanzo/iam/paths";
+
+const IAM_ENDPOINT = process.env.IAM_ENDPOINT || "https://hanzo.id";
+const IAM_TOKEN_URL = `${IAM_ENDPOINT}${OIDC_PATHS.token}`;
+const COOKIE_NAME = "hanzo_token";
+const COOKIE_MAX_AGE = 7 * 24 * 60 * 60; // 7 days in seconds
+const OAUTH_STATE_COOKIE = "hanzo_oauth_state";
+
+export async function GET(req: NextRequest) {
+  const { searchParams } = req.nextUrl;
+  const code = searchParams.get("code");
+  const returnedState = searchParams.get("state");
+
+  if (!code) {
+    return NextResponse.json(
+      { error: "Missing authorization code" },
+      { status: 400 }
+    );
+  }
+
+  // Validate OAuth state to prevent CSRF attacks
+  const cookieStore = await cookies();
+  const expectedState = cookieStore.get(OAUTH_STATE_COOKIE)?.value;
+
+  if (!returnedState || !expectedState || returnedState !== expectedState) {
+    return NextResponse.json(
+      { error: "Invalid OAuth state — possible CSRF attack" },
+      { status: 403 }
+    );
+  }
+
+  // Delete the state cookie now that it has been validated
+  cookieStore.delete(OAUTH_STATE_COOKIE);
+
+  const clientId = process.env.IAM_CLIENT_ID;
+  const clientSecret = process.env.IAM_CLIENT_SECRET;
+
+  // Derive app URL from the request for multi-domain support
+  const host = req.headers.get("host") || "localhost:3000";
+  const protocol = host.includes("localhost") ? "http" : "https";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${host}`;
+
+  if (!clientId || !clientSecret) {
+    console.error("Missing IAM OAuth configuration:", {
+      hasClientId: !!clientId,
+      hasClientSecret: !!clientSecret,
+    });
+    return NextResponse.json(
+      { error: "OAuth configuration missing" },
+      { status: 500 }
+    );
+  }
+
+  const redirectUri = `${appUrl}/api/auth/callback`;
+
+  try {
+    const tokenResponse = await fetch(IAM_TOKEN_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        grant_type: "authorization_code",
+        client_id: clientId,
+        client_secret: clientSecret,
+        code,
+        redirect_uri: redirectUri,
+      }),
+    });
+
+    if (!tokenResponse.ok) {
+      const errorText = await tokenResponse.text();
+      console.error("IAM token exchange failed:", tokenResponse.status, errorText);
+      return NextResponse.json(
+        { error: "Token exchange failed" },
+        { status: 502 }
+      );
+    }
+
+    const tokenData = await tokenResponse.json();
+    const accessToken = tokenData.access_token;
+
+    if (!accessToken) {
+      console.error("No access_token in IAM response:", tokenData);
+      return NextResponse.json(
+        { error: "Failed to retrieve access token" },
+        { status: 502 }
+      );
+    }
+
+    const response = NextResponse.redirect(new URL("/dashboard", req.nextUrl.origin));
+
+    response.cookies.set({
+      name: COOKIE_NAME,
+      value: accessToken,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: COOKIE_MAX_AGE,
+    });
+
+    return response;
+  } catch (error) {
+    console.error("IAM OAuth callback error:", error);
+    return NextResponse.json(
+      { error: "Authentication failed" },
+      { status: 500 }
+    );
+  }
+}
