@@ -32,6 +32,7 @@ import {
 } from "@/lib/prompts";
 import { DEFAULT_MODEL } from "@/lib/providers";
 import MY_TOKEN_KEY from "@/lib/get-cookie-name";
+import { requireSameOrigin } from "@/lib/org/csrf";
 import { Page } from "@/types";
 
 const HANZO_AI_BASE_URL =
@@ -76,6 +77,11 @@ async function callGateway(
  * parser consumes verbatim.
  */
 export async function POST(request: NextRequest) {
+  // CSRF: cookie-authenticated + spends AI credit for the org — refuse a
+  // cross-origin POST before doing any work.
+  const csrf = requireSameOrigin(request);
+  if (csrf) return csrf;
+
   const token = request.cookies.get(MY_TOKEN_KEY())?.value;
   if (!token) return unauthorized();
 
