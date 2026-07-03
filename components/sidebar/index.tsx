@@ -84,7 +84,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { id: 'tester', label: 'Benchmark', icon: TestTube, path: '/test-generation' },
   { id: 'about', label: 'About', icon: Info, action: 'open-about' },
   { id: 'discord', label: 'Discord', icon: DiscordIcon, href: 'https://discord.gg/mAJ8Ss4u' },
-  { id: 'github', label: 'GitHub', icon: Github, href: 'https://github.com/o-stahl/hanzo-app' },
+  { id: 'github', label: 'GitHub', icon: Github, href: 'https://github.com/hanzoai/app' },
 ];
 
 const SYSTEM_ACTIONS: SidebarItem[] = [
