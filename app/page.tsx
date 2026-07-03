@@ -176,7 +176,7 @@ export default function LandingPage() {
   return (
     <div className="bg-[#0a0a0a] text-white">
       {/* Gradient background - subtle but dynamic */}
-      <div className="fixed inset-0 pointer-events-none z-0">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0a] to-[#0a0a0a]" />
         <div className="absolute top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[800px] bg-gradient-radial from-[#fd4444]/15 via-[#ff6b6b]/5 to-transparent blur-3xl animate-pulse" />
         <div className="absolute bottom-0 left-0 right-0 h-[600px] bg-gradient-to-t from-blue-500/10 via-[#ff6b6b]/5 to-transparent blur-3xl" />
@@ -229,14 +229,14 @@ export default function LandingPage() {
                   />
                   <div className="flex items-center gap-2 justify-between md:justify-end">
                     <div className="flex items-center gap-2">
-                      <button className="p-2 md:p-2.5 hover:bg-white/5 rounded-lg md:rounded-xl transition-all group">
+                      <button className="min-h-10 min-w-10 flex items-center justify-center p-2 md:p-2.5 hover:bg-white/5 rounded-lg md:rounded-xl transition-all group">
                         <Plus className="w-5 h-5 text-white/40 group-hover:text-white/60" />
                       </button>
-                      <button className="p-2 md:p-2.5 hover:bg-white/5 rounded-lg md:rounded-xl transition-all group flex items-center gap-1.5">
+                      <button className="min-h-10 min-w-10 justify-center p-2 md:p-2.5 hover:bg-white/5 rounded-lg md:rounded-xl transition-all group flex items-center gap-1.5">
                         <Globe2 className="w-5 h-5 text-white/40 group-hover:text-white/60" />
                         <span className="hidden sm:inline text-xs text-white/40 group-hover:text-white/60">Public</span>
                       </button>
-                      <button className="p-2 md:p-2.5 hover:bg-white/5 rounded-lg md:rounded-xl transition-all group">
+                      <button className="min-h-10 min-w-10 flex items-center justify-center p-2 md:p-2.5 hover:bg-white/5 rounded-lg md:rounded-xl transition-all group">
                         <Mic className="w-5 h-5 text-white/40 group-hover:text-white/60" />
                       </button>
                     </div>
@@ -262,25 +262,25 @@ export default function LandingPage() {
               <div className="grid grid-cols-2 md:flex md:flex-wrap gap-2 justify-center mt-6 md:mt-8">
                 <button
                   onClick={() => setPrompt("Build a modern SaaS landing page with pricing tiers")}
-                  className="px-3 md:px-4 py-2 rounded-lg md:rounded-xl bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all text-xs md:text-sm font-medium"
+                  className="min-w-0 px-3 md:px-4 py-2 rounded-lg md:rounded-xl bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all text-xs md:text-sm font-medium"
                 >
                   ✨ SaaS Landing
                 </button>
                 <button
                   onClick={() => setPrompt("Create an AI chatbot interface with conversation history")}
-                  className="px-3 md:px-4 py-2 rounded-lg md:rounded-xl bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all text-xs md:text-sm font-medium"
+                  className="min-w-0 px-3 md:px-4 py-2 rounded-lg md:rounded-xl bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all text-xs md:text-sm font-medium"
                 >
                   🤖 AI Chatbot
                 </button>
                 <button
                   onClick={() => setPrompt("Design a crypto trading dashboard with real-time charts")}
-                  className="px-3 md:px-4 py-2 rounded-lg md:rounded-xl bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all text-xs md:text-sm font-medium"
+                  className="min-w-0 px-3 md:px-4 py-2 rounded-lg md:rounded-xl bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all text-xs md:text-sm font-medium"
                 >
                   📊 Trading Dashboard
                 </button>
                 <button
                   onClick={() => setPrompt("Build a social media app with posts and comments")}
-                  className="px-3 md:px-4 py-2 rounded-lg md:rounded-xl bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all text-xs md:text-sm font-medium"
+                  className="min-w-0 px-3 md:px-4 py-2 rounded-lg md:rounded-xl bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all text-xs md:text-sm font-medium"
                 >
                   💬 Social App
                 </button>
@@ -371,10 +371,10 @@ export default function LandingPage() {
               <p className="text-sm text-white/60">
                 Want to see more amazing projects? Check out our community gallery!
               </p>
-              <div className="flex items-center justify-center gap-4">
+              <div className="flex flex-wrap items-center justify-center gap-4">
                 <Button
                   onClick={() => router.push('/gallery')}
-                  className="bg-gradient-to-r from-[#fd4444] to-[#e03e3e] text-white hover:from-[#e03e3e] hover:to-[#fd4444]"
+                  className="max-w-full whitespace-normal bg-gradient-to-r from-[#fd4444] to-[#e03e3e] text-white hover:from-[#e03e3e] hover:to-[#fd4444]"
                 >
                   <Globe2 className="w-4 h-4 mr-2" />
                   View Full Gallery
@@ -382,7 +382,7 @@ export default function LandingPage() {
                 <Button
                   onClick={() => router.push('/community')}
                   variant="outline"
-                  className="border-white/20 text-white hover:bg-white/10 px-4 md:px-6 py-2.5 md:py-3 rounded-xl font-semibold"
+                  className="max-w-full whitespace-normal border-white/20 text-white hover:bg-white/10 px-4 md:px-6 py-2.5 md:py-3 rounded-xl font-semibold"
                 >
                   Explore Community
                   <ArrowRight className="ml-2 w-5 h-5" />
