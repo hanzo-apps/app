@@ -9,7 +9,6 @@ import "@/assets/globals.css";
 import MY_TOKEN_KEY from "@/lib/get-cookie-name";
 import { apiServer } from "@/lib/api";
 import AppContext from "@/components/contexts/app-context";
-import Script from "next/script";
 import IframeDetector from "@/components/iframe-detector";
 import { Providers } from "./providers";
 import { ErrorBoundary } from "@/components/error-boundary/error-boundary";
@@ -102,11 +101,6 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <Script
-        defer
-        data-domain="hanzo.build"
-        src="https://plausible.io/js/script.js"
-      ></Script>
       <body
         className={`${basel.variable} ${geistMono.variable} antialiased bg-black dark min-h-screen`}
       >
