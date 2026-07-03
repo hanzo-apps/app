@@ -43,6 +43,19 @@ const nextConfig = {
     },
   },
 
+  // /help was a dead route (404) linked from the builder footer and marketing
+  // footers. Point it at the real docs so every "Help" link resolves — one rule
+  // instead of editing each link site.
+  async redirects() {
+    return [
+      {
+        source: '/help',
+        destination: 'https://docs.hanzo.ai',
+        permanent: false,
+      },
+    ];
+  },
+
   // Disable static generation for problematic pages
   generateStaticParams: false,
   dynamicParams: true,
