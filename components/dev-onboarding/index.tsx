@@ -30,7 +30,17 @@ import { Badge } from "@hanzo/ui";
 import { Progress } from "@hanzo/ui";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { HanzoLogo } from "@/components/HanzoLogo";
+import { useRouter } from "next/navigation";
+import {
+  type GalleryTemplate,
+  snapshotCatalog,
+  popularTemplates,
+} from "@/lib/gallery-catalog";
+
+// Fork a real template into the editor.
+function forkHref(t: GalleryTemplate) {
+  return `/dev?template=hanzo-apps/${t.slug}&action=edit`;
+}
 
 interface DevOnboardingProps {
   initialPrompt?: string;
@@ -56,88 +66,6 @@ const getCategoryIcon = (category: string) => {
   };
   return icons[category] || <Code2 className="w-4 h-4" />;
 };
-
-const templates = [
-  {
-    id: "nextjs-blog",
-    title: "Next.js Blog",
-    description: "Modern blog with MDX support",
-    category: "web",
-    popular: true,
-    estimatedTime: "5 mins",
-    difficulty: "Beginner",
-    tags: ["Next.js", "MDX", "Tailwind"]
-  },
-  {
-    id: "ai-chatbot",
-    title: "AI Chatbot",
-    description: "OpenAI-powered chat interface",
-    category: "ai",
-    popular: true,
-    estimatedTime: "10 mins",
-    difficulty: "Intermediate",
-    tags: ["OpenAI", "React", "WebSocket"]
-  },
-  {
-    id: "dashboard-ui",
-    title: "Dashboard UI",
-    description: "Analytics dashboard with charts",
-    category: "design",
-    popular: true,
-    estimatedTime: "8 mins",
-    difficulty: "Beginner",
-    tags: ["Charts", "Tailwind", "React"]
-  },
-  {
-    id: "ecommerce",
-    title: "E-commerce Store",
-    description: "Full-stack online store",
-    category: "web",
-    popular: true,
-    estimatedTime: "15 mins",
-    difficulty: "Advanced",
-    tags: ["Stripe", "Next.js", "Database"]
-  }
-];
-
-const projectTemplates = [
-  {
-    id: "editor",
-    title: "Build a real-time collaborative editor",
-    icon: <Code2 className="w-4 h-4" />,
-    description: "Like Google Docs but better"
-  },
-  {
-    id: "dashboard",
-    title: "Create an analytics dashboard",
-    icon: <Zap className="w-4 h-4" />,
-    description: "Real-time data visualization"
-  },
-  {
-    id: "saas",
-    title: "Launch a SaaS platform",
-    icon: <Rocket className="w-4 h-4" />,
-    description: "Complete with billing & auth"
-  },
-  {
-    id: "ai-app",
-    title: "Deploy an AI application",
-    icon: <Brain className="w-4 h-4" />,
-    description: "LLM-powered interface"
-  },
-  {
-    id: "marketplace",
-    title: "Build a marketplace",
-    icon: <Globe className="w-4 h-4" />,
-    description: "Connect buyers and sellers"
-  },
-  {
-    id: "landing",
-    title: "Design a landing page",
-    icon: <Palette className="w-4 h-4" />,
-    description: "Beautiful & converting"
-  }
-];
 
 const features = [
   {
@@ -176,6 +104,27 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
   const [progress, setProgress] = useState(0);
   const planEndRef = useRef<HTMLDivElement>(null);
   const thoughtsEndRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+
+  // Real "popular" templates from the gallery catalog. Seed from the bundled
+  // snapshot (instant, never empty) then refresh from the live catalog.
+  const [popular, setPopular] = useState<GalleryTemplate[]>(
+    () => popularTemplates(snapshotCatalog().templates, 6),
+  );
+  useEffect(() => {
+    let alive = true;
+    fetch("/api/templates")
+      .then((r) => r.json())
+      .then((d) => {
+        if (alive && Array.isArray(d.templates) && d.templates.length) {
+          setPopular(popularTemplates(d.templates, 6));
+        }
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   // Start planning if we have an initial prompt
   useEffect(() => {
@@ -375,8 +324,10 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
     setInputMessage("");
   };
 
-  const handleTemplateSelect = (template: typeof templates[0] | typeof projectTemplates[0]) => {
-    startPlanning(template.title);
+  // Selecting a real template forks it into the editor (clone + customize),
+  // rather than running the canned plan animation.
+  const handleTemplateSelect = (template: GalleryTemplate) => {
+    router.push(forkHref(template));
   };
 
   const handleImportProject = (source: "github" | "hanzo") => {
@@ -393,8 +344,8 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
       <div className="min-h-screen h-screen overflow-y-auto bg-black flex items-center justify-center p-6">
         <div className="max-w-6xl w-full">
           <div className="text-center mb-12">
-            <div className="w-20 h-20 bg-gradient-to-br from-[#171717] to-[#404040] rounded-2xl flex items-center justify-center mb-6 mx-auto">
-              <HanzoLogo className="w-10 h-10 text-white" />
+            <div className="w-20 h-20 bg-gradient-to-br from-[#fd4444] to-[#ff6b6b] rounded-2xl flex items-center justify-center mb-6 mx-auto">
+              <span className="text-white font-bold text-4xl">H</span>
             </div>
             <h1 className="text-4xl font-bold text-white mb-4">
               Welcome to Hanzo AI ✨
@@ -458,91 +409,58 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
             </Card>
           </div>
 
-          {/* Project Templates */}
+          {/* Popular templates — real gallery templates with real previews */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">
-                Templates
+                Start from a template
               </h3>
               <Link href="/gallery">
                 <Button variant="ghost" size="sm" className="gap-2">
                   <Globe className="w-4 h-4" />
-                  View All
+                  Browse all
                 </Button>
               </Link>
             </div>
 
-            {/* Popular Templates */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-4">
-              {templates.filter(t => t.popular).slice(0, 4).map(template => (
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+              {popular.map((template) => (
                 <button
-                  key={template.id}
+                  key={template.slug}
                   onClick={() => handleTemplateSelect(template)}
-                  className="p-4 bg-neutral-900 border border-neutral-800 rounded-lg hover:bg-neutral-800 hover:border-[#171717]/50 transition-all text-left group"
+                  className="flex flex-col overflow-hidden rounded-lg border border-neutral-800 bg-neutral-900 hover:border-[#fd4444]/50 hover:-translate-y-0.5 transition-all text-left group"
                 >
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-[#171717]/20 to-[#404040]/20 rounded-lg flex items-center justify-center text-[#171717] group-hover:from-[#171717]/30 group-hover:to-[#404040]/30">
-                      {getCategoryIcon(template.category)}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <p className="text-white font-medium text-sm">{template.title}</p>
-                          <p className="text-gray-500 text-xs mt-1 line-clamp-2">{template.description.slice(0, 80)}...</p>
-                        </div>
-                        {template.popular && (
-                          <Badge className="ml-2 bg-[#171717]/20 text-[#171717] border-[#171717]/30 text-xs">
-                            Popular
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-3 mt-2">
-                        <span className="flex items-center gap-1 text-xs text-gray-400">
-                          <Clock className="w-3 h-3" />
-                          {template.estimatedTime}
-                        </span>
-                        <Badge variant="outline" className="text-xs">
-                          {template.difficulty}
-                        </Badge>
-                      </div>
-                    </div>
+                  <div className="relative aspect-[16/10] bg-neutral-950 overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={template.screenshotUrl}
+                      alt={`${template.displayName} preview`}
+                      loading="lazy"
+                      className="w-full h-full object-cover object-top group-hover:scale-[1.03] transition-transform"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).style.display = "none";
+                      }}
+                    />
+                    <Badge className="absolute top-1.5 right-1.5 bg-black/70 text-white border-neutral-700 text-[10px]">
+                      {template.category}
+                    </Badge>
+                  </div>
+                  <div className="p-3">
+                    <p className="text-white font-medium text-sm truncate">{template.displayName}</p>
+                    <p className="text-gray-500 text-xs mt-0.5 line-clamp-1">
+                      {template.description || template.framework}
+                    </p>
                   </div>
                 </button>
               ))}
             </div>
-
-            {/* All Templates Grid */}
-            <details className="group">
-              <summary className="cursor-pointer text-sm text-[#171717] hover:text-[#404040] mb-3">
-                Show all templates ({templates.length})
-              </summary>
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-                {templates.map(template => (
-                  <button
-                    key={template.id}
-                    onClick={() => handleTemplateSelect(template)}
-                    className="p-3 bg-neutral-900 border border-neutral-800 rounded-lg hover:bg-neutral-800 hover:border-[#171717]/50 transition-all text-left group/item"
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-[#171717]/20 rounded flex items-center justify-center text-[#171717] group-hover/item:bg-[#171717]/30">
-                        {getCategoryIcon(template.category)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-white text-xs font-medium truncate">{template.title}</p>
-                        <p className="text-gray-500 text-xs">{template.category}</p>
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </details>
           </div>
 
           {/* Features Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {features.map((feature, i) => (
               <div key={i} className="text-center">
-                <div className="w-12 h-12 bg-neutral-900 rounded-lg flex items-center justify-center text-[#171717] mb-2 mx-auto">
+                <div className="w-12 h-12 bg-neutral-900 rounded-lg flex items-center justify-center text-[#fd4444] mb-2 mx-auto">
                   {feature.icon}
                 </div>
                 <p className="text-white text-sm font-medium">{feature.title}</p>
@@ -554,15 +472,15 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
           {/* Stats */}
           <div className="flex justify-center gap-8 mt-8 text-center">
             <div>
-              <p className="text-2xl font-bold text-[#171717]">10,000+</p>
+              <p className="text-2xl font-bold text-[#fd4444]">10,000+</p>
               <p className="text-xs text-gray-500">apps built</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-[#171717]">5ms</p>
+              <p className="text-2xl font-bold text-[#fd4444]">5ms</p>
               <p className="text-xs text-gray-500">generation</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-[#171717]">100+</p>
+              <p className="text-2xl font-bold text-[#fd4444]">100+</p>
               <p className="text-xs text-gray-500">AI models</p>
             </div>
           </div>
@@ -578,8 +496,8 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
         <div className="w-1/2 border-r border-neutral-800 p-6 overflow-y-auto">
           <div className="flex flex-col">
             <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#171717] to-[#404040] rounded-xl flex items-center justify-center mb-4 mx-auto animate-pulse">
-                <HanzoLogo className="w-8 h-8 text-white" />
+              <div className="w-16 h-16 bg-gradient-to-br from-[#fd4444] to-[#ff6b6b] rounded-xl flex items-center justify-center mb-4 mx-auto animate-pulse">
+                <span className="text-white font-bold text-2xl">H</span>
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">
                 {stage === "planning" ? "Building your app..." : "Ready to build! 🚀"}
@@ -594,7 +512,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
               <div className="mb-6">
                 <div className="flex justify-between text-sm mb-2">
                   <span className="text-gray-400">Progress</span>
-                  <span className="text-[#171717]">{Math.round(progress)}%</span>
+                  <span className="text-[#fd4444]">{Math.round(progress)}%</span>
                 </div>
                 <Progress value={progress} className="h-2" />
               </div>
@@ -609,18 +527,18 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                     className={cn(
                       "flex items-center gap-3 p-3 rounded-lg transition-all",
                       step.status === "thinking"
-                        ? "bg-[#171717]/10 border border-[#171717]/30"
+                        ? "bg-[#fd4444]/10 border border-[#fd4444]/30"
                         : "bg-neutral-900 border border-neutral-800 opacity-60"
                     )}
                   >
                     {step.status === "thinking" ? (
-                      <Loader2 className="w-4 h-4 text-[#171717] animate-spin" />
+                      <Loader2 className="w-4 h-4 text-[#fd4444] animate-spin" />
                     ) : (
                       <CheckCircle className="w-4 h-4 text-green-400" />
                     )}
                     <p className={cn(
                       "text-sm",
-                      step.status === "thinking" ? "text-[#404040]" : "text-gray-400"
+                      step.status === "thinking" ? "text-[#ff6b6b]" : "text-gray-400"
                     )}>
                       {step.text}
                     </p>
@@ -649,7 +567,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
         <div className="w-1/2 flex flex-col">
           <div className="p-4 border-b border-neutral-800">
             <div className="flex items-center gap-3">
-              <Terminal className="w-5 h-5 text-[#171717]" />
+              <Terminal className="w-5 h-5 text-[#fd4444]" />
               <div>
                 <h3 className="text-white font-medium">Development Plan</h3>
                 <p className="text-xs text-gray-500">Streaming line by line</p>
@@ -659,16 +577,12 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
 
           <div className="flex-1 overflow-y-auto bg-neutral-950 p-4">
             <pre className="font-mono text-xs leading-relaxed">
-              {planLines.map((rawLine, i) => {
-                // Guard a missing/odd streamed line so the plan panel never
-                // throws (`.startsWith` on undefined) and take down the builder.
-                const line = rawLine ?? "";
-                return (
+              {planLines.map((line, i) => (
                 <div
                   key={i}
                   className={cn(
                     "animate-fadeIn",
-                    line.startsWith("━") && "text-[#171717]",
+                    line.startsWith("━") && "text-[#fd4444]",
                     line.startsWith("  •") && "text-gray-400",
                     line.startsWith("  ✓") && "text-green-400",
                     line.startsWith("  →") && "text-blue-400",
@@ -680,10 +594,9 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                 >
                   {line || "\u00A0"}
                 </div>
-                );
-              })}
+              ))}
               {isStreaming && (
-                <span className="inline-block w-2 h-3 bg-[#171717] animate-pulse ml-1" />
+                <span className="inline-block w-2 h-3 bg-[#fd4444] animate-pulse ml-1" />
               )}
               <div ref={planEndRef} />
             </pre>
