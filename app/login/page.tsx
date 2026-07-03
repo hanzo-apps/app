@@ -19,6 +19,18 @@ export default function LoginPage() {
   const [isTyping, setIsTyping] = useState(true);
 
   useEffect(() => {
+    // Honor a `?redirect=<path>` deep link (middleware stamps it when bouncing
+    // a protected route here) so the post-login callback returns the user
+    // there. Same-origin absolute paths only — never a protocol-relative /
+    // off-origin target. The callback re-guards via loginRedirectDestination.
+    try {
+      const r = new URLSearchParams(window.location.search).get('redirect');
+      if (r && r.startsWith('/') && !r.startsWith('//') && !r.startsWith('/\\')) {
+        window.localStorage.setItem('redirectAfterLogin', r);
+      }
+    } catch {
+      /* storage / URL unavailable */
+    }
     login();
   }, [login]);
 
