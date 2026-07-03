@@ -94,7 +94,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
               />
             </div>
           ) : (
-            <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-gradient-to-br from-[#fd4444] to-[#ff6b6b] flex items-center justify-center">
+            <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center">
               <Sparkles className="w-9 h-9 text-white" />
             </div>
           )}
@@ -146,8 +146,8 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
 
               <TabsContent value="fork" className="mt-4 space-y-3">
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-[#fd4444]/20 flex items-center justify-center flex-shrink-0">
-                    <Copy className="w-5 h-5 text-[#fd4444] dark:text-[#ff6b6b]" />
+                  <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-white/20 flex items-center justify-center flex-shrink-0">
+                    <Copy className="w-5 h-5 text-white dark:text-neutral-300" />
                   </div>
                   <div>
                     <h4 className="font-semibold">Fork to Your Account</h4>
@@ -246,7 +246,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
           </Button>
           <Button
             onClick={handleProceed}
-            className="flex-1 bg-gradient-to-r from-[#fd4444] to-[#ff6b6b] hover:from-[#e03e3e] hover:to-[#fd4444]"
+            className="flex-1 bg-gradient-to-r from-neutral-700 to-neutral-800 hover:from-neutral-900 hover:to-neutral-700"
             disabled={loading}
           >
             {loading ? (
