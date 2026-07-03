@@ -24,6 +24,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
 import { resolveOrgIdentity } from '@/lib/org/server';
+import { requireSameOrigin } from '@/lib/org/csrf';
 import {
   createOrganization,
   getOrganization,
@@ -61,6 +62,11 @@ async function freeSlug(base: string): Promise<string | null> {
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  // CSRF: creating/joining an org is state-changing — refuse a cross-origin POST
+  // before touching IAM.
+  const csrf = requireSameOrigin(req);
+  if (csrf) return csrf;
+
   const user = await resolveOrgIdentity(req, { validate: true });
   if (!user) {
     return NextResponse.json({ error: 'Sign in to create an organization.' }, { status: 401 });

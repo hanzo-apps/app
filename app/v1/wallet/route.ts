@@ -10,21 +10,21 @@
  */
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { cloudBase, effectiveOrg, resolveOrgIdentity } from '@/lib/org/server';
+import { cloudBase, resolveScope } from '@/lib/org/server';
 
 export const runtime = 'nodejs';
 
 export async function GET(req: NextRequest) {
-  const id = await resolveOrgIdentity(req);
-  if (!id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const scope = await resolveScope(req);
+  if (!scope) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const currency = req.nextUrl.searchParams.get('currency') || 'usd';
   const headers: Record<string, string> = {
-    Authorization: `Bearer ${id.token}`,
+    Authorization: `Bearer ${scope.token}`,
     Accept: 'application/json',
   };
-  const org = effectiveOrg(req, id);
-  if (id.isGlobalAdmin && org && org !== id.homeOrg) headers['X-Org-Id'] = org;
+  // Stamp X-Org-Id ONLY for a validated global admin acting cross-org.
+  if (scope.crossOrg) headers['X-Org-Id'] = scope.org;
 
   try {
     const res = await fetch(
