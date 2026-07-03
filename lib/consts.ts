@@ -1,66 +1,58 @@
+// Idle canvas shown in the builder preview before anything is generated.
+//
+// Honest empty state — NOT a fake loader: no phantom progress bar, no "being
+// generated…" copy while nothing is happening. Monochrome to match the brand
+// sweep, fully self-contained (no external CDN), and it respects
+// prefers-reduced-motion. The moment the AI returns HTML, `srcDoc` swaps to the
+// real site — this is just what sits behind the cursor until then.
 export const defaultHTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hanzo Project</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Hanzo Preview</title>
   <style>
-    @keyframes pulse {
-      0%, 100% { opacity: 0.3; }
-      50% { opacity: 1; }
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      background: #0a0a0a;
+      color: #fafafa;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-font-smoothing: antialiased;
     }
-    @keyframes gradient {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    .wrap { text-align: center; padding: 2rem; max-width: 30rem; }
+    .mark {
+      width: 3.5rem; height: 3.5rem; margin: 0 auto 1.75rem;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 0.875rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em;
+      color: #fafafa; background: rgba(255,255,255,0.03);
     }
-    .loading-dot {
-      animation: pulse 1.5s ease-in-out infinite;
+    h1 { font-size: 1.05rem; font-weight: 600; margin: 0 0 0.5rem; letter-spacing: -0.01em; }
+    p { font-size: 0.85rem; line-height: 1.5; color: rgba(255,255,255,0.5); margin: 0; }
+    .cursor {
+      display: inline-block; width: 0.5rem; height: 1.05rem;
+      background: rgba(255,255,255,0.55); margin-left: 0.25rem;
+      transform: translateY(0.15rem);
+      animation: blink 1.15s steps(1) infinite;
     }
-    .gradient-animate {
-      background: linear-gradient(90deg, #9333ea, #737373, #3b82f6, #9333ea);
-      background-size: 300% 300%;
-      animation: gradient 8s ease infinite;
+    @keyframes blink { 50% { opacity: 0; } }
+    @media (prefers-reduced-motion: reduce) {
+      .cursor { animation: none; }
     }
   </style>
 </head>
-<body class="bg-black text-white min-h-screen flex items-center justify-center">
-  <div class="text-center px-8">
-    <!-- Hanzo Logo -->
-    <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl flex items-center justify-center mb-8 mx-auto transform hover:scale-110 transition-transform">
-      <span class="text-white font-bold text-4xl">H</span>
-    </div>
-
-    <!-- Loading Animation -->
-    <div class="flex justify-center space-x-2 mb-8">
-      <div class="w-3 h-3 bg-purple-600 rounded-full loading-dot"></div>
-      <div class="w-3 h-3 bg-purple-600 rounded-full loading-dot" style="animation-delay: 0.2s;"></div>
-      <div class="w-3 h-3 bg-purple-600 rounded-full loading-dot" style="animation-delay: 0.4s;"></div>
-    </div>
-
-    <!-- Status Text -->
-    <h1 class="text-2xl font-bold mb-4 bg-clip-text text-transparent gradient-animate">
-      Initializing Hanzo AI
-    </h1>
-
-    <p class="text-gray-400 text-sm">
-      Your AI-powered application is being generated...
-    </p>
-
-    <!-- Progress Indicator -->
-    <div class="mt-8 max-w-xs mx-auto">
-      <div class="h-1 bg-gray-800 rounded-full overflow-hidden">
-        <div class="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-1000" style="width: 0%; animation: progress 3s ease-out forwards;"></div>
-      </div>
-    </div>
+<body>
+  <div class="wrap">
+    <div class="mark">H</div>
+    <h1>Your preview will appear here<span class="cursor"></span></h1>
+    <p>Describe what you want to build in the chat and Hanzo generates it live — right here.</p>
   </div>
-
-  <style>
-    @keyframes progress {
-      to { width: 100%; }
-    }
-  </style>
 </body>
 </html>
 `;

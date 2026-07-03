@@ -1,9 +1,22 @@
 "use client";
 import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { editor } from "monaco-editor";
-import Editor from "@monaco-editor/react";
+import type { editor } from "monaco-editor";
+import dynamic from "next/dynamic";
 import { CopyIcon, Share2 } from "lucide-react";
+
+// Monaco is heavy (~loads its own worker + language services) and only ever
+// needed once the builder mounts. Code-split it out of the /dev first-load
+// chunk; show a calm placeholder while it streams in. Client-only (it touches
+// `window`), so no SSR pass.
+const Editor = dynamic(() => import("@monaco-editor/react"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-full w-full bg-neutral-900 flex items-center justify-center text-neutral-500 text-xs absolute left-0 top-0">
+      Loading editor…
+    </div>
+  ),
+});
 import {
   useCopyToClipboard,
   useEvent,
@@ -31,6 +44,7 @@ import { PageNavigator } from "./page-navigator";
 import { ShareModal } from "./share-modal";
 import { VisualEditor } from "./visual-editor";
 import { AISupervisor } from "./ai-supervisor";
+import { OrgProvider } from "@/lib/org/client";
 import { Button, TooltipProvider } from "@hanzo/ui";
 
 export const AppEditor = ({
@@ -211,6 +225,7 @@ export const AppEditor = ({
   }, [pages, currentPage]);
 
   return (
+    <OrgProvider>
     <TooltipProvider>
     <section className="h-[100dvh] bg-neutral-950 flex flex-col">
       <Header tab={currentTab} onNewTab={setCurrentTab}>
@@ -520,5 +535,6 @@ export const AppEditor = ({
       />
     </section>
     </TooltipProvider>
+    </OrgProvider>
   );
 };
