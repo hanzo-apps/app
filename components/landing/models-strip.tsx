@@ -3,6 +3,8 @@
 // Rendered monochrome-white on true-black via CSS filter. The endpoint shown
 // is real (api.hanzo.ai/v1, OpenAI-compatible); the model value is illustrative.
 
+import Reveal from "./reveal";
+
 const providers = [
   { src: "/logos/providers/anthropic.svg", alt: "Anthropic", w: 118 },
   { src: "/logos/providers/openai.svg", alt: "OpenAI", w: 108 },
@@ -22,7 +24,7 @@ export default function ModelsStrip() {
   return (
     <section className="relative border-t border-white/[0.06] px-4 py-20 md:px-8 md:py-24">
       <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
-        <div>
+        <Reveal>
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">
             Hanzo LLM Gateway
           </p>
@@ -44,9 +46,9 @@ export default function ModelsStrip() {
             Explore the gateway
             <span aria-hidden>→</span>
           </a>
-        </div>
+        </Reveal>
 
-        <div className="rounded-2xl border border-white/10 bg-black/50 p-5">
+        <Reveal delay={100} className="rounded-2xl border border-white/10 bg-black/50 p-5">
           <div className="mb-4 flex items-center gap-1.5">
             <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
             <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
@@ -75,7 +77,7 @@ Authorization: Bearer $HANZO_KEY
               />
             ))}
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );
