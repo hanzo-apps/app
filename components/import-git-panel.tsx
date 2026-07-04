@@ -46,7 +46,7 @@ function isGitUrl(v: string): boolean {
  */
 export function ImportGitPanel() {
   const router = useRouter();
-  const { login } = useIam();
+  const { config, isAuthenticated, login } = useIam();
 
   const [loadingAccounts, setLoadingAccounts] = useState(true);
   const [connected, setConnected] = useState(false);
@@ -63,22 +63,50 @@ export function ImportGitPanel() {
   const [pasteUrl, setPasteUrl] = useState("");
 
   const menuRef = useRef<HTMLDivElement>(null);
+  // True while the user is off linking GitHub in the hanzo.id account tab, so a
+  // return to this tab re-checks the connection (idle refocus stays a no-op).
+  const linkPendingRef = useRef(false);
 
-  // Load the connected accounts once. A not-connected/unauthenticated response
-  // yields the honest Connect CTA (fetchGitAccounts never throws).
+  // Load (or reload) the connected accounts; resolves to whether GitHub is
+  // connected. A not-connected/unauthenticated response yields the honest
+  // Connect CTA (fetchGitAccounts never throws). The active selection is
+  // preserved across reloads so a post-link refetch never resets the user.
+  const refreshAccounts = useCallback(async () => {
+    const r = await fetchGitAccounts();
+    setConnected(r.connected);
+    setAccounts(r.accounts);
+    setActive((prev) => prev || r.accounts[0]?.login || "");
+    return r.connected;
+  }, []);
+
+  // Initial load.
   useEffect(() => {
     let alive = true;
-    fetchGitAccounts().then((r) => {
-      if (!alive) return;
-      setConnected(r.connected);
-      setAccounts(r.accounts);
-      setActive(r.accounts[0]?.login ?? "");
-      setLoadingAccounts(false);
+    refreshAccounts().finally(() => {
+      if (alive) setLoadingAccounts(false);
     });
     return () => {
       alive = false;
     };
-  }, []);
+  }, [refreshAccounts]);
+
+  // When the user returns from the hanzo.id link tab, re-check the connection
+  // and reveal their repos. Gated on a pending link so idle refocus is a no-op.
+  useEffect(() => {
+    const onReturn = () => {
+      if (document.visibilityState !== "visible") return;
+      if (!linkPendingRef.current) return;
+      void refreshAccounts().then((ok) => {
+        if (ok) linkPendingRef.current = false;
+      });
+    };
+    document.addEventListener("visibilitychange", onReturn);
+    window.addEventListener("focus", onReturn);
+    return () => {
+      document.removeEventListener("visibilitychange", onReturn);
+      window.removeEventListener("focus", onReturn);
+    };
+  }, [refreshAccounts]);
 
   // Load the active account's repositories whenever it changes.
   useEffect(() => {
@@ -107,20 +135,34 @@ export function ImportGitPanel() {
     return () => document.removeEventListener("mousedown", onClick);
   }, [menuOpen]);
 
-  // Start the IAM connect flow. `prompt=login` forces the IAM login page (rather
-  // than a silent SSO re-sign-in) so the user can pick "Continue with GitHub",
-  // which links GitHub and stores the token in their IAM account. On return the
-  // BFF resolves the token and the accounts/repos load.
-  const connectGithub = useCallback(async () => {
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem("redirectAfterLogin", window.location.pathname);
-      } catch {
-        /* storage unavailable */
-      }
+  // Connect GitHub — two honest paths, one per auth state:
+  //
+  //  • Already signed in (e.g. via Google/password): LINK GitHub to the
+  //    EXISTING hanzo.id account. `login({prompt:"login"})` would silently
+  //    re-SSO the live session back WITHOUT ever showing the GitHub chooser,
+  //    so nothing links and `/v1/git/accounts` stays `{connected:false}`.
+  //    Instead open hanzo.id's own account page, whose "Link" button runs the
+  //    canonical Casdoor link flow: getAuthUrl(app, provider-github, "link")
+  //    encodes `method=link` in the OAuth `state`, so IAM's /callback runs
+  //    LinkUserAccount against the logged-in user. A new tab keeps /new alive;
+  //    the visibilitychange listener re-fetches on return and the repos appear.
+  //
+  //  • Not signed in: full SSO. Signing in WITH GitHub links it on first
+  //    sign-in (the already-working path), then returns to /new.
+  const connectGithub = useCallback(() => {
+    if (isAuthenticated) {
+      linkPendingRef.current = true;
+      const base = (config.serverUrl || "https://hanzo.id").replace(/\/+$/, "");
+      window.open(`${base}/account`, "_blank", "noopener,noreferrer");
+      return;
     }
-    await login({ additionalParams: { prompt: "login" } });
-  }, [login]);
+    try {
+      localStorage.setItem("redirectAfterLogin", window.location.pathname);
+    } catch {
+      /* storage unavailable */
+    }
+    void login();
+  }, [isAuthenticated, config, login]);
 
   const importRepo = useCallback(
     (cloneUrl: string) => {
