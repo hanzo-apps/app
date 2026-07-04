@@ -5,6 +5,17 @@ import { useSearchParams } from "next/navigation";
 import { AppEditor } from "@/components/editor";
 import { DevOnboarding } from "@/components/dev-onboarding";
 import { TemplateLoader } from "@/components/template-loader";
+import { parseGitUrl } from "@/lib/git/url";
+import { readStagedProject, clearStagedProject } from "@/lib/import/staging";
+import { resolveTemplateSeedMeta, buildTemplateSeedPrompt } from "@/lib/api/templates";
+import type { Page } from "@/types";
+
+/** Order staged files so the editor opens on a page: index.html, other HTML, rest. */
+function stagedRank(path: string): number {
+  if (/(^|\/)index\.html?$/i.test(path)) return 0;
+  if (/\.html?$/i.test(path)) return 1;
+  return 2;
+}
 
 export default function DevPage() {
   const searchParams = useSearchParams();
@@ -16,10 +27,18 @@ export default function DevPage() {
   // (console.hanzo.ai's "Edit in hanzo.app" links here). Opening a project by
   // slug skips onboarding and reuses the same shared record on re-publish.
   const projectSlug = searchParams.get("project") || "";
+  // Drag-and-drop import: /new stages the dropped project and routes here with
+  // ?action=import. We load it into the editor as the project's files.
+  const isImport = action === "import";
 
-  // Onboarding shows only when we're not opening a repo/template fork AND not a
-  // deep-linked existing project.
-  const [showOnboarding, setShowOnboarding] = useState(!repoUrl && !projectSlug);
+  // Onboarding shows only when we're not opening a repo/template fork, a
+  // deep-linked existing project, or a drag-and-drop import.
+  const [showOnboarding, setShowOnboarding] = useState(
+    !repoUrl && !projectSlug && !isImport,
+  );
+  // Dropped-project import: null until the staged files are read (or found none).
+  const [importedPages, setImportedPages] = useState<Page[] | null>(null);
+  const [importDone, setImportDone] = useState(false);
   // Fork → builder auto-start: when the console's "Open in builder" deep-links
   // here with ?template=&prompt=&action=edit, hold the editor until the seed is
   // staged for AskAI (which reads window.__initialPrompt on mount) so the first
@@ -47,6 +66,38 @@ export default function DevPage() {
       })
       .catch(() => {});
   }, [projectSlug]);
+
+  // Load the staged drag-and-drop project (once) and seed the editor with its
+  // files. Cleared after read so the import is one-shot; a missing/empty stage
+  // falls through to an empty new project rather than dead-ending.
+  useEffect(() => {
+    if (!isImport || importDone) return;
+    let alive = true;
+    setShowOnboarding(false);
+    // No AI auto-run for a file import: drop any stale seed the editor would
+    // otherwise pick up on mount.
+    try {
+      localStorage.removeItem("initialPrompt");
+    } catch {
+      /* storage unavailable */
+    }
+    (async () => {
+      const staged = await readStagedProject();
+      if (!alive) return;
+      if (staged?.files?.length) {
+        const pages: Page[] = staged.files
+          .map((f) => ({ path: f.path, html: f.text }))
+          .sort((a, b) => stagedRank(a.path) - stagedRank(b.path));
+        setImportedPages(pages);
+        if (staged.name) (window as any).__projectName = staged.name;
+      }
+      await clearStagedProject();
+      if (alive) setImportDone(true);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [isImport, importDone]);
   const [showTemplateLoader, setShowTemplateLoader] = useState(false);
   const [finalPrompt, setFinalPrompt] = useState("");
   const [generatedPlan, setGeneratedPlan] = useState("");
@@ -57,31 +108,31 @@ export default function DevPage() {
       // Parse repo URL to extract info
       let repoInfo: any = {};
 
-      // Handle different URL formats
-      if (repoUrl.includes("github.com")) {
-        // GitHub URL: https://github.com/owner/repo or https://github.com/hanzo-community/template-name
-        const match = repoUrl.match(/github\.com\/([^\/]+)\/([^\/\?]+)/);
-        if (match) {
-          repoInfo = {
-            platform: "github",
-            owner: match[1],
-            name: match[2],
-            fullUrl: repoUrl
-          };
-        }
-      } else if (repoUrl.includes("gallery.hanzo.ai")) {
+      // Handle different URL formats. Gallery + Hanzo-project deep-links are
+      // matched by their exact hosts FIRST; everything else is parsed by the
+      // shared git recognizer so ANY host (github, gitlab, git.sr.ht, a private
+      // `.git`, …) flows through honestly — never silently rewritten to github.
+      if (repoUrl.includes("gallery.hanzo.ai")) {
         // Starter-kit gallery template: https://gallery.hanzo.ai/templates/<slug>
-        // (checked BEFORE the hanzo.ai project branch — the gallery host also
-        // contains the "hanzo.ai" substring.)
         const match = repoUrl.match(/gallery\.hanzo\.ai\/templates\/([^\/\?]+)/);
         if (match) {
           repoInfo = {
             platform: "gallery",
             owner: "hanzoai/gallery",
             name: match[1],
-            fullUrl: repoUrl
+            fullUrl: repoUrl,
           };
         }
+      } else if (parseGitUrl(repoUrl)) {
+        // Any git remote — github/gitlab/bitbucket/self-hosted/arbitrary.
+        const g = parseGitUrl(repoUrl)!;
+        repoInfo = {
+          platform: g.provider === "other" ? "git" : g.provider,
+          host: g.host,
+          owner: g.owner,
+          name: g.name,
+          fullUrl: g.httpsUrl,
+        };
       } else if (repoUrl.includes("hanzo.ai") || repoUrl.includes("hanzo.app")) {
         // Hanzo project URL: https://hanzo.ai/projects/owner/project-name
         const match = repoUrl.match(/hanzo\.(ai|app)\/projects\/([^\/]+)\/([^\/\?]+)/);
@@ -90,18 +141,9 @@ export default function DevPage() {
             platform: "hanzo",
             owner: match[2],
             name: match[3],
-            fullUrl: repoUrl
+            fullUrl: repoUrl,
           };
         }
-      } else if (repoUrl.includes("/")) {
-        // Simple owner/repo format
-        const [owner, name] = repoUrl.split("/");
-        repoInfo = {
-          platform: "github",
-          owner,
-          name,
-          fullUrl: `https://github.com/${owner}/${name}`
-        };
       }
 
       setRepoData(repoInfo);
@@ -156,40 +198,14 @@ export default function DevPage() {
   };
 
   const handleTemplateAction = async (mode: "fork" | "edit" | "deploy") => {
-    // Build a real, template-specific generation prompt from the gallery
-    // catalog (real name/category/description/features/framework + the real
-    // preview screenshot as a visual reference) so the editor recreates the
-    // actual template as an editable starting point — not a generic stub.
-    let meta: any = null;
-    try {
-      const res = await fetch("/v1/gallery");
-      const data = await res.json();
-      meta = (data.templates || []).find(
-        (t: any) => t.slug === repoData.name || t.slug === `${repoData.name}`,
-      );
-    } catch {}
-
-    const title = meta?.displayName || repoData.name;
-    const spec = meta
-      ? [
-          `Recreate the "${meta.displayName}" template as a polished, production-quality ${meta.category} web app.`,
-          meta.description ? `Purpose: ${meta.description}` : "",
-          meta.features?.length ? `Must include: ${meta.features.join(", ")}.` : "",
-          meta.framework ? `Reference stack/style: ${meta.framework}.` : "",
-          meta.screenshotUrl
-            ? `Match the visual design shown in this reference screenshot: ${meta.screenshotUrl}`
-            : "",
-          "Make it fully responsive with clean, modern styling.",
-        ]
-          .filter(Boolean)
-          .join(" ")
-      : `Build a polished, production-quality app based on the "${title}" template. Make it responsive with clean, modern styling.`;
-
-    const prompt =
-      mode === "deploy"
-        ? `${spec} Then prepare it for one-click deploy to a live hanzo.app URL.`
-        : spec;
-
+    // Seed the builder from the template's REAL fields (name/category/features/
+    // framework/useCase + the real preview screenshot as a visual reference) so
+    // the editor recreates the actual template — not a generic stub. The shared
+    // resolver checks BOTH gallery catalogs, so a card from /new (cloud slugs)
+    // and a card from /gallery (snapshot slugs) both seed correctly — the prior
+    // single-catalog lookup silently missed ~60% of /new's slugs.
+    const meta = await resolveTemplateSeedMeta(repoData.name);
+    const prompt = buildTemplateSeedPrompt(meta, repoData.name, mode);
     handleOnboardingComplete(prompt);
   };
 
@@ -231,10 +247,21 @@ export default function DevPage() {
     );
   }
 
-  // Pass the prompt to AppEditor
+  // Drag-and-drop import: hold a splash until the staged files are read, then
+  // mount the editor seeded with the imported project's files.
+  if (isImport && !importDone) {
+    return (
+      <div className="h-[100dvh] bg-neutral-950 flex items-center justify-center text-neutral-400 text-sm">
+        Importing your project…
+      </div>
+    );
+  }
+
+  // Pass the prompt (or imported pages) to AppEditor.
   return (
     <AppEditor
       isNew
+      pages={importedPages ?? undefined}
     />
   );
 }
