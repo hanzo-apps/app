@@ -77,7 +77,7 @@ function statusColor(status: string) {
     case "error":
       return "text-red-500";
     default:
-      return "text-gray-400";
+      return "text-neutral-400";
   }
 }
 
@@ -234,7 +234,7 @@ export default function AgentsPage() {
             <div className="flex flex-wrap items-center gap-3">
               <Link href="/" className="flex items-center gap-2">
                 <HanzoLogo className="w-8 h-8 text-purple-500" />
-                <span className="text-xl font-bold text-white">Agents</span>
+                <span className="text-xl font-medium text-white">Agents</span>
               </Link>
               {state.kind === "ready" && (
                 <Badge variant="outline" className="gap-1">
@@ -297,7 +297,7 @@ export default function AgentsPage() {
       <div className="container mx-auto px-4 py-6 sm:px-6">
         {/* Loading */}
         {state.kind === "loading" && (
-          <div className="flex flex-col items-center justify-center py-24 text-gray-400">
+          <div className="flex flex-col items-center justify-center py-24 text-neutral-400">
             <Loader2 className="w-8 h-8 animate-spin mb-4" />
             <p>Loading agents…</p>
           </div>
@@ -382,7 +382,7 @@ export default function AgentsPage() {
                   />
                   <textarea
                     placeholder="Instructions — the agent's system prompt (optional)"
-                    className="min-h-24 rounded-md border border-neutral-800 bg-neutral-950 p-3 text-sm text-white placeholder:text-gray-500 focus:outline-none"
+                    className="min-h-24 rounded-md border border-neutral-800 bg-neutral-950 p-3 text-sm text-white placeholder:text-neutral-500 focus:outline-none"
                     value={form.instructions}
                     disabled={submitting}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
@@ -424,12 +424,12 @@ export default function AgentsPage() {
               ].map((s) => (
                 <Card key={s.label} className="bg-neutral-900 border-neutral-800">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-gray-400">
+                    <CardTitle className="text-sm text-neutral-400">
                       {s.label}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className={cn("text-2xl font-bold", s.tone)}>{s.value}</p>
+                    <p className={cn("text-2xl font-medium", s.tone)}>{s.value}</p>
                   </CardContent>
                 </Card>
               ))}
@@ -438,7 +438,7 @@ export default function AgentsPage() {
             {/* Search */}
             {agents.length > 0 && (
               <div className="relative mb-6 w-full max-w-md">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
                 <Input
                   placeholder="Search agents…"
                   className="pl-10 bg-neutral-900 border-neutral-800"
@@ -470,7 +470,7 @@ export default function AgentsPage() {
 
             {/* No search matches */}
             {agents.length > 0 && filtered.length === 0 && (
-              <p className="py-12 text-center text-gray-500">
+              <p className="py-12 text-center text-neutral-500">
                 No agents match “{search}”.
               </p>
             )}
@@ -511,14 +511,14 @@ export default function AgentsPage() {
                           </div>
                         </div>
                         {agent.description && (
-                          <p className="mt-2 text-sm text-gray-400 line-clamp-2">
+                          <p className="mt-2 text-sm text-neutral-400 line-clamp-2">
                             {agent.description}
                           </p>
                         )}
                       </CardHeader>
 
                       <CardContent className="flex flex-1 flex-col gap-3 pt-0">
-                        <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-500">
                           <span className="flex items-center gap-1">
                             <Cpu className="w-3 h-3" />
                             {agent.runs} {agent.runs === 1 ? "run" : "runs"}
@@ -535,7 +535,7 @@ export default function AgentsPage() {
                                 </Badge>
                               ))}
                               {agent.tools.length > 3 && (
-                                <span className="text-gray-600">
+                                <span className="text-neutral-600">
                                   +{agent.tools.length - 3}
                                 </span>
                               )}
@@ -587,7 +587,7 @@ export default function AgentsPage() {
                               onClick={() =>
                                 setExpanded(isOpen ? null : agent.name)
                               }
-                              className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-200"
+                              className="flex items-center gap-1 text-xs text-neutral-400 hover:text-neutral-200"
                             >
                               {isOpen ? (
                                 <ChevronDown className="w-3 h-3" />
@@ -609,7 +609,7 @@ export default function AgentsPage() {
                             {isOpen && (
                               <div className="mt-2 rounded bg-neutral-950 p-3">
                                 {result.status === "ok" ? (
-                                  <pre className="whitespace-pre-wrap break-words text-xs text-gray-300 max-h-64 overflow-y-auto">
+                                  <pre className="whitespace-pre-wrap break-words text-xs text-neutral-300 max-h-64 overflow-y-auto">
                                     {result.output || "(empty response)"}
                                   </pre>
                                 ) : (

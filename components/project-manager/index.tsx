@@ -563,7 +563,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
                     </PopoverTrigger>
                     <PopoverContent className="w-48" align="end">
                       <div className="space-y-2">
-                        <h4 className="font-semibold text-sm">Sort by</h4>
+                        <h4 className="font-medium text-sm">Sort by</h4>
                         <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
                           <SelectTrigger>
                             <SelectValue />
@@ -619,7 +619,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
                 {filteredProjects.length === 0 ? (
                   <div className="text-center py-12">
                     <FolderOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h2 className="text-xl font-semibold mb-2">
+                    <h2 className="text-xl font-medium mb-2">
                       {searchQuery ? 'No projects found' : 'No projects yet'}
                     </h2>
                     <p className="text-muted-foreground mb-6">

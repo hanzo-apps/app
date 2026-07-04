@@ -31,7 +31,7 @@ export default function SignupPage() {
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
             <HanzoLogo className="w-8 h-8 text-white" />
-            <span className="text-xl font-bold">Hanzo</span>
+            <span className="text-xl font-medium">Hanzo</span>
           </Link>
           <Link href="/login">
             <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
@@ -62,7 +62,7 @@ export default function SignupPage() {
             <CardContent className="space-y-6">
               {/* What you get section */}
               <div className="space-y-3 p-4 bg-white/5 rounded-lg border border-white/10">
-                <h3 className="text-sm font-semibold text-white/80 mb-3">What you'll get:</h3>
+                <h3 className="text-sm font-medium text-white/80 mb-3">What you'll get:</h3>
                 <div className="grid grid-cols-1 gap-2">
                   <div className="flex items-center gap-3">
                     <Sparkles className="w-4 h-4 text-white/70" />
@@ -149,10 +149,10 @@ export default function SignupPage() {
           <div className="mt-8 text-center">
             <p className="text-sm text-white/40 mb-3">Trusted by developers at</p>
             <div className="flex items-center justify-center gap-8 opacity-60">
-              <span className="text-white/60 font-semibold">OpenAI</span>
-              <span className="text-white/60 font-semibold">Google</span>
-              <span className="text-white/60 font-semibold">Meta</span>
-              <span className="text-white/60 font-semibold">Microsoft</span>
+              <span className="text-white/60 font-medium">OpenAI</span>
+              <span className="text-white/60 font-medium">Google</span>
+              <span className="text-white/60 font-medium">Meta</span>
+              <span className="text-white/60 font-medium">Microsoft</span>
             </div>
           </div>
         </div>

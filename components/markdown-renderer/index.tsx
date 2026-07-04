@@ -75,7 +75,7 @@ export function MarkdownRenderer({ content, className, skipNormalization = false
         h1: ({ children }) => {
           const text = children?.toString() || '';
           const id = slugify(text);
-          return <h1 id={id} className="text-3xl font-bold mb-4 mt-8 first:mt-0">{children}</h1>;
+          return <h1 id={id} className="text-3xl font-medium mb-4 mt-8 first:mt-0">{children}</h1>;
         },
         h2: ({ children }) => {
           const text = children?.toString() || '';
@@ -86,7 +86,7 @@ export function MarkdownRenderer({ content, className, skipNormalization = false
             <h2
               id={id}
               data-heading-index={index}
-              className="text-2xl font-bold mb-3 mt-8 pb-2 border-b border-border/50 first:mt-0"
+              className="text-2xl font-medium mb-3 mt-8 pb-2 border-b border-border/50 first:mt-0"
             >
               {children}
             </h2>
@@ -101,7 +101,7 @@ export function MarkdownRenderer({ content, className, skipNormalization = false
             <h3
               id={id}
               data-heading-index={index}
-              className="text-xl font-semibold mb-2 mt-6"
+              className="text-xl font-medium mb-2 mt-6"
             >
               {children}
             </h3>
@@ -116,7 +116,7 @@ export function MarkdownRenderer({ content, className, skipNormalization = false
             <h4
               id={id}
               data-heading-index={index}
-              className="text-lg font-semibold mb-2 mt-4"
+              className="text-lg font-medium mb-2 mt-4"
             >
               {children}
             </h4>
@@ -231,7 +231,7 @@ export function MarkdownRenderer({ content, className, skipNormalization = false
           );
         },
         
-        strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+        strong: ({ children }) => <strong className="font-medium">{children}</strong>,
         
         em: ({ children }) => <em className="italic">{children}</em>,
         
@@ -245,7 +245,7 @@ export function MarkdownRenderer({ content, className, skipNormalization = false
         thead: ({ children }) => <thead className="bg-muted/50">{children}</thead>,
         tbody: ({ children }) => <tbody className="divide-y divide-border bg-background">{children}</tbody>,
         tr: ({ children }) => <tr className="hover:bg-muted/30 transition-colors">{children}</tr>,
-        th: ({ children }) => <th className="px-4 py-3 text-left text-xs font-semibold tracking-wide">{children}</th>,
+        th: ({ children }) => <th className="px-4 py-3 text-left text-xs font-medium tracking-wide">{children}</th>,
         td: ({ children }) => <td className="px-4 py-3 text-sm">{children}</td>,
       }}
       >

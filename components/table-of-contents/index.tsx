@@ -44,7 +44,7 @@ export function TableOfContents({ items, activeId, visibleIds = [], onItemClick 
 
   return (
     <nav className="space-y-1">
-      <p className="text-sm font-semibold mb-3 text-foreground">On This Page</p>
+      <p className="text-sm font-medium mb-3 text-foreground">On This Page</p>
       <ul className="text-sm">
         {items.map((item) => (
           <li key={`${item.id}-${item.index}`}>

@@ -273,19 +273,19 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
                   <div className="grid grid-cols-4 gap-4">
                     <div className="border rounded-lg p-4">
                       <div className="text-sm text-muted-foreground">Total Pageviews</div>
-                      <div className="text-2xl font-bold">{overview.totalPageviews.toLocaleString()}</div>
+                      <div className="text-2xl font-medium">{overview.totalPageviews.toLocaleString()}</div>
                     </div>
                     <div className="border rounded-lg p-4">
                       <div className="text-sm text-muted-foreground">Unique Visitors</div>
-                      <div className="text-2xl font-bold">{overview.uniqueVisitors.toLocaleString()}</div>
+                      <div className="text-2xl font-medium">{overview.uniqueVisitors.toLocaleString()}</div>
                     </div>
                     <div className="border rounded-lg p-4">
                       <div className="text-sm text-muted-foreground">Avg. Time on Site</div>
-                      <div className="text-2xl font-bold">{formatDuration(overview.averageTimeOnSite)}</div>
+                      <div className="text-2xl font-medium">{formatDuration(overview.averageTimeOnSite)}</div>
                     </div>
                     <div className="border rounded-lg p-4">
                       <div className="text-sm text-muted-foreground">Bounce Rate</div>
-                      <div className="text-2xl font-bold">{(overview.bounceRate * 100).toFixed(1)}%</div>
+                      <div className="text-2xl font-medium">{(overview.bounceRate * 100).toFixed(1)}%</div>
                     </div>
                   </div>
 

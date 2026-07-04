@@ -68,8 +68,8 @@ const STATUS_CONFIG: Record<
     label: 'Local only',
     description: 'Only exists in your browser. Push to save to server.',
     icon: HardDrive,
-    colorClass: 'text-gray-600 dark:text-gray-400',
-    bgClass: 'bg-gray-500/10',
+    colorClass: 'text-neutral-600 dark:text-neutral-400',
+    bgClass: 'bg-neutral-500/10',
   },
   'server-only': {
     label: 'Server only',

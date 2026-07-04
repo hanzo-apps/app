@@ -220,7 +220,7 @@ export function ProjectCard({
                           }
                           if (e.key === 'Escape') cancelEdit();
                         }}
-                        className="h-7 text-sm font-semibold"
+                        className="h-7 text-sm font-medium"
                         autoFocus
                         maxLength={50}
                         placeholder="Project name"
@@ -253,7 +253,7 @@ export function ProjectCard({
                 <>
                   {/* Title row */}
                   <div className="flex items-center gap-2">
-                    <h3 className="font-semibold truncate">{project.name}</h3>
+                    <h3 className="font-medium truncate">{project.name}</h3>
                     <Badge className={`text-xs px-1.5 py-0 h-auto shrink-0 ${runtimeBadge.className}`}>{runtimeBadge.label}</Badge>
                     <Button
                       size="icon"
@@ -437,7 +437,7 @@ export function ProjectCard({
                     }
                     if (e.key === 'Escape') cancelEdit();
                   }}
-                  className="h-8 text-sm font-semibold"
+                  className="h-8 text-sm font-medium"
                   autoFocus
                   maxLength={50}
                 />
@@ -452,7 +452,7 @@ export function ProjectCard({
             </div>
           ) : (
             <div className="flex items-center gap-2 flex-1">
-              <h3 className="font-semibold text-lg truncate flex-1">{project.name}</h3>
+              <h3 className="font-medium text-lg truncate flex-1">{project.name}</h3>
               <Button
                 size="icon"
                 variant="ghost"
