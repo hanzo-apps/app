@@ -33,7 +33,7 @@ export default function ProfilePage() {
       <div className="min-h-screen flex items-center justify-center bg-black">
         <div className="text-center">
           <HanzoLogo className="w-12 h-12 mx-auto mb-4 animate-pulse" />
-          <p className="text-gray-500">Loading profile...</p>
+          <p className="text-neutral-500">Loading profile...</p>
         </div>
       </div>
     );
@@ -45,7 +45,7 @@ export default function ProfilePage() {
       <div className="min-h-screen flex items-center justify-center bg-black">
         <div className="text-center">
           <HanzoLogo className="w-12 h-12 mx-auto mb-4 animate-pulse" />
-          <p className="text-gray-500">Redirecting to login...</p>
+          <p className="text-neutral-500">Redirecting to login...</p>
         </div>
       </div>
     );
@@ -66,7 +66,7 @@ export default function ProfilePage() {
               <ArrowLeft className="w-4 h-4" />
               Back
             </Button>
-            <h1 className="text-2xl font-bold text-white">Profile</h1>
+            <h1 className="text-2xl font-medium text-white">Profile</h1>
           </div>
           <div className="flex items-center gap-2">
             {isEditing ? (
@@ -112,12 +112,12 @@ export default function ProfilePage() {
                   <input
                     type="text"
                     defaultValue={user?.fullname}
-                    className="text-3xl font-bold bg-transparent text-white border-b border-neutral-600 focus:border-purple-500 outline-none pb-2 mb-2"
+                    className="text-3xl font-medium bg-transparent text-white border-b border-neutral-600 focus:border-purple-500 outline-none pb-2 mb-2"
                   />
                 ) : (
-                  <h2 className="text-3xl font-bold text-white mb-2">{user?.fullname}</h2>
+                  <h2 className="text-3xl font-medium text-white mb-2">{user?.fullname}</h2>
                 )}
-                <p className="text-gray-400">@{user?.username || user?.email?.split('@')[0]}</p>
+                <p className="text-neutral-400">@{user?.username || user?.email?.split('@')[0]}</p>
               </div>
             </div>
           </div>
@@ -127,10 +127,10 @@ export default function ProfilePage() {
             <div className="grid grid-cols-2 gap-6">
               {/* Basic Info */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-white mb-4">Basic Information</h3>
+                <h3 className="text-lg font-medium text-white mb-4">Basic Information</h3>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-1">
+                  <label className="block text-sm font-medium text-neutral-400 mb-1">
                     Full Name
                   </label>
                   {isEditing ? (
@@ -145,7 +145,7 @@ export default function ProfilePage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-1">
+                  <label className="block text-sm font-medium text-neutral-400 mb-1">
                     Email
                   </label>
                   {isEditing ? (
@@ -160,7 +160,7 @@ export default function ProfilePage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-1">
+                  <label className="block text-sm font-medium text-neutral-400 mb-1">
                     Username
                   </label>
                   {isEditing ? (
@@ -177,10 +177,10 @@ export default function ProfilePage() {
 
               {/* Bio & Links */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-white mb-4">Bio & Links</h3>
+                <h3 className="text-lg font-medium text-white mb-4">Bio & Links</h3>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-1">
+                  <label className="block text-sm font-medium text-neutral-400 mb-1">
                     Bio
                   </label>
                   {isEditing ? (
@@ -190,17 +190,17 @@ export default function ProfilePage() {
                       className="w-full bg-neutral-800 text-white border border-neutral-700 rounded-lg px-3 py-2 resize-none"
                     />
                   ) : (
-                    <p className="text-gray-400">No bio added yet</p>
+                    <p className="text-neutral-400">No bio added yet</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">
+                  <label className="block text-sm font-medium text-neutral-400 mb-2">
                     Social Links
                   </label>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <Globe className="w-4 h-4 text-gray-400" />
+                      <Globe className="w-4 h-4 text-neutral-400" />
                       {isEditing ? (
                         <input
                           type="url"
@@ -208,11 +208,11 @@ export default function ProfilePage() {
                           className="flex-1 bg-neutral-800 text-white border border-neutral-700 rounded-lg px-3 py-1.5"
                         />
                       ) : (
-                        <span className="text-gray-400">Not set</span>
+                        <span className="text-neutral-400">Not set</span>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <Twitter className="w-4 h-4 text-gray-400" />
+                      <Twitter className="w-4 h-4 text-neutral-400" />
                       {isEditing ? (
                         <input
                           type="text"
@@ -220,11 +220,11 @@ export default function ProfilePage() {
                           className="flex-1 bg-neutral-800 text-white border border-neutral-700 rounded-lg px-3 py-1.5"
                         />
                       ) : (
-                        <span className="text-gray-400">Not set</span>
+                        <span className="text-neutral-400">Not set</span>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <Github className="w-4 h-4 text-gray-400" />
+                      <Github className="w-4 h-4 text-neutral-400" />
                       {isEditing ? (
                         <input
                           type="text"
@@ -232,7 +232,7 @@ export default function ProfilePage() {
                           className="flex-1 bg-neutral-800 text-white border border-neutral-700 rounded-lg px-3 py-1.5"
                         />
                       ) : (
-                        <span className="text-gray-400">Not set</span>
+                        <span className="text-neutral-400">Not set</span>
                       )}
                     </div>
                   </div>
@@ -242,23 +242,23 @@ export default function ProfilePage() {
 
             {/* Stats */}
             <div className="mt-8 pt-6 border-t border-neutral-800">
-              <h3 className="text-lg font-semibold text-white mb-4">Statistics</h3>
+              <h3 className="text-lg font-medium text-white mb-4">Statistics</h3>
               <div className="grid grid-cols-4 gap-4">
                 <div className="bg-neutral-800/50 rounded-lg p-4 text-center">
-                  <p className="text-2xl font-bold text-purple-400">12</p>
-                  <p className="text-sm text-gray-400">Projects</p>
+                  <p className="text-2xl font-medium text-purple-400">12</p>
+                  <p className="text-sm text-neutral-400">Projects</p>
                 </div>
                 <div className="bg-neutral-800/50 rounded-lg p-4 text-center">
-                  <p className="text-2xl font-bold text-purple-400">342</p>
-                  <p className="text-sm text-gray-400">AI Generations</p>
+                  <p className="text-2xl font-medium text-purple-400">342</p>
+                  <p className="text-sm text-neutral-400">AI Generations</p>
                 </div>
                 <div className="bg-neutral-800/50 rounded-lg p-4 text-center">
-                  <p className="text-2xl font-bold text-purple-400">89</p>
-                  <p className="text-sm text-gray-400">Deployments</p>
+                  <p className="text-2xl font-medium text-purple-400">89</p>
+                  <p className="text-sm text-neutral-400">Deployments</p>
                 </div>
                 <div className="bg-neutral-800/50 rounded-lg p-4 text-center">
-                  <p className="text-2xl font-bold text-purple-400">2.3k</p>
-                  <p className="text-sm text-gray-400">Views</p>
+                  <p className="text-2xl font-medium text-purple-400">2.3k</p>
+                  <p className="text-sm text-neutral-400">Views</p>
                 </div>
               </div>
             </div>

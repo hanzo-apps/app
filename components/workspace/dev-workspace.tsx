@@ -69,7 +69,7 @@ export function DevWorkspace({ projectId }: DevWorkspaceProps) {
       <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex items-center justify-between px-4 py-2">
           <div className="flex items-center gap-4">
-            <h1 className="text-lg font-semibold">Hanzo Build</h1>
+            <h1 className="text-lg font-medium">Hanzo Build</h1>
             <AutoSaveIndicator projectId={projectId} />
           </div>
 
@@ -157,7 +157,7 @@ export function DevWorkspace({ projectId }: DevWorkspaceProps) {
           <div className="absolute right-0 top-0 bottom-0 w-80 border-l bg-background shadow-lg overflow-hidden z-10">
             <div className="h-full flex flex-col">
               <div className="border-b p-4 flex items-center justify-between">
-                <h2 className="font-semibold">Checkpoint History</h2>
+                <h2 className="font-medium">Checkpoint History</h2>
                 <button
                   onClick={() => setShowHistory(false)}
                   className="text-muted-foreground hover:text-foreground"

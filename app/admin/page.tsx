@@ -14,7 +14,7 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
-      <p className="text-zinc-400">Redirecting...</p>
+      <p className="text-neutral-400">Redirecting...</p>
     </div>
   );
 }

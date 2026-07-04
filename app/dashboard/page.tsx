@@ -74,7 +74,7 @@ function WalletSection() {
         <div className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center">
           <Wallet className="w-5 h-5 text-white/70" />
         </div>
-        <h3 className="text-lg font-semibold text-white">Wallet</h3>
+        <h3 className="text-lg font-medium text-white">Wallet</h3>
       </div>
       <div className="space-y-3">
         <div className="flex items-center justify-between">
@@ -161,12 +161,12 @@ export default function DashboardPage() {
                 className="w-12 h-12 rounded-full border border-white/10"
               />
             ) : (
-              <div className="w-12 h-12 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-white text-lg font-bold">
+              <div className="w-12 h-12 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-white text-lg font-medium">
                 {(user.fullname || user.name || "U").charAt(0).toUpperCase()}
               </div>
             )}
             <div>
-              <h1 className="text-2xl font-bold text-white">
+              <h1 className="text-2xl font-medium text-white">
                 Welcome back, {user.fullname || user.name || "Developer"}
               </h1>
               <p className="text-white/50 text-sm">
@@ -281,7 +281,7 @@ export default function DashboardPage() {
                 <div className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center">
                   <BarChart3 className="w-5 h-5 text-white/70" />
                 </div>
-                <h3 className="text-lg font-semibold text-white">Usage</h3>
+                <h3 className="text-lg font-medium text-white">Usage</h3>
               </div>
 
               <div className="space-y-4">

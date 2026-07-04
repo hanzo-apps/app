@@ -36,7 +36,7 @@ export const SelectedHtmlElement = ({
         <div className="rounded-lg bg-neutral-700 size-6 flex items-center justify-center">
           <Code className="text-neutral-300 size-3.5" />
         </div>
-        <p className="text-sm font-semibold text-neutral-300">
+        <p className="text-sm font-medium text-neutral-300">
           {element.textContent?.trim().split(/\s+/)[0]} {htmlTagToText(tagName)}
         </p>
         <XCircle className="text-neutral-300 size-4" />
@@ -44,10 +44,10 @@ export const SelectedHtmlElement = ({
       {/* <CollapsibleContent className="border-t border-neutral-700 pt-2 mt-2">
         <div className="text-xs text-neutral-400">
           <p>
-            <span className="font-semibold">ID:</span> {element.id || "No ID"}
+            <span className="font-medium">ID:</span> {element.id || "No ID"}
           </p>
           <p>
-            <span className="font-semibold">Classes:</span>{" "}
+            <span className="font-medium">Classes:</span>{" "}
             {element.className || "No classes"}
           </p>
         </div>

@@ -79,7 +79,7 @@ export function AppHeader({
         {showMobileMenu && (
           <div className="md:hidden flex items-center gap-3">
             <Logo width={24} height={24} />
-            {pageName && <span className="text-sm font-semibold">{pageName}</span>}
+            {pageName && <span className="text-sm font-medium">{pageName}</span>}
           </div>
         )}
 
@@ -91,7 +91,7 @@ export function AppHeader({
           >
             <Logo width={24} height={24} />
             {/* Show leftText next to logo on desktop only */}
-            {leftText && <span className="font-semibold text-lg hidden md:inline">{leftText}</span>}
+            {leftText && <span className="font-medium text-lg hidden md:inline">{leftText}</span>}
           </button>
         )}
 
@@ -119,10 +119,10 @@ export function AppHeader({
             </div>
           ) : leftText && !showMobileMenu ? (
             /* Show leftText in center on mobile (only when not using sidebar) */
-            <h1 className="text-lg font-semibold md:hidden">{leftText}</h1>
+            <h1 className="text-lg font-medium md:hidden">{leftText}</h1>
           ) : title ? (
             <>
-              {title && <h1 className="text-lg md:text-xl font-semibold">{title}</h1>}
+              {title && <h1 className="text-lg md:text-xl font-medium">{title}</h1>}
               {badge && <Badge variant="secondary">{badge}</Badge>}
             </>
           ) : null}

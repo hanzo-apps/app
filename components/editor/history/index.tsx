@@ -26,7 +26,7 @@ export function History({
         className="!rounded-2xl !p-0 overflow-hidden !bg-neutral-900"
         align="start"
       >
-        <header className="text-sm px-4 py-3 border-b gap-2 bg-neutral-950 border-neutral-800 font-semibold text-neutral-200">
+        <header className="text-sm px-4 py-3 border-b gap-2 bg-neutral-950 border-neutral-800 font-medium text-neutral-200">
           History
         </header>
         <main className="px-4 space-y-3">
@@ -34,11 +34,11 @@ export function History({
             {history?.map((item, index) => (
               <li
                 key={index}
-                className="text-gray-300 text-xs py-2 border-b border-gray-800 last:border-0 flex items-center justify-between gap-2"
+                className="text-neutral-300 text-xs py-2 border-b border-neutral-800 last:border-0 flex items-center justify-between gap-2"
               >
                 <div className="">
                   <span className="line-clamp-1">{item.prompt}</span>
-                  <span className="text-gray-500 text-[10px]">
+                  <span className="text-neutral-500 text-[10px]">
                     {new Date(item.createdAt).toLocaleDateString("en-US", {
                       month: "2-digit",
                       day: "2-digit",
