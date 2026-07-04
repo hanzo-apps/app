@@ -7,6 +7,8 @@
 // with no per-file editing. Opacity is the neutral treatment; hover lifts to
 // full white.
 
+import Reveal from "./reveal";
+
 const partners = [
   { src: "/logos/partners/techstars.svg", alt: "Techstars", w: 132 },
   { src: "/logos/partners/nvidia.svg", alt: "NVIDIA", w: 104 },
@@ -23,20 +25,21 @@ export default function LogoWall() {
   return (
     <section className="relative border-t border-white/[0.06] px-4 py-16 md:px-8 md:py-20">
       <div className="mx-auto max-w-6xl">
-        <p className="text-center font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">
+        <Reveal as="p" className="text-center font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">
           Backed by Techstars · Built on world-class infrastructure
-        </p>
+        </Reveal>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-8 md:gap-x-14">
-          {partners.map((p) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={p.alt}
-              src={p.src}
-              alt={p.alt}
-              style={{ width: p.w }}
-              className="h-6 w-auto object-contain opacity-45 transition-opacity duration-200 [filter:brightness(0)_invert(1)] hover:opacity-90 md:h-7"
-            />
+          {partners.map((p, i) => (
+            <Reveal key={p.alt} delay={i * 40}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={p.src}
+                alt={p.alt}
+                style={{ width: p.w }}
+                className="h-6 w-auto object-contain opacity-45 transition-opacity duration-200 [filter:brightness(0)_invert(1)] hover:opacity-90 md:h-7"
+              />
+            </Reveal>
           ))}
         </div>
       </div>
