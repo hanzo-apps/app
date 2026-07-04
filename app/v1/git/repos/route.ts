@@ -1,23 +1,30 @@
 /**
  * /v1/git/repos — repositories for one connected Git account.
  *
- * GET ?account=<login>&q=<search> → `{ repos: GitRepo[] }`, newest-push first,
- * server-side filtered by `q`. `account` defaults to the authenticated user.
+ * GET ?account=<login>&provider=<github|gitlab>&q=<search> → `{ repos: GitRepo[] }`,
+ * newest-activity first, server-side filtered by `q`. `account` defaults to the
+ * authenticated user; `provider` defaults to `github`.
  *
- * Proxies GitHub with the user's IAM-linked token (resolved server-side); the
- * token never reaches the browser. No linked token ⇒ 401 (the client falls back
- * to the "Connect GitHub" CTA) — never a service-token leak. Per-user ⇒ no-store.
+ * Proxies the provider with the user's IAM-linked token (resolved server-side);
+ * the token never reaches the browser. No linked token ⇒ 401 (the client falls
+ * back to the "Connect" CTA) — never a service-token leak. Per-user ⇒ no-store.
  */
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { resolveGithubConnection, listRepos } from '@/lib/git/server';
+import type { GitProvider } from '@/lib/api/git';
+import { resolveConnection, listRepos } from '@/lib/git/server';
 
 export const runtime = 'nodejs';
 
 const NO_STORE = { 'Cache-Control': 'no-store' } as const;
 
+function parseProvider(v: string | null): GitProvider {
+  return v === 'gitlab' ? 'gitlab' : 'github';
+}
+
 export async function GET(req: NextRequest) {
-  const conn = await resolveGithubConnection(req);
+  const provider = parseProvider(req.nextUrl.searchParams.get('provider'));
+  const conn = await resolveConnection(req, provider);
   if (!conn) {
     return NextResponse.json(
       { repos: [], connected: false },
@@ -33,7 +40,7 @@ export async function GET(req: NextRequest) {
     repos = await listRepos(conn, account, q);
   } catch {
     return NextResponse.json(
-      { repos: [], error: 'github unreachable' },
+      { repos: [], error: `${provider} unreachable` },
       { status: 502, headers: NO_STORE },
     );
   }
