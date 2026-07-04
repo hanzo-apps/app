@@ -2,6 +2,8 @@
 // Hanzo's monochrome. The third step is the differentiator: it ships to Hanzo
 // Cloud, not just a preview.
 
+import Reveal from "./reveal";
+
 const steps = [
   {
     n: "01",
@@ -24,16 +26,16 @@ export default function HowItWorks() {
   return (
     <section className="relative border-t border-white/[0.06] px-4 py-20 md:px-8 md:py-28">
       <div className="mx-auto max-w-6xl">
-        <div className="mx-auto max-w-2xl text-center">
+        <Reveal className="mx-auto max-w-2xl text-center">
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">
             How it works
           </p>
           <h2 className="mt-4 text-3xl font-medium tracking-tight md:text-4xl">
             From a sentence to a shipped app.
           </h2>
-        </div>
+        </Reveal>
 
-        <div className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/[0.06] md:grid-cols-3">
+        <Reveal delay={80} className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/[0.06] md:grid-cols-3">
           {steps.map((s) => (
             <div
               key={s.n}
@@ -48,7 +50,7 @@ export default function HowItWorks() {
               </p>
             </div>
           ))}
-        </div>
+        </Reveal>
       </div>
     </section>
   );
