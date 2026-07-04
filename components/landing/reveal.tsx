@@ -30,11 +30,12 @@ export default function Reveal({
     const el = ref.current;
     if (!el) return;
 
-    // Respect reduced-motion: show immediately, skip the transition entirely.
+    // Fail open: if the browser can't observe intersections, or the user asked
+    // for reduced motion, show immediately. Content must NEVER stay hidden.
     const reduce =
       typeof window !== "undefined" &&
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) {
+    if (reduce || typeof IntersectionObserver === "undefined") {
       setShown(true);
       return;
     }
