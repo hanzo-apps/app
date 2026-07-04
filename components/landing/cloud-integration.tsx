@@ -6,6 +6,7 @@
 // features, no fake metrics.
 
 import { Cloud, Database, ShieldCheck, Sparkles, KeyRound, Zap } from "lucide-react";
+import Reveal from "./reveal";
 
 interface Capability {
   icon: typeof Cloud;
@@ -73,7 +74,7 @@ export default function CloudIntegration() {
   return (
     <section className="relative border-t border-white/[0.06] px-4 py-20 md:px-8 md:py-28">
       <div className="mx-auto max-w-6xl">
-        <div className="mx-auto max-w-2xl text-center">
+        <Reveal className="mx-auto max-w-2xl text-center">
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">
             The difference
           </p>
@@ -84,18 +85,18 @@ export default function CloudIntegration() {
             Other builders hand you a screenshot. Hanzo ships a running app —
             database, auth, AI, secrets, and storage already connected.
           </p>
-        </div>
+        </Reveal>
 
         <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {capabilities.map((c) => {
+          {capabilities.map((c, i) => {
             const Icon = c.icon;
             return (
+              <Reveal key={c.name} delay={i * 60} className="h-full">
               <a
-                key={c.name}
                 href={c.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`group relative flex flex-col rounded-2xl border p-6 transition-all duration-200 ${
+                className={`group relative flex h-full flex-col rounded-2xl border p-6 transition-all duration-200 ${
                   c.primary
                     ? "border-white/20 bg-white/[0.04] hover:border-white/30"
                     : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.03]"
@@ -121,13 +122,14 @@ export default function CloudIntegration() {
                   {c.snippet}
                 </code>
               </a>
+              </Reveal>
             );
           })}
         </div>
 
-        <p className="mt-10 text-center font-mono text-xs text-white/35">
+        <Reveal as="p" delay={120} className="mt-10 text-center font-mono text-xs text-white/35">
           The same infrastructure that runs Hanzo, wired into every app you build.
-        </p>
+        </Reveal>
       </div>
     </section>
   );
