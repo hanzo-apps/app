@@ -3,11 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@hanzo/ui";
-import { Input } from "@hanzo/ui";
 import {
-  Github,
-  GitlabIcon,
-  Globe,
   ArrowRight,
   ArrowUp,
   Loader2,
@@ -27,6 +23,7 @@ import {
   templateBuilderLink,
   type GalleryTemplate,
 } from "@/lib/api/templates";
+import { ImportGitPanel } from "@/components/import-git-panel";
 import { UserMenu } from "@/components/user-menu";
 import { useUser } from "@/hooks/useUser";
 import { OrgProvider } from "@/lib/org/client";
@@ -124,8 +121,6 @@ function NewProjectInner() {
     },
     [value, loading, router],
   );
-
-  const importRepo = () => submit();
 
   // Seed the builder from a real gallery template via the existing
   // /dev?template=<source> wire (source = the template's gallery URL).
@@ -278,69 +273,8 @@ function NewProjectInner() {
 
         {/* Import / Templates */}
         <section className="relative mt-16 grid gap-6 lg:mt-20 lg:grid-cols-2">
-          {/* Import Git Repository */}
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 sm:p-6">
-            <div className="mb-1 flex items-center gap-2">
-              <Github className="h-[18px] w-[18px] text-white/70" />
-              <h2 className="text-[15px] font-medium">Import Git Repository</h2>
-            </div>
-            <p className="mb-5 text-sm text-white/45">
-              Connect a repository and deploy it as a service, container, or
-              site — with automatic builds on every push.
-            </p>
-
-            <div className="flex items-center gap-2">
-              <div className="relative flex-1">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
-                <Input
-                  type="url"
-                  placeholder="github.com/org/repo  ·  or paste a repository URL"
-                  value={value}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value)}
-                  onKeyDown={(e: React.KeyboardEvent) => {
-                    if (e.key === "Enter") importRepo();
-                  }}
-                  className="h-10 border-white/12 bg-black/40 pl-9 text-sm text-white placeholder:text-white/30 focus-visible:ring-white/20"
-                />
-              </div>
-              <Button
-                onClick={importRepo}
-                disabled={loading || !isGitUrl(value)}
-                className="h-10 shrink-0 px-4"
-              >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Import"}
-              </Button>
-            </div>
-
-            <div className="mt-4 grid grid-cols-3 gap-2">
-              {[
-                { icon: Github, label: "GitHub" },
-                { icon: GitlabIcon, label: "GitLab" },
-                { icon: Globe, label: "Bitbucket" },
-              ].map((p) => {
-                const Icon = p.icon;
-                return (
-                  <button
-                    key={p.label}
-                    type="button"
-                    onClick={() => taRef.current?.focus()}
-                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.02] py-2.5 text-sm text-white/70 transition-colors hover:border-white/20 hover:bg-white/[0.05] hover:text-white"
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span className="hidden sm:inline">{p.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            <Link
-              href="/import/third-party"
-              className="mt-5 inline-flex items-center gap-1 text-sm text-white/45 transition-colors hover:text-white"
-            >
-              Import a third-party repository
-              <ChevronRight className="h-4 w-4" />
-            </Link>
-          </div>
+          {/* Import Git Repository — real connected-account import */}
+          <ImportGitPanel />
 
           {/* Clone Template */}
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 sm:p-6">
