@@ -22,17 +22,18 @@ import {
   relativeTime,
   repoImportLink,
   type GitAccount,
+  type GitProvider,
+  type GitProviderStatus,
   type GitRepo,
 } from "@/lib/api/git";
+import { isGitUrl, gitUrlGateMessage } from "@/lib/git/url";
+import { toast } from "sonner";
 
-/** A git repository URL (https, ssh, or bare owner/repo) — the paste fallback. */
-function isGitUrl(v: string): boolean {
-  const s = v.trim();
-  if (!s) return false;
-  if (/^git@[\w.-]+:[\w./-]+/i.test(s)) return true;
-  if (/\.git$/i.test(s)) return true;
-  return /^(https?:\/\/)?(www\.)?(github|gitlab|bitbucket)\.(com|org)\/[\w.-]+\/[\w.-]+/i.test(s);
-}
+/** Provider display metadata — the ONE place icon/label per provider lives. */
+const PROVIDER_META: Record<GitProvider, { label: string; Icon: typeof Github }> = {
+  github: { label: "GitHub", Icon: Github },
+  gitlab: { label: "GitLab", Icon: GitlabIcon },
+};
 
 /**
  * Import Git Repository — the real, connected-account import panel.
@@ -51,6 +52,7 @@ export function ImportGitPanel() {
   const [loadingAccounts, setLoadingAccounts] = useState(true);
   const [connected, setConnected] = useState(false);
   const [accounts, setAccounts] = useState<GitAccount[]>([]);
+  const [providers, setProviders] = useState<GitProviderStatus[]>([]);
   const [active, setActive] = useState<string>("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [showProviders, setShowProviders] = useState(false);
@@ -75,6 +77,7 @@ export function ImportGitPanel() {
     const r = await fetchGitAccounts();
     setConnected(r.connected);
     setAccounts(r.accounts);
+    setProviders(r.providers);
     setActive((prev) => prev || r.accounts[0]?.login || "");
     return r.connected;
   }, []);
@@ -108,12 +111,14 @@ export function ImportGitPanel() {
     };
   }, [refreshAccounts]);
 
-  // Load the active account's repositories whenever it changes.
+  // Load the active account's repositories whenever it changes. The provider is
+  // taken from the account itself so a GitLab account queries GitLab, not GitHub.
   useEffect(() => {
     if (!connected || !active) return;
+    const provider = accounts.find((a) => a.login === active)?.provider ?? "github";
     let alive = true;
     setLoadingRepos(true);
-    fetchGitRepos(active).then((r) => {
+    fetchGitRepos(active, provider).then((r) => {
       if (!alive) return;
       setRepos(r);
       setLoadingRepos(false);
@@ -121,7 +126,7 @@ export function ImportGitPanel() {
     return () => {
       alive = false;
     };
-  }, [connected, active]);
+  }, [connected, active, accounts]);
 
   // Close the account menu on outside click.
   useEffect(() => {
@@ -164,6 +169,37 @@ export function ImportGitPanel() {
     void login();
   }, [isAuthenticated, config, login]);
 
+  const gitlabStatus = providers.find((p) => p.provider === "gitlab");
+  const gitlabConnectable = gitlabStatus?.connectable ?? false;
+
+  // Start the GitLab connect flow — mirrors GitHub exactly (same two honest
+  // paths by auth state). When GitLab isn't set up yet (no OAuth app / IAM
+  // provider) we NEVER dead-click: an honest toast explains what's pending
+  // instead of opening a chooser with no "Continue with GitLab".
+  const connectGitlab = useCallback(() => {
+    if (!gitlabConnectable) {
+      toast.info(
+        "GitLab sign-in is being set up. It’ll appear here once the GitLab connection is live.",
+      );
+      return;
+    }
+    // Signed in already → LINK GitLab to the existing account (a silent re-SSO
+    // would never show the GitLab chooser). Open hanzo.id's account page; the
+    // return-focus listener re-fetches accounts and reveals the repos.
+    if (isAuthenticated) {
+      linkPendingRef.current = true;
+      const base = (config.serverUrl || "https://hanzo.id").replace(/\/+$/, "");
+      window.open(`${base}/account`, "_blank", "noopener,noreferrer");
+      return;
+    }
+    try {
+      localStorage.setItem("redirectAfterLogin", window.location.pathname);
+    } catch {
+      /* storage unavailable */
+    }
+    void login();
+  }, [gitlabConnectable, isAuthenticated, config, login]);
+
   const importRepo = useCallback(
     (cloneUrl: string) => {
       setImporting(cloneUrl);
@@ -175,6 +211,13 @@ export function ImportGitPanel() {
   const submitPaste = useCallback(() => {
     const url = pasteUrl.trim();
     if (!isGitUrl(url)) return;
+    // Honest gate: SSH/private remotes can't be fetched — tell the user rather
+    // than routing to a dead end.
+    const gate = gitUrlGateMessage(url);
+    if (gate) {
+      toast.error(gate);
+      return;
+    }
     importRepo(url);
   }, [pasteUrl, importRepo]);
 
@@ -209,7 +252,11 @@ export function ImportGitPanel() {
           ))}
         </div>
       ) : !connected ? (
-        <ConnectCta onConnect={connectGithub} />
+        <ConnectCta
+          onConnect={connectGithub}
+          onConnectGitlab={connectGitlab}
+          gitlabConnectable={gitlabConnectable}
+        />
       ) : (
         <>
           {/* Account dropdown + repo search */}
@@ -220,7 +267,10 @@ export function ImportGitPanel() {
                 onClick={() => setMenuOpen((o) => !o)}
                 className="flex h-10 w-full items-center gap-2 rounded-lg border border-white/12 bg-black/40 px-3 text-sm text-white transition-colors hover:border-white/25"
               >
-                <Github className="h-4 w-4 shrink-0 text-white/70" />
+                {(() => {
+                  const Icon = PROVIDER_META[activeAccount?.provider ?? "github"].Icon;
+                  return <Icon className="h-4 w-4 shrink-0 text-white/70" />;
+                })()}
                 {activeAccount?.avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -236,31 +286,38 @@ export function ImportGitPanel() {
               {menuOpen && (
                 <div className="absolute z-30 mt-1.5 w-full min-w-[240px] overflow-hidden rounded-xl border border-white/12 bg-neutral-950 shadow-2xl shadow-black/60">
                   <div className="max-h-64 overflow-y-auto py-1">
-                    {accounts.map((a) => (
-                      <button
-                        key={a.login}
-                        type="button"
-                        onClick={() => {
-                          setActive(a.login);
-                          setSearch("");
-                          setMenuOpen(false);
-                        }}
-                        className={`flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm transition-colors hover:bg-white/[0.06] ${
-                          a.login === active ? "text-white" : "text-white/70"
-                        }`}
-                      >
-                        {a.avatarUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={a.avatarUrl} alt="" className="h-5 w-5 rounded-full" />
-                        ) : (
-                          <Github className="h-4 w-4 text-white/50" />
-                        )}
-                        <span className="truncate">{a.login}</span>
-                        <span className="ml-auto text-[11px] text-white/30">
-                          {a.type === "org" ? "Org" : "Personal"}
-                        </span>
-                      </button>
-                    ))}
+                    {accounts.map((a) => {
+                      const Icon = PROVIDER_META[a.provider].Icon;
+                      return (
+                        <button
+                          key={`${a.provider}:${a.login}`}
+                          type="button"
+                          onClick={() => {
+                            setActive(a.login);
+                            setSearch("");
+                            setMenuOpen(false);
+                          }}
+                          className={`flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm transition-colors hover:bg-white/[0.06] ${
+                            a.login === active ? "text-white" : "text-white/70"
+                          }`}
+                        >
+                          {a.avatarUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={a.avatarUrl} alt="" className="h-5 w-5 rounded-full" />
+                          ) : (
+                            <Icon className="h-4 w-4 text-white/50" />
+                          )}
+                          <span className="truncate">{a.login}</span>
+                          <span className="ml-auto text-[11px] text-white/30">
+                            {a.provider === "gitlab"
+                              ? "GitLab"
+                              : a.type === "org"
+                                ? "Org"
+                                : "Personal"}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
                   <div className="border-t border-white/10">
                     <button
@@ -273,11 +330,24 @@ export function ImportGitPanel() {
                     </button>
                     <button
                       type="button"
+                      onClick={connectGitlab}
+                      className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm text-white/70 transition-colors hover:bg-white/[0.06] hover:text-white"
+                    >
+                      <GitlabIcon className="h-4 w-4" />
+                      Add GitLab Account
+                      {!gitlabConnectable && (
+                        <span className="ml-auto rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-300/90">
+                          Needs setup
+                        </span>
+                      )}
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => setShowProviders((s) => !s)}
                       className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm text-white/70 transition-colors hover:bg-white/[0.06] hover:text-white"
                     >
                       <RefreshCw className="h-4 w-4" />
-                      Switch Git Provider
+                      Providers
                     </button>
                     {showProviders && (
                       <div className="grid grid-cols-2 gap-1.5 border-t border-white/10 px-2 py-2">
@@ -287,9 +357,22 @@ export function ImportGitPanel() {
                         <span className="inline-flex items-center gap-1.5 rounded-md border border-white/15 bg-white/[0.05] px-2 py-1.5 text-xs text-white">
                           <Github className="h-3.5 w-3.5" /> GitHub
                         </span>
-                        <span className="inline-flex items-center gap-1.5 rounded-md border border-white/10 px-2 py-1.5 text-xs text-white/35">
-                          <GitlabIcon className="h-3.5 w-3.5" /> GitLab · Soon
-                        </span>
+                        {gitlabConnectable ? (
+                          <button
+                            type="button"
+                            onClick={connectGitlab}
+                            className="inline-flex items-center gap-1.5 rounded-md border border-white/15 bg-white/[0.05] px-2 py-1.5 text-xs text-white transition-colors hover:border-white/30"
+                          >
+                            <GitlabIcon className="h-3.5 w-3.5" /> GitLab
+                          </button>
+                        ) : (
+                          <span
+                            className="inline-flex items-center gap-1.5 rounded-md border border-white/10 px-2 py-1.5 text-xs text-white/35"
+                            title="GitLab connect is being set up"
+                          >
+                            <GitlabIcon className="h-3.5 w-3.5" /> GitLab · Setup
+                          </span>
+                        )}
                         <span className="inline-flex items-center gap-1.5 rounded-md border border-white/10 px-2 py-1.5 text-xs text-white/35">
                           <Globe className="h-3.5 w-3.5" /> Bitbucket · Soon
                         </span>
@@ -402,25 +485,48 @@ export function ImportGitPanel() {
   );
 }
 
-function ConnectCta({ onConnect }: { onConnect: () => void }) {
+function ConnectCta({
+  onConnect,
+  onConnectGitlab,
+  gitlabConnectable,
+}: {
+  onConnect: () => void;
+  onConnectGitlab: () => void;
+  gitlabConnectable: boolean;
+}) {
   return (
     <div className="flex flex-col items-center rounded-xl border border-dashed border-white/15 bg-white/[0.02] px-6 py-10 text-center">
       <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/[0.04]">
         <Github className="h-6 w-6 text-white/80" />
       </div>
-      <h3 className="text-sm font-medium text-white">Connect GitHub</h3>
+      <h3 className="text-sm font-medium text-white">Connect a Git provider</h3>
       <p className="mx-auto mt-1.5 max-w-xs text-sm text-white/45">
-        Sign in with GitHub to import your repositories and deploy them with
-        automatic builds on every push.
+        Sign in with GitHub or GitLab to import your repositories and deploy them
+        with automatic builds on every push.
       </p>
-      <button
-        type="button"
-        onClick={onConnect}
-        className="mt-5 inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-medium text-black transition-colors hover:bg-white/90"
-      >
-        <Github className="h-4 w-4" />
-        Connect GitHub
-      </button>
+      <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+        <button
+          type="button"
+          onClick={onConnect}
+          className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-medium text-black transition-colors hover:bg-white/90"
+        >
+          <Github className="h-4 w-4" />
+          Connect GitHub
+        </button>
+        <button
+          type="button"
+          onClick={onConnectGitlab}
+          className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/[0.04] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:border-white/30 hover:bg-white/[0.08]"
+        >
+          <GitlabIcon className="h-4 w-4" />
+          Connect GitLab
+          {!gitlabConnectable && (
+            <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-300/90">
+              Needs setup
+            </span>
+          )}
+        </button>
+      </div>
     </div>
   );
 }
