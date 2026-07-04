@@ -103,7 +103,7 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl bg-neutral-900 text-white border-neutral-800">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">Invite</DialogTitle>
+          <DialogTitle className="text-xl font-medium">Invite</DialogTitle>
           <DialogDescription className="text-neutral-400">
             Collaborators will use credits from the project owner's workspace ({user?.name || "Your Workspace"})
           </DialogDescription>
@@ -137,7 +137,7 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
             <div className="space-y-2">
               <div className="flex items-center justify-between p-2 rounded-lg hover:bg-neutral-800">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-sm">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-medium text-sm">
                     {collaborators[0].name.charAt(0).toUpperCase()}
                   </div>
                   <div>
@@ -151,7 +151,7 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
               {collaborators.map((collaborator) => (
                 <div key={collaborator.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-neutral-800">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-sm">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-medium text-sm">
                       {collaborator.name.charAt(0).toUpperCase()}
                     </div>
                     <div>

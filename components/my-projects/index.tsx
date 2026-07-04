@@ -27,7 +27,7 @@ export function MyProjects({
       <section className="max-w-[86rem] py-12 px-4 mx-auto">
         <header className="flex items-center justify-between max-lg:flex-col gap-4">
           <div className="text-left">
-            <h1 className="text-3xl font-bold text-white">
+            <h1 className="text-3xl font-medium text-white">
               <span className="capitalize">{user.fullname || user.name || 'Your'}</span>&apos;s
               Hanzo Projects
             </h1>

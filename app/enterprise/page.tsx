@@ -52,7 +52,7 @@ export default function EnterprisePage() {
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-2.5">
               <HanzoLogo className="w-8 h-8 text-white" />
-              <span className="text-xl font-bold">Hanzo</span>
+              <span className="text-xl font-medium">Hanzo</span>
             </Link>
             <div className="hidden md:flex items-center gap-6">
               <Link href="/community" className="text-white/70 hover:text-white">Community</Link>
@@ -74,7 +74,7 @@ export default function EnterprisePage() {
             <Building className="w-4 h-4 mr-2" />
             Enterprise Ready
           </Badge>
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+          <h1 className="text-4xl md:text-6xl font-medium mb-6">
             AI Development at
             <span className="bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
               {" "}Enterprise Scale
@@ -113,7 +113,7 @@ export default function EnterprisePage() {
       <section className="px-4 md:px-8 py-20">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-3xl md:text-4xl font-medium mb-4">
               Everything you need for enterprise AI
             </h2>
             <p className="text-lg text-white/60 max-w-2xl mx-auto">
@@ -127,7 +127,7 @@ export default function EnterprisePage() {
                 <div className="p-3 bg-gradient-to-br from-violet-500/20 to-purple-500/20 rounded-xl inline-block mb-6">
                   {feature.icon}
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
+                <h3 className="text-xl font-medium mb-3">{feature.title}</h3>
                 <p className="text-white/60">{feature.description}</p>
               </div>
             ))}
@@ -143,7 +143,7 @@ export default function EnterprisePage() {
               <Badge className="mb-4 bg-violet-500/20 text-violet-400 border-violet-500/30">
                 Security First
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              <h2 className="text-3xl md:text-4xl font-medium mb-6">
                 Bank-grade security & compliance
               </h2>
               <p className="text-lg text-white/60 mb-8">
@@ -153,35 +153,35 @@ export default function EnterprisePage() {
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <div className="font-semibold mb-1">SOC 2 Type II Certified</div>
+                    <div className="font-medium mb-1">SOC 2 Type II Certified</div>
                     <div className="text-sm text-white/60">Annual audits ensure the highest security standards</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <div className="font-semibold mb-1">GDPR & CCPA Compliant</div>
+                    <div className="font-medium mb-1">GDPR & CCPA Compliant</div>
                     <div className="text-sm text-white/60">Full compliance with global data privacy regulations</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <div className="font-semibold mb-1">ISO 27001 Certified</div>
+                    <div className="font-medium mb-1">ISO 27001 Certified</div>
                     <div className="text-sm text-white/60">International standard for information security</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <div className="font-semibold mb-1">End-to-end Encryption</div>
+                    <div className="font-medium mb-1">End-to-end Encryption</div>
                     <div className="text-sm text-white/60">Your data is encrypted at rest and in transit</div>
                   </div>
                 </div>
               </div>
             </div>
             <div className="bg-[#1a1a1a] rounded-2xl p-8 border border-white/10">
-              <h3 className="text-2xl font-bold mb-6">Get a custom quote</h3>
+              <h3 className="text-2xl font-medium mb-6">Get a custom quote</h3>
               <p className="text-white/60 mb-8">
                 Tell us about your needs and we'll create a custom plan for your organization
               </p>
@@ -220,7 +220,7 @@ export default function EnterprisePage() {
       {/* CTA Section */}
       <section className="px-4 md:px-8 py-20 text-center">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+          <h2 className="text-3xl md:text-4xl font-medium mb-6">
             Ready to transform your business with AI?
           </h2>
           <p className="text-xl text-white/60 mb-8">

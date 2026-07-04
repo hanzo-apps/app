@@ -38,7 +38,7 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold">Analytics Configuration</h3>
+          <h3 className="text-lg font-medium">Analytics Configuration</h3>
           <p className="text-sm text-muted-foreground">
             Track visitors and site usage
           </p>
@@ -69,7 +69,7 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
           {/* Provider Selection */}
           <div className="space-y-4">
             <div>
-              <h4 className="font-semibold mb-4">Analytics Provider</h4>
+              <h4 className="font-medium mb-4">Analytics Provider</h4>
             </div>
 
             <div className="space-y-2">
@@ -100,7 +100,7 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
               <>
                 <div className="space-y-4">
                   <div>
-                    <h4 className="font-semibold mb-2">Analytics Features</h4>
+                    <h4 className="font-medium mb-2">Analytics Features</h4>
                     <p className="text-sm text-muted-foreground mb-4">
                       Choose which analytics features to enable. Note: Heatmaps and session recording generate more data.
                     </p>
@@ -217,7 +217,7 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
                       <div className="flex gap-3">
                         <Info className="h-5 w-5 text-orange-600 dark:text-orange-400 flex-shrink-0 mt-0.5" />
                         <div className="space-y-1">
-                          <h4 className="font-semibold text-orange-900 dark:text-orange-100">
+                          <h4 className="font-medium text-orange-900 dark:text-orange-100">
                             High Data Volume Features Enabled
                           </h4>
                           <p className="text-sm text-orange-800 dark:text-orange-200">
@@ -232,7 +232,7 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
                 {/* Data Retention */}
                 <div className="space-y-4">
                   <div>
-                    <h4 className="font-semibold mb-2">Data Retention</h4>
+                    <h4 className="font-medium mb-2">Data Retention</h4>
                     <p className="text-sm text-muted-foreground mb-4">
                       How long to keep analytics data (in days)
                     </p>
@@ -359,7 +359,7 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
           {/* Privacy Mode */}
           <div className="space-y-4">
             <div>
-              <h4 className="font-semibold mb-4">Privacy Settings</h4>
+              <h4 className="font-medium mb-4">Privacy Settings</h4>
             </div>
 
             <div className="flex items-center justify-between p-4 border rounded-lg">
@@ -388,7 +388,7 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
                 <div className="flex gap-3">
                   <Info className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
                   <div className="space-y-1">
-                    <h4 className="font-semibold text-green-900 dark:text-green-100">
+                    <h4 className="font-medium text-green-900 dark:text-green-100">
                       Privacy Mode Enabled
                     </h4>
                     <p className="text-sm text-green-800 dark:text-green-200">
@@ -405,7 +405,7 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
           {settings.analytics.provider !== 'builtin' && (
             <div className="space-y-4">
               <div>
-                <h4 className="font-semibold mb-4">Script Preview</h4>
+                <h4 className="font-medium mb-4">Script Preview</h4>
               </div>
 
               <div className="p-4 bg-muted rounded-lg">

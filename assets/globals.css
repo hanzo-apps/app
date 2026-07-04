@@ -265,6 +265,11 @@
        stack — @theme inline defines the `font-sans` utility but never applies it
        to <body>, so body text fell back to system-ui. */
     font-family: var(--font-basel-sans), ui-sans-serif, system-ui, sans-serif;
+    /* Basel ships only Book (400) + Medium (500). Never let the browser fake a
+       heavier weight — synthetic bold on the 500 file reads muddy/off. With
+       synthesis off, any 600/700 request falls back to the real Medium glyphs
+       (Geist Mono, which has real weights, is unaffected). */
+    font-synthesis: none;
   }
   html {
     @apply scroll-smooth;
