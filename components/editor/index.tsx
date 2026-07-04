@@ -268,7 +268,7 @@ export const AppEditor = ({
         {project?._id ? (
           <SaveButton pages={pages} prompts={prompts} />
         ) : (
-          <DeployButton pages={pages} prompts={prompts} />
+          <DeployButton pages={pages} prompts={prompts} disabled={isAiWorking} />
         )}
       </Header>
       <main className="bg-neutral-950 flex-1 max-lg:flex-col flex w-full max-lg:h-[calc(100%-82px)] relative">
