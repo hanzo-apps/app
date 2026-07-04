@@ -133,6 +133,17 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
     }
   }, [initialPrompt, stage]);
 
+  // A prompt that arrives AFTER mount (localStorage fallback, or a param that
+  // resolves late) must still kick off planning: the stage initializer only
+  // runs once, so promote welcome→planning here instead of dead-ending on a
+  // disabled "Start Building".
+  useEffect(() => {
+    if (initialPrompt && stage === "welcome" && !prompt) {
+      setPrompt(initialPrompt);
+      setStage("planning");
+    }
+  }, [initialPrompt, stage, prompt]);
+
   // Auto-scroll plan and thoughts (only when streaming, with debounce)
   useEffect(() => {
     if (isStreaming && planLines.length > 0) {
@@ -577,7 +588,11 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
 
           <div className="flex-1 overflow-y-auto bg-neutral-950 p-4">
             <pre className="font-mono text-xs leading-relaxed">
-              {planLines.map((line, i) => (
+              {planLines.map((raw, i) => {
+                // A streamed entry can momentarily be undefined (interval races
+                // the state update); never let a nullish line crash the render.
+                const line = raw ?? "";
+                return (
                 <div
                   key={i}
                   className={cn(
@@ -594,7 +609,8 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                 >
                   {line || "\u00A0"}
                 </div>
-              ))}
+                );
+              })}
               {isStreaming && (
                 <span className="inline-block w-2 h-3 bg-white animate-pulse ml-1" />
               )}
