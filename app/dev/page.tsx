@@ -8,10 +8,15 @@ import { TemplateLoader } from "@/components/template-loader";
 
 export default function DevPage() {
   const searchParams = useSearchParams();
-  const [initialPrompt, setInitialPrompt] = useState("");
   const repoUrl = searchParams.get("repo") || searchParams.get("template") || "";
   const action = searchParams.get("action") || "edit"; // edit or deploy
   const seedPrompt = searchParams.get("prompt") || ""; // fork → builder seed
+  // Seed the onboarding prompt SYNCHRONOUSLY from ?prompt= on the very first
+  // render. DevOnboarding locks its stage (welcome vs planning) from this value
+  // in a once-only initializer, so a value that arrives later (via effect) would
+  // never flip it to "planning" — the composer/chat handoff would dead-end at a
+  // disabled "Start Building". Initializing here makes the auto-start reliable.
+  const [initialPrompt, setInitialPrompt] = useState(seedPrompt);
   // Stable deep-link into the builder for an existing org-scoped project
   // (console.hanzo.ai's "Edit in hanzo.app" links here). Opening a project by
   // slug skips onboarding and reuses the same shared record on re-publish.
