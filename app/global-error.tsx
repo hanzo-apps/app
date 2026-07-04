@@ -28,7 +28,7 @@ export default function GlobalError({
       <body>
         <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
           <div className="max-w-md w-full">
-            <div className="bg-gray-900 rounded-2xl shadow-2xl overflow-hidden border border-gray-800">
+            <div className="bg-neutral-900 rounded-2xl shadow-2xl overflow-hidden border border-neutral-800">
               <div className="bg-gradient-to-r from-red-600 to-red-700 p-6">
                 <div className="flex items-center space-x-3">
                   <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
@@ -47,7 +47,7 @@ export default function GlobalError({
                     </svg>
                   </div>
                   <div>
-                    <h1 className="text-2xl font-bold text-white">Critical Error</h1>
+                    <h1 className="text-2xl font-medium text-white">Critical Error</h1>
                     <p className="text-red-100 text-sm mt-1">
                       The application encountered a critical error
                     </p>
@@ -57,7 +57,7 @@ export default function GlobalError({
 
               <div className="p-6">
                 <div className="mb-6">
-                  <p className="text-gray-300">
+                  <p className="text-neutral-300">
                     We apologize for the inconvenience. The application has encountered an
                     unexpected error and needs to restart. Our team has been notified.
                   </p>
@@ -73,16 +73,16 @@ export default function GlobalError({
                 {process.env.NODE_ENV === 'development' && (
                   <div className="mb-6">
                     <details className="text-xs">
-                      <summary className="cursor-pointer text-gray-400 hover:text-gray-200 mb-2">
+                      <summary className="cursor-pointer text-neutral-400 hover:text-neutral-200 mb-2">
                         View Error Details (Development Only)
                       </summary>
-                      <div className="bg-gray-800 rounded-lg p-4 mb-2">
-                        <p className="text-sm text-gray-200 font-mono break-all">
+                      <div className="bg-neutral-800 rounded-lg p-4 mb-2">
+                        <p className="text-sm text-neutral-200 font-mono break-all">
                           {error.message}
                         </p>
                       </div>
                       {error.stack && (
-                        <pre className="bg-gray-800 rounded-lg p-3 overflow-x-auto text-gray-300">
+                        <pre className="bg-neutral-800 rounded-lg p-3 overflow-x-auto text-neutral-300">
                           {error.stack}
                         </pre>
                       )}
@@ -113,7 +113,7 @@ export default function GlobalError({
 
                   <button
                     onClick={() => (window.location.href = '/')}
-                    className="w-full flex items-center justify-center space-x-2 bg-gray-800 hover:bg-gray-700 text-gray-200 py-3 px-4 rounded-lg transition-colors border border-gray-700"
+                    className="w-full flex items-center justify-center space-x-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 py-3 px-4 rounded-lg transition-colors border border-neutral-700"
                   >
                     <svg
                       className="w-4 h-4"

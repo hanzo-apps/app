@@ -169,7 +169,7 @@ export function Storefront() {
     <div className="min-h-screen bg-background">
       <header className="border-b sticky top-0 bg-background/95 backdrop-blur z-50">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between gap-4">
-          <h1 className="text-2xl font-bold flex items-center gap-2">
+          <h1 className="text-2xl font-medium flex items-center gap-2">
             <StoreIcon className="w-6 h-6" /> Store
           </h1>
           <div className="flex items-center gap-4">
@@ -216,7 +216,7 @@ export function Storefront() {
           {!loading && !error && products.length === 0 && (
             <div className="max-w-md mx-auto text-center py-24">
               <StoreIcon className="w-10 h-10 mx-auto mb-4 text-muted-foreground" />
-              <h2 className="text-lg font-semibold mb-1">No products yet</h2>
+              <h2 className="text-lg font-medium mb-1">No products yet</h2>
               <p className="text-muted-foreground">
                 This store is connected but its catalog is empty. Add a product
                 to see it here.
@@ -253,14 +253,14 @@ export function Storefront() {
                         )}
                     </div>
                     <CardContent className="p-4">
-                      <h3 className="font-semibold mb-1">{product.name}</h3>
+                      <h3 className="font-medium mb-1">{product.name}</h3>
                       {product.headline && (
                         <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
                           {product.headline}
                         </p>
                       )}
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-2xl font-bold">
+                        <span className="text-2xl font-medium">
                           {money(product.priceCents, product.currency || currency)}
                         </span>
                         {product.listPriceCents &&

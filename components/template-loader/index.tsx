@@ -98,7 +98,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
               <Sparkles className="w-9 h-9 text-white" />
             </div>
           )}
-          <CardTitle className="text-3xl font-bold">{templateTitle}</CardTitle>
+          <CardTitle className="text-3xl font-medium">{templateTitle}</CardTitle>
           <CardDescription className="text-lg mt-2">
             {meta?.description ||
               `From ${templateRepo.platform === "github" ? "GitHub" : "Hanzo Gallery"}: ${templateRepo.owner}/${templateRepo.name}`}
@@ -107,7 +107,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
 
         <CardContent className="space-y-6">
           <div className="bg-muted rounded-lg p-4">
-            <h3 className="font-semibold mb-2">What would you like to do?</h3>
+            <h3 className="font-medium mb-2">What would you like to do?</h3>
             <Tabs value={selectedMode} onValueChange={(v: string) => setSelectedMode(v as "edit" | "fork" | "deploy")}>
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="edit">
@@ -130,7 +130,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
                     <Code className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
-                    <h4 className="font-semibold">Edit in Hanzo Cloud IDE</h4>
+                    <h4 className="font-medium">Edit in Hanzo Cloud IDE</h4>
                     <p className="text-sm text-muted-foreground mt-1">
                       Start editing immediately in our cloud development environment.
                       No setup required - just code and see live previews.
@@ -150,7 +150,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
                     <Copy className="w-5 h-5 text-white dark:text-neutral-300" />
                   </div>
                   <div>
-                    <h4 className="font-semibold">Fork to Your Account</h4>
+                    <h4 className="font-medium">Fork to Your Account</h4>
                     <p className="text-sm text-muted-foreground mt-1">
                       Create your own copy of this template. You'll get your own repository
                       that you can customize and deploy independently.
@@ -170,7 +170,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
                     <Rocket className="w-5 h-5 text-green-600 dark:text-green-400" />
                   </div>
                   <div>
-                    <h4 className="font-semibold">Deploy to Hanzo Cloud</h4>
+                    <h4 className="font-medium">Deploy to Hanzo Cloud</h4>
                     <p className="text-sm text-muted-foreground mt-1">
                       Deploy this template instantly to Hanzo Cloud. Get a live URL
                       and automatic SSL certificate in seconds.
@@ -188,7 +188,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
 
           <div className="border rounded-lg p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <h4 className="text-sm font-semibold">Quick Start Command</h4>
+              <h4 className="text-sm font-medium">Quick Start Command</h4>
               <Button
                 variant="ghost"
                 size="sm"

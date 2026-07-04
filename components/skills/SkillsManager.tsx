@@ -322,7 +322,7 @@ export function SkillsManager() {
             {filteredSkills.length === 0 ? (
               <div className="text-center py-12">
                 <Sparkles className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-lg font-semibold mb-2">No skills found</h3>
+                <h3 className="text-lg font-medium mb-2">No skills found</h3>
                 <p className="text-muted-foreground mb-4">
                   {searchQuery ? 'Try a different search query' : 'Create your first custom skill'}
                 </p>
@@ -338,7 +338,7 @@ export function SkillsManager() {
                 {/* Built-in Skills */}
                 {builtInSkills.length > 0 && (
                   <div>
-                    <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                    <h2 className="text-lg font-medium mb-3 flex items-center gap-2">
                       <FileText className="w-5 h-5" />
                       Built-in Skills ({builtInSkills.length})
                     </h2>
@@ -361,7 +361,7 @@ export function SkillsManager() {
                 {/* Custom Skills */}
                 {customSkills.length > 0 && (
                   <div>
-                    <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                    <h2 className="text-lg font-medium mb-3 flex items-center gap-2">
                       <Sparkles className="w-5 h-5" />
                       Custom Skills ({customSkills.length})
                     </h2>
@@ -449,7 +449,7 @@ function SkillCard({ skill, isEnabled, globalEnabled, onToggle, onEdit, onDelete
                   ) : (
                     <ChevronRight className="w-4 h-4 shrink-0" />
                   )}
-                  <h3 className="font-semibold truncate">{skill.name}</h3>
+                  <h3 className="font-medium truncate">{skill.name}</h3>
                 </CollapsibleTrigger>
                 {skill.isBuiltIn && (
                   <Badge variant="secondary" className="text-xs">

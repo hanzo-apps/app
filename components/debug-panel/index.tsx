@@ -166,7 +166,7 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
           ) : (
             <Bug className="hidden h-4 w-4 md:inline-flex" />
           )}
-          <span className="font-semibold text-sm">Debug Events</span>
+          <span className="font-medium text-sm">Debug Events</span>
           <span className="text-xs text-muted-foreground">
             ({filteredEvents.length}/{events.length})
           </span>
@@ -272,12 +272,12 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
           {shellOutput.length > 0 && (
             <div
               ref={shellOutputRef}
-              className="max-h-32 overflow-y-auto p-2 bg-zinc-950 font-mono text-xs"
+              className="max-h-32 overflow-y-auto p-2 bg-neutral-950 font-mono text-xs"
             >
               {shellOutput.map((entry, i) => (
                 <div key={i} className="mb-2">
                   <div className="text-emerald-400">$ {entry.cmd}</div>
-                  <pre className={`whitespace-pre-wrap ${entry.isError ? 'text-red-400' : 'text-zinc-300'}`}>
+                  <pre className={`whitespace-pre-wrap ${entry.isError ? 'text-red-400' : 'text-neutral-300'}`}>
                     {entry.output}
                   </pre>
                 </div>
@@ -286,7 +286,7 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
           )}
 
           {/* Command input */}
-          <div className="flex items-center gap-2 p-2 bg-zinc-950">
+          <div className="flex items-center gap-2 p-2 bg-neutral-950">
             <span className="text-emerald-400 font-mono text-xs">$</span>
             <input
               type="text"
@@ -295,14 +295,14 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
               onKeyDown={(e) => e.key === 'Enter' && handleRunCommand()}
               placeholder="ls -la /.skills/"
               disabled={isRunning}
-              className="flex-1 bg-transparent border-none outline-none text-xs font-mono text-zinc-100 placeholder:text-zinc-600"
+              className="flex-1 bg-transparent border-none outline-none text-xs font-mono text-neutral-100 placeholder:text-neutral-600"
             />
             <Button
               variant="ghost"
               size="sm"
               onClick={handleRunCommand}
               disabled={isRunning || !command.trim()}
-              className="h-6 px-2 text-xs text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800"
+              className="h-6 px-2 text-xs text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800"
             >
               {isRunning ? '...' : 'Run'}
             </Button>
@@ -334,7 +334,7 @@ function EventItem({ event }: { event: DebugEvent }) {
         <div className="flex items-center gap-2 p-1.5 rounded hover:bg-muted/50 text-xs">
           {isOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
           <span className="text-muted-foreground font-mono">{time}</span>
-          <span className={`font-semibold ${getEventColor(event.event)}`}>
+          <span className={`font-medium ${getEventColor(event.event)}`}>
             {event.event}
           </span>
           {event.count && event.count > 1 && (

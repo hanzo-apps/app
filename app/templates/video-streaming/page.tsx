@@ -256,7 +256,7 @@ export default function VideoStreaming() {
                     </Avatar>
                     <div>
                       <div className="flex items-center gap-2">
-                        <p className="font-semibold">{currentVideo.channel.name}</p>
+                        <p className="font-medium">{currentVideo.channel.name}</p>
                         {currentVideo.channel.verified && (
                           <Badge variant="outline" className="h-5 px-1 border-[#171717] text-[#171717]">✓</Badge>
                         )}

@@ -16,7 +16,7 @@ export const FollowUpTooltip = () => {
         className="!rounded-2xl !p-0 min-w-xs text-center overflow-hidden"
       >
         <header className="bg-neutral-950 px-4 py-3 border-b border-neutral-700/70">
-          <p className="text-base text-neutral-200 font-semibold">
+          <p className="text-base text-neutral-200 font-medium">
             ⚡ Faster, Smarter Updates
           </p>
         </header>
