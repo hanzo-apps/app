@@ -38,7 +38,7 @@ export function ComplianceTab({ settings, onChange }: ComplianceTabProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold">Compliance & Consent</h3>
+          <h3 className="text-lg font-medium">Compliance & Consent</h3>
           <p className="text-sm text-muted-foreground">
             Cookie consent banner and privacy compliance
           </p>
@@ -69,7 +69,7 @@ export function ComplianceTab({ settings, onChange }: ComplianceTabProps) {
           {/* Banner Configuration */}
           <div className="space-y-4">
             <div>
-              <h4 className="font-semibold mb-4">Banner Configuration</h4>
+              <h4 className="font-medium mb-4">Banner Configuration</h4>
             </div>
 
             {/* Banner Position */}
@@ -161,7 +161,7 @@ export function ComplianceTab({ settings, onChange }: ComplianceTabProps) {
             {/* Policy Links */}
             <div className="space-y-4">
               <div>
-                <h4 className="font-semibold mb-2">Policy Links (Optional)</h4>
+                <h4 className="font-medium mb-2">Policy Links (Optional)</h4>
                 <p className="text-sm text-muted-foreground mb-4">
                   Add links to your privacy and cookie policies
                 </p>
@@ -198,7 +198,7 @@ export function ComplianceTab({ settings, onChange }: ComplianceTabProps) {
           {/* Compliance Mode */}
           <div className="space-y-4">
             <div>
-              <h4 className="font-semibold mb-4">Compliance Mode</h4>
+              <h4 className="font-medium mb-4">Compliance Mode</h4>
             </div>
 
             <div className="space-y-2">
@@ -251,7 +251,7 @@ export function ComplianceTab({ settings, onChange }: ComplianceTabProps) {
                 <div className="flex gap-3">
                   <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
                   <div className="space-y-1">
-                    <h4 className="font-semibold text-blue-900 dark:text-blue-100">
+                    <h4 className="font-medium text-blue-900 dark:text-blue-100">
                       GDPR Compliance Mode
                     </h4>
                     <p className="text-sm text-blue-800 dark:text-blue-200">
@@ -267,7 +267,7 @@ export function ComplianceTab({ settings, onChange }: ComplianceTabProps) {
           {/* Preview Info */}
           <div className="space-y-4">
             <div>
-              <h4 className="font-semibold mb-4">Preview</h4>
+              <h4 className="font-medium mb-4">Preview</h4>
             </div>
 
             <div className="p-4 bg-muted rounded-lg border">

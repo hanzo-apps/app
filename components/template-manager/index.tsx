@@ -355,7 +355,7 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
             </PopoverTrigger>
             <PopoverContent className="w-48" align="end">
               <div className="space-y-2">
-                <h4 className="font-semibold text-sm">Sort by</h4>
+                <h4 className="font-medium text-sm">Sort by</h4>
                 <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
                   <SelectTrigger>
                     <SelectValue />
@@ -409,7 +409,7 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
               {searchQuery ? (
                 <>
                   <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="font-semibold mb-2">No templates found</h3>
+                  <h3 className="font-medium mb-2">No templates found</h3>
                   <p className="text-sm text-muted-foreground mb-4">
                     No templates match your search query "{searchQuery}"
                   </p>
@@ -420,7 +420,7 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
               ) : (
                 <>
                   <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="font-semibold mb-2">No custom templates yet</h3>
+                  <h3 className="font-medium mb-2">No custom templates yet</h3>
                   <p className="text-sm text-muted-foreground mb-4">
                     Import custom templates to get started with professional designs.
                   </p>

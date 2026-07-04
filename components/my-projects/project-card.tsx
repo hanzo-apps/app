@@ -34,7 +34,7 @@ export function ProjectCard({ project }: { project: Project }) {
       </Link>
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-neutral-200 text-base font-semibold line-clamp-1">
+          <p className="text-neutral-200 text-base font-medium line-clamp-1">
             {project.space_id}
           </p>
           <p className="text-sm text-neutral-500">

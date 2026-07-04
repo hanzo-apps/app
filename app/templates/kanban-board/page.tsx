@@ -174,7 +174,7 @@ export default function KanbanBoard() {
       <div className="mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Project Board</h1>
+            <h1 className="text-3xl font-medium">Project Board</h1>
             <p className="text-muted-foreground">Built with @hanzo/ui components</p>
           </div>
           <div className="flex items-center gap-2">

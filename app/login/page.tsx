@@ -83,7 +83,7 @@ export default function LoginPage() {
               />
             </div>
 
-            <h1 className="text-4xl font-bold mb-4 tracking-tight">Welcome back</h1>
+            <h1 className="text-4xl font-medium mb-4 tracking-tight">Welcome back</h1>
             <p className="text-white/50 text-lg mb-10">Taking you to Hanzo ID to sign in</p>
 
             <div className="flex items-center justify-center gap-2 text-white/60 mb-12">
@@ -140,7 +140,7 @@ export default function LoginPage() {
         </div>
 
         {/* Right Side - Animated Ideas */}
-        <div className="hidden lg:flex w-1/2 items-center justify-center px-6 py-20 bg-gradient-to-br from-gray-900 via-black to-gray-900 relative overflow-hidden">
+        <div className="hidden lg:flex w-1/2 items-center justify-center px-6 py-20 bg-gradient-to-br from-neutral-900 via-black to-neutral-900 relative overflow-hidden">
           <div className="absolute inset-0 opacity-20">
             <div
               className="absolute inset-0"
@@ -164,7 +164,7 @@ export default function LoginPage() {
                 <span className="text-sm text-white/80">AI-powered development</span>
               </div>
 
-              <h2 className="text-3xl font-bold mb-4">Start building in seconds</h2>
+              <h2 className="text-3xl font-medium mb-4">Start building in seconds</h2>
 
               <p className="text-white/60 mb-8">
                 Describe your idea and watch AI bring it to life instantly

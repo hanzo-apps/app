@@ -551,7 +551,7 @@ export default function ChatPage() {
                     <div className="flex gap-4">
                       {message.role === "assistant" ? (
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center flex-shrink-0">
-                          <span className="text-white font-bold text-sm">
+                          <span className="text-white font-medium text-sm">
                             {message.agentEmoji ?? "H"}
                           </span>
                         </div>
@@ -610,9 +610,9 @@ export default function ChatPage() {
               <div className="flex items-center justify-center h-full">
                 <div className="text-center space-y-4">
                   <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl flex items-center justify-center mx-auto">
-                    <span className="text-white font-bold text-4xl">{selectedAgent?.emoji ?? "H"}</span>
+                    <span className="text-white font-medium text-4xl">{selectedAgent?.emoji ?? "H"}</span>
                   </div>
-                  <h2 className="text-2xl font-bold text-white">Chat with {selectedAgent?.name ?? "Hanzo"}</h2>
+                  <h2 className="text-2xl font-medium text-white">Chat with {selectedAgent?.name ?? "Hanzo"}</h2>
                   <p className="text-neutral-400 max-w-md">
                     {selectedAgent?.description ?? "Start a new chat or select an existing one to continue your conversation"}
                   </p>

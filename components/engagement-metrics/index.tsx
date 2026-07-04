@@ -87,11 +87,11 @@ export function EngagementMetrics({ deploymentId }: EngagementMetricsProps) {
       <div className="grid grid-cols-2 gap-4">
         <div className="border rounded-lg p-4">
           <div className="text-sm text-muted-foreground mb-1">Average Time on Page</div>
-          <div className="text-2xl font-bold">{formatDuration(data.timeOnPage.average)}</div>
+          <div className="text-2xl font-medium">{formatDuration(data.timeOnPage.average)}</div>
         </div>
         <div className="border rounded-lg p-4">
           <div className="text-sm text-muted-foreground mb-1">Median Time on Page</div>
-          <div className="text-2xl font-bold">{formatDuration(data.timeOnPage.median)}</div>
+          <div className="text-2xl font-medium">{formatDuration(data.timeOnPage.median)}</div>
         </div>
       </div>
 

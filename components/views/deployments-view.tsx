@@ -564,7 +564,7 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
                 </PopoverTrigger>
                 <PopoverContent className="w-48" align="end">
                   <div className="space-y-2">
-                    <h4 className="font-semibold text-sm">Sort by</h4>
+                    <h4 className="font-medium text-sm">Sort by</h4>
                     <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
                       <SelectTrigger>
                         <SelectValue />
@@ -597,7 +597,7 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
                 <Globe className="h-16 w-16 text-muted-foreground mb-4" />
                 {deployments.length === 0 ? (
                   <>
-                    <h2 className="text-xl font-semibold mb-2">No Deployments Yet</h2>
+                    <h2 className="text-xl font-medium mb-2">No Deployments Yet</h2>
                     <p className="text-muted-foreground mb-4 max-w-md">
                       Create your first deployment by clicking the "New" button above.
                       Deployments let you publish projects and manage their public settings independently.
@@ -605,7 +605,7 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
                   </>
                 ) : (
                   <>
-                    <h2 className="text-xl font-semibold mb-2">No deployments found</h2>
+                    <h2 className="text-xl font-medium mb-2">No deployments found</h2>
                     <p className="text-muted-foreground mb-4 max-w-md">
                       Try adjusting your search or filter criteria
                     </p>
