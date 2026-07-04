@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { AppEditor } from "@/components/editor";
 import { DevOnboarding } from "@/components/dev-onboarding";
 import { TemplateLoader } from "@/components/template-loader";
+import { resolveTemplateSeedMeta, buildTemplateSeedPrompt } from "@/lib/api/templates";
 
 export default function DevPage() {
   const searchParams = useSearchParams();
@@ -156,40 +157,14 @@ export default function DevPage() {
   };
 
   const handleTemplateAction = async (mode: "fork" | "edit" | "deploy") => {
-    // Build a real, template-specific generation prompt from the gallery
-    // catalog (real name/category/description/features/framework + the real
-    // preview screenshot as a visual reference) so the editor recreates the
-    // actual template as an editable starting point — not a generic stub.
-    let meta: any = null;
-    try {
-      const res = await fetch("/v1/gallery");
-      const data = await res.json();
-      meta = (data.templates || []).find(
-        (t: any) => t.slug === repoData.name || t.slug === `${repoData.name}`,
-      );
-    } catch {}
-
-    const title = meta?.displayName || repoData.name;
-    const spec = meta
-      ? [
-          `Recreate the "${meta.displayName}" template as a polished, production-quality ${meta.category} web app.`,
-          meta.description ? `Purpose: ${meta.description}` : "",
-          meta.features?.length ? `Must include: ${meta.features.join(", ")}.` : "",
-          meta.framework ? `Reference stack/style: ${meta.framework}.` : "",
-          meta.screenshotUrl
-            ? `Match the visual design shown in this reference screenshot: ${meta.screenshotUrl}`
-            : "",
-          "Make it fully responsive with clean, modern styling.",
-        ]
-          .filter(Boolean)
-          .join(" ")
-      : `Build a polished, production-quality app based on the "${title}" template. Make it responsive with clean, modern styling.`;
-
-    const prompt =
-      mode === "deploy"
-        ? `${spec} Then prepare it for one-click deploy to a live hanzo.app URL.`
-        : spec;
-
+    // Seed the builder from the template's REAL fields (name/category/features/
+    // framework/useCase + the real preview screenshot as a visual reference) so
+    // the editor recreates the actual template — not a generic stub. The shared
+    // resolver checks BOTH gallery catalogs, so a card from /new (cloud slugs)
+    // and a card from /gallery (snapshot slugs) both seed correctly — the prior
+    // single-catalog lookup silently missed ~60% of /new's slugs.
+    const meta = await resolveTemplateSeedMeta(repoData.name);
+    const prompt = buildTemplateSeedPrompt(meta, repoData.name, mode);
     handleOnboardingComplete(prompt);
   };
 

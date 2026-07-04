@@ -182,3 +182,128 @@ export async function fetchGalleryTemplates(): Promise<GalleryResult> {
 export function templateBuilderLink(source: string): string {
   return `/dev?template=${encodeURIComponent(source)}&action=deploy`;
 }
+
+// --- Seed resolution (the ONE way /dev turns a template slug into a real seed) ---
+
+/** Normalized metadata used to seed the builder from a template, regardless of
+ *  which gallery surface (/new or /gallery) linked into /dev. */
+export interface TemplateSeedMeta {
+  slug: string;
+  displayName: string;
+  description: string;
+  category: string;
+  framework: string;
+  features: string[];
+  useCase: string;
+  /** Preview screenshot URL (may be empty). */
+  screenshotUrl: string;
+}
+
+/** Human title from a slug when a catalog title is missing ("bento-cards-v1" → "Bento Cards V1"). */
+function titleize(slug: string): string {
+  return slug.replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+}
+
+/**
+ * Resolve a template slug to seed metadata from whichever catalog knows it.
+ *
+ * The builder is reached from TWO gallery surfaces with DIFFERENT slug schemes:
+ *   • /new  → cards from the cloud `/v1/templates` catalog (e.g. `brainwave`)
+ *   • /gallery / dev-onboarding → the `/v1/gallery` snapshot (e.g. `synapse`)
+ * Both funnel through `/dev?template=…`, so a single-catalog lookup silently
+ * failed for every slug that lives only in the other catalog (the builder then
+ * fell back to a generic "based on the <slug> template" seed with no preview,
+ * no features, no framework). We check BOTH — the cloud catalog first (what
+ * /new uses), then the snapshot — so all templates seed from real fields.
+ *
+ * Never throws; returns null only when neither catalog knows the slug.
+ */
+export async function resolveTemplateSeedMeta(slug: string): Promise<TemplateSeedMeta | null> {
+  const clean = slug.trim();
+  if (!clean) return null;
+
+  // Cloud catalog (the one /new renders) — single-template endpoint, 404 if absent.
+  try {
+    const res = await fetch(`/v1/templates/${encodeURIComponent(clean)}`, {
+      headers: { Accept: 'application/json' },
+    });
+    if (res.ok) {
+      const t = (await res.json()) as Record<string, unknown>;
+      if (t && typeof t === 'object' && (str(t.slug) || str(t.title))) {
+        return {
+          slug: str(t.slug) || clean,
+          displayName: str(t.title) || titleize(clean),
+          description: str(t.description),
+          category: str(t.category),
+          framework: str(t.framework),
+          features: strArray(t.features),
+          useCase: str(t.useCase),
+          screenshotUrl: str(t.preview),
+        };
+      }
+    }
+  } catch {
+    // fall through to the snapshot catalog
+  }
+
+  // Snapshot catalog (the one /gallery + dev-onboarding render).
+  try {
+    const res = await fetch('/v1/gallery', { headers: { Accept: 'application/json' } });
+    if (res.ok) {
+      const body = (await res.json()) as { templates?: unknown };
+      const rows = Array.isArray(body?.templates) ? body.templates : [];
+      const g = rows.find(
+        (x): x is Record<string, unknown> =>
+          !!x && typeof x === 'object' && str((x as Record<string, unknown>).slug) === clean,
+      );
+      if (g) {
+        return {
+          slug: str(g.slug) || clean,
+          displayName: str(g.displayName) || titleize(clean),
+          description: str(g.description),
+          category: str(g.category),
+          framework: str(g.framework),
+          features: strArray(g.features),
+          useCase: str(g.useCase),
+          screenshotUrl: str(g.screenshotUrl),
+        };
+      }
+    }
+  } catch {
+    // neither catalog reachable
+  }
+
+  return null;
+}
+
+/**
+ * Build the builder seed prompt from resolved template metadata. ONE place, so
+ * the TemplateLoader preview and the actual generation seed can never drift.
+ * `meta` may be null (unknown slug) — we still emit an honest, specific prompt
+ * from the human-readable title rather than a bare slug.
+ */
+export function buildTemplateSeedPrompt(
+  meta: TemplateSeedMeta | null,
+  slug: string,
+  mode: 'fork' | 'edit' | 'deploy',
+): string {
+  const title = meta?.displayName || titleize(slug);
+  const spec = meta
+    ? [
+        `Recreate the "${title}" template as a polished, production-quality ${meta.category || 'web'} app.`,
+        meta.description ? `Purpose: ${meta.description}` : '',
+        meta.features.length ? `Must include: ${meta.features.join(', ')}.` : '',
+        meta.framework ? `Reference stack/style: ${meta.framework}.` : '',
+        meta.useCase ? `Use case: ${meta.useCase}.` : '',
+        meta.screenshotUrl
+          ? `Match the visual design shown in this reference screenshot: ${meta.screenshotUrl}`
+          : '',
+        'Make it fully responsive with clean, modern styling.',
+      ]
+        .filter(Boolean)
+        .join(' ')
+    : `Build a polished, production-quality app based on the "${title}" template. Make it fully responsive with clean, modern styling.`;
+  return mode === 'deploy'
+    ? `${spec} Then prepare it for one-click deploy to a live hanzo.app URL.`
+    : spec;
+}

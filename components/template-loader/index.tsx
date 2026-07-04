@@ -10,13 +10,12 @@ import {
   Code,
   Zap,
   Copy,
-  Globe,
   Github,
   Rocket,
   ArrowRight,
-  Check,
   Loader2
 } from "lucide-react";
+import { resolveTemplateSeedMeta, type TemplateSeedMeta } from "@/lib/api/templates";
 
 interface TemplateLoaderProps {
   templateRepo: {
@@ -31,25 +30,18 @@ interface TemplateLoaderProps {
 
 export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoaderProps) {
   const [loading, setLoading] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [selectedMode, setSelectedMode] = useState<"fork" | "edit" | "deploy">(
     action === "deploy" ? "deploy" : "edit"
   );
 
-  // Real gallery metadata (preview screenshot + description) for this slug.
-  const [meta, setMeta] = useState<{
-    displayName?: string;
-    description?: string;
-    category?: string;
-    framework?: string;
-    screenshotUrl?: string;
-  } | null>(null);
+  // Real template metadata (preview screenshot + fields) for this slug, resolved
+  // from WHICHEVER gallery catalog knows it (the same resolver the seed prompt
+  // uses) — so the preview + title are correct no matter which surface linked in.
+  const [meta, setMeta] = useState<TemplateSeedMeta | null>(null);
   useEffect(() => {
     let alive = true;
-    fetch("/v1/gallery")
-      .then((r) => r.json())
-      .then((d) => {
-        const m = (d.templates || []).find((t: any) => t.slug === templateRepo.name);
+    resolveTemplateSeedMeta(templateRepo.name)
+      .then((m) => {
         if (alive && m) setMeta(m);
       })
       .catch(() => {});
@@ -65,12 +57,13 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
       .replace(/\b\w/g, (l) => l.toUpperCase())
       .replace("Template ", "");
 
-  const handleCopyCommand = () => {
-    const command = `npx create-hanzo-app@latest my-app --template ${templateRepo.owner}/${templateRepo.name}`;
-    navigator.clipboard.writeText(command);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  // Honest one-line description from the template's real fields; a git-import
+  // (no catalog match) falls back to its source provenance.
+  const templateDescription =
+    meta?.description ||
+    meta?.useCase ||
+    [meta?.framework, meta?.category].filter(Boolean).join(" · ") ||
+    `From ${templateRepo.platform === "github" ? "GitHub" : "Hanzo Gallery"}: ${templateRepo.owner}/${templateRepo.name}`;
 
   const handleProceed = () => {
     setLoading(true);
@@ -100,8 +93,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
           )}
           <CardTitle className="text-3xl font-medium">{templateTitle}</CardTitle>
           <CardDescription className="text-lg mt-2">
-            {meta?.description ||
-              `From ${templateRepo.platform === "github" ? "GitHub" : "Hanzo Gallery"}: ${templateRepo.owner}/${templateRepo.name}`}
+            {templateDescription}
           </CardDescription>
         </CardHeader>
 
@@ -186,33 +178,6 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
             </Tabs>
           </div>
 
-          <div className="border rounded-lg p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <h4 className="text-sm font-medium">Quick Start Command</h4>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleCopyCommand}
-                className="h-8 px-2"
-              >
-                {copied ? (
-                  <>
-                    <Check className="w-3 h-3 mr-1" />
-                    Copied
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3 h-3 mr-1" />
-                    Copy
-                  </>
-                )}
-              </Button>
-            </div>
-            <code className="block bg-muted px-3 py-2 rounded text-xs overflow-x-auto">
-              npx create-hanzo-app@latest my-app --template {templateRepo.owner}/{templateRepo.name}
-            </code>
-          </div>
-
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <a
               href={templateRepo.fullUrl}
@@ -222,15 +187,6 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
             >
               <Github className="w-4 h-4" />
               View Source
-            </a>
-            <a
-              href={`https://hanzo.app/docs/templates/${templateRepo.name}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 hover:text-foreground transition-colors"
-            >
-              <Globe className="w-4 h-4" />
-              Documentation
             </a>
           </div>
         </CardContent>
