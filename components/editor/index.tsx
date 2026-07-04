@@ -80,7 +80,14 @@ export const AppEditor = ({
   const monacoRef = useRef<any>(null);
 
   const [currentTab, setCurrentTab] = useState("chat");
-  const [currentPage, setCurrentPage] = useState("index.html");
+  // Open on the project's entry page: index.html when present (e.g. a dropped
+  // project), else the first seeded page, else the default new-project page.
+  const [currentPage, setCurrentPage] = useState(
+    () =>
+      initialPages?.find((p) => /(^|\/)index\.html?$/i.test(p.path))?.path ??
+      initialPages?.[0]?.path ??
+      "index.html",
+  );
   const [device, setDevice] = useState<"desktop" | "mobile">("desktop");
   const [isResizing, setIsResizing] = useState(false);
   const [isAiWorking, setIsAiWorking] = useState(false);
