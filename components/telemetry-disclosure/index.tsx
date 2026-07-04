@@ -58,7 +58,7 @@ export function TelemetryDisclosure({ open, onDismiss }: TelemetryDisclosureProp
               <CollapsibleContent>
                 <div className="px-4 pb-4 space-y-3 text-sm text-muted-foreground">
                   <div>
-                    <p className="font-bold text-foreground mb-1.5">What will <span className="text-orange-400 uppercase">not</span> be collected:</p>
+                    <p className="font-medium text-foreground mb-1.5">What will <span className="text-orange-400 uppercase">not</span> be collected:</p>
                     <ul className="list-disc pl-5 space-y-0.5">
                       <li>Your prompts or messages</li>
                       <li>Code, file names, or file contents</li>
@@ -70,7 +70,7 @@ export function TelemetryDisclosure({ open, onDismiss }: TelemetryDisclosureProp
                   </div>
 
                   <div>
-                    <p className="font-bold text-foreground mb-1.5">What will be collected:</p>
+                    <p className="font-medium text-foreground mb-1.5">What will be collected:</p>
                     <ul className="list-disc pl-5 space-y-0.5">
                       <li>Which views are visited (e.g. dashboard, workspace, settings)</li>
                       <li>Which AI providers and models are selected</li>

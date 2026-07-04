@@ -102,7 +102,7 @@ export function OrgSwitcher() {
           <div className="absolute right-0 z-50 mt-2 w-72 rounded-xl border border-white/10 bg-[#141414] p-2 shadow-2xl">
             {creating ? (
               <div className="space-y-2">
-                <p className="text-sm font-bold text-white/90">Create organization</p>
+                <p className="text-sm font-medium text-white/90">Create organization</p>
                 <input
                   value={newName}
                   onChange={(e) => setNewName(e.target.value.slice(0, 60))}
@@ -132,7 +132,7 @@ export function OrgSwitcher() {
                     className="flex-1 bg-transparent text-sm outline-none placeholder:text-white/30"
                   />
                 </div>
-                <p className="px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-white/30">
+                <p className="px-2 py-1 text-[10px] font-medium uppercase tracking-wide text-white/30">
                   Organizations · {allOrgs.length}
                 </p>
                 <div className="max-h-64 overflow-y-auto">
@@ -234,7 +234,7 @@ function OnboardingPanel() {
       <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#fd4444] to-[#ff6b6b]">
         <Sparkles className="h-7 w-7 text-white" />
       </div>
-      <h1 className="mb-2 text-2xl font-bold">Set up your workspace</h1>
+      <h1 className="mb-2 text-2xl font-medium">Set up your workspace</h1>
       <p className="mb-8 text-sm text-white/60">
         Every project belongs to an organization — that&apos;s where it&apos;s billed and
         shared. Start with a personal workspace, or name a team organization.

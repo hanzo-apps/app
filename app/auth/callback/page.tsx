@@ -76,7 +76,7 @@ export default function AuthCallback() {
         {error ? (
           <div className="space-y-5">
             <div>
-              <h1 className="text-xl font-semibold tracking-tight">
+              <h1 className="text-xl font-medium tracking-tight">
                 Sign-in didn&apos;t complete
               </h1>
               <p className="mt-2 text-sm text-white/50">

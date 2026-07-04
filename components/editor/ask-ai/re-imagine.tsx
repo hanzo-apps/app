@@ -82,7 +82,7 @@ export function ReImagine({
                 💎
               </div>
             </div>
-            <p className="text-xl font-semibold text-neutral-950">
+            <p className="text-xl font-medium text-neutral-950">
               Redesign your Site!
             </p>
             <p className="text-sm text-neutral-500 mt-1.5">

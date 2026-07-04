@@ -605,7 +605,7 @@ export default function TestGenerationPage() {
       case 'failed': return <XCircle className="h-4 w-4 text-red-500" />;
       case 'stopped': return <Square className="h-4 w-4 text-orange-500" />;
       case 'running': return <RefreshCw className="h-4 w-4 text-blue-500 animate-spin" />;
-      default: return <Clock className="h-4 w-4 text-gray-400" />;
+      default: return <Clock className="h-4 w-4 text-neutral-400" />;
     }
   };
 
@@ -1029,34 +1029,34 @@ export default function TestGenerationPage() {
                 {stats.rounds !== undefined && (
                   <div className="bg-card border rounded-lg p-4">
                     <div className="text-sm font-medium text-muted-foreground mb-1">Rounds</div>
-                    <div className="text-2xl font-bold">{stats.rounds}</div>
+                    <div className="text-2xl font-medium">{stats.rounds}</div>
                   </div>
                 )}
                 <div className="bg-card border rounded-lg p-4">
                   <div className="text-sm font-medium text-muted-foreground mb-1">Total Tests</div>
-                  <div className="text-2xl font-bold">{stats.total}</div>
+                  <div className="text-2xl font-medium">{stats.total}</div>
                 </div>
                 <div className="bg-card border rounded-lg p-4">
                   <div className="text-sm font-medium text-muted-foreground mb-1">Passed</div>
-                  <div className="text-2xl font-bold text-green-600">{stats.passed}</div>
+                  <div className="text-2xl font-medium text-green-600">{stats.passed}</div>
                 </div>
                 <div className="bg-card border rounded-lg p-4">
                   <div className="text-sm font-medium text-muted-foreground mb-1">Failed</div>
-                  <div className="text-2xl font-bold text-red-600">{stats.failed}</div>
+                  <div className="text-2xl font-medium text-red-600">{stats.failed}</div>
                 </div>
                 <div className="bg-card border rounded-lg p-4">
                   <div className="text-sm font-medium text-muted-foreground mb-1">Pass Rate</div>
-                  <div className="text-2xl font-bold">{stats.successRate.toFixed(1)}%</div>
+                  <div className="text-2xl font-medium">{stats.successRate.toFixed(1)}%</div>
                 </div>
                 <div className="bg-card border rounded-lg p-4">
                   <div className="text-sm font-medium text-muted-foreground mb-1">Cost</div>
-                  <div className="text-2xl font-bold">
+                  <div className="text-2xl font-medium">
                     {formatCost(stats.totalCost)}
                   </div>
                 </div>
                 <div className="bg-card border rounded-lg p-4">
                   <div className="text-sm font-medium text-muted-foreground mb-1">Tokens</div>
-                  <div className="text-2xl font-bold">{stats.totalTokens.toLocaleString()}</div>
+                  <div className="text-2xl font-medium">{stats.totalTokens.toLocaleString()}</div>
                   <div className="text-xs text-muted-foreground mt-0.5">
                     {stats.promptTokens.toLocaleString()} in &rarr; {stats.completionTokens.toLocaleString()} out
                   </div>
@@ -1210,7 +1210,7 @@ export default function TestGenerationPage() {
                 {/* Track header */}
                 <div className="flex items-center gap-3 mb-3">
                   <div className="h-px flex-1 bg-border" />
-                  <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                  <h2 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
                     {track.name}
                   </h2>
                   <span className="text-xs text-muted-foreground">{track.description}</span>
@@ -1362,7 +1362,7 @@ export default function TestGenerationPage() {
                                           <span className={tc.status === 'success' && !isInvalid ? 'text-green-500' : isInvalid ? 'text-orange-500' : 'text-red-500'}>
                                             {tc.status === 'success' && !isInvalid ? '\u2713' : '\u2717'}
                                           </span>
-                                          <span className={`font-semibold ${isInvalid ? 'text-orange-500' : ''}`}>{tc.name}</span>
+                                          <span className={`font-medium ${isInvalid ? 'text-orange-500' : ''}`}>{tc.name}</span>
                                           {isInvalid && (
                                             <span className="text-orange-500 text-[10px] border border-orange-400/50 rounded px-1">invalid</span>
                                           )}
@@ -1419,7 +1419,7 @@ export default function TestGenerationPage() {
                 {report.allDone && (
                   <div className="mt-4 bg-muted/40 border rounded-lg p-4">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-3">
-                      <h3 className="text-sm font-semibold">{track.name} Track Report</h3>
+                      <h3 className="text-sm font-medium">{track.name} Track Report</h3>
                       <span className="text-xs text-muted-foreground">
                         Passed: {report.passed}/{report.total} ({report.successRate.toFixed(1)}%)
                         {report.totalAssertions > 0 && (
@@ -1507,7 +1507,7 @@ export default function TestGenerationPage() {
           <div className="mt-8">
             <div className="flex items-center gap-3 mb-3">
               <div className="h-px flex-1 bg-border" />
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+              <h2 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
                 Aggregated Results ({roundHistory.length} Rounds)
               </h2>
               <div className="h-px flex-1 bg-border" />
@@ -1530,7 +1530,7 @@ export default function TestGenerationPage() {
                   {aggregatedResults.map(r => (
                     <tr key={r.id} className="border-b last:border-b-0">
                       <td className="px-4 py-2 font-medium">{r.name}</td>
-                      <td className={`px-4 py-2 text-right font-semibold ${
+                      <td className={`px-4 py-2 text-right font-medium ${
                         r.passRate === 100 ? 'text-green-500' : r.passRate > 0 ? 'text-yellow-500' : 'text-red-500'
                       }`}>
                         {r.passRate.toFixed(0)}%

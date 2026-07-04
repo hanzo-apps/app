@@ -109,7 +109,7 @@ export function TemplateCard({
           {/* Template Info */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <h3 className="font-semibold text-base truncate" title={template.name}>
+              <h3 className="font-medium text-base truncate" title={template.name}>
                 {template.name}
               </h3>
               {customTemplate && (
@@ -325,7 +325,7 @@ export function TemplateCard({
         {/* Header */}
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-base line-clamp-1 flex-1" title={template.name}>
+            <h3 className="font-medium text-base line-clamp-1 flex-1" title={template.name}>
               {template.name}
             </h3>
             {customTemplate && (

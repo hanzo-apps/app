@@ -386,7 +386,7 @@ function SidebarContent({
 
         {!collapsed && (
           <div className="flex flex-col">
-            <span className="text-sm font-semibold whitespace-nowrap leading-none">
+            <span className="text-sm font-medium whitespace-nowrap leading-none">
               {logoHover && !pinned ? "Pin" : "Open\u00A0Source Web\u00A0Studio"}
             </span>
             {!(logoHover && !pinned) && (

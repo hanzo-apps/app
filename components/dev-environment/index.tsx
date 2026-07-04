@@ -68,7 +68,7 @@ export function DevEnvironment({ projectId }: DevEnvironmentProps) {
       {/* Toolbar */}
       <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h2 className="text-sm font-semibold">Development Environment</h2>
+          <h2 className="text-sm font-medium">Development Environment</h2>
           <span className="text-xs text-muted-foreground">Project: {projectId}</span>
         </div>
 
