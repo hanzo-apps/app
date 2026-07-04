@@ -35,6 +35,7 @@ import { Preview } from "@/components/editor/preview";
 import { useEditor } from "@/hooks/useEditor";
 import { AskAI } from "@/components/editor/ask-ai";
 import { DeployButton } from "./deploy-button";
+import { GitSyncButton } from "./git-sync-button";
 import { Page, Project } from "@/types";
 import { SaveButton } from "./save-button";
 import { LoadProject } from "../my-projects/load-project";
@@ -272,6 +273,7 @@ export const AppEditor = ({
           }}
         />
         {/* for these buttons pass the whole pages */}
+        <GitSyncButton pages={pages} prompts={prompts} disabled={isAiWorking} />
         {project?._id ? (
           <SaveButton pages={pages} prompts={prompts} />
         ) : (
