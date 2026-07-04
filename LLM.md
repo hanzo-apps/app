@@ -459,3 +459,56 @@ By addressing these issues systematically and following the recommended evolutio
 5. Begin service layer refactoring
 
 The platform is well-positioned for growth with these improvements, and the modular monolith approach is appropriate for the current scale. The proposed evolution path provides a clear roadmap for scaling when needed.
+
+---
+
+## Landing page (`app/page.tsx` + `components/landing/*`)
+
+Design-maven marketing landing — true-black `#000` monochrome (zero hue by
+construction), Basel Grotesk Medium headings, Geist Mono for code/data. Lovable
+STRUCTURE, Hanzo brand. Keep the working prompt-composer + logged-in projects
+logic in `page.tsx`; elevate design only.
+
+- **`reveal.tsx`** — the ONE scroll-reveal primitive (IntersectionObserver
+  fade-up, ~500ms ease-out, `delay` for stagger). Fails open on reduced-motion
+  OR no-IntersectionObserver so content is never stuck hidden. Every section
+  uses this — no per-file animation code.
+- **`hero-preview.tsx`** — hero focal visual: an honest, schematic browser frame
+  (`your-app.hanzo.app` URL, semantic green Live dot, wireframe UI, "Wired in:
+  Database · Auth · AI · Storage"). Deliberately a wireframe — communicates
+  "a real running app" without fabricating a customer or metrics.
+- **`logo-wall.tsx`** — REAL partners only (Techstars '17 + NVIDIA/AWS/Microsoft/
+  Google/DigitalOcean/Nebius/Lux/Zoo), mono-tinted white via
+  `[filter:brightness(0)_invert(1)]`. Labeled "Backed by Techstars · Built on
+  world-class infrastructure" — never "trusted by <fake customers>".
+- **`cloud-integration.tsx`** — the differentiator: 6 capabilities each mapping
+  to a LIVE Hanzo product (Cloud/Base/IAM/LLM Gateway/KMS·S3/Functions), linked
+  to `hanzo.ai/<product>`. No invented features/metrics.
+- **`models-strip.tsx`** — real `api.hanzo.ai/v1` endpoint + real provider logos.
+- **`how-it-works.tsx`** / **`site-footer.tsx`** — 3-step + multi-column footer.
+
+Honesty rule: REAL logos + REAL integration claims only. If a claim can't be
+truthful, omit it.
+
+### Local-dev landmine: `react-resizable-panels` shim (dev-only crash)
+
+`next.config.js` aliases `react-resizable-panels` → `lib/shims/react-resizable-panels.js`,
+but the shim does `export … from 'react-resizable-panels'` — the alias re-catches
+the shim's own import, so it re-exports **itself**. In `next dev` (webpack HMR
+harmony getters) this recurses → `RangeError: Maximum call stack size exceeded`
+on EVERY route through the layout (500). The **production** build/`next start`
+does NOT crash (webpack resolves the circular re-export to `undefined` bindings
+instead of recursing — which is why live 1.42.x works), but Panel/Group/Separator
+from the shim are effectively `undefined` in prod too. The installed real package
+is v4.7.4 which already exports `Group`/`Panel`/`Separator` natively, so the shim
+is largely obsolete. To fix properly: alias only the exact bare specifier
+(`react-resizable-panels$`) to the shim and have the shim re-export from a
+sentinel (`react-resizable-panels-real$` → `require.resolve('react-resizable-panels')`),
+never from the bare specifier. Until then, verify the landing via
+`next build && next start` (production), not `next dev`.
+
+Note: a local `next start` bounces anon users to IAM (`hanzo.id`/`console.hanzo.ai`)
+because the prod build points auth at the in-cluster `iam.hanzo.svc` (unreachable
+off-cluster). This is an env artifact — the live `/` is public (middleware treats
+`/` as a public route). Block those hosts in the browser to verify below-fold
+sections locally.
