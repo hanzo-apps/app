@@ -141,7 +141,7 @@ Start writing your content above!
         <div className="container mx-auto px-6 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <h1 className="text-xl font-bold">Markdown Editor</h1>
+              <h1 className="text-xl font-medium">Markdown Editor</h1>
               <Separator orientation="vertical" className="h-6" />
               <div className="flex items-center gap-1">
                 <Button

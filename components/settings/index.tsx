@@ -130,7 +130,7 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
     <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       {/* Header */}
       <div className="shrink-0 pb-3 mb-1 border-b">
-        <h3 className="font-semibold text-base tracking-tight">Settings</h3>
+        <h3 className="font-medium text-base tracking-tight">Settings</h3>
         <p className="text-muted-foreground text-xs mt-1">
           Application preferences and data management
         </p>

@@ -114,7 +114,7 @@ export function GuidedTourOverlay({ location }: GuidedTourOverlayProps) {
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center justify-between gap-4">
-                <h3 className="text-lg font-semibold text-foreground">{currentStep.title}</h3>
+                <h3 className="text-lg font-medium text-foreground">{currentStep.title}</h3>
                 <span className="text-sm text-muted-foreground font-medium">{currentStepNumber}/{totalSteps}</span>
               </div>
               <div className="mt-2 text-sm leading-relaxed text-muted-foreground">

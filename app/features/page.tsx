@@ -182,7 +182,7 @@ export default function FeaturesPage() {
         <div className="flex items-center gap-6 md:gap-10">
           <Link href="/" className="flex items-center gap-2.5">
             <HanzoLogo className="w-8 md:w-9 h-8 md:h-9 text-white" />
-            <span className="text-xl md:text-2xl font-bold">Hanzo</span>
+            <span className="text-xl md:text-2xl font-medium">Hanzo</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
@@ -217,7 +217,7 @@ export default function FeaturesPage() {
               </Button>
               <Button
                 onClick={() => router.push('/dev')}
-                className="bg-white text-black hover:bg-white/90 text-sm font-semibold px-5 py-2.5 rounded-xl"
+                className="bg-white text-black hover:bg-white/90 text-sm font-medium px-5 py-2.5 rounded-xl"
               >
                 Get started
               </Button>
@@ -233,7 +233,7 @@ export default function FeaturesPage() {
               </Button>
               <Button
                 onClick={openLoginWindow}
-                className="bg-white text-black hover:bg-white/90 text-sm font-semibold px-5 py-2.5 rounded-xl"
+                className="bg-white text-black hover:bg-white/90 text-sm font-medium px-5 py-2.5 rounded-xl"
               >
                 Get started
               </Button>
@@ -261,7 +261,7 @@ export default function FeaturesPage() {
             <div className="flex items-center justify-between p-4 border-b border-white/10">
               <Link href="/" className="flex items-center gap-2.5">
                 <HanzoLogo className="w-8 h-8 text-white" />
-                <span className="text-xl font-bold">Hanzo</span>
+                <span className="text-xl font-medium">Hanzo</span>
               </Link>
               <button
                 onClick={() => setMobileMenuOpen(false)}
@@ -302,7 +302,7 @@ export default function FeaturesPage() {
               <span className="text-sm text-violet-300">Powered by Advanced AI</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 md:mb-6">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-medium mb-4 md:mb-6">
               Everything you need to{" "}
               <span className="relative inline-block">
                 <span className="bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
@@ -318,7 +318,7 @@ export default function FeaturesPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button
                 onClick={() => user ? router.push('/dev') : openLoginWindow()}
-                className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-400 hover:to-purple-400 text-white px-8 py-3 rounded-xl font-semibold text-lg"
+                className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-400 hover:to-purple-400 text-white px-8 py-3 rounded-xl font-medium text-lg"
               >
                 <Zap className="w-5 h-5 mr-2" />
                 Start Building
@@ -326,7 +326,7 @@ export default function FeaturesPage() {
               <Button
                 onClick={() => router.push('/docs')}
                 variant="outline"
-                className="border-white/20 text-white hover:bg-white/10 px-8 py-3 rounded-xl font-semibold text-lg"
+                className="border-white/20 text-white hover:bg-white/10 px-8 py-3 rounded-xl font-medium text-lg"
               >
                 View Documentation
                 <ArrowRight className="ml-2 w-5 h-5" />
@@ -343,7 +343,7 @@ export default function FeaturesPage() {
                 <Settings className="w-4 h-4 mr-2" />
                 Core Features
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Everything you need in one platform</h2>
+              <h2 className="text-3xl md:text-4xl font-medium mb-4">Everything you need in one platform</h2>
               <p className="text-lg text-white/60 max-w-2xl mx-auto">
                 Comprehensive development tools designed to accelerate your workflow
               </p>
@@ -385,7 +385,7 @@ export default function FeaturesPage() {
                 <Brain className="w-4 h-4 mr-2" />
                 AI Capabilities
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Next-generation AI development</h2>
+              <h2 className="text-3xl md:text-4xl font-medium mb-4">Next-generation AI development</h2>
               <p className="text-lg text-white/60 max-w-2xl mx-auto">
                 Advanced AI models that understand your intent and generate production-ready code
               </p>
@@ -400,7 +400,7 @@ export default function FeaturesPage() {
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold mb-3 text-white">{capability.title}</h3>
+                    <h3 className="text-xl font-medium mb-3 text-white">{capability.title}</h3>
                     <p className="text-white/70 leading-relaxed">{capability.description}</p>
                   </div>
                 </div>
@@ -417,7 +417,7 @@ export default function FeaturesPage() {
                 <Layers className="w-4 h-4 mr-2" />
                 Technology Stack
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Built on modern infrastructure</h2>
+              <h2 className="text-3xl md:text-4xl font-medium mb-4">Built on modern infrastructure</h2>
               <p className="text-lg text-white/60 max-w-2xl mx-auto">
                 Enterprise-grade technology stack designed for scale and performance
               </p>
@@ -428,21 +428,21 @@ export default function FeaturesPage() {
                 <div className="inline-flex p-4 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-2xl border border-blue-500/20 mb-4">
                   <Cloud className="w-8 h-8 text-blue-400" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2 text-white">Cloud Infrastructure</h3>
+                <h3 className="text-xl font-medium mb-2 text-white">Cloud Infrastructure</h3>
                 <p className="text-white/60">Global CDN, edge computing, and auto-scaling infrastructure</p>
               </div>
               <div className="text-center">
                 <div className="inline-flex p-4 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-2xl border border-green-500/20 mb-4">
                   <Server className="w-8 h-8 text-green-400" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2 text-white">Database Solutions</h3>
+                <h3 className="text-xl font-medium mb-2 text-white">Database Solutions</h3>
                 <p className="text-white/60">Managed PostgreSQL, SQLite, and Redis with auto-backups</p>
               </div>
               <div className="text-center">
                 <div className="inline-flex p-4 bg-gradient-to-br from-purple-500/10 to-violet-500/10 rounded-2xl border border-purple-500/20 mb-4">
                   <Cpu className="w-8 h-8 text-purple-400" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2 text-white">AI Processing</h3>
+                <h3 className="text-xl font-medium mb-2 text-white">AI Processing</h3>
                 <p className="text-white/60">GPT-4, Claude, and custom models for code generation</p>
               </div>
             </div>
@@ -457,7 +457,7 @@ export default function FeaturesPage() {
                 <BarChart className="w-4 h-4 mr-2" />
                 Simple Pricing
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Choose your plan</h2>
+              <h2 className="text-3xl md:text-4xl font-medium mb-4">Choose your plan</h2>
               <p className="text-lg text-white/60 max-w-2xl mx-auto">
                 Start free, scale as you grow. No hidden fees or surprises.
               </p>
@@ -481,7 +481,7 @@ export default function FeaturesPage() {
                   <CardHeader className="text-center pb-6">
                     <CardTitle className="text-2xl text-white">{plan.name}</CardTitle>
                     <div className="mt-4">
-                      <span className="text-4xl font-bold text-white">{plan.price}</span>
+                      <span className="text-4xl font-medium text-white">{plan.price}</span>
                       {plan.period && <span className="text-white/60 ml-1">{plan.period}</span>}
                     </div>
                     <CardDescription className="text-white/60 mt-2">
@@ -530,7 +530,7 @@ export default function FeaturesPage() {
         {/* CTA Section */}
         <section className="px-4 md:px-8 py-16 md:py-20 bg-gradient-to-b from-violet-950/10 to-transparent">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-3xl md:text-4xl font-medium mb-4">
               Ready to build your next project?
             </h2>
             <p className="text-lg text-white/60 mb-8 max-w-2xl mx-auto">
@@ -540,7 +540,7 @@ export default function FeaturesPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button
                 onClick={() => user ? router.push('/dev') : openLoginWindow()}
-                className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-400 hover:to-purple-400 text-white px-8 py-3 rounded-xl font-semibold text-lg"
+                className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-400 hover:to-purple-400 text-white px-8 py-3 rounded-xl font-medium text-lg"
               >
                 <Zap className="w-5 h-5 mr-2" />
                 Start Building Now
@@ -548,7 +548,7 @@ export default function FeaturesPage() {
               <Button
                 onClick={() => router.push('/community')}
                 variant="outline"
-                className="border-white/20 text-white hover:bg-white/10 px-8 py-3 rounded-xl font-semibold text-lg"
+                className="border-white/20 text-white hover:bg-white/10 px-8 py-3 rounded-xl font-medium text-lg"
               >
                 <Users className="w-5 h-5 mr-2" />
                 Explore Community
@@ -563,7 +563,7 @@ export default function FeaturesPage() {
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-16">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-8 mb-8 md:mb-12">
             <div>
-              <h3 className="text-white font-semibold text-sm mb-3 md:mb-4">Product</h3>
+              <h3 className="text-white font-medium text-sm mb-3 md:mb-4">Product</h3>
               <ul className="space-y-2 md:space-y-3">
                 <li><Link href="/features" className="text-white hover:text-white text-xs md:text-sm transition-colors">Features</Link></li>
                 <li><Link href="/integrations" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Integrations</Link></li>
@@ -572,7 +572,7 @@ export default function FeaturesPage() {
               </ul>
             </div>
             <div>
-              <h3 className="text-white font-semibold text-sm mb-3 md:mb-4">Resources</h3>
+              <h3 className="text-white font-medium text-sm mb-3 md:mb-4">Resources</h3>
               <ul className="space-y-2 md:space-y-3">
                 <li><Link href="/docs" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Documentation</Link></li>
                 <li><Link href="/tutorials" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Tutorials</Link></li>
@@ -581,7 +581,7 @@ export default function FeaturesPage() {
               </ul>
             </div>
             <div>
-              <h3 className="text-white font-semibold text-sm mb-3 md:mb-4">Company</h3>
+              <h3 className="text-white font-medium text-sm mb-3 md:mb-4">Company</h3>
               <ul className="space-y-2 md:space-y-3">
                 <li><Link href="/about" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">About</Link></li>
                 <li><Link href="/careers" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Careers</Link></li>
@@ -596,7 +596,7 @@ export default function FeaturesPage() {
               <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 text-center md:text-left">
                 <div className="flex items-center gap-3">
                   <HanzoLogo className="w-6 md:w-7 h-6 md:h-7 text-white" />
-                  <span className="text-base md:text-lg font-bold">Hanzo</span>
+                  <span className="text-base md:text-lg font-medium">Hanzo</span>
                 </div>
                 <span className="text-xs md:text-sm text-white/40">
                   © 2025 Hanzo AI, Inc. All rights reserved.

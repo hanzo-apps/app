@@ -256,7 +256,7 @@ export function ProviderSettings() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold mb-2">Provider Settings</h2>
+        <h2 className="text-2xl font-medium mb-2">Provider Settings</h2>
         <p className="text-muted-foreground">
           Configure your AI provider API keys and settings. All keys are stored locally in your browser.
         </p>

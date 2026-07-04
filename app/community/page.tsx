@@ -109,7 +109,7 @@ export default function CommunityPage() {
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-2.5">
               <HanzoLogo className="w-8 h-8 text-white" />
-              <span className="text-xl font-bold">Hanzo</span>
+              <span className="text-xl font-medium">Hanzo</span>
             </Link>
             <div className="hidden md:flex items-center gap-6">
               <Link href="/community" className="text-white font-medium">Community</Link>
@@ -131,7 +131,7 @@ export default function CommunityPage() {
             <Users className="w-4 h-4 mr-2" />
             50,000+ Developers Building
           </Badge>
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+          <h1 className="text-4xl md:text-6xl font-medium mb-6">
             Join the Hanzo{" "}
             <span className="bg-gradient-to-r from-[#171717] to-[#404040] bg-clip-text text-transparent">
               Community
@@ -157,25 +157,25 @@ export default function CommunityPage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#171717] to-[#404040] bg-clip-text text-transparent">
+              <div className="text-3xl md:text-4xl font-medium bg-gradient-to-r from-[#171717] to-[#404040] bg-clip-text text-transparent">
                 50K+
               </div>
               <div className="text-white/60 mt-2">Active Developers</div>
             </div>
             <div>
-              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#171717] to-[#404040] bg-clip-text text-transparent">
+              <div className="text-3xl md:text-4xl font-medium bg-gradient-to-r from-[#171717] to-[#404040] bg-clip-text text-transparent">
                 10K+
               </div>
               <div className="text-white/60 mt-2">Projects Shared</div>
             </div>
             <div>
-              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#171717] to-[#404040] bg-clip-text text-transparent">
+              <div className="text-3xl md:text-4xl font-medium bg-gradient-to-r from-[#171717] to-[#404040] bg-clip-text text-transparent">
                 250K+
               </div>
               <div className="text-white/60 mt-2">Components Used</div>
             </div>
             <div>
-              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#171717] to-[#404040] bg-clip-text text-transparent">
+              <div className="text-3xl md:text-4xl font-medium bg-gradient-to-r from-[#171717] to-[#404040] bg-clip-text text-transparent">
                 1M+
               </div>
               <div className="text-white/60 mt-2">Apps Deployed</div>
@@ -188,7 +188,7 @@ export default function CommunityPage() {
       <section className="px-4 md:px-8 py-16">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold">Community Projects</h2>
+            <h2 className="text-2xl md:text-3xl font-medium">Community Projects</h2>
             <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
               <Code2 className="w-5 h-5 mr-2" />
               Submit Project
@@ -225,7 +225,7 @@ export default function CommunityPage() {
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <h3 className="font-semibold text-lg mb-2 group-hover:text-[#171717] transition-colors">
+                      <h3 className="font-medium text-lg mb-2 group-hover:text-[#171717] transition-colors">
                         {project.title}
                       </h3>
                       <p className="text-sm text-white/60 mb-4">
@@ -278,7 +278,7 @@ export default function CommunityPage() {
               <Zap className="w-4 h-4 mr-2" />
               This Month
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Top Contributors</h2>
+            <h2 className="text-3xl md:text-4xl font-medium mb-4">Top Contributors</h2>
             <p className="text-lg text-white/60 max-w-2xl mx-auto">
               Recognizing the developers who make our community amazing
             </p>
@@ -289,7 +289,7 @@ export default function CommunityPage() {
               <div key={contributor.name} className="bg-[#1a1a1a] rounded-2xl p-6 text-center border border-white/10 hover:border-[#171717]/50 transition-all">
                 <div className="text-2xl mb-2">{contributor.badge}</div>
                 <div className="text-4xl mb-3">{contributor.avatar}</div>
-                <div className="font-semibold mb-2">{contributor.name}</div>
+                <div className="font-medium mb-2">{contributor.name}</div>
                 <div className="text-sm text-white/60">{contributor.contributions} contributions</div>
               </div>
             ))}
@@ -300,7 +300,7 @@ export default function CommunityPage() {
       {/* CTA Section */}
       <section className="px-4 md:px-8 py-20 text-center">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+          <h2 className="text-3xl md:text-4xl font-medium mb-6">
             Ready to Share Your Creation?
           </h2>
           <p className="text-xl text-white/60 mb-8">

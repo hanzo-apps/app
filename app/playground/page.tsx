@@ -228,7 +228,7 @@ export default function PlaygroundPage() {
       <div className="space-y-2">
         <div className="flex justify-between">
           <Label>Temperature</Label>
-          <span className="text-xs text-gray-500">{config.temperature}</span>
+          <span className="text-xs text-neutral-500">{config.temperature}</span>
         </div>
         <Slider
           value={[config.temperature]}
@@ -243,7 +243,7 @@ export default function PlaygroundPage() {
       <div className="space-y-2">
         <div className="flex justify-between">
           <Label>Max Tokens</Label>
-          <span className="text-xs text-gray-500">{config.maxTokens}</span>
+          <span className="text-xs text-neutral-500">{config.maxTokens}</span>
         </div>
         <Slider
           value={[config.maxTokens]}
@@ -258,7 +258,7 @@ export default function PlaygroundPage() {
       <div className="space-y-2">
         <div className="flex justify-between">
           <Label>Top P</Label>
-          <span className="text-xs text-gray-500">{config.topP}</span>
+          <span className="text-xs text-neutral-500">{config.topP}</span>
         </div>
         <Slider
           value={[config.topP]}
@@ -298,7 +298,7 @@ export default function PlaygroundPage() {
                 <ArrowLeft className="w-4 h-4" />
                 Back
               </Button>
-              <h1 className="text-2xl font-bold text-white">Playground</h1>
+              <h1 className="text-2xl font-medium text-white">Playground</h1>
               <Badge variant="outline">Compare Models</Badge>
             </div>
 
@@ -312,7 +312,7 @@ export default function PlaygroundPage() {
                     <SelectItem key={preset.value} value={preset.value}>
                       <div>
                         <p className="font-medium">{preset.label}</p>
-                        <p className="text-xs text-gray-500">{preset.description}</p>
+                        <p className="text-xs text-neutral-500">{preset.description}</p>
                       </div>
                     </SelectItem>
                   ))}
@@ -383,7 +383,7 @@ export default function PlaygroundPage() {
                     placeholder="Enter your prompt here..."
                     className="bg-neutral-800 border-neutral-700 text-white min-h-[150px]"
                   />
-                  <div className="flex justify-between text-xs text-gray-500">
+                  <div className="flex justify-between text-xs text-neutral-500">
                     <span>{prompt.length} characters</span>
                     <span>~{Math.ceil(prompt.length / 4)} tokens</span>
                   </div>
@@ -424,7 +424,7 @@ export default function PlaygroundPage() {
                                 : "bg-neutral-800 hover:bg-neutral-700"
                             )}
                           >
-                            <p className="text-xs text-gray-400 mb-1">
+                            <p className="text-xs text-neutral-400 mb-1">
                               {result.timestamp.toLocaleTimeString()}
                             </p>
                             <p className="text-sm text-white truncate">
@@ -477,7 +477,7 @@ export default function PlaygroundPage() {
                     <div className="space-y-4">
                       <ScrollArea className="h-[400px]">
                         <div className="prose prose-invert max-w-none">
-                          <p className="whitespace-pre-wrap text-sm text-gray-300">
+                          <p className="whitespace-pre-wrap text-sm text-neutral-300">
                             {activeResult.models[0]?.response || "No response"}
                           </p>
                         </div>
@@ -486,20 +486,20 @@ export default function PlaygroundPage() {
                       {/* Metrics */}
                       <div className="flex items-center gap-4 pt-4 border-t border-neutral-800">
                         <div className="flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-gray-500" />
-                          <span className="text-xs text-gray-400">
+                          <Clock className="w-3 h-3 text-neutral-500" />
+                          <span className="text-xs text-neutral-400">
                             {activeResult.models[0]?.latency.toFixed(0)}ms
                           </span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <Hash className="w-3 h-3 text-gray-500" />
-                          <span className="text-xs text-gray-400">
+                          <Hash className="w-3 h-3 text-neutral-500" />
+                          <span className="text-xs text-neutral-400">
                             {activeResult.models[0]?.tokens} tokens
                           </span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <DollarSign className="w-3 h-3 text-gray-500" />
-                          <span className="text-xs text-gray-400">
+                          <DollarSign className="w-3 h-3 text-neutral-500" />
+                          <span className="text-xs text-neutral-400">
                             ${activeResult.models[0]?.cost.toFixed(4)}
                           </span>
                         </div>
@@ -524,8 +524,8 @@ export default function PlaygroundPage() {
                   ) : (
                     <div className="h-[400px] flex items-center justify-center">
                       <div className="text-center">
-                        <Sparkles className="w-12 h-12 text-gray-700 mx-auto mb-4" />
-                        <p className="text-gray-500">Generate a response to see output</p>
+                        <Sparkles className="w-12 h-12 text-neutral-700 mx-auto mb-4" />
+                        <p className="text-neutral-500">Generate a response to see output</p>
                       </div>
                     </div>
                   )}
@@ -560,7 +560,7 @@ export default function PlaygroundPage() {
                       <div className="space-y-4">
                         <ScrollArea className="h-[400px]">
                           <div className="prose prose-invert max-w-none">
-                            <p className="whitespace-pre-wrap text-sm text-gray-300">
+                            <p className="whitespace-pre-wrap text-sm text-neutral-300">
                               {activeResult.models[1].response}
                             </p>
                           </div>
@@ -569,20 +569,20 @@ export default function PlaygroundPage() {
                         {/* Metrics */}
                         <div className="flex items-center gap-4 pt-4 border-t border-neutral-800">
                           <div className="flex items-center gap-1">
-                            <Clock className="w-3 h-3 text-gray-500" />
-                            <span className="text-xs text-gray-400">
+                            <Clock className="w-3 h-3 text-neutral-500" />
+                            <span className="text-xs text-neutral-400">
                               {activeResult.models[1].latency.toFixed(0)}ms
                             </span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <Hash className="w-3 h-3 text-gray-500" />
-                            <span className="text-xs text-gray-400">
+                            <Hash className="w-3 h-3 text-neutral-500" />
+                            <span className="text-xs text-neutral-400">
                               {activeResult.models[1].tokens} tokens
                             </span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <DollarSign className="w-3 h-3 text-gray-500" />
-                            <span className="text-xs text-gray-400">
+                            <DollarSign className="w-3 h-3 text-neutral-500" />
+                            <span className="text-xs text-neutral-400">
                               ${activeResult.models[1].cost.toFixed(4)}
                             </span>
                           </div>
@@ -607,8 +607,8 @@ export default function PlaygroundPage() {
                     ) : (
                       <div className="h-[400px] flex items-center justify-center">
                         <div className="text-center">
-                          <Sparkles className="w-12 h-12 text-gray-700 mx-auto mb-4" />
-                          <p className="text-gray-500">Generate a response to see output</p>
+                          <Sparkles className="w-12 h-12 text-neutral-700 mx-auto mb-4" />
+                          <p className="text-neutral-500">Generate a response to see output</p>
                         </div>
                       </div>
                     )}
@@ -626,11 +626,11 @@ export default function PlaygroundPage() {
                 <CardContent>
                   <div className="grid grid-cols-3 gap-4">
                     <div>
-                      <p className="text-sm text-gray-400 mb-2">Speed Comparison</p>
+                      <p className="text-sm text-neutral-400 mb-2">Speed Comparison</p>
                       <div className="space-y-2">
                         {activeResult.models.map(model => (
                           <div key={model.model} className="flex items-center justify-between">
-                            <span className="text-xs text-gray-500">{model.model}</span>
+                            <span className="text-xs text-neutral-500">{model.model}</span>
                             <span className="text-sm font-medium text-white">
                               {model.latency.toFixed(0)}ms
                             </span>
@@ -649,11 +649,11 @@ export default function PlaygroundPage() {
                     </div>
 
                     <div>
-                      <p className="text-sm text-gray-400 mb-2">Token Usage</p>
+                      <p className="text-sm text-neutral-400 mb-2">Token Usage</p>
                       <div className="space-y-2">
                         {activeResult.models.map(model => (
                           <div key={model.model} className="flex items-center justify-between">
-                            <span className="text-xs text-gray-500">{model.model}</span>
+                            <span className="text-xs text-neutral-500">{model.model}</span>
                             <span className="text-sm font-medium text-white">
                               {model.tokens}
                             </span>
@@ -663,11 +663,11 @@ export default function PlaygroundPage() {
                     </div>
 
                     <div>
-                      <p className="text-sm text-gray-400 mb-2">Cost Analysis</p>
+                      <p className="text-sm text-neutral-400 mb-2">Cost Analysis</p>
                       <div className="space-y-2">
                         {activeResult.models.map(model => (
                           <div key={model.model} className="flex items-center justify-between">
-                            <span className="text-xs text-gray-500">{model.model}</span>
+                            <span className="text-xs text-neutral-500">{model.model}</span>
                             <span className="text-sm font-medium text-white">
                               ${model.cost.toFixed(4)}
                             </span>

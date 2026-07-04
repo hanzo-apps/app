@@ -101,7 +101,7 @@ export default function BlogPlatform() {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-8">
-              <h1 className="text-2xl font-bold">Hanzo Blog</h1>
+              <h1 className="text-2xl font-medium">Hanzo Blog</h1>
               <nav className="hidden md:flex items-center gap-6">
                 {categories.slice(0, 5).map(cat => (
                   <button
@@ -151,7 +151,7 @@ export default function BlogPlatform() {
             </AspectRatio>
             <div className="p-6 flex flex-col justify-center">
               <Badge className="w-fit mb-4 bg-[#171717]/10 text-[#171717] border-[#171717]/20">{featuredArticle.category}</Badge>
-              <h2 className="text-3xl font-bold mb-4">{featuredArticle.title}</h2>
+              <h2 className="text-3xl font-medium mb-4">{featuredArticle.title}</h2>
               <p className="text-muted-foreground mb-6">{featuredArticle.excerpt}</p>
 
               <div className="flex items-center gap-4 mb-6">
@@ -213,7 +213,7 @@ export default function BlogPlatform() {
                             </Badge>
                           )}
                         </div>
-                        <h3 className="font-semibold text-lg mb-2">{article.title}</h3>
+                        <h3 className="font-medium text-lg mb-2">{article.title}</h3>
                         <p className="text-sm text-muted-foreground mb-4">
                           {article.excerpt}
                         </p>

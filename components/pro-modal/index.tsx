@@ -38,14 +38,14 @@ export const ProModal = ({
               🥳
             </div>
           </div>
-          <h2 className="text-2xl font-bold text-neutral-950">
+          <h2 className="text-2xl font-medium text-neutral-950">
             Only $9 to enhance your possibilities
           </h2>
           <p className="text-neutral-500 text-base mt-2 max-w-sm">
             It seems like you have reached the monthly free limit of Hanzo.
           </p>
           <hr className="bg-neutral-200 w-full max-w-[150px] my-6" />
-          <p className="text-lg mt-3 text-neutral-900 font-semibold">
+          <p className="text-lg mt-3 text-neutral-900 font-medium">
             Upgrade to a <ProTag className="mx-1" /> Account, and unlock your
             Hanzo high quota access ⚡
           </p>
@@ -85,7 +85,7 @@ export const ProModal = ({
 
 const ProTag = ({ className }: { className?: string }) => (
   <span
-    className={`${className} bg-linear-to-br shadow-green-500/10 dark:shadow-green-500/20 inline-block -skew-x-12 border border-gray-200 from-pink-300 via-green-200 to-yellow-200 text-xs font-bold text-black shadow-lg rounded-md px-2.5 py-0.5`}
+    className={`${className} bg-linear-to-br shadow-green-500/10 dark:shadow-green-500/20 inline-block -skew-x-12 border border-neutral-200 from-pink-300 via-green-200 to-yellow-200 text-xs font-medium text-black shadow-lg rounded-md px-2.5 py-0.5`}
   >
     PRO
   </span>

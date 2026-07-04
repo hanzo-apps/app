@@ -65,7 +65,7 @@ export default function AnalyticsDashboard() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
+            <h1 className="text-3xl font-medium">Analytics Dashboard</h1>
             <p className="text-muted-foreground">Built with @hanzo/ui components</p>
           </div>
           <div className="flex items-center gap-2">
@@ -104,7 +104,7 @@ export default function AnalyticsDashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{metric.value}</div>
+                <div className="text-2xl font-medium">{metric.value}</div>
                 <div className="flex items-center gap-1 text-xs">
                   {metric.trend === "up" ? (
                     <TrendingUp className="w-3 h-3 text-green-600" />
@@ -198,7 +198,7 @@ export default function AnalyticsDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <div className="text-2xl font-bold">$89.42</div>
+                    <div className="text-2xl font-medium">$89.42</div>
                     <div className="flex items-center gap-2">
                       <Badge variant="outline" className="text-green-600 border-green-600">
                         <TrendingUp className="w-3 h-3 mr-1" />
@@ -217,7 +217,7 @@ export default function AnalyticsDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <div className="text-2xl font-bold">4.8/5.0</div>
+                    <div className="text-2xl font-medium">4.8/5.0</div>
                     <div className="flex items-center gap-1">
                       {[...Array(5)].map((_, i) => (
                         <div

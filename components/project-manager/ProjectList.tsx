@@ -124,7 +124,7 @@ export function ProjectList() {
       {filtered.length === 0 ? (
         <div className="text-center py-16">
           <FolderOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h2 className="text-xl font-semibold mb-2">
+          <h2 className="text-xl font-medium mb-2">
             {searchQuery ? 'No projects found' : 'No projects yet'}
           </h2>
           <p className="text-muted-foreground mb-6">

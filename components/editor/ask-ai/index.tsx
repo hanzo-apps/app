@@ -329,10 +329,10 @@ export function AskAI({
                 }}
               >
                 <div className="flex items-start justify-between gap-2">
-                  <p className="text-sm text-gray-300 flex-1">{msg.message}</p>
+                  <p className="text-sm text-neutral-300 flex-1">{msg.message}</p>
                   <button
                     onClick={() => setMessageQueue(prev => prev.filter(m => m.id !== msg.id))}
-                    className="text-gray-500 hover:text-gray-300"
+                    className="text-neutral-500 hover:text-neutral-300"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -340,7 +340,7 @@ export function AskAI({
                   </button>
                 </div>
                 <div className="flex items-center gap-2 mt-2">
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-neutral-500">
                     {msg.timestamp.toLocaleTimeString()}
                   </span>
                   {index === 0 && (
@@ -622,7 +622,7 @@ export function AskAI({
         />
         {pages.length === 1 && (
           <div className="border border-sky-500/20 bg-sky-500/40 hover:bg-sky-600 transition-all duration-200 text-sky-500 pl-2 pr-4 py-1.5 text-xs rounded-full absolute top-0 -translate-y-[calc(100%+8px)] left-0 max-w-max flex items-center justify-start gap-2">
-            <span className="rounded-full text-[10px] font-semibold bg-white text-neutral-900 px-1.5 py-0.5">
+            <span className="rounded-full text-[10px] font-medium bg-white text-neutral-900 px-1.5 py-0.5">
               NEW
             </span>
             <p className="text-sm text-neutral-100">

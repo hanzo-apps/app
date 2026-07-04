@@ -80,13 +80,13 @@ export default function LoginPage() {
         </div>
 
         {/* Title */}
-        <h1 className="text-3xl font-semibold mb-2 tracking-tight">OSW Studio Admin</h1>
-        <p className="text-zinc-400 mb-8">Enter your password to continue</p>
+        <h1 className="text-3xl font-medium mb-2 tracking-tight">OSW Studio Admin</h1>
+        <p className="text-neutral-400 mb-8">Enter your password to continue</p>
 
         {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="text-left">
-            <label htmlFor="password" className="block text-sm font-medium text-zinc-400 mb-2">
+            <label htmlFor="password" className="block text-sm font-medium text-neutral-400 mb-2">
               Password
             </label>
             <input
@@ -94,7 +94,7 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+              className="w-full px-4 py-3 bg-neutral-900 border border-neutral-800 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
               placeholder="Enter your password"
               required
               autoFocus
@@ -110,14 +110,14 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 px-4 rounded-lg transition-colors disabled:bg-zinc-700 disabled:text-zinc-500 disabled:cursor-not-allowed"
+            className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 px-4 rounded-lg transition-colors disabled:bg-neutral-700 disabled:text-neutral-500 disabled:cursor-not-allowed"
           >
             {isLoading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 
         {/* Footer */}
-        <div className="mt-12 pt-6 border-t border-zinc-800 flex items-center justify-center gap-2 text-sm text-zinc-500">
+        <div className="mt-12 pt-6 border-t border-neutral-800 flex items-center justify-center gap-2 text-sm text-neutral-500">
           <span>Powered by</span>
           <svg
             className="w-5 h-5 opacity-80"
