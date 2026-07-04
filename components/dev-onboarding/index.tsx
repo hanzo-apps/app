@@ -345,12 +345,12 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
         <div className="max-w-6xl w-full">
           <div className="text-center mb-12">
             <div className="w-20 h-20 bg-gradient-to-br from-neutral-700 to-neutral-800 rounded-2xl flex items-center justify-center mb-6 mx-auto">
-              <span className="text-white font-bold text-4xl">H</span>
+              <span className="text-white font-medium text-4xl">H</span>
             </div>
-            <h1 className="text-4xl font-bold text-white mb-4">
+            <h1 className="text-4xl font-medium text-white mb-4">
               Welcome to Hanzo AI ✨
             </h1>
-            <p className="text-xl text-gray-400">
+            <p className="text-xl text-neutral-400">
               Your AI-powered development platform is ready
             </p>
           </div>
@@ -358,7 +358,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
           {/* Quick Start Options */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <Card className="bg-neutral-900 border-neutral-800 p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">
+              <h3 className="text-lg font-medium text-white mb-4">
                 Start with a prompt
               </h3>
               <Textarea
@@ -378,7 +378,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
             </Card>
 
             <Card className="bg-neutral-900 border-neutral-800 p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">
+              <h3 className="text-lg font-medium text-white mb-4">
                 Import existing project
               </h3>
               <div className="space-y-3">
@@ -412,7 +412,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
           {/* Popular templates — real gallery templates with real previews */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white">
+              <h3 className="text-lg font-medium text-white">
                 Start from a template
               </h3>
               <Link href="/gallery">
@@ -447,7 +447,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                   </div>
                   <div className="p-3">
                     <p className="text-white font-medium text-sm truncate">{template.displayName}</p>
-                    <p className="text-gray-500 text-xs mt-0.5 line-clamp-1">
+                    <p className="text-neutral-500 text-xs mt-0.5 line-clamp-1">
                       {template.description || template.framework}
                     </p>
                   </div>
@@ -464,7 +464,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                   {feature.icon}
                 </div>
                 <p className="text-white text-sm font-medium">{feature.title}</p>
-                <p className="text-gray-500 text-xs">{feature.description}</p>
+                <p className="text-neutral-500 text-xs">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -472,16 +472,16 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
           {/* Stats */}
           <div className="flex justify-center gap-8 mt-8 text-center">
             <div>
-              <p className="text-2xl font-bold text-white">10,000+</p>
-              <p className="text-xs text-gray-500">apps built</p>
+              <p className="text-2xl font-medium text-white">10,000+</p>
+              <p className="text-xs text-neutral-500">apps built</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">5ms</p>
-              <p className="text-xs text-gray-500">generation</p>
+              <p className="text-2xl font-medium text-white">5ms</p>
+              <p className="text-xs text-neutral-500">generation</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">100+</p>
-              <p className="text-xs text-gray-500">AI models</p>
+              <p className="text-2xl font-medium text-white">100+</p>
+              <p className="text-xs text-neutral-500">AI models</p>
             </div>
           </div>
         </div>
@@ -497,12 +497,12 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
           <div className="flex flex-col">
             <div className="text-center mb-6">
               <div className="w-16 h-16 bg-gradient-to-br from-neutral-700 to-neutral-800 rounded-xl flex items-center justify-center mb-4 mx-auto animate-pulse">
-                <span className="text-white font-bold text-2xl">H</span>
+                <span className="text-white font-medium text-2xl">H</span>
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">
+              <h2 className="text-2xl font-medium text-white mb-2">
                 {stage === "planning" ? "Building your app..." : "Ready to build! 🚀"}
               </h2>
-              <p className="text-gray-400">
+              <p className="text-neutral-400">
                 {stage === "planning" ? "AI is thinking and executing" : "Everything is configured"}
               </p>
             </div>
@@ -511,7 +511,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
             {stage === "planning" && (
               <div className="mb-6">
                 <div className="flex justify-between text-sm mb-2">
-                  <span className="text-gray-400">Progress</span>
+                  <span className="text-neutral-400">Progress</span>
                   <span className="text-white">{Math.round(progress)}%</span>
                 </div>
                 <Progress value={progress} className="h-2" />
@@ -538,7 +538,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                     )}
                     <p className={cn(
                       "text-sm",
-                      step.status === "thinking" ? "text-neutral-300" : "text-gray-400"
+                      step.status === "thinking" ? "text-neutral-300" : "text-neutral-400"
                     )}>
                       {step.text}
                     </p>
@@ -570,7 +570,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
               <Terminal className="w-5 h-5 text-white" />
               <div>
                 <h3 className="text-white font-medium">Development Plan</h3>
-                <p className="text-xs text-gray-500">Streaming line by line</p>
+                <p className="text-xs text-neutral-500">Streaming line by line</p>
               </div>
             </div>
           </div>
@@ -583,10 +583,10 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                   className={cn(
                     "animate-fadeIn",
                     line.startsWith("━") && "text-white",
-                    line.startsWith("  •") && "text-gray-400",
+                    line.startsWith("  •") && "text-neutral-400",
                     line.startsWith("  ✓") && "text-green-400",
                     line.startsWith("  →") && "text-blue-400",
-                    line.includes("Phase") && "text-yellow-400 font-bold",
+                    line.includes("Phase") && "text-yellow-400 font-medium",
                     line === "" && "h-3",
                     !line.startsWith(" ") && !line.startsWith("━") && line !== "" && "text-white"
                   )}
@@ -624,7 +624,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                 <Send className="w-4 h-4" />
               </Button>
             </div>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-neutral-500 mt-2">
               Add additional requirements while the plan generates
             </p>
           </div>

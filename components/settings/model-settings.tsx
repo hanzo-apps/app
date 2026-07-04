@@ -169,7 +169,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
     <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       {/* Header */}
       <div className="shrink-0">
-        <h3 className="font-semibold text-base tracking-tight">Model Settings</h3>
+        <h3 className="font-medium text-base tracking-tight">Model Settings</h3>
         <p className="text-muted-foreground text-xs mt-1">
           Configure your AI model and API connection
         </p>
@@ -180,7 +180,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
 
       {/* Provider Selection */}
       <div>
-        <Label htmlFor="provider" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Provider</Label>
+        <Label htmlFor="provider" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Provider</Label>
         <Select value={selectedProvider} onValueChange={handleProviderChange}>
           <SelectTrigger id="provider" className="mt-2 !h-fit w-full">
             <SelectValue placeholder="Select a provider">
@@ -376,7 +376,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
 
       {/* Code Model */}
       <div>
-        <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Code Model</Label>
+        <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Code Model</Label>
         <div className="mt-2">
           <ModelSelector
             provider={selectedProvider}
@@ -414,7 +414,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
       {/* Chat Model (conditional) — hidden in judge mode */}
       {!showJudgeModel && useSeparateChatModel && (
         <div>
-          <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Chat Model</Label>
+          <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Chat Model</Label>
           <div className="mt-2">
             <ModelSelector
               provider={selectedProvider}
@@ -436,7 +436,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
         <>
           <hr className="border-border" />
           <div>
-            <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Judge Model <span className="normal-case font-normal">(optional)</span>
             </Label>
             <p className="text-xs text-muted-foreground mt-1 mb-2">

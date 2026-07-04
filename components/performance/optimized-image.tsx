@@ -68,14 +68,14 @@ export function OptimizedImage({
     return (
       <div
         className={cn(
-          'flex items-center justify-center bg-gray-100 dark:bg-gray-800',
+          'flex items-center justify-center bg-neutral-100 dark:bg-neutral-800',
           containerClassName,
           fill && 'absolute inset-0'
         )}
       >
         <div className="text-center p-4">
           <svg
-            className="w-12 h-12 mx-auto text-gray-400"
+            className="w-12 h-12 mx-auto text-neutral-400"
             fill="none"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -85,7 +85,7 @@ export function OptimizedImage({
           >
             <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
-          <p className="mt-2 text-sm text-gray-500">Failed to load image</p>
+          <p className="mt-2 text-sm text-neutral-500">Failed to load image</p>
         </div>
       </div>
     );
@@ -117,7 +117,7 @@ export function OptimizedImage({
       ) : (
         <div
           className={cn(
-            'bg-gray-200 dark:bg-gray-700 animate-pulse',
+            'bg-neutral-200 dark:bg-neutral-700 animate-pulse',
             className
           )}
           style={{
@@ -225,7 +225,7 @@ export function BackgroundImage({
       }}
     >
       {!isLoaded && (
-        <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse" />
+        <div className="absolute inset-0 bg-neutral-200 dark:bg-neutral-700 animate-pulse" />
       )}
       {overlay && (
         <div

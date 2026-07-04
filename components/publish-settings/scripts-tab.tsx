@@ -131,7 +131,7 @@ export function ScriptsTab({ settings, onChange }: ScriptsTabProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold">Script Management</h3>
+          <h3 className="text-lg font-medium">Script Management</h3>
           <p className="text-sm text-muted-foreground">
             Add custom scripts to your published deployment
           </p>
@@ -145,7 +145,7 @@ export function ScriptsTab({ settings, onChange }: ScriptsTabProps) {
       {allScripts.length === 0 ? (
         <div className="text-center p-8 border-2 border-dashed rounded-lg">
           <Code className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
-          <h3 className="text-lg font-semibold mb-2">No Scripts Added</h3>
+          <h3 className="text-lg font-medium mb-2">No Scripts Added</h3>
           <p className="text-sm text-muted-foreground mb-4">
             Add tracking scripts, analytics, or custom code to your deployment
           </p>
@@ -163,7 +163,7 @@ export function ScriptsTab({ settings, onChange }: ScriptsTabProps) {
             >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-2">
-                  <h4 className="font-semibold truncate">{script.name}</h4>
+                  <h4 className="font-medium truncate">{script.name}</h4>
                   <Badge variant={script.position === 'head' ? 'default' : 'secondary'}>
                     {script.position === 'head' ? '<head>' : 'before </body>'}
                   </Badge>

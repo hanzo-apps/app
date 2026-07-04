@@ -235,7 +235,7 @@ function DocsViewContent() {
             <div className="flex items-center gap-3 p-4 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive">
               <AlertCircle className="h-5 w-5 flex-shrink-0" />
               <div>
-                <p className="font-semibold">Error loading document</p>
+                <p className="font-medium">Error loading document</p>
                 <p className="text-sm">{error}</p>
               </div>
             </div>
@@ -247,7 +247,7 @@ function DocsViewContent() {
               <div className="mb-6 pb-4 border-b">
                 <div className="flex items-center gap-3 mb-2">
                   <selectedDoc.icon className="h-8 w-8 text-primary" />
-                  <h1 className="text-3xl font-bold">{selectedDoc.title}</h1>
+                  <h1 className="text-3xl font-medium">{selectedDoc.title}</h1>
                 </div>
               </div>
 

@@ -367,7 +367,7 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
     if (id.includes('qwen')) return 'bg-orange-500/10 text-orange-500';
     if (id.includes('google')) return 'bg-red-500/10 text-red-500';
     if (id.includes('meta')) return 'bg-indigo-500/10 text-indigo-500';
-    return 'bg-gray-500/10 text-gray-500';
+    return 'bg-neutral-500/10 text-neutral-500';
   };
 
   // Filter models based on search query

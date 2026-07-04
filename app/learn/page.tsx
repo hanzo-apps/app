@@ -131,7 +131,7 @@ export default function LearnPage() {
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-2.5">
               <HanzoLogo className="w-8 h-8 text-white" />
-              <span className="text-xl font-bold">Hanzo</span>
+              <span className="text-xl font-medium">Hanzo</span>
             </Link>
             <div className="hidden md:flex items-center gap-6">
               <Link href="/community" className="text-white/70 hover:text-white">Community</Link>
@@ -153,7 +153,7 @@ export default function LearnPage() {
             <BookOpen className="w-4 h-4 mr-2" />
             Hanzo Academy
           </Badge>
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+          <h1 className="text-4xl md:text-6xl font-medium mb-6">
             Learn to build with{" "}
             <span className="bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
               AI superpowers
@@ -177,12 +177,12 @@ export default function LearnPage() {
       {/* Learning Paths */}
       <section className="px-4 md:px-8 py-12 border-y border-white/10">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-2xl font-bold mb-8">Popular Learning Paths</h2>
+          <h2 className="text-2xl font-medium mb-8">Popular Learning Paths</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {learningPaths.map(path => (
               <div key={path.title} className="bg-[#1a1a1a] rounded-2xl p-6 border border-white/10 hover:border-violet-500/50 transition-all cursor-pointer">
                 <div className="text-3xl mb-4">{path.icon}</div>
-                <h3 className="text-lg font-semibold mb-2">{path.title}</h3>
+                <h3 className="text-lg font-medium mb-2">{path.title}</h3>
                 <p className="text-sm text-white/60 mb-4">{path.description}</p>
                 <div className="flex items-center gap-4 text-sm text-white/40">
                   <span className="flex items-center gap-1">
@@ -204,7 +204,7 @@ export default function LearnPage() {
       <section className="px-4 md:px-8 py-16">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold">All Courses</h2>
+            <h2 className="text-2xl md:text-3xl font-medium">All Courses</h2>
             <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
               <Video className="w-5 h-5 mr-2" />
               Watch Live Classes
@@ -253,7 +253,7 @@ export default function LearnPage() {
                     </div>
                   </div>
 
-                  <h3 className="font-semibold text-lg mb-2 group-hover:text-violet-400 transition-colors">
+                  <h3 className="font-medium text-lg mb-2 group-hover:text-violet-400 transition-colors">
                     {course.title}
                   </h3>
                   <p className="text-sm text-white/60 mb-4">
@@ -292,7 +292,7 @@ export default function LearnPage() {
       <section className="px-4 md:px-8 py-16 bg-gradient-to-b from-transparent via-violet-950/10 to-transparent">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-3xl md:text-4xl font-medium mb-4">
               Additional Resources
             </h2>
             <p className="text-lg text-white/60">
@@ -302,7 +302,7 @@ export default function LearnPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-[#1a1a1a] rounded-2xl p-6 border border-white/10">
               <BookOpen className="w-8 h-8 mb-4 text-violet-400" />
-              <h3 className="text-xl font-semibold mb-2">Documentation</h3>
+              <h3 className="text-xl font-medium mb-2">Documentation</h3>
               <p className="text-white/60 mb-4">Comprehensive guides and API references</p>
               <Link href="/docs" className="text-violet-400 hover:text-violet-300 flex items-center gap-1">
                 Explore Docs <ArrowRight className="w-4 h-4" />
@@ -310,7 +310,7 @@ export default function LearnPage() {
             </div>
             <div className="bg-[#1a1a1a] rounded-2xl p-6 border border-white/10">
               <Users className="w-8 h-8 mb-4 text-violet-400" />
-              <h3 className="text-xl font-semibold mb-2">Community Forum</h3>
+              <h3 className="text-xl font-medium mb-2">Community Forum</h3>
               <p className="text-white/60 mb-4">Get help and share knowledge with others</p>
               <Link href="/community" className="text-violet-400 hover:text-violet-300 flex items-center gap-1">
                 Join Community <ArrowRight className="w-4 h-4" />
@@ -318,7 +318,7 @@ export default function LearnPage() {
             </div>
             <div className="bg-[#1a1a1a] rounded-2xl p-6 border border-white/10">
               <Video className="w-8 h-8 mb-4 text-violet-400" />
-              <h3 className="text-xl font-semibold mb-2">YouTube Channel</h3>
+              <h3 className="text-xl font-medium mb-2">YouTube Channel</h3>
               <p className="text-white/60 mb-4">Video tutorials and live coding sessions</p>
               <a href="https://youtube.com/@hanzoai" className="text-violet-400 hover:text-violet-300 flex items-center gap-1">
                 Watch Videos <ArrowRight className="w-4 h-4" />
@@ -331,7 +331,7 @@ export default function LearnPage() {
       {/* CTA Section */}
       <section className="px-4 md:px-8 py-20 text-center">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+          <h2 className="text-3xl md:text-4xl font-medium mb-6">
             Start your learning journey today
           </h2>
           <p className="text-xl text-white/60 mb-8">

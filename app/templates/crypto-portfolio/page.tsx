@@ -103,7 +103,7 @@ export default function CryptoPortfolio() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Crypto Portfolio</h1>
+            <h1 className="text-3xl font-medium">Crypto Portfolio</h1>
             <p className="text-muted-foreground">Built with @hanzo/ui components</p>
           </div>
           <div className="flex items-center gap-2">
@@ -128,7 +128,7 @@ export default function CryptoPortfolio() {
               <DollarSign className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${portfolio.totalValue.toLocaleString()}</div>
+              <div className="text-2xl font-medium">${portfolio.totalValue.toLocaleString()}</div>
               <div className="flex items-center gap-1 text-xs">
                 {portfolio.dailyChangePercent > 0 ? (
                   <TrendingUp className="w-3 h-3 text-green-600" />
@@ -149,7 +149,7 @@ export default function CryptoPortfolio() {
               <TrendingUp className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-2xl font-medium text-green-600">
                 +${portfolio.totalProfit.toLocaleString()}
               </div>
               <div className="text-xs text-muted-foreground">
@@ -164,7 +164,7 @@ export default function CryptoPortfolio() {
               <Wallet className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${portfolio.totalInvested.toLocaleString()}</div>
+              <div className="text-2xl font-medium">${portfolio.totalInvested.toLocaleString()}</div>
               <div className="text-xs text-muted-foreground">Principal amount</div>
             </CardContent>
           </Card>
@@ -175,7 +175,7 @@ export default function CryptoPortfolio() {
               <PieChart className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{holdings.length}</div>
+              <div className="text-2xl font-medium">{holdings.length}</div>
               <div className="text-xs text-muted-foreground">Cryptocurrencies</div>
             </CardContent>
           </Card>
@@ -216,7 +216,7 @@ export default function CryptoPortfolio() {
                     {holdings.map((coin) => (
                       <div key={coin.symbol} className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold">
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-medium">
                             {coin.icon}
                           </div>
                           <div>
