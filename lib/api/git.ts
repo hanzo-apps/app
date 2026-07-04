@@ -102,6 +102,72 @@ export function repoImportLink(cloneUrl: string): string {
   return `/dev?repo=${encodeURIComponent(cloneUrl)}&action=edit`;
 }
 
+export type GitProvider = 'github' | 'gitlab';
+
+/** A page to push (mirrors the publish `pages[]`). */
+export interface SyncPage {
+  path: string;
+  html: string;
+}
+
+export interface SyncGitRequest {
+  provider: GitProvider;
+  name: string;
+  slug?: string;
+  description?: string;
+  account?: string;
+  repo?: string;
+  private?: boolean;
+  message?: string;
+  pages: SyncPage[];
+}
+
+export interface SyncGitResult {
+  ok: boolean;
+  connected?: boolean;
+  needsOnboarding?: boolean;
+  provider?: GitProvider;
+  repoUrl?: string;
+  htmlUrl?: string;
+  branch?: string;
+  commitSha?: string;
+  created?: boolean;
+  linked?: boolean;
+  slug?: string;
+  error?: string;
+  /** HTTP status, surfaced so the caller can branch (401 ⇒ connect first). */
+  status: number;
+}
+
+/**
+ * Push the builder project to the user's GitHub/GitLab repo (`POST /v1/git/sync`).
+ *
+ * Same-origin so the httpOnly `hanzo_token` rides automatically; the provider
+ * token is resolved + used SERVER-SIDE only. Never throws — a not-connected (401)
+ * or error response is returned with `ok:false` so the UI can show the honest
+ * "Connect …" CTA or the error.
+ */
+export async function syncToGit(
+  input: SyncGitRequest,
+  orgHeader?: string,
+): Promise<SyncGitResult> {
+  try {
+    const res = await fetch('/v1/git/sync', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(orgHeader ? { 'X-Org-Id': orgHeader } : {}),
+      },
+      body: JSON.stringify(input),
+    });
+    const data = (await res.json().catch(() => ({}))) as Partial<SyncGitResult>;
+    return { ...data, ok: res.ok && Boolean(data.ok), status: res.status };
+  } catch (e) {
+    return { ok: false, status: 0, error: e instanceof Error ? e.message : 'Network error' };
+  }
+}
+
 /** "updated 2h ago" — compact relative time for a repo's last push. */
 export function relativeTime(iso: string): string {
   if (!iso) return '';
