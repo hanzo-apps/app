@@ -59,7 +59,7 @@ export default function SaaSLandingPage() {
             <Badge className="mb-4" variant="outline">
               Built with @hanzo/ui
             </Badge>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-[#171717] to-[#404040] bg-clip-text text-transparent">
+            <h1 className="text-5xl md:text-6xl font-medium mb-6 bg-gradient-to-r from-[#171717] to-[#404040] bg-clip-text text-transparent">
               Build Better Products Faster
             </h1>
             <p className="text-xl text-muted-foreground mb-8">
@@ -95,7 +95,7 @@ export default function SaaSLandingPage() {
       <section className="py-24 bg-muted/50">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Why Choose Our Platform</h2>
+            <h2 className="text-3xl font-medium mb-4">Why Choose Our Platform</h2>
             <p className="text-muted-foreground">Everything you need to succeed</p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
@@ -120,7 +120,7 @@ export default function SaaSLandingPage() {
       <section className="py-24">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Simple, Transparent Pricing</h2>
+            <h2 className="text-3xl font-medium mb-4">Simple, Transparent Pricing</h2>
             <p className="text-muted-foreground">Choose the plan that fits your needs</p>
           </div>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -135,7 +135,7 @@ export default function SaaSLandingPage() {
                   )}
                   <CardTitle>{plan.name}</CardTitle>
                   <div className="mt-4">
-                    <span className="text-4xl font-bold">{plan.price}</span>
+                    <span className="text-4xl font-medium">{plan.price}</span>
                     {plan.price !== "Custom" && <span className="text-muted-foreground">/month</span>}
                   </div>
                   <CardDescription>{plan.description}</CardDescription>
@@ -164,7 +164,7 @@ export default function SaaSLandingPage() {
       {/* CTA Section */}
       <section className="py-24 bg-gradient-to-r from-[#171717] to-[#404040] text-white">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
+          <h2 className="text-3xl font-medium mb-4">Ready to Get Started?</h2>
           <p className="mb-8 opacity-90">
             Join thousands of teams already using our platform
           </p>

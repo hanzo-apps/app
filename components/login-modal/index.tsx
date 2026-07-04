@@ -43,7 +43,7 @@ export const LoginModal = ({
               🙌
             </div>
           </div>
-          <p className="text-2xl font-bold text-neutral-950">{title}</p>
+          <p className="text-2xl font-medium text-neutral-950">{title}</p>
           <p className="text-neutral-500 text-base mt-2 max-w-sm">
             {description}
           </p>

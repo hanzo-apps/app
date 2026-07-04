@@ -208,7 +208,7 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
                       Popular
                     </Badge>
                   )}
-                  <div className="text-xl font-bold">${option.amount}</div>
+                  <div className="text-xl font-medium">${option.amount}</div>
                   <div className="flex items-center text-sm text-white/60 mt-1">
                     <Zap className="w-3 h-3 mr-1" />
                     {option.credits.toLocaleString()} credits
@@ -235,11 +235,11 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
             <div className="p-4 rounded-lg bg-[#0a0a0a] border border-white/10">
               <div className="flex justify-between items-center">
                 <span className="text-white/60">Amount</span>
-                <span className="font-bold">${selectedAmount} USDC</span>
+                <span className="font-medium">${selectedAmount} USDC</span>
               </div>
               <div className="flex justify-between items-center mt-2">
                 <span className="text-white/60">Credits</span>
-                <span className="font-bold text-green-500">
+                <span className="font-medium text-green-500">
                   +{CREDIT_PRICING[selectedAmount as keyof typeof CREDIT_PRICING]?.credits.toLocaleString()}
                 </span>
               </div>

@@ -41,7 +41,7 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <span className={`h-2.5 w-2.5 rounded-full shrink-0 ${status.color}`} title={status.label} />
-            <h3 className="font-semibold text-base truncate">{project.name}</h3>
+            <h3 className="font-medium text-base truncate">{project.name}</h3>
           </div>
 
           <DropdownMenu>

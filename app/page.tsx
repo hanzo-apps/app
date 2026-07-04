@@ -197,7 +197,7 @@ export default function LandingPage() {
               <span className="text-sm text-[#404040]">Powered by Hanzo AI</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium mb-4 md:mb-6">
               Build something{" "}
               <span className="relative inline-block">
                 <span className="bg-gradient-to-r from-white via-white to-white/60 bg-clip-text text-transparent">
@@ -246,7 +246,7 @@ export default function LandingPage() {
                     <Button
                       onClick={handleCreateProject}
                       disabled={isCreating || !prompt.trim()}
-                      className="bg-gradient-to-r from-[#171717] to-[#404040] hover:from-[#404040] hover:to-[#171717] text-white px-4 md:px-6 py-2 md:py-2.5 rounded-lg md:rounded-xl font-semibold shadow-lg shadow-[#171717]/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="bg-gradient-to-r from-[#171717] to-[#404040] hover:from-[#404040] hover:to-[#171717] text-white px-4 md:px-6 py-2 md:py-2.5 rounded-lg md:rounded-xl font-medium shadow-lg shadow-[#171717]/20 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isCreating ? (
                         <Loader2 className="w-5 h-5 animate-spin" />
@@ -300,7 +300,7 @@ export default function LandingPage() {
                 <Sparkles className="w-4 h-4 mr-2" />
                 Built with Hanzo AI
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Incredible apps created by our community</h2>
+              <h2 className="text-3xl md:text-4xl font-medium mb-4">Incredible apps created by our community</h2>
               <p className="text-base md:text-lg text-white/60 max-w-2xl mx-auto px-4">
                 From startups to enterprises, see what teams are building with Hanzo
               </p>
@@ -333,7 +333,7 @@ export default function LandingPage() {
                 >
                   {project.featured && (
                     <div className="absolute -top-2 -right-2 z-10">
-                      <div className="bg-gradient-to-r from-[#171717] to-[#404040] text-white text-xs px-2 py-1 rounded-lg font-semibold shadow-lg">
+                      <div className="bg-gradient-to-r from-[#171717] to-[#404040] text-white text-xs px-2 py-1 rounded-lg font-medium shadow-lg">
                         Featured
                       </div>
                     </div>
@@ -346,7 +346,7 @@ export default function LandingPage() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     </div>
                     <div className="p-4 md:p-5">
-                      <h3 className="font-semibold text-sm md:text-base mb-2 group-hover:text-[#171717] transition-colors">
+                      <h3 className="font-medium text-sm md:text-base mb-2 group-hover:text-[#171717] transition-colors">
                         {project.title}
                       </h3>
                       <p className="text-xs md:text-sm text-white/60 mb-3 line-clamp-2">
@@ -385,7 +385,7 @@ export default function LandingPage() {
                 <Button
                   onClick={() => router.push('/community')}
                   variant="outline"
-                  className="border-white/20 text-white hover:bg-white/10 px-4 md:px-6 py-2.5 md:py-3 rounded-xl font-semibold"
+                  className="border-white/20 text-white hover:bg-white/10 px-4 md:px-6 py-2.5 md:py-3 rounded-xl font-medium"
                 >
                   Explore Community
                   <ArrowRight className="ml-2 w-5 h-5" />
@@ -401,7 +401,7 @@ export default function LandingPage() {
             <div className="max-w-7xl mx-auto">
               <div className="flex items-center justify-between mb-8 md:mb-10">
                 <div>
-                  <h2 className="text-2xl md:text-3xl font-bold mb-2">Continue Building</h2>
+                  <h2 className="text-2xl md:text-3xl font-medium mb-2">Continue Building</h2>
                   <p className="text-white/60 text-sm md:text-base">Jump back into your recent projects</p>
                 </div>
                 <Button
@@ -427,7 +427,7 @@ export default function LandingPage() {
                         </div>
                       </div>
                       <div className="p-4 md:p-5">
-                        <h3 className="font-semibold text-sm md:text-base mb-1">
+                        <h3 className="font-medium text-sm md:text-base mb-1">
                           {project.name}
                         </h3>
                         {project.short_description && (
@@ -455,7 +455,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-8 mb-8 md:mb-12">
             {/* Product Column */}
             <div>
-              <h3 className="text-white font-semibold text-sm mb-3 md:mb-4">Product</h3>
+              <h3 className="text-white font-medium text-sm mb-3 md:mb-4">Product</h3>
               <ul className="space-y-2 md:space-y-3">
                 <li><Link href="/features" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Features</Link></li>
                 <li><Link href="/integrations" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Integrations</Link></li>
@@ -467,7 +467,7 @@ export default function LandingPage() {
 
             {/* Solutions Column */}
             <div>
-              <h3 className="text-white font-semibold text-sm mb-3 md:mb-4">Solutions</h3>
+              <h3 className="text-white font-medium text-sm mb-3 md:mb-4">Solutions</h3>
               <ul className="space-y-2 md:space-y-3">
                 <li><Link href="/startups" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">For Startups</Link></li>
                 <li><Link href="/enterprise" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">For Enterprise</Link></li>
@@ -479,7 +479,7 @@ export default function LandingPage() {
 
             {/* Resources Column */}
             <div>
-              <h3 className="text-white font-semibold text-sm mb-3 md:mb-4">Resources</h3>
+              <h3 className="text-white font-medium text-sm mb-3 md:mb-4">Resources</h3>
               <ul className="space-y-2 md:space-y-3">
                 <li><Link href="/docs" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Documentation</Link></li>
                 <li><Link href="/tutorials" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Tutorials</Link></li>
@@ -491,7 +491,7 @@ export default function LandingPage() {
 
             {/* Company Column */}
             <div>
-              <h3 className="text-white font-semibold text-sm mb-3 md:mb-4">Company</h3>
+              <h3 className="text-white font-medium text-sm mb-3 md:mb-4">Company</h3>
               <ul className="space-y-2 md:space-y-3">
                 <li><Link href="/about" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">About</Link></li>
                 <li><Link href="/careers" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Careers</Link></li>
@@ -503,7 +503,7 @@ export default function LandingPage() {
 
             {/* Support Column */}
             <div>
-              <h3 className="text-white font-semibold text-sm mb-3 md:mb-4">Support</h3>
+              <h3 className="text-white font-medium text-sm mb-3 md:mb-4">Support</h3>
               <ul className="space-y-2 md:space-y-3">
                 <li><Link href="/help" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Help Center</Link></li>
                 <li><Link href="/status" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Status</Link></li>
@@ -515,7 +515,7 @@ export default function LandingPage() {
 
             {/* Legal Column */}
             <div>
-              <h3 className="text-white font-semibold text-sm mb-3 md:mb-4">Legal</h3>
+              <h3 className="text-white font-medium text-sm mb-3 md:mb-4">Legal</h3>
               <ul className="space-y-2 md:space-y-3">
                 <li><Link href="/privacy" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Privacy</Link></li>
                 <li><Link href="/terms" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Terms</Link></li>
@@ -535,7 +535,7 @@ export default function LandingPage() {
                   <HanzoBrand
                     className="text-white"
                     markClassName="w-6 md:w-7 h-6 md:h-7"
-                    wordmarkClassName="text-base md:text-lg font-bold"
+                    wordmarkClassName="text-base md:text-lg font-medium"
                   />
                 </div>
                 <span className="text-xs md:text-sm text-white/40">

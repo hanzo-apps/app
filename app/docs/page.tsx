@@ -230,7 +230,7 @@ export default function DocsPage() {
         <div className="flex items-center gap-6 md:gap-10">
           <Link href="/" className="flex items-center gap-2.5">
             <HanzoLogo className="w-8 md:w-9 h-8 md:h-9 text-white" />
-            <span className="text-xl md:text-2xl font-bold">Hanzo</span>
+            <span className="text-xl md:text-2xl font-medium">Hanzo</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
@@ -265,7 +265,7 @@ export default function DocsPage() {
               </Button>
               <Button
                 onClick={() => router.push('/dev')}
-                className="bg-white text-black hover:bg-white/90 text-sm font-semibold px-5 py-2.5 rounded-xl"
+                className="bg-white text-black hover:bg-white/90 text-sm font-medium px-5 py-2.5 rounded-xl"
               >
                 Get started
               </Button>
@@ -281,7 +281,7 @@ export default function DocsPage() {
               </Button>
               <Button
                 onClick={openLoginWindow}
-                className="bg-white text-black hover:bg-white/90 text-sm font-semibold px-5 py-2.5 rounded-xl"
+                className="bg-white text-black hover:bg-white/90 text-sm font-medium px-5 py-2.5 rounded-xl"
               >
                 Get started
               </Button>
@@ -309,7 +309,7 @@ export default function DocsPage() {
             <div className="flex items-center justify-between p-4 border-b border-white/10">
               <Link href="/" className="flex items-center gap-2.5">
                 <HanzoLogo className="w-8 h-8 text-white" />
-                <span className="text-xl font-bold">Hanzo</span>
+                <span className="text-xl font-medium">Hanzo</span>
               </Link>
               <button
                 onClick={() => setMobileMenuOpen(false)}
@@ -350,7 +350,7 @@ export default function DocsPage() {
               <span className="text-sm text-blue-300">Documentation Hub</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 md:mb-6">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-medium mb-4 md:mb-6">
               Everything you need to{" "}
               <span className="relative inline-block">
                 <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-violet-400 bg-clip-text text-transparent">
@@ -386,7 +386,7 @@ export default function DocsPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button
                 onClick={() => router.push('/docs/quickstart')}
-                className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-400 hover:to-purple-400 text-white px-8 py-3 rounded-xl font-semibold text-lg"
+                className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-400 hover:to-purple-400 text-white px-8 py-3 rounded-xl font-medium text-lg"
               >
                 <Play className="w-5 h-5 mr-2" />
                 Quick Start
@@ -394,7 +394,7 @@ export default function DocsPage() {
               <Button
                 onClick={() => router.push('/docs/api')}
                 variant="outline"
-                className="border-white/20 text-white hover:bg-white/10 px-8 py-3 rounded-xl font-semibold text-lg"
+                className="border-white/20 text-white hover:bg-white/10 px-8 py-3 rounded-xl font-medium text-lg"
               >
                 <Terminal className="w-5 h-5 mr-2" />
                 API Reference
@@ -411,7 +411,7 @@ export default function DocsPage() {
                 <FileText className="w-4 h-4 mr-2" />
                 Documentation Categories
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Find what you're looking for</h2>
+              <h2 className="text-3xl md:text-4xl font-medium mb-4">Find what you're looking for</h2>
               <p className="text-lg text-white/60 max-w-2xl mx-auto">
                 Organized documentation to help you at every stage of your development journey
               </p>
@@ -452,7 +452,7 @@ export default function DocsPage() {
                 <Rocket className="w-4 h-4 mr-2" />
                 Quick Start
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Get up and running in minutes</h2>
+              <h2 className="text-3xl md:text-4xl font-medium mb-4">Get up and running in minutes</h2>
               <p className="text-lg text-white/60 max-w-2xl mx-auto">
                 Follow these essential guides to start building with Hanzo AI
               </p>
@@ -504,7 +504,7 @@ export default function DocsPage() {
                 <Star className="w-4 h-4 mr-2" />
                 Popular Docs
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Most viewed documentation</h2>
+              <h2 className="text-3xl md:text-4xl font-medium mb-4">Most viewed documentation</h2>
               <p className="text-lg text-white/60 max-w-2xl mx-auto">
                 The most popular guides and references from our community
               </p>
@@ -551,7 +551,7 @@ export default function DocsPage() {
                 <Terminal className="w-4 h-4 mr-2" />
                 API Reference
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Complete API documentation</h2>
+              <h2 className="text-3xl md:text-4xl font-medium mb-4">Complete API documentation</h2>
               <p className="text-lg text-white/60 max-w-2xl mx-auto">
                 RESTful API endpoints with detailed examples and responses
               </p>
@@ -609,7 +609,7 @@ export default function DocsPage() {
                 <Play className="w-4 h-4 mr-2" />
                 Tutorials
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Learn by building</h2>
+              <h2 className="text-3xl md:text-4xl font-medium mb-4">Learn by building</h2>
               <p className="text-lg text-white/60 max-w-2xl mx-auto">
                 Step-by-step tutorials to help you build real-world applications
               </p>
@@ -663,7 +663,7 @@ export default function DocsPage() {
               <Button
                 onClick={() => router.push('/docs/tutorials')}
                 variant="outline"
-                className="border-white/20 text-white hover:bg-white/10 px-6 py-3 rounded-xl font-semibold"
+                className="border-white/20 text-white hover:bg-white/10 px-6 py-3 rounded-xl font-medium"
               >
                 View All Tutorials
                 <ArrowRight className="ml-2 w-5 h-5" />
@@ -675,7 +675,7 @@ export default function DocsPage() {
         {/* Community & Support */}
         <section className="px-4 md:px-8 py-16 md:py-20">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-3xl md:text-4xl font-medium mb-4">
               Need help or have questions?
             </h2>
             <p className="text-lg text-white/60 mb-12">
@@ -743,7 +743,7 @@ export default function DocsPage() {
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-16">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-8 mb-8 md:mb-12">
             <div>
-              <h3 className="text-white font-semibold text-sm mb-3 md:mb-4">Documentation</h3>
+              <h3 className="text-white font-medium text-sm mb-3 md:mb-4">Documentation</h3>
               <ul className="space-y-2 md:space-y-3">
                 <li><Link href="/docs/quickstart" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Quick Start</Link></li>
                 <li><Link href="/docs/api" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">API Reference</Link></li>
@@ -752,7 +752,7 @@ export default function DocsPage() {
               </ul>
             </div>
             <div>
-              <h3 className="text-white font-semibold text-sm mb-3 md:mb-4">Resources</h3>
+              <h3 className="text-white font-medium text-sm mb-3 md:mb-4">Resources</h3>
               <ul className="space-y-2 md:space-y-3">
                 <li><Link href="/docs/examples" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Examples</Link></li>
                 <li><Link href="/templates" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Templates</Link></li>
@@ -761,7 +761,7 @@ export default function DocsPage() {
               </ul>
             </div>
             <div>
-              <h3 className="text-white font-semibold text-sm mb-3 md:mb-4">Support</h3>
+              <h3 className="text-white font-medium text-sm mb-3 md:mb-4">Support</h3>
               <ul className="space-y-2 md:space-y-3">
                 <li><Link href="/help" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Help Center</Link></li>
                 <li><Link href="/status" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Status</Link></li>
@@ -775,7 +775,7 @@ export default function DocsPage() {
               <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 text-center md:text-left">
                 <div className="flex items-center gap-3">
                   <HanzoLogo className="w-6 md:w-7 h-6 md:h-7 text-white" />
-                  <span className="text-base md:text-lg font-bold">Hanzo</span>
+                  <span className="text-base md:text-lg font-medium">Hanzo</span>
                 </div>
                 <span className="text-xs md:text-sm text-white/40">
                   © 2025 Hanzo AI, Inc. All rights reserved.

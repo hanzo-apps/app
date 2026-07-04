@@ -165,7 +165,7 @@ export default function SocialFeed() {
                     </Avatar>
                     <div>
                       <div className="flex items-center gap-1">
-                        <p className="font-semibold">{post.author.name}</p>
+                        <p className="font-medium">{post.author.name}</p>
                         {post.author.verified && (
                           <Badge variant="outline" className="h-5 px-1">✓</Badge>
                         )}

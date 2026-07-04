@@ -178,7 +178,7 @@ export function CreateProject({ open, onOpenChange, onCreated }: CreateProjectPr
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent>
         <div className="flex flex-col space-y-1.5 text-center sm:text-left">
-          <DialogPrimitive.Title className="text-lg font-semibold leading-none tracking-tight">
+          <DialogPrimitive.Title className="text-lg font-medium leading-none tracking-tight">
             Create New Project
           </DialogPrimitive.Title>
           <DialogPrimitive.Description className="text-sm text-muted-foreground">

@@ -40,7 +40,7 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
       {/* Publishing Status */}
       <div className="space-y-4">
         <div>
-          <h3 className="text-lg font-semibold mb-4">Publishing Status</h3>
+          <h3 className="text-lg font-medium mb-4">Publishing Status</h3>
         </div>
 
         <div className="flex items-center justify-between p-4 border rounded-lg">
@@ -80,7 +80,7 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
       {projects && projects.length > 0 && onProjectChange && (
         <div className="space-y-4">
           <div>
-            <h3 className="text-lg font-semibold mb-4">Source Project</h3>
+            <h3 className="text-lg font-medium mb-4">Source Project</h3>
           </div>
 
           <div className="space-y-2">
@@ -119,7 +119,7 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
       {/* Public URL */}
       <div className="space-y-4">
         <div>
-          <h3 className="text-lg font-semibold mb-4">Public URL</h3>
+          <h3 className="text-lg font-medium mb-4">Public URL</h3>
         </div>
 
         <div className="space-y-3">
@@ -163,7 +163,7 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
       {/* Custom Domain */}
       <div className="space-y-4">
         <div>
-          <h3 className="text-lg font-semibold mb-4">Custom Domain (Advanced)</h3>
+          <h3 className="text-lg font-medium mb-4">Custom Domain (Advanced)</h3>
         </div>
 
         <div className="space-y-2">
@@ -184,17 +184,17 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
       {/* Version Info */}
       <div className="space-y-4">
         <div>
-          <h3 className="text-lg font-semibold mb-4">Version Information</h3>
+          <h3 className="text-lg font-medium mb-4">Version Information</h3>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div className="p-3 border rounded-lg">
             <div className="text-sm text-muted-foreground mb-1">Current Version</div>
-            <div className="text-2xl font-semibold">{settings.settingsVersion}</div>
+            <div className="text-2xl font-medium">{settings.settingsVersion}</div>
           </div>
           <div className="p-3 border rounded-lg">
             <div className="text-sm text-muted-foreground mb-1">Published Version</div>
-            <div className="text-2xl font-semibold">
+            <div className="text-2xl font-medium">
               {settings.lastPublishedVersion !== null && settings.lastPublishedVersion !== undefined
                 ? settings.lastPublishedVersion
                 : '-'}

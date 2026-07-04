@@ -441,7 +441,7 @@ export function AISupervisor({
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Shield className="w-5 h-5 text-purple-400" />
-          <h3 className="text-lg font-semibold text-white">AI Supervisor</h3>
+          <h3 className="text-lg font-medium text-white">AI Supervisor</h3>
           <div className="flex items-center gap-1">
             {sandboxStatus === "running" && (
               <span className="flex items-center gap-1 text-xs text-green-400">
@@ -497,7 +497,7 @@ export function AISupervisor({
       {/* MCP Tools Status */}
       <div className="mb-4 p-3 bg-neutral-800/50 rounded-lg">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-gray-300">MCP Tools</span>
+          <span className="text-sm font-medium text-neutral-300">MCP Tools</span>
           <Button
             size="xs"
             variant="ghost"
@@ -514,7 +514,7 @@ export function AISupervisor({
               key={tool.name}
               className="flex items-center justify-between text-xs"
             >
-              <span className="text-gray-400">{tool.name}</span>
+              <span className="text-neutral-400">{tool.name}</span>
               <div className="flex items-center gap-2">
                 {tool.available ? (
                   <CheckCircle2 className="w-3 h-3 text-green-400" />
@@ -522,7 +522,7 @@ export function AISupervisor({
                   <AlertCircle className="w-3 h-3 text-yellow-400" />
                 )}
                 {tool.usage > 0 && (
-                  <span className="text-gray-500">({tool.usage}x)</span>
+                  <span className="text-neutral-500">({tool.usage}x)</span>
                 )}
               </div>
             </div>
@@ -533,7 +533,7 @@ export function AISupervisor({
       {/* Test Results */}
       <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-gray-300">Test Results</span>
+          <span className="text-sm font-medium text-neutral-300">Test Results</span>
           {isAutoFixing && (
             <span className="flex items-center gap-1 text-xs text-blue-400">
               <Loading overlay={false} className="!size-3" />
@@ -557,18 +557,18 @@ export function AISupervisor({
                 <CheckCircle2 className="w-3 h-3 text-green-400 mt-0.5" />
               )}
               <div className="flex-1">
-                <p className="text-gray-300">{result.message}</p>
+                <p className="text-neutral-300">{result.message}</p>
                 {result.fixed && (
                   <p className="text-green-400 mt-1">✓ Auto-fixed</p>
                 )}
               </div>
-              <span className="text-gray-500">
+              <span className="text-neutral-500">
                 {result.timestamp.toLocaleTimeString()}
               </span>
             </div>
           ))}
           {testResults.length === 0 && (
-            <p className="text-gray-500 text-center py-4">
+            <p className="text-neutral-500 text-center py-4">
               No test results yet
             </p>
           )}
@@ -578,7 +578,7 @@ export function AISupervisor({
       {/* Agent Tasks */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-gray-300">Agent Tasks</span>
+          <span className="text-sm font-medium text-neutral-300">Agent Tasks</span>
           <Button
             size="xs"
             variant="ghost"
@@ -604,10 +604,10 @@ export function AISupervisor({
                       ? "text-green-400"
                       : task.status === "failed"
                       ? "text-red-400"
-                      : "text-gray-400"
+                      : "text-neutral-400"
                   }`}
                 />
-                <span className="text-gray-300">{task.name}</span>
+                <span className="text-neutral-300">{task.name}</span>
               </div>
               <div className="flex items-center gap-2">
                 {task.status === "running" && (
@@ -618,12 +618,12 @@ export function AISupervisor({
                     />
                   </div>
                 )}
-                <span className="text-gray-500">{task.status}</span>
+                <span className="text-neutral-500">{task.status}</span>
               </div>
             </div>
           ))}
           {agentTasks.length === 0 && (
-            <p className="text-gray-500 text-center py-4">
+            <p className="text-neutral-500 text-center py-4">
               No active agent tasks
             </p>
           )}
