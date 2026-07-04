@@ -16,9 +16,13 @@ import { DeployButtonContent } from "./content";
 export function DeployButton({
   pages,
   prompts,
+  disabled = false,
 }: {
   pages: Page[];
   prompts: string[];
+  // True while the AI is still generating — publishing now would ship a
+  // truncated/blank page, so the trigger is disabled until generation settles.
+  disabled?: boolean;
 }) {
   const { user } = useUser();
   const [open, setOpen] = useState(false);
@@ -30,12 +34,12 @@ export function DeployButton({
           <Popover>
             <PopoverTrigger asChild>
               <div>
-                <Button variant="default" className="max-lg:hidden !px-4">
+                <Button variant="default" className="max-lg:hidden !px-4" disabled={disabled}>
                   <MdSave className="size-4" />
-                  Publish your Project
+                  {disabled ? "Building…" : "Publish your Project"}
                 </Button>
-                <Button variant="default" size="sm" className="lg:hidden">
-                  Publish
+                <Button variant="default" size="sm" className="lg:hidden" disabled={disabled}>
+                  {disabled ? "Building…" : "Publish"}
                 </Button>
               </div>
             </PopoverTrigger>
@@ -52,17 +56,19 @@ export function DeployButton({
               variant="default"
               className="max-lg:hidden !px-4"
               onClick={() => setOpen(true)}
+              disabled={disabled}
             >
               <MdSave className="size-4" />
-              Publish your Project
+              {disabled ? "Building…" : "Publish your Project"}
             </Button>
             <Button
               variant="default"
               size="sm"
               className="lg:hidden"
               onClick={() => setOpen(true)}
+              disabled={disabled}
             >
-              Publish
+              {disabled ? "Building…" : "Publish"}
             </Button>
           </>
         )}
