@@ -1,41 +1,57 @@
 /**
- * /v1/git/accounts — the signed-in user's connected Git accounts.
+ * /v1/git/accounts — the signed-in user's connected Git accounts, across
+ * providers, plus each provider's connectability.
  *
- * GET → `{ connected: boolean, accounts: GitAccount[] }`.
- *   - `connected: false, accounts: []` when the user has no GitHub linked in IAM
- *     (drives the honest "Connect GitHub" CTA — NEVER fabricated rows).
- *   - Otherwise the authenticated GitHub user + the orgs they belong to.
+ * GET → `{ connected, accounts: GitAccount[], providers: GitProviderStatus[] }`.
+ *   - `accounts` is the aggregate of every linked provider (GitHub user + orgs,
+ *     GitLab user). Empty ⇒ nothing linked (drives the honest "Connect" CTA —
+ *     NEVER fabricated rows).
+ *   - `providers` reports which providers can be connected right now. GitHub is
+ *     always live; GitLab is `connectable: false, reason: 'needs-setup'` until
+ *     its OAuth app + IAM provider are configured (operator flips
+ *     `GITLAB_CONNECT_ENABLED`). No dead clicks.
  *
- * The GitHub token is resolved from IAM server-side (the user's own bearer) and
- * used only here — it is never returned to the browser. Per-user data ⇒ no-store.
+ * Provider tokens are resolved from IAM server-side (the user's own bearer) and
+ * used only here — never returned to the browser. Per-user data ⇒ no-store.
  */
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { resolveGithubConnection, listAccounts } from '@/lib/git/server';
+import type { GitAccount, GitProviderStatus } from '@/lib/api/git';
+import { resolveAllConnections, listAccounts, gitlabConnectable } from '@/lib/git/server';
 
 export const runtime = 'nodejs';
 
 const NO_STORE = { 'Cache-Control': 'no-store' } as const;
 
+function providerStatuses(): GitProviderStatus[] {
+  return [
+    { provider: 'github', connectable: true },
+    gitlabConnectable()
+      ? { provider: 'gitlab', connectable: true }
+      : { provider: 'gitlab', connectable: false, reason: 'needs-setup' },
+  ];
+}
+
 export async function GET(req: NextRequest) {
-  const conn = await resolveGithubConnection(req);
-  if (!conn) {
-    return NextResponse.json({ connected: false, accounts: [] }, { headers: NO_STORE });
+  const providers = providerStatuses();
+  const conns = await resolveAllConnections(req);
+  if (conns.length === 0) {
+    return NextResponse.json({ connected: false, accounts: [], providers }, { headers: NO_STORE });
   }
 
-  let accounts;
-  try {
-    accounts = await listAccounts(conn);
-  } catch {
-    return NextResponse.json(
-      { connected: true, accounts: [], error: 'github unreachable' },
-      { status: 502, headers: NO_STORE },
-    );
-  }
-  // A 401 from GitHub (token revoked/expired) ⇒ treat as not connected.
-  if (accounts === null) {
-    return NextResponse.json({ connected: false, accounts: [] }, { headers: NO_STORE });
+  const accounts: GitAccount[] = [];
+  for (const conn of conns) {
+    try {
+      const list = await listAccounts(conn);
+      // A 401 (revoked token) yields null — skip that provider, keep the rest.
+      if (list) accounts.push(...list);
+    } catch {
+      // One provider being unreachable must not sink the others.
+    }
   }
 
-  return NextResponse.json({ connected: true, accounts }, { headers: NO_STORE });
+  return NextResponse.json(
+    { connected: accounts.length > 0, accounts, providers },
+    { headers: NO_STORE },
+  );
 }

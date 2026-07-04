@@ -11,6 +11,7 @@ import {
   CloudOff,
   Search,
   Paperclip,
+  FolderUp,
   LayoutDashboard,
   Bot,
   FileCode2,
@@ -23,11 +24,14 @@ import {
   templateBuilderLink,
   type GalleryTemplate,
 } from "@/lib/api/templates";
+import { toast } from "sonner";
 import { ImportGitPanel } from "@/components/import-git-panel";
 import { UserMenu } from "@/components/user-menu";
 import { useUser } from "@/hooks/useUser";
 import { OrgProvider } from "@/lib/org/client";
 import { OrgGate, OrgSwitcher } from "@/components/org-switcher";
+import { isGitUrl, gitUrlGateMessage } from "@/lib/git/url";
+import { useProjectImport } from "@/lib/import/use-project-import";
 
 export default function NewProjectPage() {
   // Establish an org BEFORE any project is created: a zero-org user is gated
@@ -40,15 +44,6 @@ export default function NewProjectPage() {
       </OrgGate>
     </OrgProvider>
   );
-}
-
-/** A git repository URL (github/gitlab/bitbucket https, ssh, or bare owner/repo). */
-function isGitUrl(v: string): boolean {
-  const s = v.trim();
-  if (!s) return false;
-  if (/^git@[\w.-]+:[\w./-]+/i.test(s)) return true;
-  if (/\.git$/i.test(s)) return true;
-  return /^(https?:\/\/)?(www\.)?(github|gitlab|bitbucket)\.(com|org)\/[\w.-]+\/[\w.-]+/i.test(s);
 }
 
 const QUICK_STARTS: { label: string; icon: typeof LayoutDashboard; prompt: string }[] = [
@@ -82,6 +77,38 @@ function NewProjectInner() {
   const [repoFilter, setRepoFilter] = useState("");
   const taRef = useRef<HTMLTextAreaElement>(null);
 
+  // Drag & drop / pick a project folder or .zip → import into the builder.
+  const { importing, importDrop, importFiles } = useProjectImport();
+  const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const folderInputRef = useRef<HTMLInputElement>(null);
+
+  const onComposerDrop = useCallback(
+    (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      setDragActive(false);
+      if (e.dataTransfer) importDrop(e.dataTransfer);
+    },
+    [importDrop],
+  );
+  const onComposerDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    if (Array.from(e.dataTransfer.types || []).includes("Files")) {
+      e.preventDefault();
+      setDragActive(true);
+    }
+  }, []);
+  const onComposerDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    if (
+      e.clientX < r.left ||
+      e.clientX >= r.right ||
+      e.clientY < r.top ||
+      e.clientY >= r.bottom
+    ) {
+      setDragActive(false);
+    }
+  }, []);
+
   // Real starter-kit gallery (hanzoai/gallery via the /v1/templates BFF). Always
   // resolves — an unreachable/empty gallery yields the honest local fallback.
   const [templates, setTemplates] = useState<GalleryTemplate[]>([]);
@@ -107,13 +134,20 @@ function NewProjectInner() {
     (raw?: string) => {
       const text = (raw ?? value).trim();
       if (!text || loading) return;
-      setLoading(true);
       if (isGitUrl(text)) {
+        // Honest gate: an SSH/private remote can't be imported (no credentials).
+        const gate = gitUrlGateMessage(text);
+        if (gate) {
+          toast.error(gate);
+          return;
+        }
+        setLoading(true);
         const url = new URL("/dev", window.location.origin);
         url.searchParams.set("repo", text);
         url.searchParams.set("action", "edit");
         router.push(url.toString());
       } else {
+        setLoading(true);
         const url = new URL("/dev", window.location.origin);
         url.searchParams.set("prompt", text);
         router.push(url.toString());
@@ -201,7 +235,22 @@ function NewProjectInner() {
 
           {/* Composer */}
           <div className="mx-auto mt-8 max-w-2xl text-left">
-            <div className="group rounded-2xl border border-white/12 bg-white/[0.03] p-2 shadow-2xl shadow-black/40 transition-colors focus-within:border-white/25">
+            <div
+              onDrop={onComposerDrop}
+              onDragOver={onComposerDragOver}
+              onDragLeave={onComposerDragLeave}
+              className={`group relative rounded-2xl border bg-white/[0.03] p-2 shadow-2xl shadow-black/40 transition-colors focus-within:border-white/25 ${
+                dragActive ? "border-white/40 bg-white/[0.06]" : "border-white/12"
+              }`}
+            >
+              {dragActive && (
+                <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-2xl border-2 border-dashed border-white/40 bg-black/50 backdrop-blur-sm">
+                  <span className="flex items-center gap-2 text-sm font-medium text-white">
+                    <FolderUp className="h-5 w-5" />
+                    Drop your project folder or .zip to import
+                  </span>
+                </div>
+              )}
               <textarea
                 ref={taRef}
                 rows={2}
@@ -220,7 +269,8 @@ function NewProjectInner() {
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
-                    title="Attach a file or folder"
+                    title="Import a project — .zip or files"
+                    onClick={() => fileInputRef.current?.click()}
                     className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-white/40 transition-colors hover:bg-white/5 hover:text-white/80"
                   >
                     <Paperclip className="h-[18px] w-[18px]" />
@@ -247,6 +297,67 @@ function NewProjectInner() {
                 </Button>
               </div>
             </div>
+
+            {/* Import affordance — drag & drop, or pick a folder / .zip. */}
+            <div className="mt-2.5 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-xs text-white/40">
+              {importing ? (
+                <span className="inline-flex items-center gap-1.5 text-white/60">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  Importing your project…
+                </span>
+              ) : (
+                <>
+                  <FolderUp className="h-3.5 w-3.5 text-white/35" />
+                  <span>Drag &amp; drop your project, or</span>
+                  <button
+                    type="button"
+                    onClick={() => folderInputRef.current?.click()}
+                    className="rounded text-white/70 underline decoration-white/20 underline-offset-2 transition-colors hover:text-white hover:decoration-white/40"
+                  >
+                    choose a folder
+                  </button>
+                  <span className="text-white/25">·</span>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="rounded text-white/70 underline decoration-white/20 underline-offset-2 transition-colors hover:text-white hover:decoration-white/40"
+                  >
+                    .zip or files
+                  </button>
+                </>
+              )}
+            </div>
+
+            {/* Hidden pickers — a .zip / loose files, or a whole directory. */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              accept=".zip,text/*,.html,.htm,.css,.js,.jsx,.ts,.tsx,.json,.md,.svg,.xml,.yml,.yaml,.vue,.svelte,.astro"
+              className="hidden"
+              onChange={(e) => {
+                if (e.target.files?.length) importFiles(e.target.files);
+                e.target.value = "";
+              }}
+            />
+            <input
+              // `webkitdirectory`/`directory` aren't in React's input types, so
+              // set them imperatively — one honest cast-free path to a folder picker.
+              ref={(el) => {
+                folderInputRef.current = el;
+                if (el) {
+                  el.setAttribute("webkitdirectory", "");
+                  el.setAttribute("directory", "");
+                }
+              }}
+              type="file"
+              multiple
+              className="hidden"
+              onChange={(e) => {
+                if (e.target.files?.length) importFiles(e.target.files);
+                e.target.value = "";
+              }}
+            />
 
             {/* Quick starts */}
             <div className="mt-3 flex flex-wrap justify-center gap-2">
