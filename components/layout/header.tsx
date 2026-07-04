@@ -55,6 +55,12 @@ export default function Header() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             <Link
+              href="/apps"
+              className="text-white/70 hover:text-white text-sm font-medium transition-colors"
+            >
+              Apps
+            </Link>
+            <Link
               href="/community"
               className="text-white/70 hover:text-white text-sm font-medium transition-colors"
             >
@@ -255,6 +261,13 @@ export default function Header() {
                   <div className="h-px bg-white/10 my-4" />
 
                   <button
+                    onClick={() => navigateTo("/apps")}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
+                  >
+                    <span>Apps</span>
+                  </button>
+
+                  <button
                     onClick={() => navigateTo("/community")}
                     className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
                   >
@@ -280,6 +293,12 @@ export default function Header() {
                 </>
               ) : (
                 <>
+                  <button
+                    onClick={() => navigateTo("/apps")}
+                    className="w-full px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
+                  >
+                    Apps
+                  </button>
                   <button
                     onClick={() => navigateTo("/community")}
                     className="w-full px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
