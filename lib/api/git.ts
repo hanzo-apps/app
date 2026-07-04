@@ -9,10 +9,13 @@
  * honest "Connect GitHub" CTA instead of crashing.
  */
 
+/** The git providers the import surface can talk to. */
+export type GitProvider = 'github' | 'gitlab';
+
 export interface GitAccount {
   login: string;
   avatarUrl: string;
-  provider: 'github';
+  provider: GitProvider;
   type: 'user' | 'org';
 }
 
@@ -26,12 +29,31 @@ export interface GitRepo {
   defaultBranch: string;
   cloneUrl: string;
   htmlUrl: string;
+  provider: GitProvider;
+}
+
+/**
+ * Connectability of one provider, resolved SERVER-SIDE. `connectable: false`
+ * with `reason: 'needs-setup'` is the honest state when the OAuth app / IAM
+ * provider isn't configured yet — the UI shows "needs setup", never a dead click.
+ */
+export interface GitProviderStatus {
+  provider: GitProvider;
+  connectable: boolean;
+  reason?: 'needs-setup';
 }
 
 export interface GitAccountsResult {
   connected: boolean;
   accounts: GitAccount[];
+  providers: GitProviderStatus[];
 }
+
+/** GitHub is always live; GitLab is honest-pending until the server says otherwise. */
+const DEFAULT_PROVIDERS: GitProviderStatus[] = [
+  { provider: 'github', connectable: true },
+  { provider: 'gitlab', connectable: false, reason: 'needs-setup' },
+];
 
 /** Connected accounts for the signed-in user (empty + not-connected on any failure). */
 export async function fetchGitAccounts(): Promise<GitAccountsResult> {
@@ -40,22 +62,28 @@ export async function fetchGitAccounts(): Promise<GitAccountsResult> {
       credentials: 'include',
       headers: { Accept: 'application/json' },
     });
-    if (!res.ok) return { connected: false, accounts: [] };
+    if (!res.ok) return { connected: false, accounts: [], providers: DEFAULT_PROVIDERS };
     const body = (await res.json()) as Partial<GitAccountsResult>;
     return {
       connected: Boolean(body.connected),
       accounts: Array.isArray(body.accounts) ? body.accounts : [],
+      providers: Array.isArray(body.providers) ? body.providers : DEFAULT_PROVIDERS,
     };
   } catch {
-    return { connected: false, accounts: [] };
+    return { connected: false, accounts: [], providers: DEFAULT_PROVIDERS };
   }
 }
 
 /** Repositories for one account, server-side filtered by `q`. Empty on any failure. */
-export async function fetchGitRepos(account: string, q = ''): Promise<GitRepo[]> {
+export async function fetchGitRepos(
+  account: string,
+  provider: GitProvider = 'github',
+  q = '',
+): Promise<GitRepo[]> {
   try {
     const params = new URLSearchParams();
     if (account) params.set('account', account);
+    if (provider) params.set('provider', provider);
     if (q.trim()) params.set('q', q.trim());
     const res = await fetch(`/v1/git/repos?${params.toString()}`, {
       credentials: 'include',
