@@ -70,7 +70,10 @@ const nextConfig = {
     // Shim react-resizable-panels to re-export Group/Separator (removed in v2+)
     config.resolve.alias = {
       ...config.resolve.alias,
-      'react-resizable-panels': path.resolve(__dirname, 'lib/shims/react-resizable-panels.js'),
+      // Exact-match ($) so ONLY the bare specifier is shimmed — the shim's own
+      // `react-resizable-panels/dist/...` subpath import must resolve to the real
+      // package, else it aliases back to the shim → infinite SSR recursion.
+      'react-resizable-panels$': path.resolve(__dirname, 'lib/shims/react-resizable-panels.js'),
     };
     // Externalize React Native deps (MetaMask SDK brings these in but they're not needed in browser)
     config.resolve.fallback = {
