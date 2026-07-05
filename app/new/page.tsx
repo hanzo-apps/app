@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@hanzo/ui";
 import {
   ArrowRight,
@@ -34,6 +34,25 @@ import { isGitUrl, gitUrlGateMessage } from "@/lib/git/url";
 import { useProjectImport } from "@/lib/import/use-project-import";
 
 export default function NewProjectPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const forwarded = useRef(false);
+
+  // A "Deploy on Hanzo" README badge links to /new?template=<repo> (the OSS
+  // Author program's one-click deploy). Forward that straight into the builder so
+  // the repo loads AND its sourceRepo provenance is captured (/dev persists it) —
+  // this is what makes the eventual deploy attributable to the repo's OSS author.
+  useEffect(() => {
+    if (forwarded.current) return;
+    const repo = searchParams.get("template") || searchParams.get("repo");
+    if (!repo) return;
+    forwarded.current = true;
+    const url = new URL("/dev", window.location.origin);
+    url.searchParams.set("template", repo);
+    url.searchParams.set("action", searchParams.get("action") || "deploy");
+    router.replace(url.toString());
+  }, [searchParams, router]);
+
   // Establish an org BEFORE any project is created: a zero-org user is gated
   // into onboarding (personal workspace by default); everyone else picks/sees
   // their org via the selector in the header.
