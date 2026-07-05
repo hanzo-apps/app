@@ -75,10 +75,16 @@ export async function POST(req: NextRequest) {
     description?: string;
     framework?: string;
     pages?: PageIn[];
+    sourceRepo?: string;
   };
 
   const name = (body.name || '').trim();
   const description = (body.description || '').trim().slice(0, 280);
+  // Source-repo provenance: the git remote the project was built from. Persisted on
+  // the project record (projectsvc `repo`) and used to attribute the deploy to the
+  // OSS author who owns the repo (Hanzo OSS Author program). Bounded; never trusted
+  // for control flow.
+  const sourceRepo = (body.sourceRepo || '').trim().slice(0, 512);
   if (!name) return NextResponse.json({ error: 'A project name is required.' }, { status: 400 });
   const pages = Array.isArray(body.pages) ? body.pages : [];
   if (pages.length === 0) {
@@ -130,7 +136,13 @@ export async function POST(req: NextRequest) {
       const createRes = await fetch(`${base}/v1/projects`, {
         method: 'POST',
         headers: { ...bearer, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, slug, description, framework: body.framework || 'static' }),
+        body: JSON.stringify({
+          name,
+          slug,
+          description,
+          framework: body.framework || 'static',
+          ...(sourceRepo ? { repo: sourceRepo } : {}),
+        }),
         cache: 'no-store',
       });
       if (!createRes.ok) {
@@ -190,6 +202,24 @@ export async function POST(req: NextRequest) {
     }
   } catch (e) {
     deployError = e instanceof Error ? e.message : 'deploy failed';
+  }
+
+  // 3) Best-effort deploy-attribution to the OSS Author program. When this project
+  //    was built from a source repo, tell the authors service that THIS org deployed
+  //    it — if the repo is a VERIFIED author repo, the author accrues a royalty. The
+  //    call carries the org bearer (the deploying org), is idempotent per (repo,
+  //    project, org), and NEVER fails publish (a non-author repo is a silent no-op).
+  if (sourceRepo && deployment && !deployError) {
+    try {
+      await fetch(`${base}/v1/authors/deploys/record`, {
+        method: 'POST',
+        headers: { ...bearer, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ repoUrl: sourceRepo, project: slug }),
+        cache: 'no-store',
+      });
+    } catch {
+      /* attribution is provenance analytics, never a publish blocker */
+    }
   }
 
   return NextResponse.json({
