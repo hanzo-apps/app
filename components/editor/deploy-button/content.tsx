@@ -51,6 +51,14 @@ export const DeployButtonContent = ({
 
     try {
       const selectedOrg = currentOrg();
+      // Source-repo provenance: when the builder was opened from a template/git
+      // remote (/dev?template=…), that repo was stashed in localStorage. Carrying
+      // it into publish is what lets the deploy be attributed to the OSS author who
+      // owns the repo (Hanzo OSS Author program). Absent for from-scratch builds.
+      let sourceRepo: string | undefined;
+      try {
+        sourceRepo = localStorage.getItem("sourceRepo") || undefined;
+      } catch {}
       const res = await fetch("/v1/publish", {
         method: "POST",
         credentials: "include",
@@ -64,6 +72,7 @@ export const DeployButtonContent = ({
           description: prompts?.[prompts.length - 1] || "",
           framework: "static",
           pages,
+          ...(sourceRepo ? { sourceRepo } : {}),
         }),
       });
       const data = await res.json().catch(() => ({}));

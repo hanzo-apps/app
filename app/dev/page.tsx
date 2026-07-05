@@ -156,6 +156,16 @@ export default function DevPage() {
       // Keep the template provenance for the deploy path.
       if (repoInfo.name) {
         (window as any).__templateRepo = repoInfo;
+        // Persist the source repo so it rides through to publish as provenance —
+        // this is what makes a deploy attributable to the OSS AUTHOR who owns the
+        // repo (Hanzo OSS Author program → /v1/authors/deploys/record). Only real
+        // git remotes (host set by parseGitUrl) carry an author; gallery/
+        // hanzo-project sources do not.
+        try {
+          if (repoInfo.host && repoInfo.fullUrl) {
+            localStorage.setItem("sourceRepo", repoInfo.fullUrl);
+          }
+        } catch {}
       }
 
       // Show the manual template loader ONLY when we did NOT arrive with a seed
