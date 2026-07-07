@@ -6,6 +6,37 @@
     "main"
   ],
   "permissions": [
-    "core:default"
+    "core:default",
+    {
+      "identifier": "fs:allow-read-text-file",
+      "allow": [
+        { "path": "$HOME/.codex" },
+        { "path": "$HOME/.codex/**" },
+        { "path": "$HOME/.claude" },
+        { "path": "$HOME/.claude/**" },
+        { "path": "$HOME/.hanzo" },
+        { "path": "$HOME/.hanzo/**" }
+      ]
+    },
+    {
+      "identifier": "fs:allow-read-dir",
+      "allow": [
+        { "path": "$HOME/.codex" },
+        { "path": "$HOME/.codex/**" },
+        { "path": "$HOME/.claude" },
+        { "path": "$HOME/.claude/**" },
+        { "path": "$HOME/.hanzo" },
+        { "path": "$HOME/.hanzo/**" }
+      ]
+    },
+    {
+      "identifier": "http:default",
+      "allow": [
+        { "url": "https://chatgpt.com/*" },
+        { "url": "https://api.anthropic.com/*" },
+        { "url": "https://api.hanzo.ai/*" },
+        { "url": "https://claude.ai/*" }
+      ]
+    }
   ]
 }
