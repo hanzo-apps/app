@@ -368,6 +368,38 @@ export async function getCustomerCredits(
 }
 
 // ---------------------------------------------------------------------------
+// Metered usage
+// ---------------------------------------------------------------------------
+
+export interface BillingUsageLine {
+  label: string;
+  used: number;
+  /** null = no published limit; never a fabricated cap. */
+  limit?: number | null;
+  unit?: string;
+}
+
+/**
+ * Per-user metered usage from Hanzo Commerce (`GET /v1/billing/usage`), run as
+ * the calling user (their IAM token). Fail-soft: returns null when the endpoint
+ * is unavailable or usage is not yet metered for this account, so callers fall
+ * back to local figures rather than inventing numbers.
+ */
+export async function getBillingUsage(token: string): Promise<BillingUsageLine[] | null> {
+  if (!token) return null;
+  try {
+    const data = await commerceRequest<{ usage?: BillingUsageLine[] }>(
+      token,
+      'GET',
+      '/billing/usage',
+    );
+    return data.usage ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Webhooks
 // ---------------------------------------------------------------------------
 
