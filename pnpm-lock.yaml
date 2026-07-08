@@ -41,8 +41,8 @@ importers:
         specifier: ^0.13.1
         version: 0.13.1(react@19.2.4)
       '@hanzo/ui':
-        specifier: npm:@hanzo/ui-shadcn@^5.7.3
-        version: '@hanzo/ui-shadcn@5.7.3(x72lyvucg3qwuc74lwzgc6rk5y)'
+        specifier: npm:@hanzo/ui-shadcn@^5.7.4
+        version: '@hanzo/ui-shadcn@5.7.4(x72lyvucg3qwuc74lwzgc6rk5y)'
       '@huggingface/hub':
         specifier: ^2.11.0
         version: 2.11.0
@@ -1556,8 +1556,8 @@ packages:
       react:
         optional: true
 
-  '@hanzo/ui-shadcn@5.7.3':
-    resolution: {integrity: sha512-akwsAavFQcRRgmRm45uaRmqfvfj72dCOHQk4Mv2sTGQ8bAnJwT3KTjvJ9Ym3eCgU/wyS0NmMOByr3aVoLffJpQ==}
+  '@hanzo/ui-shadcn@5.7.4':
+    resolution: {integrity: sha512-MFGPp+GYzaBUyd79F2mrk40SDLTFgUBEoPiSFVuJjekOVr5bJvUVNIWdoNtrl5ITL86N2ruiCNRhKGmEJyHFQA==}
     hasBin: true
     peerDependencies:
       '@dnd-kit/core': ^6.0.0
@@ -12749,7 +12749,7 @@ snapshots:
     optionalDependencies:
       react: 19.2.4
 
-  '@hanzo/ui-shadcn@5.7.3(x72lyvucg3qwuc74lwzgc6rk5y)':
+  '@hanzo/ui-shadcn@5.7.4(x72lyvucg3qwuc74lwzgc6rk5y)':
     dependencies:
       '@hookform/resolvers': 3.10.0(react-hook-form@7.71.2(react@19.2.4))
       '@next/third-parties': 16.2.10(next@16.2.1(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.54.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
