@@ -11,6 +11,7 @@ import {
   catalogCategories,
   snapshotCatalog,
 } from "@/lib/gallery-catalog";
+import { AppShell } from "@/components/app-shell";
 
 // Fork a real template into the editor: /dev parses ?template=owner/repo and the
 // TemplateLoader clones github.com/hanzo-apps/<slug>.
@@ -68,7 +69,8 @@ export default function TemplateGallery() {
   };
 
   return (
-    <div className="h-screen overflow-y-auto bg-black text-white">
+    <AppShell currentView="templates">
+      <div className="flex-1 overflow-y-auto bg-black text-white">
       {/* Hero: prompt-first onboarding */}
       <header className="border-b border-neutral-900 bg-gradient-to-b from-neutral-950 to-black">
         <div className="container mx-auto px-6 py-10">
@@ -246,6 +248,7 @@ export default function TemplateGallery() {
           </Button>
         </div>
       </section>
-    </div>
+      </div>
+    </AppShell>
   );
 }

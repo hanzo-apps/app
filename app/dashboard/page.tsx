@@ -22,7 +22,7 @@ import { formatUnits } from "viem";
 
 import { useUser } from "@/hooks/useUser";
 import { WalletBoundary } from "@/components/providers/WalletBoundary";
-import Header from "@/components/layout/header";
+import { AppShell } from "@/components/app-shell";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { getProjects } from "@/app/actions/projects";
 import {
@@ -146,8 +146,8 @@ export default function DashboardPage() {
   const usage = buildUsage(projects?.length ?? 0);
 
   return (
-    <div className="min-h-screen bg-neutral-950">
-      <Header />
+    <AppShell currentView="dashboard">
+    <div className="flex-1 overflow-y-auto bg-neutral-950">
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome / User Info */}
@@ -338,6 +338,7 @@ export default function DashboardPage() {
         </div>
       </main>
     </div>
+    </AppShell>
   );
 }
 
