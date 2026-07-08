@@ -171,7 +171,11 @@ export async function POST(request: NextRequest) {
   try {
     const { prompt, apiKey: clientApiKey, model, tools, context, messages, tool_choice, provider, max_tokens, reasoning, stream: requestStream } = await request.json();
 
-    const selectedProvider: ProviderId = provider || 'openrouter';
+    // Default to the Hanzo gateway (api.hanzo.ai/v1) so unspecified-provider
+    // generations route through the central AI router and are metered against
+    // the org — never silently off-meter via a third-party default. An explicit
+    // provider (incl. a customer's connected account) is still honored.
+    const selectedProvider: ProviderId = provider || 'hanzo';
     const providerConfig = getProvider(selectedProvider);
 
     let apiKey = clientApiKey;
