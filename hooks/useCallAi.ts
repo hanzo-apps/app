@@ -14,6 +14,21 @@ const safeJsonParse = (text: string): any | null => {
   }
 };
 
+// The /v1/generate stream appends the actually-served model after the page
+// content, delimited by an ASCII Record Separator (U+001E) — a control char
+// that can never occur in HTML page output, so it is a safe side channel. Split
+// it off before parsing so the routed model surfaces in the UI (smart routing
+// sends `model: "auto"`; the gateway echoes what actually served) without ever
+// corrupting the page parser.
+const ROUTED_MODEL_SEP = "\u001e";
+const splitRoutedModel = (
+  text: string
+): { content: string; model: string | null } => {
+  const i = text.indexOf(ROUTED_MODEL_SEP);
+  if (i === -1) return { content: text, model: null };
+  return { content: text.slice(0, i), model: text.slice(i + 1).trim() || null };
+};
+
 interface UseCallAiProps {
   onNewPrompt: (prompt: string) => void;
   onSuccess: (page: Page[], p: string, n?: number[][]) => void;
@@ -183,7 +198,7 @@ export const useCallAi = ({
   const audio = useRef<HTMLAudioElement | null>(null);
   const [controller, setController] = useState<AbortController | null>(null);
 
-  const callAiNewProject = async (prompt: string, model: string | undefined, provider: string | undefined, redesignMarkdown?: string, handleThink?: (think: string) => void, onFinishThink?: () => void) => {
+  const callAiNewProject = async (prompt: string, model: string | undefined, provider: string | undefined, redesignMarkdown?: string, handleThink?: (think: string) => void, onFinishThink?: () => void, onRoutedModel?: (servedModel: string) => void) => {
     if (isAiWorking) return;
     if (!redesignMarkdown && !prompt.trim()) return;
     
@@ -218,6 +233,8 @@ export const useCallAi = ({
         const read = async () => {
           const { done, value } = await reader.read();
           if (done) {
+            const served = splitRoutedModel(contentResponse).model;
+            if (served) onRoutedModel?.(served);
             const trimmed = contentResponse.trim();
             const isJson =
               trimmed.startsWith("{") && trimmed.endsWith("}");
@@ -296,7 +313,7 @@ export const useCallAi = ({
     }
   };
 
-  const callAiNewPage = async (prompt: string, model: string | undefined, provider: string | undefined, currentPagePath: string, previousPrompts?: string[]) => {
+  const callAiNewPage = async (prompt: string, model: string | undefined, provider: string | undefined, currentPagePath: string, previousPrompts?: string[], onRoutedModel?: (servedModel: string) => void) => {
     if (isAiWorking) return;
     if (!prompt.trim()) return;
     
@@ -332,6 +349,8 @@ export const useCallAi = ({
         const read = async () => {
           const { done, value } = await reader.read();
           if (done) {
+            const served = splitRoutedModel(contentResponse).model;
+            if (served) onRoutedModel?.(served);
             const trimmed = contentResponse.trim();
             const isJson =
               trimmed.startsWith("{") && trimmed.endsWith("}");
@@ -458,7 +477,7 @@ export const useCallAi = ({
         
         if (audio.current) audio.current.play();
 
-        return { success: true, html: res.html, updatedLines: res.updatedLines };
+        return { success: true, html: res.html, updatedLines: res.updatedLines, model: res.model };
       }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -486,7 +505,7 @@ export const useCallAi = ({
   // START_TITLE format, a bare single-file HTML document, a leading <think>
   // block, and a JSON error envelope — always an array, never a throw.
   const formatPages = (content: string): Page[] => {
-    const parsed = parsePages(content);
+    const parsed = parsePages(splitRoutedModel(content).content);
     if (parsed.length > 0) {
       setPages(parsed);
       const last = parsed[parsed.length - 1];
@@ -499,7 +518,7 @@ export const useCallAi = ({
   };
 
   const formatPage = (content: string, currentPagePath: string): Page | null => {
-    const page = parseSinglePage(content, currentPagePath);
+    const page = parseSinglePage(splitRoutedModel(content).content, currentPagePath);
     if (!page) return null;
 
     setPages((prevPages) => {
