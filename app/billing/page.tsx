@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/hooks/useUser';
-import Header from '@/components/layout/header';
+import { AppShell } from '@/components/app-shell';
 import { CryptoPayment } from '@/components/crypto-payment';
 import { WalletBoundary } from '@/components/providers/WalletBoundary';
 
@@ -266,9 +266,8 @@ export default function BillingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
-      <Header />
-
+    <AppShell currentView="billing">
+    <div className="flex-1 overflow-y-auto bg-[#0a0a0a] text-white">
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
@@ -725,6 +724,7 @@ export default function BillingPage() {
         />
       </WalletBoundary>
     </div>
+    </AppShell>
   );
 }
 
