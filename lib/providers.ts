@@ -26,6 +26,21 @@ export type ModelOption = {
 // The model the builder opens on when neither storage nor the gateway pick one.
 export const DEFAULT_MODEL = "zen5-coder";
 
+// Smart routing sentinel. Sent as the `model` to the gateway, it means "route
+// this request to the best/cheapest capable model" — the gateway decides per
+// request and bills as what actually served. It is a VALUE of `model`, not a
+// separate flag: the /usage toggle and the builder picker are two views over
+// this one persisted value, so an explicit concrete pick always wins over auto.
+export const AUTO_MODEL = "auto";
+
+// Whether smart routing is on for a given persisted model value. Empty/unset is
+// treated as auto so a fresh session opens in smart routing (the default).
+export const isSmartRouting = (model?: string | null): boolean =>
+  !model || model === AUTO_MODEL;
+
+// Public docs for the routing behaviour, linked from the toggle.
+export const ROUTING_DOCS_URL = "https://docs.hanzo.ai/docs/usage/routing";
+
 // One provider from the app's perspective: the Hanzo gateway.
 export const PROVIDERS = {
   hanzo: {

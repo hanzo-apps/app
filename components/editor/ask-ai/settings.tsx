@@ -7,7 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@hanzo/ui";
-import { PROVIDERS } from "@/lib/providers";
+import { PROVIDERS, AUTO_MODEL } from "@/lib/providers";
 import { useModels } from "@/lib/hooks/use-models";
 import { Button } from "@hanzo/ui";
 import {
@@ -77,11 +77,23 @@ export function Settings({
             )}
             <label className="block">
               <p className="text-neutral-300 text-sm mb-2.5">Choose a model</p>
-              <Select defaultValue={model} onValueChange={onModelChange}>
+              <Select value={model} onValueChange={onModelChange}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a model" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Smart routing</SelectLabel>
+                    {/* Auto = let the gateway route each request to the best/
+                       cheapest capable model, billed as what served you.
+                       Picking a concrete model below overrides it. */}
+                    <SelectItem value={AUTO_MODEL}>
+                      Auto
+                      <span className="ml-2 text-xs text-neutral-400">
+                        Best/cheapest model per request
+                      </span>
+                    </SelectItem>
+                  </SelectGroup>
                   <SelectGroup>
                     <SelectLabel>Models</SelectLabel>
                     {models.map(({ value, label, description }) => (
