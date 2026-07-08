@@ -102,8 +102,6 @@ export function repoImportLink(cloneUrl: string): string {
   return `/dev?repo=${encodeURIComponent(cloneUrl)}&action=edit`;
 }
 
-export type GitProvider = 'github' | 'gitlab';
-
 /** A page to push (mirrors the publish `pages[]`). */
 export interface SyncPage {
   path: string;
