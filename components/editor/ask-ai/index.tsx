@@ -10,6 +10,7 @@ import { FaStopCircle } from "react-icons/fa";
 import ProModal from "@/components/pro-modal";
 import { Button } from "@hanzo/ui";
 import { useModels } from "@/lib/hooks/use-models";
+import { AUTO_MODEL, isSmartRouting } from "@/lib/providers";
 import { HtmlHistory, Page, Project } from "@/types";
 // import { InviteFriends } from "@/components/invite-friends";
 import { Settings } from "@/components/editor/ask-ai/settings";
@@ -75,7 +76,11 @@ export function AskAI({
   const [open, setOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [provider, setProvider] = useLocalStorage("provider", "auto");
-  const [model, setModel] = useLocalStorage("model", defaultModel);
+  // Opens in smart routing: `AUTO_MODEL` means "let the gateway route each
+  // request to the best/cheapest capable model". A concrete pick from the model
+  // Settings (or the /usage toggle turning routing off) overrides this value.
+  const [model, setModel] = useLocalStorage("model", AUTO_MODEL);
+  const [routedModel, setRoutedModel] = useState<string | null>(null);
   const [openProvider, setOpenProvider] = useState(false);
   const [providerError, setProviderError] = useState("");
   const [openProModal, setOpenProModal] = useState(false);
@@ -115,6 +120,7 @@ export function AskAI({
     if (
       !modelsLoading &&
       models.length > 0 &&
+      model !== AUTO_MODEL &&
       (!model || !models.some((m) => m.value === model))
     ) {
       setModel(defaultModel);
@@ -161,6 +167,7 @@ export function AskAI({
       }
 
       if (result?.success) {
+        if (result.model) setRoutedModel(result.model);
         if (!queuedPrompt) {
           setPrompt("");
         }
@@ -174,7 +181,8 @@ export function AskAI({
         [
           ...(previousPrompts ?? []),
           ...(htmlHistory?.map((h) => h.prompt) ?? []),
-        ]
+        ],
+        setRoutedModel
       );
       if (result?.error) {
         handleError(result.error, result.message);
@@ -195,7 +203,8 @@ export function AskAI({
         handleThink,
         () => {
           setIsThinking(false);
-        }
+        },
+        setRoutedModel
       );
 
       if (result?.error) {
@@ -584,6 +593,22 @@ export function AskAI({
             {/* <InviteFriends /> */}
           </div>
           <div className="flex items-center justify-end gap-2">
+            {isSmartRouting(model) && routedModel && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="text-xs text-neutral-400 px-2 py-1 rounded-md bg-neutral-800 truncate max-w-[10rem]">
+                    Routed: {routedModel}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent
+                  align="end"
+                  className="bg-neutral-950 text-xs text-neutral-200 py-1 px-2 rounded-md -translate-y-0.5"
+                >
+                  Smart routing sent this request to {routedModel}. You&apos;re
+                  billed as what served you.
+                </TooltipContent>
+              </Tooltip>
+            )}
             <Settings
               provider={provider as string}
               model={model as string}

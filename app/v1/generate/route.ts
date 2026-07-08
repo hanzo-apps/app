@@ -40,6 +40,12 @@ const HANZO_AI_BASE_URL =
 
 const MAX_TOKENS = 131_000;
 
+// ASCII Record Separator (U+001E). Appended once after the page content to
+// carry the actually-served model back to the client without corrupting the
+// HTML page parser (this control char can never appear in page output). The
+// client (hooks/useCallAi.ts) splits on the same delimiter.
+const ROUTED_MODEL_SEP = "\u001e";
+
 // A fresh response per call — a NextResponse body is a one-shot stream, so a
 // shared instance would send an empty body on the second use.
 const unauthorized = () =>
@@ -152,9 +158,17 @@ export async function POST(request: NextRequest) {
 
   (async () => {
     try {
-      await pipeGatewaySse(gateway.body!, (delta) =>
+      const servedModel = await pipeGatewaySse(gateway.body!, (delta) =>
         writer.write(encoder.encode(delta))
       );
+      // Echo the actually-served model to the client, delimited so the page
+      // parser never sees it. Under smart routing (`model: "auto"`) this is how
+      // the client learns which model the gateway routed to.
+      if (servedModel) {
+        await writer.write(
+          encoder.encode(`${ROUTED_MODEL_SEP}${servedModel}`)
+        );
+      }
     } catch (error: any) {
       try {
         await writer.write(
@@ -265,20 +279,29 @@ export async function PUT(request: NextRequest) {
 
   const { updatedLines, pages: updatedPages } = applyEdits(chunk, pages);
 
-  return NextResponse.json({ ok: true, updatedLines, pages: updatedPages });
+  return NextResponse.json({
+    ok: true,
+    updatedLines,
+    pages: updatedPages,
+    model: data.model || selectedModel,
+  });
 }
 
 /**
  * Parse the gateway's OpenAI-compatible SSE stream and hand each
- * `choices[0].delta.content` fragment to `onDelta`.
+ * `choices[0].delta.content` fragment to `onDelta`. Returns the model the
+ * gateway reports having served (echoed on every chunk) — under smart routing
+ * the request `model` is `"auto"`, so this is how the actually-served model is
+ * surfaced back to the client.
  */
 async function pipeGatewaySse(
   body: ReadableStream<Uint8Array>,
   onDelta: (delta: string) => Promise<unknown> | unknown
-) {
+): Promise<string | null> {
   const reader = body.getReader();
   const decoder = new TextDecoder("utf-8");
   let buffer = "";
+  let servedModel: string | null = null;
 
   while (true) {
     const { done, value } = await reader.read();
@@ -301,6 +324,7 @@ async function pipeGatewaySse(
 
         try {
           const json = JSON.parse(payload);
+          if (typeof json.model === "string") servedModel = json.model;
           const delta = json.choices?.[0]?.delta?.content;
           if (delta) await onDelta(delta);
         } catch {
@@ -309,6 +333,8 @@ async function pipeGatewaySse(
       }
     }
   }
+
+  return servedModel;
 }
 
 /**
