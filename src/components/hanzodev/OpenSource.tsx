@@ -40,7 +40,7 @@ const OpenSource = () => {
 
           <div className="flex flex-wrap justify-center gap-4 mb-8">
             <a
-              href="https://github.com/hanzoai/hanzo-dev"
+              href="https://github.com/hanzoai/dev"
               target="_blank"
               rel="noreferrer noopener"
               className="inline-flex items-center px-6 py-3 rounded-full font-medium transition-all hover:opacity-90 text-sm"

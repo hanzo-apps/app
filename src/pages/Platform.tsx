@@ -29,7 +29,8 @@ const DeploymentOptions = () => {
             Deploy Your Way
           </h2>
           <p className="text-neutral-400 max-w-2xl mx-auto">
-            Same codebase, same APIs, your choice of infrastructure.
+            One binary, one <code className="px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-300 text-sm">/v1</code> contract, your choice of infrastructure.
+            Ship with <code className="px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-300 text-sm">hanzo deploy</code> and the platform reconciles the rollout — no second deployer.
           </p>
         </motion.div>
 
@@ -90,14 +91,14 @@ const DeploymentOptions = () => {
             </div>
             <h3 className="text-xl font-bold text-white mb-2">Hanzo Cloud</h3>
             <p className="text-neutral-400 text-sm mb-4">
-              Fully managed platform with global edge deployment and automatic scaling.
+              The native PaaS runs the managed platform — the operator merge-patches your Service and reconciles the rollout.
             </p>
             <ul className="space-y-2 text-sm text-neutral-500">
               <li className="flex items-center gap-2">
                 <span className="text-blue-500">✓</span> 35+ global regions
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-blue-500">✓</span> Zero-config deployments
+                <span className="text-blue-500">✓</span> Zero-config deploys, instant rollbacks
               </li>
               <li className="flex items-center gap-2">
                 <span className="text-blue-500">✓</span> 99.99% SLA

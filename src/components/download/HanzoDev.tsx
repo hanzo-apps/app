@@ -52,7 +52,7 @@ const HanzoDev = () => {
           <div className="flex justify-center mb-10">
             <div className="bg-gray-900 border border-gray-800 rounded-lg px-6 py-4 flex items-center">
               <Terminal className="h-5 w-5 text-purple-500 mr-3" />
-              <code className="text-neutral-300 font-mono">pip install hanzo-dev</code>
+              <code className="text-neutral-300 font-mono">npx @hanzo/dev</code>
               <Button variant="ghost" size="sm" className="ml-4 text-neutral-400 hover:text-[var(--white)]">
                 Copy
               </Button>
