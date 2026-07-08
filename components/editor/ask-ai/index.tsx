@@ -10,7 +10,8 @@ import { FaStopCircle } from "react-icons/fa";
 import ProModal from "@/components/pro-modal";
 import { Button } from "@hanzo/ui";
 import { useModels } from "@/lib/hooks/use-models";
-import { AUTO_MODEL, isSmartRouting } from "@/lib/providers";
+import { useRoutingDefaults } from "@/lib/hooks/use-routing-defaults";
+import { AUTO_MODEL, isSmartRouting, resolveSmartRouting } from "@/lib/providers";
 import { HtmlHistory, Page, Project } from "@/types";
 // import { InviteFriends } from "@/components/invite-friends";
 import { Settings } from "@/components/editor/ask-ai/settings";
@@ -72,14 +73,22 @@ export function AskAI({
   const refThink = useRef<HTMLDivElement | null>(null);
 
   const { models, defaultModel, loading: modelsLoading } = useModels();
+  const routingDefaults = useRoutingDefaults();
 
   const [open, setOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [provider, setProvider] = useLocalStorage("provider", "auto");
-  // Opens in smart routing: `AUTO_MODEL` means "let the gateway route each
-  // request to the best/cheapest capable model". A concrete pick from the model
-  // Settings (or the /usage toggle turning routing off) overrides this value.
-  const [model, setModel] = useLocalStorage("model", AUTO_MODEL);
+  // The persisted `model` is the user OVERRIDE: `AUTO_MODEL` = smart routing on,
+  // a concrete id = routing off, unset = follow the org default. A NEW session
+  // (unset) opens on the org's server-driven default (`/v1/routing-defaults`) —
+  // Auto when the org defaults routing on, else the concrete default model.
+  // Fail-soft: with no org policy known this stays on Auto, exactly as before.
+  const [storedModel, setModel] = useLocalStorage<string>("model");
+  const smartOn = resolveSmartRouting(
+    storedModel == null ? null : isSmartRouting(storedModel),
+    routingDefaults
+  ).enabled;
+  const model = storedModel ?? (smartOn ? AUTO_MODEL : defaultModel);
   const [routedModel, setRoutedModel] = useState<string | null>(null);
   const [openProvider, setOpenProvider] = useState(false);
   const [providerError, setProviderError] = useState("");
