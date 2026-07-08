@@ -22,13 +22,20 @@ interface RouteParams {
   params: Promise<{ path: string[] }>;
 }
 
-// Hop-by-hop / sensitive headers we must not forward upstream.
-const STRIP_REQUEST_HEADERS = new Set([
-  "host",
-  "connection",
-  "content-length",
-  "authorization",
-  "cookie",
+// ALLOWLIST — the ONLY request headers forwarded upstream to Base. Everything
+// else is DROPPED, in particular every identity header (X-Org-Id, X-User-*,
+// X-Roles, and any legacy X-IAM-*/X-HANZO-* variant) and cookies. The signed-in
+// identity travels SOLELY via the server-minted IAM Bearer set below, so Base
+// derives the user/org from the validated JWT and NEVER from a client-supplied
+// header — a builder-generated app (untrusted client) cannot spoof org/identity
+// into the Base backend through this proxy. An allowlist (not a blocklist) means
+// a newly-introduced forgeable header is dropped by default, not leaked.
+const FORWARD_REQUEST_HEADERS = new Set([
+  "content-type",
+  "accept",
+  "accept-language",
+  "if-none-match",
+  "if-modified-since",
 ]);
 
 async function handle(request: NextRequest, { params }: RouteParams): Promise<NextResponse> {
@@ -53,7 +60,7 @@ async function handle(request: NextRequest, { params }: RouteParams): Promise<Ne
 
   const fwdHeaders = new Headers();
   request.headers.forEach((value, key) => {
-    if (!STRIP_REQUEST_HEADERS.has(key.toLowerCase())) fwdHeaders.set(key, value);
+    if (FORWARD_REQUEST_HEADERS.has(key.toLowerCase())) fwdHeaders.set(key, value);
   });
   fwdHeaders.set("Authorization", `Bearer ${token}`);
 
