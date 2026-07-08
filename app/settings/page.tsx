@@ -6,7 +6,7 @@ import { Save, Key, Bell, Palette, Shield, CreditCard } from "lucide-react";
 import { Button } from "@hanzo/ui";
 import { useUser } from "@/hooks/useUser";
 import { toast } from "sonner";
-import Header from "@/components/layout/header";
+import { AppShell } from "@/components/app-shell";
 import { HanzoLogo } from "@/components/HanzoLogo";
 
 export default function SettingsPage() {
@@ -59,9 +59,8 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black">
-      <Header />
-
+    <AppShell currentView="settings">
+    <div className="flex-1 overflow-y-auto bg-black">
       <div className="container mx-auto px-6 py-8">
         <div className="grid grid-cols-12 gap-8">
           {/* Sidebar */}
@@ -220,5 +219,6 @@ export default function SettingsPage() {
         </div>
       </div>
     </div>
+    </AppShell>
   );
 }
