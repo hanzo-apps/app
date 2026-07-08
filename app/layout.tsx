@@ -13,6 +13,7 @@ import IframeDetector from "@/components/iframe-detector";
 import { Providers } from "./providers";
 import { ErrorBoundary } from "@/components/error-boundary/error-boundary";
 import { errorLogger } from "@/lib/error-handling/error-logger";
+import { HanzoAnalytics } from "@/components/HanzoAnalytics";
 
 // Canonical Hanzo typography: Basel Grotesk (UI/body/display/heading, self-hosted)
 // + Geist Mono (code/data).
@@ -112,6 +113,8 @@ export default async function RootLayout({
             </TanstackProvider>
           </Providers>
         </ErrorBoundary>
+        {/* One analytics tag: first-party + GA4 + Meta Pixel (env-driven). */}
+        <HanzoAnalytics />
       </body>
     </html>
   );
