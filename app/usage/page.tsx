@@ -7,6 +7,7 @@ import { listProjects } from '@/lib/db/projects';
 import { buildUsage } from '@/lib/usage';
 import { getBillingUsage, type BillingUsageLine } from '@/lib/commerce';
 import Header from '@/components/layout/header';
+import SmartRoutingCard from '@/components/usage/smart-routing-card';
 import { Button } from '@hanzo/ui';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@hanzo/ui';
 import { Progress } from '@hanzo/ui';
@@ -74,6 +75,9 @@ export default async function UsagePage() {
             </Button>
           </Link>
         </div>
+
+        {/* Smart routing — explains the value and toggles the builder default. */}
+        <SmartRoutingCard />
 
         {/* Account usage — real figures from the Hanzo Base data plane. */}
         <Card className="bg-[#1a1a1a] border-white/10 mb-6">
