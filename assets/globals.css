@@ -3,6 +3,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Shared @hanzo/ui components (network switcher / wallet menu) live in
+   node_modules - point Tailwind's scanner at them. */
+@source "../node_modules/@hanzo/ui/dist/network";
+@source "../node_modules/@hanzo/ui/dist/wallet";
+
 /* Custom animations */
 @keyframes fadeIn {
   from {
