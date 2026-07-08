@@ -41,6 +41,49 @@ export const isSmartRouting = (model?: string | null): boolean =>
 // Public docs for the routing behaviour, linked from the toggle.
 export const ROUTING_DOCS_URL = "https://docs.hanzo.ai/docs/usage/routing";
 
+// Server-driven org routing policy, surfaced by the `/v1/routing-defaults`
+// proxy (which fetches cloud-api `GET /v1/get-routing-defaults`).
+// `autoRoutingActive` gates whether the org permits smart routing at all;
+// `defaultSessionRouting` is the org's default for a NEW session when the user
+// has expressed no explicit override.
+export type RoutingDefaults = {
+  autoRoutingActive: boolean;
+  defaultSessionRouting: boolean;
+};
+
+// Effective smart-routing state for a NEW session.
+export type SmartRoutingState = {
+  enabled: boolean; // routing on for a fresh session/conversation
+  toggleDisabled: boolean; // org disallows routing → hide/disable the toggle
+};
+
+// Resolve the effective smart-routing state for a NEW session — the ONE place
+// the precedence lives (mirrored, not shared, across chat/app/console).
+//
+// `localPref` is the user's explicit override: true = on, false = off, null =
+// never touched (follow the org default). `defaults` is the server-driven org
+// policy, or null when unknown (older cloud-api / fetch failed).
+//
+// Fail-soft: with no org policy, behave exactly as before — the user's local
+// preference alone, defaulting to on (smart routing was the prior default).
+// When the org disables routing, the toggle is off and locked regardless of any
+// local preference. Otherwise the user's override wins, else the org default.
+export function resolveSmartRouting(
+  localPref: boolean | null,
+  defaults: RoutingDefaults | null
+): SmartRoutingState {
+  if (!defaults) {
+    return { enabled: localPref ?? true, toggleDisabled: false };
+  }
+  if (!defaults.autoRoutingActive) {
+    return { enabled: false, toggleDisabled: true };
+  }
+  return {
+    enabled: localPref ?? defaults.defaultSessionRouting,
+    toggleDisabled: false,
+  };
+}
+
 // One provider from the app's perspective: the Hanzo gateway.
 export const PROVIDERS = {
   hanzo: {
