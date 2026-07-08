@@ -10,7 +10,9 @@ import {
   DEFAULT_MODEL,
   ROUTING_DOCS_URL,
   isSmartRouting,
+  resolveSmartRouting,
 } from "@/lib/providers";
+import { useRoutingDefaults } from "@/lib/hooks/use-routing-defaults";
 
 /**
  * Smart routing toggle for the /usage page.
@@ -21,10 +23,21 @@ import {
  * value the builder's model picker reads and writes, so the two surfaces stay
  * in sync and an explicit model pick in the builder always wins over auto.
  * Turning routing off restores the concrete default model.
+ *
+ * The local value is the user OVERRIDE. When it is unset (never touched), the
+ * effective state follows the org's server-driven default
+ * (`/v1/routing-defaults`); if the org disables routing, the toggle is locked
+ * off with honest copy. Fail-soft: with no org policy known, this behaves
+ * exactly as before — local preference only, defaulting to on.
  */
 export default function SmartRoutingCard() {
-  const [model, setModel] = useLocalStorage<string>("model", AUTO_MODEL);
-  const on = isSmartRouting(model);
+  // No default: an unset key reads as `undefined`, so we can tell "never
+  // touched" (follow the org default) apart from an explicit on/off override.
+  const [model, setModel] = useLocalStorage<string>("model");
+  const defaults = useRoutingDefaults();
+
+  const localPref = model == null ? null : isSmartRouting(model);
+  const { enabled: on, toggleDisabled } = resolveSmartRouting(localPref, defaults);
 
   return (
     <Card className="bg-[#1a1a1a] border-white/10 mb-6">
@@ -44,9 +57,11 @@ export default function SmartRoutingCard() {
             role="switch"
             aria-checked={on}
             aria-label="Toggle smart routing"
+            disabled={toggleDisabled}
             onClick={() => setModel(on ? DEFAULT_MODEL : AUTO_MODEL)}
             className={classNames(
-              "mt-1 shrink-0 rounded-full min-w-10 w-10 h-6 flex items-center p-1 cursor-pointer transition-all duration-200",
+              "mt-1 shrink-0 rounded-full min-w-10 w-10 h-6 flex items-center p-1 transition-all duration-200",
+              toggleDisabled ? "cursor-not-allowed opacity-40" : "cursor-pointer",
               on ? "bg-white" : "bg-neutral-700"
             )}
           >
@@ -67,9 +82,11 @@ export default function SmartRoutingCard() {
           routing for that request.
         </p>
         <p className="text-sm text-white/50">
-          {on
-            ? "On — the builder opens on Auto and the gateway routes each request."
-            : `Off — the builder uses ${DEFAULT_MODEL} unless you pick another model.`}
+          {toggleDisabled
+            ? "Disabled for your organization."
+            : on
+              ? "On — the builder opens on Auto and the gateway routes each request."
+              : `Off — the builder uses ${DEFAULT_MODEL} unless you pick another model.`}
         </p>
         <a
           href={ROUTING_DOCS_URL}
