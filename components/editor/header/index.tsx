@@ -5,6 +5,7 @@ import Link from "next/link";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { OrgSwitcher } from "@/components/org-switcher";
 import { EditorAccountMenu } from "@/components/editor/account-menu";
+import { NetworkWallet } from "@/components/network-wallet";
 
 import { Button } from "@hanzo/ui";
 import classNames from "classnames";
@@ -62,6 +63,7 @@ export function Header({
       </div>
       <div className="flex items-center justify-end gap-2 lg:gap-3">
         {children}
+        <NetworkWallet />
         <div className="h-6 w-px bg-neutral-700 hidden md:block" />
         <EditorAccountMenu />
       </div>
