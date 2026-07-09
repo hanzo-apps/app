@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Metadata, Viewport } from "next";
-import localFont from "next/font/local";
-import { Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import { cookies } from "next/headers";
 
 import TanstackProvider from "@/components/providers/tanstack-query-provider";
@@ -14,14 +13,11 @@ import { Providers } from "./providers";
 import { ErrorBoundary } from "@/components/error-boundary/error-boundary";
 import { errorLogger } from "@/lib/error-handling/error-logger";
 
-// Canonical Hanzo typography: Basel Grotesk (UI/body/display/heading, self-hosted)
+// Canonical Hanzo typography: Geist Sans (UI/body/display/heading)
 // + Geist Mono (code/data).
-const basel = localFont({
-  src: [
-    { path: "./fonts/Basel-Grotesk-Book.woff2", weight: "400", style: "normal" },
-    { path: "./fonts/Basel-Grotesk-Medium.woff2", weight: "500", style: "normal" },
-  ],
+const basel = Geist({
   variable: "--font-basel-sans",
+  subsets: ["latin"],
   display: "swap",
 });
 
