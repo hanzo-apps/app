@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { MessageSquare, LayoutGrid } from "lucide-react";
-import { Button } from "@hanzo/ui";
 
 /**
  * Cross-surface project deep-links (console <-> hanzo.app <-> hanzo.chat).
@@ -13,6 +12,10 @@ import { Button } from "@hanzo/ui";
  * slug rides as `?project=<slug>`. When the builder is opened for a linked
  * project we surface "Chat" (hanzo.chat) + "Console" (manage) for the SAME
  * slug, so one project round-trips across every surface.
+ *
+ * Plain anchors (not `<Button asChild>`): the shared Button always wraps its
+ * children in an array for the loading slot, which trips Radix Slot's
+ * React.Children.only under asChild.
  */
 const CHAT_ORIGIN = "https://hanzo.chat";
 const CONSOLE_ORIGIN = "https://console.hanzo.ai";
@@ -46,45 +49,36 @@ function useProjectSlug(): string {
   return slug;
 }
 
+const linkClass =
+  "inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium text-neutral-400 transition-colors hover:bg-neutral-800 hover:text-white";
+
 /** Compact "Chat" + "Console" links for the linked project, shown in the
  *  builder header only when the builder was opened for a project. */
 export function CrossSurfaceLinks() {
   const slug = useProjectSlug();
   if (!slug) return null;
   return (
-    <div className="hidden md:flex items-center gap-1">
-      <Button
-        asChild
-        variant="ghost"
-        size="sm"
-        className="opacity-70 hover:opacity-100"
+    <div className="hidden items-center gap-1 md:flex">
+      <a
+        href={chatProjectUrl(slug)}
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Chat about this project in hanzo.chat"
+        className={linkClass}
       >
-        <a
-          href={chatProjectUrl(slug)}
-          target="_blank"
-          rel="noopener noreferrer"
-          title="Chat about this project in hanzo.chat"
-        >
-          <MessageSquare className="size-4" />
-          <span className="hidden lg:inline">Chat</span>
-        </a>
-      </Button>
-      <Button
-        asChild
-        variant="ghost"
-        size="sm"
-        className="opacity-70 hover:opacity-100"
+        <MessageSquare className="size-4" />
+        <span className="hidden lg:inline">Chat</span>
+      </a>
+      <a
+        href={consoleProjectUrl(slug)}
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Manage this project in console.hanzo.ai"
+        className={linkClass}
       >
-        <a
-          href={consoleProjectUrl(slug)}
-          target="_blank"
-          rel="noopener noreferrer"
-          title="Manage this project in console.hanzo.ai"
-        >
-          <LayoutGrid className="size-4" />
-          <span className="hidden lg:inline">Console</span>
-        </a>
-      </Button>
+        <LayoutGrid className="size-4" />
+        <span className="hidden lg:inline">Console</span>
+      </a>
     </div>
   );
 }
