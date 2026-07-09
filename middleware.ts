@@ -73,7 +73,11 @@ export async function middleware(request: NextRequest) {
     const token = request.cookies.get(TOKEN_COOKIE);
     if (!token?.value) {
       const loginUrl = new URL("/login", request.url);
-      loginUrl.searchParams.set("redirect", path);
+      // Preserve the full path AND query so a cross-surface deep link
+      // (e.g. /dev?project=<slug>) survives the login bounce — the project scope
+      // is otherwise lost for a logged-out user. loginRedirectDestination allows
+      // a same-origin path with a query; only protocol-relative targets are rejected.
+      loginUrl.searchParams.set("redirect", path + request.nextUrl.search);
       return NextResponse.redirect(loginUrl);
     }
     // Token exists – allow through. Server-side validation happens in lib/auth.ts.
