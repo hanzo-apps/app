@@ -1,6 +1,6 @@
 {
   "name": "@hanzo/app",
-  "version": "1.42.8",
+  "version": "1.42.10",
   "private": true,
   "license": "MIT",
   "scripts": {
