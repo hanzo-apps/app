@@ -30,7 +30,12 @@ import { useCloudBalance, spendableCents } from "@/lib/billing/live-balance";
 
 const fmtUsd = (cents: number): string => `$${(cents / 100).toFixed(2)}`;
 
-export function EditorAccountMenu() {
+export function EditorAccountMenu({
+  direction = "down",
+}: {
+  /** "up" opens the menu above the trigger — for the bottom-left cluster. */
+  direction?: "up" | "down";
+}) {
   const { user, logout } = useUser();
   const { phase, balance } = useCloudBalance();
   const cents = spendableCents(balance);
@@ -68,7 +73,11 @@ export function EditorAccountMenu() {
             <span className="hidden lg:inline max-w-[120px] truncate">{name}</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuContent
+          side={direction === "up" ? "top" : "bottom"}
+          align="start"
+          className="w-56"
+        >
           <DropdownMenuLabel>
             <div className="flex flex-col space-y-1">
               <p className="text-sm font-medium leading-none truncate">{name}</p>

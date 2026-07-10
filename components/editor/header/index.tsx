@@ -3,9 +3,6 @@ import { Eye, MessageCircleCode } from "lucide-react";
 import Link from "next/link";
 
 import { HanzoLogo } from "@/components/HanzoLogo";
-import { OrgSwitcher } from "@/components/org-switcher";
-import { EditorAccountMenu } from "@/components/editor/account-menu";
-import { NetworkWallet } from "@/components/network-wallet";
 import { CrossSurfaceLinks } from "@/components/editor/cross-surface-links";
 
 import { Button } from "@hanzo/ui";
@@ -42,13 +39,22 @@ export function Header({
   children?: ReactNode;
 }) {
   return (
-    <header className="border-b bg-neutral-200 border-neutral-300 dark:bg-neutral-950 dark:border-neutral-800 px-3 lg:px-6 py-2 flex items-center max-lg:gap-3 justify-between lg:grid lg:grid-cols-3 z-20">
+    <header className="border-b bg-neutral-950 border-neutral-800 px-3 lg:px-6 py-2 flex items-center max-lg:gap-3 justify-between lg:grid lg:grid-cols-3 z-20">
       <div className="flex items-center justify-start gap-3 min-w-0">
         <ContextMenu>
           <ContextMenuTrigger asChild>
             {/* Left-click → home; right-click → the app-shell menu (settings / brand / docs). */}
-            <Link href="/" className="flex items-center gap-2 group shrink-0" aria-label="Hanzo">
-              <HanzoLogo className="w-8 h-8 text-white group-hover:text-white/80 transition-colors" />
+            <Link
+              href="/"
+              className="group flex items-center shrink-0 rounded-md p-1 -m-1 transition-colors hover:bg-white/5"
+              aria-label="Hanzo"
+            >
+              {/* Animated mark unifies the surfaces — a subtle idle drift that
+                  lifts on hover; the SVG's own animation is reduced-motion safe. */}
+              <HanzoLogo
+                animated
+                className="w-8 h-8 text-white transition-opacity duration-200 opacity-90 group-hover:opacity-100 motion-reduce:opacity-100"
+              />
             </Link>
           </ContextMenuTrigger>
           <ContextMenuContent className="w-56">
@@ -69,11 +75,6 @@ export function Header({
             </ContextMenuItem>
           </ContextMenuContent>
         </ContextMenu>
-        <div className="h-6 w-px bg-neutral-700 hidden sm:block" />
-        {/* Active org context — the builder is always scoped to one org. */}
-        <div className="hidden sm:block min-w-0">
-          <OrgSwitcher />
-        </div>
       </div>
       <div className="flex items-center justify-start lg:justify-center gap-1 max-lg:pl-3 flex-1 max-lg:border-l max-lg:border-l-neutral-800">
         {TABS.map((item) => (
@@ -94,9 +95,6 @@ export function Header({
       <div className="flex items-center justify-end gap-2 lg:gap-3">
         <CrossSurfaceLinks />
         {children}
-        <NetworkWallet />
-        <div className="h-6 w-px bg-neutral-700 hidden md:block" />
-        <EditorAccountMenu />
       </div>
     </header>
   );

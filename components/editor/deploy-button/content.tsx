@@ -113,13 +113,13 @@ export const DeployButtonContent = ({
     <>
       <header className="bg-neutral-50 p-6 border-b border-neutral-200/60">
         <div className="flex items-center justify-center -space-x-4 mb-3">
-          <div className="size-9 rounded-full bg-amber-200 shadow-2xs flex items-center justify-center text-xl opacity-50">
+          <div className="size-9 rounded-full bg-neutral-200 shadow-2xs flex items-center justify-center text-xl opacity-50">
             🚀
           </div>
-          <div className="size-11 rounded-full bg-red-200 shadow-2xl flex items-center justify-center z-2">
+          <div className="size-11 rounded-full bg-neutral-100 shadow-2xl flex items-center justify-center z-2">
             <Image src={SpaceIcon} alt="Project Icon" className="size-7" />
           </div>
-          <div className="size-9 rounded-full bg-sky-200 shadow-2xs flex items-center justify-center text-xl opacity-50">
+          <div className="size-9 rounded-full bg-neutral-300 shadow-2xs flex items-center justify-center text-xl opacity-50">
             👻
           </div>
         </div>
@@ -139,7 +139,7 @@ export const DeployButtonContent = ({
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setConfig({ ...config, title: e.target.value })
             }
-            className="!bg-white !border-neutral-300 !text-neutral-800 !placeholder:text-neutral-400 selection:!bg-blue-100"
+            className="!bg-white !border-neutral-300 !text-neutral-800 !placeholder:text-neutral-400 selection:!bg-neutral-200"
           />
         </div>
         <div>
