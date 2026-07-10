@@ -176,7 +176,7 @@ export const Preview = ({
       />
       {!isAiWorking && hoveredElement && selectedElement && (
         <div
-          className="cursor-pointer absolute bg-sky-500/10 border-[2px] border-dashed border-sky-500 rounded-r-lg rounded-b-lg p-3 z-10 pointer-events-none"
+          className="cursor-pointer absolute bg-white/10 border-[2px] border-dashed border-white rounded-r-lg rounded-b-lg p-3 z-10 pointer-events-none"
           style={{
             top:
               selectedElement.getBoundingClientRect().top +
@@ -188,7 +188,7 @@ export const Preview = ({
             height: selectedElement.getBoundingClientRect().height,
           }}
         >
-          <span className="bg-sky-500 rounded-t-md text-sm text-neutral-100 px-2 py-0.5 -translate-y-7 absolute top-0 left-0">
+          <span className="bg-white rounded-t-md text-sm text-neutral-900 px-2 py-0.5 -translate-y-7 absolute top-0 left-0">
             {htmlTagToText(selectedElement.tagName.toLowerCase())}
           </span>
         </div>

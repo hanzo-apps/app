@@ -6,7 +6,7 @@ import { HtmlHistory, Page } from "@/types";
 import { Button } from "@hanzo/ui";
 import { MdAdd } from "react-icons/md";
 import { History } from "@/components/editor/history";
-import { UserMenu } from "@/components/user-menu";
+import { BuilderIdentityBar } from "@/components/editor/identity-bar";
 import { useUser } from "@/hooks/useUser";
 import Link from "next/link";
 import { useLocalStorage } from "react-use";
@@ -62,17 +62,17 @@ export function Footer({
   };
 
   return (
-    <footer className="border-t bg-neutral-200 border-neutral-300 dark:bg-neutral-950 dark:border-neutral-800 px-3 py-2 flex items-center justify-between sticky bottom-0 z-20">
-      <div className="flex items-center gap-2">
+    <footer className="border-t bg-neutral-950 border-neutral-800 px-3 py-2 flex items-center justify-between sticky bottom-0 z-20">
+      <div className="flex items-center gap-2 min-w-0">
         {user ? (
           user?.isLocalUse ? (
-            <>
-              <div className="max-w-max bg-amber-500/10 rounded-full px-3 py-1 text-amber-500 border border-amber-500/20 text-sm font-medium">
-                Local Usage
-              </div>
-            </>
+            <div className="max-w-max rounded-full border border-neutral-700 bg-neutral-800/60 px-3 py-1 text-sm font-medium text-neutral-300">
+              Local Usage
+            </div>
           ) : (
-            <UserMenu className="!p-1 !pr-3 !h-auto" />
+            /* The ONE bottom-left identity cluster: org + account
+               (mirrors hanzo.chat / console). Menus open upward. */
+            <BuilderIdentityBar />
           )
         ) : (
           <Button size="sm" variant="default" onClick={handleClick}>
