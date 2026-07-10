@@ -23,7 +23,7 @@ const providers = [
 export default function ModelsStrip() {
   return (
     <section className="relative border-t border-white/[0.06] px-4 py-20 md:px-8 md:py-24">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
+      <div className="mx-auto grid max-w-6xl items-center gap-12 [&>*]:min-w-0 lg:grid-cols-2 lg:gap-16">
         <Reveal>
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">
             Hanzo LLM Gateway
