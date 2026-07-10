@@ -15,7 +15,6 @@ import {
   Monitor,
   Smartphone,
   Globe,
-  Boxes,
   Check,
 } from 'lucide-react';
 import { AppShell } from '@/components/app-shell';
@@ -24,15 +23,21 @@ import {
   studioHref,
   builderHref,
   isPlayable,
-  type GameTarget,
+  type BuildTarget,
 } from '@/data/games-catalog';
 
-const TARGET_ICON: Record<GameTarget, typeof Globe> = {
-  web: Globe,
-  desktop: Monitor,
-  mobile: Smartphone,
-  console: Boxes,
+const TARGET_ICON: Record<BuildTarget, typeof Globe> = {
+  webgl: Globe,
+  windows: Monitor,
+  mac: Monitor,
+  linux: Monitor,
+  android: Smartphone,
+  ios: Smartphone,
 };
+
+function upstreamUrl(upstream: string): string {
+  return /^https?:\/\//.test(upstream) ? upstream : `https://github.com/${upstream}`;
+}
 
 export default function GameDetail() {
   const router = useRouter();
@@ -54,6 +59,7 @@ export default function GameDetail() {
   }
 
   const playable = isPlayable(game);
+  const webglCapable = game.targets.includes('webgl');
   const submitAsk = () => {
     if (!ask.trim()) return;
     router.push(builderHref(game, ask.trim()));
@@ -82,7 +88,7 @@ export default function GameDetail() {
                 <Badge variant="secondary">{game.genre}</Badge>
               </div>
               <h1 className="text-3xl font-medium">{game.name}</h1>
-              <p className="mt-2 max-w-2xl text-neutral-400">{game.blurb}</p>
+              <p className="mt-2 max-w-2xl text-neutral-400">{game.description}</p>
             </div>
             {playable && (
               <Button
@@ -99,11 +105,11 @@ export default function GameDetail() {
           {/* Spec grid */}
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Spec label="Targets">
-              <div className="flex items-center gap-2 text-neutral-200">
+              <div className="flex flex-wrap items-center gap-2 text-neutral-200">
                 {game.targets.map((t) => {
                   const Icon = TARGET_ICON[t];
                   return (
-                    <span key={t} className="inline-flex items-center gap-1 text-sm capitalize">
+                    <span key={t} className="inline-flex items-center gap-1 text-sm">
                       <Icon className="h-4 w-4" />
                       {t}
                     </span>
@@ -116,43 +122,65 @@ export default function GameDetail() {
             </Spec>
             <Spec label="Build status">
               <span className="inline-flex items-center gap-1.5 text-sm text-neutral-200">
-                {game.buildable ? (
-                  <>
-                    <Check className="h-4 w-4 text-white" />
-                    {playable
-                      ? game.playable === 'web'
-                        ? 'Web build live'
-                        : 'Web build (placeholder)'
-                      : 'Desktop build'}
-                  </>
-                ) : (
-                  'Not buildable'
-                )}
+                {game.buildable && <Check className="h-4 w-4 text-white" />}
+                {playable
+                  ? 'WebGL build (placeholder)'
+                  : webglCapable
+                    ? 'WebGL-capable — build not hosted'
+                    : game.buildable
+                      ? 'Desktop build'
+                      : 'Not buildable'}
               </span>
             </Spec>
             <Spec label="Upstream">
               <a
-                href={game.upstream}
+                href={upstreamUrl(game.upstream)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-sm text-neutral-200 hover:text-white"
               >
                 <Github className="h-4 w-4" />
-                Source
+                {game.upstream}
                 <ArrowUpRight className="h-3.5 w-3.5" />
               </a>
             </Spec>
             <Spec label="Hanzo fork">
-              <span className="font-mono text-xs text-neutral-400">{game.fork}</span>
+              {game.fork ? (
+                <a
+                  href={`https://github.com/${game.fork}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 font-mono text-xs text-neutral-300 hover:text-white"
+                >
+                  {game.fork}
+                  <ArrowUpRight className="h-3 w-3" />
+                </a>
+              ) : (
+                <span className="text-xs text-neutral-500">
+                  Reference only — {game.forkReason ?? 'license forbids redistribution'}
+                </span>
+              )}
+            </Spec>
+            <Spec label="License terms">
+              <span className="text-xs text-neutral-400">{game.licenseRestrictions}</span>
             </Spec>
           </div>
 
-          {/* Unreal desktop titles: honest note, no fake play / pixel-stream button */}
+          {/* No in-browser build — honest note, no fake play / pixel-stream button */}
           {!playable && (
             <p className="mt-6 rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-3 text-sm text-neutral-400">
-              {game.name} targets{' '}
-              {game.targets.join(', ')} — no in-browser build. Pixel-streaming preview is a
-              render-node feature and is not enabled here.
+              {webglCapable ? (
+                <>
+                  {game.name} builds to WebGL, but no artifact is hosted yet. A CI job drops the
+                  build under <code className="text-neutral-300">/webgl/{game.id}/</code> (see the
+                  artifact contract) to enable in-browser play.
+                </>
+              ) : (
+                <>
+                  {game.name} targets {game.targets.join(', ')} — no in-browser build.
+                  Pixel-streaming preview is a render-node feature and is not enabled here.
+                </>
+              )}
             </p>
           )}
 
@@ -163,19 +191,24 @@ export default function GameDetail() {
               <h2 className="text-lg font-medium">Generate assets</h2>
             </div>
             <p className="mb-4 text-sm text-neutral-400">
-              Open this title in the Hanzo studio pipeline to regenerate its assets. The
-              slots below travel to studio as the generation targets.
+              Open this title in the Hanzo studio pipeline to regenerate its assets.
             </p>
-            <div className="mb-5 flex flex-wrap gap-2">
-              {game.assetSlots.map((slot) => (
-                <span
-                  key={slot}
-                  className="rounded-full border border-neutral-700 bg-neutral-800/50 px-3 py-1 text-xs capitalize text-neutral-200"
-                >
-                  {slot}
-                </span>
-              ))}
-            </div>
+            {game.assetSlots.length > 0 ? (
+              <div className="mb-5 flex flex-wrap gap-2">
+                {game.assetSlots.map((slot) => (
+                  <span
+                    key={slot}
+                    className="rounded-full border border-neutral-700 bg-neutral-800/50 px-3 py-1 text-xs capitalize text-neutral-200"
+                  >
+                    {slot}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="mb-5 text-xs text-neutral-500">
+                Asset slots are defined in a later catalog pass; studio infers them for now.
+              </p>
+            )}
             <a href={studioHref(game)} target="_blank" rel="noopener noreferrer">
               <Button className="gap-2 bg-gradient-to-r from-neutral-700 to-neutral-900 hover:from-neutral-900 hover:to-neutral-700">
                 <Wand2 className="h-4 w-4" />
