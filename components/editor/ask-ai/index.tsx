@@ -327,12 +327,12 @@ export function AskAI({
       {messageQueue.length > 0 && (
         <div className="mb-4 space-y-2">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs text-[#171717] font-medium">
+            <span className="text-xs text-white font-medium">
               Queued Messages ({messageQueue.length})
             </span>
             <button
               onClick={() => setMessageQueue([])}
-              className="text-xs text-[#171717] hover:text-[#404040] underline"
+              className="text-xs text-neutral-400 hover:text-white underline"
             >
               Clear all
             </button>
@@ -341,7 +341,7 @@ export function AskAI({
             {messageQueue.map((msg, index) => (
               <div
                 key={msg.id}
-                className="relative bg-neutral-800/50 border border-[#171717]/20 rounded-lg p-3 animate-slideIn"
+                className="relative bg-neutral-800/50 border border-neutral-700 rounded-lg p-3 animate-slideIn"
                 style={{
                   animationDelay: `${index * 0.05}s`,
                 }}
@@ -362,8 +362,8 @@ export function AskAI({
                     {msg.timestamp.toLocaleTimeString()}
                   </span>
                   {index === 0 && (
-                    <span className="text-xs text-[#171717] flex items-center gap-1">
-                      <div className="w-1.5 h-1.5 bg-[#171717] rounded-full animate-pulse" />
+                    <span className="text-xs text-neutral-300 flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
                       Next in queue
                     </span>
                   )}
@@ -456,7 +456,7 @@ export function AskAI({
                     <>
                       AI is working...
                       {messageQueue.length > 0 && (
-                        <span className="ml-1 text-[#171717]">
+                        <span className="ml-1 text-neutral-400">
                           ({messageQueue.length} queued)
                         </span>
                       )}
@@ -515,7 +515,7 @@ export function AskAI({
                         </span>
                       ))}
                       {messageQueue.length > 0 && (
-                        <span className="ml-2 text-[#171717]">
+                        <span className="ml-2 text-neutral-400">
                           ({messageQueue.length} queued)
                         </span>
                       )}
@@ -641,7 +641,6 @@ export function AskAI({
                 size="iconXs"
                 disabled={isUploading || !prompt.trim()}
                 onClick={() => callAi()}
-                className={messageQueue.length > 0 ? "bg-[#171717] hover:bg-[#000000]" : ""}
               >
                 <ArrowUp className="size-4" />
               </Button>
