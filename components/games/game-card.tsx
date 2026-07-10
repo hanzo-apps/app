@@ -2,32 +2,28 @@
 
 /**
  * GameCard — one entry in the /games grid. Fully derived from the catalog row:
- * engine badge, genre, license, targets, and an honest play affordance. The
- * whole card links to the title's detail page; a "Play" pill appears only when
- * the title is playable in-browser.
+ * engine badge, genre, license, target families, and an honest play affordance.
+ * The whole card links to the title's detail page; a "Play" pill appears only
+ * when a WebGL build is hosted for the title.
  */
 
 import Link from 'next/link';
 import { Badge } from '@hanzo/ui';
-import { Gamepad2, Monitor, Smartphone, Globe, Boxes, Play } from 'lucide-react';
-import type { GameEntry, GameEngine, GameTarget } from '@/data/games-catalog';
+import { Gamepad2, Monitor, Smartphone, Globe, Play } from 'lucide-react';
+import type { GameEntry, GameEngine } from '@/data/games-catalog';
 import { isPlayable } from '@/data/games-catalog';
+import { targetFamilies } from '@/components/games/targets';
 
 const ENGINE_LABEL: Record<GameEngine, string> = {
   unity: 'Unity',
   unreal: 'Unreal',
-  godot: 'Godot',
 };
 
-const TARGET_ICON: Record<GameTarget, typeof Globe> = {
-  web: Globe,
-  desktop: Monitor,
-  mobile: Smartphone,
-  console: Boxes,
-};
+const FAMILY_ICON = { web: Globe, desktop: Monitor, mobile: Smartphone } as const;
 
 export function GameCard({ game }: { game: GameEntry }) {
   const playable = isPlayable(game);
+  const families = targetFamilies(game.targets);
   return (
     <Link
       href={`/games/${game.id}`}
@@ -49,7 +45,7 @@ export function GameCard({ game }: { game: GameEntry }) {
           </span>
         ) : (
           <span className="rounded-full border border-neutral-700 px-2 py-0.5 text-[11px] text-neutral-400">
-            {game.targets.includes('desktop') ? 'Desktop' : 'Build'}
+            {game.targets.includes('webgl') ? 'WebGL-ready' : 'Desktop'}
           </span>
         )}
       </div>
@@ -61,14 +57,14 @@ export function GameCard({ game }: { game: GameEntry }) {
             {game.genre}
           </Badge>
         </div>
-        <p className="line-clamp-3 flex-1 text-xs text-neutral-500">{game.blurb}</p>
+        <p className="line-clamp-3 flex-1 text-xs text-neutral-500">{game.description}</p>
 
-        {/* Targets + license */}
+        {/* Target families + license */}
         <div className="mt-3 flex items-center justify-between">
           <div className="flex items-center gap-1.5 text-neutral-400">
-            {game.targets.map((t) => {
-              const Icon = TARGET_ICON[t];
-              return <Icon key={t} className="h-3.5 w-3.5" aria-label={t} />;
+            {families.map((f) => {
+              const Icon = FAMILY_ICON[f];
+              return <Icon key={f} className="h-3.5 w-3.5" aria-label={f} />;
             })}
           </div>
           <span className="font-mono text-[10px] uppercase tracking-wide text-neutral-600">
