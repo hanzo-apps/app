@@ -440,7 +440,7 @@ export function AISupervisor({
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Shield className="w-5 h-5 text-purple-400" />
+          <Shield className="w-5 h-5 text-neutral-300" />
           <h3 className="text-lg font-medium text-white">AI Supervisor</h3>
           <div className="flex items-center gap-1">
             {sandboxStatus === "running" && (
@@ -535,7 +535,7 @@ export function AISupervisor({
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-neutral-300">Test Results</span>
           {isAutoFixing && (
-            <span className="flex items-center gap-1 text-xs text-blue-400">
+            <span className="flex items-center gap-1 text-xs text-neutral-400">
               <Loading overlay={false} className="!size-3" />
               Auto-fixing...
             </span>
@@ -599,7 +599,7 @@ export function AISupervisor({
                 <Activity
                   className={`w-3 h-3 ${
                     task.status === "running"
-                      ? "text-blue-400 animate-pulse"
+                      ? "text-neutral-300 animate-pulse"
                       : task.status === "completed"
                       ? "text-green-400"
                       : task.status === "failed"
@@ -613,7 +613,7 @@ export function AISupervisor({
                 {task.status === "running" && (
                   <div className="w-20 h-1 bg-neutral-700 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-blue-400 transition-all"
+                      className="h-full bg-white transition-all"
                       style={{ width: `${task.progress}%` }}
                     />
                   </div>
