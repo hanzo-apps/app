@@ -429,7 +429,7 @@ export const AppEditor = ({
             </div>
             <div
               ref={resizer}
-              className="bg-neutral-800 hover:bg-sky-500 active:bg-sky-500 w-1.5 cursor-col-resize h-full max-lg:hidden"
+              className="bg-neutral-800 hover:bg-neutral-600 active:bg-neutral-500 w-1.5 cursor-col-resize h-full max-lg:hidden"
             />
           </>
         )}
