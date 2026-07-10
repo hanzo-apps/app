@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dodge the Creeps — WebGL</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  /* Engine loader DOM contract: a single full-frame canvas the runtime draws to.
+     A real Godot HTML5 / Unity WebGL export owns this same #game-canvas slot. */
+  #game-canvas { display: block; width: 100vw; height: 100vh; }
+  .overlay {
+    position: fixed; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 12px; pointer-events: none;
+    text-align: center; color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,.8);
+  }
+  .title { font-size: 28px; font-weight: 600; letter-spacing: .5px; }
+  .badge {
+    font-size: 11px; text-transform: uppercase; letter-spacing: .15em;
+    border: 1px solid rgba(255,255,255,.35); border-radius: 999px; padding: 4px 12px;
+    color: rgba(255,255,255,.85);
+  }
+  .note { font-size: 12px; color: rgba(255,255,255,.6); max-width: 460px; line-height: 1.5; padding: 0 20px; }
+</style>
+</head>
+<body>
+  <canvas id="game-canvas"></canvas>
+  <div class="overlay">
+    <div class="badge">Placeholder build</div>
+    <div class="title">Dodge the Creeps</div>
+    <div class="note">
+      A real Godot 4 HTML5 export is dropped here by CI (see public/webgl/README.md).
+      This live WebGL canvas stands in for it so the player, sandbox, and controls
+      are wired and verified.
+    </div>
+  </div>
+<script>
+// Real WebGL scene — an animated field, drawn every frame to prove the canvas
+// runtime works inside the sandboxed player iframe. Falls back to 2D if WebGL
+// is unavailable so a canvas is always rendered.
+(function () {
+  var canvas = document.getElementById('game-canvas');
+  function resize() {
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.floor(canvas.clientWidth * dpr);
+    canvas.height = Math.floor(canvas.clientHeight * dpr);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if (!gl) return fallback2d();
+
+  var vs = 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0.0, 1.0); }';
+  var fs =
+    'precision highp float; uniform vec2 r; uniform float t;' +
+    'void main(){' +
+    '  vec2 uv = (gl_FragCoord.xy / r) * 2.0 - 1.0; uv.x *= r.x / r.y;' +
+    '  float d = 0.0;' +
+    '  for (float i = 1.0; i < 6.0; i += 1.0) {' +
+    '    d += sin(uv.x * i * 1.7 + t) * cos(uv.y * i * 1.3 - t) / i;' +
+    '  }' +
+    '  vec3 col = 0.5 + 0.5 * cos(vec3(0.0, 2.0, 4.0) + d * 3.0 + t * 0.3);' +
+    '  col *= 0.35 + 0.25 * length(uv);' +
+    '  gl_FragColor = vec4(col, 1.0);' +
+    '}';
+
+  function compile(type, src) {
+    var s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+  var prog = gl.createProgram();
+  gl.attachShader(prog, compile(gl.VERTEX_SHADER, vs));
+  gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+
+  var buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+  var loc = gl.getAttribLocation(prog, 'p');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+  var uR = gl.getUniformLocation(prog, 'r');
+  var uT = gl.getUniformLocation(prog, 't');
+  var start = performance.now();
+
+  function frame(now) {
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.uniform2f(uR, canvas.width, canvas.height);
+    gl.uniform1f(uT, (now - start) / 1000);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  function fallback2d() {
+    var ctx = canvas.getContext('2d');
+    var s = performance.now();
+    (function loop(now) {
+      var w = canvas.width, h = canvas.height, tt = (now - s) / 1000;
+      var g = ctx.createLinearGradient(0, 0, w, h);
+      g.addColorStop(0, 'hsl(' + ((tt * 40) % 360) + ',60%,20%)');
+      g.addColorStop(1, 'hsl(' + ((tt * 40 + 120) % 360) + ',60%,10%)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, w, h);
+      requestAnimationFrame(loop);
+    })(s);
+  }
+})();
+</script>
+</body>
+</html>
