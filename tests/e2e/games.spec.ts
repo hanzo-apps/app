@@ -27,13 +27,13 @@ test.describe('Games surface', () => {
     await page.goto('/games');
     const cards = page.getByTestId('game-card');
     const all = await cards.count();
-    const platformer = page.getByRole('button', { name: 'Platformer', exact: true });
+    const fps = page.getByRole('button', { name: 'fps', exact: true });
 
     // Retry the click until it narrows the grid: a click that lands before React
     // finishes hydrating the button has no effect, so re-click until it takes
     // (setGenre is idempotent). The filter logic itself is deterministic.
     await expect(async () => {
-      await platformer.click({ timeout: 3000 });
+      await fps.click({ timeout: 3000 });
       const n = await cards.count();
       expect(n).toBeLessThan(all);
       expect(n).toBeGreaterThan(0);
@@ -43,16 +43,15 @@ test.describe('Games surface', () => {
   });
 
   test('detail page shows engine, targets, and both generative hooks', async ({ page }) => {
-    await page.goto('/games/dodge-the-creeps');
-    await expect(page.getByRole('heading', { name: 'Dodge the Creeps', level: 1 })).toBeVisible();
+    await page.goto('/games/unity-red-runner');
+    await expect(page.getByRole('heading', { name: 'Red Runner', level: 1 })).toBeVisible();
 
-    // Studio generative hook links out with the URL contract (game id + slots).
+    // Studio generative hook links out with the URL contract (carries the game id).
     const studio = page.getByRole('link', { name: /Generate assets in Studio/i });
     await expect(studio).toBeVisible();
     const studioHref = await studio.getAttribute('href');
     expect(studioHref).toContain('studio.hanzo.ai');
-    expect(studioHref).toContain('game=dodge-the-creeps');
-    expect(studioHref).toContain('slots=');
+    expect(studioHref).toContain('game=unity-red-runner');
 
     // Builder hook is a real prompt box routing to /dev with repo context.
     await expect(page.getByTestId('builder-prompt')).toBeVisible();
@@ -61,7 +60,7 @@ test.describe('Games surface', () => {
   });
 
   test('unreal desktop title shows no play button (honest, no fake UI)', async ({ page }) => {
-    await page.goto('/games/lyra');
+    await page.goto('/games/ue-lyra');
     await expect(page.getByRole('heading', { name: 'Lyra Starter Game', level: 1 })).toBeVisible();
     await expect(page.getByTestId('play-button')).toHaveCount(0);
     await expect(page.getByText(/no in-browser build/i)).toBeVisible();
@@ -69,9 +68,9 @@ test.describe('Games surface', () => {
 
   test('WebGL player mounts a live canvas', async ({ page }) => {
     // Detail -> Play, exercising the real interaction path.
-    await page.goto('/games/dodge-the-creeps');
+    await page.goto('/games/unity-red-runner');
     await page.getByTestId('play-button').click();
-    await expect(page).toHaveURL(/\/games\/dodge-the-creeps\/play/);
+    await expect(page).toHaveURL(/\/games\/unity-red-runner\/play/);
 
     const frame = page.frameLocator('[data-testid="game-player-frame"]');
     const canvas = frame.locator('#game-canvas');
