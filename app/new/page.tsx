@@ -402,7 +402,10 @@ function NewProjectInner() {
         </section>
 
         {/* Import / Templates */}
-        <section className="relative mt-16 grid gap-6 lg:mt-20 lg:grid-cols-2">
+        {/* [&>*]:min-w-0 lets each grid item shrink below its content's
+            min-content (long repo/template strings) so the track can't blow the
+            column past the viewport — otherwise mobile gets a horizontal scroll. */}
+        <section className="relative mt-16 grid gap-6 [&>*]:min-w-0 lg:mt-20 lg:grid-cols-2">
           {/* Import Git Repository — real connected-account import */}
           <ImportGitPanel />
 

@@ -16,8 +16,11 @@ function Bar({ w, h = "h-2.5", o = "bg-white/10" }: { w: string; h?: string; o?:
 export default function HeroPreview() {
   return (
     <div className="relative mx-auto w-full max-w-4xl">
-      {/* Soft floor glow to seat the frame. */}
-      <div className="pointer-events-none absolute -inset-x-8 -bottom-10 top-8 -z-10 rounded-[2rem] bg-white/[0.04] blur-2xl" />
+      {/* Soft floor glow to seat the frame. Spans the frame width on mobile
+          (inset-x-0) and spreads wider on ≥sm where the max-w-3xl hero has side
+          room — the old -inset-x-8 bled 32px past a full-width phone viewport,
+          adding a horizontal body scroll. blur is paint-only, so no bleed. */}
+      <div className="pointer-events-none absolute inset-x-0 -bottom-10 top-8 -z-10 rounded-[2rem] bg-white/[0.04] blur-2xl sm:-inset-x-8" />
 
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0a0a0a] shadow-2xl shadow-black/60 ring-1 ring-white/[0.02]">
         {/* Browser chrome */}
