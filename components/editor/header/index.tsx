@@ -9,6 +9,14 @@ import { NetworkWallet } from "@/components/network-wallet";
 import { CrossSurfaceLinks } from "@/components/editor/cross-surface-links";
 
 import { Button } from "@hanzo/ui";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import classNames from "classnames";
 
 const TABS = [
@@ -36,10 +44,31 @@ export function Header({
   return (
     <header className="border-b bg-neutral-200 border-neutral-300 dark:bg-neutral-950 dark:border-neutral-800 px-3 lg:px-6 py-2 flex items-center max-lg:gap-3 justify-between lg:grid lg:grid-cols-3 z-20">
       <div className="flex items-center justify-start gap-3 min-w-0">
-        <Link href="/" className="flex items-center gap-2 group shrink-0">
-          <HanzoLogo className="w-8 h-8 text-white group-hover:text-white/80 transition-colors" />
-          <span className="hidden md:inline font-medium text-white">Hanzo Dev</span>
-        </Link>
+        <ContextMenu>
+          <ContextMenuTrigger asChild>
+            {/* Left-click → home; right-click → the app-shell menu (settings / brand / docs). */}
+            <Link href="/" className="flex items-center gap-2 group shrink-0" aria-label="Hanzo">
+              <HanzoLogo className="w-8 h-8 text-white group-hover:text-white/80 transition-colors" />
+            </Link>
+          </ContextMenuTrigger>
+          <ContextMenuContent className="w-56">
+            <ContextMenuLabel className="text-xs text-neutral-400">Hanzo Dev</ContextMenuLabel>
+            <ContextMenuSeparator />
+            <ContextMenuItem asChild>
+              <Link href="/settings">Settings &amp; preferences</Link>
+            </ContextMenuItem>
+            <ContextMenuItem asChild>
+              <a href="https://hanzo.ai/brand" target="_blank" rel="noopener noreferrer">Brand &amp; assets</a>
+            </ContextMenuItem>
+            <ContextMenuItem asChild>
+              <a href="https://hanzo.ai/docs" target="_blank" rel="noopener noreferrer">Docs</a>
+            </ContextMenuItem>
+            <ContextMenuSeparator />
+            <ContextMenuItem asChild>
+              <a href="https://hanzo.ai" target="_blank" rel="noopener noreferrer">About Hanzo</a>
+            </ContextMenuItem>
+          </ContextMenuContent>
+        </ContextMenu>
         <div className="h-6 w-px bg-neutral-700 hidden sm:block" />
         {/* Active org context — the builder is always scoped to one org. */}
         <div className="hidden sm:block min-w-0">
