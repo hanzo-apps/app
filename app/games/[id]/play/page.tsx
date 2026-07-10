@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { AppShell } from '@/components/app-shell';
 import { GamePlayer } from '@/components/games/game-player';
-import { getGame, isPlayable } from '@/data/games-catalog';
+import { getGame, isPlayable, isPlaceholderBuild } from '@/data/games-catalog';
 
 export default function GamePlay() {
   const params = useParams<{ id: string }>();
@@ -37,7 +37,7 @@ export default function GamePlay() {
             <ArrowLeft className="h-4 w-4" />
             {game.name}
           </Link>
-          {game.playable === 'placeholder' && (
+          {isPlaceholderBuild(game) && (
             <span className="rounded-full border border-neutral-700 px-2 py-0.5 text-[11px] text-neutral-400">
               placeholder build
             </span>
