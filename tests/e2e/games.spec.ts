@@ -25,12 +25,19 @@ test.describe('Games surface', () => {
 
   test('genre filter narrows the grid', async ({ page }) => {
     await page.goto('/games');
-    const all = await page.getByTestId('game-card').count();
+    const cards = page.getByTestId('game-card');
+    const all = await cards.count();
+    const platformer = page.getByRole('button', { name: 'Platformer', exact: true });
 
-    await page.getByRole('button', { name: 'Platformer', exact: true }).click();
-    const filtered = await page.getByTestId('game-card').count();
-    expect(filtered).toBeLessThan(all);
-    expect(filtered).toBeGreaterThan(0);
+    // Retry the click until it narrows the grid: a click that lands before React
+    // finishes hydrating the button has no effect, so re-click until it takes
+    // (setGenre is idempotent). The filter logic itself is deterministic.
+    await expect(async () => {
+      await platformer.click({ timeout: 3000 });
+      const n = await cards.count();
+      expect(n).toBeLessThan(all);
+      expect(n).toBeGreaterThan(0);
+    }).toPass({ intervals: [250, 500, 1000], timeout: 20000 });
 
     await page.screenshot({ path: shot('games-filtered.png'), fullPage: true });
   });
