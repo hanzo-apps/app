@@ -10,6 +10,7 @@ import {
   FolderOpen,
   Globe,
   LayoutTemplate,
+  Gamepad2,
   Sparkles,
   Settings,
   Info,
@@ -57,6 +58,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { id: 'projects', label: 'Projects', icon: FolderOpen, path: 'projects', hasRecentProjects: true },
   { id: 'deployments', label: 'Deployments', icon: Globe, path: 'deployments', serverModeOnly: true },
   { id: 'templates', label: 'Templates', icon: LayoutTemplate, path: 'templates' },
+  { id: 'games', label: 'Games', icon: Gamepad2, path: '/games' },
   { id: 'skills', label: 'Skills', icon: Sparkles, path: 'skills' },
   {
     id: 'docs',
