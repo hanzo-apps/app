@@ -96,11 +96,11 @@ export function PageNavigator({ currentPath = "/", onNavigate, onReload }: PageN
                   ) : (
                     <span className="w-3" />
                   )}
-                  <span className={route.current ? "text-purple-400 font-medium" : "text-neutral-300"}>
+                  <span className={route.current ? "text-white font-medium" : "text-neutral-300"}>
                     {route.path}
                   </span>
                 </span>
-                {route.current && <Check className="w-3 h-3 text-purple-400" />}
+                {route.current && <Check className="w-3 h-3 text-white" />}
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator className="bg-neutral-700" />

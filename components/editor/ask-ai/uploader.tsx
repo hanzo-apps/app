@@ -127,10 +127,10 @@ export const Uploader = ({
                   <div className="size-9 rounded-full bg-pink-200 shadow-2xs flex items-center justify-center text-xl opacity-50">
                     🎨
                   </div>
-                  <div className="size-11 rounded-full bg-amber-200 shadow-2xl flex items-center justify-center text-2xl z-2">
+                  <div className="size-11 rounded-full bg-neutral-200 shadow-2xl flex items-center justify-center text-2xl z-2">
                     🖼️
                   </div>
-                  <div className="size-9 rounded-full bg-sky-200 shadow-2xs flex items-center justify-center text-xl opacity-50">
+                  <div className="size-9 rounded-full bg-neutral-300 shadow-2xs flex items-center justify-center text-xl opacity-50">
                     💻
                   </div>
                 </div>
