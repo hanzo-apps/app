@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -88,17 +88,51 @@ export default function IntegrationsPage() {
   const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
 
+  // Real GitHub connection state, resolved server-side from the IAM-linked token
+  // via the same-origin BFF (`/v1/git/accounts`). No token ever reaches the
+  // client. Resolves-never-throws: any failure is treated as "not connected" so
+  // the card shows the honest "Connect" CTA. This is the seam the bidirectional
+  // GitHub connector (integrations service) consumes for its outbound actions.
+  const [githubConnected, setGithubConnected] = useState(false);
+  const [githubLogin, setGithubLogin] = useState<string>("");
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/v1/git/accounts", {
+          credentials: "include",
+          headers: { Accept: "application/json" },
+        });
+        if (!res.ok) return;
+        const body = await res.json();
+        const gh = Array.isArray(body?.accounts)
+          ? body.accounts.find((a: { provider?: string }) => a?.provider === "github")
+          : undefined;
+        if (!cancelled && body?.connected && gh) {
+          setGithubConnected(true);
+          setGithubLogin(gh.login ?? "");
+        }
+      } catch {
+        /* not connected — leave the Connect CTA */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const integrations: Integration[] = [
     {
       id: "github",
       name: "GitHub",
-      description: "Connect repositories, manage issues, and automate workflows",
+      description: githubConnected
+        ? `Connected as ${githubLogin} — repos, issues, pull requests, comments and inbound webhooks`
+        : "Connect repositories, manage issues, open PRs, and receive webhook events",
       category: "development",
       icon: <Github className="w-5 h-5" />,
-      status: "connected",
-      features: ["Repository sync", "Issue tracking", "Pull request automation", "Actions integration"],
-      lastSync: new Date(Date.now() - 1000 * 60 * 5),
-      usage: { events: 1247, quota: 5000 }
+      status: githubConnected ? "connected" : "disconnected",
+      features: ["Repository sync", "Issue tracking", "Pull request automation", "Inbound webhooks"]
     },
     {
       id: "linear",
@@ -239,6 +273,12 @@ export default function IntegrationsPage() {
 
   const handleConnect = async (integration: Integration) => {
     setSelectedIntegration(integration);
+    // GitHub links through IAM's real OAuth flow (ImportGitPanel on /new); the
+    // resulting token is what the connector uses for outbound actions.
+    if (integration.id === "github") {
+      router.push("/new");
+      return;
+    }
     if (integration.configRequired) {
       setShowConfigDialog(true);
     } else {
