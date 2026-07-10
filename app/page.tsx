@@ -138,7 +138,7 @@ export default function LandingPage() {
         <section className="px-4 pb-14 pt-16 md:px-8 md:pb-20 md:pt-24">
           <div className="mx-auto max-w-3xl text-center">
             <Reveal>
-              <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5">
+              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
                 <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-white/55">
                   Full-stack apps on Hanzo Cloud
@@ -147,7 +147,7 @@ export default function LandingPage() {
             </Reveal>
 
             <Reveal delay={60}>
-              <h1 className="text-balance text-4xl font-medium leading-[1.05] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+              <h1 className="text-balance text-4xl font-medium leading-[1.02] tracking-tight sm:text-5xl md:text-6xl">
                 Describe your app.
                 <br />
                 Hanzo builds and ships it.
@@ -155,7 +155,7 @@ export default function LandingPage() {
             </Reveal>
 
             <Reveal delay={120}>
-              <p className="mx-auto mt-6 max-w-xl text-pretty text-base text-white/55 md:text-lg">
+              <p className="mx-auto mt-5 max-w-xl text-pretty text-base text-white/55 md:text-lg">
                 One prompt becomes a live app on Hanzo Cloud — UI, database,
                 auth, and 100+ AI models, wired in and deployed.
               </p>
@@ -163,7 +163,7 @@ export default function LandingPage() {
 
             {/* ── Prompt composer ── */}
             <Reveal delay={180}>
-              <div className="mx-auto mt-10 max-w-2xl">
+              <div className="mx-auto mt-8 max-w-2xl">
                 <div
                   id="build"
                   className={`rounded-2xl border bg-[#0a0a0a] p-2.5 text-left shadow-2xl transition-all duration-200 ${
@@ -230,7 +230,7 @@ export default function LandingPage() {
                 </div>
 
                 {/* Starter prompts — honest app types, not fabricated products. */}
-                <div className="mt-5 flex flex-wrap justify-center gap-2">
+                <div className="mt-4 flex flex-wrap justify-center gap-2">
                   {STARTERS.map((s) => (
                     <button
                       key={s}
