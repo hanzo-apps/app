@@ -654,16 +654,6 @@ export function AskAI({
           open={openProModal}
           onClose={() => setOpenProModal(false)}
         />
-        {pages.length === 1 && (
-          <div className="border border-neutral-700 bg-neutral-800 hover:bg-neutral-700 transition-all duration-200 text-neutral-300 pl-2 pr-4 py-1.5 text-xs rounded-full absolute top-0 -translate-y-[calc(100%+8px)] left-0 max-w-max flex items-center justify-start gap-2">
-            <span className="rounded-full text-[10px] font-medium bg-white text-neutral-900 px-1.5 py-0.5">
-              NEW
-            </span>
-            <p className="text-sm text-neutral-100">
-              Hanzo can now create multiple pages at once. Try it!
-            </p>
-          </div>
-        )}
         {!isSameHtml && (
           <div className="absolute top-0 right-0 -translate-y-[calc(100%+8px)] select-none text-xs text-neutral-400 flex items-center justify-center gap-2 bg-neutral-800 border border-neutral-700 rounded-md p-1 pr-2.5">
             <label
