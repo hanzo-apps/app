@@ -5,13 +5,13 @@ import { Badge, Input } from '@hanzo/ui';
 import { Gamepad2, Search } from 'lucide-react';
 import { AppShell } from '@/components/app-shell';
 import { GameCard } from '@/components/games/game-card';
-import { gamesCatalog, gameGenres } from '@/data/games-catalog';
+import { gamesCatalog, genreList } from '@/data/games-catalog';
 
 export default function GamesCatalog() {
   const [genre, setGenre] = useState('All');
   const [query, setQuery] = useState('');
 
-  const genres = useMemo(() => gameGenres(gamesCatalog), []);
+  const genres = useMemo(() => genreList(gamesCatalog), []);
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
@@ -20,7 +20,7 @@ export default function GamesCatalog() {
       const matchesSearch =
         !q ||
         g.name.toLowerCase().includes(q) ||
-        g.blurb.toLowerCase().includes(q) ||
+        g.description.toLowerCase().includes(q) ||
         g.engine.toLowerCase().includes(q) ||
         g.genre.toLowerCase().includes(q);
       return matchesGenre && matchesSearch;
