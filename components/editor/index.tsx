@@ -516,7 +516,7 @@ export const AppEditor = ({
         className={classNames(
           "fixed bottom-20 right-4 p-3 rounded-full shadow-lg transition-all z-40",
           showSupervisor
-            ? "bg-[#171717] text-white"
+            ? "bg-white text-neutral-900"
             : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700"
         )}
         title="AI Supervisor"
