@@ -250,8 +250,8 @@ export function VisualEditor({
             },
             options: {
               isWholeLine: true,
-              className: "bg-purple-500/20",
-              glyphMarginClassName: "bg-purple-500",
+              className: "bg-white/10",
+              glyphMarginClassName: "bg-white",
             },
           },
         ]
@@ -413,14 +413,14 @@ export function VisualEditor({
   return (
     <>
       {/* Visual Editor Toolbar */}
-      <div className="absolute top-4 left-4 z-50 bg-neutral-900/95 backdrop-blur-sm rounded-lg border border-purple-500/30 p-2 flex items-center gap-2">
+      <div className="absolute top-4 left-4 z-50 bg-neutral-900/95 backdrop-blur-sm rounded-lg border border-neutral-800 p-2 flex items-center gap-2">
         <Button
           variant={isEnabled ? "default" : "ghost"}
           size="sm"
           onClick={() => onToggle(!isEnabled)}
           className={cn(
             "gap-2",
-            isEnabled && "bg-purple-600 hover:bg-purple-700"
+            isEnabled && "bg-white text-neutral-900 hover:bg-neutral-200"
           )}
         >
           <MousePointer className="w-4 h-4" />
@@ -465,7 +465,7 @@ export function VisualEditor({
 
       {/* Properties Panel */}
       {isEnabled && showPanel && selectedElement && (
-        <div className="absolute top-20 right-4 z-50 w-80 bg-neutral-900/95 backdrop-blur-sm rounded-lg border border-purple-500/30 max-h-[600px] overflow-hidden flex flex-col">
+        <div className="absolute top-20 right-4 z-50 w-80 bg-neutral-900/95 backdrop-blur-sm rounded-lg border border-neutral-800 max-h-[600px] overflow-hidden flex flex-col">
           <div className="p-4 border-b border-neutral-800">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-medium text-white">Element Properties</h3>
@@ -483,7 +483,7 @@ export function VisualEditor({
                 <Box className="w-3 h-3" />
                 <span className="font-mono">{selectedElement.tagName}</span>
                 {selectedElement.id && (
-                  <span className="text-purple-400">#{selectedElement.id}</span>
+                  <span className="text-neutral-300">#{selectedElement.id}</span>
                 )}
               </div>
               {selectedElement.className && (
@@ -492,7 +492,7 @@ export function VisualEditor({
                 </div>
               )}
               {selectedElement.sourceLocation && (
-                <div className="flex items-center gap-1 text-xs text-purple-400">
+                <div className="flex items-center gap-1 text-xs text-neutral-300">
                   <Code className="w-3 h-3" />
                   Line {selectedElement.sourceLocation.line}
                 </div>
@@ -525,7 +525,7 @@ export function VisualEditor({
 
                 <div>
                   <Label className="text-xs text-neutral-400">CSS Selector</Label>
-                  <code className="block mt-1 p-2 bg-neutral-800 rounded text-xs text-purple-400 font-mono">
+                  <code className="block mt-1 p-2 bg-neutral-800 rounded text-xs text-neutral-300 font-mono">
                     {selectedElement.selector}
                   </code>
                 </div>
