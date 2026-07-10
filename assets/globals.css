@@ -3,11 +3,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Shared @hanzo/ui components (network switcher / wallet menu) live in
-   node_modules - point Tailwind's scanner at them. */
-@source "../node_modules/@hanzo/ui/dist/network";
-@source "../node_modules/@hanzo/ui/dist/wallet";
-
 /* Custom animations */
 @keyframes fadeIn {
   from {
@@ -23,6 +18,30 @@
 .animate-fadeIn {
   animation: fadeIn 0.3s ease-out forwards;
   opacity: 0;
+}
+
+/* Hanzo mark idle animation — a slow, restrained "breathing" opacity drift
+   used for the animated logo variant in chrome (header). Reduced-motion safe:
+   only runs when the user has NOT requested reduced motion; otherwise the mark
+   renders fully static. */
+@keyframes hanzoLogoIdle {
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.hanzo-logo-idle {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hanzo-logo-idle {
+    animation: hanzoLogoIdle 4s ease-in-out infinite;
+  }
 }
 
 @theme inline {
@@ -299,5 +318,5 @@
 }
 
 .matched-line {
-  @apply bg-sky-500/30;
+  @apply bg-white/15;
 }

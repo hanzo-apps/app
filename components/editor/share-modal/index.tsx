@@ -125,7 +125,7 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
                 />
                 <UserPlus className="absolute left-3 top-3 w-4 h-4 text-neutral-500" />
               </div>
-              <Button onClick={handleInvite} className="bg-purple-600 hover:bg-purple-700">
+              <Button onClick={handleInvite} className="bg-white text-neutral-900 hover:bg-neutral-200">
                 Invite
               </Button>
             </div>
@@ -270,7 +270,7 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
               </div>
               <Button
                 onClick={handleCopyLink}
-                className="bg-purple-600 hover:bg-purple-700"
+                className="bg-white text-neutral-900 hover:bg-neutral-200"
               >
                 {linkCopied ? (
                   <>

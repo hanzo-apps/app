@@ -125,7 +125,7 @@ export function Settings({
                   className={classNames(
                     "bg-neutral-700 rounded-full min-w-10 w-10 h-6 flex items-center justify-between p-1 cursor-pointer transition-all duration-200",
                     {
-                      "!bg-sky-500": provider === "auto",
+                      "!bg-white": provider === "auto",
                     }
                   )}
                   onClick={() => {
@@ -136,9 +136,10 @@ export function Settings({
                 >
                   <div
                     className={classNames(
-                      "w-4 h-4 rounded-full shadow-md transition-all duration-200 bg-neutral-200",
+                      "w-4 h-4 rounded-full shadow-md transition-all duration-200",
                       {
-                        "translate-x-4": provider === "auto",
+                        "translate-x-4 bg-neutral-900": provider === "auto",
+                        "bg-neutral-200": provider !== "auto",
                       }
                     )}
                   />
@@ -167,7 +168,7 @@ export function Settings({
                       />
                       {PROVIDERS[id as keyof typeof PROVIDERS].name}
                       {id === provider && (
-                        <RiCheckboxCircleFill className="ml-2 size-4 text-blue-500" />
+                        <RiCheckboxCircleFill className="ml-2 size-4 text-white" />
                       )}
                     </Button>
                   ))}

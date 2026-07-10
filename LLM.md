@@ -512,3 +512,46 @@ because the prod build points auth at the in-cluster `iam.hanzo.svc` (unreachabl
 off-cluster). This is an env artifact — the live `/` is public (middleware treats
 `/` as a public route). Block those hosts in the browser to verify below-fold
 sections locally.
+
+---
+
+## `/dev` builder chrome (`components/editor/*`) — unified design
+
+True-black monochrome, content-forward. The chrome recedes; the generated
+preview is the star. Matches hanzo.ai (zero hue by construction, except genuine
+semantics).
+
+- **Bottom-left identity cluster** — `components/editor/identity-bar/index.tsx`
+  (`BuilderIdentityBar`). ONE consolidated cluster pinned bottom-left in the
+  `Footer` (`components/editor/footer`): `OrgSwitcher` + `EditorAccountMenu`
+  (credit balance included). Mirrors the canonical bottom-left user/org control
+  from hanzo.chat (`client/src/components/Nav/AccountSettings.tsx`) and
+  console.hanzo.ai (`DashboardShell.tsx` SidebarIdentity). Both controls take an
+  additive `direction="up"` prop so their menus open UPWARD (Radix `side="top"`
+  for the account menu; `bottom-full` popover for the org switcher). The top
+  `Header` stays minimal: animated H mark + tab switcher + primary actions.
+- **Animated logo** — `HanzoLogo` `animated` prop wraps the mark's paths in
+  `<g className="hanzo-logo-idle">`. The keyframe (`hanzoLogoIdle`, in
+  `assets/globals.css`) is a slow 4s opacity breathe, gated behind
+  `@media (prefers-reduced-motion: no-preference)` — a no-op (static mark) for
+  reduced-motion users. The header lifts opacity on hover. Static and animated
+  variants share ONE `paths` fragment (no path duplication).
+- **Monochrome**: `assets/globals.css` already remaps the `teal/cyan/indigo/`
+  `violet/purple/rose` token families to zero-chroma grays, so those Tailwind
+  classes render gray automatically. `blue/sky/emerald/amber/green/red/yellow`
+  are NOT remapped (render truly colored) — non-semantic uses of those in the
+  builder chrome were neutralized to white/neutral. Kept semantic only: green
+  = live/active/success, red = error/destructive, yellow = warning,
+  emerald = git-push success.
+
+### Landmine: `@hanzo/ui` wallet/network subpaths dropped in 5.5.x
+
+`components/network-wallet` used to import `@hanzo/ui/network`
+(`NetworkSwitcher`) and `@hanzo/ui/wallet` (`injectedEvmAdapter`, `WalletMenu`).
+The installed `@hanzo/ui@5.5.1` ships NEITHER subpath (no `./network` /
+`./wallet` in its `exports`, no `dist/network*` / `dist/wallet*` files) — a
+hard `Module not found` that fails the whole `/dev` build (it's a static ESM
+import; no try/catch possible). `NetworkWallet` now renders `null` (API stable,
+re-enable recipe in its file) and is NOT composed into `BuilderIdentityBar` —
+the canonical bottom-left pattern is org + account anyway. Re-enable when
+`@hanzo/ui` exports the wallet entry points again.
