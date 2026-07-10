@@ -153,7 +153,7 @@ export const Preview = ({
       className={classNames(
         "w-full border-l border-neutral-900 h-full relative z-0 flex items-center justify-center",
         {
-          "lg:p-4": currentTab !== "preview",
+          "lg:p-3": currentTab !== "preview",
           "max-lg:h-0": currentTab === "chat",
           "max-lg:h-full": currentTab === "preview",
         }
@@ -203,7 +203,7 @@ export const Preview = ({
             "pointer-events-none": isResizing || isAiWorking,
             "lg:max-w-md lg:mx-auto lg:!rounded-[42px] lg:border-[8px] lg:border-neutral-700 lg:shadow-2xl lg:h-[80dvh] lg:max-h-[996px]":
               device === "mobile",
-            "lg:border-[8px] lg:border-neutral-700 lg:shadow-2xl lg:rounded-[24px]":
+            "lg:rounded-xl lg:ring-1 lg:ring-white/10 lg:shadow-2xl lg:overflow-hidden":
               currentTab !== "preview" && device === "desktop",
           }
         )}
