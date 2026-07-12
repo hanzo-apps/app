@@ -75,8 +75,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+// App Router route handlers read the raw request body directly (see req.text()
+// above), so no body-parser opt-out is needed. The legacy Pages-Router
+// `export const config = { api: { bodyParser: false } }` is not a valid
+// route-segment config in Next 16 and hard-fails the production build.
