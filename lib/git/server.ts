@@ -80,8 +80,16 @@ interface IamAccount {
   };
 }
 
-/** IAM property keys per provider (Casdoor's `oauth_<Type>_*` convention). */
-const IAM_KEYS: Record<GitProvider, { token: string; username: string; login?: string }> = {
+/**
+ * The external providers linked via IAM OAuth. Hanzo is NOT here: it is our own
+ * git and needs no OAuth link — the user's IAM bearer is the credential (see
+ * `resolveConnection`). This is the set `resolveAllConnections` iterates.
+ */
+const OAUTH_PROVIDERS = ['github', 'gitlab'] as const;
+type OAuthProvider = (typeof OAUTH_PROVIDERS)[number];
+
+/** IAM property keys per OAuth provider (Casdoor's `oauth_<Type>_*` convention). */
+const IAM_KEYS: Record<OAuthProvider, { token: string; username: string; login?: string }> = {
   github: { token: 'oauth_GitHub_accessToken', username: 'oauth_GitHub_username', login: 'github' },
   gitlab: { token: 'oauth_GitLab_accessToken', username: 'oauth_GitLab_username', login: 'gitlab' },
 };
@@ -111,10 +119,10 @@ async function fetchIamAccount(bearer: string): Promise<IamAccount | null> {
   return body;
 }
 
-/** Pull one provider's connection out of an already-fetched IAM account. */
+/** Pull one OAuth provider's connection out of an already-fetched IAM account. */
 function connectionFromAccount(
   account: IamAccount,
-  provider: GitProvider,
+  provider: OAuthProvider,
 ): GitConnection | null {
   const props = account.data?.properties || {};
   const keys = IAM_KEYS[provider];
@@ -128,9 +136,16 @@ function connectionFromAccount(
 }
 
 /**
- * Resolve the signed-in user's connection for ONE provider from IAM. Returns
- * null when unauthenticated OR the provider isn't linked (the honest "not
- * connected" state). A masked value ("***") is treated as absent.
+ * Resolve the signed-in user's connection for ONE provider.
+ *
+ * Hanzo is our own git: there is NO separate OAuth link — the user's IAM bearer
+ * IS the credential and tenancy is the gateway-derived JWT owner. So Hanzo is
+ * always connected whenever a session exists; it fails closed to null ONLY when
+ * there is no bearer (⇒ the normal sign-in CTA), never to a service token.
+ *
+ * GitHub/GitLab resolve their OAuth token from IAM: null when unauthenticated OR
+ * the provider isn't linked (the honest "not connected" state). A masked value
+ * ("***") is treated as absent.
  */
 export async function resolveConnection(
   req: NextRequest,
@@ -138,6 +153,11 @@ export async function resolveConnection(
 ): Promise<GitConnection | null> {
   const bearer = readBearer(req);
   if (!bearer) return null;
+  if (provider === 'hanzo') {
+    // The push client sends this bearer as Authorization; the gateway derives
+    // the org. No IAM get-account round-trip needed.
+    return { provider: 'hanzo', token: bearer, login: '' };
+  }
   const account = await fetchIamAccount(bearer);
   if (!account) return null;
   return connectionFromAccount(account, provider);
@@ -153,7 +173,7 @@ export async function resolveAllConnections(req: NextRequest): Promise<GitConnec
   const account = await fetchIamAccount(bearer);
   if (!account) return [];
   const out: GitConnection[] = [];
-  for (const provider of ['github', 'gitlab'] as GitProvider[]) {
+  for (const provider of OAUTH_PROVIDERS) {
     const conn = connectionFromAccount(account, provider);
     if (conn) out.push(conn);
   }
