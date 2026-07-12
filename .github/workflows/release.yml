@@ -8,6 +8,11 @@ name: Release
 on:
   push:
     branches: [main]
+    # Workflow/doc-only edits must NOT cut a release (a scan tweak is not a new app
+    # image). Real code changes on main still trigger; use workflow_dispatch to force.
+    paths-ignore:
+      - '.github/**'
+      - '**.md'
   workflow_dispatch:
 permissions:
   contents: write
@@ -46,11 +51,18 @@ jobs:
           # Fold in ALREADY-PUSHED container tags on the same line, so a number that has
           # an image (even from a run that died before git-tagging) is never reused
           # (mirrors hanzoai/cloud). Best-effort — never fails the run if the API is down.
+          # Use curl (universally present) NOT gh — the arcd runners have no `gh`, so
+          # the gh-gated scan returned container_max='none' and the first run cut
+          # v1.42.11 instead of v1.42.13. Fold BOTH v-prefixed and legacy non-v 1.42.x
+          # image tags so the v-stream never numerically collides with the retired
+          # platform-build non-v tags. jq-optional: grep fallback if a runner lacks jq.
           cont_max=""
-          if command -v gh >/dev/null 2>&1 && [ -n "${GH_PAT:-}" ]; then
-            cont_max="$(GH_TOKEN="$GH_PAT" gh api --paginate \
-              '/orgs/hanzoai/packages/container/hanzo-app/versions' \
-              --jq '.[].metadata.container.tags[]' 2>/dev/null \
+          if [ -n "${GH_PAT:-}" ]; then
+            _pkgjson="$(curl -fsSL -H "Authorization: Bearer $GH_PAT" \
+              -H "Accept: application/vnd.github+json" \
+              'https://api.github.com/orgs/hanzoai/packages/container/hanzo-app/versions?per_page=100' 2>/dev/null || true)"
+            cont_max="$(printf '%s' "$_pkgjson" \
+              | { jq -r '.[].metadata.container.tags[]?' 2>/dev/null || grep -oE '"v?[0-9]+\.[0-9]+\.[0-9]+"' | tr -d '"'; } \
               | sed 's/^v//' | grep -E "^${LINE//./\\.}[0-9]+$" | sort -V | tail -1 || true)"
           fi
           max="$(printf '%s\n%s\n%s\n' "${LINE}0" "$git_max" "$cont_max" \
