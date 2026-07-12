@@ -113,30 +113,37 @@ export function Footer({
           <RefreshCcw className="size-3.5" />
           <span className="max-lg:hidden">Refresh Preview</span>
         </Button>
-        <div className="flex items-center rounded-full p-0.5 bg-neutral-700/70 relative overflow-hidden z-0 max-lg:hidden gap-0.5">
-          <div
-            className={classNames(
-              "absolute left-0.5 top-0.5 rounded-full bg-white size-7 -z-[1] transition-all duration-200",
-              {
-                "translate-x-[calc(100%+2px)]": device === "mobile",
-              }
-            )}
-          />
-          {DEVICES.map((deviceItem) => (
-            <button
-              key={deviceItem.name}
-              className={classNames(
-                "rounded-full text-neutral-300 size-7 flex items-center justify-center cursor-pointer",
-                {
-                  "!text-black": device === deviceItem.name,
-                  "hover:bg-neutral-800": device !== deviceItem.name,
+        {/* Device switcher — a clean segmented tab control (desktop / mobile),
+            matching the header view switcher. Preview-frame only, so it stays
+            hidden below `lg` where there's no room for the phone frame. */}
+        <div
+          role="tablist"
+          aria-label="Preview device"
+          className="flex items-center gap-0.5 rounded-lg bg-neutral-900 p-0.5 ring-1 ring-neutral-800 max-lg:hidden"
+        >
+          {DEVICES.map((deviceItem) => {
+            const active = device === deviceItem.name;
+            return (
+              <button
+                key={deviceItem.name}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                title={`${deviceItem.name[0].toUpperCase()}${deviceItem.name.slice(1)} preview`}
+                className={classNames(
+                  "flex size-7 items-center justify-center rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
+                  active
+                    ? "bg-neutral-700 text-white shadow-sm"
+                    : "text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200"
+                )}
+                onClick={() =>
+                  setDevice(deviceItem.name as "desktop" | "mobile")
                 }
-              )}
-              onClick={() => setDevice(deviceItem.name as "desktop" | "mobile")}
-            >
-              <deviceItem.icon className="text-sm" />
-            </button>
-          ))}
+              >
+                <deviceItem.icon />
+              </button>
+            );
+          })}
         </div>
       </div>
     </footer>
