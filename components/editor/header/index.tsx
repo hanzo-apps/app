@@ -5,7 +5,6 @@ import Link from "next/link";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { CrossSurfaceLinks } from "@/components/editor/cross-surface-links";
 
-import { Button } from "@hanzo/ui";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -39,8 +38,8 @@ export function Header({
   children?: ReactNode;
 }) {
   return (
-    <header className="border-b bg-neutral-950 border-neutral-800 px-3 lg:px-6 py-2 flex items-center max-lg:gap-3 justify-between lg:grid lg:grid-cols-3 z-20">
-      <div className="flex items-center justify-start gap-3 min-w-0">
+    <header className="border-b bg-neutral-950 border-neutral-800 px-3 lg:px-6 py-2 flex items-center gap-2 sm:gap-3 z-20 lg:grid lg:grid-cols-[auto_1fr_auto]">
+      <div className="flex items-center justify-start gap-3 shrink-0">
         <ContextMenu>
           <ContextMenuTrigger asChild>
             {/* Left-click → home; right-click → the app-shell menu (settings / brand / docs). */}
@@ -76,23 +75,42 @@ export function Header({
           </ContextMenuContent>
         </ContextMenu>
       </div>
-      <div className="flex items-center justify-start lg:justify-center gap-1 max-lg:pl-3 flex-1 max-lg:border-l max-lg:border-l-neutral-800">
-        {TABS.map((item) => (
-          <Button
-            key={item.value}
-            variant={tab === item.value ? "secondary" : "ghost"}
-            className={classNames("", {
-              "opacity-60": tab !== item.value,
-            })}
-            size="sm"
-            onClick={() => onNewTab(item.value)}
-          >
-            <item.icon className="size-4" />
-            <span className="hidden md:inline">{item.label}</span>
-          </Button>
-        ))}
+      {/* Chat/Preview switcher — a compact segmented control. Icon-only on the
+          smallest widths, labels appear from `sm` up. It never grabs flex, so it
+          can't push into the actions cluster; the rail keeps it visually distinct
+          from the neighbouring action buttons. */}
+      <div
+        role="tablist"
+        aria-label="Editor view"
+        className="flex shrink-0 items-center gap-0.5 rounded-lg bg-neutral-900 p-0.5 ring-1 ring-neutral-800 lg:justify-self-center"
+      >
+        {TABS.map((item) => {
+          const active = tab === item.value;
+          return (
+            <button
+              key={item.value}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              title={item.label}
+              onClick={() => onNewTab(item.value)}
+              className={classNames(
+                "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
+                active
+                  ? "bg-neutral-700 text-white shadow-sm"
+                  : "text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200"
+              )}
+            >
+              <item.icon className="size-4 shrink-0" />
+              <span className="hidden sm:inline">{item.label}</span>
+            </button>
+          );
+        })}
       </div>
-      <div className="flex items-center justify-end gap-2 lg:gap-3">
+      {/* Actions cluster. `min-w-0` + `overflow-x-auto` means that on the
+          narrowest widths the actions scroll within their own lane instead of
+          overlapping the switcher; `shrink` lets the lane give up space first. */}
+      <div className="flex min-w-0 flex-1 items-center justify-end gap-1.5 overflow-x-auto lg:flex-none lg:gap-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <CrossSurfaceLinks />
         {children}
       </div>
