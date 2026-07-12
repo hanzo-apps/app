@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ComponentType } from "react";
 import { useIam } from "@hanzo/iam/react";
 import { toast } from "sonner";
 import {
@@ -18,10 +18,30 @@ import { Input } from "@hanzo/ui";
 import { Switch } from "@hanzo/ui";
 import { Popover, PopoverContent, PopoverTrigger } from "@hanzo/ui";
 
+import { HanzoLogo } from "@/components/HanzoLogo";
 import { useUser } from "@/hooks/useUser";
 import { currentOrg } from "@/lib/org-scope";
 import { syncToGit, type GitProvider, type SyncGitResult } from "@/lib/api/git";
 import { Page } from "@/types";
+
+/**
+ * The push targets, Hanzo FIRST (our own git — the default). Each carries its
+ * human label + brand mark. Hanzo uses the real geometric logomark (the same
+ * `HanzoLogo` the header uses), never a text "H". `lucide` marks are wrapped so
+ * every entry has the same `{ className }` icon contract.
+ */
+const PROVIDERS: {
+  id: GitProvider;
+  label: string;
+  Icon: ComponentType<{ className?: string }>;
+}[] = [
+  { id: "hanzo", label: "Hanzo", Icon: HanzoLogo },
+  { id: "github", label: "GitHub", Icon: Github },
+  { id: "gitlab", label: "GitLab", Icon: GitlabIcon },
+];
+
+const providerMeta = (p: GitProvider) =>
+  PROVIDERS.find((x) => x.id === p) ?? PROVIDERS[0];
 
 /**
  * Push to GitHub / Sync to GitLab — the REVERSE of the repo-import panel.
@@ -44,7 +64,7 @@ export function GitSyncButton({
   const { user } = useUser();
   const { config } = useIam();
 
-  const [provider, setProvider] = useState<GitProvider>("github");
+  const [provider, setProvider] = useState<GitProvider>("hanzo");
   const [name, setName] = useState("");
   const [slug, setSlug] = useState<string | undefined>(undefined);
   const [isPrivate, setIsPrivate] = useState(true);
@@ -61,8 +81,10 @@ export function GitSyncButton({
 
   if (!user?.id) return null;
 
-  const providerName = provider === "github" ? "GitHub" : "GitLab";
-
+  const meta = providerMeta(provider);
+  const providerName = meta.label;
+  // Hanzo needs no OAuth link — the only "connect" is the IAM account itself, so
+  // this only matters for GitHub/GitLab (Hanzo never sets `needsConnect`).
   const connect = () => {
     const base = (config.serverUrl || "https://hanzo.id").replace(/\/+$/, "");
     window.open(`${base}/account`, "_blank", "noopener,noreferrer");
@@ -91,6 +113,12 @@ export function GitSyncButton({
 
       if (!res.ok) {
         if (res.status === 401 && res.connected === false) {
+          // Hanzo has no OAuth-link step — a 401 means the session lapsed, so
+          // prompt a re-sign-in rather than the "link provider" panel.
+          if (provider === "hanzo") {
+            toast.error("Your session expired — sign in again to push to Hanzo git.");
+            return;
+          }
           setNeedsConnect(true);
           return;
         }
@@ -113,7 +141,7 @@ export function GitSyncButton({
     }
   };
 
-  const ProviderIcon = provider === "github" ? Github : GitlabIcon;
+  const ProviderIcon = meta.Icon;
 
   return (
     <Popover>
@@ -123,7 +151,7 @@ export function GitSyncButton({
           size="sm"
           disabled={disabled}
           className="gap-2 !border-white/15 !bg-white/[0.04] !text-white hover:!bg-white/10"
-          title="Push your project to GitHub or GitLab"
+          title="Push your project to Hanzo git, GitHub, or GitLab"
         >
           <UploadCloud className="size-4" />
           <span className="hidden md:inline">Push to Git</span>
@@ -201,24 +229,23 @@ export function GitSyncButton({
           </div>
         ) : (
           <div className="space-y-4 p-5">
-            {/* Provider toggle */}
-            <div className="grid grid-cols-2 gap-2">
-              {(["github", "gitlab"] as GitProvider[]).map((p) => {
-                const Icon = p === "github" ? Github : GitlabIcon;
-                const activeP = provider === p;
+            {/* Provider toggle — Hanzo first (our own git, the default). */}
+            <div className="grid grid-cols-3 gap-2">
+              {PROVIDERS.map(({ id, label, Icon }) => {
+                const activeP = provider === id;
                 return (
                   <button
-                    key={p}
+                    key={id}
                     type="button"
-                    onClick={() => setProvider(p)}
-                    className={`inline-flex h-9 items-center justify-center gap-2 rounded-lg border text-sm transition-colors ${
+                    onClick={() => setProvider(id)}
+                    className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border text-sm transition-colors ${
                       activeP
                         ? "border-white/25 bg-white/10 text-white"
                         : "border-white/10 bg-transparent text-white/50 hover:border-white/20 hover:text-white/80"
                     }`}
                   >
                     <Icon className="h-4 w-4" />
-                    {p === "github" ? "GitHub" : "GitLab"}
+                    {label}
                   </button>
                 );
               })}
@@ -257,7 +284,9 @@ export function GitSyncButton({
             </Button>
             <p className="flex items-center gap-1 text-xs text-white/35">
               <ExternalLink className="size-3" />
-              Pushes with your linked {providerName} account. Token stays server-side.
+              {provider === "hanzo"
+                ? "Pushes to your Hanzo account. Credentials stay server-side."
+                : `Pushes with your linked ${providerName} account. Token stays server-side.`}
             </p>
           </div>
         )}
