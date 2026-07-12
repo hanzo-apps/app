@@ -25,22 +25,43 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - name: Compute next version (monotonic patch bump over git tags, floor 1.42.0)
+      - name: Compute next version (monotonic patch bump over the 1.42.x deploy line)
         id: ver
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           set -euo pipefail
           git fetch --tags --force --quiet
-          git_max="$(git tag -l 'v[0-9]*.[0-9]*.[0-9]*' \
-            | sed 's/^v//' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)"
-          max="$(printf '%s\n%s\n' "1.42.0" "$git_max" \
-            | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)"
+          # The deployed lineage is 1.42.x: the operator CR (universe: hanzo-app.yaml)
+          # and every ghcr.io/hanzoai/hanzo-app image are on it, and the newest-by-date
+          # commits on main are tagged v1.42.x. Stray older tags exist off that line
+          # (v2.2.0 = a 2025 "stack integration" relic, v2.2.1 = a one-off CSP fix,
+          # v1.75.0 = a June relic). `sort -V` is purely numeric, so an UNCONSTRAINED
+          # scan lets 2.2.1 > 1.75.0 > 1.42.x hijack the floor and cut a v2.2.2 the CR
+          # can't follow. Pin the scan to the 1.42. line so the bump stays monotonic
+          # over the ACTUAL deploy stream, not the numerically-largest orphan tag.
+          LINE='1.42.'
+          git_max="$(git tag -l "v${LINE}[0-9]*" \
+            | sed 's/^v//' | grep -E "^${LINE//./\\.}[0-9]+$" | sort -V | tail -1 || true)"
+          # Fold in ALREADY-PUSHED container tags on the same line, so a number that has
+          # an image (even from a run that died before git-tagging) is never reused
+          # (mirrors hanzoai/cloud). Best-effort — never fails the run if the API is down.
+          cont_max=""
+          if command -v gh >/dev/null 2>&1 && [ -n "${GH_PAT:-}" ]; then
+            cont_max="$(GH_TOKEN="$GH_PAT" gh api --paginate \
+              '/orgs/hanzoai/packages/container/hanzo-app/versions' \
+              --jq '.[].metadata.container.tags[]' 2>/dev/null \
+              | sed 's/^v//' | grep -E "^${LINE//./\\.}[0-9]+$" | sort -V | tail -1 || true)"
+          fi
+          max="$(printf '%s\n%s\n%s\n' "${LINE}0" "$git_max" "$cont_max" \
+            | grep -E "^${LINE//./\\.}[0-9]+$" | sort -V | tail -1)"
           major="${max%%.*}"; rest="${max#*.}"; minor="${rest%%.*}"; patch="${rest##*.}"
           version="${major}.${minor}.$((patch + 1))"
           if git rev-parse -q --verify "refs/tags/v${version}" >/dev/null; then
             echo "::error::computed v${version} already exists — aborting to avoid collision"; exit 1
           fi
           echo "version_v=v${version}" >> "$GITHUB_OUTPUT"
-          echo "Next release: v${version} (git_max='${git_max:-none}')"
+          echo "Next release: v${version} (git_max='${git_max:-none}' container_max='${cont_max:-none}')"
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
