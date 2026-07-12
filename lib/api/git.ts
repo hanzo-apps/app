@@ -10,7 +10,7 @@
  */
 
 /** The git providers the import surface can talk to. */
-export type GitProvider = 'github' | 'gitlab';
+export type GitProvider = 'github' | 'gitlab' | 'hanzo';
 
 export interface GitAccount {
   login: string;
@@ -49,8 +49,13 @@ export interface GitAccountsResult {
   providers: GitProviderStatus[];
 }
 
-/** GitHub is always live; GitLab is honest-pending until the server says otherwise. */
+/**
+ * Hanzo is our own git — always available to a signed-in user (no OAuth link
+ * step). GitHub is always live; GitLab is honest-pending until the server says
+ * otherwise.
+ */
 const DEFAULT_PROVIDERS: GitProviderStatus[] = [
+  { provider: 'hanzo', connectable: true },
   { provider: 'github', connectable: true },
   { provider: 'gitlab', connectable: false, reason: 'needs-setup' },
 ];
