@@ -39,14 +39,19 @@ interface PageIn {
   html: string;
 }
 
-/** The connect surface each provider points the user at when no token is linked. */
+/**
+ * The connect surface each provider points the user at when no token is linked.
+ * Hanzo is our own git — the only "unlinked" state is being signed out, so its
+ * hint is the sign-in CTA (never an OAuth-link hint).
+ */
 const CONNECT_HINT: Record<GitProvider, string> = {
+  hanzo: 'Sign in to push to Hanzo git.',
   github: 'Connect GitHub in your account settings, then try again.',
   gitlab: 'Connect GitLab in your account settings, then try again.',
 };
 
 function providerOf(v: unknown): GitProvider | null {
-  return v === 'github' || v === 'gitlab' ? v : null;
+  return v === 'hanzo' || v === 'github' || v === 'gitlab' ? v : null;
 }
 
 export async function POST(req: NextRequest) {
@@ -83,7 +88,7 @@ export async function POST(req: NextRequest) {
 
   const provider = providerOf(body.provider);
   if (!provider) {
-    return NextResponse.json({ error: 'provider must be "github" or "gitlab".' }, { status: 400 });
+    return NextResponse.json({ error: 'provider must be "hanzo", "github" or "gitlab".' }, { status: 400 });
   }
 
   const name = (body.name || '').trim();

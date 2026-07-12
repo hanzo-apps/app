@@ -12,6 +12,10 @@
  *     files, not N commits.
  *   - GitLab: the atomic Commits API — one POST with a `create`/`update` action
  *     per file (existence resolved from the repo tree), one commit.
+ *   - Hanzo: our own git (`api.hanzo.ai/v1/git`). The service accepts a single
+ *     push with the files inline — no local git client, no per-file round-trip.
+ *     The "token" here is the user's own IAM bearer (they are already signed in),
+ *     and tenancy is the gateway-minted org from that JWT — we never pick it.
  *
  * PURE with respect to the runtime: every function takes the resolved provider
  * token as an argument (the BFF resolves it from IAM server-side; it never
@@ -20,7 +24,7 @@
  * HTTP status the route maps through). Fail-closed everywhere.
  */
 
-export type GitProvider = 'github' | 'gitlab';
+export type GitProvider = 'github' | 'gitlab' | 'hanzo';
 
 /** A file to write: a site-relative path and its UTF-8 contents. */
 export interface SyncFile {
@@ -57,6 +61,20 @@ export class GitSyncError extends Error {
 
 const GITHUB_API = 'https://api.github.com';
 const GITLAB_API = 'https://gitlab.com/api/v4';
+
+/**
+ * Hanzo git base (`…/v1/git`). Resolved from the SAME env the cloud base uses
+ * (`CLOUD_API_URL` / `HANZO_API_URL`) so there is one-and-only-one source of
+ * truth for the api.hanzo.ai origin — no second literal to drift. In-cluster
+ * deploys point at the internal gateway via that env; the public gateway is the
+ * default. Kept as a bare const (not imported from `server.ts`) so this module
+ * stays runtime-pure / unit-testable.
+ */
+const HANZO_GIT_API = `${(
+  process.env.CLOUD_API_URL ||
+  process.env.HANZO_API_URL ||
+  'https://api.hanzo.ai'
+).replace(/\/+$/, '')}/v1/git`;
 
 // ---------------------------------------------------------------------------
 // Shared helpers
@@ -391,6 +409,99 @@ async function glPush(
 }
 
 // ---------------------------------------------------------------------------
+// Hanzo (api.hanzo.ai/v1/git) — our own git
+// ---------------------------------------------------------------------------
+
+/**
+ * The "token" for Hanzo is the user's own IAM bearer. The gateway derives the
+ * tenant (org) from that JWT, so we send ONLY Authorization — never X-Org-Id.
+ */
+async function hz(
+  token: string,
+  method: string,
+  path: string,
+  body?: unknown,
+): Promise<Response> {
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${token}`,
+    Accept: 'application/json',
+    'User-Agent': 'hanzo-app',
+  };
+  if (body !== undefined) headers['Content-Type'] = 'application/json';
+  return fetch(`${HANZO_GIT_API}${path}`, {
+    method,
+    headers,
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+    cache: 'no-store',
+  });
+}
+
+async function hzErr(res: Response, what: string): Promise<never> {
+  const text = await res.text().catch(() => '');
+  const status = res.status === 401 || res.status === 403 ? res.status : 502;
+  const code = res.status === 401 || res.status === 403 ? 'forbidden' : 'git_error';
+  throw new GitSyncError(
+    `hanzo ${what} failed (${res.status})${text ? `: ${text.slice(0, 300)}` : ''}`,
+    status,
+    code,
+  );
+}
+
+interface HzRepo {
+  name: string;
+  cloneUrl: string;
+  sshUrl: string;
+  defaultBranch: string;
+}
+
+/**
+ * Create the repo if absent, else target the existing one. Idempotent: the
+ * service returns 409 when it already exists — we then read it back (GET detail)
+ * to recover its clone URL + default branch. Mirrors the ensure-repo shape of
+ * the GitHub/GitLab paths.
+ */
+async function hzEnsureRepo(
+  token: string,
+  name: string,
+  description: string,
+): Promise<{ repo: HzRepo; created: boolean }> {
+  const createRes = await hz(token, 'POST', '/repos', {
+    name,
+    description: description.slice(0, 350),
+  });
+  if (createRes.status === 201) {
+    return { repo: (await createRes.json()) as HzRepo, created: true };
+  }
+  if (createRes.status === 409) {
+    const getRes = await hz(token, 'GET', `/repos/${encodeURIComponent(name)}`);
+    if (!getRes.ok) return hzErr(getRes, 'repo lookup');
+    return { repo: (await getRes.json()) as HzRepo, created: false };
+  }
+  return hzErr(createRes, 'create repo');
+}
+
+/** Push all files in ONE commit via the Hanzo push endpoint (no local git). */
+async function hzPush(
+  token: string,
+  name: string,
+  branch: string,
+  message: string,
+  files: SyncFile[],
+): Promise<{ commit: string; repo: HzRepo }> {
+  const res = await hz(token, 'POST', `/repos/${encodeURIComponent(name)}/push`, {
+    branch,
+    message,
+    files: files.map((f) => ({ path: f.path, content: f.content, encoding: 'utf-8' })),
+  });
+  if (!res.ok) return hzErr(res, 'push');
+  const out = (await res.json()) as { commit: string; cloneUrl: string; sshUrl: string };
+  return {
+    commit: out.commit,
+    repo: { name, cloneUrl: out.cloneUrl, sshUrl: out.sshUrl, defaultBranch: branch },
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Orchestration
 // ---------------------------------------------------------------------------
 
@@ -422,6 +533,31 @@ export async function pushProject(opts: PushOptions): Promise<SyncResult> {
   if (!opts.files.length) throw new GitSyncError('nothing to push (no files)', 400, 'empty');
   const isPrivate = opts.private !== false;
   const description = (opts.description || '').trim();
+
+  if (opts.provider === 'hanzo') {
+    // Repos are addressed by name; tenancy (org) is the gateway-derived JWT
+    // owner, so there is no owner/namespace to resolve. A re-sync reuses the
+    // linked repo by parsing its name out of the stored clone URL.
+    let name = repoNameFrom(opts.repoName || '');
+    if (opts.existingRepoUrl) {
+      const parsed = parseOwnerRepo(opts.existingRepoUrl);
+      name = repoNameFrom(parsed?.repo || opts.repoName || '');
+      if (!name) throw new GitSyncError('linked repo URL is not a valid Hanzo repo', 400, 'bad_repo');
+    }
+    const { repo, created } = await hzEnsureRepo(opts.token, name, description);
+    const branch = repo.defaultBranch || 'main';
+    const pushed = await hzPush(opts.token, repo.name, branch, opts.message, opts.files);
+    return {
+      provider: 'hanzo',
+      repoUrl: pushed.repo.cloneUrl,
+      // No separate web host in the contract — the clone URL is the canonical
+      // link. Strip a trailing `.git` for the human-facing URL.
+      htmlUrl: pushed.repo.cloneUrl.replace(/\.git$/i, ''),
+      branch,
+      commitSha: pushed.commit,
+      created,
+    };
+  }
 
   if (opts.provider === 'github') {
     const authedLogin = await ghLogin(opts.token);
