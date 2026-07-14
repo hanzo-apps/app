@@ -5,14 +5,22 @@ import { Button } from "@hanzo/ui";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { Badge } from "@hanzo/ui";
 import { Check, Sparkles, Zap, CreditCard, ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { EVENTS } from "@hanzo/capture";
+import { useAnalytics } from "@hanzo/capture/react";
 
 export default function PricingPage() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
   const router = useRouter();
+  const analytics = useAnalytics();
+
+  useEffect(() => {
+    analytics.capture(EVENTS.PRICING_VIEWED);
+  }, [analytics]);
 
   const handleCheckout = async (planId: string) => {
+    analytics.capture(EVENTS.PLAN_CLICKED, { plan: planId, billing: billingCycle });
     router.push(`/api/commerce/checkout?plan=${planId}&billing=${billingCycle}`);
   };
 
