@@ -1,3 +1,0 @@
-# Isolated pnpm root — keeps the Expo/React-Native/Metro graph out of the
-# parent app's lockfile. @hanzo/launcher comes from ../../packages/launcher.
-packages: []

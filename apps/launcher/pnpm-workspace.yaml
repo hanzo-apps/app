@@ -1,4 +1,0 @@
-# Isolated pnpm root. Being its own workspace root keeps this target's heavy
-# react-native-web / Vite / Tauri graph out of the parent app's lockfile.
-# `@hanzo/launcher` is pulled from ../../packages/launcher via a file: dep.
-packages: []
