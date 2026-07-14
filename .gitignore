@@ -17,8 +17,6 @@ dist-ssr/
 build/
 
 # Rust
-src-tauri/target/
-src-tauri/gen/
 Cargo.lock
 
 # Editor directories and files
@@ -52,12 +50,8 @@ Thumbs.db
 .env.test.local
 .env.production.local
 
-# Tauri
-src-tauri/WixTools/
 
 # Mobile
-src-tauri/gen/android/
-src-tauri/gen/ios/
 
 # Large files and models
 *.gguf
