@@ -11,6 +11,8 @@ import { currentOrg } from "@/lib/org-scope";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { EVENTS } from "@hanzo/capture";
+import { useAnalytics } from "@hanzo/capture/react";
 
 export const DeployButtonContent = ({
   pages,
@@ -25,6 +27,7 @@ export const DeployButtonContent = ({
   prompts: string[];
 }) => {
   const router = useRouter();
+  const analytics = useAnalytics();
   const [loading, setLoading] = useState(false);
   const [config, setConfig] = useState({ title: "" });
   // When the builder was opened on an existing project (`/dev?project=<slug>`),
@@ -48,6 +51,7 @@ export const DeployButtonContent = ({
       return;
     }
     setLoading(true);
+    analytics.capture(EVENTS.DEPLOY_STARTED, { framework: "static", update: Boolean(existingSlug) });
 
     try {
       const selectedOrg = currentOrg();
