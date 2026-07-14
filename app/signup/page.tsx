@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useIam } from '@hanzo/iam/react';
+import { EVENTS } from '@hanzo/capture';
+import { useAnalytics } from '@hanzo/capture/react';
 import { HanzoLogo } from '@/components/HanzoLogo';
 import { Button } from '@hanzo/ui';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@hanzo/ui';
@@ -17,9 +19,15 @@ import { Loader2, Sparkles, Zap, Shield, Rocket } from 'lucide-react';
  */
 export default function SignupPage() {
   const { login } = useIam();
+  const analytics = useAnalytics();
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    analytics.capture(EVENTS.SIGNUP_VIEWED);
+  }, [analytics]);
+
   const handleSignup = () => {
+    analytics.capture(EVENTS.SIGNUP_SUBMITTED);
     setLoading(true);
     login();
   };
