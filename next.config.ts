@@ -154,7 +154,7 @@ const nextConfig: NextConfig = {
   },
   images: {
     remotePatterns: [
-      new URL('https://iam.hanzo.ai/**'),
+      new URL('https://hanzo.id/**'),
       new URL('https://api.hanzo.ai/**'),
       new URL('https://cdn.hanzo.ai/**'),
     ],
@@ -165,7 +165,7 @@ const nextConfig: NextConfig = {
         // Allow CORS for Hanzo IAM SSO callbacks and API
         source: '/api/auth/:path*',
         headers: [
-          { key: 'Access-Control-Allow-Origin', value: 'https://iam.hanzo.ai' },
+          { key: 'Access-Control-Allow-Origin', value: 'https://hanzo.id' },
           { key: 'Access-Control-Allow-Methods', value: 'GET, POST, OPTIONS' },
           { key: 'Access-Control-Allow-Headers', value: 'Content-Type, Authorization' },
           { key: 'Access-Control-Allow-Credentials', value: 'true' },
