@@ -35,6 +35,8 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { EVENTS } from '@hanzo/capture';
+import { useAnalytics } from '@hanzo/capture/react';
 import { provisionBackendFeatures } from '@/lib/vfs/provision-backend-features';
 import {
   BAREBONES_PROJECT_TEMPLATE,
@@ -83,6 +85,7 @@ type ViewMode = 'grid' | 'list';
 
 export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter = false }: ProjectManagerProps) {
   const router = useRouter();
+  const analytics = useAnalytics();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -291,6 +294,12 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
         settings: { ...project.settings, runtime: newProjectRuntime },
       };
       await vfs.updateProject(finalProject);
+
+      // Enumerated values only — no project name/description.
+      analytics.capture(EVENTS.PROJECT_CREATED, {
+        runtime: newProjectRuntime,
+        template: newProjectTemplate.startsWith('custom:') ? 'custom' : newProjectTemplate,
+      });
 
       // Apply selected template
       if (newProjectTemplate.startsWith('custom:')) {
