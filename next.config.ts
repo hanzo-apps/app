@@ -178,7 +178,7 @@ const nextConfig: NextConfig = {
       {
         // Proxy IAM well-known endpoints to avoid mixed-content issues
         source: '/.well-known/openid-configuration',
-        destination: `${process.env.IAM_ENDPOINT || 'https://iam.hanzo.ai'}/.well-known/openid-configuration`,
+        destination: `${process.env.IAM_ENDPOINT || 'https://hanzo.id'}/.well-known/openid-configuration`,
       },
     ];
   },
