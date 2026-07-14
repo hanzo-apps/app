@@ -1,0 +1,11 @@
+Hanzo App
+Copyright (c) 2025 Hanzo AI, Inc.
+
+This product includes software derived from DeepSite, an open-source
+(MIT-licensed) AI web builder by enzostvs, published on Hugging Face Spaces:
+
+    https://huggingface.co/spaces/enzostvs/deepsite
+
+The AI-assisted HTML/CSS/JS generation flow and prompt scaffolding originate
+from that project and remain under the MIT License. See the LICENSE file for
+the full text.
