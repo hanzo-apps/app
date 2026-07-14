@@ -104,3 +104,4 @@ public/esbuild.wasm
 # TS incremental build cache (regenerated)
 tsconfig.tsbuildinfo
 *.tsbuildinfo
+test/test-results/
