@@ -131,5 +131,12 @@
     "onlyBuiltDependencies": [
       "better-sqlite3"
     ]
-  }
+  },
+  "description": "Hanzo App — AI web & app builder on Hanzo Cloud",
+  "author": "Hanzo AI, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hanzoai/app.git"
+  },
+  "homepage": "https://hanzo.app"
 }
