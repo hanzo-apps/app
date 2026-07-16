@@ -4,6 +4,8 @@
 HTML, CSS, and JavaScript for it, live in the browser — then iterates with you
 through follow-up edits. Publish and share instantly.
 
+Forked from [OSW Studio](https://github.com/o-stahl/osw-studio) (MIT).
+
 <div align="center">
   <a href="https://hanzo.app" target="_blank">Visit Hanzo App →</a>
 </div>
