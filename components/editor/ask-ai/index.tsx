@@ -24,6 +24,7 @@ import { SelectedHtmlElement } from "./selected-html-element";
 import { FollowUpTooltip } from "./follow-up-tooltip";
 import { isTheSameHtml } from "@/lib/compare-html-diff";
 import { useCallAi } from "@/hooks/useCallAi";
+import { sendRewardSignal, getLastGenerationRequestId } from "@/lib/reward-signal";
 import { SelectedFiles } from "./selected-files";
 import { Uploader } from "./uploader";
 
@@ -204,6 +205,12 @@ export function AskAI({
         }
       }
     } else {
+      // Regenerating a full page: when a prior generation exists, this new full
+      // generation replaces it — emit a content-free "regenerate" signal keyed
+      // on the OUTGOING generation's id before it is overwritten. First-time
+      // generation has no prior id, so this no-ops (never fabricates one).
+      sendRewardSignal(getLastGenerationRequestId(), "regenerate");
+
       const result = await callAiNewProject(
         promptToUse,
         model,
