@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { Page } from "@/types";
 import { parsePages, parseSinglePage } from "@/lib/format-pages";
+import { setLastGenerationRequestId } from "@/lib/reward-signal";
 
 // Guarded JSON parse: the stream-done handler only treats the response as a
 // JSON error envelope when it actually parses, so a malformed `{…}` never
@@ -14,19 +15,30 @@ const safeJsonParse = (text: string): any | null => {
   }
 };
 
-// The /v1/generate stream appends the actually-served model after the page
-// content, delimited by an ASCII Record Separator (U+001E) — a control char
-// that can never occur in HTML page output, so it is a safe side channel. Split
-// it off before parsing so the routed model surfaces in the UI (smart routing
-// sends `model: "auto"`; the gateway echoes what actually served) without ever
-// corrupting the page parser.
+// The /v1/generate stream appends a side channel after the page content,
+// delimited by an ASCII Record Separator (U+001E) — a control char that can
+// never occur in HTML page output, so it is safe. Trailer shape:
+// <RS><servedModel><RS><responseId>. Split it off before parsing so the routed
+// model surfaces in the UI (smart routing sends `model: "auto"`; the gateway
+// echoes what actually served) and the gateway response id (the routing
+// ledger's join key) reaches the reward-signal store — without ever corrupting
+// the page parser.
 const ROUTED_MODEL_SEP = "\u001e";
-const splitRoutedModel = (
+const splitSideChannel = (
   text: string
-): { content: string; model: string | null } => {
+): { content: string; model: string | null; id: string | null } => {
   const i = text.indexOf(ROUTED_MODEL_SEP);
-  if (i === -1) return { content: text, model: null };
-  return { content: text.slice(0, i), model: text.slice(i + 1).trim() || null };
+  if (i === -1) return { content: text, model: null, id: null };
+  const content = text.slice(0, i);
+  const rest = text.slice(i + 1);
+  const j = rest.indexOf(ROUTED_MODEL_SEP);
+  // Older single-field trailers (response id absent) still parse cleanly.
+  if (j === -1) return { content, model: rest.trim() || null, id: null };
+  return {
+    content,
+    model: rest.slice(0, j).trim() || null,
+    id: rest.slice(j + 1).trim() || null,
+  };
 };
 
 interface UseCallAiProps {
@@ -233,7 +245,10 @@ export const useCallAi = ({
         const read = async () => {
           const { done, value } = await reader.read();
           if (done) {
-            const served = splitRoutedModel(contentResponse).model;
+            const { model: served, id } = splitSideChannel(contentResponse);
+            // Capture the gateway response id BEFORE onSuccess so the reward
+            // signals (accept/deploy) read the right generation's join key.
+            setLastGenerationRequestId(id);
             if (served) onRoutedModel?.(served);
             const trimmed = contentResponse.trim();
             const isJson =
@@ -349,7 +364,8 @@ export const useCallAi = ({
         const read = async () => {
           const { done, value } = await reader.read();
           if (done) {
-            const served = splitRoutedModel(contentResponse).model;
+            const { model: served, id } = splitSideChannel(contentResponse);
+            setLastGenerationRequestId(id);
             if (served) onRoutedModel?.(served);
             const trimmed = contentResponse.trim();
             const isJson =
@@ -472,6 +488,8 @@ export const useCallAi = ({
         toast.success("AI responded successfully");
         setisAiWorking(false);
 
+        // Capture the gateway response id before onSuccess (accept reads it).
+        setLastGenerationRequestId(res.id);
         setPages(res.pages);
         onSuccess(res.pages, prompt, res.updatedLines);
         
@@ -505,7 +523,7 @@ export const useCallAi = ({
   // START_TITLE format, a bare single-file HTML document, a leading <think>
   // block, and a JSON error envelope — always an array, never a throw.
   const formatPages = (content: string): Page[] => {
-    const parsed = parsePages(splitRoutedModel(content).content);
+    const parsed = parsePages(splitSideChannel(content).content);
     if (parsed.length > 0) {
       setPages(parsed);
       const last = parsed[parsed.length - 1];
@@ -518,7 +536,7 @@ export const useCallAi = ({
   };
 
   const formatPage = (content: string, currentPagePath: string): Page | null => {
-    const page = parseSinglePage(splitRoutedModel(content).content, currentPagePath);
+    const page = parseSinglePage(splitSideChannel(content).content, currentPagePath);
     if (!page) return null;
 
     setPages((prevPages) => {
