@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { EVENTS } from "@hanzo/capture";
 import { useAnalytics } from "@hanzo/capture/react";
+import { sendRewardSignal, getLastGenerationRequestId } from "@/lib/reward-signal";
 
 export const DeployButtonContent = ({
   pages,
@@ -90,6 +91,10 @@ export const DeployButtonContent = ({
         toast.error(data?.error || "Failed to publish project");
         return;
       }
+
+      // Content-free reward signal: the user shipped this generation. Attaches
+      // the last gateway response id (no-ops if none). Fire-and-forget.
+      sendRewardSignal(getLastGenerationRequestId(), "up");
 
       const liveUrl: string | undefined =
         data?.project?.liveUrl || data?.deployment?.liveUrl;
