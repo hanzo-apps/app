@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.42.14 - 2026-07-16
+
+Content-free reward-signal collection (router training feedback): regenerate/accept/deploy.
+
+- **Reward signals to the gateway**: The builder now emits content-free reward signals to the Hanzo gateway (`${HANZO_AI_BASE_URL}/feedback`) so router training gets production feedback. Three moments in the app editor fire a signal — a full re-generation over an existing result (`regenerate`), a generation succeeding and being built on (`accept`), and a deploy/publish (`up`). The payload carries ONLY `{request_id, signal, rating?}` — never any prompt, response, filename, code, or HTML
+- **Real join key threaded end-to-end**: `/v1/generate` now captures the gateway's real response id (`json.id` / `data.id`, the `chatcmpl-…` the routing ledger keys on). The streaming POST path echoes it to the client via the existing U+001E record-separator side channel (extended to `<RS><servedModel><RS><responseId>`, backward-compatible); the non-streaming PUT path returns it as `id`. `hooks/useCallAi.ts` extracts it into a single last-generation store that the disjoint deploy/accept/regenerate moments read
+- **New same-origin BFF `POST /v1/feedback`**: Copies the `/v1/generate` transport (same-origin CSRF guard, `hanzo_token` cookie forwarded as `Authorization: Bearer`) so the org-scoped gateway signal preserves the user's identity. It whitelists the body to exactly `{request_id, signal, rating?}` — stripping anything else so no content can transit — is fire-and-forget (returns 204 quickly, swallows all upstream errors), and no-ops when `HANZO_FEEDBACK` is `0`/`false`/`off` (server-side org/user training opt-in on the gateway is the preferred enforcement; this env is the local kill-switch)
+- **Client helper `lib/reward-signal.ts`**: `sendRewardSignal(requestId, signal, rating?)` POSTs to the same-origin BFF with `credentials: "include"` + `keepalive`, no-ops on a falsy id, dedupes the same `(id, signal)`, and swallows every error so a feedback failure never surfaces to the user or blocks UX
+
 ## v1.42.0 - 2026-03-08
 
 Multi-framework support — Svelte, Vue, and Preact join React as first-class project runtimes with in-browser SFC compilation, starter templates, and AI domain prompts. Plus publish output cleanup.

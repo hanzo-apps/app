@@ -37,6 +37,7 @@ import { AskAI } from "@/components/editor/ask-ai";
 import { DeployButton } from "./deploy-button";
 import { GitSyncButton } from "./git-sync-button";
 import { Page, Project } from "@/types";
+import { sendRewardSignal, getLastGenerationRequestId } from "@/lib/reward-signal";
 import { SaveButton } from "./save-button";
 import { LoadProject } from "../my-projects/load-project";
 import { isTheSameHtml } from "@/lib/compare-html-diff";
@@ -372,6 +373,10 @@ export const AppEditor = ({
                 htmlHistory={htmlHistory}
                 previousPrompts={prompts}
                 onSuccess={(newPages, p: string) => {
+                  // Content-free reward signal: a generation succeeded and the
+                  // user is building on it. Attaches the last gateway response id
+                  // (no-ops if a generation produced none). Fire-and-forget.
+                  sendRewardSignal(getLastGenerationRequestId(), "accept");
                   const currentHistory = [...htmlHistory];
                   currentHistory.unshift({
                     pages: newPages,

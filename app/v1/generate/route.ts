@@ -41,9 +41,11 @@ const HANZO_AI_BASE_URL =
 const MAX_TOKENS = 131_000;
 
 // ASCII Record Separator (U+001E). Appended once after the page content to
-// carry the actually-served model back to the client without corrupting the
-// HTML page parser (this control char can never appear in page output). The
-// client (hooks/useCallAi.ts) splits on the same delimiter.
+// carry the served model AND the gateway response id back to the client without
+// corrupting the HTML page parser (this control char can never appear in page
+// output). Trailer shape: <RS><servedModel><RS><responseId>. The response id is
+// the routing ledger's join key and is discovered mid-stream (so it can't ride
+// a response header). The client (hooks/useCallAi.ts) splits on the delimiter.
 const ROUTED_MODEL_SEP = "\u001e";
 
 // A fresh response per call — a NextResponse body is a one-shot stream, so a
@@ -158,15 +160,22 @@ export async function POST(request: NextRequest) {
 
   (async () => {
     try {
-      const servedModel = await pipeGatewaySse(gateway.body!, (delta) =>
-        writer.write(encoder.encode(delta))
+      const { model: servedModel, id: responseId } = await pipeGatewaySse(
+        gateway.body!,
+        (delta) => writer.write(encoder.encode(delta))
       );
-      // Echo the actually-served model to the client, delimited so the page
-      // parser never sees it. Under smart routing (`model: "auto"`) this is how
-      // the client learns which model the gateway routed to.
-      if (servedModel) {
+      // Echo the served model AND the gateway response id to the client,
+      // delimited so the page parser never sees them. The response id is the
+      // routing ledger's join key; the client threads it to the reward-signal
+      // store. Under smart routing (`model: "auto"`) this is also how the client
+      // learns which model the gateway routed to.
+      if (servedModel || responseId) {
         await writer.write(
-          encoder.encode(`${ROUTED_MODEL_SEP}${servedModel}`)
+          encoder.encode(
+            `${ROUTED_MODEL_SEP}${servedModel ?? ""}${ROUTED_MODEL_SEP}${
+              responseId ?? ""
+            }`
+          )
         );
       }
     } catch (error: any) {
@@ -284,24 +293,29 @@ export async function PUT(request: NextRequest) {
     updatedLines,
     pages: updatedPages,
     model: data.model || selectedModel,
+    // The gateway response id — the routing ledger's join key the client
+    // attaches to reward signals (non-streaming path: available before we reply).
+    id: data.id,
   });
 }
 
 /**
  * Parse the gateway's OpenAI-compatible SSE stream and hand each
  * `choices[0].delta.content` fragment to `onDelta`. Returns the model the
- * gateway reports having served (echoed on every chunk) — under smart routing
- * the request `model` is `"auto"`, so this is how the actually-served model is
- * surfaced back to the client.
+ * gateway reports having served (echoed on every chunk — under smart routing the
+ * request `model` is `"auto"`, so this is how the actually-served model surfaces)
+ * and the gateway response id (`json.id`, first non-empty wins) — the routing
+ * ledger's join key the client attaches to reward signals.
  */
 async function pipeGatewaySse(
   body: ReadableStream<Uint8Array>,
   onDelta: (delta: string) => Promise<unknown> | unknown
-): Promise<string | null> {
+): Promise<{ model: string | null; id: string | null }> {
   const reader = body.getReader();
   const decoder = new TextDecoder("utf-8");
   let buffer = "";
   let servedModel: string | null = null;
+  let responseId: string | null = null;
 
   while (true) {
     const { done, value } = await reader.read();
@@ -325,6 +339,8 @@ async function pipeGatewaySse(
         try {
           const json = JSON.parse(payload);
           if (typeof json.model === "string") servedModel = json.model;
+          if (!responseId && typeof json.id === "string" && json.id)
+            responseId = json.id;
           const delta = json.choices?.[0]?.delta?.content;
           if (delta) await onDelta(delta);
         } catch {
@@ -334,7 +350,7 @@ async function pipeGatewaySse(
     }
   }
 
-  return servedModel;
+  return { model: servedModel, id: responseId };
 }
 
 /**
