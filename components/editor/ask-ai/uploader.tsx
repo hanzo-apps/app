@@ -14,6 +14,7 @@ import { RiCheckboxCircleFill } from "react-icons/ri";
 import { useUser } from "@/hooks/useUser";
 import { LoginModal } from "@/components/login-modal";
 import { DeployButtonContent } from "../deploy-button/content";
+import { imageFilesFrom, uploadProjectImages } from "@/lib/upload-project-images";
 
 export const Uploader = ({
   pages,
@@ -29,7 +30,8 @@ export const Uploader = ({
   onLoading: (isLoading: boolean) => void;
   isLoading: boolean;
   files: string[];
-  onFiles: React.Dispatch<React.SetStateAction<string[]>>;
+  // Receives the newly-uploaded durable URLs; the bar unions + persists them.
+  onFiles: (urls: string[]) => void;
   onSelectFile: (file: string) => void;
   selectedFiles: string[];
   project?: Project | null;
@@ -42,30 +44,18 @@ export const Uploader = ({
   const [genError, setGenError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Persist image File(s) to the project's own storage and add the returned
-  // durable URLs to the builder's image list. Shared by upload + AI generation.
+  // Persist image File(s) to the project's own storage and hand the returned
+  // durable URLs to the bar. Shared by upload + AI generation, via the ONE
+  // upload path in lib/upload-project-images.
   const persistFiles = async (images: File[]) => {
-    if (!project?.space_id || images.length === 0) return;
-    const data = new FormData();
-    images.forEach((image) => data.append("images", image));
-    const response = await fetch(
-      `/api/me/projects/${project.space_id}/images`,
-      { method: "POST", body: data }
-    );
-    if (response.ok) {
-      const d = await response.json();
-      onFiles((prev) => [...prev, ...d.uploadedFiles]);
-    }
+    const urls = await uploadProjectImages(project?.space_id, images);
+    if (urls.length) onFiles(urls);
   };
 
   const uploadFiles = async (files: FileList | null) => {
-    if (!files) return;
-    if (!project) return;
+    if (!files || !project) return;
     onLoading(true);
-    const images = Array.from(files).filter((file) =>
-      file.type.startsWith("image/")
-    );
-    await persistFiles(images);
+    await persistFiles(imageFilesFrom(files));
     onLoading(false);
   };
 
