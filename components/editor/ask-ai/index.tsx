@@ -4,7 +4,7 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import classNames from "classnames";
 import { toast } from "sonner";
 import { useLocalStorage, useUpdateEffect } from "react-use";
-import { ArrowUp, ChevronDown, Crosshair } from "lucide-react";
+import { ArrowUp, ChevronDown, Crosshair, ImagePlus } from "lucide-react";
 import { FaStopCircle } from "react-icons/fa";
 
 import ProModal from "@/components/pro-modal";
@@ -17,6 +17,13 @@ import { HtmlHistory, Page, Project } from "@/types";
 import { Settings } from "@/components/editor/ask-ai/settings";
 import { LoginModal } from "@/components/login-modal";
 import { ReImagine } from "@/components/editor/ask-ai/re-imagine";
+import { Fix } from "@/components/editor/ask-ai/fix";
+import { imageFilesFrom, uploadProjectImages } from "@/lib/upload-project-images";
+import {
+  addReferenceImages,
+  mergeReferenceImages,
+  referenceImagesKey,
+} from "@/lib/reference-images";
 import Loading from "@/components/loading";
 import { Checkbox } from "@hanzo/ui";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@hanzo/ui";
@@ -27,6 +34,12 @@ import { useCallAi } from "@/hooks/useCallAi";
 import { sendRewardSignal, getLastGenerationRequestId } from "@/lib/reward-signal";
 import { SelectedFiles } from "./selected-files";
 import { Uploader } from "./uploader";
+
+// Fix mode composes this short, human intent preamble in front of the user's
+// text (empty text is fine when references are attached). The reference images
+// ride the UNCHANGED follow-up `files` path — Fix adds no new API surface.
+const FIX_PREAMBLE =
+  "Fix the current design to match the attached reference. Change only what differs from the reference; keep what already matches.";
 
 export function AskAI({
   isNew,
@@ -100,6 +113,75 @@ export function AskAI({
   const [isFollowUp, setIsFollowUp] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
   const [files, setFiles] = useState<string[]>(images ?? []);
+  // Fix mode: ONE flag. While on, the generate call is prefixed with a
+  // fix-intent preamble and the send guard accepts a references-only submit.
+  const [isFixMode, setIsFixMode] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Per-project reference-image history, persisted like the ask-ai settings
+  // (namespaced localStorage). Backs the uploader's "past images" picker so a
+  // drop / paste / upload survives a reload before the server list refetches.
+  const [history, setHistory] = useLocalStorage<string[]>(
+    referenceImagesKey(project?.space_id),
+    []
+  );
+
+  // ONE way to grow the library: union into the in-session list + persist to the
+  // per-project history. Attaching (drop / paste / pick) also selects them.
+  const addToLibrary = (urls: string[]) => {
+    if (urls.length === 0) return;
+    setFiles((prev) => mergeReferenceImages(prev, urls));
+    setHistory((prev) => addReferenceImages(prev ?? [], urls));
+  };
+  const attachRefs = (urls: string[]) => {
+    if (urls.length === 0) return;
+    addToLibrary(urls);
+    setSelectedFiles((prev) => mergeReferenceImages(prev, urls));
+  };
+
+  // Drop / paste ingest: reuse the ONE upload path + the "Uploading images..."
+  // affordance, then attach the references to the current prompt.
+  const ingestFiles = async (imgs: File[]) => {
+    if (imgs.length === 0) return;
+    if (!project?.space_id) {
+      toast.error("Publish your project first to attach reference images.");
+      return;
+    }
+    setIsUploading(true);
+    const urls = await uploadProjectImages(project.space_id, imgs);
+    if (urls.length) attachRefs(urls);
+    else toast.error("Couldn't upload image(s). Please try again.");
+    setIsUploading(false);
+  };
+
+  const isFileDrag = (e: React.DragEvent) =>
+    Array.from(e.dataTransfer?.types ?? []).includes("Files");
+  const handleDragOver = (e: React.DragEvent) => {
+    if (isFileDrag(e)) e.preventDefault();
+  };
+  const handleDragEnter = (e: React.DragEvent) => {
+    if (!isFileDrag(e)) return;
+    e.preventDefault();
+    setIsDragging(true);
+  };
+  const handleDragLeave = (e: React.DragEvent) => {
+    // Ignore leave events fired while crossing into a child of the card.
+    if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+      setIsDragging(false);
+    }
+  };
+  const handleDrop = (e: React.DragEvent) => {
+    if (!isFileDrag(e)) return;
+    e.preventDefault();
+    setIsDragging(false);
+    void ingestFiles(imageFilesFrom(e.dataTransfer.files));
+  };
+  const handlePaste = (e: React.ClipboardEvent) => {
+    const imgs = imageFilesFrom(e.clipboardData?.files ?? null);
+    if (imgs.length === 0) return; // let a normal text paste through
+    e.preventDefault();
+    void ingestFiles(imgs);
+  };
 
   // Message queue state
   const [messageQueue, setMessageQueue] = useState<Array<{id: string; message: string; timestamp: Date}>>([]);
@@ -122,6 +204,15 @@ export function AskAI({
     isAiWorking,
     setisAiWorking,
   });
+
+  // Hydrate the in-session library with the persisted per-project history once
+  // on mount (client-only, so no SSR/client mismatch on the server `images`).
+  useEffect(() => {
+    if (history && history.length) {
+      setFiles((prev) => mergeReferenceImages(prev, history));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Keep the persisted selection valid against the live gateway list: if the
   // stored model is no longer served (or a fresh session has none), fall back to
@@ -154,7 +245,29 @@ export function AskAI({
     // Use queued prompt if provided, otherwise use current prompt
     const promptToUse = queuedPrompt || prompt;
 
-    if (!redesignMarkdown && !promptToUse.trim()) return;
+    // Fix mode: a references-only submit is valid, otherwise a non-empty prompt
+    // is still required. The mode composes the fix preamble in front of the text.
+    const fixSubmit = isFixMode && !redesignMarkdown;
+    if (
+      !redesignMarkdown &&
+      !promptToUse.trim() &&
+      !(fixSubmit && selectedFiles.length > 0)
+    )
+      return;
+    const effectivePrompt = fixSubmit
+      ? promptToUse.trim()
+        ? `${FIX_PREAMBLE}\n\n${promptToUse.trim()}`
+        : FIX_PREAMBLE
+      : promptToUse;
+
+    // Clear the composer after a non-queued submit (queued prompts keep the box
+    // untouched). Fix is one-shot: it resets so the next prompt is ordinary.
+    const clearComposer = () => {
+      if (!queuedPrompt) {
+        setPrompt("");
+        setIsFixMode(false);
+      }
+    };
 
     if (isFollowUp && !redesignMarkdown && !isSameHtml) {
       // Use follow-up function for existing projects
@@ -163,7 +276,7 @@ export function AskAI({
         : "";
 
       const result = await callAiFollowUp(
-        promptToUse,
+        effectivePrompt,
         model,
         provider,
         previousPrompts,
@@ -178,13 +291,11 @@ export function AskAI({
 
       if (result?.success) {
         if (result.model) setRoutedModel(result.model);
-        if (!queuedPrompt) {
-          setPrompt("");
-        }
+        clearComposer();
       }
     } else if (isFollowUp && pages.length > 1 && isSameHtml) {
       const result = await callAiNewPage(
-        promptToUse,
+        effectivePrompt,
         model,
         provider,
         currentPage.path,
@@ -200,9 +311,7 @@ export function AskAI({
       }
 
       if (result?.success) {
-        if (!queuedPrompt) {
-          setPrompt("");
-        }
+        clearComposer();
       }
     } else {
       // Regenerating a full page: when a prior generation exists, this new full
@@ -212,7 +321,7 @@ export function AskAI({
       sendRewardSignal(getLastGenerationRequestId(), "regenerate");
 
       const result = await callAiNewProject(
-        promptToUse,
+        effectivePrompt,
         model,
         provider,
         redesignMarkdown,
@@ -229,9 +338,7 @@ export function AskAI({
       }
 
       if (result?.success) {
-        if (!queuedPrompt) {
-          setPrompt("");
-        }
+        clearComposer();
       }
     }
   };
@@ -397,7 +504,21 @@ export function AskAI({
         }
       `}</style>
 
-      <div className="relative bg-neutral-800 border border-neutral-700 rounded-2xl ring-[4px] focus-within:ring-neutral-500/30 focus-within:border-neutral-600 ring-transparent z-10 w-full group">
+      <div
+        className="relative bg-neutral-800 border border-neutral-700 rounded-2xl ring-[4px] focus-within:ring-neutral-500/30 focus-within:border-neutral-600 ring-transparent z-10 w-full group"
+        onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        {isDragging && (
+          <div className="absolute inset-0 z-30 rounded-2xl border-2 border-dashed border-neutral-500 bg-neutral-900/80 flex items-center justify-center pointer-events-none">
+            <p className="text-sm text-neutral-200 flex items-center gap-2">
+              <ImagePlus className="size-4" />
+              Drop images to attach as references
+            </p>
+          </div>
+        )}
         {think && (
           <div className="w-full border-b border-neutral-700 relative overflow-hidden">
             <header
@@ -542,7 +663,9 @@ export function AskAI({
               }
             )}
             placeholder={
-              isAiWorking && messageQueue.length > 0
+              isFixMode
+                ? "Attach a reference (drop, paste, or pick), then send — or add a note"
+                : isAiWorking && messageQueue.length > 0
                 ? "Type your message... (will be queued)"
                 : selectedElement
                 ? `Ask Hanzo about ${selectedElement.tagName.toLowerCase()}...`
@@ -552,6 +675,7 @@ export function AskAI({
             }
             value={prompt}
             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPrompt(e.target.value)}
+            onPaste={handlePaste}
             onKeyDown={(e: React.KeyboardEvent) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
@@ -566,7 +690,7 @@ export function AskAI({
               pages={pages}
               onLoading={setIsUploading}
               isLoading={isUploading}
-              onFiles={setFiles}
+              onFiles={addToLibrary}
               onSelectFile={(file) => {
                 if (selectedFiles.includes(file)) {
                   setSelectedFiles((prev) => prev.filter((f) => f !== file));
@@ -579,6 +703,12 @@ export function AskAI({
               project={project}
             />
             {isNew && <ReImagine onRedesign={(md) => callAi(md)} />}
+            {!isSameHtml && (
+              <Fix
+                active={isFixMode}
+                onToggle={() => setIsFixMode((v) => !v)}
+              />
+            )}
             {!isSameHtml && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -646,7 +776,11 @@ export function AskAI({
             ) : (
               <Button
                 size="iconXs"
-                disabled={isUploading || !prompt.trim()}
+                disabled={
+                  isUploading ||
+                  (!prompt.trim() &&
+                    !(isFixMode && selectedFiles.length > 0))
+                }
                 onClick={() => callAi()}
               >
                 <ArrowUp className="size-4" />
