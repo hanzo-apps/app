@@ -1,11 +1,15 @@
 Hanzo App
 Copyright (c) 2025 Hanzo AI, Inc.
 
-This product includes software derived from DeepSite, an open-source
-(MIT-licensed) AI web builder by enzostvs, published on Hugging Face Spaces:
+This product is derived from OSW Studio (Open Source Web Studio), an
+MIT-licensed AI website builder by Otto Stahl:
+
+    https://github.com/o-stahl/osw-studio
+
+OSW Studio is itself derived from DeepSite v2, an MIT-licensed AI web builder
+by enzostvs and the DeepSite authors, published on Hugging Face Spaces:
 
     https://huggingface.co/spaces/enzostvs/deepsite
 
-The AI-assisted HTML/CSS/JS generation flow and prompt scaffolding originate
-from that project and remain under the MIT License. See the LICENSE file for
-the full text.
+Both projects are used under the MIT License. See the LICENSE file for the
+full text and copyright notices.
