@@ -5,41 +5,14 @@ import { Activity, ExternalLink } from 'lucide-react';
 import { isAuthenticated } from '@/lib/auth';
 import { listProjects } from '@/lib/db/projects';
 import { buildUsage } from '@/lib/usage';
-import { getBillingUsage, type BillingUsageLine } from '@/lib/commerce';
 import Header from '@/components/layout/header';
 import SmartRoutingCard from '@/components/usage/smart-routing-card';
+import CloudUsagePanel from '@/components/usage/cloud-usage-panel';
 import { Button } from '@hanzo/ui';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@hanzo/ui';
-import { Progress } from '@hanzo/ui';
 
 // Reads the caller's cookies/token — must render per-request.
 export const dynamic = 'force-dynamic';
-
-const pct = (used: number, limit?: number | null) =>
-  limit && limit > 0 ? Math.min((used / limit) * 100, 100) : 0;
-
-function UsageRow({ label, used, limit, unit }: BillingUsageLine) {
-  const suffix = unit ? ` ${unit}` : '';
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-2">
-        <span>{label}</span>
-        <span className="text-sm text-white/60">
-          {used.toLocaleString()}
-          {suffix}
-          {typeof limit === 'number' ? ` / ${limit.toLocaleString()}${suffix}` : ''}
-        </span>
-      </div>
-      {typeof limit === 'number' && (
-        <Progress
-          value={pct(used, limit)}
-          className="h-2 bg-white/10"
-          indicatorClassName="bg-white"
-        />
-      )}
-    </div>
-  );
-}
 
 export default async function UsagePage() {
   const user = await isAuthenticated();
@@ -53,7 +26,6 @@ export default async function UsagePage() {
   }
 
   const account = buildUsage(projectCount);
-  const billing = await getBillingUsage(user.token);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
@@ -105,20 +77,10 @@ export default async function UsagePage() {
           </CardContent>
         </Card>
 
-        {/* Metered usage from Hanzo Commerce, shown only when the account has it. */}
-        {billing && billing.length > 0 && (
-          <Card className="bg-[#1a1a1a] border-white/10">
-            <CardHeader>
-              <CardTitle>Metered Usage</CardTitle>
-              <CardDescription>This billing period, via Hanzo Commerce</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {billing.map((line) => (
-                <UsageRow key={line.label} {...line} />
-              ))}
-            </CardContent>
-          </Card>
-        )}
+        {/* Cloud usage — the ONE canonical <UsagePanel> over GET /v1/get-cloud-usages
+            (spend, tokens, requests, per-model, activity). Same component every
+            Hanzo surface renders; reads this session's IAM bearer. */}
+        <CloudUsagePanel />
       </div>
     </div>
   );
