@@ -9,6 +9,7 @@ import MY_TOKEN_KEY from "@/lib/get-cookie-name";
 import { apiServer } from "@/lib/api";
 import AppContext from "@/components/contexts/app-context";
 import IframeDetector from "@/components/iframe-detector";
+import { ChunkReloader } from "@/components/chunk-reloader";
 import { Providers } from "./providers";
 import { ErrorBoundary } from "@/components/error-boundary/error-boundary";
 import { errorLogger } from "@/lib/error-handling/error-logger";
@@ -102,6 +103,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black dark min-h-screen`}
       >
         <IframeDetector />
+        <ChunkReloader />
         <ErrorBoundary level="app">
           <Providers>
             <TanstackProvider>
