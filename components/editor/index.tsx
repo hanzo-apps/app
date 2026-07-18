@@ -29,7 +29,6 @@ import classNames from "classnames";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { Header } from "@/components/editor/header";
-import { Footer } from "@/components/editor/footer";
 import { defaultHTML } from "@/lib/consts";
 import { Preview } from "@/components/editor/preview";
 import { useEditor } from "@/hooks/useEditor";
@@ -237,7 +236,15 @@ export const AppEditor = ({
     <OrgProvider>
     <TooltipProvider>
     <section className="h-[100dvh] bg-neutral-950 flex flex-col">
-      <Header tab={currentTab} onNewTab={setCurrentTab}>
+      <Header
+        tab={currentTab}
+        onNewTab={setCurrentTab}
+        device={device}
+        setDevice={setDevice}
+        htmlHistory={htmlHistory}
+        setPages={setPages}
+        iframeRef={iframeRef}
+      >
         {currentTab === "preview" && (
           <PageNavigator
             currentPath={currentPreviewPath}
@@ -259,11 +266,13 @@ export const AppEditor = ({
             }}
           />
         )}
+        {/* Secondary actions (Share / Load / Push) share ONE treatment so the
+            action cluster reads as a set; Publish is the sole solid primary. */}
         <Button
-          variant="ghost"
+          variant="outline"
           size="sm"
           onClick={() => setIsShareModalOpen(true)}
-          className="gap-2"
+          className="gap-2 !border-white/15 !bg-white/[0.04] !text-white hover:!bg-white/10"
         >
           <Share2 className="w-4 h-4" />
           <span className="hidden md:inline">Share</span>
@@ -504,16 +513,6 @@ export const AppEditor = ({
           />
         </div>
       )}
-
-      <Footer
-        pages={pages}
-        htmlHistory={htmlHistory}
-        setPages={setPages}
-        iframeRef={iframeRef}
-        device={device}
-        isNew={isNew}
-        setDevice={setDevice}
-      />
 
       {/* Supervisor Toggle Button */}
       <button
