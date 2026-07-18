@@ -724,7 +724,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
               onClick={() => setAboutModalOpen(true)}
             >
               <Info className="mr-2 h-4 w-4" />
-              About OSW Studio
+              About Hanzo App
             </Button>
             <Button
               variant="outline"

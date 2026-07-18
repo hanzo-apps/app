@@ -31,7 +31,7 @@ export function TelemetryDisclosure({ open, onDismiss }: TelemetryDisclosureProp
         <DialogHeader>
           <DialogTitle>Anonymous Usage Analytics</DialogTitle>
           <DialogDescription>
-            Open Source Web Studio collects anonymous usage analytics to help improve the app
+            Hanzo App collects anonymous usage analytics to help improve the app
           </DialogDescription>
         </DialogHeader>
 
