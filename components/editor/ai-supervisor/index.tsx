@@ -126,8 +126,18 @@ export function AISupervisor({
   };
 
   const connectToSupervisor = () => {
+    // The supervisor socket only exists when explicitly configured. In prod
+    // NEXT_PUBLIC_SUPERVISOR_WS is unset — do NOT fall back to a dev
+    // `ws://localhost:8080` URL: it's CSP-blocked and floods the builder console
+    // with connection errors on every load (a source of error-boundary noise).
+    // No endpoint configured → run in local/offline mode, no socket.
+    const wsUrl = process.env.NEXT_PUBLIC_SUPERVISOR_WS;
+    if (!wsUrl) {
+      setSandboxStatus("idle");
+      return;
+    }
     try {
-      const ws = new WebSocket(process.env.NEXT_PUBLIC_SUPERVISOR_WS || "ws://localhost:8080/supervisor");
+      const ws = new WebSocket(wsUrl);
 
       ws.onopen = () => {
         console.log("Connected to AI Supervisor");
