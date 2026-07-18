@@ -45,20 +45,14 @@ const HANZO_AI_BASE_URL =
 // safe across the Zen ladder + Enso.
 const MAX_TOKENS = 128_000;
 
-// The builder STREAMS (SSE). zen5-coder (glm-5.2, OpenAI-dialect) streams
-// reliably and is the code-specialized model. The Enso family currently routes
-// to claude-opus-4-8 whose ANTHROPIC streaming seam returns 0 bytes (non-stream
-// works, stream is empty) — so an Enso build silently fails ("app never
-// appears"). Until the Anthropic streaming seam is fixed backend-side, the code
-// builder uses zen5-coder for any Enso selection (a persisted default or an
-// explicit pick). Enso stays fully available for non-streaming chat. This is the
-// ONE builder-model coercion: resolveModelId first (kills dead ids), then remap
-// the not-yet-streamable Enso family to the builder's streaming coder.
-const NON_STREAMING_MODEL = /^enso(\b|[-_])/i;
-function builderModel(model: string | undefined | null): string {
-  const m = resolveModelId(model);
-  return NON_STREAMING_MODEL.test(m) ? "zen5-coder" : m;
-}
+// Builder model resolution: kill retired/dead ids (resolveModelId), then honor
+// what remains. Both zen5-coder (the code-specialized default, glm-5.2) and the
+// Enso family (claude-opus-4-8) now STREAM reliably — the Enso streaming seam was
+// fixed at the source (deploy/enso rebuilt on zen v1.4.3), verified live — so an
+// explicit or persisted Enso pick is served as Enso. `auto` still routes via the
+// gateway. (DEFAULT_MODEL stays zen5-coder for a fresh builder session.)
+const builderModel = (model: string | undefined | null): string =>
+  resolveModelId(model);
 
 // ASCII Record Separator (U+001E). Appended once after the page content to
 // carry the served model AND the gateway response id back to the client without
