@@ -60,7 +60,13 @@ export class GitSyncError extends Error {
 }
 
 const GITHUB_API = 'https://api.github.com';
-const GITLAB_API = 'https://gitlab.com/api/v4';
+/**
+ * GitLab API base — gitlab.com by default; self-managed via `GITLAB_ENDPOINT`.
+ * Mirrors `lib/git/server.ts` so the PUSH path and the IMPORT path resolve the
+ * SAME GitLab host (DRY — no divergent literal that would let import list repos
+ * from a self-hosted instance while push silently targeted gitlab.com).
+ */
+const GITLAB_API = `${(process.env.GITLAB_ENDPOINT || 'https://gitlab.com').replace(/\/+$/, '')}/api/v4`;
 
 /**
  * Hanzo git base (`…/v1/git`). Resolved from the SAME env the cloud base uses
@@ -137,6 +143,39 @@ export function parseOwnerRepo(
   const parts = s.split('/').filter(Boolean);
   if (parts.length < 2) return null;
   return { owner: parts[0], repo: parts[parts.length - 1], path: parts.join('/') };
+}
+
+/**
+ * Does a stored clone/remote URL belong to `provider`'s host family?
+ *
+ * A project record carries ONE `repo.url`, so after pushing to GitHub and then
+ * toggling the target to GitLab the stored `github.com/owner/repo` must NOT be
+ * replayed as a GitLab project lookup — it would 404 and hard-fail the push.
+ * When the host disagrees with the selected provider the caller IGNORES the
+ * stored URL and creates a fresh repo for that provider (which then re-links).
+ * A bare `owner/repo` (no host) is provider-agnostic ⇒ matches. This is the
+ * belt to the route's suspenders (which should also persist `repo.provider`).
+ */
+export function repoUrlMatchesProvider(urlOrPath: string, provider: GitProvider): boolean {
+  const s = (urlOrPath || '').trim().toLowerCase();
+  if (!s) return false;
+  const scp = /^[\w.+-]+@([\w.-]+):/i.exec(s); // git@host:owner/repo
+  const sch = /^[a-z][a-z0-9+.-]*:\/\/([^/]+)/i.exec(s); // scheme://host/…
+  const host = scp?.[1] || sch?.[1] || '';
+  if (!host) return true; // bare owner/repo — no host to disagree with
+  if (provider === 'github') return host.includes('github');
+  if (provider === 'gitlab') {
+    const glHost = (process.env.GITLAB_ENDPOINT || 'https://gitlab.com')
+      .replace(/^https?:\/\//i, '')
+      .replace(/\/.*$/, '')
+      .toLowerCase();
+    return host.includes('gitlab') || host === glHost;
+  }
+  // hanzo — our own git origin (api.hanzo.ai / CLOUD_API_URL host).
+  const hzHost = HANZO_GIT_API.replace(/^https?:\/\//i, '')
+    .replace(/\/.*$/, '')
+    .toLowerCase();
+  return host === hzHost || host.includes('hanzo');
 }
 
 // ---------------------------------------------------------------------------
@@ -539,7 +578,7 @@ export async function pushProject(opts: PushOptions): Promise<SyncResult> {
     // owner, so there is no owner/namespace to resolve. A re-sync reuses the
     // linked repo by parsing its name out of the stored clone URL.
     let name = repoNameFrom(opts.repoName || '');
-    if (opts.existingRepoUrl) {
+    if (opts.existingRepoUrl && repoUrlMatchesProvider(opts.existingRepoUrl, 'hanzo')) {
       const parsed = parseOwnerRepo(opts.existingRepoUrl);
       name = repoNameFrom(parsed?.repo || opts.repoName || '');
       if (!name) throw new GitSyncError('linked repo URL is not a valid Hanzo repo', 400, 'bad_repo');
@@ -566,7 +605,7 @@ export async function pushProject(opts: PushOptions): Promise<SyncResult> {
     let defaultBranch = 'main';
     let created = false;
 
-    if (opts.existingRepoUrl) {
+    if (opts.existingRepoUrl && repoUrlMatchesProvider(opts.existingRepoUrl, 'github')) {
       const parsed = parseOwnerRepo(opts.existingRepoUrl);
       if (!parsed) throw new GitSyncError('linked repo URL is not a valid GitHub repo', 400, 'bad_repo');
       const ensured = await ghEnsureRepo(opts.token, authedLogin, parsed.owner, parsed.repo, isPrivate, description);
@@ -601,7 +640,7 @@ export async function pushProject(opts: PushOptions): Promise<SyncResult> {
   let defaultBranch = 'main';
   let created = false;
 
-  if (opts.existingRepoUrl) {
+  if (opts.existingRepoUrl && repoUrlMatchesProvider(opts.existingRepoUrl, 'gitlab')) {
     const parsed = parseOwnerRepo(opts.existingRepoUrl);
     if (!parsed) throw new GitSyncError('linked repo URL is not a valid GitLab project', 400, 'bad_repo');
     const getRes = await gl(opts.token, 'GET', `/projects/${encodeURIComponent(parsed.path)}`);
