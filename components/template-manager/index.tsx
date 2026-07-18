@@ -134,7 +134,7 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
           name: template.name,
           description: template.description,
           version: '1.0.0',
-          author: 'OSW Studio',
+          author: 'Hanzo App',
           license: 'mit',
           tags: template.metadata?.tags || []
         });
