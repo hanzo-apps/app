@@ -19,6 +19,8 @@ import { useRouter } from 'next/navigation';
 import { LogOut, Wallet } from 'lucide-react';
 
 import { useUser } from '@/hooks/useUser';
+import { useOrg } from '@/lib/org/client';
+import { currentOrg, orgDisplayName } from '@/lib/org-scope';
 import { useCloudBalance, spendableCents } from '@/lib/billing/live-balance';
 
 const BILLING_URL = process.env.NEXT_PUBLIC_BILLING_URL || 'https://billing.hanzo.ai';
@@ -42,6 +44,7 @@ export function SidebarWallet({ collapsed }: { collapsed: boolean }) {
   // the user on `/`. A server-only /api/auth/logout cleared the cookie but not
   // the SDK store, so the bridge resurrected it on the next mount.
   const { user, logout } = useUser();
+  const { ctx } = useOrg();
   const router = useRouter();
   const { phase, balance } = useCloudBalance();
   const cents = spendableCents(balance);
@@ -50,6 +53,10 @@ export function SidebarWallet({ collapsed }: { collapsed: boolean }) {
 
   const name = user.fullname || user.name || 'Account';
   const avatar = (user as { avatarUrl?: string }).avatarUrl;
+  // The ACTIVE org the wallet (and every scoped call) attributes to — resolved
+  // exactly like the OrgSwitcher, so the person's identity is bound to a
+  // clearly-named org at the bottom of the sidebar.
+  const org = orgDisplayName(ctx?.orgs ?? [], currentOrg() || ctx?.currentOrg || '');
   // Honest balance text: a real number when ready, else "—" (loading / no-auth /
   // billing unconfigured) — never a fabricated value.
   const balanceText = phase === 'ready' && cents !== null ? fmtUsd(cents) : '—';
@@ -69,7 +76,7 @@ export function SidebarWallet({ collapsed }: { collapsed: boolean }) {
             initials(name)
           )}
         </button>
-        <button onClick={openTopUp} className="p-1.5 text-muted-foreground hover:text-foreground" title={`Wallet ${balanceText} — top up`}>
+        <button onClick={openTopUp} className="p-1.5 text-muted-foreground hover:text-foreground" title={`Wallet ${balanceText}${org ? ` · ${org}` : ''} — top up`}>
           <Wallet className="h-4 w-4" />
         </button>
         <button onClick={() => void logout()} className="p-1.5 text-muted-foreground hover:text-foreground" title="Sign out">
@@ -101,13 +108,23 @@ export function SidebarWallet({ collapsed }: { collapsed: boolean }) {
           </span>
         </button>
 
-        {/* Balance (per-org credit) */}
-        <div className="flex items-center justify-between px-1 text-sm">
+        {/* Balance — the ACTIVE org's credit, labeled with that org so the
+            per-org scope is unmistakable at the bottom identity. */}
+        <div className="flex items-center justify-between gap-2 px-1 text-sm">
           <span className="flex items-center gap-1.5 text-muted-foreground">
             <Wallet className="h-3.5 w-3.5" />
             {balanceText}
           </span>
-          {phase === 'unconfigured' && <span className="text-[10px] text-muted-foreground">billing not set up</span>}
+          {phase === 'unconfigured' ? (
+            <span className="text-[10px] text-muted-foreground">billing not set up</span>
+          ) : org ? (
+            <span
+              className="min-w-0 max-w-[9rem] truncate text-[10px] text-muted-foreground"
+              title={`Active organization: ${org}`}
+            >
+              {org}
+            </span>
+          ) : null}
         </div>
 
         <button onClick={openTopUp} className="w-full rounded-md bg-foreground px-2 py-1.5 text-sm font-medium text-background hover:opacity-90">
