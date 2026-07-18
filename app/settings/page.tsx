@@ -72,7 +72,7 @@ export default function SettingsPage() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-sm transition-colors ${
                     activeTab === tab.id
-                      ? "bg-purple-500/10 text-purple-400 border border-purple-500/20"
+                      ? "bg-white/10 text-white border border-white/20"
                       : "text-neutral-400 hover:text-white hover:bg-neutral-800"
                   }`}
                 >
@@ -199,8 +199,8 @@ export default function SettingsPage() {
                 <div className="space-y-6">
                   <h2 className="text-xl font-medium text-white mb-4">Billing & Usage</h2>
 
-                  <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-4">
-                    <p className="text-sm text-purple-300 mb-2">Current Plan: Free</p>
+                  <div className="bg-white/[0.06] border border-white/15 rounded-lg p-4">
+                    <p className="text-sm text-white/80 mb-2">Current Plan: Free</p>
                     <p className="text-xs text-neutral-400 mb-4">0 / 100 AI generations used this month</p>
                     <Button className="w-full">Upgrade to Pro</Button>
                   </div>
