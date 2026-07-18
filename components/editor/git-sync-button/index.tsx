@@ -25,6 +25,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@hanzo/ui";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { useUser } from "@/hooks/useUser";
 import { currentOrg } from "@/lib/org-scope";
+import { linkProvider } from "@/lib/hanzo/iam";
 import { syncToGit, type GitProvider, type SyncGitResult } from "@/lib/api/git";
 import { Page } from "@/types";
 
@@ -97,7 +98,7 @@ export function GitSyncButton({
   disabled?: boolean;
 }) {
   const { user } = useUser();
-  const { config } = useIam();
+  const { sdk } = useIam();
 
   const [provider, setProvider] = useState<GitProvider>("hanzo");
   const [name, setName] = useState("");
@@ -153,10 +154,16 @@ export function GitSyncButton({
   const ProviderIcon = meta.Icon;
 
   // Hanzo needs no OAuth link — the only "connect" is the IAM account itself, so
-  // this only matters for GitHub/GitLab (Hanzo never sets `needsConnect`).
+  // this only matters for GitHub/GitLab (Hanzo never sets `needsConnect`). LINK
+  // the provider to the signed-in hanzo.id account via the canonical SDK popup
+  // (`provider=<p>&method=link` → the app's registered `/auth/callback`), then
+  // drop the connect gate so the user's retried push carries the linked token.
   const connect = () => {
-    const base = (config.serverUrl || "https://hanzo.id").replace(/\/+$/, "");
-    window.open(`${base}/account`, "_blank", "noopener,noreferrer");
+    void (async () => {
+      await linkProvider(sdk, provider === "gitlab" ? "gitlab" : "github");
+      setNeedsConnect(false);
+      setError(null);
+    })();
   };
 
   /** Push to `target` under `repoName`; the BFF reuses the project's linked repo. */

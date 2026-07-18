@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react";
 
 import { useUser } from "@/hooks/useUser";
 import { loginRedirectDestination } from "@/lib/auth/redirect";
+import { isLinkPopupReturn, finishLinkPopup } from "@/lib/hanzo/iam";
 import { HanzoLogo } from "@/components/HanzoLogo";
 
 const REDIRECT_KEY = "redirectAfterLogin";
@@ -42,6 +43,18 @@ export default function AuthCallback() {
     };
 
     (async () => {
+      // Link-provider popup return: this callback is running INSIDE the popup
+      // opened by `linkProvider()` (child window + our sentinel). The provider
+      // link already happened server-side at IAM; signal the opener and close.
+      // Must run before the `isAuthenticated` branch — the popup shares the
+      // signed-in session, so that branch would otherwise navigate the popup to
+      // the dashboard instead of closing it.
+      if (isLinkPopupReturn()) {
+        const linkParams = new URLSearchParams(window.location.search);
+        finishLinkPopup(!linkParams.has("error"));
+        return;
+      }
+
       // Already signed in (revisit / token already exchanged): go straight in.
       if (isAuthenticated) {
         router.replace(destination());

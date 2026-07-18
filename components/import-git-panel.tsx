@@ -26,11 +26,17 @@ import {
   type GitProviderStatus,
   type GitRepo,
 } from "@/lib/api/git";
+import { linkProvider } from "@/lib/hanzo/iam";
 import { isGitUrl, gitUrlGateMessage } from "@/lib/git/url";
 import { toast } from "sonner";
 
-/** Provider display metadata — the ONE place icon/label per provider lives. */
-const PROVIDER_META: Record<GitProvider, { label: string; Icon: typeof Github }> = {
+/**
+ * Provider display metadata — the ONE place icon/label per provider lives.
+ * Partial: this panel only ever surfaces OAuth-linked accounts (github/gitlab);
+ * `hanzo` is our own git and never appears as an importable account, so lookups
+ * fall back to the GitHub mark (see call sites) rather than carrying dead rows.
+ */
+const PROVIDER_META: Partial<Record<GitProvider, { label: string; Icon: typeof Github }>> = {
   github: { label: "GitHub", Icon: Github },
   gitlab: { label: "GitLab", Icon: GitlabIcon },
 };
@@ -47,7 +53,7 @@ const PROVIDER_META: Record<GitProvider, { label: string; Icon: typeof Github }>
  */
 export function ImportGitPanel() {
   const router = useRouter();
-  const { config, isAuthenticated, login } = useIam();
+  const { sdk, isAuthenticated, login } = useIam();
 
   const [loadingAccounts, setLoadingAccounts] = useState(true);
   const [connected, setConnected] = useState(false);
@@ -143,22 +149,24 @@ export function ImportGitPanel() {
   // Connect GitHub — two honest paths, one per auth state:
   //
   //  • Already signed in (e.g. via Google/password): LINK GitHub to the
-  //    EXISTING hanzo.id account. `login({prompt:"login"})` would silently
-  //    re-SSO the live session back WITHOUT ever showing the GitHub chooser,
-  //    so nothing links and `/v1/git/accounts` stays `{connected:false}`.
-  //    Instead open hanzo.id's own account page, whose "Link" button runs the
-  //    canonical Casdoor link flow: getAuthUrl(app, provider-github, "link")
-  //    encodes `method=link` in the OAuth `state`, so IAM's /callback runs
-  //    LinkUserAccount against the logged-in user. A new tab keeps /new alive;
-  //    the visibilitychange listener re-fetches on return and the repos appear.
+  //    EXISTING hanzo.id account via a POPUP. `login({prompt:"login"})` would
+  //    silently re-SSO the live session back WITHOUT ever showing the GitHub
+  //    chooser, so nothing links. `linkProvider` opens the SDK-built authorize
+  //    URL (`provider=github&method=link`, redirect_uri = the app's REGISTERED
+  //    `/auth/callback`) in a popup that goes straight to GitHub, links to the
+  //    signed-in account, then posts back + closes. We re-fetch on resolve so
+  //    the repos appear without leaving /new.
   //
   //  • Not signed in: full SSO. Signing in WITH GitHub links it on first
   //    sign-in (the already-working path), then returns to /new.
   const connectGithub = useCallback(() => {
     if (isAuthenticated) {
       linkPendingRef.current = true;
-      const base = (config.serverUrl || "https://hanzo.id").replace(/\/+$/, "");
-      window.open(`${base}/account`, "_blank", "noopener,noreferrer");
+      void (async () => {
+        await linkProvider(sdk, "github");
+        await refreshAccounts();
+        linkPendingRef.current = false;
+      })();
       return;
     }
     try {
@@ -167,7 +175,7 @@ export function ImportGitPanel() {
       /* storage unavailable */
     }
     void login();
-  }, [isAuthenticated, config, login]);
+  }, [isAuthenticated, sdk, login, refreshAccounts]);
 
   const gitlabStatus = providers.find((p) => p.provider === "gitlab");
   const gitlabConnectable = gitlabStatus?.connectable ?? false;
@@ -183,13 +191,16 @@ export function ImportGitPanel() {
       );
       return;
     }
-    // Signed in already → LINK GitLab to the existing account (a silent re-SSO
-    // would never show the GitLab chooser). Open hanzo.id's account page; the
-    // return-focus listener re-fetches accounts and reveals the repos.
+    // Signed in already → LINK GitLab to the existing account in a popup (a
+    // silent re-SSO would never show the GitLab chooser). Same canonical flow as
+    // GitHub; re-fetch on resolve so the repos appear without leaving /new.
     if (isAuthenticated) {
       linkPendingRef.current = true;
-      const base = (config.serverUrl || "https://hanzo.id").replace(/\/+$/, "");
-      window.open(`${base}/account`, "_blank", "noopener,noreferrer");
+      void (async () => {
+        await linkProvider(sdk, "gitlab");
+        await refreshAccounts();
+        linkPendingRef.current = false;
+      })();
       return;
     }
     try {
@@ -198,7 +209,7 @@ export function ImportGitPanel() {
       /* storage unavailable */
     }
     void login();
-  }, [gitlabConnectable, isAuthenticated, config, login]);
+  }, [gitlabConnectable, isAuthenticated, sdk, login, refreshAccounts]);
 
   const importRepo = useCallback(
     (cloneUrl: string) => {
@@ -268,7 +279,8 @@ export function ImportGitPanel() {
                 className="flex h-10 w-full items-center gap-2 rounded-lg border border-white/12 bg-black/40 px-3 text-sm text-white transition-colors hover:border-white/25"
               >
                 {(() => {
-                  const Icon = PROVIDER_META[activeAccount?.provider ?? "github"].Icon;
+                  const Icon =
+                    PROVIDER_META[activeAccount?.provider ?? "github"]?.Icon ?? Github;
                   return <Icon className="h-4 w-4 shrink-0 text-white/70" />;
                 })()}
                 {activeAccount?.avatarUrl ? (
@@ -287,7 +299,7 @@ export function ImportGitPanel() {
                 <div className="absolute z-30 mt-1.5 w-full min-w-[240px] overflow-hidden rounded-xl border border-white/12 bg-neutral-950 shadow-2xl shadow-black/60">
                   <div className="max-h-64 overflow-y-auto py-1">
                     {accounts.map((a) => {
-                      const Icon = PROVIDER_META[a.provider].Icon;
+                      const Icon = PROVIDER_META[a.provider]?.Icon ?? Github;
                       return (
                         <button
                           key={`${a.provider}:${a.login}`}
