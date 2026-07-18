@@ -43,7 +43,6 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -153,8 +152,17 @@ export function EditorAccountMenu({
 
       {/* Identity + workspace/project menu. */}
       <DropdownMenu>
+        {/* Native <button> trigger (NOT @hanzo/ui <Button>): the shared Button
+            array-wraps icon+text for its loading slot, which trips Radix Slot's
+            React.Children.only under `asChild` and tears down the whole builder.
+            A native button is a single element the Trigger clones cleanly — the
+            same pattern the header/page-navigator triggers use. */}
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="gap-2 px-1.5">
+          <button
+            type="button"
+            aria-label="Account menu"
+            className="inline-flex items-center gap-2 rounded-lg px-1.5 py-1 text-sm text-white/80 transition-colors hover:bg-white/[0.06] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+          >
             <Avatar className="size-7">
               <AvatarImage src={avatarSrc} alt={name} />
               <AvatarFallback className="bg-white/10 text-xs text-white">
@@ -162,7 +170,7 @@ export function EditorAccountMenu({
               </AvatarFallback>
             </Avatar>
             <span className="hidden max-w-[120px] truncate lg:inline">{name}</span>
-          </Button>
+          </button>
         </DropdownMenuTrigger>
 
         <DropdownMenuContent

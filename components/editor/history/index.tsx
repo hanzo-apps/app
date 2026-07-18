@@ -14,7 +14,6 @@ import {
 import classNames from "classnames";
 import { toast } from "sonner";
 import {
-  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -218,19 +217,21 @@ export function History({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
+      {/* Native <button> trigger (NOT @hanzo/ui <Button>): a single element the
+          Radix Trigger clones cleanly — the shared Button array-wraps icon+text
+          and trips Slot's React.Children.only under `asChild`. */}
       <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="max-lg:hidden gap-1.5 !text-white/60 hover:!text-white hover:!bg-white/5"
+        <button
+          type="button"
           title="Version history"
+          className="max-lg:hidden inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-[13px] font-medium text-white/60 transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
         >
           <HistoryIcon className="size-4" />
           <span className="font-mono text-xs">{history?.length ?? 0}</span>
           <span className="max-xl:hidden">
             revision{history?.length !== 1 ? "s" : ""}
           </span>
-        </Button>
+        </button>
       </PopoverTrigger>
       <PopoverContent
         side="top"

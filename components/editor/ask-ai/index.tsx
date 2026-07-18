@@ -399,29 +399,49 @@ export function AskAI({
     }
   }, [isAiWorking, messageQueue, isProcessingQueue]);
 
-  // Handle initial prompt for new projects
+  // Auto-start the first generation from the seed prompt staged by /dev
+  // (`window.__initialPrompt`, with a `localStorage` backup). Fires EXACTLY once.
+  //
+  // The seed is passed DIRECTLY into callAi (as its `queuedPrompt` arg), never
+  // through the `prompt` state: the previous code did `setPrompt(seed)` then, in
+  // a setTimeout, called `callAi()` with no args. That closure captured the
+  // empty `prompt` from this render (state updates are async), so `promptToUse`
+  // was "" and callAi returned early — the box was prefilled but NOTHING ever
+  // generated. Passing the value sidesteps the stale closure entirely.
+  const autoStartedRef = useRef(false);
   useEffect(() => {
-    if (isNew && typeof window !== 'undefined') {
-      // Check for initial prompt stored by AppEditor
-      const initialPrompt = (window as any).__initialPrompt;
-      if (initialPrompt) {
-        // Clean up the global variable
-        delete (window as any).__initialPrompt;
+    if (!isNew || autoStartedRef.current) return;
 
-        // Set the prompt
-        setPrompt(initialPrompt);
-
-        // Trigger generation after a short delay to ensure everything is mounted
-        const timer = setTimeout(() => {
-          // Call the AI directly here instead of relying on another effect
-          if (!isAiWorking) {
-            callAi();
-          }
-        }, 500);
-
-        return () => clearTimeout(timer);
-      }
+    let seed = "";
+    try {
+      seed =
+        (window as any).__initialPrompt ||
+        localStorage.getItem("initialPrompt") ||
+        "";
+    } catch {
+      seed = (window as any).__initialPrompt || "";
     }
+    if (!seed.trim()) return;
+
+    autoStartedRef.current = true;
+    // One-shot: clear BOTH sources so a remount/StrictMode re-run or a later
+    // navigation can never re-fire the same seed (the old code left the
+    // localStorage copy behind, so a stale prompt could resurface).
+    try {
+      delete (window as any).__initialPrompt;
+    } catch {}
+    try {
+      localStorage.removeItem("initialPrompt");
+    } catch {}
+
+    // Show the seed in the composer while it runs.
+    setPrompt(seed);
+
+    // Small delay so the editor/composer is fully mounted before we submit.
+    const timer = setTimeout(() => {
+      if (!isAiWorking) callAi(undefined, seed);
+    }, 500);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isNew]);
 
@@ -719,21 +739,26 @@ export function AskAI({
             )}
             {!isSameHtml && (
               <Tooltip>
+                {/* Native <button> (NOT @hanzo/ui <Button>): a single element
+                    the Radix Trigger clones cleanly — the shared Button
+                    array-wraps icon+text and trips Slot's React.Children.only
+                    under `asChild`. */}
                 <TooltipTrigger asChild>
-                  <Button
-                    size="xs"
-                    variant={isEditableModeEnabled ? "default" : "ghost"}
+                  <button
+                    type="button"
                     onClick={() => {
                       setIsEditableModeEnabled?.(!isEditableModeEnabled);
                     }}
-                    className={classNames("h-[28px]", {
-                      "text-neutral-400 hover:bg-white/10 hover:!text-neutral-200":
-                        !isEditableModeEnabled,
-                    })}
+                    className={classNames(
+                      "inline-flex h-[28px] items-center gap-1.5 rounded-full px-3 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
+                      isEditableModeEnabled
+                        ? "bg-white text-neutral-900"
+                        : "text-neutral-400 hover:bg-white/10 hover:!text-neutral-200",
+                    )}
                   >
                     <Crosshair className="size-4" />
                     Edit
-                  </Button>
+                  </button>
                 </TooltipTrigger>
                 <TooltipContent
                   align="start"

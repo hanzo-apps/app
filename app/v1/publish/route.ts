@@ -119,7 +119,18 @@ export async function POST(req: NextRequest) {
     Authorization: `Bearer ${id.token}`,
     Accept: 'application/json',
   };
-  if (org && org !== id.homeOrg) bearer['X-Org-Id'] = org; // only reachable for a validated admin
+  // Publish is ORG-SCOPED: the deployed site lives at `<slug>.<org>.hanzo.app`,
+  // not the flat global `<slug>.hanzo.app` (which lets two orgs collide on the
+  // same slug). The authoritative URL construction + host routing is cloud-side
+  // (`clients/projects/deploy.go` siteURL(org, slug) + `clients/sites/sites.go`
+  // siteSlug parsing the `<slug>.<org>` form + wildcard ingress for
+  // `*.<org>.hanzo.app`). The app's job here is to hand the cloud an explicit,
+  // unambiguous org on EVERY call so it can scope the URL without re-deriving —
+  // so we always send `X-Org-Id`. For a normal user this equals their pinned
+  // home org (a no-op for tenant selection); for a validated admin it carries
+  // the chosen org. Never lets the browser pick a foreign tenant (that is gated
+  // in effectiveOrg, which ignores an unauthorized override).
+  if (org) bearer['X-Org-Id'] = org;
   const base = cloudBase();
 
   // 1) Ensure the org-scoped record (idempotent: reuse an existing slug, else

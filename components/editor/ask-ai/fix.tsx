@@ -1,7 +1,6 @@
 import { Wrench } from "lucide-react";
 import classNames from "classnames";
 
-import { Button } from "@hanzo/ui";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@hanzo/ui";
 
 // Fix — a bar toggle sibling to Re-imagine. Re-imagine seeds a NEW design from a
@@ -17,20 +16,24 @@ export function Fix({
 }) {
   return (
     <Tooltip>
+      {/* Native <button> (NOT @hanzo/ui <Button>): a single element the Radix
+          Trigger clones cleanly — the shared Button array-wraps icon+text and
+          trips Slot's React.Children.only under `asChild`. */}
       <TooltipTrigger asChild>
-        <Button
-          size="xs"
-          variant={active ? "default" : "ghost"}
+        <button
+          type="button"
           onClick={onToggle}
           aria-pressed={active}
-          className={classNames("h-[28px]", {
-            "text-neutral-400 hover:bg-white/10 hover:!text-neutral-200":
-              !active,
-          })}
+          className={classNames(
+            "inline-flex h-[28px] items-center gap-1.5 rounded-full px-3 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
+            active
+              ? "bg-white text-neutral-900"
+              : "text-neutral-400 hover:bg-white/10 hover:!text-neutral-200",
+          )}
         >
           <Wrench className="size-4" />
           Fix
-        </Button>
+        </button>
       </TooltipTrigger>
       <TooltipContent
         align="start"

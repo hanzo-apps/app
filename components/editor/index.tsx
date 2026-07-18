@@ -44,7 +44,6 @@ import { LoadProject } from "../my-projects/load-project";
 import { isTheSameHtml } from "@/lib/compare-html-diff";
 import { ListPages } from "./pages";
 import { ShareModal } from "./share-modal";
-import { VisualEditor } from "./visual-editor";
 import { AISupervisor } from "./ai-supervisor";
 import { OrgProvider } from "@/lib/org/client";
 import { Button, TooltipProvider } from "@hanzo/ui";
@@ -379,25 +378,15 @@ export const AppEditor = ({
               setCurrentTab("chat");
             }}
           />
-          {currentTab === "preview" && (
-            <VisualEditor
-              iframeRef={iframeRef}
-              editorRef={editorRef}
-              isEnabled={isEditableModeEnabled}
-              onToggle={setIsEditableModeEnabled}
-              onElementSelect={(_info) => {
-                // Element selection handled by VisualEditor
-              }}
-              onCodeUpdate={(newHtml, _location) => {
-                // Update the current page with new HTML
-                setPages((prev) =>
-                  prev.map((page) =>
-                    page.path === currentPage ? { ...page, html: newHtml } : page
-                  )
-                );
-              }}
-            />
-          )}
+          {/* ONE element-selection path. Clicking an element in the preview
+              (while the composer's "Edit" mode is on) is owned solely by
+              <Preview onClickElement> above: it selects the element and hands
+              off to chat so the user asks Hanzo to edit it (→ callAiFollowUp).
+              The former <VisualEditor> attached a SECOND, competing set of
+              iframe click/hover listeners on the same `isEditableModeEnabled`
+              flag and was mounted only on this tab — so every click both opened
+              its panel AND flipped to chat, which unmounted it mid-interaction.
+              Removed to leave a single, coherent selection source. */}
           {/* CODE view — the CodeMirror editor overlaid on the right pane when the
               header switches to Code. The left pane stays chat; code lives here. */}
           {currentTab === "code" && (
