@@ -257,20 +257,23 @@ export function GitSyncButton({
         }
       }}
     >
+      {/* Native <button> trigger (NOT @hanzo/ui <Button>): the shared Button
+          array-wraps icon+text for its loading slot, tripping Radix Slot's
+          React.Children.only under `asChild`. A native button is a single
+          element the Trigger clones cleanly. */}
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
+        <button
+          type="button"
           disabled={disabled}
-          className="gap-2 !border-white/15 !bg-white/[0.04] !text-white hover:!bg-white/10"
           title="Push your project to Hanzo git, GitHub, or GitLab"
+          className="inline-flex h-8 items-center gap-2 rounded-lg border border-white/15 bg-white/[0.04] px-3 text-[13px] font-medium text-white transition-colors hover:bg-white/10 disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
         >
           <UploadCloud className="size-4" />
           <span className="hidden md:inline">Push to Git</span>
           {linked && (
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden />
           )}
-        </Button>
+        </button>
       </PopoverTrigger>
       <PopoverContent
         align="end"

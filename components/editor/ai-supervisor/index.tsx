@@ -125,9 +125,30 @@ export function AISupervisor({
     }
   };
 
+  // Resolve the supervisor WebSocket endpoint. In production there is NO
+  // `ws://localhost:8080` — shipping that dev default meant every builder load
+  // opened a socket the CSP blocks, then retried every 5s, flooding the console
+  // with "Supervisor WebSocket error". So: use the explicit endpoint when it is
+  // configured (add it to CSP `connect-src` when it exists — `wss://*.hanzo.ai`
+  // is already allowed), otherwise stay DISABLED. A bare `localhost` value is
+  // treated as unset so a stale dev env can't leak the dev socket into prod.
+  const resolveSupervisorWs = (): string | null => {
+    const configured = (process.env.NEXT_PUBLIC_SUPERVISOR_WS || "").trim();
+    if (!configured || /localhost|127\.0\.0\.1/.test(configured)) return null;
+    return configured;
+  };
+
   const connectToSupervisor = () => {
+    const endpoint = resolveSupervisorWs();
+    if (!endpoint) {
+      // No supervisor backend configured — run without live supervision rather
+      // than storm a dead/blocked socket. Feature lights up once the endpoint
+      // is set (and whitelisted in CSP).
+      setSandboxStatus("idle");
+      return;
+    }
     try {
-      const ws = new WebSocket(process.env.NEXT_PUBLIC_SUPERVISOR_WS || "ws://localhost:8080/supervisor");
+      const ws = new WebSocket(endpoint);
 
       ws.onopen = () => {
         console.log("Connected to AI Supervisor");

@@ -101,7 +101,16 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const { prompt, model, redesignMarkdown, previousPrompts, pages } = body;
 
-  if (!prompt && !redesignMarkdown) {
+  // A generation needs SOMETHING to build from — a typed prompt or a redesign
+  // markdown. Treat a whitespace-only prompt as missing so we never spend a
+  // gateway round-trip (and credit) on empty input. The empty-prompt 400 the
+  // builder used to hit came from the seed auto-start submitting before the
+  // prompt state committed (fixed client-side in ask-ai); this stays as the
+  // honest server guard.
+  const hasPrompt = typeof prompt === "string" && prompt.trim().length > 0;
+  const hasRedesign =
+    typeof redesignMarkdown === "string" && redesignMarkdown.trim().length > 0;
+  if (!hasPrompt && !hasRedesign) {
     return NextResponse.json(
       { ok: false, message: "Missing prompt" },
       { status: 400 }

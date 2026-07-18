@@ -88,15 +88,17 @@ export function Settings({
 
   return (
     <Popover open={open} onOpenChange={onClose}>
+      {/* Native <button> trigger (NOT @hanzo/ui <Button>): a single element the
+          Radix Trigger clones cleanly — the shared Button array-wraps icon+text
+          and trips Slot's React.Children.only under `asChild`. */}
       <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="gap-1.5 !text-neutral-300 hover:!bg-white/10 hover:!text-white"
+        <button
+          type="button"
+          className="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-[13px] font-medium text-neutral-300 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
         >
           <PiGearSixFill className="size-4" />
           <span className="hidden sm:inline">Settings</span>
-        </Button>
+        </button>
       </PopoverTrigger>
       {/* ONE popover surface: solid bg-neutral-900, a single hairline border, high
           z-index. The model list is inline (not a nested Select portal), so the

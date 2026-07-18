@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils";
 import { GridPattern } from "@/components/magic-ui/grid-pattern";
 import { htmlTagToText } from "@/lib/html-tag-to-text";
 import { Page } from "@/types";
+import { currentOrg } from "@/lib/org-scope";
+import { resolveOrgLogo, isEmoji, isImageUrl } from "@/lib/avatar";
 
 export const Preview = ({
   html,
@@ -62,6 +64,22 @@ export const Preview = ({
     document.addEventListener("fullscreenchange", onChange);
     return () => document.removeEventListener("fullscreenchange", onChange);
   }, []);
+
+  // Org brand mark for THIS preview surface — the same ⚡ (or image/initial) the
+  // OrgSwitcher and account menu resolve, so the app being built carries its
+  // org's identity here too (audit: the preview had no org brand). Resolved on
+  // the client only (currentOrg reads localStorage) to avoid a hydration
+  // mismatch; empty when no org scope is known (renders nothing).
+  const [orgSlug, setOrgSlug] = useState("");
+  useEffect(() => {
+    try {
+      setOrgSlug((currentOrg() || "").trim().toLowerCase());
+    } catch {
+      setOrgSlug("");
+    }
+  }, []);
+  const orgMark = orgSlug ? resolveOrgLogo(orgSlug) : undefined;
+  const orgInitial = orgSlug ? orgSlug.charAt(0).toUpperCase() : "";
 
   const handleMouseOver = (event: MouseEvent) => {
     if (iframeRef?.current) {
@@ -194,6 +212,36 @@ export const Preview = ({
         }
       }}
     >
+      {/* Org brand mark — the ⚡ (or image/initial) of the org this app belongs
+          to, pinned to the preview surface so the build carries its org identity.
+          Fades in on hover like the fullscreen control so it never obscures the
+          generated page. Rendered only when an org scope resolves. */}
+      {orgSlug && (
+        <div
+          title={`${orgSlug} workspace`}
+          aria-label={`${orgSlug} workspace`}
+          className={classNames(
+            "absolute left-3 z-20 inline-flex size-9 items-center justify-center overflow-hidden rounded-lg bg-neutral-900/80 text-sm font-semibold text-white ring-1 ring-white/10 backdrop-blur transition-all",
+            isFullscreen
+              ? "top-3 opacity-100"
+              : "top-6 opacity-0 group-hover/preview:opacity-100"
+          )}
+        >
+          {orgMark && isImageUrl(orgMark) ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={orgMark}
+              alt={`${orgSlug} logo`}
+              className="size-full object-cover"
+            />
+          ) : orgMark && isEmoji(orgMark) ? (
+            <span className="text-lg leading-none">{orgMark}</span>
+          ) : (
+            <span>{orgInitial}</span>
+          )}
+        </div>
+      )}
+
       {/* Fullscreen toggle — pinned to the elevated preview surface. Escape (or a
           second press) restores; the icon mirrors the real fullscreen state. */}
       <button

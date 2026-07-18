@@ -67,6 +67,15 @@ export default function DevPage() {
     if (!projectSlug) return;
     (window as any).__projectSlug = projectSlug;
     setShowOnboarding(false);
+    // Opening an existing project is an EDIT, not a fresh build: drop any seed a
+    // prior session left staged so AskAI's auto-start never fires a stale prompt
+    // against this project (parity with the import path below).
+    try {
+      delete (window as any).__initialPrompt;
+      localStorage.removeItem("initialPrompt");
+    } catch {
+      /* storage unavailable */
+    }
     fetch(`/v1/projects/${encodeURIComponent(projectSlug)}`, { credentials: "include" })
       .then((r) => (r.ok ? r.json() : null))
       .then((p) => {
