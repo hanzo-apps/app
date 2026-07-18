@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Images, Upload, Sparkles } from "lucide-react";
+import { Plus, Upload, Sparkles } from "lucide-react";
 import Image from "next/image";
 
 import {
@@ -100,10 +100,11 @@ export const Uploader = ({
         <PopoverTrigger asChild>
           <Button
             size="iconXs"
-            variant="outline"
-            className="!border-neutral-600 !text-neutral-400 !hover:!border-neutral-500 hover:!text-neutral-300"
+            variant="ghost"
+            aria-label="Add images"
+            className="rounded-full text-neutral-400 hover:bg-white/10 hover:text-neutral-200"
           >
-            <Images className="size-4" />
+            <Plus className="size-4" />
           </Button>
         </PopoverTrigger>
         <PopoverContent
@@ -252,11 +253,12 @@ export const Uploader = ({
     <>
       <Button
         size="iconXs"
-        variant="outline"
-        className="!border-neutral-600 !text-neutral-400 !hover:!border-neutral-500 hover:!text-neutral-300"
+        variant="ghost"
+        aria-label="Add images"
+        className="rounded-full text-neutral-400 hover:bg-white/10 hover:text-neutral-200"
         onClick={() => setOpen(true)}
       >
-        <Images className="size-4" />
+        <Plus className="size-4" />
       </Button>
       <LoginModal
         open={open}
