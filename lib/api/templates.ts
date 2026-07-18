@@ -286,24 +286,26 @@ export function buildTemplateSeedPrompt(
   meta: TemplateSeedMeta | null,
   slug: string,
   mode: 'fork' | 'edit' | 'deploy',
+  userMessage?: string,
 ): string {
   const title = meta?.displayName || titleize(slug);
-  const spec = meta
+  const ask = (userMessage || '').trim();
+  // A template is a READY-TO-GO starting point, not a spec to "recreate". Its files
+  // load and the preview renders immediately; this prompt only frames the FIRST
+  // change the user wants built ON TOP. Never instruct a rebuild-from-scratch.
+  const context = meta
     ? [
-        `Recreate the "${title}" template as a polished, production-quality ${meta.category || 'web'} app.`,
-        meta.description ? `Purpose: ${meta.description}` : '',
-        meta.features.length ? `Must include: ${meta.features.join(', ')}.` : '',
-        meta.framework ? `Reference stack/style: ${meta.framework}.` : '',
-        meta.useCase ? `Use case: ${meta.useCase}.` : '',
-        meta.screenshotUrl
-          ? `Match the visual design shown in this reference screenshot: ${meta.screenshotUrl}`
-          : '',
-        'Make it fully responsive with clean, modern styling.',
+        `You're starting from the "${title}" template${meta.category ? ` (${meta.category})` : ''} — it's already built and running in the live preview.`,
+        meta.description || '',
+        meta.framework ? `Stack: ${meta.framework}.` : '',
       ]
         .filter(Boolean)
         .join(' ')
-    : `Build a polished, production-quality app based on the "${title}" template. Make it fully responsive with clean, modern styling.`;
+    : `You're starting from the "${title}" template — it's already built and running in the live preview.`;
+  const instruction = ask
+    ? `${context} Build on top of it — apply this change: ${ask}`
+    : `${context} Keep its structure and styling; make changes only when I ask.`;
   return mode === 'deploy'
-    ? `${spec} Then prepare it for one-click deploy to a live hanzo.app URL.`
-    : spec;
+    ? `${instruction} When it's ready, prepare it for one-click deploy to a live hanzo.app URL.`
+    : instruction;
 }

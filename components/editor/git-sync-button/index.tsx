@@ -4,12 +4,16 @@ import { useEffect, useState, type ComponentType } from "react";
 import { useIam } from "@hanzo/iam/react";
 import { toast } from "sonner";
 import {
+  AlertCircle,
   Check,
+  Copy,
   ExternalLink,
   Github,
+  GitBranch,
   GitlabIcon,
   Loader2,
   Lock,
+  RefreshCw,
   UploadCloud,
 } from "lucide-react";
 
@@ -43,14 +47,45 @@ const PROVIDERS: {
 const providerMeta = (p: GitProvider) =>
   PROVIDERS.find((x) => x.id === p) ?? PROVIDERS[0];
 
+/** Best-effort provider from a stored clone/remote URL (host family). */
+function providerFromUrl(url: string): GitProvider {
+  const h = (url || "").toLowerCase();
+  if (h.includes("gitlab")) return "gitlab";
+  if (h.includes("github")) return "github";
+  return "hanzo"; // our own git (api.hanzo.ai/…)
+}
+
+/** Compact `owner/repo` label from a clone/web URL (drops scheme, host, `.git`). */
+function repoLabel(url: string): string {
+  const s = (url || "")
+    .replace(/^https?:\/\//i, "")
+    .replace(/\.git$/i, "")
+    .replace(/\/+$/, "");
+  const parts = s.split("/").filter(Boolean);
+  if (parts.length <= 1) return s;
+  return parts.slice(-2).join("/"); // owner/repo
+}
+
+/** The repo we re-sync to — hydrated from the project record or the last push. */
+interface LinkedRepo {
+  provider: GitProvider;
+  htmlUrl: string;
+  repoUrl: string;
+  branch: string;
+  label: string;
+}
+
 /**
- * Push to GitHub / Sync to GitLab — the REVERSE of the repo-import panel.
+ * Push to Git — the REVERSE of the repo-import panel.
  *
  * Pushes the builder's generated pages to a repo the signed-in user owns, as ONE
  * commit, via the same-origin `/v1/git/sync` BFF (the provider token is resolved
- * + used SERVER-SIDE only). Fail-closed: no linked token ⇒ an honest "Connect …"
- * CTA that opens the hanzo.id account tab (the canonical link flow). Re-syncs push
- * to the SAME repo (the BFF reuses the project's linked repo).
+ * + used SERVER-SIDE only). Once a project is linked to a repo (from a prior push
+ * OR loaded from the project record on open) the panel leads with a one-click
+ * "Push update" that re-syncs to the SAME repo; the full form (provider, name,
+ * visibility) is one click away for the first push or a different target.
+ * Fail-closed: no linked token ⇒ an honest "Connect …" CTA to the hanzo.id
+ * account tab.
  */
 export function GitSyncButton({
   pages,
@@ -71,18 +106,52 @@ export function GitSyncButton({
   const [loading, setLoading] = useState(false);
   const [needsConnect, setNeedsConnect] = useState(false);
   const [result, setResult] = useState<SyncGitResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [linked, setLinked] = useState<LinkedRepo | null>(null);
+  // When linked, the compact re-sync card leads; this reveals the full form
+  // (different provider / repo name) on demand.
+  const [showForm, setShowForm] = useState(false);
+  const [copied, setCopied] = useState(false);
 
-  // Reuse the open project's slug/name so a re-sync targets the SAME record/repo.
+  // Reuse the open project's slug/name so a re-sync targets the SAME record/repo,
+  // and hydrate the linked-repo state from the project record so RE-OPENING the
+  // builder shows "Linked to …" (and a one-click re-sync) without a push first.
   useEffect(() => {
     const w = window as unknown as { __projectSlug?: string; __projectName?: string };
-    if (w.__projectSlug) setSlug(w.__projectSlug);
+    const s = w.__projectSlug;
+    if (s) setSlug(s);
     if (w.__projectName) setName((n) => n || (w.__projectName as string));
+    if (!s) return;
+    let alive = true;
+    fetch(`/v1/projects/${encodeURIComponent(s)}`, { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((p: { repo?: { url?: string; branch?: string } } | null) => {
+        if (!alive || !p?.repo?.url) return;
+        const url = p.repo.url;
+        const prov = providerFromUrl(url);
+        setLinked({
+          provider: prov,
+          repoUrl: url,
+          htmlUrl: url.replace(/\.git$/i, ""),
+          branch: p.repo.branch || "main",
+          label: repoLabel(url),
+        });
+        setProvider(prov);
+      })
+      .catch(() => {
+        /* linked state is a convenience; the form still works */
+      });
+    return () => {
+      alive = false;
+    };
   }, []);
 
   if (!user?.id) return null;
 
   const meta = providerMeta(provider);
   const providerName = meta.label;
+  const ProviderIcon = meta.Icon;
+
   // Hanzo needs no OAuth link — the only "connect" is the IAM account itself, so
   // this only matters for GitHub/GitLab (Hanzo never sets `needsConnect`).
   const connect = () => {
@@ -90,19 +159,20 @@ export function GitSyncButton({
     window.open(`${base}/account`, "_blank", "noopener,noreferrer");
   };
 
-  const push = async () => {
-    if (!name.trim()) {
+  /** Push to `target` under `repoName`; the BFF reuses the project's linked repo. */
+  const runSync = async (target: GitProvider, repoName: string) => {
+    if (!repoName.trim()) {
       toast.error("Enter a name for your repository.");
       return;
     }
     setLoading(true);
     setNeedsConnect(false);
-    setResult(null);
+    setError(null);
     try {
       const res = await syncToGit(
         {
-          provider,
-          name: name.trim(),
+          provider: target,
+          name: repoName.trim(),
           slug,
           description: prompts?.[prompts.length - 1] || "",
           private: isPrivate,
@@ -115,36 +185,71 @@ export function GitSyncButton({
         if (res.status === 401 && res.connected === false) {
           // Hanzo has no OAuth-link step — a 401 means the session lapsed, so
           // prompt a re-sign-in rather than the "link provider" panel.
-          if (provider === "hanzo") {
-            toast.error("Your session expired — sign in again to push to Hanzo git.");
+          if (target === "hanzo") {
+            setError("Your session expired — sign in again to push to Hanzo git.");
             return;
           }
           setNeedsConnect(true);
           return;
         }
         if (res.status === 409 && res.needsOnboarding) {
-          toast.error("Set up your organization first.");
+          setError("Set up your organization first, then push.");
           return;
         }
-        toast.error(res.error || `Failed to push to ${providerName}.`);
+        setError(res.error || `Failed to push to ${providerMeta(target).label}.`);
         return;
       }
 
       setResult(res);
-      toast.success(`Pushed to ${providerName}. 🎉`, {
+      if (res.repoUrl) {
+        setLinked({
+          provider: res.provider || target,
+          repoUrl: res.repoUrl,
+          htmlUrl: res.htmlUrl || res.repoUrl.replace(/\.git$/i, ""),
+          branch: res.branch || "main",
+          label: repoLabel(res.htmlUrl || res.repoUrl),
+        });
+      }
+      setShowForm(false);
+      toast.success(`Pushed to ${providerMeta(res.provider || target).label}.`, {
         description: res.created ? "Repository created and pushed." : "New commit pushed.",
       });
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : `Failed to push to ${providerName}.`);
+      setError(e instanceof Error ? e.message : `Failed to push to ${providerMeta(target).label}.`);
     } finally {
       setLoading(false);
     }
   };
 
-  const ProviderIcon = meta.Icon;
+  // First push / different target uses the form's provider + name; a re-sync
+  // targets the already-linked repo (same provider, same name).
+  const push = () => runSync(provider, name);
+  const resync = () => {
+    if (!linked) return push();
+    return runSync(linked.provider, linked.label.split("/").pop() || name);
+  };
+
+  const copyUrl = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      /* clipboard unavailable */
+    }
+  };
 
   return (
-    <Popover>
+    <Popover
+      onOpenChange={(open) => {
+        // On close, drop the transient "just pushed" confirmation so the next
+        // open leads with the linked-repo re-sync card (linked state persists).
+        if (!open && result?.ok) {
+          setResult(null);
+          setError(null);
+        }
+      }}
+    >
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -155,11 +260,14 @@ export function GitSyncButton({
         >
           <UploadCloud className="size-4" />
           <span className="hidden md:inline">Push to Git</span>
+          {linked && (
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden />
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent
         align="end"
-        className="w-[340px] !rounded-2xl !border-white/10 !bg-neutral-950 !p-0 text-white shadow-2xl shadow-black/60"
+        className="w-[360px] !rounded-2xl !border-white/10 !bg-neutral-950 !p-0 text-white shadow-2xl shadow-black/60"
       >
         <div className="border-b border-white/10 p-5">
           <div className="mb-1 flex items-center gap-2">
@@ -198,33 +306,158 @@ export function GitSyncButton({
             </button>
           </div>
         ) : result?.ok ? (
-          <div className="flex flex-col items-center px-6 py-8 text-center">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-emerald-400/20 bg-emerald-400/10">
+          <div className="px-6 py-7 text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-emerald-400/20 bg-emerald-400/10">
               <Check className="h-6 w-6 text-emerald-400" />
             </div>
             <p className="text-sm font-medium">
               {result.created ? "Repository created" : "Commit pushed"}
             </p>
-            <a
-              href={result.htmlUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-1.5 inline-flex items-center gap-1 text-sm text-white/70 underline decoration-white/20 underline-offset-2 hover:text-white"
+
+            <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.02] p-3 text-left">
+              <div className="flex items-center gap-2">
+                {(() => {
+                  const I = providerMeta(result.provider || provider).Icon;
+                  return <I className="h-4 w-4 shrink-0 text-white/70" />;
+                })()}
+                <a
+                  href={result.htmlUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="min-w-0 flex-1 truncate text-sm text-white/85 hover:text-white"
+                >
+                  {repoLabel(result.htmlUrl || result.repoUrl || "")}
+                </a>
+                <button
+                  type="button"
+                  onClick={() => copyUrl(result.htmlUrl || result.repoUrl || "")}
+                  className="text-white/40 transition-colors hover:text-white"
+                  title="Copy URL"
+                >
+                  {copied ? (
+                    <Check className="h-3.5 w-3.5 text-emerald-400" />
+                  ) : (
+                    <Copy className="h-3.5 w-3.5" />
+                  )}
+                </button>
+                <a
+                  href={result.htmlUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-white/40 transition-colors hover:text-white"
+                  title="Open repository"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              </div>
+              {(result.branch || result.commitSha) && (
+                <div className="mt-2 flex items-center gap-1.5 font-mono text-xs text-white/35">
+                  <GitBranch className="h-3 w-3" />
+                  {result.branch}
+                  {result.commitSha ? ` · ${result.commitSha.slice(0, 7)}` : ""}
+                </div>
+              )}
+            </div>
+
+            <div className="mt-4 flex items-center justify-center gap-2">
+              <Button
+                variant="default"
+                size="sm"
+                onClick={resync}
+                disabled={loading}
+                className="gap-1.5"
+              >
+                {loading ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : (
+                  <RefreshCw className="size-3.5" />
+                )}
+                Push again
+              </Button>
+              <button
+                type="button"
+                onClick={() => {
+                  setResult(null);
+                  setShowForm(true);
+                }}
+                className="rounded-lg px-3 py-1.5 text-xs text-white/50 transition-colors hover:text-white/80"
+              >
+                Push elsewhere
+              </button>
+            </div>
+          </div>
+        ) : linked && !showForm ? (
+          <div className="p-5">
+            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3.5">
+              <div className="mb-1.5 flex items-center gap-1.5 text-[11px] uppercase tracking-wide text-white/35">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                Linked repository
+              </div>
+              <div className="flex items-center gap-2">
+                {(() => {
+                  const I = providerMeta(linked.provider).Icon;
+                  return <I className="h-4 w-4 shrink-0 text-white/70" />;
+                })()}
+                <a
+                  href={linked.htmlUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="min-w-0 flex-1 truncate text-sm font-medium text-white hover:text-white/80"
+                >
+                  {linked.label}
+                </a>
+                <button
+                  type="button"
+                  onClick={() => copyUrl(linked.htmlUrl)}
+                  className="text-white/40 transition-colors hover:text-white"
+                  title="Copy URL"
+                >
+                  {copied ? (
+                    <Check className="h-3.5 w-3.5 text-emerald-400" />
+                  ) : (
+                    <Copy className="h-3.5 w-3.5" />
+                  )}
+                </button>
+                <a
+                  href={linked.htmlUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-white/40 transition-colors hover:text-white"
+                  title="Open repository"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              </div>
+              <div className="mt-1.5 flex items-center gap-1.5 font-mono text-xs text-white/35">
+                <GitBranch className="h-3 w-3" />
+                {linked.branch}
+              </div>
+            </div>
+
+            {error && <ErrorNote message={error} />}
+
+            <Button
+              variant="default"
+              onClick={resync}
+              disabled={loading}
+              className="mt-3 w-full gap-2"
             >
-              {result.htmlUrl?.replace(/^https?:\/\//, "")}
-              <ExternalLink className="h-3 w-3" />
-            </a>
-            {result.commitSha && (
-              <p className="mt-2 font-mono text-xs text-white/35">
-                {result.branch} · {result.commitSha.slice(0, 7)}
-              </p>
-            )}
+              {loading ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <RefreshCw className="size-4" />
+              )}
+              Push update to {providerMeta(linked.provider).label}
+            </Button>
             <button
               type="button"
-              onClick={() => setResult(null)}
-              className="mt-5 text-xs text-white/40 hover:text-white/70"
+              onClick={() => {
+                setShowForm(true);
+                setError(null);
+              }}
+              className="mt-2 w-full text-center text-xs text-white/40 transition-colors hover:text-white/70"
             >
-              Push again
+              Push to a different repository
             </button>
           </div>
         ) : (
@@ -269,6 +502,8 @@ export function GitSyncButton({
               <Switch checked={isPrivate} onCheckedChange={setIsPrivate} />
             </label>
 
+            {error && <ErrorNote message={error} />}
+
             <Button
               variant="default"
               onClick={push}
@@ -282,6 +517,20 @@ export function GitSyncButton({
               )}
               Push to {providerName}
             </Button>
+
+            {linked && (
+              <button
+                type="button"
+                onClick={() => {
+                  setShowForm(false);
+                  setError(null);
+                }}
+                className="w-full truncate text-center text-xs text-white/40 transition-colors hover:text-white/70"
+              >
+                Back to {linked.label}
+              </button>
+            )}
+
             <p className="flex items-center gap-1 text-xs text-white/35">
               <ExternalLink className="size-3" />
               {provider === "hanzo"
@@ -292,5 +541,15 @@ export function GitSyncButton({
         )}
       </PopoverContent>
     </Popover>
+  );
+}
+
+/** Inline, on-brand error note (semantic red — the one exception to monochrome). */
+function ErrorNote({ message }: { message: string }) {
+  return (
+    <div className="flex items-start gap-2 rounded-lg border border-red-500/25 bg-red-500/[0.06] px-3 py-2.5 text-left">
+      <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-red-400" />
+      <p className="text-xs text-red-200/90">{message}</p>
+    </div>
   );
 }
