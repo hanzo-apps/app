@@ -110,14 +110,21 @@ export const LoadProject = ({
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <div>
-              <Button variant="outline" className="max-lg:hidden">
-                <Import className="size-4 mr-1.5" />
-                Load existing Project
-              </Button>
-              <Button variant="outline" size="sm" className="lg:hidden">
-                {fullXsBtn && <Import className="size-3.5 mr-1" />}
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2 !border-white/15 !bg-white/[0.04] !text-white hover:!bg-white/10 max-lg:hidden"
+              >
+                <Import className="size-4" />
                 Load
-                {fullXsBtn && " existing Project"}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2 !border-white/15 !bg-white/[0.04] !text-white hover:!bg-white/10 lg:hidden"
+              >
+                {fullXsBtn && <Import className="size-3.5" />}
+                Load
               </Button>
             </div>
           </DialogTrigger>
