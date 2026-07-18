@@ -18,7 +18,7 @@ export interface BackupData {
   metadata: {
     projectCount: number;
     totalSize: number;
-    exportedFrom: 'deepstudio' | 'oswstudio';
+    exportedFrom: 'deepstudio' | 'oswstudio' | 'hanzo';
   };
 }
 
@@ -29,7 +29,10 @@ export interface ImportOptions {
 
 export class BackupService {
   private static readonly BACKUP_VERSION = '1.9.0';
-  private static readonly FILE_EXTENSION = '.osws';
+  // Hanzo-native backup format. Import still accepts the legacy '.osws' extension
+  // (ACCEPTED_EXTENSIONS) so existing backups always restore — never break restore.
+  private static readonly FILE_EXTENSION = '.hanzo';
+  private static readonly ACCEPTED_EXTENSIONS = ['.hanzo', '.osws'];
   private static readonly MAX_IMPORT_SIZE = 100 * 1024 * 1024; // 100MB
 
   /**
@@ -50,7 +53,7 @@ export class BackupService {
         metadata: {
           projectCount: 0,
           totalSize: 0,
-          exportedFrom: 'oswstudio',
+          exportedFrom: 'hanzo',
         },
       };
 
@@ -69,7 +72,7 @@ export class BackupService {
       });
 
       // Download the file
-      const filename = `oswstudio-backup-${new Date().toISOString().split('T')[0]}${this.FILE_EXTENSION}`;
+      const filename = `hanzo-backup-${new Date().toISOString().split('T')[0]}${this.FILE_EXTENSION}`;
       this.downloadBlob(blob, filename);
 
       logger.info(`Export completed: ${backupData.metadata.projectCount} projects, ${this.formatBytes(backupData.metadata.totalSize)}`);
@@ -85,8 +88,8 @@ export class BackupService {
   static async importAllData(file: File, options: ImportOptions = { mode: 'merge' }): Promise<void> {
     try {
       // Validate file
-      if (!file.name.endsWith(this.FILE_EXTENSION)) {
-        throw new Error(`Invalid file type. Expected ${this.FILE_EXTENSION} file.`);
+      if (!BackupService.ACCEPTED_EXTENSIONS.some((e) => file.name.endsWith(e))) {
+        throw new Error(`Invalid file type. Expected a .hanzo or .osws backup file.`);
       }
 
       if (file.size > this.MAX_IMPORT_SIZE) {
@@ -158,7 +161,7 @@ export class BackupService {
    */
   static async validateBackupFile(file: File): Promise<{ valid: boolean; reason?: string; metadata?: BackupData['metadata'] }> {
     try {
-      if (!file.name.endsWith(this.FILE_EXTENSION)) {
+      if (!BackupService.ACCEPTED_EXTENSIONS.some((e) => file.name.endsWith(e))) {
         return { valid: false, reason: 'Invalid file extension' };
       }
 
