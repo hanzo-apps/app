@@ -41,6 +41,35 @@ const splitSideChannel = (
   };
 };
 
+// Reasoning ("thinking") deltas ride the SAME text stream as page HTML, wrapped
+// by the BFF in a MATCHED PAIR of ASCII Unit Separators (U+001F) — open before a
+// reasoning run, close when content resumes (see app/v1/generate/route.ts). This
+// char can never occur in HTML output OR reasoning text, and is orthogonal to
+// the U+001E side channel, so splitting on it is corruption-proof. Even segment
+// indices (0,2,4…) are page HTML, odd indices are reasoning. An unmatched
+// trailing open frame yields an EVEN part count -> `reasoningOpen` (still
+// streaming reasoning; hold page render).
+const REASONING_SEP = "\u001f";
+const splitReasoning = (
+  text: string
+): { content: string; reasoning: string; reasoningOpen: boolean } => {
+  if (text.indexOf(REASONING_SEP) === -1) {
+    return { content: text, reasoning: "", reasoningOpen: false };
+  }
+  const parts = text.split(REASONING_SEP);
+  const content = parts.filter((_, i) => i % 2 === 0).join("");
+  const reasoning = parts.filter((_, i) => i % 2 === 1).join("");
+  // Odd number of parts => all frames closed; even => a frame is still open.
+  const reasoningOpen = parts.length % 2 === 0;
+  return { content, reasoning, reasoningOpen };
+};
+
+// The one place raw stream text is stripped of BOTH side channels (U+001E routed
+// model/id trailer AND U+001F reasoning frames) before it reaches the page
+// parser. Reused by formatPages/formatPage so reasoning never corrupts HTML.
+const cleanContent = (text: string): string =>
+  splitReasoning(splitSideChannel(text).content).content;
+
 interface UseCallAiProps {
   onNewPrompt: (prompt: string) => void;
   onSuccess: (page: Page[], p: string, n?: number[][]) => void;
@@ -250,6 +279,12 @@ export const useCallAi = ({
             // signals (accept/deploy) read the right generation's join key.
             setLastGenerationRequestId(id);
             if (served) onRoutedModel?.(served);
+            // Stream is over: reasoning (if any) is complete. Close the thinking
+            // panel BEFORE parsing so it never stays stuck "thinking", even if
+            // the stream ended mid-reasoning. The empty-response guard below runs
+            // on the reasoning-stripped HTML, so reasoning-only output correctly
+            // reports "no usable page" rather than being mistaken for content.
+            onFinishThink?.();
             const trimmed = contentResponse.trim();
             const isJson =
               trimmed.startsWith("{") && trimmed.endsWith("}");
@@ -299,16 +334,29 @@ export const useCallAi = ({
           const chunk = decoder.decode(value, { stream: true });
           contentResponse += chunk;
 
-          // The stream itself signals a reasoning model: route any open <think>
-          // block to the thinking panel. No static model flag needed.
-          const thinkMatch = contentResponse.match(/<think>[\s\S]*/)?.[0];
-          if (thinkMatch && !contentResponse?.includes("</think>")) {
-            handleThink?.(thinkMatch.replace("<think>", "").trim());
-            return read();
-          }
-
-          if (contentResponse.includes("</think>")) {
+          // Canonical reasoning channel: the BFF wraps reasoning_content deltas
+          // in a U+001F matched pair. Demux it and DISPLAY the reasoning live in
+          // the thinking panel; while a frame is still open there is no page HTML
+          // to render yet, so hold. formatPages strips the frames from the HTML.
+          const { reasoning, reasoningOpen } = splitReasoning(
+            splitSideChannel(contentResponse).content
+          );
+          if (reasoning || reasoningOpen) {
+            if (reasoning) handleThink?.(reasoning.trim());
+            if (reasoningOpen) return read();
             onFinishThink?.();
+          } else {
+            // Fallback: models that inline <think>…</think> in the content
+            // stream instead of using reasoning_content. Same panel; the two
+            // channels are mutually exclusive per model.
+            const thinkMatch = contentResponse.match(/<think>[\s\S]*/)?.[0];
+            if (thinkMatch && !contentResponse?.includes("</think>")) {
+              handleThink?.(thinkMatch.replace("<think>", "").trim());
+              return read();
+            }
+            if (contentResponse.includes("</think>")) {
+              onFinishThink?.();
+            }
           }
 
           formatPages(contentResponse);
@@ -412,9 +460,18 @@ export const useCallAi = ({
           const chunk = decoder.decode(value, { stream: true });
           contentResponse += chunk;
 
-          // Skip rendering a page while an unterminated <think> block streams.
+          // Skip page render while a framed U+001F reasoning run streams, or an
+          // unterminated inline <think> block streams. This new-page flow has no
+          // thinking panel wired, but must not render reasoning-polluted or
+          // partial HTML. formatPage strips both side channels from the output.
+          const { reasoningOpen } = splitReasoning(
+            splitSideChannel(contentResponse).content
+          );
           const thinkMatch = contentResponse.match(/<think>[\s\S]*/)?.[0];
-          if (thinkMatch && !contentResponse?.includes("</think>")) {
+          if (
+            reasoningOpen ||
+            (thinkMatch && !contentResponse?.includes("</think>"))
+          ) {
             return read();
           }
 
@@ -523,7 +580,7 @@ export const useCallAi = ({
   // START_TITLE format, a bare single-file HTML document, a leading <think>
   // block, and a JSON error envelope — always an array, never a throw.
   const formatPages = (content: string): Page[] => {
-    const parsed = parsePages(splitSideChannel(content).content);
+    const parsed = parsePages(cleanContent(content));
     if (parsed.length > 0) {
       setPages(parsed);
       const last = parsed[parsed.length - 1];
@@ -536,7 +593,7 @@ export const useCallAi = ({
   };
 
   const formatPage = (content: string, currentPagePath: string): Page | null => {
-    const page = parseSinglePage(splitSideChannel(content).content, currentPagePath);
+    const page = parseSinglePage(cleanContent(content), currentPagePath);
     if (!page) return null;
 
     setPages((prevPages) => {
