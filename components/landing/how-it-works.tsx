@@ -24,7 +24,10 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section className="relative border-t border-white/[0.06] px-4 py-20 md:px-8 md:py-28">
+    <section
+      id="how-it-works"
+      className="relative scroll-mt-24 border-t border-white/[0.06] px-4 py-20 md:px-8 md:py-28"
+    >
       <div className="mx-auto max-w-6xl">
         <Reveal className="mx-auto max-w-2xl text-center">
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">
