@@ -51,7 +51,10 @@ export const iamConfig: IAMConfig = {
   clientId: CLIENT_ID,
   appName: 'hanzo-app',
   redirectUri: REDIRECT_URI,
-  scope: 'openid profile email',
+  // `offline_access` requests a REFRESH token so the SDK can silently renew the
+  // access token when it expires — without it a long session lapses and a
+  // logged-in user gets bounced to the "Log In to use Hanzo for free" modal.
+  scope: 'openid profile email offline_access',
   // localStorage (not sessionStorage): the PKCE verifier/state and the
   // resulting tokens must survive the cross-site round-trip to hanzo.id and
   // any reload / new tab, so the session persists after "Go to Dashboard".
