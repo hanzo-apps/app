@@ -27,6 +27,21 @@ import { useOrg } from '@/lib/org/client';
 import { currentOrg, switchOrg, filterOrgs, isScopedAway, setCurrentOrg, getHomeOrg, orgDisplayName, titleCase } from '@/lib/org-scope';
 import type { Org } from '@/lib/org/types';
 
+/** The org's identity mark for the chrome — its initial in a neutral rounded
+ *  square (monochrome, matching the brand sweep). Reads as "this is MY org"
+ *  without needing a per-org logo URL (the Org shape carries none today). */
+function OrgAvatar({ name, className = "h-5 w-5 text-[11px]" }: { name: string; className?: string }) {
+  const initial = (name || "").trim().charAt(0).toUpperCase() || "•";
+  return (
+    <span
+      className={`flex shrink-0 items-center justify-center rounded-md border border-white/10 bg-white/[0.08] font-semibold text-white/90 ${className}`}
+      aria-hidden="true"
+    >
+      {initial}
+    </span>
+  );
+}
+
 /** The org selector for the builder/dashboard chrome. */
 export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" } = {}) {
   const { ctx, loading, createOrg } = useOrg();
@@ -88,7 +103,7 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
         className="flex items-center gap-2 rounded-lg border border-white/10 px-3 py-1.5 text-sm text-white/80 hover:bg-white/5 transition-colors"
         title="Active organization"
       >
-        <Building2 className="h-4 w-4 text-white/50" />
+        <OrgAvatar name={currentName} />
         <span className="max-w-[10rem] truncate font-medium text-white">{currentName}</span>
         {isScopedAway() && <span className="rounded border border-white/20 px-1 text-[10px] text-white/60">scoped</span>}
         <ChevronsUpDown className="h-3.5 w-3.5 text-white/40" />
@@ -151,7 +166,7 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
                             isCurrent ? 'bg-white/10' : 'hover:bg-white/5'
                           }`}
                         >
-                          <Building2 className="h-4 w-4 text-white/50" />
+                          <OrgAvatar name={orgDisplayName(allOrgs, org.name)} />
                           <span className="flex-1 truncate text-left text-white/85">
                             {orgDisplayName(allOrgs, org.name)}
                           </span>
