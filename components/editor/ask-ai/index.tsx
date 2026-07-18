@@ -11,7 +11,7 @@ import ProModal from "@/components/pro-modal";
 import { Button } from "@hanzo/ui";
 import { useModels } from "@/lib/hooks/use-models";
 import { useRoutingDefaults } from "@/lib/hooks/use-routing-defaults";
-import { AUTO_MODEL, isSmartRouting, resolveSmartRouting } from "@/lib/providers";
+import { AUTO_MODEL, isDeadModelId, isSmartRouting, resolveSmartRouting } from "@/lib/providers";
 import { HtmlHistory, Page, Project } from "@/types";
 // import { InviteFriends } from "@/components/invite-friends";
 import { Settings } from "@/components/editor/ask-ai/settings";
@@ -98,11 +98,16 @@ export function AskAI({
   // Auto when the org defaults routing on, else the concrete default model.
   // Fail-soft: with no org policy known this stays on Auto, exactly as before.
   const [storedModel, setModel] = useLocalStorage<string>("model");
+  // A dead id persisted by an older build (e.g. a retired `gpt-*-codex`) is
+  // treated as UNSET so we open on smart-routing/default instead of sending an
+  // unavailable model — the cause of "The model didn't return a usable page".
+  const safeStoredModel =
+    storedModel && !isDeadModelId(storedModel) ? storedModel : undefined;
   const smartOn = resolveSmartRouting(
-    storedModel == null ? null : isSmartRouting(storedModel),
+    safeStoredModel == null ? null : isSmartRouting(safeStoredModel),
     routingDefaults
   ).enabled;
-  const model = storedModel ?? (smartOn ? AUTO_MODEL : defaultModel);
+  const model = safeStoredModel ?? (smartOn ? AUTO_MODEL : defaultModel);
   const [routedModel, setRoutedModel] = useState<string | null>(null);
   const [openProvider, setOpenProvider] = useState(false);
   const [providerError, setProviderError] = useState("");
