@@ -14,9 +14,10 @@ import { ErrorBoundary } from "@/components/error-boundary/error-boundary";
 import { errorLogger } from "@/lib/error-handling/error-logger";
 
 // Canonical Hanzo typography: Geist Sans (UI/body/display/heading)
-// + Geist Mono (code/data).
-const basel = Geist({
-  variable: "--font-basel-sans",
+// + Geist Mono (code/data). Geist is a variable font with real 100–900
+// weights, so headings/bold render truly bold (no faux-weight synthesis).
+const geistSans = Geist({
+  variable: "--font-geist-sans",
   subsets: ["latin"],
   display: "swap",
 });
