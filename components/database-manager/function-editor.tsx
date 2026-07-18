@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import MonacoEditor from '@monaco-editor/react';
+import { CodeEditor } from '@/components/code-editor';
 import { EdgeFunction } from '@/lib/vfs/types';
 import {
   Dialog,
@@ -21,7 +21,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Loader2, AlertCircle, Info } from 'lucide-react';
-import { useTheme } from 'next-themes';
 
 interface FunctionEditorProps {
   deploymentId: string;
@@ -66,7 +65,6 @@ export function FunctionEditor({
   const [timeoutMs, setTimeoutMs] = useState(fn?.timeoutMs || 5000);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -199,18 +197,10 @@ export function FunctionEditor({
           <div className="space-y-2">
             <Label>Function Code</Label>
             <div className="h-64 border rounded-lg overflow-hidden">
-              <MonacoEditor
+              <CodeEditor
                 language="javascript"
-                theme={resolvedTheme === 'dark' ? 'vs-dark' : 'light'}
                 value={code}
-                onChange={value => setCode(value || '')}
-                options={{
-                  minimap: { enabled: false },
-                  fontSize: 13,
-                  scrollBeyondLastLine: false,
-                  automaticLayout: true,
-                  tabSize: 2,
-                }}
+                onChange={(value) => setCode(value)}
               />
             </div>
           </div>
