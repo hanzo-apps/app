@@ -1,4 +1,4 @@
-import { Rocket, ExternalLink } from "lucide-react";
+import { Rocket } from "lucide-react";
 import Image from "next/image";
 
 import Loading from "@/components/loading";
@@ -148,17 +148,21 @@ export const DeployButtonContent = ({
         </div>
         <Button
           variant="default"
+          size="sm"
           onClick={publish}
-          className="relative w-full !bg-white !text-black hover:!bg-white/90"
+          className="relative w-full gap-1.5 !bg-white font-medium !text-black hover:!bg-white/90"
           disabled={loading}
         >
-          Publish <Rocket className="size-4" />
-          {loading && <Loading className="ml-2 size-4 animate-spin" />}
+          {loading ? (
+            <>
+              <Loading className="size-4 animate-spin" /> Publishing…
+            </>
+          ) : (
+            <>
+              Publish <Rocket className="size-4" />
+            </>
+          )}
         </Button>
-        <p className="flex items-center justify-center gap-1 text-[11px] text-white/35">
-          <ExternalLink className="size-3" />
-          Manage every project at console.hanzo.ai
-        </p>
       </main>
     </>
   );
