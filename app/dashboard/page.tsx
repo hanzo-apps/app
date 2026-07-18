@@ -251,7 +251,7 @@ export default function DashboardPage() {
                 {projects.map((project) => (
                   <Link
                     key={project.id}
-                    href={`/projects/${project.spaceId || project.id}`}
+                    href={`/dev?project=${encodeURIComponent(project.spaceId || project.id)}`}
                     className="group flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] p-4 hover:bg-white/[0.06] hover:border-white/20 transition-all"
                   >
                     <div className="flex items-center gap-4">
