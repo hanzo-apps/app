@@ -26,6 +26,25 @@ export type ModelOption = {
 // The model the builder opens on when neither storage nor the gateway pick one.
 export const DEFAULT_MODEL = "zen5-coder";
 
+// The Hanzo gateway (api.hanzo.ai) serves the Zen ladder + connected providers —
+// NOT OpenAI `gpt-*` / `o1|o3` / legacy `-codex` ids. A stale selection persisted
+// in `localStorage["model"]` by an OLDER build (when the picker still listed such
+// ids) would otherwise be sent verbatim, the gateway would reply "model … is not
+// available", and the empty stream surfaces to the user as "The model didn't
+// return a usable page. Please try again." — editing appears broken. This is the
+// ONE predicate for "a dead id we must never send", shared by the client model
+// state (components/editor/ask-ai) and the server BFF (app/v1/generate). `auto`
+// (smart routing) and every real gateway id pass through untouched.
+export const isDeadModelId = (id?: string | null): boolean =>
+  !!id && /^(gpt-[0-9]|o[13]($|-)|text-davinci|.*-codex$)/i.test(id.trim());
+
+// Coerce a possibly-stale/blank model id to a servable one. Used server-side to
+// harden the BFF and client-side to sanitize a persisted selection on read.
+export const resolveModelId = (id?: string | null): string => {
+  const m = (id ?? "").trim();
+  return !m || isDeadModelId(m) ? DEFAULT_MODEL : m;
+};
+
 // Smart routing sentinel. Sent as the `model` to the gateway, it means "route
 // this request to the best/cheapest capable model" — the gateway decides per
 // request and bills as what actually served. It is a VALUE of `model`, not a

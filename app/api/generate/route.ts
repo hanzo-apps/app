@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ProviderId } from '@/lib/llm/providers/types';
 import { getProvider, getDefaultModel } from '@/lib/llm/providers/registry';
+import { isDeadModelId } from '@/lib/providers';
 import { LLMMessage, ToolDefinition, ContentBlock, TextContentBlock, ImageContentBlock } from '@/lib/llm/types';
 import { logger } from '@/lib/utils';
 import { handleCodexGeneration } from '@/lib/llm/codex-adapter';
@@ -177,6 +178,14 @@ export async function POST(request: NextRequest) {
     // provider (incl. a customer's connected account) is still honored.
     const selectedProvider: ProviderId = provider || 'hanzo';
     const providerConfig = getProvider(selectedProvider);
+
+    // Only the Hanzo gateway rejects retired OpenAI `gpt-*` / `o1|o3` / `-codex`
+    // ids (a dead id → "model … is not available" → empty stream → "The model
+    // didn't return a usable page"). Sanitize those to the Hanzo coding model on
+    // the hanzo path using the ONE shared predicate; every other provider (incl.
+    // the real `openai-codex` endpoint) keeps its requested model.
+    const resolvedModel: string =
+      selectedProvider === 'hanzo' && isDeadModelId(model) ? 'zen5-coder' : model;
 
     let apiKey = clientApiKey;
 
@@ -384,7 +393,7 @@ Habits:
     }
 
     const streamEnabled = requestStream !== false;
-    const apiEndpoint = getApiEndpoint(selectedProvider, providerConfig, model, { apiKey, stream: streamEnabled });
+    const apiEndpoint = getApiEndpoint(selectedProvider, providerConfig, resolvedModel, { apiKey, stream: streamEnabled });
 
     // --- Gemini: build entirely different request body ---
     if (selectedProvider === 'gemini') {
@@ -448,7 +457,7 @@ Habits:
 
     // --- All other providers: OpenAI-compatible request body ---
     const requestBody: Record<string, unknown> = {
-      model: model || getDefaultModel(selectedProvider),
+      model: resolvedModel || getDefaultModel(selectedProvider),
       messages: processedMessages,
       stream: streamEnabled
     };
