@@ -11,6 +11,8 @@ import {
   DropdownMenuTrigger,
 } from '@hanzo/ui';
 import { Pencil, Trash2, MoreVertical, ExternalLink, Globe } from 'lucide-react';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { builderLink, type Project, type ProjectStatus } from '@/lib/api/projects';
 
 interface ProjectCardProps {
@@ -95,12 +97,22 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
             Edit
           </Button>
           {project.liveUrl && (
-            <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" asChild>
-              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="h-3 w-3 mr-1" />
-                Visit
-              </a>
-            </Button>
+            // Plain anchor, NOT the shared Button with `asChild`: the @hanzo/ui
+            // Button wraps its children in an array for the loading slot, which
+            // trips Radix Slot's React.Children.only when it renders as a Slot.
+            // See components/editor/cross-surface-links.tsx for the same footgun.
+            <a
+              href={project.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                buttonVariants({ size: 'sm', variant: 'ghost' }),
+                'h-7 px-2 text-xs',
+              )}
+            >
+              <ExternalLink className="h-3 w-3 mr-1" />
+              Visit
+            </a>
           )}
         </div>
       </div>
