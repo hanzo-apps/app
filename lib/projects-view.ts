@@ -13,6 +13,9 @@ export interface BaseProjectRow {
   id?: string;
   _id?: string;
   space_id?: string;
+  /** The project's own display name (the cloud projectsvc carries a real name);
+   *  preferred over the de-slugged space_id when present. */
+  name?: string;
   prompts?: string[];
   created?: string;
   updated?: string;
@@ -43,7 +46,7 @@ export function toDashboardProject(row: BaseProjectRow): DashboardProject {
   const spaceId = row.space_id ?? "";
   return {
     id: row.id ?? row._id ?? spaceId,
-    name: projectName(spaceId),
+    name: row.name?.trim() || projectName(spaceId),
     spaceId,
     updatedAt: row.updated ?? row._updatedAt ?? row.created ?? row._createdAt ?? null,
   };
