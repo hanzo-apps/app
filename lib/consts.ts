@@ -10,7 +10,7 @@ export const defaultHTML = `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hanzo Preview</title>
+  <title>Preview</title>
   <style>
     :root { color-scheme: dark; }
     * { box-sizing: border-box; }
@@ -49,8 +49,12 @@ export const defaultHTML = `<!DOCTYPE html>
 </head>
 <body>
   <div class="wrap">
-    <div class="mark">H</div>
-    <h1>Your preview will appear here<span class="cursor"></span></h1>
+    <div class="mark" aria-hidden="true">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 3c.45 3.75 2.55 5.85 6 6-3.45.15-5.55 2.25-6 6-.45-3.75-2.55-5.85-6-6 3.45-.15 5.55-2.25 6-6z" fill="rgba(255,255,255,0.7)"/>
+      </svg>
+    </div>
+    <h1>Your app will appear here<span class="cursor"></span></h1>
     <p>Describe what you want to build in the chat and Hanzo generates it live — right here.</p>
   </div>
 </body>

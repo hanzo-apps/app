@@ -24,6 +24,7 @@ import { useUser } from "@/hooks/useUser";
 import { WalletBoundary } from "@/components/providers/WalletBoundary";
 import { AppShell } from "@/components/app-shell";
 import { HanzoLogo } from "@/components/HanzoLogo";
+import { StartComposer } from "@/components/start-composer";
 import {
   toDashboardProject,
   relativeTime,
@@ -192,6 +193,9 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+
+        {/* Start something new — the fast path to a fresh project. */}
+        <StartComposer className="mb-10" />
 
         {/* Quick Links */}
         <section className="mb-10">
