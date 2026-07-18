@@ -29,6 +29,7 @@ import { Card } from "@hanzo/ui";
 import { Badge } from "@hanzo/ui";
 import { Progress } from "@hanzo/ui";
 import { cn } from "@/lib/utils";
+import { MarkdownRenderer } from "@/components/markdown-renderer";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -182,75 +183,53 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
       "✅ Finalizing development plan..."
     ];
 
-    // Plan that will stream line by line on the right
+    // Development plan as GitHub-flavored markdown. Each array entry is one
+    // line so the existing 80ms/line stream reveals it progressively; joined
+    // with "\n" the growing string is rendered through <MarkdownRenderer/>.
     const planContent = [
-      `Project: ${userPrompt}`,
+      `**Building:** ${userPrompt}`,
       "",
-      "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-      "TECHNOLOGY STACK",
-      "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+      "## Technology Stack",
       "",
-      "Frontend Framework:",
-      "  • Next.js 14 with App Router",
-      "  • React 18 with Server Components",
-      "  • TypeScript for type safety",
+      "- **Next.js 15** with the App Router and React Server Components",
+      "- **React 19** and **TypeScript** for type-safe UI",
+      "- **@hanzo/ui** components styled with **Tailwind CSS**",
+      "- **Hanzo Base** for storage — SQLite in dev, Postgres in production",
+      "- **Hanzo IAM** for authentication and single sign-on",
+      "- **Hanzo Cloud** `/v1` APIs for shared, org-scoped state",
       "",
-      "UI Components:",
-      "  • @hanzo/ui (shadcn fork)",
-      "  • Tailwind CSS for styling",
-      "  • Framer Motion for animations",
+      "## Core Features",
       "",
-      "State Management:",
-      "  • Zustand for global state",
-      "  • React Query for server state",
-      "  • React Hook Form for forms",
+      "1. **Authentication** — sign in with Hanzo IAM, org-scoped access and protected routes",
+      "2. **Persistent data** — typed records in Hanzo Base, scoped per user and org",
+      "3. **Responsive UI** — mobile-first layout with light and dark themes",
+      "4. **Accessible by default** — keyboard navigation and semantic markup",
       "",
-      "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-      "CORE FEATURES",
-      "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+      "## Implementation Phases",
       "",
-      "1. User Authentication",
-      "   - Social login (Google, GitHub)",
-      "   - JWT token management",
-      "   - Protected routes",
+      "### Phase 1 — Foundation",
       "",
-      "2. Real-time Functionality",
-      "   - WebSocket connections",
-      "   - Live updates",
-      "   - Optimistic UI updates",
+      "- Scaffold the project and core configuration",
+      "- Wire routing and the @hanzo/ui theme",
       "",
-      "3. Responsive Design",
-      "   - Mobile-first approach",
-      "   - Dark/light theme support",
-      "   - Accessibility features",
+      "### Phase 2 — Interface",
       "",
-      "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-      "IMPLEMENTATION PHASES",
-      "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+      "- Build layout, navigation, and key screens",
+      "- Compose interactive @hanzo/ui components",
       "",
-      "Phase 1: Foundation (Now)",
-      "  ✓ Project setup and configuration",
-      "  ✓ Core dependencies installation",
-      "  ✓ Basic routing structure",
+      "### Phase 3 — Functionality",
       "",
-      "Phase 2: UI Development",
-      "  → Component library setup",
-      "  → Layout components",
-      "  → Interactive elements",
+      "- Implement feature logic against the `/v1` APIs",
+      "- Persist data in Hanzo Base",
       "",
-      "Phase 3: Feature Implementation",
-      "  → Core functionality",
-      "  → API integration",
-      "  → Data persistence",
+      "### Phase 4 — Ship",
       "",
-      "Phase 4: Polish & Deploy",
-      "  → Performance optimization",
-      "  → Testing & debugging",
-      "  → Production deployment",
+      "- Performance pass, testing, and review",
+      "- Deploy to Hanzo Cloud",
       "",
-      "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+      "---",
       "",
-      "Ready to start building! 🚀"
+      "**Ready to start building! 🚀**",
     ];
 
     let thoughtIndex = 0;
@@ -307,17 +286,17 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
   const sendMessage = () => {
     if (!inputMessage.trim()) return;
 
-    // Add user input to the plan
+    // Add user input to the plan (markdown, same stream as the plan template)
     setPlanLines(prev => [
       ...prev,
       "",
-      "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-      "USER REQUEST",
-      "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+      "---",
+      "",
+      "## Your Request",
+      "",
       inputMessage,
       "",
-      "Incorporating into plan...",
-      "✓ Requirements updated"
+      "**Requirements updated — folding this into the plan.**",
     ]);
 
     // Add a thinking step
@@ -356,7 +335,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
         <div className="max-w-6xl w-full">
           <div className="text-center mb-12">
             <div className="w-20 h-20 bg-gradient-to-br from-neutral-700 to-neutral-800 rounded-2xl flex items-center justify-center mb-6 mx-auto">
-              <span className="text-white font-medium text-4xl">H</span>
+              <Sparkles className="w-10 h-10 text-white" />
             </div>
             <h1 className="text-4xl font-medium text-white mb-4">
               Welcome to Hanzo AI ✨
@@ -508,7 +487,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
           <div className="flex flex-col">
             <div className="text-center mb-6">
               <div className="w-16 h-16 bg-gradient-to-br from-neutral-700 to-neutral-800 rounded-xl flex items-center justify-center mb-4 mx-auto animate-pulse">
-                <span className="text-white font-medium text-2xl">H</span>
+                <Sparkles className="w-7 h-7 text-white" />
               </div>
               <h2 className="text-2xl font-medium text-white mb-2">
                 {stage === "planning" ? "Building your app..." : "Ready to build! 🚀"}
@@ -587,35 +566,19 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
           </div>
 
           <div className="flex-1 overflow-y-auto bg-neutral-950 p-4">
-            <pre className="font-mono text-xs leading-relaxed">
-              {planLines.map((raw, i) => {
-                // A streamed entry can momentarily be undefined (interval races
-                // the state update); never let a nullish line crash the render.
-                const line = raw ?? "";
-                return (
-                <div
-                  key={i}
-                  className={cn(
-                    "animate-fadeIn",
-                    line.startsWith("━") && "text-white",
-                    line.startsWith("  •") && "text-neutral-400",
-                    line.startsWith("  ✓") && "text-green-400",
-                    line.startsWith("  →") && "text-blue-400",
-                    line.includes("Phase") && "text-yellow-400 font-medium",
-                    line === "" && "h-3",
-                    !line.startsWith(" ") && !line.startsWith("━") && line !== "" && "text-white"
-                  )}
-                  style={{ animationDelay: `${i * 20}ms` }}
-                >
-                  {line || "\u00A0"}
-                </div>
-                );
-              })}
-              {isStreaming && (
-                <span className="inline-block w-2 h-3 bg-white animate-pulse ml-1" />
-              )}
-              <div ref={planEndRef} />
-            </pre>
+            {/* The plan streams line-by-line into planLines; joined it forms a
+                growing markdown document rendered through the shared
+                MarkdownRenderer (react-markdown + remark-gfm). react-markdown
+                tolerates the partial markdown produced mid-stream. */}
+            <MarkdownRenderer
+              content={planLines.join("\n")}
+              className="text-sm text-neutral-200"
+              skipNormalization
+            />
+            {isStreaming && (
+              <span className="inline-block w-2 h-4 bg-white animate-pulse align-text-bottom" />
+            )}
+            <div ref={planEndRef} />
           </div>
 
           <div className="p-4 border-t border-neutral-800">
