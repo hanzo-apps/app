@@ -334,9 +334,6 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
       <div className="min-h-screen h-screen overflow-y-auto bg-black flex items-center justify-center p-6">
         <div className="max-w-6xl w-full">
           <div className="text-center mb-12">
-            <div className="w-20 h-20 bg-gradient-to-br from-neutral-700 to-neutral-800 rounded-2xl flex items-center justify-center mb-6 mx-auto">
-              <Sparkles className="w-10 h-10 text-white" />
-            </div>
             <h1 className="text-4xl font-medium text-white mb-4">
               Welcome to Hanzo AI ✨
             </h1>
@@ -486,9 +483,6 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
         <div className="w-1/2 border-r border-neutral-800 p-6 overflow-y-auto">
           <div className="flex flex-col">
             <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-neutral-700 to-neutral-800 rounded-xl flex items-center justify-center mb-4 mx-auto animate-pulse">
-                <Sparkles className="w-7 h-7 text-white" />
-              </div>
               <h2 className="text-2xl font-medium text-white mb-2">
                 {stage === "planning" ? "Building your app..." : "Ready to build! 🚀"}
               </h2>
