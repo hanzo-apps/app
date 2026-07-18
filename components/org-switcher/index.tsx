@@ -24,10 +24,8 @@ import { Building2, Check, ChevronsUpDown, Loader2, Plus, Search, Sparkles } fro
 import { Button } from '@hanzo/ui';
 
 import { useOrg } from '@/lib/org/client';
-import { currentOrg, switchOrg, filterOrgs, isScopedAway, setCurrentOrg, getHomeOrg } from '@/lib/org-scope';
+import { currentOrg, switchOrg, filterOrgs, isScopedAway, setCurrentOrg, getHomeOrg, orgDisplayName, titleCase } from '@/lib/org-scope';
 import type { Org } from '@/lib/org/types';
-
-const titleCase = (s: string) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
 /** The org selector for the builder/dashboard chrome. */
 export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" } = {}) {
@@ -51,7 +49,7 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
     return orgs;
   }, [ctx, currentId]);
 
-  const currentName = allOrgs.find((o) => o.name === currentId)?.displayName || titleCase(currentId || '…');
+  const currentName = orgDisplayName(allOrgs, currentId) || '…';
   const filtered = useMemo(() => filterOrgs(allOrgs, query), [allOrgs, query]);
 
   const select = (org: Org) => {
@@ -91,7 +89,7 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
         title="Active organization"
       >
         <Building2 className="h-4 w-4 text-white/50" />
-        <span className="max-w-[10rem] truncate">{currentName}</span>
+        <span className="max-w-[10rem] truncate font-medium text-white">{currentName}</span>
         {isScopedAway() && <span className="rounded border border-white/20 px-1 text-[10px] text-white/60">scoped</span>}
         <ChevronsUpDown className="h-3.5 w-3.5 text-white/40" />
       </button>
