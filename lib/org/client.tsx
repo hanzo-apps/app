@@ -10,8 +10,12 @@
  */
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
-import type { OrgContext } from '@/lib/org/types';
+import type { Org, OrgContext } from '@/lib/org/types';
 import { setHomeOrg, switchOrg } from '@/lib/org-scope';
+
+/** The raw org row as `/v1/orgs` may send it — the logo field name isn't settled
+ *  in IAM yet, so we accept any of `logo`/`icon`/`avatar` (all optional). */
+type RawOrg = Partial<Org> & { icon?: string; avatar?: string };
 
 interface OrgState {
   ctx: OrgContext | null;
@@ -29,7 +33,18 @@ async function getOrgContext(): Promise<OrgContext | null> {
   const res = await fetch('/v1/orgs', { credentials: 'include', cache: 'no-store' });
   if (res.status === 401) return null;
   if (!res.ok) throw new Error(`Failed to load orgs (${res.status})`);
-  return (await res.json()) as OrgContext;
+  const raw = (await res.json()) as OrgContext & { orgs?: RawOrg[] };
+  // Reshape each row defensively: carry a server-supplied logo through under one
+  // name (`logo`/`icon`/`avatar` — IAM hasn't settled it), so OrgAvatar renders
+  // real identity when present. Absent → undefined (avatar falls back to an
+  // override / known-default / initial). Never fabricated.
+  const orgs: Org[] = (raw.orgs ?? []).map((o) => ({
+    name: o.name ?? '',
+    displayName: o.displayName ?? o.name ?? '',
+    isPersonal: Boolean(o.isPersonal),
+    logo: o.logo ?? o.icon ?? o.avatar ?? undefined,
+  }));
+  return { ...raw, orgs };
 }
 
 export function OrgProvider({ children }: { children: React.ReactNode }) {
