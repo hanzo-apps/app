@@ -37,7 +37,7 @@ interface WhatsNewData {
 async function getWhatsNew(): Promise<WhatsNewData> {
   const defaultData: WhatsNewData = {
     version: 'unknown',
-    title: 'Welcome to OSW Studio',
+    title: 'Welcome to Hanzo App',
     highlights: [],
   };
 

@@ -8,10 +8,10 @@ name: osw-planning
 description: Read when starting new projects. Covers PLAN.md workflow, JAMstack-compatible tech stack options, and project structure.
 ---
 
-# OSW Studio Project Planning
+# Hanzo App Project Planning
 
 ## Purpose
-This skill helps you plan new website projects in OSW Studio. Use it at the start of any new project to establish structure, choose technologies, and create a roadmap.
+This skill helps you plan new website projects in Hanzo App. Use it at the start of any new project to establish structure, choose technologies, and create a roadmap.
 
 ## Step 1: Create PLAN.md First
 

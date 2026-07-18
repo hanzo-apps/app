@@ -1,6 +1,6 @@
 /**
  * Handlebars Advanced - Built-in Skill
- * Advanced Handlebars templating patterns for OSW Studio
+ * Advanced Handlebars templating patterns for Hanzo App
  */
 
 export const HANDLEBARS_ADVANCED_SKILL = String.raw`---
@@ -11,11 +11,11 @@ description: Read when using Handlebars templates, partials, or data.json. Cover
 # Advanced Handlebars Patterns
 
 ## Purpose
-Deep dive into Handlebars features available in OSW Studio for building maintainable, data-driven static websites with reusable templates.
+Deep dive into Handlebars features available in Hanzo App for building maintainable, data-driven static websites with reusable templates.
 
 ## Key Concept: Build-Time Compilation
 
-**CRITICAL**: In OSW Studio, Handlebars templates are compiled automatically when the preview loads. You do NOT write JavaScript code to compile or render templates.
+**CRITICAL**: In Hanzo App, Handlebars templates are compiled automatically when the preview loads. You do NOT write JavaScript code to compile or render templates.
 
 - \`.hbs\` files in \`/templates/\` are auto-registered as partials
 - \`data.json\` provides global context for all templates
