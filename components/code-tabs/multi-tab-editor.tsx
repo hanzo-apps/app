@@ -1,13 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import MonacoEditor from '@monaco-editor/react';
+import { CodeEditor } from '@/components/code-editor';
 import { VirtualFile } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';
 import { X, Code2, Save, FileCode, Image as ImageIcon, AlertCircle } from 'lucide-react';
 import { Button } from '@hanzo/ui';
 import { cn } from '@/lib/utils';
-import { useTheme } from 'next-themes';
 
 interface MultiTabEditorProps {
   projectId: string;
@@ -24,13 +23,6 @@ interface OpenFile {
 export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClose }: MultiTabEditorProps) {
   const [openFiles, setOpenFiles] = useState<Map<string, OpenFile>>(new Map());
   const [activeFilePath, setActiveFilePath] = useState<string | null>(null);
-  const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   useEffect(() => {
     const handleFileOpen = (event: CustomEvent<VirtualFile>) => {
       openFile(event.detail);
@@ -370,23 +362,12 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
                 }
 
                 return (
-                  <MonacoEditor
+                  <CodeEditor
+                    key={activeFile.file.path}
                     height="100%"
                     language={getLanguageFromPath(activeFile.file.path)}
                     value={activeFile.content}
                     onChange={(value) => handleContentChange(value, activeFile.file.path)}
-                    theme={mounted ? (resolvedTheme === 'dark' ? 'vs-dark' : 'light') : 'vs-dark'}
-                    options={{
-                      minimap: { enabled: false },
-                      fontSize: 14,
-                      lineNumbers: 'on',
-                      roundedSelection: false,
-                      scrollBeyondLastLine: false,
-                      automaticLayout: true,
-                      tabSize: 2,
-                      wordWrap: 'on',
-                      wrappingIndent: 'indent'
-                    }}
                   />
                 );
               })()}
