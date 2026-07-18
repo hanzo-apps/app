@@ -21,9 +21,19 @@ import Link from 'next/link';
 import { vfs } from '@/lib/vfs';
 import { templateService } from '@/lib/vfs/template-service';
 import { skillsService } from '@/lib/vfs/skills';
+import { fetchProjects, type Project as CloudProject } from '@/lib/api/projects';
 import pkg from '@/package.json';
 
 const isServerMode = process.env.NEXT_PUBLIC_SERVER_MODE === 'true';
+
+// A project row on the dashboard, normalized from either the org-scoped cloud
+// store (source of truth) or the local IndexedDB VFS (unsynced drafts).
+interface RecentProject {
+  id: string;
+  name: string;
+  description: string | null;
+  updatedAt: string; // ISO 8601
+}
 
 interface DashboardData {
   system: {
@@ -56,12 +66,7 @@ interface DashboardData {
     title: string;
     highlights: string[];
   };
-  recentProjects: Array<{
-    id: string;
-    name: string;
-    description: string | null;
-    updatedAt: string;
-  }>;
+  recentProjects: RecentProject[];
   recentDeployments: Array<{
     id: string;
     name: string;
@@ -84,21 +89,64 @@ interface BrowserDashboardData {
     title: string;
     highlights: string[];
   } | null;
-  recentProjects: Array<{
-    id: string;
-    name: string;
-    description: string | null;
-    updatedAt: string;
-  }>;
+  recentProjects: RecentProject[];
 }
 
-// Fetch dashboard data for browser mode (IndexedDB)
+/** Merge the org-scoped cloud projects (source of truth) over the local VFS
+ *  drafts, deduped by id/slug — a cloud record always wins, so its status and
+ *  liveUrl stay authoritative. Returns the full list, newest first. */
+function mergeProjects(
+  cloud: CloudProject[],
+  local: Awaited<ReturnType<typeof vfs.listProjects>>,
+): RecentProject[] {
+  const seen = new Set<string>();
+  const merged: RecentProject[] = [];
+
+  for (const p of cloud) {
+    seen.add(p.id);
+    seen.add(p.slug);
+    merged.push({
+      id: p.id,
+      name: p.name,
+      description: p.description || null,
+      updatedAt: new Date(p.updatedAt * 1000).toISOString(), // cloud: unix seconds
+    });
+  }
+
+  for (const p of local) {
+    if (seen.has(p.id)) continue; // already represented by a cloud record
+    merged.push({
+      id: p.id,
+      name: p.name,
+      description: p.description || null,
+      updatedAt: p.updatedAt instanceof Date ? p.updatedAt.toISOString() : p.updatedAt,
+    });
+  }
+
+  return merged.sort(
+    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+  );
+}
+
+// Fetch dashboard data for browser mode (IndexedDB + org-scoped cloud store)
 async function fetchBrowserModeData(): Promise<BrowserDashboardData> {
   await vfs.init();
 
-  const projects = await vfs.listProjects();
+  const localProjects = await vfs.listProjects();
   const templates = await templateService.listCustomTemplates();
   const skills = await skillsService.getAllSkills();
+
+  // The org's real projects live in the cloud org store (same-origin
+  // /v1/projects, scoped to the signed-in owner). Merge them over any local VFS
+  // drafts. Fail soft: if the call fails (offline / signed out / self-hosted),
+  // the local list stands alone so the dashboard never crashes.
+  let cloudProjects: CloudProject[] = [];
+  try {
+    cloudProjects = await fetchProjects();
+  } catch {
+    // Cloud unavailable — fall back to local VFS projects only.
+  }
+  const projects = mergeProjects(cloudProjects, localProjects);
 
   // Fetch What's New - version, title, and highlights (matching server mode)
   let whatsNew: BrowserDashboardData['whatsNew'] = null;
@@ -157,15 +205,7 @@ async function fetchBrowserModeData(): Promise<BrowserDashboardData> {
       skills: skills.length,
     },
     whatsNew,
-    recentProjects: projects
-      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-      .slice(0, 3)
-      .map((p) => ({
-        id: p.id,
-        name: p.name,
-        description: p.description || null,
-        updatedAt: p.updatedAt instanceof Date ? p.updatedAt.toISOString() : p.updatedAt,
-      })),
+    recentProjects: projects.slice(0, 3),
   };
 }
 
@@ -474,7 +514,7 @@ function RecentProjectsCard({
   onNavigate,
   onProjectSelect,
 }: {
-  projects: DashboardData['recentProjects'] | BrowserDashboardData['recentProjects'];
+  projects: RecentProject[];
   onNavigate?: (view: string) => void;
   onProjectSelect?: (projectId: string) => void;
 }) {
