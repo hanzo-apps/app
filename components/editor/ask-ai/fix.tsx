@@ -20,11 +20,11 @@ export function Fix({
       <TooltipTrigger asChild>
         <Button
           size="xs"
-          variant={active ? "default" : "outline"}
+          variant={active ? "default" : "ghost"}
           onClick={onToggle}
           aria-pressed={active}
           className={classNames("h-[28px]", {
-            "!text-neutral-400 hover:!text-neutral-200 !border-neutral-600 !hover:!border-neutral-500":
+            "text-neutral-400 hover:bg-white/10 hover:!text-neutral-200":
               !active,
           })}
         >
