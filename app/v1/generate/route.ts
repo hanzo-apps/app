@@ -30,7 +30,7 @@ import {
   UPDATE_PAGE_START,
   UPDATE_PAGE_END,
 } from "@/lib/prompts";
-import { DEFAULT_MODEL } from "@/lib/providers";
+import { resolveModelId } from "@/lib/providers";
 import MY_TOKEN_KEY from "@/lib/get-cookie-name";
 import { requireSameOrigin } from "@/lib/org/csrf";
 import { Page } from "@/types";
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const selectedModel = model || DEFAULT_MODEL;
+  const selectedModel = resolveModelId(model);
 
   const messages: ChatMessage[] = [
     { role: "system", content: INITIAL_SYSTEM_PROMPT },
@@ -231,7 +231,7 @@ export async function PUT(request: NextRequest) {
     );
   }
 
-  const selectedModel = model || DEFAULT_MODEL;
+  const selectedModel = resolveModelId(model);
 
   const messages: ChatMessage[] = [
     { role: "system", content: FOLLOW_UP_SYSTEM_PROMPT },
