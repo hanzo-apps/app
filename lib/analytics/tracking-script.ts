@@ -63,7 +63,7 @@ export function generateTrackingScript(options: TrackingScriptOptions): string {
   } = options;
 
   return `
-<!-- OSW Studio Analytics -->
+<!-- Hanzo App Analytics -->
 <script>
 (function() {
   'use strict';

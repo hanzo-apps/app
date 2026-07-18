@@ -22,6 +22,11 @@ import ModelsStrip from "@/components/landing/models-strip";
 import HowItWorks from "@/components/landing/how-it-works";
 import SiteFooter from "@/components/landing/site-footer";
 import { useUser } from "@/hooks/useUser";
+import {
+  type GalleryTemplate,
+  snapshotCatalog,
+  popularTemplates,
+} from "@/lib/gallery-catalog";
 
 interface Project {
   namespace: string;
@@ -59,6 +64,12 @@ export default function LandingPage() {
   const [isCreating, setIsCreating] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [inputFocused, setInputFocused] = useState(false);
+  // A few real gallery templates surfaced beside the prompt: the bundled
+  // snapshot seeds them instantly, then the live catalog (gallery.hanzo.ai)
+  // refreshes below.
+  const [starterTemplates, setStarterTemplates] = useState<GalleryTemplate[]>(
+    () => popularTemplates(snapshotCatalog().templates, 4),
+  );
 
   // Animated typewriter placeholder — pauses once the user focuses or types.
   const [typed, setTyped] = useState("");
@@ -105,6 +116,23 @@ export default function LandingPage() {
       .catch(() => setProjects([]));
   }, [user]);
 
+  // Refresh the starter templates from the live gallery catalog (same-origin
+  // proxy → gallery.hanzo.ai). Snapshot already painted, so this only upgrades.
+  useEffect(() => {
+    let alive = true;
+    fetch("/v1/gallery")
+      .then((res) => res.json())
+      .then((data) => {
+        if (alive && Array.isArray(data.templates) && data.templates.length) {
+          setStarterTemplates(popularTemplates(data.templates, 4));
+        }
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+
   const handleCreateProject = () => {
     if (!prompt.trim()) return;
     // Persist the prompt so the builder can pick it up post-login.
@@ -118,6 +146,14 @@ export default function LandingPage() {
     // `/dev` is the builder IDE; it reads localStorage.initialPrompt and starts
     // generating immediately. `/new` is the Git-import surface.
     router.push("/dev");
+  };
+
+  // One-click start from a real template: fork it into the builder via the same
+  // wire `/gallery` uses (`/dev` resolves the slug and auto-seeds the first
+  // generation). Middleware preserves this deep link through login, so an anon
+  // visitor lands back on the exact template after signing in.
+  const startFromTemplate = (t: GalleryTemplate) => {
+    router.push(`/dev?template=hanzo-apps/${t.slug}&action=edit`);
   };
 
   const placeholder = idle
@@ -242,6 +278,57 @@ export default function LandingPage() {
                     </button>
                   ))}
                 </div>
+
+                {/* Or start from one of our great templates — one click forks it
+                    into the builder, seeded from that template. */}
+                {starterTemplates.length > 0 && (
+                  <div className="mt-6">
+                    <div className="mb-3 flex items-center justify-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.12em] text-white/30">
+                      <span className="h-px w-6 bg-white/10" />
+                      or start from a template
+                      <span className="h-px w-6 bg-white/10" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+                      {starterTemplates.map((t) => (
+                        <button
+                          key={t.slug}
+                          type="button"
+                          onClick={() => startFromTemplate(t)}
+                          className="group overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] text-left transition-all hover:border-white/25 hover:bg-white/[0.04]"
+                        >
+                          <div className="relative aspect-[16/10] overflow-hidden bg-white/[0.02]">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={t.screenshotUrl}
+                              alt={`${t.displayName} preview`}
+                              loading="lazy"
+                              className="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.04]"
+                              onError={(e) => {
+                                (e.currentTarget as HTMLImageElement).style.opacity = "0";
+                              }}
+                            />
+                          </div>
+                          <div className="px-2.5 py-2">
+                            <p className="truncate text-xs font-medium text-white/80">
+                              {t.displayName}
+                            </p>
+                            <p className="truncate text-[11px] text-white/35">
+                              {t.category}
+                            </p>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                    <div className="mt-3 text-center">
+                      <Link
+                        href="/gallery"
+                        className="text-xs text-white/40 transition-colors hover:text-white"
+                      >
+                        Browse all templates →
+                      </Link>
+                    </div>
+                  </div>
+                )}
 
                 <div className="mt-6 flex flex-col items-center gap-2 text-xs text-white/35">
                   <p>
