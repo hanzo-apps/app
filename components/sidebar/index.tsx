@@ -15,72 +15,49 @@ import {
   Settings,
   Info,
   Github,
-  ChevronLeft,
-  ChevronRight,
-  BookOpen,
   ChevronDown,
+  BookOpen,
   Cloud,
   LogOut,
   LayoutDashboard,
+  PanelLeft,
+  X,
 } from 'lucide-react';
 import { DiscordIcon } from '@/components/ui/discord-icon';
-import { DOCS_ITEMS } from '@/lib/constants/docs';
 import { cn } from '@/lib/utils';
 import { OrgProvider } from '@/lib/org/client';
 import { OrgSwitcher } from '@/components/org-switcher';
 import { SidebarWallet } from '@/components/SidebarWallet';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import pkg from '@/package.json';
 
-// Collapsed sidebar width
-export const COLLAPSED_SIDEBAR_WIDTH = 56; // Width in pixels for icon-only buttons
+// Collapsed sidebar width (icon-only rail). Kept exported for callers that lay
+// out around the sidebar; the width itself is applied via a Tailwind class now.
+export const COLLAPSED_SIDEBAR_WIDTH = 56;
 
 interface SidebarItem {
   id: string;
   label: string;
   icon: React.ElementType;
-  path?: string;
+  /** Canonical ABSOLUTE internal route (e.g. `/skills`). One way: every nav item
+   *  resolves to a real top-level page — no mode branching, no dead-ends. */
+  route?: string;
   action?: string;
-  href?: string;
+  href?: string; // external link (opens in a new tab)
   serverModeOnly?: boolean;
-  hasRecentProjects?: boolean; // Special flag for Projects to show recent projects as sub-items
-  subItems?: {
-    id: string;
-    label: string;
-    icon: React.ElementType;
-    file?: string; // For docs
-  }[];
+  hasRecentProjects?: boolean; // Projects shows recent projects as sub-items
 }
 
+// Canonical top-level routes — each maps to a real `app/<route>/page.tsx`.
 const SIDEBAR_ITEMS: SidebarItem[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: 'dashboard' },
-  { id: 'projects', label: 'Projects', icon: FolderOpen, path: 'projects', hasRecentProjects: true },
-  { id: 'deployments', label: 'Deployments', icon: Globe, path: 'deployments', serverModeOnly: true },
-  { id: 'templates', label: 'Templates', icon: LayoutTemplate, path: 'templates' },
-  { id: 'games', label: 'Games', icon: Gamepad2, path: '/games' },
-  { id: 'skills', label: 'Skills', icon: Sparkles, path: 'skills' },
-  {
-    id: 'docs',
-    label: 'Docs',
-    icon: BookOpen,
-    path: 'docs',
-    subItems: DOCS_ITEMS.map(doc => ({
-      id: doc.id,
-      label: doc.title,
-      icon: doc.icon,
-      file: doc.file,
-    }))
-  },
-  {
-    id: 'settings',
-    label: 'Settings',
-    icon: Settings,
-    path: 'settings',
-    subItems: [
-      { id: 'application', label: 'Application', icon: Settings },
-      { id: 'model', label: 'Provider & Model', icon: Sparkles },
-    ]
-  },
+  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, route: '/dashboard' },
+  { id: 'projects', label: 'Projects', icon: FolderOpen, route: '/projects', hasRecentProjects: true },
+  { id: 'deployments', label: 'Deployments', icon: Globe, route: '/admin/deployments', serverModeOnly: true },
+  { id: 'templates', label: 'Templates', icon: LayoutTemplate, route: '/templates' },
+  { id: 'games', label: 'Games', icon: Gamepad2, route: '/games' },
+  { id: 'skills', label: 'Skills', icon: Sparkles, route: '/skills' },
+  { id: 'docs', label: 'Docs', icon: BookOpen, route: '/docs' },
+  { id: 'settings', label: 'Settings', icon: Settings, route: '/settings' },
   { id: 'tour', label: 'Guided Tour', icon: Info, action: 'start-tour' },
   { id: 'about', label: 'About', icon: Info, action: 'open-about' },
   { id: 'discord', label: 'Discord', icon: DiscordIcon, href: 'https://discord.gg/mAJ8Ss4u' },
@@ -101,56 +78,46 @@ interface SidebarProps {
   onOpenSettings?: () => void;
   onServerSync?: () => void;
   onLogoClick?: () => void;
+  /** @deprecated pin/hover model retired for a top collapse toggle (console pattern). */
   onPinnedChange?: (pinned: boolean) => void;
+  /** @deprecated pin/hover model retired for a top collapse toggle (console pattern). */
   onHoverChange?: (hovering: boolean) => void;
   onCollapsedChange?: (collapsed: boolean) => void;
   mobileOpen?: boolean;
   onMobileOpenChange?: (open: boolean) => void;
 }
 
+const COLLAPSE_STORAGE_KEY = 'hanzo-app-sidebar-collapsed';
+
 function SidebarContent({
   currentView,
-  onNavigate,
+  onNavigate: _onNavigate,
   onProjectSelect,
   onStartTour,
   onOpenAbout,
-  onOpenSettings,
   onServerSync,
   onLogoClick,
-  onPinnedChange,
-  onHoverChange,
   onCollapsedChange,
   mobileOpen = false,
   onMobileOpenChange,
 }: SidebarProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const currentDocId = searchParams.get('doc');
-  const currentSettingsTab = searchParams.get('settings');
-  const [pinned, setPinned] = useState(true); // Pinned = sidebar stays expanded
-  const [hovering, setHovering] = useState(false);
   const [recentProjects, setRecentProjects] = useState<Project[]>([]);
   const [loadingRecentProjects, setLoadingRecentProjects] = useState(true);
   const [syncStatus, setSyncStatus] = useState<SyncOverviewStatus | null>(null);
 
-  // Initialize expandedItems based on currentView to prevent flash
+  // Expanded set — only Projects (recent projects) can expand now.
   const [expandedItems, setExpandedItems] = useState<Set<string>>(() => {
     const initial = new Set<string>();
-    if (currentView === 'docs') initial.add('docs');
     if (currentView === 'projects') initial.add('projects');
-    if (currentView === 'settings') initial.add('settings');
     return initial;
   });
-  const [logoHover, setLogoHover] = useState(false);
-  // Brand flourish: after load, the "Hanzo App" wordmark folds into just the H
-  // mark (Vercel-style). Stays "Hanzo App" (no fold) for reduced-motion users.
-  const [wordmarkFolded, setWordmarkFolded] = useState(false);
 
   const isServerMode = process.env.NEXT_PUBLIC_SERVER_MODE === 'true';
 
-  // Track if we're on mobile (client-side only)
+  // Track mobile (client-side only). On mobile the sidebar is a drawer, never
+  // a collapsed rail — collapse is a desktop affordance.
   const [isMobile, setIsMobile] = useState(false);
-
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
@@ -158,37 +125,43 @@ function SidebarContent({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Fold the wordmark shortly after load — subtle, one-shot, reduced-motion-safe.
+  // Collapse is an EXPLICIT toggle (console.hanzo.ai `DashboardShell` pattern),
+  // persisted per-device — no hover-to-expand, no pin. Mobile is never collapsed.
+  const [collapsedPref, setCollapsedPref] = useState(false);
+  const collapsed = !isMobile && collapsedPref;
+
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
-    const t = setTimeout(() => setWordmarkFolded(true), 1500);
-    return () => clearTimeout(t);
+    const stored = localStorage.getItem(COLLAPSE_STORAGE_KEY);
+    if (stored !== null) setCollapsedPref(stored === 'true');
   }, []);
 
-  // Collapsed state is derived: collapsed when not pinned AND not hovering (desktop only)
-  // On mobile, sidebar is never collapsed - it's either open or closed via mobileOpen
-  const collapsed = !isMobile && !pinned && !hovering;
+  const toggleCollapsed = () => {
+    setCollapsedPref((prev) => {
+      const next = !prev;
+      localStorage.setItem(COLLAPSE_STORAGE_KEY, String(next));
+      return next;
+    });
+  };
 
-  // Auto-expand items when on their view
+  // Notify parent of collapsed state (content layout may want it).
   useEffect(() => {
-    if (currentView === 'docs') {
-      setExpandedItems(prev => new Set(prev).add('docs'));
-    }
+    onCollapsedChange?.(collapsed);
+  }, [collapsed, onCollapsedChange]);
+
+  // Auto-expand Projects when on that view.
+  useEffect(() => {
     if (currentView === 'projects') {
-      setExpandedItems(prev => new Set(prev).add('projects'));
+      setExpandedItems((prev) => new Set(prev).add('projects'));
     }
   }, [currentView]);
 
-  // Load recent projects
+  // Load recent projects.
   useEffect(() => {
     async function loadRecentProjects() {
       try {
         await vfs.init();
         const projects = await vfs.listProjects();
-        const sorted = projects.sort((a, b) =>
-          b.updatedAt.getTime() - a.updatedAt.getTime()
-        );
+        const sorted = projects.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
         setRecentProjects(sorted.slice(0, 3));
       } catch (error) {
         console.error('Failed to load recent projects:', error);
@@ -199,14 +172,12 @@ function SidebarContent({
     loadRecentProjects();
   }, []);
 
-  // Load sync status for Server Mode
+  // Load sync status for Server Mode.
   useEffect(() => {
     if (!isServerMode) return;
-
     async function loadSyncStatus() {
       try {
-        const status = await getSyncOverviewStatus();
-        setSyncStatus(status);
+        setSyncStatus(await getSyncOverviewStatus());
       } catch (error) {
         console.error('Failed to load sync status:', error);
       }
@@ -214,95 +185,37 @@ function SidebarContent({
     loadSyncStatus();
   }, [isServerMode]);
 
-  // Load pinned state from localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem('osw-admin-sidebar-pinned');
-    if (stored !== null) {
-      setPinned(stored === 'true');
-    }
-  }, []);
-
-  // Toggle pinned state
-  const togglePinned = () => {
-    const newState = !pinned;
-    setPinned(newState);
-    localStorage.setItem('osw-admin-sidebar-pinned', String(newState));
-    onPinnedChange?.(newState);
-  };
-
-  // Mouse enter/leave handlers (desktop only)
-  const handleMouseEnter = () => {
-    if (!isMobile && !pinned) {
-      setHovering(true);
-      onHoverChange?.(true);
-    }
-  };
-
-  const handleMouseLeave = () => {
-    if (!isMobile && !pinned) {
-      setHovering(false);
-      onHoverChange?.(false);
-    }
-  };
-
-  // Notify parent of initial pinned state
-  useEffect(() => {
-    onPinnedChange?.(pinned);
-  }, [pinned, onPinnedChange]);
-
-  // Notify parent of collapsed state
-  useEffect(() => {
-    onCollapsedChange?.(collapsed);
-  }, [collapsed, onCollapsedChange]);
-
-  // Filter sidebar items based on Server Mode
   const visibleSidebarItems = SIDEBAR_ITEMS.filter(
-    item => !item.serverModeOnly || isServerMode
+    (item) => !item.serverModeOnly || isServerMode,
   );
 
   const toggleExpanded = (itemId: string) => {
-    setExpandedItems(prev => {
+    setExpandedItems((prev) => {
       const newSet = new Set(prev);
-      if (newSet.has(itemId)) {
-        newSet.delete(itemId);
-      } else {
-        newSet.add(itemId);
-      }
+      if (newSet.has(itemId)) newSet.delete(itemId);
+      else newSet.add(itemId);
       return newSet;
     });
   };
 
   const handleItemAction = async (item: SidebarItem) => {
-    // Close mobile menu when action is triggered
+    // Close the mobile drawer whenever a nav item is chosen.
     onMobileOpenChange?.(false);
 
     if (item.href) {
       window.open(item.href, '_blank', 'noopener,noreferrer');
-    } else if (item.path) {
-      // Check if path is absolute (starts with /)
-      if (item.path.startsWith('/')) {
-        router.push(item.path);
-      } else if (isServerMode) {
-        router.push(`/admin/${item.path}`);
-      } else {
-        // Browser Mode: Use router.push to clear query params when navigating away from docs
-        router.push('/');
-        onNavigate(item.id);
-      }
-    } else if (item.action === 'start-tour' && onStartTour) {
-      onStartTour();
-    } else if (item.action === 'open-about' && onOpenAbout) {
-      onOpenAbout();
-    } else if (item.action === 'open-settings' && onOpenSettings) {
-      onOpenSettings();
-    } else if (item.action === 'server-sync' && onServerSync) {
-      onServerSync();
+    } else if (item.route) {
+      router.push(item.route);
+    } else if (item.action === 'start-tour') {
+      onStartTour?.();
+    } else if (item.action === 'open-about') {
+      onOpenAbout?.();
+    } else if (item.action === 'server-sync') {
+      onServerSync?.();
     } else if (item.action === 'logout') {
       try {
         const response = await fetch('/api/auth/logout', { method: 'POST' });
-        if (response.ok) {
-          router.push('/admin/login');
-        }
+        if (response.ok) router.push('/admin/login');
       } catch (error) {
         console.error('Logout failed:', error);
       }
@@ -321,357 +234,221 @@ function SidebarContent({
 
       <div
         className={cn(
-          'flex flex-col h-screen bg-card transition-all duration-300',
-          // Border: left on mobile (slides from right), right on desktop (stays on left)
-          'border-l md:border-l-0 md:border-r',
-          // Desktop behavior - always on left
-          'md:relative md:left-0',
-          pinned ? 'md:relative' : 'md:absolute md:left-0 md:top-0 md:z-40 md:shadow-lg',
-          // Mobile behavior - slide in from right, fixed 240px width
-          'fixed right-0 top-0 z-50 w-60',
-          // Desktop - 240px when expanded, or collapsed width
-          collapsed ? '' : 'md:w-60',
-          // Mobile: slide from right. Desktop: always visible
-          mobileOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'
-        )}
-        style={{
-          // Apply collapsed width when needed
-          width: collapsed ? `${COLLAPSED_SIDEBAR_WIDTH}px` : undefined,
-        }}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      >
-      {/* Logo/Brand */}
-      <button
-        onClick={() => {
-          // Mobile: close sidebar (if open), do nothing otherwise
-          // Desktop: toggle pinned state
-          if (isMobile) {
-            if (mobileOpen) {
-              onMobileOpenChange?.(false);
-            }
-            // On mobile, don't toggle pinned state
-          } else {
-            // Desktop: toggle pin/unpin
-            togglePinned();
-          }
-        }}
-        onMouseEnter={() => !isMobile && setLogoHover(true)}
-        onMouseLeave={() => !isMobile && setLogoHover(false)}
-        className={cn(
-          "p-3 border-b flex items-center gap-3 h-[54px] overflow-hidden w-full",
-          "hover:bg-accent/50 transition-colors cursor-pointer",
-          collapsed && "justify-center"
+          'flex flex-col h-screen bg-card transition-[width] duration-300',
+          // Mobile: fixed drawer sliding in from the right.
+          'fixed right-0 top-0 z-50 w-64 border-l',
+          // Desktop: static, in-flow left column with a right border.
+          'md:static md:right-auto md:z-auto md:border-l-0 md:border-r',
+          collapsed ? 'md:w-14' : 'md:w-60',
+          mobileOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0',
         )}
       >
-        {/* Icon container with position relative for chevron overlay */}
-        <div className="relative w-5 h-5 flex items-center justify-center flex-shrink-0">
-          {/* Hanzo H mark - hidden on hover */}
-          <HanzoLogo
-            className={cn(
-              "w-5 h-5 text-foreground transition-opacity absolute",
-              logoHover && "opacity-0"
-            )}
-          />
-
-          {/* Desktop chevron - visible on hover (desktop only) */}
-          {/* Left when pinned (collapse), Right when unpinned (expand) */}
-          {pinned ? (
-            <ChevronLeft
-              className={cn(
-                "hidden md:block h-5 w-5 transition-opacity absolute",
-                logoHover ? "opacity-100" : "opacity-0 pointer-events-none"
-              )}
-            />
+        {/* Top: brand mark + collapse toggle — the ONE collapse control lives at
+            the TOP (console.hanzo.ai `DashboardShell` pattern), not a bottom pin. */}
+        <div
+          className={cn(
+            'flex items-center h-[54px] border-b px-2',
+            collapsed ? 'justify-center' : 'gap-2 justify-between',
+          )}
+        >
+          {collapsed ? (
+            <button
+              onClick={toggleCollapsed}
+              title="Expand sidebar"
+              aria-label="Expand sidebar"
+              className="flex h-9 w-9 items-center justify-center rounded-md hover:bg-accent transition-colors"
+            >
+              <HanzoLogo className="h-5 w-5 text-foreground" />
+            </button>
           ) : (
-            <ChevronRight
-              className={cn(
-                "hidden md:block h-5 w-5 transition-opacity absolute",
-                logoHover ? "opacity-100" : "opacity-0 pointer-events-none"
-              )}
-            />
+            <>
+              <button
+                onClick={() => (isMobile ? onMobileOpenChange?.(false) : onLogoClick?.())}
+                className="flex min-w-0 items-center gap-2 rounded-md p-1 hover:bg-accent/50 transition-colors"
+                title="Hanzo App"
+              >
+                <HanzoLogo className="h-5 w-5 shrink-0 text-foreground" />
+                <span className="flex min-w-0 flex-col text-left">
+                  <span className="truncate text-sm font-medium leading-none">Hanzo&nbsp;App</span>
+                  <span className="mt-0.5 text-[10px] leading-[10px] text-muted-foreground">
+                    {isServerMode ? `Server · v${pkg.version}` : `v${pkg.version}`}
+                  </span>
+                </span>
+              </button>
+
+              {/* Desktop collapse toggle */}
+              <button
+                onClick={toggleCollapsed}
+                title="Collapse sidebar"
+                aria-label="Collapse sidebar"
+                className="hidden md:flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+              >
+                <PanelLeft className="h-4 w-4" />
+              </button>
+
+              {/* Mobile drawer close */}
+              <button
+                onClick={() => onMobileOpenChange?.(false)}
+                title="Close menu"
+                aria-label="Close menu"
+                className="flex md:hidden h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </>
           )}
         </div>
 
-        {!collapsed && (
-          <div
-            className={cn(
-              "flex flex-col overflow-hidden transition-all duration-500 ease-out motion-reduce:transition-none",
-              wordmarkFolded && !(logoHover && !pinned)
-                ? "max-w-0 -translate-x-1 opacity-0"
-                : "max-w-[9rem] translate-x-0 opacity-100"
-            )}
-          >
-            <span className="text-sm font-medium whitespace-nowrap leading-none">
-              {logoHover && !pinned ? "Pin" : "Hanzo\u00A0App"}
-            </span>
-            {!(logoHover && !pinned) && (
-              <span className="text-[10px] leading-[10px] text-muted-foreground text-left mt-0.5">
-                {isServerMode ? `Server, v${pkg.version}` : `v${pkg.version}`}
-              </span>
-            )}
-          </div>
-        )}
-      </button>
+        {/* Org selector + nav + wallet all share the OrgProvider scope. */}
+        <OrgProvider>
+          {!collapsed && (
+            <div className="border-b px-2 py-2">
+              <OrgSwitcher />
+            </div>
+          )}
 
-      {/* Org selector — the org every project/deploy/credit is scoped to.
-          Wrapped in OrgProvider so it also SEEDS the active-org scope
-          (lib/org-scope) for the whole app (projects list, publish, wallet). */}
-      <OrgProvider>
-        {!collapsed && (
-          <div className="border-b px-2 py-2">
-            <OrgSwitcher />
-          </div>
-        )}
+          {/* Main navigation */}
+          <nav className="flex-1 space-y-1 overflow-y-auto p-2">
+            {visibleSidebarItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = currentView === item.id;
+              const hasChildren = !!item.hasRecentProjects;
+              const isExpanded = expandedItems.has(item.id);
 
-      {/* Main Navigation - Single scrollable container */}
-      <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
-        {visibleSidebarItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = currentView === item.id;
-          const hasSubItems = (item.subItems && item.subItems.length > 0) || item.hasRecentProjects;
-          const isExpanded = expandedItems.has(item.id);
+              return (
+                <div key={item.id}>
+                  <div className={cn('p-1', isExpanded && hasChildren && 'rounded-2xl bg-muted')}>
+                    <div className="relative">
+                      <Button
+                        variant={isActive && !hasChildren ? 'default' : 'ghost'}
+                        className={cn(
+                          'w-full',
+                          collapsed ? 'justify-center px-2' : 'justify-start',
+                          !collapsed && hasChildren && 'pr-8',
+                        )}
+                        onClick={() => {
+                          if (!hasChildren || currentView !== item.id) handleItemAction(item);
+                        }}
+                        title={collapsed ? item.label : undefined}
+                      >
+                        <Icon className={cn('h-4 w-4', !collapsed && 'mr-2')} />
+                        {!collapsed && item.label}
+                      </Button>
+                      {!collapsed && hasChildren && (
+                        <button
+                          className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 transition-colors hover:bg-accent"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toggleExpanded(item.id);
+                          }}
+                          aria-label={isExpanded ? `Collapse ${item.label}` : `Expand ${item.label}`}
+                        >
+                          <ChevronDown
+                            className={cn('h-4 w-4 transition-transform', isExpanded && 'rotate-180')}
+                          />
+                        </button>
+                      )}
+                    </div>
 
-          return (
-            <div key={item.id}>
-              {/* Wrap parent + children in container - always has padding to prevent layout shift */}
-              <div className={cn(
-                'p-1',
-                isExpanded && hasSubItems && 'bg-muted rounded-2xl'
-              )}>
-                <div className="relative">
-                  <Button
-                    variant={isActive && !hasSubItems ? 'default' : 'ghost'}
-                    className={cn(
-                      'w-full',
-                      collapsed ? 'justify-center px-2' : 'justify-start',
-                      !collapsed && hasSubItems && 'pr-8' // Make room for chevron
+                    {/* Recent projects (Projects only) */}
+                    {item.hasRecentProjects && isExpanded && (
+                      <div className={cn('mt-1 space-y-1', collapsed ? 'flex flex-col items-center' : 'ml-4')}>
+                        {loadingRecentProjects ? (
+                          <>
+                            {[1, 2, 3].map((i) => (
+                              <div
+                                key={i}
+                                className={cn(
+                                  'flex items-center gap-2',
+                                  collapsed ? 'justify-center p-1' : 'h-8 px-2',
+                                )}
+                              >
+                                <div className="h-3 w-3 animate-pulse rounded bg-muted-foreground/20" />
+                                {!collapsed && (
+                                  <div className="h-3 flex-1 animate-pulse rounded bg-muted-foreground/20" />
+                                )}
+                              </div>
+                            ))}
+                          </>
+                        ) : recentProjects.length > 0 ? (
+                          recentProjects.map((project) => (
+                            <Button
+                              key={project.id}
+                              variant="ghost"
+                              size="sm"
+                              className={cn(
+                                collapsed ? 'h-8 w-8 justify-center p-0' : 'w-full justify-start text-xs',
+                              )}
+                              onClick={() => {
+                                onMobileOpenChange?.(false);
+                                onProjectSelect(project);
+                              }}
+                              title={project.name}
+                            >
+                              <FolderOpen className={cn('h-3 w-3 flex-shrink-0', !collapsed && 'mr-2')} />
+                              {!collapsed && <span className="truncate">{project.name}</span>}
+                            </Button>
+                          ))
+                        ) : (
+                          !collapsed && (
+                            <div className="px-2 py-1 text-xs text-muted-foreground">No recent projects</div>
+                          )
+                        )}
+                      </div>
                     )}
-                    onClick={() => {
-                      // Navigate if item has path (or other action)
-                      if (!hasSubItems || currentView !== item.id) {
-                        handleItemAction(item);
-                      }
-                    }}
+                  </div>
+                </div>
+              );
+            })}
+          </nav>
+
+          {/* System Actions (Server Mode only) */}
+          {isServerMode && (
+            <div className="space-y-1 border-t p-2">
+              {SYSTEM_ACTIONS.map((item) => {
+                const Icon = item.icon;
+                const isLogout = item.id === 'logout';
+                const isSync = item.id === 'sync';
+                const showSyncIndicator = isSync && syncStatus?.needsSync;
+
+                return (
+                  <Button
+                    key={item.id}
+                    variant="ghost"
+                    size="sm"
+                    className={cn(
+                      'relative w-full',
+                      collapsed ? 'justify-center px-2' : 'justify-start',
+                      isLogout && 'text-destructive hover:bg-destructive/10 hover:text-destructive',
+                    )}
+                    onClick={() => handleItemAction(item)}
                     title={collapsed ? item.label : undefined}
                   >
                     <Icon className={cn('h-4 w-4', !collapsed && 'mr-2')} />
                     {!collapsed && item.label}
+                    {showSyncIndicator && (
+                      <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-orange-500" />
+                    )}
                   </Button>
-                  {!collapsed && hasSubItems && (
-                    <button
-                      className={cn(
-                        'absolute right-2 top-1/2 -translate-y-1/2',
-                        'p-1 rounded hover:bg-accent transition-colors'
-                      )}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        toggleExpanded(item.id);
-                      }}
-                    >
-                      <ChevronDown
-                        className={cn(
-                          'h-4 w-4 transition-transform',
-                          isExpanded && 'rotate-180'
-                        )}
-                      />
-                    </button>
-                  )}
-                </div>
-
-              {/* Recent Projects Sub-items (for Projects item) */}
-              {item.hasRecentProjects && isExpanded && (
-                <div className={cn(
-                  "mt-1 space-y-1",
-                  collapsed ? "flex flex-col items-center" : "ml-4"
-                )}>
-                  {loadingRecentProjects ? (
-                    // Skeleton loaders
-                    <>
-                      {[1, 2, 3].map((i) => (
-                        <div
-                          key={i}
-                          className={cn(
-                            "flex items-center gap-2",
-                            collapsed ? "justify-center p-1" : "h-8 px-2"
-                          )}
-                        >
-                          <div className="h-3 w-3 bg-muted-foreground/20 rounded animate-pulse" />
-                          {!collapsed && <div className="h-3 flex-1 bg-muted-foreground/20 rounded animate-pulse" />}
-                        </div>
-                      ))}
-                    </>
-                  ) : recentProjects.length > 0 ? (
-                    // Actual projects
-                    recentProjects.map((project) => (
-                      <Button
-                        key={project.id}
-                        variant="ghost"
-                        size="sm"
-                        className={cn(
-                          collapsed ? "w-8 h-8 p-0 justify-center" : "w-full justify-start text-xs"
-                        )}
-                        onClick={() => {
-                          onMobileOpenChange?.(false);
-                          onProjectSelect(project);
-                        }}
-                        title={project.name}
-                      >
-                        <FolderOpen className={cn("h-3 w-3 flex-shrink-0", !collapsed && "mr-2")} />
-                        {!collapsed && <span className="truncate">{project.name}</span>}
-                      </Button>
-                    ))
-                  ) : (
-                    !collapsed && (
-                      <div className="px-2 py-1 text-xs text-muted-foreground">
-                        No recent projects
-                      </div>
-                    )
-                  )}
-                </div>
-              )}
-
-              {/* Sub-items (for Docs and Settings) */}
-              {item.subItems && isExpanded && (
-                <div className={cn(
-                  "mt-1 space-y-1",
-                  collapsed ? "flex flex-col items-center" : "ml-4"
-                )}>
-                  {item.subItems.map((subItem) => {
-                    const SubIcon = subItem.icon;
-                    // For docs, check currentDocId. For settings, check URL param or path
-                    const isSubItemActive = subItem.file
-                      ? currentDocId === subItem.id
-                      : item.id === 'settings'
-                        ? (isServerMode
-                            ? window.location.pathname === `/admin/${item.id}/${subItem.id}`
-                            : currentSettingsTab === subItem.id)
-                        : (isServerMode && window.location.pathname === `/admin/${item.id}/${subItem.id}`);
-
-                    return (
-                      <Button
-                        key={subItem.id}
-                        variant={isSubItemActive ? 'default' : 'ghost'}
-                        size="sm"
-                        className={cn(
-                          collapsed ? "w-8 h-8 p-0 justify-center" : "w-full justify-start text-xs"
-                        )}
-                        onClick={() => {
-                          onMobileOpenChange?.(false);
-                          if (isServerMode) {
-                            if (subItem.file) {
-                              // Docs sub-item
-                              router.push(`/admin/docs?doc=${subItem.id}`);
-                            } else {
-                              // Settings sub-item
-                              router.push(`/admin/${item.id}/${subItem.id}`);
-                            }
-                          } else {
-                            // Browser mode
-                            if (subItem.file) {
-                              // Docs sub-item - navigate to specific doc
-                              router.push(`/?doc=${subItem.id}`);
-                              onNavigate(item.id);
-                            } else if (item.id === 'settings') {
-                              // Settings sub-item - use query param
-                              router.push(`/?settings=${subItem.id}`);
-                              onNavigate(item.id);
-                            } else {
-                              // Other sub-items
-                              router.push('/');
-                              onNavigate(item.id);
-                            }
-                          }
-                        }}
-                        title={collapsed ? subItem.label : undefined}
-                      >
-                        <SubIcon className={cn("h-3 w-3", !collapsed && "mr-2")} />
-                        {!collapsed && subItem.label}
-                      </Button>
-                    );
-                  })}
-                </div>
-              )}
-              </div>
+                );
+              })}
             </div>
-          );
-        })}
-      </nav>
-
-      {/* System Actions (Server Mode only) */}
-      {isServerMode && (
-        <div className="border-t p-2 space-y-1">
-          {SYSTEM_ACTIONS.map((item) => {
-            const Icon = item.icon;
-            const isLogout = item.id === 'logout';
-            const isSync = item.id === 'sync';
-            const showSyncIndicator = isSync && syncStatus?.needsSync;
-
-            return (
-              <Button
-                key={item.id}
-                variant="ghost"
-                size="sm"
-                className={cn(
-                  'w-full relative',
-                  collapsed ? 'justify-center px-2' : 'justify-start',
-                  isLogout && 'text-destructive hover:text-destructive hover:bg-destructive/10'
-                )}
-                onClick={() => handleItemAction(item)}
-                title={collapsed ? item.label : undefined}
-              >
-                <Icon className={cn('h-4 w-4', !collapsed && 'mr-2')} />
-                {!collapsed && item.label}
-                {/* Orange indicator dot when sync is needed */}
-                {showSyncIndicator && (
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-orange-500 rounded-full" />
-                )}
-              </Button>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Per-org wallet: identity + the credit balance the gateway debits for
-          the ACTIVE org, with Top up + Sign out. Honest states, org-scoped. */}
-      <SidebarWallet collapsed={collapsed} />
-
-      {/* Pin/Unpin Toggle (desktop only) */}
-      <div className="hidden md:block border-t p-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          className={cn(
-            'w-full',
-            collapsed ? 'justify-center px-2' : 'justify-start'
           )}
-          onClick={togglePinned}
-          title={collapsed ? (pinned ? "Unpin sidebar" : "Pin sidebar") : undefined}
-        >
-          {pinned ? (
-            <>
-              <ChevronLeft className={cn('h-4 w-4', !collapsed && 'mr-2')} />
-              {!collapsed && 'Unpin'}
-            </>
-          ) : (
-            <>
-              <ChevronRight className={cn('h-4 w-4', !collapsed && 'mr-2')} />
-              {!collapsed && 'Pin'}
-            </>
-          )}
-        </Button>
+
+          {/* Per-org identity + credit balance, pinned to the bottom (console
+              SidebarIdentity placement). */}
+          <SidebarWallet collapsed={collapsed} />
+        </OrgProvider>
       </div>
-      </OrgProvider>
-    </div>
     </>
   );
 }
 
-// Wrapper component with Suspense boundary for Next.js 15
+// Wrapper with a Suspense boundary (kept for router hooks under Next 15).
 export function Sidebar(props: SidebarProps) {
   return (
-    <Suspense fallback={<div className="w-full h-full bg-card" />}>
+    <Suspense fallback={<div className="h-full w-full bg-card" />}>
       <SidebarContent {...props} />
     </Suspense>
   );
