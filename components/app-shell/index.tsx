@@ -60,7 +60,7 @@ export function AppShell({ children, currentView = 'templates' }: AppShellProps)
           >
             <Menu className="h-5 w-5" />
           </button>
-          <HanzoLogo className="h-5 w-5 text-white" />
+          <HanzoLogo animated className="h-5 w-5 text-white" />
           <span className="text-sm font-medium">Hanzo App</span>
         </div>
 
