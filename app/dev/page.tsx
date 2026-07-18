@@ -212,15 +212,17 @@ export default function DevPage() {
     }
   };
 
-  const handleTemplateAction = async (mode: "fork" | "edit" | "deploy") => {
-    // Seed the builder from the template's REAL fields (name/category/features/
-    // framework/useCase + the real preview screenshot as a visual reference) so
-    // the editor recreates the actual template — not a generic stub. The shared
-    // resolver checks BOTH gallery catalogs, so a card from /new (cloud slugs)
-    // and a card from /gallery (snapshot slugs) both seed correctly — the prior
-    // single-catalog lookup silently missed ~60% of /new's slugs.
+  const handleTemplateAction = async (
+    mode: "fork" | "edit" | "deploy",
+    firstMessage?: string,
+  ) => {
+    // A template is a READY starting point: it loads and previews immediately.
+    // The seed frames the FIRST change the user wants built ON TOP (firstMessage
+    // from the template screen's chat input) — never a "recreate from scratch".
+    // The shared resolver checks BOTH gallery catalogs so /new (cloud slugs) and
+    // /gallery (snapshot slugs) both seed correctly.
     const meta = await resolveTemplateSeedMeta(repoData.name);
-    const prompt = buildTemplateSeedPrompt(meta, repoData.name, mode);
+    const prompt = buildTemplateSeedPrompt(meta, repoData.name, mode, firstMessage);
     handleOnboardingComplete(prompt);
   };
 

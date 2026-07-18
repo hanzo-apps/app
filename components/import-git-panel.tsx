@@ -416,7 +416,10 @@ export function ImportGitPanel() {
                   className="group flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] px-3.5 py-2.5 transition-all hover:border-white/20 hover:bg-white/[0.05]"
                 >
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-white/60">
-                    <Github className="h-4 w-4" />
+                    {(() => {
+                      const Icon = PROVIDER_META[r.provider]?.Icon ?? Github;
+                      return <Icon className="h-4 w-4" />;
+                    })()}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">
