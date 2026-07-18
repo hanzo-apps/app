@@ -25,14 +25,6 @@ export const defaultHTML = `<!DOCTYPE html>
       -webkit-font-smoothing: antialiased;
     }
     .wrap { text-align: center; padding: 2rem; max-width: 30rem; }
-    .mark {
-      width: 3.5rem; height: 3.5rem; margin: 0 auto 1.75rem;
-      border: 1px solid rgba(255,255,255,0.14);
-      border-radius: 0.875rem;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em;
-      color: #fafafa; background: rgba(255,255,255,0.03);
-    }
     h1 { font-size: 1.05rem; font-weight: 600; margin: 0 0 0.5rem; letter-spacing: -0.01em; }
     p { font-size: 0.85rem; line-height: 1.5; color: rgba(255,255,255,0.5); margin: 0; }
     .cursor {
@@ -49,11 +41,6 @@ export const defaultHTML = `<!DOCTYPE html>
 </head>
 <body>
   <div class="wrap">
-    <div class="mark" aria-hidden="true">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 3c.45 3.75 2.55 5.85 6 6-3.45.15-5.55 2.25-6 6-.45-3.75-2.55-5.85-6-6 3.45-.15 5.55-2.25 6-6z" fill="rgba(255,255,255,0.7)"/>
-      </svg>
-    </div>
     <h1>Your app will appear here<span class="cursor"></span></h1>
     <p>Describe what you want to build in the chat and Hanzo generates it live — right here.</p>
   </div>

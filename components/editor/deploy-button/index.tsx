@@ -36,7 +36,7 @@ export function DeployButton({
               <div>
                 <Button variant="default" className="max-lg:hidden !px-4" disabled={disabled}>
                   <MdSave className="size-4" />
-                  {disabled ? "Building…" : "Publish your Project"}
+                  {disabled ? "Building…" : "Publish"}
                 </Button>
                 <Button variant="default" size="sm" className="lg:hidden" disabled={disabled}>
                   {disabled ? "Building…" : "Publish"}
@@ -59,7 +59,7 @@ export function DeployButton({
               disabled={disabled}
             >
               <MdSave className="size-4" />
-              {disabled ? "Building…" : "Publish your Project"}
+              {disabled ? "Building…" : "Publish"}
             </Button>
             <Button
               variant="default"
