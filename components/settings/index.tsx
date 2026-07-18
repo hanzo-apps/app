@@ -77,7 +77,9 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
   const handleImportData = () => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = '.osws';
+    // Accept both the legacy `.osws` extension and the current `.hanzo` brand so
+    // existing backups still restore. Backups written by BackupService are `.osws`.
+    input.accept = '.osws,.hanzo';
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
@@ -377,7 +379,7 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium">Import Data</div>
                   <div className="text-xs text-muted-foreground">
-                    Restore from a .osws backup file
+                    Restore from a Hanzo backup file
                   </div>
                 </div>
                 <Button

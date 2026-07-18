@@ -854,7 +854,7 @@ export default function TestGenerationPage() {
   const getExportFilename = (ext: string) => {
     const modelSlug = currentModel.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-');
     const dateSlug = new Date().toISOString().split('T')[0];
-    return `osws-benchmark-${modelSlug}-${dateSlug}.${ext}`;
+    return `hanzo-benchmark-${modelSlug}-${dateSlug}.${ext}`;
   };
 
   const exportJSON = () => {
@@ -943,7 +943,7 @@ export default function TestGenerationPage() {
   return (
     <div className="h-screen flex flex-col">
       <AppHeader
-        leftText="OSWS Benchmark"
+        leftText="Hanzo Benchmark"
         onLogoClick={() => router.push('/')}
         actions={headerActions}
       />

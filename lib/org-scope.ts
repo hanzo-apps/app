@@ -86,14 +86,20 @@ export function filterOrgs<T extends { name: string; displayName?: string }>(
 export const titleCase = (s: string): string => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
 /**
- * The display name of org `id` within `orgs` — the org's own `displayName`, else
- * its title-cased slug; '' when `id` is empty. The ONE way the chrome names the
- * org it's scoped to (the OrgSwitcher's primary label, the wallet's scope tag).
+ * The display name of org `id` — its title-cased slug (`maxpower` → `Maxpower`).
+ * The ONE way the chrome names the org it's scoped to (the OrgSwitcher's primary
+ * label, the wallet's scope tag), and it names the ORG, never the person.
+ *
+ * We deliberately IGNORE each org's server-supplied `displayName` (`_orgs`): the
+ * cloud fills it from the signed-in IAM *user's* display-name claim, so trusting
+ * it leaks the person ("Dave Lorenzini", "Z — Maxpower Admin") into the org
+ * label. The slug is the org's own stable, identifier-safe identity and can never
+ * carry a person, so it is the ONE honest source. '' when `id` is empty. `_orgs`
+ * is kept so the call sites (OrgSwitcher + SidebarWallet) pass the list they hold.
  */
 export function orgDisplayName(
-  orgs: ReadonlyArray<{ name: string; displayName?: string }>,
+  _orgs: ReadonlyArray<{ name: string; displayName?: string }>,
   id: string,
 ): string {
-  if (!id) return '';
-  return orgs.find((o) => o.name === id)?.displayName || titleCase(id);
+  return id ? titleCase(id) : '';
 }
