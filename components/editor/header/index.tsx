@@ -4,6 +4,8 @@ import Link from "next/link";
 
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { CrossSurfaceLinks } from "@/components/editor/cross-surface-links";
+import { OrgSwitcher } from "@/components/org-switcher";
+import { EditorAccountMenu } from "@/components/editor/account-menu";
 
 import {
   ContextMenu,
@@ -28,6 +30,21 @@ const TABS = [
   },
 ];
 
+/**
+ * Builder top chrome, Lovable structure in Hanzo-darker monochrome.
+ *
+ *   LEFT   brand/home anchor + the active org·project switcher (top-left, like
+ *          Lovable's project icon)
+ *   CENTER the view switcher as a segmented control
+ *   RIGHT  account + credits, cross-surface links, then the primary actions
+ *          passed as `children` (Share … the prominent Publish button)
+ *
+ * True-black `#080808` field, white/10 hairline border, white/[0.03–0.10]
+ * surfaces — the chrome recedes so the generated preview stays the star. The
+ * switcher and account/credits are the canonical shared controls (`OrgSwitcher`
+ * / `EditorAccountMenu`) composed here — one way to switch orgs, one account
+ * cluster — never re-implemented.
+ */
 export function Header({
   tab,
   onNewTab,
@@ -38,26 +55,27 @@ export function Header({
   children?: ReactNode;
 }) {
   return (
-    <header className="border-b bg-neutral-950 border-neutral-800 px-3 lg:px-6 py-2 flex items-center gap-2 sm:gap-3 z-20 lg:grid lg:grid-cols-[auto_1fr_auto]">
-      <div className="flex items-center justify-start gap-3 shrink-0">
+    <header className="border-b bg-[#080808] border-white/10 px-3 lg:px-4 py-2 flex items-center gap-2 sm:gap-3 z-20 lg:grid lg:grid-cols-[auto_1fr_auto]">
+      {/* LEFT — brand/home anchor + org·project switcher. */}
+      <div className="flex items-center gap-2 shrink-0">
         <ContextMenu>
           <ContextMenuTrigger asChild>
             {/* Left-click → home; right-click → the app-shell menu (settings / brand / docs). */}
             <Link
               href="/"
-              className="group flex items-center shrink-0 rounded-md p-1 -m-1 transition-colors hover:bg-white/5"
-              aria-label="Hanzo"
+              className="group flex items-center shrink-0 rounded-md p-1 -m-1 transition-colors hover:bg-white/[0.06]"
+              aria-label="Hanzo — home"
             >
               {/* Animated mark unifies the surfaces — a subtle idle drift that
                   lifts on hover; the SVG's own animation is reduced-motion safe. */}
               <HanzoLogo
                 animated
-                className="w-8 h-8 text-white transition-opacity duration-200 opacity-90 group-hover:opacity-100 motion-reduce:opacity-100"
+                className="w-7 h-7 text-white transition-opacity duration-200 opacity-90 group-hover:opacity-100 motion-reduce:opacity-100"
               />
             </Link>
           </ContextMenuTrigger>
           <ContextMenuContent className="w-56">
-            <ContextMenuLabel className="text-xs text-neutral-400">Hanzo Dev</ContextMenuLabel>
+            <ContextMenuLabel className="text-xs text-white/40">Hanzo Dev</ContextMenuLabel>
             <ContextMenuSeparator />
             <ContextMenuItem asChild>
               <Link href="/settings">Settings &amp; preferences</Link>
@@ -74,15 +92,23 @@ export function Header({
             </ContextMenuItem>
           </ContextMenuContent>
         </ContextMenu>
+
+        {/* The org the builder is scoped to — the canonical switcher (its own
+            hairline-bordered trigger + chevron dropdown). Collapses on the
+            tightest widths so the mark + tabs keep priority. */}
+        <div className="hidden min-w-0 sm:block">
+          <OrgSwitcher />
+        </div>
       </div>
-      {/* Chat/Preview switcher — a compact segmented control. Icon-only on the
-          smallest widths, labels appear from `sm` up. It never grabs flex, so it
-          can't push into the actions cluster; the rail keeps it visually distinct
+
+      {/* CENTER — Chat/Preview switcher as a compact segmented control. Icon-only
+          on the smallest widths, labels from `sm` up. It never grabs flex, so it
+          can't push into the actions cluster; the surface rail keeps it distinct
           from the neighbouring action buttons. */}
       <div
         role="tablist"
         aria-label="Editor view"
-        className="flex shrink-0 items-center gap-0.5 rounded-lg bg-neutral-900 p-0.5 ring-1 ring-neutral-800 lg:justify-self-center"
+        className="flex shrink-0 items-center gap-0.5 rounded-lg bg-white/[0.03] p-0.5 ring-1 ring-white/10 lg:justify-self-center"
       >
         {TABS.map((item) => {
           const active = tab === item.value;
@@ -97,8 +123,8 @@ export function Header({
               className={classNames(
                 "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
                 active
-                  ? "bg-neutral-700 text-white shadow-sm"
-                  : "text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200"
+                  ? "bg-white/10 text-white shadow-sm"
+                  : "text-white/50 hover:bg-white/[0.06] hover:text-white/90"
               )}
             >
               <item.icon className="size-4 shrink-0" />
@@ -107,10 +133,14 @@ export function Header({
           );
         })}
       </div>
-      {/* Actions cluster. `min-w-0` + `overflow-x-auto` means that on the
-          narrowest widths the actions scroll within their own lane instead of
-          overlapping the switcher; `shrink` lets the lane give up space first. */}
-      <div className="flex min-w-0 flex-1 items-center justify-end gap-1.5 overflow-x-auto lg:flex-none lg:gap-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+
+      {/* RIGHT — account + credits, cross-surface links, then the primary actions.
+          `min-w-0` + `overflow-x-auto` means the lane scrolls within itself on the
+          narrowest widths instead of overlapping the switcher; `shrink` lets it
+          give up space first. The Publish button (last child) stays the prominent,
+          right-most CTA. */}
+      <div className="flex min-w-0 flex-1 items-center justify-end gap-1.5 overflow-x-auto lg:flex-none lg:gap-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <EditorAccountMenu />
         <CrossSurfaceLinks />
         {children}
       </div>
