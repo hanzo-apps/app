@@ -26,11 +26,57 @@ import { Button } from '@hanzo/ui';
 import { useOrg } from '@/lib/org/client';
 import { currentOrg, switchOrg, filterOrgs, isScopedAway, setCurrentOrg, getHomeOrg, orgDisplayName, titleCase } from '@/lib/org-scope';
 import type { Org } from '@/lib/org/types';
+import { resolveOrgLogo, isEmoji, isImageUrl, readOrgLogoOverride, setOrgLogoOverride } from '@/lib/avatar';
 
-/** The org's identity mark for the chrome — its initial in a neutral rounded
- *  square (monochrome, matching the brand sweep). Reads as "this is MY org"
- *  without needing a per-org logo URL (the Org shape carries none today). */
-function OrgAvatar({ name, className = "h-5 w-5 text-[11px]" }: { name: string; className?: string }) {
+/**
+ * The org's identity mark for the chrome. Renders, in priority (see
+ * `resolveOrgLogo`): (a) an image if the resolved logo is a URL; (b) an emoji if
+ * it's a short emoji string (full color — monochrome-safe); (c) the org's
+ * initial in a neutral rounded square. `logo` is the server-supplied mark (from
+ * `/v1/orgs`); a client-side override / known-default is layered on top of it.
+ * ONE avatar, reused by the switcher AND the account menu.
+ */
+export function OrgAvatar({
+  name,
+  logo,
+  className = "h-5 w-5 text-[11px]",
+}: {
+  name: string;
+  logo?: string;
+  className?: string;
+}) {
+  const resolved = resolveOrgLogo(name, logo);
+  const [imgError, setImgError] = useState(false);
+  // Reset the image-failed flag when the mark changes (list rows reuse instances).
+  useEffect(() => setImgError(false), [resolved]);
+
+  // (a) image logo — a rounded, cover-fit <img>; on load failure fall through.
+  if (resolved && isImageUrl(resolved) && !imgError) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- arbitrary remote org logo, not a bundled asset
+      <img
+        src={resolved}
+        alt=""
+        aria-hidden="true"
+        onError={() => setImgError(true)}
+        className={`shrink-0 rounded-md border border-white/10 object-cover ${className}`}
+      />
+    );
+  }
+  // (b) emoji logo — centered + a touch larger, in full color. The glyph carries
+  //     the color; the box stays borderless here (inline size beats the class).
+  if (resolved && isEmoji(resolved)) {
+    return (
+      <span
+        className={`flex shrink-0 items-center justify-center leading-none ${className}`}
+        style={{ fontSize: "1.05rem" }}
+        aria-hidden="true"
+      >
+        {resolved}
+      </span>
+    );
+  }
+  // (c) fallback — the org's initial in a neutral rounded square (monochrome).
   const initial = (name || "").trim().charAt(0).toUpperCase() || "•";
   return (
     <span
@@ -51,6 +97,9 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
   const [newName, setNewName] = useState('');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  // The current org's client-side emoji override (localStorage) — the value of
+  // the inline "set emoji" control. Seeded from storage when the scope changes.
+  const [orgEmoji, setOrgEmoji] = useState('');
 
   const currentId = currentOrg() || ctx?.currentOrg || '';
 
@@ -65,7 +114,11 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
   }, [ctx, currentId]);
 
   const currentName = orgDisplayName(allOrgs, currentId) || '…';
+  const currentLogo = allOrgs.find((o) => o.name === currentId)?.logo;
   const filtered = useMemo(() => filterOrgs(allOrgs, query), [allOrgs, query]);
+
+  // Seed the emoji control from the stored override whenever the scope changes.
+  useEffect(() => setOrgEmoji(readOrgLogoOverride(currentId)), [currentId]);
 
   const select = (org: Org) => {
     setOpen(false);
@@ -103,7 +156,7 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
         className="flex items-center gap-2 rounded-lg border border-white/10 px-3 py-1.5 text-sm text-white/80 hover:bg-white/5 transition-colors"
         title="Active organization"
       >
-        <OrgAvatar name={currentName} />
+        <OrgAvatar name={currentName} logo={currentLogo} />
         <span className="max-w-[10rem] truncate font-medium text-white">{currentName}</span>
         {isScopedAway() && <span className="rounded border border-white/20 px-1 text-[10px] text-white/60">scoped</span>}
         <ChevronsUpDown className="h-3.5 w-3.5 text-white/40" />
@@ -166,7 +219,7 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
                             isCurrent ? 'bg-white/10' : 'hover:bg-white/5'
                           }`}
                         >
-                          <OrgAvatar name={orgDisplayName(allOrgs, org.name)} />
+                          <OrgAvatar name={orgDisplayName(allOrgs, org.name)} logo={org.logo} />
                           <span className="flex-1 truncate text-left text-white/85">
                             {orgDisplayName(allOrgs, org.name)}
                           </span>
@@ -179,6 +232,32 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
                     })
                   )}
                 </div>
+                {/* Personalize the current org's mark — a client-side emoji
+                    override persisted to localStorage (`orgLogo:<name>`), read
+                    FIRST by OrgAvatar, until `/v1/orgs` carries a real `logo`.
+                    Lets a user set "their org emoji" today. */}
+                {currentId && (
+                  <div className="mt-1 flex items-center gap-2 border-t border-white/10 px-2 pt-2">
+                    <OrgAvatar name={currentName} logo={currentLogo} />
+                    <label htmlFor="org-emoji-input" className="flex-1 truncate text-[11px] text-white/40">
+                      Emoji for {currentName}
+                    </label>
+                    <input
+                      id="org-emoji-input"
+                      value={orgEmoji}
+                      onChange={(e) => {
+                        const v = e.target.value.slice(0, 4);
+                        setOrgEmoji(v);
+                        // Persist only a real emoji (or a clear) — never garbage.
+                        if (!v || isEmoji(v)) setOrgLogoOverride(currentId, v);
+                      }}
+                      placeholder="⚡"
+                      maxLength={4}
+                      aria-label={`Set an emoji for ${currentName}`}
+                      className="w-10 rounded-md border border-white/15 bg-transparent px-1 py-1 text-center text-sm outline-none focus:border-white/40"
+                    />
+                  </div>
+                )}
                 <button
                   onClick={() => { setCreating(true); setErr(null); }}
                   className="mt-1 flex w-full items-center gap-2 rounded-md border-t border-white/10 px-2 py-2 text-sm text-white/70 hover:bg-white/5"
