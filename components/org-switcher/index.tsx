@@ -20,13 +20,14 @@
  * TODO: hoist to @hanzo/ui (task #36) — share one <OrgSwitcher> across apps.
  */
 import React, { useEffect, useMemo, useState } from 'react';
-import { Building2, Check, ChevronsUpDown, Loader2, Plus, Search, Sparkles } from 'lucide-react';
+import Link from 'next/link';
+import { Building2, Check, ChevronsUpDown, Loader2, Plus, Search, Settings, Sparkles } from 'lucide-react';
 import { Button } from '@hanzo/ui';
 
 import { useOrg } from '@/lib/org/client';
 import { currentOrg, switchOrg, filterOrgs, isScopedAway, setCurrentOrg, getHomeOrg, orgDisplayName, titleCase } from '@/lib/org-scope';
 import type { Org } from '@/lib/org/types';
-import { resolveOrgLogo, isEmoji, isImageUrl, readOrgLogoOverride, setOrgLogoOverride } from '@/lib/avatar';
+import { resolveOrgLogo, isEmoji, isImageUrl } from '@/lib/avatar';
 
 /**
  * The org's identity mark for the chrome. Renders, in priority (see
@@ -97,9 +98,6 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
   const [newName, setNewName] = useState('');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  // The current org's client-side emoji override (localStorage) — the value of
-  // the inline "set emoji" control. Seeded from storage when the scope changes.
-  const [orgEmoji, setOrgEmoji] = useState('');
 
   const currentId = currentOrg() || ctx?.currentOrg || '';
 
@@ -116,9 +114,6 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
   const currentName = orgDisplayName(allOrgs, currentId) || '…';
   const currentLogo = allOrgs.find((o) => o.name === currentId)?.logo;
   const filtered = useMemo(() => filterOrgs(allOrgs, query), [allOrgs, query]);
-
-  // Seed the emoji control from the stored override whenever the scope changes.
-  useEffect(() => setOrgEmoji(readOrgLogoOverride(currentId)), [currentId]);
 
   const select = (org: Org) => {
     setOpen(false);
@@ -232,32 +227,17 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
                     })
                   )}
                 </div>
-                {/* Personalize the current org's mark — a client-side emoji
-                    override persisted to localStorage (`orgLogo:<name>`), read
-                    FIRST by OrgAvatar, until `/v1/orgs` carries a real `logo`.
-                    Lets a user set "their org emoji" today. */}
-                {currentId && (
-                  <div className="mt-1 flex items-center gap-2 border-t border-white/10 px-2 pt-2">
-                    <OrgAvatar name={currentName} logo={currentLogo} />
-                    <label htmlFor="org-emoji-input" className="flex-1 truncate text-[11px] text-white/40">
-                      Emoji for {currentName}
-                    </label>
-                    <input
-                      id="org-emoji-input"
-                      value={orgEmoji}
-                      onChange={(e) => {
-                        const v = e.target.value.slice(0, 4);
-                        setOrgEmoji(v);
-                        // Persist only a real emoji (or a clear) — never garbage.
-                        if (!v || isEmoji(v)) setOrgLogoOverride(currentId, v);
-                      }}
-                      placeholder="⚡"
-                      maxLength={4}
-                      aria-label={`Set an emoji for ${currentName}`}
-                      className="w-10 rounded-md border border-white/15 bg-transparent px-1 py-1 text-center text-sm outline-none focus:border-white/40"
-                    />
-                  </div>
-                )}
+                {/* The org's avatar/emoji picker lives on its own settings page
+                    now (the switcher stays a switcher). */}
+                <Link
+                  href="/settings/organization"
+                  onClick={() => setOpen(false)}
+                  className="mt-1 flex w-full items-center gap-2 rounded-md border-t border-white/10 px-2 py-2 text-sm text-white/70 hover:bg-white/5"
+                >
+                  <Settings className="h-4 w-4" />
+                  Organization settings
+                  <span className="ml-auto text-white/40">→</span>
+                </Link>
                 <button
                   onClick={() => { setCreating(true); setErr(null); }}
                   className="mt-1 flex w-full items-center gap-2 rounded-md border-t border-white/10 px-2 py-2 text-sm text-white/70 hover:bg-white/5"

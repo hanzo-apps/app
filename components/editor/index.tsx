@@ -3,7 +3,7 @@ import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { CodeEditorHandle } from "@/components/code-editor";
 import dynamic from "next/dynamic";
-import { CopyIcon, Share2 } from "lucide-react";
+import { Code2, CopyIcon, Share2 } from "lucide-react";
 
 // CodeMirror bundles locally (no CDN, no web workers) so it is CSP-clean.
 // Still code-split out of the /dev first-load chunk and rendered client-only
@@ -81,6 +81,10 @@ export const AppEditor = ({
   const resizer = useRef<HTMLDivElement>(null);
 
   const [currentTab, setCurrentTab] = useState("chat");
+  // Chat mode shows the chat by DEFAULT; the raw code editor is an opt-in
+  // overlay toggled from the panel's top-right, so a fresh chat never leaks
+  // code behind the composer.
+  const [showCode, setShowCode] = useState(false);
   // Open on the project's entry page: index.html when present (e.g. a dropped
   // project), else the first seeded page, else the default new-project page.
   const [currentPage, setCurrentPage] = useState(
@@ -293,68 +297,91 @@ export const AppEditor = ({
               ref={editor}
               className="bg-neutral-900 relative flex-1 overflow-hidden h-full flex flex-col gap-2 pb-3"
             >
-              <ListPages
-                pages={pages}
-                currentPage={currentPage}
-                onSelectPage={(path, newPath) => {
-                  if (newPath) {
-                    setPages((prev) =>
-                      prev.map((page) =>
-                        page.path === path ? { ...page, path: newPath } : page
-                      )
-                    );
-                    setCurrentPage(newPath);
-                  } else {
-                    setCurrentPage(path);
-                  }
-                }}
-                onDeletePage={(path) => {
-                  const newPages = pages.filter((page) => page.path !== path);
-                  setPages(newPages);
-                  if (currentPage === path) {
-                    setCurrentPage(newPages[0]?.path ?? "index.html");
-                  }
-                }}
-                onNewPage={() => {
-                  setPages((prev) => [
-                    ...prev,
-                    {
-                      path: `page-${prev.length + 1}.html`,
-                      html: defaultHTML,
-                    },
-                  ]);
-                  setCurrentPage(`page-${pages.length + 1}.html`);
-                }}
-              />
-              <CopyIcon
-                className="size-4 absolute top-14 right-5 text-neutral-500 hover:text-neutral-300 z-2 cursor-pointer"
-                onClick={() => {
-                  copyToClipboard(currentPageData.html);
-                  toast.success("HTML copied to clipboard!");
-                }}
-              />
-              <CodeEditor
-                language="html"
+              {/* Chat ⇄ code toggle — pinned top-right, above the overlay. Chat
+                  is the DEFAULT; the code editor is opt-in so a fresh chat never
+                  shows raw code behind the composer. */}
+              <button
+                type="button"
+                onClick={() => setShowCode((s) => !s)}
+                title={showCode ? "Hide code" : "View code"}
+                aria-label={showCode ? "Hide code" : "View code"}
                 className={classNames(
-                  "h-full w-full bg-neutral-900 transition-all duration-200 absolute left-0 top-0",
-                  {
-                    "pointer-events-none": isAiWorking,
-                  }
+                  "absolute top-3 right-4 z-20 flex items-center justify-center rounded-md p-1.5 transition-colors",
+                  showCode
+                    ? "bg-white/10 text-neutral-100"
+                    : "text-neutral-500 hover:bg-white/5 hover:text-neutral-200"
                 )}
-                value={currentPageData.html}
-                onChange={(value) => {
-                  setPages((prev) =>
-                    prev.map((page) =>
-                      page.path === currentPageData.path
-                        ? { ...page, html: value }
-                        : page
-                    )
-                  );
-                }}
-                onReady={(handle) => {
-                  editorRef.current = handle;
-                }}
-              />
+              >
+                <Code2 className="size-4" />
+              </button>
+              {/* Code surfaces overlay the chat only when opted in; the AskAI
+                  chat below stays mounted (it owns generation state). */}
+              {showCode && (
+                <>
+                  <ListPages
+                    pages={pages}
+                    currentPage={currentPage}
+                    onSelectPage={(path, newPath) => {
+                      if (newPath) {
+                        setPages((prev) =>
+                          prev.map((page) =>
+                            page.path === path ? { ...page, path: newPath } : page
+                          )
+                        );
+                        setCurrentPage(newPath);
+                      } else {
+                        setCurrentPage(path);
+                      }
+                    }}
+                    onDeletePage={(path) => {
+                      const newPages = pages.filter((page) => page.path !== path);
+                      setPages(newPages);
+                      if (currentPage === path) {
+                        setCurrentPage(newPages[0]?.path ?? "index.html");
+                      }
+                    }}
+                    onNewPage={() => {
+                      setPages((prev) => [
+                        ...prev,
+                        {
+                          path: `page-${prev.length + 1}.html`,
+                          html: defaultHTML,
+                        },
+                      ]);
+                      setCurrentPage(`page-${pages.length + 1}.html`);
+                    }}
+                  />
+                  <CopyIcon
+                    className="size-4 absolute top-14 right-5 text-neutral-500 hover:text-neutral-300 z-2 cursor-pointer"
+                    onClick={() => {
+                      copyToClipboard(currentPageData.html);
+                      toast.success("HTML copied to clipboard!");
+                    }}
+                  />
+                  <CodeEditor
+                    language="html"
+                    className={classNames(
+                      "h-full w-full bg-neutral-900 transition-all duration-200 absolute left-0 top-0",
+                      {
+                        "pointer-events-none": isAiWorking,
+                      }
+                    )}
+                    value={currentPageData.html}
+                    onChange={(value) => {
+                      setPages((prev) =>
+                        prev.map((page) =>
+                          page.path === currentPageData.path
+                            ? { ...page, html: value }
+                            : page
+                        )
+                      );
+                    }}
+                    onReady={(handle) => {
+                      editorRef.current = handle;
+                    }}
+                  />
+                </>
+              )}
               <AskAI
                 isNew={isNew}
                 project={project}
