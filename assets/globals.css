@@ -47,7 +47,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-basel-sans);
+  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -284,16 +284,13 @@
   }
   body {
     @apply bg-background text-foreground;
-    /* Consume the Basel Grotesk var (set on <body> via next/font) as the default
+    /* Consume the Geist Sans var (set on <body> via next/font) as the default
        body font. Tailwind v4 preflight otherwise leaves <body> on the system
        stack — @theme inline defines the `font-sans` utility but never applies it
        to <body>, so body text fell back to system-ui. */
-    font-family: var(--font-basel-sans), ui-sans-serif, system-ui, sans-serif;
-    /* Basel ships only Book (400) + Medium (500). Never let the browser fake a
-       heavier weight — synthetic bold on the 500 file reads muddy/off. With
-       synthesis off, any 600/700 request falls back to the real Medium glyphs
-       (Geist Mono, which has real weights, is unaffected). */
-    font-synthesis: none;
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    /* Geist is a variable font with real weights — headings/bold render truly
+       bold. */
   }
   html {
     @apply scroll-smooth;
