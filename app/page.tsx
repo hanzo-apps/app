@@ -107,12 +107,25 @@ export default function LandingPage() {
     return () => clearTimeout(t);
   }, [idle]);
 
-  // Fetch the user's projects when logged in.
+  // Fetch the user's REAL projects from the ONE canonical org store (the same
+  // same-origin /v1/projects BFF console + the dashboard use). Mapped to the
+  // landing card shape; the builder opens by slug (/dev?project=<slug>).
   useEffect(() => {
     if (!user) return;
-    fetch("/api/me/projects")
-      .then((res) => (res.ok ? res.json() : { projects: [] }))
-      .then((data) => setProjects(data.projects || []))
+    fetch("/v1/projects", { credentials: "include", cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : []))
+      .then((rows: Array<{ id: string; slug: string; name?: string; status?: string; createdAt?: number }>) =>
+        setProjects(
+          (Array.isArray(rows) ? rows : []).map((p) => ({
+            namespace: p.slug,
+            id: p.slug,
+            name: p.name || p.slug,
+            emoji: "◆",
+            short_description: p.status === "live" ? "Live" : "Draft",
+            created_at: p.createdAt ? new Date(p.createdAt * 1000).toISOString() : "",
+          })),
+        ),
+      )
       .catch(() => setProjects([]));
   }, [user]);
 
@@ -382,10 +395,8 @@ export default function LandingPage() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {projects.slice(0, 4).map((project) => (
                   <button
-                    key={`${project.namespace}/${project.id}`}
-                    onClick={() =>
-                      router.push(`/projects/${project.namespace}/${project.id}`)
-                    }
+                    key={project.id}
+                    onClick={() => router.push(`/dev?project=${encodeURIComponent(project.id)}`)}
                     className="group overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] text-left transition-all duration-200 hover:border-white/20 hover:bg-white/[0.03]"
                   >
                     <div className="flex aspect-video items-center justify-center bg-white/[0.02] text-4xl md:text-5xl">
