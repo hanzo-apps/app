@@ -99,7 +99,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${basel.variable} ${geistMono.variable} antialiased bg-black dark min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black dark min-h-screen`}
       >
         <IframeDetector />
         <ErrorBoundary level="app">
