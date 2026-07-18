@@ -250,7 +250,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
                 </>
               ) : (
                 <>
-                  {selectedMode === "edit" && "Open editor"}
+                  {selectedMode === "edit" && "Edit now"}
                   {selectedMode === "fork" && "Fork template"}
                   {selectedMode === "deploy" && "Deploy now"}
                   <ArrowRight className="ml-2 h-4 w-4" />
