@@ -1,10 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import MonacoEditor from '@monaco-editor/react';
+import { CodeEditor } from '@/components/code-editor';
 import { Play, Loader2, AlertCircle, CheckCircle2, History, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
 interface SqlEditorProps {
@@ -30,7 +29,6 @@ export function SqlEditor({ deploymentId, queryEndpoint }: SqlEditorProps) {
   const [result, setResult] = useState<QueryResult | null>(null);
   const [history, setHistory] = useState<string[]>([]);
   const [showHistory, setShowHistory] = useState(false);
-  const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -99,15 +97,6 @@ export function SqlEditor({ deploymentId, queryEndpoint }: SqlEditorProps) {
     }
   }, [sql, deploymentId, saveToHistory]);
 
-  // Handle keyboard shortcut
-  const handleEditorMount = useCallback((editor: unknown) => {
-    const monacoEditor = editor as { addCommand: (keybinding: number, handler: () => void) => void };
-    // Cmd/Ctrl + Enter to execute
-    monacoEditor.addCommand(2048 | 3, () => { // KeyMod.CtrlCmd | KeyCode.Enter
-      executeQuery();
-    });
-  }, [executeQuery]);
-
   if (!mounted) {
     return <div className="h-full flex items-center justify-center">
       <Loader2 className="h-6 w-6 animate-spin" />
@@ -164,22 +153,20 @@ export function SqlEditor({ deploymentId, queryEndpoint }: SqlEditorProps) {
           </div>
         )}
 
-        <div className="h-32 border rounded-lg overflow-hidden">
-          <MonacoEditor
+        <div
+          className="h-32 border rounded-lg overflow-hidden"
+          onKeyDown={(e) => {
+            // Cmd/Ctrl + Enter to execute (CodeMirror leaves this combo unbound)
+            if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+              e.preventDefault();
+              executeQuery();
+            }
+          }}
+        >
+          <CodeEditor
             language="sql"
-            theme={resolvedTheme === 'dark' ? 'vs-dark' : 'light'}
             value={sql}
-            onChange={value => setSql(value || '')}
-            onMount={handleEditorMount}
-            options={{
-              minimap: { enabled: false },
-              fontSize: 13,
-              lineNumbers: 'off',
-              folding: false,
-              scrollBeyondLastLine: false,
-              wordWrap: 'on',
-              automaticLayout: true,
-            }}
+            onChange={(value) => setSql(value)}
           />
         </div>
       </div>
