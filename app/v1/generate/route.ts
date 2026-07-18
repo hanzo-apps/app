@@ -53,6 +53,16 @@ const MAX_TOKENS = 128_000;
 // a response header). The client (hooks/useCallAi.ts) splits on the delimiter.
 const ROUTED_MODEL_SEP = "\u001e";
 
+// ASCII Unit Separator (U+001F). A MATCHED PAIR of this char frames a run of
+// reasoning ("thinking") deltas inside the same text stream: open before the
+// first reasoning token, close when content resumes (mirroring <think>/</think>
+// semantics). Distinct from the U+001E end trailer and impossible in HTML page
+// output OR reasoning text, so the client can demux reasoning to the thinking
+// panel and content to the page parser without either corrupting the other.
+// Models expose reasoning on `delta.reasoning_content` (Zhipu) or
+// `delta.reasoning` (DeepSeek/Qwen); we forward whichever is present.
+const REASONING_SEP = "\u001f";
+
 // A fresh response per call — a NextResponse body is a one-shot stream, so a
 // shared instance would send an empty body on the second use.
 const unauthorized = () =>
@@ -321,6 +331,10 @@ async function pipeGatewaySse(
   let buffer = "";
   let servedModel: string | null = null;
   let responseId: string | null = null;
+  // True while we are inside a U+001F reasoning frame (open emitted, not yet
+  // closed). Lets us wrap a contiguous run of reasoning deltas in ONE matched
+  // pair and flip back to content cleanly the moment content resumes.
+  let inReasoning = false;
 
   while (true) {
     const { done, value } = await reader.read();
@@ -346,14 +360,39 @@ async function pipeGatewaySse(
           if (typeof json.model === "string") servedModel = json.model;
           if (!responseId && typeof json.id === "string" && json.id)
             responseId = json.id;
+          // Reasoning ("thinking") tokens arrive on `reasoning_content` (Zhipu)
+          // or `reasoning` (DeepSeek/Qwen), never on `content`. Forward them —
+          // wrapped in a U+001F matched pair — BEFORE any content delta so the
+          // client can stream them to the thinking panel while page HTML is
+          // parsed separately.
+          const reason =
+            json.choices?.[0]?.delta?.reasoning_content ??
+            json.choices?.[0]?.delta?.reasoning;
           const delta = json.choices?.[0]?.delta?.content;
-          if (delta) await onDelta(delta);
+          if (reason) {
+            if (!inReasoning) {
+              await onDelta(REASONING_SEP);
+              inReasoning = true;
+            }
+            await onDelta(reason);
+          }
+          if (delta) {
+            if (inReasoning) {
+              await onDelta(REASONING_SEP);
+              inReasoning = false;
+            }
+            await onDelta(delta);
+          }
         } catch {
           // Non-JSON keepalive / comment line — ignore.
         }
       }
     }
   }
+
+  // Stream ended mid-reasoning (no content followed): close the open frame so
+  // the client's matched-pair demux stays balanced.
+  if (inReasoning) await onDelta(REASONING_SEP);
 
   return { model: servedModel, id: responseId };
 }
