@@ -116,17 +116,33 @@ export const PROVIDERS = {
   },
 };
 
-// Hyphen/underscore segments that mark a NON-build Zen surface: embeddings, ASR,
-// TTS, the guard classifier and vision-only (vl) SKUs are separate products, not
-// the code builder. `omni` (general multimodal chat) and the text/code ladder
-// stay in.
+// Hyphen/underscore segments that mark a NON-build surface — separate products,
+// not the code builder: embeddings, ASR, the guard classifier, vision-only (vl),
+// and the whole GENERATIVE-MEDIA family (image / video / music / voice / foley /
+// audio) + reranking / moderation. The builder is a TEXT/code tool, so only the
+// chat/code ladder (zen5, zen5-coder, enso, …) should appear in its picker —
+// `omni` (general multimodal chat) stays in.
 const NON_BUILD_SEGMENTS = new Set([
   "embedding",
   "embeddings",
+  "embed",
   "asr",
   "tts",
   "guard",
   "vl",
+  // generative media — not code
+  "image",
+  "video",
+  "music",
+  "voice",
+  "foley",
+  "audio",
+  "speech",
+  "tale",
+  // utility
+  "rerank",
+  "reranker",
+  "moderation",
 ]);
 
 // A build model is a Zen or Enso chat/code SKU: id starts with `zen` or `enso`
