@@ -141,7 +141,11 @@ export async function POST(req: NextRequest) {
           slug,
           description,
           framework: body.framework || 'static',
-          ...(sourceRepo ? { repo: sourceRepo } : {}),
+          // projectsvc expects `repo` as an OBJECT { url, branch } — sending the
+          // bare source URL string 400s ("cannot unmarshal string into repo"),
+          // which broke Publish for every template-derived project (the template
+          // flow stashes sourceRepo). Shape it as the expected object.
+          ...(sourceRepo ? { repo: { url: sourceRepo, branch: 'main' } } : {}),
         }),
         cache: 'no-store',
       });
