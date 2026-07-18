@@ -354,52 +354,56 @@ export function VisualEditor({
 
   return (
     <>
-      {/* Visual Editor Toolbar */}
-      <div className="absolute top-4 left-4 z-50 bg-neutral-900/95 backdrop-blur-sm rounded-lg border border-neutral-800 p-2 flex items-center gap-2">
+      {/* Visual Editor Toolbar — compact icon rail. */}
+      <div className="absolute top-3 left-3 z-50 flex items-center gap-1 rounded-lg border border-white/10 bg-neutral-900/95 p-1 backdrop-blur-sm">
         <Button
           variant={isEnabled ? "default" : "ghost"}
           size="sm"
           onClick={() => onToggle(!isEnabled)}
           className={cn(
-            "gap-2",
+            "h-7 gap-1.5 px-2 text-xs",
             isEnabled && "bg-white text-neutral-900 hover:bg-neutral-200"
           )}
         >
-          <MousePointer className="w-4 h-4" />
-          Visual Editor
+          <MousePointer className="w-3.5 h-3.5" />
+          Edit
         </Button>
 
         {isEnabled && (
           <>
-            <div className="w-px h-6 bg-neutral-700" />
+            <div className="w-px h-5 bg-white/10" />
             <Button
               variant={editMode === "select" ? "secondary" : "ghost"}
               size="sm"
+              className="size-7 p-0"
               onClick={() => setEditMode("select")}
             >
-              <MousePointer className="w-4 h-4" />
+              <MousePointer className="w-3.5 h-3.5" />
             </Button>
             <Button
               variant={editMode === "edit" ? "secondary" : "ghost"}
               size="sm"
+              className="size-7 p-0"
               onClick={() => setEditMode("edit")}
             >
-              <Edit3 className="w-4 h-4" />
+              <Edit3 className="w-3.5 h-3.5" />
             </Button>
             <Button
               variant={editMode === "move" ? "secondary" : "ghost"}
               size="sm"
+              className="size-7 p-0"
               onClick={() => setEditMode("move")}
             >
-              <Move className="w-4 h-4" />
+              <Move className="w-3.5 h-3.5" />
             </Button>
-            <div className="w-px h-6 bg-neutral-700" />
+            <div className="w-px h-5 bg-white/10" />
             <Button
               variant="ghost"
               size="sm"
+              className="size-7 p-0"
               onClick={() => setShowPanel(!showPanel)}
             >
-              {showPanel ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              {showPanel ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
             </Button>
           </>
         )}
