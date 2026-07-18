@@ -24,10 +24,11 @@ export type ModelOption = {
 };
 
 // The model the builder opens on when neither storage nor the gateway pick one.
-// Enso is Hanzo's proprietary frontier orchestrator ("one model to command them
-// all") and the current default for all new requests — the app opens on it, and
-// any stale/dead persisted id resolves to it.
-export const DEFAULT_MODEL = "enso";
+// zen5-coder (→ glm-5.2 upstream) is the verified-working coding default. Enso is
+// NOT the default: its upstream is anthropic-claude-opus-4.8, which surfaced as an
+// "opus-4.8" error in the builder — off-brand and failing. Keep zen for builds
+// until Enso's upstream is healthy + brand-masked.
+export const DEFAULT_MODEL = "zen5-coder";
 
 // The Hanzo gateway (api.hanzo.ai) serves the Zen ladder + connected providers —
 // NOT OpenAI `gpt-*` / `o1|o3` / legacy `-codex` ids. A stale selection persisted
@@ -176,10 +177,8 @@ export function buildModelsFrom(
 // the client useModels() fallback — so the picker never breaks. It is NOT the
 // source of truth; the gateway is. Keep it to the current Zen 5 ladder.
 export const FALLBACK_MODELS: ModelOption[] = [
-  { value: "enso", label: "Enso" },
-  { value: "enso-flash", label: "Enso Flash" },
-  { value: "enso-ultra", label: "Enso Ultra" },
   { value: "zen5-coder", label: "Zen 5 Coder" },
+  { value: "enso", label: "Enso" },
   { value: "zen5-flash", label: "Zen 5 Flash" },
   { value: "zen5", label: "Zen 5" },
   { value: "zen5-pro", label: "Zen 5 Pro" },
