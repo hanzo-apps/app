@@ -34,7 +34,7 @@ export function DeployButton({
           <Popover>
             <PopoverTrigger asChild>
               <div>
-                <Button variant="default" className="max-lg:hidden !px-4" disabled={disabled}>
+                <Button variant="default" size="sm" className="max-lg:hidden" disabled={disabled}>
                   <MdSave className="size-4" />
                   {disabled ? "Building…" : "Publish"}
                 </Button>
@@ -54,7 +54,8 @@ export function DeployButton({
           <>
             <Button
               variant="default"
-              className="max-lg:hidden !px-4"
+              size="sm"
+              className="max-lg:hidden"
               onClick={() => setOpen(true)}
               disabled={disabled}
             >
