@@ -6,7 +6,6 @@ import { HtmlHistory, Page } from "@/types";
 import { Button } from "@hanzo/ui";
 import { MdAdd } from "react-icons/md";
 import { History } from "@/components/editor/history";
-import { BuilderIdentityBar } from "@/components/editor/identity-bar";
 import { useUser } from "@/hooks/useUser";
 import Link from "next/link";
 import { useLocalStorage } from "react-use";
@@ -70,9 +69,9 @@ export function Footer({
               Local Usage
             </div>
           ) : (
-            /* The ONE bottom-left identity cluster: org + account
-               (mirrors hanzo.chat / console). Menus open upward. */
-            <BuilderIdentityBar />
+            /* Identity (org switcher + account/credits) now lives in the top-left
+               header chrome (Lovable-style), so nothing renders here. */
+            null
           )
         ) : (
           <Button size="sm" variant="default" onClick={handleClick}>

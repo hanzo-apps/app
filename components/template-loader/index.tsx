@@ -3,19 +3,27 @@
 import { useState, useEffect } from "react";
 import { Button } from "@hanzo/ui";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@hanzo/ui";
-import { Badge } from "@hanzo/ui";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
 import {
   Sparkles,
   Code,
-  Zap,
   Copy,
   Github,
   Rocket,
   ArrowRight,
-  Loader2
+  Loader2,
+  Check,
+  type LucideIcon,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { resolveTemplateSeedMeta, type TemplateSeedMeta } from "@/lib/api/templates";
+
+type StartMode = "fork" | "edit" | "deploy";
+
+const START_OPTIONS: { mode: StartMode; icon: LucideIcon; title: string; desc: string }[] = [
+  { mode: "edit", icon: Code, title: "Edit in Hanzo", desc: "Opens in the editor — the app runs live in the preview beside your code, with the AI assistant on hand." },
+  { mode: "fork", icon: Copy, title: "Fork to your account", desc: "Your own copy as a fresh repository — customize it, keep version control, and deploy independently." },
+  { mode: "deploy", icon: Rocket, title: "Deploy to Hanzo Cloud", desc: "Ship it live in seconds — a public URL with automatic SSL on Hanzo Cloud." },
+];
 
 interface TemplateLoaderProps {
   templateRepo: {
@@ -26,7 +34,7 @@ interface TemplateLoaderProps {
     host?: string;
   };
   action: "edit" | "deploy";
-  onProceed: (mode: "fork" | "edit" | "deploy") => void;
+  onProceed: (mode: StartMode, firstMessage?: string) => void;
 }
 
 /** Friendly provenance label for the repo source (any host, not just GitHub). */
@@ -82,9 +90,13 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
     [meta?.framework, meta?.category].filter(Boolean).join(" · ") ||
     `From ${sourceLabel(templateRepo.platform, templateRepo.host)}: ${templateRepo.owner}/${templateRepo.name}`;
 
+  // Optional first message — the change the user wants built ON TOP of the ready
+  // template. Empty = load the template as-is and show its preview immediately.
+  const [firstMessage, setFirstMessage] = useState("");
+
   const handleProceed = () => {
     setLoading(true);
-    onProceed(selectedMode);
+    onProceed(selectedMode, firstMessage.trim() || undefined);
   };
 
   return (
@@ -122,85 +134,78 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
         </CardHeader>
 
         <CardContent className="space-y-6">
-          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
-            <h3 className="mb-3 text-sm font-medium text-white/70">Choose how to start</h3>
-            <Tabs value={selectedMode} onValueChange={(v: string) => setSelectedMode(v as "edit" | "fork" | "deploy")}>
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="edit">
-                  <Code className="w-4 h-4 mr-2" />
-                  Edit
-                </TabsTrigger>
-                <TabsTrigger value="fork">
-                  <Copy className="w-4 h-4 mr-2" />
-                  Fork
-                </TabsTrigger>
-                <TabsTrigger value="deploy">
-                  <Zap className="w-4 h-4 mr-2" />
-                  Deploy
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="edit" className="mt-4 space-y-3">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.06]">
-                    <Code className="h-5 w-5 text-white/80" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium">Edit in Hanzo</h4>
-                    <p className="mt-1 text-sm text-white/55">
-                      Opens in the Hanzo editor — no setup. Your app runs live in the
-                      preview panel beside your code, refreshing on every edit, with
-                      the AI assistant on hand.
-                    </p>
-                    <div className="mt-2.5 flex gap-2">
-                      <Badge variant="secondary">Instant start</Badge>
-                      <Badge variant="secondary">Live preview</Badge>
-                      <Badge variant="secondary">AI assistant</Badge>
+          <div>
+            <h3 className="mb-2.5 text-xs font-medium uppercase tracking-[0.12em] text-white/40">Choose how to start</h3>
+            <div className="space-y-2">
+              {START_OPTIONS.map((opt) => {
+                const active = selectedMode === opt.mode;
+                return (
+                  <button
+                    key={opt.mode}
+                    type="button"
+                    onClick={() => setSelectedMode(opt.mode)}
+                    aria-pressed={active}
+                    className={cn(
+                      "group flex w-full items-start gap-3.5 rounded-xl border p-3.5 text-left transition-colors",
+                      active
+                        ? "border-white/25 bg-white/[0.05]"
+                        : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.03]"
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border",
+                        opt.mode === "deploy"
+                          ? "border-green-500/25 bg-green-500/10"
+                          : active
+                            ? "border-white/20 bg-white/[0.08]"
+                            : "border-white/10 bg-white/[0.04]"
+                      )}
+                    >
+                      <opt.icon className={cn("h-4 w-4", opt.mode === "deploy" ? "text-green-400" : "text-white/80")} />
                     </div>
-                  </div>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="fork" className="mt-4 space-y-3">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.06]">
-                    <Copy className="h-5 w-5 text-white/80" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium">Fork to your account</h4>
-                    <p className="mt-1 text-sm text-white/55">
-                      Get your own copy as a fresh repository — customize it, keep it
-                      under version control, and deploy it independently. Entirely yours.
-                    </p>
-                    <div className="mt-2.5 flex gap-2">
-                      <Badge variant="secondary">Own repository</Badge>
-                      <Badge variant="secondary">Full control</Badge>
-                      <Badge variant="secondary">Version control</Badge>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <h4 className="text-sm font-medium text-white">{opt.title}</h4>
+                        <span
+                          className={cn(
+                            "h-4 w-4 flex-shrink-0 rounded-full border transition-colors",
+                            active ? "border-white bg-white" : "border-white/25"
+                          )}
+                        >
+                          {active && <Check className="h-4 w-4 text-black" strokeWidth={3} />}
+                        </span>
+                      </div>
+                      <p className="mt-0.5 text-[13px] leading-snug text-white/50">{opt.desc}</p>
                     </div>
-                  </div>
-                </div>
-              </TabsContent>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
-              <TabsContent value="deploy" className="mt-4 space-y-3">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-green-500/20 bg-green-500/10">
-                    <Rocket className="h-5 w-5 text-green-400" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium">Deploy to Hanzo Cloud</h4>
-                    <p className="mt-1 text-sm text-white/55">
-                      Ship it live in seconds — a public URL with automatic SSL,
-                      running on Hanzo Cloud.
-                    </p>
-                    <div className="mt-2.5 flex gap-2">
-                      <Badge variant="secondary">Instant deploy</Badge>
-                      <Badge variant="secondary">Custom domain</Badge>
-                      <Badge variant="secondary">Auto scaling</Badge>
-                    </div>
-                  </div>
-                </div>
-              </TabsContent>
-            </Tabs>
+          {/* Optional first message — the change to build ON TOP of the ready template. */}
+          <div>
+            <label
+              htmlFor="tpl-first-msg"
+              className="mb-2 block text-xs font-medium uppercase tracking-[0.12em] text-white/40"
+            >
+              What do you want to change?{" "}
+              <span className="normal-case tracking-normal text-white/30">(optional)</span>
+            </label>
+            <div className="rounded-xl border border-white/10 bg-white/[0.02] transition-colors focus-within:border-white/25">
+              <textarea
+                id="tpl-first-msg"
+                value={firstMessage}
+                onChange={(e) => setFirstMessage(e.target.value)}
+                rows={2}
+                placeholder="e.g. rename the brand to Bean & Bloom and rewrite the hero copy…"
+                className="w-full resize-none bg-transparent px-3.5 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none"
+              />
+            </div>
+            <p className="mt-1.5 text-xs text-white/35">
+              Leave blank to open the template as-is — it loads and previews instantly. Add a note and Hanzo builds it on top.
+            </p>
           </div>
 
           <div className="flex items-center gap-4 text-sm text-white/45">
