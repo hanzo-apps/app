@@ -120,27 +120,22 @@ export const DeployButtonContent = ({
 
   return (
     <>
-      <header className="bg-neutral-50 p-6 border-b border-neutral-200/60">
-        <div className="flex items-center justify-center -space-x-4 mb-3">
-          <div className="size-9 rounded-full bg-neutral-200 shadow-2xs flex items-center justify-center text-xl opacity-50">
-            🚀
-          </div>
-          <div className="size-11 rounded-full bg-neutral-100 shadow-2xl flex items-center justify-center z-2">
-            <Image src={SpaceIcon} alt="Project Icon" className="size-7" />
-          </div>
-          <div className="size-9 rounded-full bg-neutral-300 shadow-2xs flex items-center justify-center text-xl opacity-50">
-            👻
+      {/* Black chrome to match the builder — compact header. */}
+      <header className="border-b border-white/10 bg-neutral-900 p-4">
+        <div className="mb-2 flex items-center justify-center">
+          <div className="flex size-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.06]">
+            <Image src={SpaceIcon} alt="" className="size-5" />
           </div>
         </div>
-        <p className="text-xl font-medium text-neutral-950">Publish your project</p>
-        <p className="text-sm text-neutral-500 mt-1.5">
+        <p className="text-center text-base font-medium text-white">Publish your project</p>
+        <p className="mt-1 text-center text-xs leading-relaxed text-white/50">
           {options?.description ??
-            "Publish to your organization on Hanzo Cloud. Your project is billed to your org and appears across your Hanzo tools."}
+            "Publish to your org on Hanzo Cloud — billed to your org, live across your Hanzo tools."}
         </p>
       </header>
-      <main className="space-y-4 p-6">
+      <main className="space-y-3 bg-neutral-950 p-4">
         <div>
-          <p className="text-sm text-neutral-700 mb-2">Choose a title for your project:</p>
+          <label className="mb-1.5 block text-xs font-medium text-white/50">Project title</label>
           <Input
             type="text"
             placeholder="My Awesome Website"
@@ -148,25 +143,22 @@ export const DeployButtonContent = ({
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setConfig({ ...config, title: e.target.value })
             }
-            className="!bg-white !border-neutral-300 !text-neutral-800 !placeholder:text-neutral-400 selection:!bg-neutral-200"
+            className="!border-white/15 !bg-white/[0.04] !text-white !placeholder:text-white/30 selection:!bg-white/20"
           />
         </div>
-        <div>
-          <p className="text-sm text-neutral-700 mb-2">Then, let&apos;s publish it!</p>
-          <Button
-            variant="black"
-            onClick={publish}
-            className="relative w-full"
-            disabled={loading}
-          >
-            Publish <Rocket className="size-4" />
-            {loading && <Loading className="ml-2 size-4 animate-spin" />}
-          </Button>
-          <p className="mt-3 flex items-center gap-1 text-xs text-neutral-400">
-            <ExternalLink className="size-3" />
-            Manage every project at console.hanzo.ai — the same shared store.
-          </p>
-        </div>
+        <Button
+          variant="default"
+          onClick={publish}
+          className="relative w-full !bg-white !text-black hover:!bg-white/90"
+          disabled={loading}
+        >
+          Publish <Rocket className="size-4" />
+          {loading && <Loading className="ml-2 size-4 animate-spin" />}
+        </Button>
+        <p className="flex items-center justify-center gap-1 text-[11px] text-white/35">
+          <ExternalLink className="size-3" />
+          Manage every project at console.hanzo.ai
+        </p>
       </main>
     </>
   );
