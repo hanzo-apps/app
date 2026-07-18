@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { MultiTabEditor, openFileInEditor } from '@/components/monaco-editor';
+import { MultiTabEditor, openFileInEditor } from '@/components/code-tabs';
 import { FileExplorer } from '@/components/file-explorer';
 import { VirtualFile } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';

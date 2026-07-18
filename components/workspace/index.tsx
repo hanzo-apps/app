@@ -758,12 +758,12 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
       if (!modifierPressed) return;
 
       if (event.key.toLowerCase() === 's') {
-        // Check if Monaco editor has focus - if so, let Monaco handle the save
+        // If the code editor has focus, let its own Cmd/Ctrl+S handler save the file
         const activeElement = document.activeElement;
-        const isMonacoFocused = activeElement?.closest('.monaco-editor') !== null;
+        const isCodeEditorFocused = activeElement?.closest('.cm-editor') !== null;
 
-        if (isMonacoFocused) {
-          // Monaco editor will handle file save
+        if (isCodeEditorFocused) {
+          // The editor's keydown handler will save the open file
           return;
         }
 
