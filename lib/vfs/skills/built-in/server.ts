@@ -11,7 +11,7 @@ description: Server Mode - Quick orientation for features (requires Server Mode 
 # Server Mode Overview
 
 ## Purpose
-Quick reference for OSW Studio Server Mode features. For detailed guidance, read the specific skills below.
+Quick reference for Hanzo App Server Mode features. For detailed guidance, read the specific skills below.
 
 ## Related Skills
 - **Server Mode: Functions** - Creating edge functions (API endpoints) and server functions (helpers)

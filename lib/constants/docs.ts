@@ -31,7 +31,7 @@ export const DOCS_ITEMS: DocItem[] = [
   { id: 'getting-started', title: 'Getting Started', icon: Zap, file: 'GETTING_STARTED.md' },
   { id: 'projects', title: 'Projects', icon: FolderOpen, file: 'PROJECTS.md' },
 
-  // Using OSW Studio
+  // Using Hanzo App
   { id: 'working-with-ai', title: 'Working with AI', icon: Sparkles, file: 'WORKING_WITH_AI.md' },
   { id: 'templates', title: 'Templates', icon: LayoutTemplate, file: 'TEMPLATES.md' },
   { id: 'skills', title: 'Skills', icon: Sparkles, file: 'SKILLS.md' },

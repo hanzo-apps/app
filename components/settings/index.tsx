@@ -186,7 +186,7 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
                 <div>
                   <Label htmlFor="telemetry">Anonymous Usage Analytics</Label>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    Help improve OSW Studio by sharing anonymous usage data
+                    Help improve Hanzo App by sharing anonymous usage data
                   </p>
                 </div>
                 <Switch
@@ -427,7 +427,7 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
           onClick={() => setAboutModalOpen(true)}
         >
           <Info className="mr-1.5 h-3.5 w-3.5" />
-          About OSW Studio
+          About Hanzo App
         </Button>
       </div>
 

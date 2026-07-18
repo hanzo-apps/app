@@ -32,7 +32,7 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
     ? `https://${settings.customDomain}`
     : `${typeof window !== 'undefined' ? window.location.origin : ''}/deployments/${deploymentId}`;
 
-  // Generate OSW Studio path URL (always show for debugging - uses deploymentId, not projectId!)
+  // Generate Hanzo App path URL (always show for debugging - uses deploymentId, not projectId!)
   const appUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/deployments/${deploymentId}`;
 
   return (
@@ -144,10 +144,10 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
             </p>
           </div>
 
-          {/* Show OSW Studio path if custom domain is set */}
+          {/* Show Hanzo App path if custom domain is set */}
           {settings.customDomain && (
             <div className="space-y-2">
-              <Label className="text-xs text-muted-foreground">OSW Studio Path (Debug)</Label>
+              <Label className="text-xs text-muted-foreground">Hanzo App Path (Debug)</Label>
               <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg border border-dashed">
                 <Globe className="h-4 w-4 text-muted-foreground" />
                 <code className="text-xs flex-1 text-muted-foreground">{appUrl}</code>
