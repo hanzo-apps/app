@@ -36,10 +36,13 @@ export default function DevPage() {
   // ?action=import. We load it into the editor as the project's files.
   const isImport = action === "import";
 
-  // Onboarding shows only when we're not opening a repo/template fork, a
-  // deep-linked existing project, or a drag-and-drop import.
+  // Onboarding shows ONLY for a truly bare `/dev` (no prompt, repo, project, or
+  // import). A prompt from the dashboard/landing composer (`?prompt=…`) goes
+  // STRAIGHT to the editor, which auto-generates and renders the page — no
+  // canned "Development Plan" interstitial in between (that theater was the
+  // "it stops on the chat prompt and never renders" bug).
   const [showOnboarding, setShowOnboarding] = useState(
-    !repoUrl && !projectSlug && !isImport,
+    !repoUrl && !projectSlug && !isImport && !seedPrompt.trim(),
   );
   // Dropped-project import: null until the staged files are read (or found none).
   const [importedPages, setImportedPages] = useState<Page[] | null>(null);
@@ -186,7 +189,9 @@ export default function DevPage() {
   // and flip seedReady so AppEditor mounts AFTER the global is set — AskAI's
   // mount effect then auto-starts callAiNewProject with no extra click.
   useEffect(() => {
-    if (seedReady || !repoUrl || !seedPrompt.trim()) return;
+    // Stage for ANY seed prompt — a bare `?prompt=` (dashboard/landing composer)
+    // OR a repo/template fork. Both skip onboarding and auto-start generation.
+    if (seedReady || !seedPrompt.trim()) return;
     setShowTemplateLoader(false);
     setShowOnboarding(false);
     (window as any).__initialPrompt = seedPrompt;
@@ -256,7 +261,7 @@ export default function DevPage() {
   // Fork → builder: while the seed is being staged, hold a brief splash so the
   // editor mounts only AFTER window.__initialPrompt is set — AskAI reads it on
   // mount to auto-start the first generation.
-  if (repoUrl && seedPrompt.trim() && !seedReady) {
+  if (seedPrompt.trim() && !seedReady) {
     return (
       <div className="h-[100dvh] bg-neutral-950 flex items-center justify-center text-neutral-400 text-sm">
         Preparing your first edition…
