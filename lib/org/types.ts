@@ -20,6 +20,13 @@ export interface Org {
   displayName: string;
   /** True for an auto-provisioned personal workspace (personal billing). */
   isPersonal: boolean;
+  /**
+   * Optional org mark from `/v1/orgs` — an image URL or an emoji. Absent today
+   * (IAM doesn't surface it yet); the client threads it through defensively so
+   * OrgAvatar can render real identity the moment the field appears. Until then
+   * a client-side emoji override / known-default fills in (see `lib/avatar`).
+   */
+  logo?: string;
 }
 
 /**
