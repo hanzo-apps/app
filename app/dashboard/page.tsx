@@ -24,7 +24,6 @@ import { useUser } from "@/hooks/useUser";
 import { WalletBoundary } from "@/components/providers/WalletBoundary";
 import { AppShell } from "@/components/app-shell";
 import { HanzoLogo } from "@/components/HanzoLogo";
-import { getProjects } from "@/app/actions/projects";
 import {
   toDashboardProject,
   relativeTime,
@@ -108,9 +107,22 @@ export default function DashboardPage() {
     let cancelled = false;
     (async () => {
       try {
-        const res = await getProjects();
+        // ONE canonical projects source: the same-origin /v1/projects BFF, called
+        // CLIENT-SIDE so the browser session cookie carries auth (proven path —
+        // identical to console). The in-pod getProjects() server action can't reach
+        // cloud from the pod, so we read the BFF directly here.
+        const r = await fetch("/v1/projects", { credentials: "include", cache: "no-store" });
+        const cloud = r.ok
+          ? ((await r.json()) as Array<{ id: string; slug: string; name?: string; updatedAt?: number; createdAt?: number }>)
+          : [];
         if (cancelled) return;
-        const rows = (res?.ok ? res.projects : []) as unknown as BaseProjectRow[];
+        const rows: BaseProjectRow[] = cloud.map((p) => ({
+          id: p.id,
+          name: p.name,
+          space_id: p.slug,
+          updated: p.updatedAt ? new Date(p.updatedAt * 1000).toISOString() : undefined,
+          created: p.createdAt ? new Date(p.createdAt * 1000).toISOString() : undefined,
+        }));
         setProjects(rows.map(toDashboardProject));
       } catch {
         if (!cancelled) setProjects([]);
