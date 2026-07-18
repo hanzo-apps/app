@@ -80,7 +80,7 @@ export default function LoginPage() {
         </div>
 
         {/* Title */}
-        <h1 className="text-3xl font-medium mb-2 tracking-tight">OSW Studio Admin</h1>
+        <h1 className="text-3xl font-medium mb-2 tracking-tight">Hanzo App Admin</h1>
         <p className="text-neutral-400 mb-8">Enter your password to continue</p>
 
         {/* Login Form */}
@@ -134,7 +134,7 @@ export default function LoginPage() {
               <path d="M3047 2515 c-47 -16 -81 -46 -101 -90 -14 -28 -16 -95 -16 -463 0 -281 4 -440 11 -459 15 -40 48 -73 94 -94 38 -17 79 -19 685 -19 626 0 646 -1 678 -20 58 -35 72 -72 72 -185 0 -110 -14 -147 -67 -182 -25 -17 -73 -18 -698 -23 -672 -5 -672 -5 -708 -33 -20 -15 -44 -42 -53 -60 -21 -39 -21 -125 -1 -163 20 -38 65 -80 100 -93 19 -8 289 -11 833 -11 701 0 809 2 841 15 48 20 71 41 94 88 19 35 19 60 17 480 -3 444 -3 444 -30 479 -54 71 -23 68 -740 68 -612 0 -645 1 -685 20 -67 30 -83 66 -83 183 0 116 14 156 68 189 35 21 35 21 691 22 606 1 658 2 688 19 137 74 130 264 -12 328 -38 18 -85 19 -840 18 -652 0 -807 -2 -838 -14z"/>
             </g>
           </svg>
-          <span>OSW Studio</span>
+          <span>Hanzo App</span>
         </div>
       </div>
     </div>

@@ -391,7 +391,7 @@ export class VirtualServer {
     const blobUrlMap = blobUrls ? Object.fromEntries(blobUrls) : {};
     const deploymentIdForScript = this.deploymentId || '';
     const vfsScript = `<script>
-// VFS Asset Interceptor - Auto-injected by OSW Studio
+// VFS Asset Interceptor - Auto-injected by Hanzo App
 (function() {
   const vfsBlobUrls = ${JSON.stringify(blobUrlMap)};
   const deploymentId = ${JSON.stringify(deploymentIdForScript)};

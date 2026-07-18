@@ -23,9 +23,9 @@ export const BLOG_PROJECT_TEMPLATE: ProjectTemplate = {
       "date": "January 15, 2025"
     },
     {
-      "title": "Getting Started with OSW Studio",
+      "title": "Getting Started with Hanzo App",
       "slug": "getting-started",
-      "excerpt": "Learn how to build and publish websites using OSW Studio's AI-powered development environment.",
+      "excerpt": "Learn how to build and publish websites using Hanzo App's AI-powered development environment.",
       "author": "Admin",
       "date": "January 10, 2025"
     }
@@ -119,7 +119,7 @@ export const BLOG_PROJECT_TEMPLATE: ProjectTemplate = {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Getting Started with OSW Studio - {{siteName}}</title>
+    <title>Getting Started with Hanzo App - {{siteName}}</title>
     <link rel="stylesheet" href="/styles/style.css">
 </head>
 <body>
@@ -128,12 +128,12 @@ export const BLOG_PROJECT_TEMPLATE: ProjectTemplate = {
     <main class="container">
         <article class="post-full">
             <time>January 10, 2025</time>
-            <h2>Getting Started with OSW Studio</h2>
+            <h2>Getting Started with Hanzo App</h2>
             <div class="post-meta">
                 <span class="author">by Admin</span>
             </div>
             <div class="post-body">
-                <p>OSW Studio makes it easy to build and publish websites using AI. Here\u2019s how to get started.</p>
+                <p>Hanzo App makes it easy to build and publish websites using AI. Here\u2019s how to get started.</p>
                 <h3>Step 1: Create a Project</h3>
                 <p>Open the Projects tab and click <strong>New Project</strong>. Choose a template or start from scratch.</p>
                 <h3>Step 2: Chat with AI</h3>
@@ -177,7 +177,7 @@ export const BLOG_PROJECT_TEMPLATE: ProjectTemplate = {
       path: '/templates/footer.hbs',
       content: `<footer class="site-footer">
     <div class="container">
-        <p>&copy; 2025 {{siteName}}. Built with OSW Studio.</p>
+        <p>&copy; 2025 {{siteName}}. Built with Hanzo App.</p>
     </div>
 </footer>`
     },

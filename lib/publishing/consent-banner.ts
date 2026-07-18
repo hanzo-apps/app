@@ -77,7 +77,7 @@ export function generateConsentBanner(options: ConsentBannerOptions): string {
   }
 
   return `
-<!-- OSW Studio Consent Banner -->
+<!-- Hanzo App Consent Banner -->
 <style>
 #osw-consent-banner {
   position: fixed;

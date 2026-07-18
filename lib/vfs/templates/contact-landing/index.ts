@@ -56,7 +56,7 @@ export const CONTACT_LANDING_PROJECT_TEMPLATE: ProjectTemplate = {
                 <div class="feature-card">
                     <div class="feature-icon">&#x1F310;</div>
                     <h3>Ready to Deploy</h3>
-                    <p>Publish directly from OSW Studio in Server Mode, or export and host anywhere.</p>
+                    <p>Publish directly from Hanzo App in Server Mode, or export and host anywhere.</p>
                 </div>
             </div>
         </div>
@@ -103,7 +103,7 @@ export const CONTACT_LANDING_PROJECT_TEMPLATE: ProjectTemplate = {
     <!-- Footer -->
     <footer class="site-footer">
         <div class="container">
-            <p>&copy; 2025 MyBrand. Built with OSW Studio.</p>
+            <p>&copy; 2025 MyBrand. Built with Hanzo App.</p>
         </div>
     </footer>
 
