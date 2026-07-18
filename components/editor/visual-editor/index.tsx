@@ -26,7 +26,7 @@ import { Label } from "@hanzo/ui";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
 import { cn } from "@/lib/utils";
 import { HexColorPicker } from "react-colorful";
-import type { editor } from "monaco-editor";
+import type { CodeEditorHandle } from "@/components/code-editor";
 
 interface SourceLocation {
   file: string;
@@ -50,7 +50,7 @@ interface SelectedElementInfo {
 
 interface VisualEditorProps {
   iframeRef: React.RefObject<HTMLIFrameElement | null>;
-  editorRef: React.RefObject<editor.IStandaloneCodeEditor | null>;
+  editorRef: React.RefObject<CodeEditorHandle | null>;
   isEnabled: boolean;
   onToggle: (enabled: boolean) => void;
   onElementSelect?: (element: SelectedElementInfo) => void;
@@ -143,12 +143,10 @@ export function VisualEditor({
 
   // Find source location in Monaco editor
   const findSourceLocation = useCallback((element: HTMLElement): SourceLocation | undefined => {
-    if (!editorRef.current) return undefined;
+    const editor = editorRef.current;
+    if (!editor) return undefined;
 
-    const model = editorRef.current.getModel();
-    if (!model) return undefined;
-
-    const htmlContent = model.getValue();
+    const htmlContent = editor.getValue();
     const selector = getCSSSelector(element);
     const xpath = getXPath(element);
 
@@ -157,7 +155,7 @@ export function VisualEditor({
       const idPattern = new RegExp(`id=["']${element.id}["']`, "g");
       const match = idPattern.exec(htmlContent);
       if (match) {
-        const position = model.getPositionAt(match.index);
+        const position = editor.getPositionAt(match.index);
         return {
           file: "index.html",
           line: position.lineNumber,
@@ -172,7 +170,7 @@ export function VisualEditor({
     const htmlPattern = new RegExp(escapedHTML);
     const match = htmlPattern.exec(htmlContent);
     if (match) {
-      const position = model.getPositionAt(match.index);
+      const position = editor.getPositionAt(match.index);
       return {
         file: "index.html",
         line: position.lineNumber,
@@ -229,38 +227,9 @@ export function VisualEditor({
       onElementSelect(info);
     }
 
-    // Jump to source in Monaco editor
+    // Jump to source in the code editor
     if (info.sourceLocation && editorRef.current) {
-      editorRef.current.setPosition({
-        lineNumber: info.sourceLocation.line,
-        column: info.sourceLocation.column,
-      });
-      editorRef.current.revealLineInCenter(info.sourceLocation.line);
-
-      // Highlight the line
-      const decorations = editorRef.current.deltaDecorations(
-        [],
-        [
-          {
-            range: {
-              startLineNumber: info.sourceLocation.line,
-              startColumn: 1,
-              endLineNumber: info.sourceLocation.line,
-              endColumn: 1000,
-            },
-            options: {
-              isWholeLine: true,
-              className: "bg-white/10",
-              glyphMarginClassName: "bg-white",
-            },
-          },
-        ]
-      );
-
-      // Remove highlight after 2 seconds
-      setTimeout(() => {
-        editorRef.current?.deltaDecorations(decorations, []);
-      }, 2000);
+      editorRef.current.revealLine(info.sourceLocation.line);
     }
   }, [isEnabled, editMode, findSourceLocation, onElementSelect, editorRef]);
 
@@ -285,12 +254,10 @@ export function VisualEditor({
     // Apply to element
     (selectedElement.element.style as any)[property] = value;
 
-    // Update in Monaco editor
-    if (editorRef.current && selectedElement.sourceLocation) {
-      const model = editorRef.current.getModel();
-      if (!model) return;
-
-      const lineContent = model.getLineContent(selectedElement.sourceLocation.line);
+    // Update in the code editor
+    const editor = editorRef.current;
+    if (editor && selectedElement.sourceLocation) {
+      const lineContent = editor.getLineContent(selectedElement.sourceLocation.line);
       let newLineContent = lineContent;
 
       // Try to update inline style
@@ -314,22 +281,10 @@ export function VisualEditor({
         }
       }
 
-      // Update the line in editor
-      const range = {
-        startLineNumber: selectedElement.sourceLocation.line,
-        startColumn: 1,
-        endLineNumber: selectedElement.sourceLocation.line,
-        endColumn: lineContent.length + 1,
-      };
-
-      editorRef.current.executeEdits('visual-editor', [{
-        range,
-        text: newLineContent,
-        forceMoveMarkers: true,
-      }]);
+      editor.replaceLine(selectedElement.sourceLocation.line, newLineContent);
 
       if (onCodeUpdate) {
-        onCodeUpdate(model.getValue(), selectedElement.sourceLocation);
+        onCodeUpdate(editor.getValue(), selectedElement.sourceLocation);
       }
     }
 
@@ -342,31 +297,18 @@ export function VisualEditor({
 
     selectedElement.element.textContent = elementText;
 
-    // Update in Monaco editor
-    if (editorRef.current && selectedElement.sourceLocation) {
-      const model = editorRef.current.getModel();
-      if (!model) return;
-
-      const lineContent = model.getLineContent(selectedElement.sourceLocation.line);
+    // Update in the code editor
+    const editor = editorRef.current;
+    if (editor && selectedElement.sourceLocation) {
+      const lineContent = editor.getLineContent(selectedElement.sourceLocation.line);
       const tagMatch = />([^<]*)</.exec(lineContent);
 
       if (tagMatch) {
         const newLineContent = lineContent.replace(tagMatch[0], `>${elementText}<`);
-        const range = {
-          startLineNumber: selectedElement.sourceLocation.line,
-          startColumn: 1,
-          endLineNumber: selectedElement.sourceLocation.line,
-          endColumn: lineContent.length + 1,
-        };
-
-        editorRef.current.executeEdits('visual-editor', [{
-          range,
-          text: newLineContent,
-          forceMoveMarkers: true,
-        }]);
+        editor.replaceLine(selectedElement.sourceLocation.line, newLineContent);
 
         if (onCodeUpdate) {
-          onCodeUpdate(model.getValue(), selectedElement.sourceLocation);
+          onCodeUpdate(editor.getValue(), selectedElement.sourceLocation);
         }
       }
     }
