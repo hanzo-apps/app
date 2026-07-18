@@ -61,6 +61,8 @@ import { useUser } from "@/hooks/useUser";
 import { useOrg } from "@/lib/org/client";
 import { currentOrg, orgDisplayName } from "@/lib/org-scope";
 import { useCloudBalance, spendableCents } from "@/lib/billing/live-balance";
+import { OrgAvatar } from "@/components/org-switcher";
+import { gravatarUrl } from "@/lib/avatar";
 
 const fmtUsd = (cents: number): string => `$${(cents / 100).toFixed(2)}`;
 
@@ -119,12 +121,16 @@ export function EditorAccountMenu({
 
   const name = user.fullname || user.name || "Account";
   const initial = name.charAt(0).toUpperCase();
+  // Gravatar fallback: when IAM carries no `picture`, derive one from the email.
+  // `d=404` ⇒ "no gravatar for this email" → the <img> errors → Radix Avatar
+  // swaps to the initial (its onError-driven <AvatarFallback>). Never fabricated.
+  const gravatar = user.email ? gravatarUrl(user.email, 64) : "";
+  const avatarSrc = user.avatarUrl || gravatar || undefined;
 
   // Active org scope — resolved exactly like the OrgSwitcher/SidebarWallet, so
   // the workspace row names the ORG the credits attribute to (never the person).
   const orgId = currentOrg() || ctx?.currentOrg || "";
   const orgName = orgDisplayName(ctx?.orgs ?? [], orgId) || "Workspace";
-  const orgInitial = orgName.charAt(0).toUpperCase() || "W";
   const activeOrg = (ctx?.orgs ?? []).find((o) => o.name === orgId);
   const orgKind = activeOrg?.isPersonal ? "Personal" : "Team";
 
@@ -150,7 +156,7 @@ export function EditorAccountMenu({
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="sm" className="gap-2 px-1.5">
             <Avatar className="size-7">
-              <AvatarImage src={user.avatarUrl} alt={name} />
+              <AvatarImage src={avatarSrc} alt={name} />
               <AvatarFallback className="bg-white/10 text-xs text-white">
                 {initial}
               </AvatarFallback>
@@ -168,7 +174,7 @@ export function EditorAccountMenu({
           <DropdownMenuLabel className="px-2 py-2 font-normal">
             <div className="flex items-center gap-2">
               <Avatar className="size-7">
-                <AvatarImage src={user.avatarUrl} alt={name} />
+                <AvatarImage src={avatarSrc} alt={name} />
                 <AvatarFallback className="bg-white/10 text-xs text-white">
                   {initial}
                 </AvatarFallback>
@@ -191,11 +197,9 @@ export function EditorAccountMenu({
 
           <DropdownMenuSeparator className="-mx-1.5 my-1.5 bg-white/10" />
 
-          {/* Active workspace/org — org logo (initial fallback) + plan/kind. */}
+          {/* Active workspace/org — real mark (image/emoji/initial) + plan/kind. */}
           <DropdownMenuLabel className="flex items-center gap-2.5 px-2 py-1.5 font-normal">
-            <span className="flex size-7 shrink-0 items-center justify-center rounded-md border border-white/10 bg-white/[0.06] text-[11px] font-semibold text-white">
-              {orgInitial}
-            </span>
+            <OrgAvatar name={orgName} logo={activeOrg?.logo} className="size-7 text-[11px]" />
             <span className="min-w-0 flex-1">
               <span className="block truncate text-sm font-medium text-white">{orgName}</span>
               <span className="block text-[11px] text-white/40">Workspace</span>
