@@ -43,11 +43,11 @@ export function AboutModal({ open, onOpenChange }: AboutModalProps) {
           <section>
             <div className="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed space-y-3">
               <p>
-                Hanzo App is a BYOK (Bring Your Own Key) agentic browser-based website builder where you describe what you want and an agent writes the code. Originally forked from @enzostvs and @victor's DeepSite v2, it has evolved into a full-featured development environment.
+                Hanzo App is an agentic, browser-based app builder: describe what you want and an agent writes the code, then ships it through the real pipeline — commit to git, build, deploy to object storage, live at your-app.hanzo.app. Web apps, mobile, and games, all on the Hanzo Cloud stack.
               </p>
-              
+
               <p>
-                This is a solo project and there isn't a huge corpo behind it. I'll do my best to fix issues and possibly keep the project improving, but it's just me doing this for fun so please be patient. All feedback and contributions are more than welcome.
+                Every app is wired into Hanzo Cloud primitives out of the box — Database, Auth (hanzo.id), AI (api.hanzo.ai), and Storage — with usage and billing unified across the platform. Sign in with GitHub, GitLab, or Google and deploy from any repo.
               </p>
 
               <p>

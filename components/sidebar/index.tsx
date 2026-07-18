@@ -14,7 +14,6 @@ import {
   Sparkles,
   Settings,
   Info,
-  TestTube,
   Github,
   ChevronLeft,
   ChevronRight,
@@ -83,7 +82,6 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
     ]
   },
   { id: 'tour', label: 'Guided Tour', icon: Info, action: 'start-tour' },
-  { id: 'tester', label: 'Benchmark', icon: TestTube, path: '/test-generation' },
   { id: 'about', label: 'About', icon: Info, action: 'open-about' },
   { id: 'discord', label: 'Discord', icon: DiscordIcon, href: 'https://discord.gg/mAJ8Ss4u' },
   { id: 'github', label: 'GitHub', icon: Github, href: 'https://github.com/hanzoai/app' },
@@ -144,6 +142,9 @@ function SidebarContent({
     return initial;
   });
   const [logoHover, setLogoHover] = useState(false);
+  // Brand flourish: after load, the "Hanzo App" wordmark folds into just the H
+  // mark (Vercel-style). Stays "Hanzo App" (no fold) for reduced-motion users.
+  const [wordmarkFolded, setWordmarkFolded] = useState(false);
 
   const isServerMode = process.env.NEXT_PUBLIC_SERVER_MODE === 'true';
 
@@ -155,6 +156,14 @@ function SidebarContent({
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Fold the wordmark shortly after load — subtle, one-shot, reduced-motion-safe.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    const t = setTimeout(() => setWordmarkFolded(true), 1500);
+    return () => clearTimeout(t);
   }, []);
 
   // Collapsed state is derived: collapsed when not pinned AND not hovering (desktop only)
@@ -356,11 +365,11 @@ function SidebarContent({
         )}
       >
         {/* Icon container with position relative for chevron overlay */}
-        <div className="relative w-6 h-6 flex items-center justify-center flex-shrink-0">
+        <div className="relative w-5 h-5 flex items-center justify-center flex-shrink-0">
           {/* Hanzo H mark - hidden on hover */}
           <HanzoLogo
             className={cn(
-              "w-6 h-6 text-foreground transition-opacity absolute",
+              "w-5 h-5 text-foreground transition-opacity absolute",
               logoHover && "opacity-0"
             )}
           />
@@ -370,14 +379,14 @@ function SidebarContent({
           {pinned ? (
             <ChevronLeft
               className={cn(
-                "hidden md:block h-6 w-6 transition-opacity absolute",
+                "hidden md:block h-5 w-5 transition-opacity absolute",
                 logoHover ? "opacity-100" : "opacity-0 pointer-events-none"
               )}
             />
           ) : (
             <ChevronRight
               className={cn(
-                "hidden md:block h-6 w-6 transition-opacity absolute",
+                "hidden md:block h-5 w-5 transition-opacity absolute",
                 logoHover ? "opacity-100" : "opacity-0 pointer-events-none"
               )}
             />
@@ -385,7 +394,14 @@ function SidebarContent({
         </div>
 
         {!collapsed && (
-          <div className="flex flex-col">
+          <div
+            className={cn(
+              "flex flex-col overflow-hidden transition-all duration-500 ease-out motion-reduce:transition-none",
+              wordmarkFolded && !(logoHover && !pinned)
+                ? "max-w-0 -translate-x-1 opacity-0"
+                : "max-w-[9rem] translate-x-0 opacity-100"
+            )}
+          >
             <span className="text-sm font-medium whitespace-nowrap leading-none">
               {logoHover && !pinned ? "Pin" : "Hanzo\u00A0App"}
             </span>
