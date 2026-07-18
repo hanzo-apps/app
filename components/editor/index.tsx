@@ -471,9 +471,23 @@ export const AppEditor = ({
         </div>
       </main>
 
-      {/* AI Supervisor Panel */}
+      {/* AI Supervisor Panel — fixed to the viewport bottom-right so it pins
+          reliably, with its own close button (the toggle below is hidden while
+          open, so it can never cover/trap the panel). */}
       {showSupervisor && (
-        <div className="absolute bottom-16 right-4 w-96 max-h-[60vh] overflow-hidden shadow-2xl z-50">
+        <div className="fixed bottom-4 right-4 w-96 max-h-[60vh] overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950 shadow-2xl z-50">
+          <button
+            type="button"
+            onClick={() => setShowSupervisor(false)}
+            title="Close AI Supervisor"
+            aria-label="Close AI Supervisor"
+            className="absolute top-2 right-2 z-10 flex size-7 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-neutral-800 hover:text-white"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
           <AISupervisor
             pages={pages}
             iframeRef={iframeRef}
@@ -498,15 +512,12 @@ export const AppEditor = ({
         </div>
       )}
 
-      {/* Supervisor Toggle Button */}
+      {/* Supervisor Toggle Button — hidden while the panel is open (the panel's
+          own X closes it), so the button can never be covered/trapped. */}
+      {!showSupervisor && (
       <button
-        onClick={() => setShowSupervisor(!showSupervisor)}
-        className={classNames(
-          "fixed bottom-20 right-4 p-3 rounded-full shadow-lg transition-all z-40",
-          showSupervisor
-            ? "bg-white text-neutral-900"
-            : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700"
-        )}
+        onClick={() => setShowSupervisor(true)}
+        className="fixed bottom-4 right-4 p-3 rounded-full shadow-lg transition-all z-40 bg-neutral-800 text-neutral-400 hover:bg-neutral-700"
         title="AI Supervisor"
       >
         <svg
@@ -523,6 +534,7 @@ export const AppEditor = ({
           />
         </svg>
       </button>
+      )}
 
       <ShareModal
         isOpen={isShareModalOpen}
