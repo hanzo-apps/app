@@ -1,22 +1,24 @@
 "use client";
 import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import type { editor } from "monaco-editor";
+import type { CodeEditorHandle } from "@/components/code-editor";
 import dynamic from "next/dynamic";
 import { CopyIcon, Share2 } from "lucide-react";
 
-// Monaco is heavy (~loads its own worker + language services) and only ever
-// needed once the builder mounts. Code-split it out of the /dev first-load
-// chunk; show a calm placeholder while it streams in. Client-only (it touches
-// `window`), so no SSR pass.
-const Editor = dynamic(() => import("@monaco-editor/react"), {
-  ssr: false,
-  loading: () => (
-    <div className="h-full w-full bg-neutral-900 flex items-center justify-center text-neutral-500 text-xs absolute left-0 top-0">
-      Loading editor…
-    </div>
-  ),
-});
+// CodeMirror bundles locally (no CDN, no web workers) so it is CSP-clean.
+// Still code-split out of the /dev first-load chunk and rendered client-only
+// (it touches the DOM on mount); show a calm placeholder while it streams in.
+const CodeEditor = dynamic(
+  () => import("@/components/code-editor").then((m) => m.CodeEditor),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-full w-full bg-neutral-900 flex items-center justify-center text-neutral-500 text-xs absolute left-0 top-0">
+        Loading editor…
+      </div>
+    ),
+  }
+);
 import {
   useCopyToClipboard,
   useEvent,
@@ -75,10 +77,8 @@ export const AppEditor = ({
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const preview = useRef<HTMLDivElement>(null);
   const editor = useRef<HTMLDivElement>(null);
-  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+  const editorRef = useRef<CodeEditorHandle | null>(null);
   const resizer = useRef<HTMLDivElement>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const monacoRef = useRef<any>(null);
 
   const [currentTab, setCurrentTab] = useState("chat");
   // Open on the project's entry page: index.html when present (e.g. a dropped
@@ -219,10 +219,6 @@ export const AppEditor = ({
     }
   }, [currentTab]);
 
-  const handleEditorValidation = (_markers: editor.IMarker[]) => {
-    // Validation markers available for future error display
-  };
-
   const currentPageData = useMemo(() => {
     return (
       pages.find((page) => page.path === currentPage) ?? {
@@ -337,42 +333,27 @@ export const AppEditor = ({
                   toast.success("HTML copied to clipboard!");
                 }}
               />
-              <Editor
-                defaultLanguage="html"
-                theme="vs-dark"
+              <CodeEditor
+                language="html"
                 className={classNames(
-                  "h-full bg-neutral-900 transition-all duration-200 absolute left-0 top-0",
+                  "h-full w-full bg-neutral-900 transition-all duration-200 absolute left-0 top-0",
                   {
                     "pointer-events-none": isAiWorking,
                   }
                 )}
-                options={{
-                  colorDecorators: true,
-                  fontLigatures: true,
-                  theme: "vs-dark",
-                  minimap: { enabled: false },
-                  scrollbar: {
-                    horizontal: "hidden",
-                  },
-                  wordWrap: "on",
-                }}
                 value={currentPageData.html}
                 onChange={(value) => {
-                  const newValue = value ?? "";
-                  // setHtml(newValue);
                   setPages((prev) =>
                     prev.map((page) =>
                       page.path === currentPageData.path
-                        ? { ...page, html: newValue }
+                        ? { ...page, html: value }
                         : page
                     )
                   );
                 }}
-                onMount={(editor, monaco) => {
-                  editorRef.current = editor;
-                  monacoRef.current = monaco;
+                onReady={(handle) => {
+                  editorRef.current = handle;
                 }}
-                onValidate={handleEditorValidation}
               />
               <AskAI
                 isNew={isNew}
@@ -399,26 +380,6 @@ export const AppEditor = ({
                   if (window.innerWidth <= 1024) {
                     setCurrentTab("preview");
                   }
-                  // if (updatedLines && updatedLines?.length > 0) {
-                  //   const decorations = updatedLines.map((line) => ({
-                  //     range: new monacoRef.current.Range(
-                  //       line[0],
-                  //       1,
-                  //       line[1],
-                  //       1
-                  //     ),
-                  //     options: {
-                  //       inlineClassName: "matched-line",
-                  //     },
-                  //   }));
-                  //   setTimeout(() => {
-                  //     editorRef?.current
-                  //       ?.getModel()
-                  //       ?.deltaDecorations([], decorations);
-
-                  //     editorRef.current?.revealLine(updatedLines[0][0]);
-                  //   }, 100);
-                  // }
                 }}
                 setPages={setPages}
                 pages={pages}
@@ -430,7 +391,7 @@ export const AppEditor = ({
                 }}
                 onScrollToBottom={() => {
                   editorRef.current?.revealLine(
-                    editorRef.current?.getModel()?.getLineCount() ?? 0
+                    editorRef.current?.getLineCount() ?? 0
                   );
                 }}
                 isEditableModeEnabled={isEditableModeEnabled}

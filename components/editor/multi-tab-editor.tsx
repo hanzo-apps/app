@@ -1,14 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import MonacoEditor, { useMonaco } from '@monaco-editor/react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { CodeEditor } from '@/components/code-editor';
 import { VirtualFile, ProjectRuntime } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';
 import { X, Code2, Save, FileCode, Image as ImageIcon, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn, logger } from '@/lib/utils';
-import { useTheme } from 'next-themes';
-import { useTypescriptIntelliSense } from '@/lib/hooks/use-typescript-intellisense';
 
 interface MultiTabEditorProps {
   projectId: string;
@@ -23,22 +21,10 @@ interface OpenFile {
   modified: boolean;
 }
 
-export function MultiTabEditor({ projectId, runtime, onFilesChange: _onFilesChange, onClose }: MultiTabEditorProps) {
+export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClose }: MultiTabEditorProps) {
   const [openFiles, setOpenFiles] = useState<Map<string, OpenFile>>(new Map());
   const [activeFilePath, setActiveFilePath] = useState<string | null>(null);
-  const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
   const savingPathsRef = React.useRef<Set<string>>(new Set());
-
-  // TypeScript IntelliSense for React projects
-  const monacoInstance = useMonaco();
-  const monacoRef = useRef(monacoInstance);
-  useEffect(() => { monacoRef.current = monacoInstance; }, [monacoInstance]);
-  useTypescriptIntelliSense(projectId, runtime, monacoRef);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     const handleFileOpen = (event: CustomEvent<VirtualFile>) => {
@@ -423,24 +409,12 @@ export function MultiTabEditor({ projectId, runtime, onFilesChange: _onFilesChan
                 }
                 
                 return (
-                  <MonacoEditor
+                  <CodeEditor
+                    key={activeFile.file.path}
                     height="100%"
-                    path={activeFile.file.path}
                     language={getLanguageFromPath(activeFile.file.path)}
                     value={activeFile.content}
                     onChange={(value) => handleContentChange(value, activeFile.file.path)}
-                    theme={mounted ? (resolvedTheme === 'dark' ? 'vs-dark' : 'light') : 'vs-dark'}
-                    options={{
-                      minimap: { enabled: false },
-                      fontSize: 14,
-                      lineNumbers: 'on',
-                      roundedSelection: false,
-                      scrollBeyondLastLine: false,
-                      automaticLayout: true,
-                      tabSize: 2,
-                      wordWrap: 'on',
-                      wrappingIndent: 'indent'
-                    }}
                   />
                 );
               })()}
