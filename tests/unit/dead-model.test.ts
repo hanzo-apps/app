@@ -33,6 +33,9 @@ test("dead OpenAI / codex ids are flagged", () => {
 
 test("real gateway ids and the smart-routing sentinel pass through", () => {
   for (const id of [
+    "enso", // Hanzo's frontier orchestrator — the current default
+    "enso-flash",
+    "enso-ultra",
     "zen5-coder",
     "zen5-flash",
     "zen5",
