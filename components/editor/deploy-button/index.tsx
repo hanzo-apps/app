@@ -44,8 +44,9 @@ export function DeployButton({
               </div>
             </PopoverTrigger>
             <PopoverContent
-              className="!rounded-2xl !p-0 !bg-white !border-neutral-200 min-w-xs text-center overflow-hidden"
+              className="w-72 !rounded-xl !p-0 !bg-neutral-950 !border-white/10 overflow-hidden shadow-2xl"
               align="end"
+              sideOffset={8}
             >
               <DeployButtonContent pages={pages} prompts={prompts} />
             </PopoverContent>
