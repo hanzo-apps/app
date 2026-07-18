@@ -38,7 +38,12 @@ import { Page } from "@/types";
 const HANZO_AI_BASE_URL =
   process.env.HANZO_AI_BASE_URL || "https://api.hanzo.ai/v1";
 
-const MAX_TOKENS = 131_000;
+// Output-token ceiling for a generation. Must not exceed the SMALLEST output cap
+// among the models the gateway may route to: claude-opus-4-8 (Enso's upstream)
+// caps at 128000, so 131000 made every Enso build 502 with
+// `max_tokens: 131000 > 128000`. 128000 is ample for a full multi-page app and
+// safe across the Zen ladder + Enso.
+const MAX_TOKENS = 128_000;
 
 // ASCII Record Separator (U+001E). Appended once after the page content to
 // carry the served model AND the gateway response id back to the client without
