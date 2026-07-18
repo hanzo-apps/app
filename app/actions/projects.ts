@@ -1,21 +1,30 @@
 "use server";
 
+import { cookies } from "next/headers";
+
 import { isAuthenticated } from "@/lib/auth";
 import {
   listProjects,
   getProject as getProjectRow,
   spaceId,
 } from "@/lib/db/projects";
+import MY_TOKEN_KEY from "@/lib/get-cookie-name";
 import { cloudBase } from "@/lib/org/server";
 import { Project as ProjectType } from "@/types";
 
 /**
  * The ONE canonical projects store is the org-scoped cloud projectsvc
  * (`api.hanzo.ai/v1/projects`) — the SAME records console.hanzo.ai and the
- * /v1/projects BFF read, tenant-derived from the bearer `owner` claim. We fetch
- * it here (server-side, with the user's IAM bearer) and map to the BaseProjectRow
- * shape the dashboard renders. The per-user Base store (listProjects) remains only
- * as a self-hosted fallback when cloud is unreachable — never a second source of truth.
+ * same-origin `/v1/projects` BFF read, tenant-derived from the bearer `owner`
+ * claim. We reach it here EXACTLY the way that (proven-working) BFF does: the raw
+ * `hanzo_token` httpOnly cookie is forwarded verbatim as the bearer, and cloud
+ * verifies it + derives the tenant. We deliberately do NOT gate this on an IAM
+ * userinfo round-trip (isAuthenticated) — that round-trip is the regression that
+ * made this return 0 (it fails from the pod, short-circuiting before the fetch);
+ * the cloud gateway is the authoritative verifier, so forwarding the cookie is
+ * sufficient and correct. The per-user Base store (listProjects) remains only as
+ * a fail-soft fallback when the cookie is absent or the cloud call throws — never
+ * a second source of truth.
  */
 async function cloudOrgProjects(token: string): Promise<Array<Record<string, unknown>>> {
   const res = await fetch(`${cloudBase()}/v1/projects`, {
@@ -43,25 +52,35 @@ export async function getProjects(): Promise<{
   ok: boolean;
   projects: ProjectType[];
 }> {
+  // Primary + canonical: forward the SAME httpOnly `hanzo_token` cookie the
+  // working /v1/projects BFF forwards, straight to the org-scoped cloud store.
+  // No userinfo round-trip — cloud is the authoritative verifier of the bearer.
+  const token = (await cookies()).get(MY_TOKEN_KEY())?.value;
+  if (token) {
+    try {
+      return {
+        ok: true,
+        projects: (await cloudOrgProjects(token)) as unknown as ProjectType[],
+      };
+    } catch {
+      // Cloud unreachable → fall through to the per-user Base fallback below.
+    }
+  }
+
+  // Fail-soft: the per-user Base store. It scopes by the caller's IAM `sub`, so
+  // it needs the validated identity (isAuthenticated) — used only when the cloud
+  // store is unavailable or the session cookie is missing.
   const user = await isAuthenticated();
   if (!user) {
     return { ok: false, projects: [] };
   }
-  try {
-    return {
-      ok: true,
-      projects: (await cloudOrgProjects(user.token)) as unknown as ProjectType[],
-    };
-  } catch {
-    // Self-hosted / cloud-unreachable fallback: the per-user Base store.
-    return {
-      ok: true,
-      projects: (await listProjects(
-        user.token,
-        user.id
-      )) as unknown as ProjectType[],
-    };
-  }
+  return {
+    ok: true,
+    projects: (await listProjects(
+      user.token,
+      user.id
+    )) as unknown as ProjectType[],
+  };
 }
 
 export async function getProject(
