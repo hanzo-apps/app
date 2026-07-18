@@ -1,6 +1,6 @@
 import { http, createConfig } from 'wagmi'
 import { base, mainnet, arbitrum } from 'wagmi/chains'
-import { injected, coinbaseWallet } from 'wagmi/connectors'
+import { injected } from 'wagmi/connectors'
 
 // Hanzo treasury wallet for receiving payments
 export const TREASURY_ADDRESS = '0xda93811b968ba9d3b69eef9b0178da651006cf5c' as const
@@ -27,19 +27,22 @@ export const CHAIN_INFO = {
   [arbitrum.id]: { name: 'Arbitrum', explorer: 'https://arbiscan.io' },
 } as const
 
-// Connectors that do NOT phone home on construction: `injected` (reads
-// window.ethereum) and `coinbaseWallet` (opens its popup only on an explicit
-// connect). `walletConnect` is deliberately EXCLUDED — its Core eagerly opens
-// relay/verify/explorer/pulse sockets the moment WagmiProvider mounts, which
-// floods the console with CSP violations on every dashboard/billing load even
-// though nobody has chosen to connect. Crypto top-up (components/crypto-payment)
-// still works over injected + Coinbase; WalletConnect is not our one canonical
-// path here, so it stays off rather than being lazily bolted on.
+// ONE wallet connector: `injected()` — which via EIP-6963 auto-discovery picks
+// up LUX WALLET (our own wallet, github.com/luxwallet — the extension registers
+// an EIP-6963 provider on window.ethereum with its rdns) as well as any other
+// injected wallet the user has. This is our canonical, native path.
+//
+// The third-party connectors are DELIBERATELY EXCLUDED:
+//   • `walletConnect` — its Core eagerly opens relay/verify/explorer/pulse
+//     sockets the moment WagmiProvider mounts, flooding the console with CSP
+//     violations on every load even when nobody connects.
+//   • `coinbaseWallet` — a third-party wallet SDK; not ours. LuxWallet is the
+//     canonical Hanzo/Lux wallet, and MetaMask etc. still connect via injected.
+// So the app uses our own wallet, not a third-party connector bolted on.
 export const wagmiConfig = createConfig({
   chains: [base, mainnet, arbitrum],
   connectors: [
     injected(),
-    coinbaseWallet({ appName: 'Hanzo' }),
   ],
   transports: {
     [mainnet.id]: http(),
