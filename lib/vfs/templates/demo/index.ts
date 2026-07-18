@@ -2496,7 +2496,7 @@ document.addEventListener('DOMContentLoaded', function() {
     {"name": "Consulting", "url": "/portfolio.html"}
   ],
   "deepstudioLink": "https://huggingface.co/spaces/otst/oswstudio",
-  "deepstudioName": "OSW Studio",
+  "deepstudioName": "Hanzo App",
   "legalLinks": [
     {"name": "Privacy Policy", "url": "/privacy.html"},
     {"name": "Terms of Service", "url": "/terms.html"}

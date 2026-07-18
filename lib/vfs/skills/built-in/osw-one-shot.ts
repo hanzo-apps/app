@@ -8,7 +8,7 @@ name: osw-one-shot
 description: Read when building landing pages, page layouts, or complete sites. Covers execution order, Handlebars components, CDN resources, and efficient page structure.
 ---
 
-# OSW Studio One-Shot Site Building
+# Hanzo App One-Shot Site Building
 
 ## Purpose
 This skill helps you build complete multi-page websites efficiently in a single session. Focus on visible progress and systematic execution.
