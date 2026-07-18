@@ -24,7 +24,10 @@ export type ModelOption = {
 };
 
 // The model the builder opens on when neither storage nor the gateway pick one.
-export const DEFAULT_MODEL = "zen5-coder";
+// Enso is Hanzo's proprietary frontier orchestrator ("one model to command them
+// all") and the current default for all new requests — the app opens on it, and
+// any stale/dead persisted id resolves to it.
+export const DEFAULT_MODEL = "enso";
 
 // The Hanzo gateway (api.hanzo.ai) serves the Zen ladder + connected providers —
 // NOT OpenAI `gpt-*` / `o1|o3` / legacy `-codex` ids. A stale selection persisted
@@ -125,11 +128,12 @@ const NON_BUILD_SEGMENTS = new Set([
   "vl",
 ]);
 
-// A build model is a Zen chat/code SKU: id starts with `zen` and carries none of
-// the non-build segments. Pure rule — the LIST of ids stays dynamic (it comes
-// from the gateway); this only decides membership.
+// A build model is a Zen or Enso chat/code SKU: id starts with `zen` or `enso`
+// (Enso is Hanzo's proprietary frontier family, the current default) and carries
+// none of the non-build segments. Pure rule — the LIST of ids stays dynamic (it
+// comes from the gateway); this only decides membership.
 export function isBuildModel(id: string): boolean {
-  if (!id.startsWith("zen")) return false;
+  if (!id.startsWith("zen") && !id.startsWith("enso")) return false;
   return !id
     .toLowerCase()
     .split(/[-_]/)
@@ -172,6 +176,9 @@ export function buildModelsFrom(
 // the client useModels() fallback — so the picker never breaks. It is NOT the
 // source of truth; the gateway is. Keep it to the current Zen 5 ladder.
 export const FALLBACK_MODELS: ModelOption[] = [
+  { value: "enso", label: "Enso" },
+  { value: "enso-flash", label: "Enso Flash" },
+  { value: "enso-ultra", label: "Enso Ultra" },
   { value: "zen5-coder", label: "Zen 5 Coder" },
   { value: "zen5-flash", label: "Zen 5 Flash" },
   { value: "zen5", label: "Zen 5" },
