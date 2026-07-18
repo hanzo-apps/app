@@ -34,6 +34,7 @@ import { useCallAi } from "@/hooks/useCallAi";
 import { sendRewardSignal, getLastGenerationRequestId } from "@/lib/reward-signal";
 import { SelectedFiles } from "./selected-files";
 import { Uploader } from "./uploader";
+import { VoiceInput } from "./voice-input";
 
 // Fix mode composes this short, human intent preamble in front of the user's
 // text (empty text is fine when references are attached). The reference images
@@ -441,7 +442,9 @@ export function AskAI({
   }, [currentPage.html]);
 
   return (
-    <div className="px-3">
+    // Composer is pinned to the BOTTOM of the (flex-col) chat pane: `mt-auto`
+    // pushes it down so any messages/queue scroll above it, Lovable-style.
+    <div className="mt-auto px-3 pb-1">
       {/* Stacked Message Queue Cards */}
       {messageQueue.length > 0 && (
         <div className="mb-4 space-y-2">
@@ -719,12 +722,12 @@ export function AskAI({
                 <TooltipTrigger asChild>
                   <Button
                     size="xs"
-                    variant={isEditableModeEnabled ? "default" : "outline"}
+                    variant={isEditableModeEnabled ? "default" : "ghost"}
                     onClick={() => {
                       setIsEditableModeEnabled?.(!isEditableModeEnabled);
                     }}
                     className={classNames("h-[28px]", {
-                      "!text-neutral-400 hover:!text-neutral-200 !border-neutral-600 !hover:!border-neutral-500":
+                      "text-neutral-400 hover:bg-white/10 hover:!text-neutral-200":
                         !isEditableModeEnabled,
                     })}
                   >
@@ -769,18 +772,27 @@ export function AskAI({
               error={providerError}
               onClose={setOpenProvider}
             />
+            {/* Voice dictation — appends the spoken phrase to the prompt. Renders
+                nothing where the browser has no SpeechRecognition. */}
+            <VoiceInput
+              disabled={isAiWorking || isUploading}
+              onTranscript={(t) =>
+                setPrompt((p) => (p.trim() ? `${p.trim()} ${t}` : t))
+              }
+            />
             {isAiWorking ? (
               <Button
                 size="iconXs"
                 variant="destructive"
                 onClick={stopController}
-                className="gap-1"
+                className="gap-1 rounded-full"
               >
                 <FaStopCircle className="size-4" />
               </Button>
             ) : (
               <Button
                 size="iconXs"
+                className="rounded-full"
                 disabled={
                   isUploading ||
                   (!prompt.trim() &&

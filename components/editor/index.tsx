@@ -3,7 +3,7 @@ import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { CodeEditorHandle } from "@/components/code-editor";
 import dynamic from "next/dynamic";
-import { Code2, CopyIcon, Share2 } from "lucide-react";
+import { CopyIcon, Share2 } from "lucide-react";
 
 // CodeMirror bundles locally (no CDN, no web workers) so it is CSP-clean.
 // Still code-split out of the /dev first-load chunk and rendered client-only
@@ -43,7 +43,6 @@ import { SaveButton } from "./save-button";
 import { LoadProject } from "../my-projects/load-project";
 import { isTheSameHtml } from "@/lib/compare-html-diff";
 import { ListPages } from "./pages";
-import { PageNavigator } from "./page-navigator";
 import { ShareModal } from "./share-modal";
 import { VisualEditor } from "./visual-editor";
 import { AISupervisor } from "./ai-supervisor";
@@ -80,11 +79,17 @@ export const AppEditor = ({
   const editorRef = useRef<CodeEditorHandle | null>(null);
   const resizer = useRef<HTMLDivElement>(null);
 
+  // The ONE view state ("chat" | "preview" | "code"): the chat pane is always
+  // docked on the left; this drives what the RIGHT pane shows — preview or the
+  // code editor — and, on mobile, which single pane is visible.
   const [currentTab, setCurrentTab] = useState("chat");
-  // Chat mode shows the chat by DEFAULT; the raw code editor is an opt-in
-  // overlay toggled from the panel's top-right, so a fresh chat never leaks
-  // code behind the composer.
-  const [showCode, setShowCode] = useState(false);
+  // The chat pane can be collapsed on desktop to give preview/code the full
+  // width; on mobile the tab switcher already shows one pane at a time.
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  // Live mirror so the once-registered window-resize listener always sees the
+  // current collapsed state in the split math (no stale closure, no re-register).
+  const sidebarCollapsedRef = useRef(false);
+  sidebarCollapsedRef.current = sidebarCollapsed;
   // Open on the project's entry page: index.html when present (e.g. a dropped
   // project), else the first seeded page, else the default new-project page.
   const [currentPage, setCurrentPage] = useState(
@@ -102,14 +107,15 @@ export const AppEditor = ({
   );
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-  const [currentPreviewPath, setCurrentPreviewPath] = useState("/");
   const [showSupervisor, setShowSupervisor] = useState(false);
 
   const resetLayout = () => {
     if (!editor.current || !preview.current) return;
 
-    // lg breakpoint is 1024px based on useBreakpoint definition and Tailwind defaults
-    if (window.innerWidth >= 1024) {
+    // lg breakpoint is 1024px based on useBreakpoint definition and Tailwind
+    // defaults. A collapsed chat pane means the right pane takes the full width,
+    // so clear the inline widths (flex-1 fills the row) in that case.
+    if (window.innerWidth >= 1024 && !sidebarCollapsedRef.current) {
       // Set initial 1/3 - 2/3 sizes for large screens, accounting for resizer width
       const resizerWidth = resizer.current?.offsetWidth ?? 8; // w-2 = 0.5rem = 8px
       const availableWidth = window.innerWidth - resizerWidth;
@@ -207,21 +213,12 @@ export const AppEditor = ({
     }
   });
 
+  // The chat pane is always docked on desktop, so keep the split sized correctly
+  // as the view or the collapsed state changes (the panes stay mounted; widths
+  // just re-apply). resetLayout clears the inline widths when collapsed/mobile.
   useUpdateEffect(() => {
-    if (currentTab === "chat") {
-      // Reset editor width when switching to reasoning tab
-      resetLayout();
-      // re-add the event listener for resizing
-      if (resizer.current) {
-        resizer.current.addEventListener("mousedown", handleMouseDown);
-      }
-    } else {
-      if (preview.current) {
-        // Reset preview width when switching to preview tab
-        preview.current.style.width = "100%";
-      }
-    }
-  }, [currentTab]);
+    resetLayout();
+  }, [currentTab, sidebarCollapsed]);
 
   const currentPageData = useMemo(() => {
     return (
@@ -231,6 +228,19 @@ export const AppEditor = ({
       }
     );
   }, [pages, currentPage]);
+
+  // Open the current page's generated HTML in a real new browser tab (the
+  // header's external-link control). A blob URL needs no publish and no server.
+  const openInNewTab = () => {
+    if (typeof window === "undefined") return;
+    const blob = new Blob([currentPageData?.html ?? defaultHTML], {
+      type: "text/html",
+    });
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank", "noopener,noreferrer");
+    // Revoke later so the new tab has time to load the document first.
+    setTimeout(() => URL.revokeObjectURL(url), 60_000);
+  };
 
   return (
     <OrgProvider>
@@ -244,28 +254,13 @@ export const AppEditor = ({
         htmlHistory={htmlHistory}
         setPages={setPages}
         iframeRef={iframeRef}
+        pages={pages}
+        currentPage={currentPage}
+        onSelectPage={setCurrentPage}
+        onOpenExternal={openInNewTab}
+        sidebarCollapsed={sidebarCollapsed}
+        onToggleSidebar={() => setSidebarCollapsed((v) => !v)}
       >
-        {currentTab === "preview" && (
-          <PageNavigator
-            currentPath={currentPreviewPath}
-            onNavigate={(path) => {
-              setCurrentPreviewPath(path);
-              // Update iframe src
-              if (iframeRef.current) {
-                const doc = iframeRef.current.contentDocument;
-                if (doc) {
-                  // Navigate within the iframe
-                  doc.location.href = path;
-                }
-              }
-            }}
-            onReload={() => {
-              if (iframeRef.current) {
-                iframeRef.current.contentWindow?.location.reload();
-              }
-            }}
-          />
-        )}
         {/* Secondary actions (Share / Load / Push) share ONE treatment so the
             action cluster reads as a set; Publish is the sole solid primary. */}
         <Button
@@ -291,151 +286,82 @@ export const AppEditor = ({
         )}
       </Header>
       <main className="bg-neutral-950 flex-1 max-lg:flex-col flex w-full max-lg:h-[calc(100%-82px)] relative">
-        {currentTab === "chat" && (
-          <>
-            <div
-              ref={editor}
-              className="bg-neutral-900 relative flex-1 overflow-hidden h-full flex flex-col gap-2 pb-3"
-            >
-              {/* Chat ⇄ code toggle — pinned top-right, above the overlay. Chat
-                  is the DEFAULT; the code editor is opt-in so a fresh chat never
-                  shows raw code behind the composer. */}
-              <button
-                type="button"
-                onClick={() => setShowCode((s) => !s)}
-                title={showCode ? "Hide code" : "View code"}
-                aria-label={showCode ? "Hide code" : "View code"}
-                className={classNames(
-                  "absolute top-3 right-4 z-20 flex items-center justify-center rounded-md p-1.5 transition-colors",
-                  showCode
-                    ? "bg-white/10 text-neutral-100"
-                    : "text-neutral-500 hover:bg-white/5 hover:text-neutral-200"
-                )}
-              >
-                <Code2 className="size-4" />
-              </button>
-              {/* Code surfaces overlay the chat only when opted in; the AskAI
-                  chat below stays mounted (it owns generation state). */}
-              {showCode && (
-                <>
-                  <ListPages
-                    pages={pages}
-                    currentPage={currentPage}
-                    onSelectPage={(path, newPath) => {
-                      if (newPath) {
-                        setPages((prev) =>
-                          prev.map((page) =>
-                            page.path === path ? { ...page, path: newPath } : page
-                          )
-                        );
-                        setCurrentPage(newPath);
-                      } else {
-                        setCurrentPage(path);
-                      }
-                    }}
-                    onDeletePage={(path) => {
-                      const newPages = pages.filter((page) => page.path !== path);
-                      setPages(newPages);
-                      if (currentPage === path) {
-                        setCurrentPage(newPages[0]?.path ?? "index.html");
-                      }
-                    }}
-                    onNewPage={() => {
-                      setPages((prev) => [
-                        ...prev,
-                        {
-                          path: `page-${prev.length + 1}.html`,
-                          html: defaultHTML,
-                        },
-                      ]);
-                      setCurrentPage(`page-${pages.length + 1}.html`);
-                    }}
-                  />
-                  <CopyIcon
-                    className="size-4 absolute top-14 right-5 text-neutral-500 hover:text-neutral-300 z-2 cursor-pointer"
-                    onClick={() => {
-                      copyToClipboard(currentPageData.html);
-                      toast.success("HTML copied to clipboard!");
-                    }}
-                  />
-                  <CodeEditor
-                    language="html"
-                    className={classNames(
-                      "h-full w-full bg-neutral-900 transition-all duration-200 absolute left-0 top-0",
-                      {
-                        "pointer-events-none": isAiWorking,
-                      }
-                    )}
-                    value={currentPageData.html}
-                    onChange={(value) => {
-                      setPages((prev) =>
-                        prev.map((page) =>
-                          page.path === currentPageData.path
-                            ? { ...page, html: value }
-                            : page
-                        )
-                      );
-                    }}
-                    onReady={(handle) => {
-                      editorRef.current = handle;
-                    }}
-                  />
-                </>
-              )}
-              <AskAI
-                isNew={isNew}
-                project={project}
-                images={images}
-                currentPage={currentPageData}
-                htmlHistory={htmlHistory}
-                previousPrompts={prompts}
-                onSuccess={(newPages, p: string) => {
-                  // Content-free reward signal: a generation succeeded and the
-                  // user is building on it. Attaches the last gateway response id
-                  // (no-ops if a generation produced none). Fire-and-forget.
-                  sendRewardSignal(getLastGenerationRequestId(), "accept");
-                  const currentHistory = [...htmlHistory];
-                  currentHistory.unshift({
-                    pages: newPages,
-                    createdAt: new Date(),
-                    prompt: p,
-                  });
-                  setHtmlHistory(currentHistory);
-                  setSelectedElement(null);
-                  setSelectedFiles([]);
-                  // if xs or sm
-                  if (window.innerWidth <= 1024) {
-                    setCurrentTab("preview");
-                  }
-                }}
-                setPages={setPages}
-                pages={pages}
-                setCurrentPage={setCurrentPage}
-                isAiWorking={isAiWorking}
-                setisAiWorking={setIsAiWorking}
-                onNewPrompt={(prompt: string) => {
-                  setPrompts((prev) => [...prev, prompt]);
-                }}
-                onScrollToBottom={() => {
-                  editorRef.current?.revealLine(
-                    editorRef.current?.getLineCount() ?? 0
-                  );
-                }}
-                isEditableModeEnabled={isEditableModeEnabled}
-                setIsEditableModeEnabled={setIsEditableModeEnabled}
-                selectedElement={selectedElement}
-                setSelectedElement={setSelectedElement}
-                setSelectedFiles={setSelectedFiles}
-                selectedFiles={selectedFiles}
-              />
-            </div>
-            <div
-              ref={resizer}
-              className="bg-neutral-800 hover:bg-neutral-600 active:bg-neutral-500 w-1.5 cursor-col-resize h-full max-lg:hidden"
-            />
-          </>
-        )}
-        <div className="relative flex-1">
+        {/* LEFT — the chat pane, ALWAYS chat (never code). The composer is pinned
+            to the bottom of this flex-col (AskAI is `mt-auto`), so messages scroll
+            above it. Desktop: docked left unless collapsed; mobile: shown only on
+            the Chat tab. Kept mounted so generation state persists across views. */}
+        <div
+          ref={editor}
+          className={classNames(
+            "bg-neutral-900 relative flex-1 overflow-hidden h-full flex flex-col gap-2 pb-3",
+            currentTab === "chat" ? "flex" : "hidden",
+            sidebarCollapsed ? "lg:hidden" : "lg:flex"
+          )}
+        >
+          <AskAI
+            isNew={isNew}
+            project={project}
+            images={images}
+            currentPage={currentPageData}
+            htmlHistory={htmlHistory}
+            previousPrompts={prompts}
+            onSuccess={(newPages, p: string) => {
+              // Content-free reward signal: a generation succeeded and the
+              // user is building on it. Attaches the last gateway response id
+              // (no-ops if a generation produced none). Fire-and-forget.
+              sendRewardSignal(getLastGenerationRequestId(), "accept");
+              const currentHistory = [...htmlHistory];
+              currentHistory.unshift({
+                pages: newPages,
+                createdAt: new Date(),
+                prompt: p,
+              });
+              setHtmlHistory(currentHistory);
+              setSelectedElement(null);
+              setSelectedFiles([]);
+              // if xs or sm — surface the result on mobile (one pane at a time).
+              if (window.innerWidth <= 1024) {
+                setCurrentTab("preview");
+              }
+            }}
+            setPages={setPages}
+            pages={pages}
+            setCurrentPage={setCurrentPage}
+            isAiWorking={isAiWorking}
+            setisAiWorking={setIsAiWorking}
+            onNewPrompt={(prompt: string) => {
+              setPrompts((prev) => [...prev, prompt]);
+            }}
+            onScrollToBottom={() => {
+              editorRef.current?.revealLine(
+                editorRef.current?.getLineCount() ?? 0
+              );
+            }}
+            isEditableModeEnabled={isEditableModeEnabled}
+            setIsEditableModeEnabled={setIsEditableModeEnabled}
+            selectedElement={selectedElement}
+            setSelectedElement={setSelectedElement}
+            setSelectedFiles={setSelectedFiles}
+            selectedFiles={selectedFiles}
+          />
+        </div>
+        {/* Resizer — desktop only, and only while the chat pane is docked. */}
+        <div
+          ref={resizer}
+          className={classNames(
+            "bg-neutral-800 hover:bg-neutral-600 active:bg-neutral-500 w-1.5 cursor-col-resize h-full max-lg:hidden",
+            sidebarCollapsed && "lg:hidden"
+          )}
+        />
+        {/* RIGHT — Preview OR Code, driven by the header's view switcher. Preview
+            stays mounted (iframe warm, iframeRef valid); Code overlays it when
+            selected. On mobile this pane is hidden on the Chat tab. */}
+        <div
+          className={classNames(
+            "relative flex-1 h-full",
+            currentTab === "chat" ? "hidden lg:block" : "block"
+          )}
+        >
           <Preview
             html={currentPageData?.html}
             isResizing={isResizing}
@@ -462,7 +388,7 @@ export const AppEditor = ({
               onElementSelect={(_info) => {
                 // Element selection handled by VisualEditor
               }}
-              onCodeUpdate={(newHtml, location) => {
+              onCodeUpdate={(newHtml, _location) => {
                 // Update the current page with new HTML
                 setPages((prev) =>
                   prev.map((page) =>
@@ -471,6 +397,76 @@ export const AppEditor = ({
                 );
               }}
             />
+          )}
+          {/* CODE view — the CodeMirror editor overlaid on the right pane when the
+              header switches to Code. The left pane stays chat; code lives here. */}
+          {currentTab === "code" && (
+            <div className="absolute inset-0 z-10 flex flex-col bg-neutral-900">
+              <ListPages
+                pages={pages}
+                currentPage={currentPage}
+                onSelectPage={(path, newPath) => {
+                  if (newPath) {
+                    setPages((prev) =>
+                      prev.map((page) =>
+                        page.path === path ? { ...page, path: newPath } : page
+                      )
+                    );
+                    setCurrentPage(newPath);
+                  } else {
+                    setCurrentPage(path);
+                  }
+                }}
+                onDeletePage={(path) => {
+                  const newPages = pages.filter((page) => page.path !== path);
+                  setPages(newPages);
+                  if (currentPage === path) {
+                    setCurrentPage(newPages[0]?.path ?? "index.html");
+                  }
+                }}
+                onNewPage={() => {
+                  setPages((prev) => [
+                    ...prev,
+                    {
+                      path: `page-${prev.length + 1}.html`,
+                      html: defaultHTML,
+                    },
+                  ]);
+                  setCurrentPage(`page-${pages.length + 1}.html`);
+                }}
+              />
+              <div className="relative flex-1 overflow-hidden">
+                <CopyIcon
+                  className="size-4 absolute top-3 right-5 text-neutral-500 hover:text-neutral-300 z-20 cursor-pointer"
+                  onClick={() => {
+                    copyToClipboard(currentPageData.html);
+                    toast.success("HTML copied to clipboard!");
+                  }}
+                />
+                <CodeEditor
+                  language="html"
+                  className={classNames(
+                    "h-full w-full bg-neutral-900 transition-all duration-200 absolute left-0 top-0",
+                    {
+                      "pointer-events-none": isAiWorking,
+                    }
+                  )}
+                  value={currentPageData.html}
+                  onChange={(value) => {
+                    setPages((prev) =>
+                      prev.map((page) =>
+                        page.path === currentPageData.path
+                          ? { ...page, html: value }
+                          : page
+                      )
+                    );
+                  }}
+                  onReady={(handle) => {
+                    editorRef.current = handle;
+                  }}
+                />
+              </div>
+            </div>
           )}
         </div>
       </main>
