@@ -5,7 +5,7 @@ import { Project } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';
 import { getSyncOverviewStatus, SyncOverviewStatus } from '@/lib/vfs/auto-sync';
 import { Button } from '@/components/ui/button';
-import { Logo } from '@/components/ui/logo';
+import { HanzoLogo } from '@/components/HanzoLogo';
 import {
   FolderOpen,
   Globe,
@@ -357,12 +357,10 @@ function SidebarContent({
       >
         {/* Icon container with position relative for chevron overlay */}
         <div className="relative w-6 h-6 flex items-center justify-center flex-shrink-0">
-          {/* Logo - hidden on hover */}
-          <Logo
-            width={24}
-            height={24}
+          {/* Hanzo H mark - hidden on hover */}
+          <HanzoLogo
             className={cn(
-              "transition-opacity absolute",
+              "w-6 h-6 text-foreground transition-opacity absolute",
               logoHover && "opacity-0"
             )}
           />
@@ -389,7 +387,7 @@ function SidebarContent({
         {!collapsed && (
           <div className="flex flex-col">
             <span className="text-sm font-medium whitespace-nowrap leading-none">
-              {logoHover && !pinned ? "Pin" : "Open\u00A0Source Web\u00A0Studio"}
+              {logoHover && !pinned ? "Pin" : "Hanzo\u00A0App"}
             </span>
             {!(logoHover && !pinned) && (
               <span className="text-[10px] leading-[10px] text-muted-foreground text-left mt-0.5">

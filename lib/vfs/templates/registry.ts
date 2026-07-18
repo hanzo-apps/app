@@ -23,7 +23,7 @@ export const BUILT_IN_TEMPLATES: BuiltInTemplateMetadata[] = [
     runtime: 'static',
     updatedAt: new Date('2025-01-01T00:00:00Z'),
     metadata: {
-      author: 'OSW Studio',
+      author: 'Hanzo App',
       tags: ['starter', 'basic', 'website']
     }
   },
@@ -35,7 +35,7 @@ export const BUILT_IN_TEMPLATES: BuiltInTemplateMetadata[] = [
     runtime: 'static',
     updatedAt: new Date('2025-01-01T00:00:00Z'),
     metadata: {
-      author: 'OSW Studio',
+      author: 'Hanzo App',
       tags: ['portfolio', 'multi-page', 'example']
     }
   },
@@ -73,7 +73,7 @@ export const BUILT_IN_TEMPLATES: BuiltInTemplateMetadata[] = [
       databaseSchema: `CREATE TABLE IF NOT EXISTS messages (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  name TEXT NOT NULL,\n  email TEXT NOT NULL,\n  subject TEXT,\n  message TEXT NOT NULL,\n  created_at DATETIME DEFAULT CURRENT_TIMESTAMP\n);`,
     },
     metadata: {
-      author: 'OSW Studio',
+      author: 'Hanzo App',
       tags: ['landing-page', 'contact-form', 'server-mode'],
     },
   },
@@ -115,7 +115,7 @@ export const BUILT_IN_TEMPLATES: BuiltInTemplateMetadata[] = [
     runtime: 'react',
     updatedAt: new Date('2025-01-01T00:00:00Z'),
     metadata: {
-      author: 'OSW Studio',
+      author: 'Hanzo App',
       tags: ['react', 'typescript', 'starter']
     }
   },
@@ -127,7 +127,7 @@ export const BUILT_IN_TEMPLATES: BuiltInTemplateMetadata[] = [
     runtime: 'react',
     updatedAt: new Date('2025-01-01T00:00:00Z'),
     metadata: {
-      author: 'OSW Studio',
+      author: 'Hanzo App',
       tags: ['react', 'typescript', 'demo']
     }
   },
@@ -139,7 +139,7 @@ export const BUILT_IN_TEMPLATES: BuiltInTemplateMetadata[] = [
     runtime: 'preact',
     updatedAt: new Date('2025-01-01T00:00:00Z'),
     metadata: {
-      author: 'OSW Studio',
+      author: 'Hanzo App',
       tags: ['preact', 'typescript', 'starter']
     }
   },
@@ -151,7 +151,7 @@ export const BUILT_IN_TEMPLATES: BuiltInTemplateMetadata[] = [
     runtime: 'svelte',
     updatedAt: new Date('2025-01-01T00:00:00Z'),
     metadata: {
-      author: 'OSW Studio',
+      author: 'Hanzo App',
       tags: ['svelte', 'starter']
     }
   },
@@ -163,7 +163,7 @@ export const BUILT_IN_TEMPLATES: BuiltInTemplateMetadata[] = [
     runtime: 'vue',
     updatedAt: new Date('2025-01-01T00:00:00Z'),
     metadata: {
-      author: 'OSW Studio',
+      author: 'Hanzo App',
       tags: ['vue', 'starter']
     }
   },
@@ -230,7 +230,7 @@ export const BUILT_IN_TEMPLATES: BuiltInTemplateMetadata[] = [
       databaseSchema: `CREATE TABLE IF NOT EXISTS comments (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  post_slug TEXT NOT NULL,\n  author TEXT NOT NULL,\n  content TEXT NOT NULL,\n  approved INTEGER DEFAULT 0,\n  created_at DATETIME DEFAULT CURRENT_TIMESTAMP\n);\n\nCREATE TABLE IF NOT EXISTS users (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  username TEXT NOT NULL UNIQUE,\n  password_hash TEXT NOT NULL,\n  salt TEXT NOT NULL,\n  display_name TEXT NOT NULL,\n  created_at DATETIME DEFAULT CURRENT_TIMESTAMP\n);\n\nCREATE TABLE IF NOT EXISTS sessions (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  user_id INTEGER NOT NULL REFERENCES users(id),\n  token TEXT NOT NULL UNIQUE,\n  expires_at DATETIME NOT NULL,\n  created_at DATETIME DEFAULT CURRENT_TIMESTAMP\n);`,
     },
     metadata: {
-      author: 'OSW Studio',
+      author: 'Hanzo App',
       tags: ['blog', 'comments', 'auth', 'server-mode'],
     },
   },
