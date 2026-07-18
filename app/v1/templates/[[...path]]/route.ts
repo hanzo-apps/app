@@ -63,6 +63,14 @@ export async function GET(req: NextRequest, ctx: Ctx) {
   const qs = req.nextUrl.search || '';
   const url = `${cloudBase()}/v1/templates${base}${qs}`;
 
+  // A single-slug lookup (`/v1/templates/<slug>`). The cloud catalog and the
+  // `/v1/gallery` snapshot don't list the SAME slugs (e.g. `circle` is in the
+  // gallery but 404s on the cloud single-template endpoint), so a bare proxy
+  // leaked a raw 404 into the builder's template flow (`?template=…`). When the
+  // cloud 404s a single slug, fall back to the gallery snapshot and return the
+  // matching card in the template shape — so every gallery slug resolves.
+  const isSingleSlug = Array.isArray(path) && path.length === 1;
+
   try {
     const res = await fetch(url, {
       method: 'GET',
@@ -71,6 +79,12 @@ export async function GET(req: NextRequest, ctx: Ctx) {
       // rather than hammer the cloud on every browse.
       next: { revalidate: 300 },
     });
+
+    if (res.status === 404 && isSingleSlug) {
+      const fromGallery = await templateFromGallery(path![0]);
+      if (fromGallery) return NextResponse.json(fromGallery);
+    }
+
     const buf = await res.arrayBuffer();
     return new Response(buf, {
       status: res.status,
@@ -79,6 +93,44 @@ export async function GET(req: NextRequest, ctx: Ctx) {
       },
     });
   } catch {
+    // Cloud unreachable — still try the gallery snapshot for a single slug.
+    if (isSingleSlug) {
+      const fromGallery = await templateFromGallery(path![0]);
+      if (fromGallery) return NextResponse.json(fromGallery);
+    }
     return NextResponse.json({ error: 'templates backend unreachable' }, { status: 502 });
+  }
+}
+
+/** Resolve a slug from the `/v1/gallery` snapshot and shape it like a cloud
+ *  Template, so a gallery-only slug still returns 200 on /v1/templates/:slug. */
+async function templateFromGallery(slug: string): Promise<Record<string, unknown> | null> {
+  try {
+    const res = await fetch(`${cloudBase()}/v1/gallery`, {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+      next: { revalidate: 300 },
+    });
+    if (!res.ok) return null;
+    const body = (await res.json()) as { templates?: Array<Record<string, unknown>> };
+    const rows = Array.isArray(body?.templates) ? body.templates : [];
+    const g = rows.find((r) => String(r.slug) === slug);
+    if (!g) return null;
+    const str = (v: unknown) => (typeof v === 'string' ? v : '');
+    return {
+      slug: str(g.slug) || slug,
+      title: str(g.displayName) || str(g.name) || slug,
+      category: str(g.category),
+      description: str(g.description),
+      framework: str(g.framework),
+      features: Array.isArray(g.features) ? g.features : [],
+      useCase: str(g.useCase),
+      tier: typeof g.tier === 'number' ? g.tier : undefined,
+      rating: typeof g.rating === 'number' ? g.rating : undefined,
+      source: str(g.templateUrl) || str(g.repo) || `https://gallery.hanzo.ai/templates/${slug}`,
+      preview: str(g.screenshotUrl) || str(g.screenshot),
+    };
+  } catch {
+    return null;
   }
 }
