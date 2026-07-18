@@ -81,3 +81,19 @@ export function filterOrgs<T extends { name: string; displayName?: string }>(
     (o) => o.name.toLowerCase().includes(q) || (o.displayName ?? '').toLowerCase().includes(q),
   );
 }
+
+/** Title-case an org slug for display (`maxpower` → `Maxpower`). */
+export const titleCase = (s: string): string => (s ? s[0].toUpperCase() + s.slice(1) : s);
+
+/**
+ * The display name of org `id` within `orgs` — the org's own `displayName`, else
+ * its title-cased slug; '' when `id` is empty. The ONE way the chrome names the
+ * org it's scoped to (the OrgSwitcher's primary label, the wallet's scope tag).
+ */
+export function orgDisplayName(
+  orgs: ReadonlyArray<{ name: string; displayName?: string }>,
+  id: string,
+): string {
+  if (!id) return '';
+  return orgs.find((o) => o.name === id)?.displayName || titleCase(id);
+}
