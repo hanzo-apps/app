@@ -153,7 +153,7 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
                         >
                           <Building2 className="h-4 w-4 text-white/50" />
                           <span className="flex-1 truncate text-left text-white/85">
-                            {org.displayName || titleCase(org.name)}
+                            {orgDisplayName(allOrgs, org.name)}
                           </span>
                           {org.isPersonal && (
                             <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] text-white/50">personal</span>
