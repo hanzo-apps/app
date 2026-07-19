@@ -52,24 +52,32 @@ export function SaveButton({
       setLoading(false);
     }
   };
+  // Same treatment as the sibling header actions (Share / Push) — !h-7 text-xs,
+  // solid primary — so the whole action cluster reads as one set. Was an oversized
+  // `!px-4` button with the long "Publish your Project" label, which made Publish
+  // visibly taller/wider than everything beside it.
   return (
     <>
       <Button
         variant="default"
-        className="max-lg:hidden !px-4 relative"
+        size="sm"
+        className="max-lg:hidden !h-7 gap-1.5 px-2.5 text-xs relative"
         onClick={updateSpace}
+        disabled={loading}
       >
-        <MdSave className="size-4" />
-        Publish your Project{" "}
-        {loading && <Loading className="ml-2 size-4 animate-spin" />}
+        <MdSave className="size-3.5" />
+        {loading ? "Publishing…" : "Publish"}
+        {loading && <Loading className="ml-1 size-3.5 animate-spin" />}
       </Button>
       <Button
         variant="default"
         size="sm"
-        className="lg:hidden relative"
+        className="lg:hidden !h-7 px-2.5 text-xs relative"
         onClick={updateSpace}
+        disabled={loading}
       >
-        Publish {loading && <Loading className="ml-2 size-4 animate-spin" />}
+        {loading ? "Publishing…" : "Publish"}
+        {loading && <Loading className="ml-1 size-3.5 animate-spin" />}
       </Button>
     </>
   );
