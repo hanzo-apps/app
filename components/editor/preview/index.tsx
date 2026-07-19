@@ -175,15 +175,16 @@ export const Preview = ({
     <div
       ref={ref}
       className={classNames(
-        "group/preview w-full border-l border-neutral-900 h-full relative z-0 flex items-center justify-center bg-black",
+        // No border/padding seam here — the raised preview CARD (in the editor
+        // shell) owns the frame; this just fills it edge-to-edge.
+        "group/preview w-full h-full relative z-0 flex items-center justify-center bg-black",
         {
-          "lg:p-3": currentTab !== "preview" && !isFullscreen,
           "max-lg:h-0": currentTab === "chat" && !isFullscreen,
           "max-lg:h-full": currentTab === "preview",
           // In native fullscreen the container IS the fullscreen surface — go
-          // edge-to-edge, drop the resting border, and force full height so the
-          // iframe fills the screen regardless of the current tab/device.
-          "!h-full !p-0 !border-0": isFullscreen,
+          // edge-to-edge and force full height so the iframe fills the screen
+          // regardless of the current tab/device.
+          "!h-full !p-0": isFullscreen,
         }
       )}
       onClick={(e) => {
@@ -253,8 +254,6 @@ export const Preview = ({
             "pointer-events-none": isResizing || isAiWorking,
             "lg:max-w-md lg:mx-auto lg:!rounded-[42px] lg:border-[8px] lg:border-neutral-700 lg:shadow-2xl lg:h-[80dvh] lg:max-h-[996px]":
               device === "mobile" && !isFullscreen,
-            "lg:rounded-xl lg:ring-1 lg:ring-white/10 lg:shadow-2xl lg:overflow-hidden":
-              currentTab !== "preview" && device === "desktop" && !isFullscreen,
             // Fullscreen wins over every device frame: fill the surface flat.
             "!h-full !max-w-none !rounded-none !border-0 !ring-0": isFullscreen,
           }
