@@ -408,14 +408,18 @@ export function AskAI({
         // Clean up the global variable
         delete (window as any).__initialPrompt;
 
-        // Set the prompt
+        // Set the prompt (so it shows in the composer)
         setPrompt(initialPrompt);
 
-        // Trigger generation after a short delay to ensure everything is mounted
+        // Auto-start generation. Pass the seed EXPLICITLY as the queuedPrompt —
+        // `setPrompt` above is async, so the `callAi` captured in this timeout
+        // still sees the EMPTY `prompt` state (stale closure) and would submit
+        // nothing (the "seed pre-fills but never auto-builds" bug). callAi uses
+        // `queuedPrompt || prompt`, so the explicit arg guarantees the real seed
+        // is sent on the first automatic generation.
         const timer = setTimeout(() => {
-          // Call the AI directly here instead of relying on another effect
           if (!isAiWorking) {
-            callAi();
+            callAi(undefined, initialPrompt);
           }
         }, 500);
 
