@@ -5,7 +5,6 @@ import {
   Bookmark,
   BookmarkCheck,
   Copy,
-  History as HistoryIcon,
   Inbox,
   Loader2,
   MoreVertical,
@@ -14,14 +13,10 @@ import {
 import classNames from "classnames";
 import { toast } from "sonner";
 import {
-  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
 } from "@hanzo/ui";
 
 import { HtmlHistory, Page } from "@/types";
@@ -92,15 +87,22 @@ function projectKey(): string {
   return (window as unknown as { __projectSlug?: string }).__projectSlug || "local";
 }
 
-export function History({
+/**
+ * HistoryPanel — the embedded version history / bookmarks list, docked INSIDE
+ * the builder's left panel under its Chat · History · Bookmarks tab strip
+ * (Lovable parity). The parent owns the tab strip and hands the active view in
+ * via `tab`; this renders the newest-first revision list, and each row can be
+ * reverted (loads that version's HTML into the preview + editor) or bookmarked.
+ */
+export function HistoryPanel({
   history,
   setPages,
+  tab,
 }: {
   history: HtmlHistory[];
   setPages: (pages: Page[]) => void;
+  tab: "history" | "bookmarks";
 }) {
-  const [open, setOpen] = useState(false);
-  const [tab, setTab] = useState<"history" | "bookmarks">("history");
   const [checkpoints, setCheckpoints] = useState<CheckpointMetadata[]>([]);
   const [bookmarks, setBookmarks] = useState<Set<string>>(new Set());
   const [activeKey, setActiveKey] = useState<string | null>(null);
@@ -131,8 +133,7 @@ export function History({
 
   // When a NEW edit lands (the newest edit key changes), the builder is on that
   // new state — clear any pinned revert target so the highlight follows it.
-  const newestEditKey =
-    revisions.find((r) => r.kind === "edit")?.key ?? null;
+  const newestEditKey = revisions.find((r) => r.kind === "edit")?.key ?? null;
   const prevNewestEdit = useRef(newestEditKey);
   useEffect(() => {
     if (prevNewestEdit.current !== newestEditKey) {
@@ -141,10 +142,9 @@ export function History({
     }
   }, [newestEditKey]);
 
-  // On open: resolve the project, hydrate bookmarks, and pull any persisted
-  // checkpoints (memory-only surfaces simply have none — safe + silent).
+  // Hydrate bookmarks + pull any persisted checkpoints (memory-only surfaces
+  // simply have none — safe + silent). A restore elsewhere refreshes the list.
   useEffect(() => {
-    if (!open) return;
     const pk = projectKey();
     setBookmarks(readBookmarks(pk));
 
@@ -160,14 +160,13 @@ export function History({
     };
     loadCheckpoints();
 
-    // A restore elsewhere (rollback button, etc.) should refresh our list.
     const onRestored = () => loadCheckpoints();
     window.addEventListener("checkpointRestored", onRestored);
     return () => {
       alive = false;
       window.removeEventListener("checkpointRestored", onRestored);
     };
-  }, [open]);
+  }, []);
 
   const revert = async (rev: Revision) => {
     if (rev.kind === "edit") {
@@ -217,220 +216,131 @@ export function History({
       : revisions;
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="max-lg:hidden gap-1.5 !text-white/60 hover:!text-white hover:!bg-white/5"
-          title="Version history"
-        >
-          <HistoryIcon className="size-4" />
-          <span className="font-mono text-xs">{history?.length ?? 0}</span>
-          <span className="max-xl:hidden">
-            revision{history?.length !== 1 ? "s" : ""}
-          </span>
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        side="top"
-        align="start"
-        sideOffset={8}
-        className="w-[340px] overflow-hidden !rounded-2xl !border-white/10 !bg-[#0a0a0a] !p-0 text-white shadow-2xl shadow-black/60"
-      >
-        {/* Tabs — the panel header (History · Bookmarks), each with a count. */}
-        <div className="border-b border-white/10 bg-[#080808] p-2">
-          <div
-            role="tablist"
-            aria-label="Version history"
-            className="flex items-center gap-0.5 rounded-lg bg-white/[0.04] p-0.5 ring-1 ring-white/10"
-          >
-            <TabButton active={tab === "history"} onClick={() => setTab("history")}>
-              History
-              {revisions.length > 0 && <TabCount active={tab === "history"} n={revisions.length} />}
-            </TabButton>
-            <TabButton
-              active={tab === "bookmarks"}
-              onClick={() => setTab("bookmarks")}
-            >
-              Bookmarks
-              {bookmarks.size > 0 && <TabCount active={tab === "bookmarks"} n={bookmarks.size} />}
-            </TabButton>
-          </div>
-        </div>
-
-        {/* Revision list */}
-        <div className="max-h-[320px] overflow-y-auto bg-[#0a0a0a] p-1.5">
-          {shown.length === 0 ? (
-            <EmptyState tab={tab} />
-          ) : (
-            <ul className="space-y-0.5">
-              {shown.map((rev) => {
-                const isActive = rev.key === currentKey;
-                const isBookmarked = bookmarks.has(rev.key);
-                const isBusy = busyKey === rev.key;
-                return (
-                  <li
-                    key={rev.key}
-                    className={classNames(
-                      "group relative flex items-center gap-1 rounded-lg px-2 py-1.5 transition-colors motion-reduce:transition-none",
-                      isActive
-                        ? "bg-white/[0.06] ring-1 ring-inset ring-white/15"
-                        : "hover:bg-white/[0.04]",
+    <div className="flex-1 overflow-y-auto px-2 py-2 [scrollbar-width:thin]">
+      {shown.length === 0 ? (
+        <EmptyState tab={tab} />
+      ) : (
+        <ul className="space-y-0.5">
+          {shown.map((rev) => {
+            const isActive = rev.key === currentKey;
+            const isBookmarked = bookmarks.has(rev.key);
+            const isBusy = busyKey === rev.key;
+            return (
+              <li
+                key={rev.key}
+                className={classNames(
+                  "group relative flex items-center gap-1 rounded-lg px-2 py-2 transition-colors duration-150 motion-reduce:transition-none",
+                  isActive
+                    ? "bg-white/[0.06] ring-1 ring-inset ring-white/15"
+                    : "hover:bg-white/[0.04]",
+                )}
+              >
+                {/* Primary target — the whole label reverts to this revision */}
+                <button
+                  type="button"
+                  onClick={() => revert(rev)}
+                  className="min-w-0 flex-1 rounded-md text-left focus:outline-none focus-visible:ring-1 focus-visible:ring-white/25"
+                  title="Restore this version"
+                >
+                  <div className="flex items-center gap-1.5">
+                    {isActive && (
+                      <span
+                        className="size-1.5 shrink-0 rounded-full bg-white"
+                        aria-hidden
+                      />
                     )}
+                    <span className="truncate text-[13px] leading-snug text-white/85 group-hover:text-white">
+                      {rev.title}
+                    </span>
+                  </div>
+                  <div className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] text-white/35">
+                    <span>{fmt(rev.at)}</span>
+                    {rev.kind === "checkpoint" && (
+                      <span className="uppercase tracking-wide text-white/30">
+                        · {rev.cpKind === "manual" ? "save" : rev.cpKind}
+                      </span>
+                    )}
+                  </div>
+                </button>
+
+                {/* Hover action cluster: bookmark · revert · more */}
+                <div className="flex shrink-0 items-center gap-0.5">
+                  <IconAction
+                    onClick={() => toggle(rev.key)}
+                    title={isBookmarked ? "Remove bookmark" : "Bookmark this version"}
+                    aria-pressed={isBookmarked}
+                    className={
+                      isBookmarked
+                        ? "!opacity-100 text-white/80"
+                        : "opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+                    }
                   >
-                    {/* Primary target — the whole label reverts to this revision */}
-                    <button
-                      type="button"
-                      onClick={() => revert(rev)}
-                      className="min-w-0 flex-1 rounded-md text-left focus:outline-none focus-visible:ring-1 focus-visible:ring-white/25"
-                      title="Revert to this version"
+                    {isBookmarked ? (
+                      <BookmarkCheck className="size-3.5" />
+                    ) : (
+                      <Bookmark className="size-3.5" />
+                    )}
+                  </IconAction>
+
+                  <IconAction
+                    onClick={() => revert(rev)}
+                    disabled={isBusy}
+                    title="Restore this version"
+                    className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+                  >
+                    {isBusy ? (
+                      <Loader2 className="size-3.5 animate-spin motion-reduce:animate-none" />
+                    ) : (
+                      <Undo2 className="size-3.5" />
+                    )}
+                  </IconAction>
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        type="button"
+                        title="More"
+                        className="grid size-6 place-items-center rounded-md text-white/40 opacity-0 transition hover:bg-white/10 hover:text-white focus-visible:opacity-100 group-hover:opacity-100 data-[state=open]:bg-white/10 data-[state=open]:opacity-100 motion-reduce:transition-none"
+                      >
+                        <MoreVertical className="size-3.5" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="end"
+                      className="min-w-[180px] !rounded-xl !border-white/10 !bg-[#0a0a0a] !p-1 text-white shadow-2xl shadow-black/60"
                     >
-                      <div className="flex items-center gap-1.5">
-                        {isActive && (
-                          <span
-                            className="size-1.5 shrink-0 rounded-full bg-white"
-                            aria-hidden
-                          />
-                        )}
-                        <span className="truncate text-[13px] leading-snug text-white/85 group-hover:text-white">
-                          {rev.title}
-                        </span>
-                      </div>
-                      <div className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] text-white/35">
-                        <span>{fmt(rev.at)}</span>
-                        {rev.kind === "checkpoint" && (
-                          <span className="uppercase tracking-wide text-white/30">
-                            · {rev.cpKind === "manual" ? "save" : rev.cpKind}
-                          </span>
-                        )}
-                      </div>
-                    </button>
-
-                    {/* Hover action cluster: bookmark · revert · more */}
-                    <div className="flex shrink-0 items-center gap-0.5">
-                      <IconAction
-                        onClick={() => toggle(rev.key)}
-                        title={
-                          isBookmarked ? "Remove bookmark" : "Bookmark this version"
-                        }
-                        aria-pressed={isBookmarked}
-                        // bookmarked stays lit; otherwise reveal on hover/focus
-                        className={
-                          isBookmarked
-                            ? "!opacity-100 text-white/80"
-                            : "opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
-                        }
-                      >
+                      <MenuItem onSelect={() => revert(rev)}>
+                        <Undo2 className="size-3.5" />
+                        Restore this version
+                      </MenuItem>
+                      <MenuItem onSelect={() => toggle(rev.key)}>
                         {isBookmarked ? (
-                          <BookmarkCheck className="size-3.5" />
+                          <>
+                            <BookmarkCheck className="size-3.5" />
+                            Remove bookmark
+                          </>
                         ) : (
-                          <Bookmark className="size-3.5" />
+                          <>
+                            <Bookmark className="size-3.5" />
+                            Bookmark
+                          </>
                         )}
-                      </IconAction>
-
-                      <IconAction
-                        onClick={() => revert(rev)}
-                        disabled={isBusy}
-                        title="Revert to this version"
-                        className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
-                      >
-                        {isBusy ? (
-                          <Loader2 className="size-3.5 animate-spin motion-reduce:animate-none" />
-                        ) : (
-                          <Undo2 className="size-3.5" />
-                        )}
-                      </IconAction>
-
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button
-                            type="button"
-                            title="More"
-                            className="grid size-6 place-items-center rounded-md text-white/40 opacity-0 transition hover:bg-white/10 hover:text-white focus-visible:opacity-100 group-hover:opacity-100 data-[state=open]:bg-white/10 data-[state=open]:opacity-100 motion-reduce:transition-none"
-                          >
-                            <MoreVertical className="size-3.5" />
-                          </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                          align="end"
-                          className="min-w-[180px] !rounded-xl !border-white/10 !bg-[#0a0a0a] !p-1 text-white shadow-2xl shadow-black/60"
-                        >
-                          <MenuItem onSelect={() => revert(rev)}>
-                            <Undo2 className="size-3.5" />
-                            Revert to this version
-                          </MenuItem>
-                          <MenuItem onSelect={() => toggle(rev.key)}>
-                            {isBookmarked ? (
-                              <>
-                                <BookmarkCheck className="size-3.5" />
-                                Remove bookmark
-                              </>
-                            ) : (
-                              <>
-                                <Bookmark className="size-3.5" />
-                                Bookmark
-                              </>
-                            )}
-                          </MenuItem>
-                          {rev.kind === "edit" && (
-                            <MenuItem onSelect={() => copyTitle(rev.title)}>
-                              <Copy className="size-3.5" />
-                              Copy prompt
-                            </MenuItem>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
-      </PopoverContent>
-    </Popover>
-  );
-}
-
-function TabButton({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      role="tab"
-      aria-selected={active}
-      onClick={onClick}
-      className={classNames(
-        "flex flex-1 items-center justify-center rounded-md px-2 py-1 text-xs font-medium transition-colors motion-reduce:transition-none",
-        active
-          ? "bg-white/10 text-white shadow-sm"
-          : "text-white/45 hover:text-white/80",
+                      </MenuItem>
+                      {rev.kind === "edit" && (
+                        <MenuItem onSelect={() => copyTitle(rev.title)}>
+                          <Copy className="size-3.5" />
+                          Copy prompt
+                        </MenuItem>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
       )}
-    >
-      {children}
-    </button>
-  );
-}
-
-/** Small muted count pill shown inside a tab label. */
-function TabCount({ active, n }: { active: boolean; n: number }) {
-  return (
-    <span
-      className={classNames(
-        "ml-1.5 font-mono text-[10px]",
-        active ? "text-white/50" : "text-white/30",
-      )}
-    >
-      {n}
-    </span>
+    </div>
   );
 }
 
@@ -487,7 +397,7 @@ function MenuItem({
 function EmptyState({ tab }: { tab: "history" | "bookmarks" }) {
   const Icon = tab === "bookmarks" ? Bookmark : Inbox;
   return (
-    <div className="flex flex-col items-center justify-center gap-2 px-4 py-10 text-center">
+    <div className="flex flex-col items-center justify-center gap-2 px-4 py-16 text-center">
       <Icon className="size-7 text-white/20" />
       <p className="text-[13px] font-medium text-white/70">
         {tab === "bookmarks" ? "No bookmarks yet" : "No revisions yet"}
@@ -495,7 +405,7 @@ function EmptyState({ tab }: { tab: "history" | "bookmarks" }) {
       <p className="max-w-[220px] text-xs text-white/35">
         {tab === "bookmarks"
           ? "Bookmark any revision to pin it here for quick access."
-          : "Your edits appear here — revert to any earlier version."}
+          : "Your edits appear here — restore any earlier version."}
       </p>
     </div>
   );

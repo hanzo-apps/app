@@ -3,7 +3,7 @@ import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { CodeEditorHandle } from "@/components/code-editor";
 import dynamic from "next/dynamic";
-import { CopyIcon, Share2 } from "lucide-react";
+import { Bookmark, CopyIcon, History as HistoryIcon, MessageCircleCode, Share2 } from "lucide-react";
 
 // CodeMirror bundles locally (no CDN, no web workers) so it is CSP-clean.
 // Still code-split out of the /dev first-load chunk and rendered client-only
@@ -43,6 +43,7 @@ import { SaveButton } from "./save-button";
 import { LoadProject } from "../my-projects/load-project";
 import { isTheSameHtml } from "@/lib/compare-html-diff";
 import { ListPages } from "./pages";
+import { HistoryPanel } from "./history";
 import { ShareModal } from "./share-modal";
 import { VisualEditor } from "./visual-editor";
 import { AISupervisor } from "./ai-supervisor";
@@ -83,6 +84,12 @@ export const AppEditor = ({
   // docked on the left; this drives what the RIGHT pane shows — preview or the
   // code editor — and, on mobile, which single pane is visible.
   const [currentTab, setCurrentTab] = useState("chat");
+  // The left panel's own view (Lovable parity): the composer, or the version
+  // History / Bookmarks timeline. Chat stays MOUNTED across switches (generation
+  // state persists); History/Bookmarks mount on demand.
+  const [leftTab, setLeftTab] = useState<"chat" | "history" | "bookmarks">(
+    "chat"
+  );
   // The chat pane can be collapsed on desktop to give preview/code the full
   // width; on mobile the tab switcher already shows one pane at a time.
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -110,43 +117,37 @@ export const AppEditor = ({
   const [showSupervisor, setShowSupervisor] = useState(false);
 
   const resetLayout = () => {
-    if (!editor.current || !preview.current) return;
+    if (!editor.current) return;
 
-    // lg breakpoint is 1024px based on useBreakpoint definition and Tailwind
-    // defaults. A collapsed chat pane means the right pane takes the full width,
-    // so clear the inline widths (flex-1 fills the row) in that case.
+    // ONLY the LEFT chat pane carries an explicit width; the RIGHT region is
+    // `flex-1` and fills every remaining pixel to the viewport's right edge.
+    // (The old code sized BOTH panes from a computed split, which — combined
+    // with both being `flex-1` — left a dead gutter on the far right when the
+    // two never agreed. One authoritative width, one flex fill: no gutter.)
+    // lg breakpoint is 1024px (Tailwind default). Collapsed/mobile → clear the
+    // width so the pane is hidden or the flex-col fills naturally.
     if (window.innerWidth >= 1024 && !sidebarCollapsedRef.current) {
-      // Set initial 1/3 - 2/3 sizes for large screens, accounting for resizer width
-      const resizerWidth = resizer.current?.offsetWidth ?? 8; // w-2 = 0.5rem = 8px
+      const resizerWidth = resizer.current?.offsetWidth ?? 6; // w-1.5 = 6px
       const availableWidth = window.innerWidth - resizerWidth;
-      const initialEditorWidth = availableWidth / 3; // Editor takes 1/3 of space
-      const initialPreviewWidth = availableWidth - initialEditorWidth; // Preview takes 2/3
-      editor.current.style.width = `${initialEditorWidth}px`;
-      preview.current.style.width = `${initialPreviewWidth}px`;
+      editor.current.style.width = `${availableWidth / 3}px`; // chat takes ~1/3
     } else {
-      // Remove inline styles for smaller screens, let CSS flex-col handle it
       editor.current.style.width = "";
-      preview.current.style.width = "";
     }
   };
 
   const handleResize = (e: MouseEvent) => {
-    if (!editor.current || !preview.current || !resizer.current) return;
+    if (!editor.current || !resizer.current) return;
 
     const resizerWidth = resizer.current.offsetWidth;
-    const minWidth = 100; // Minimum width for editor/preview
-    const maxWidth = window.innerWidth - resizerWidth - minWidth;
+    const minWidth = 240; // keep the composer usable
+    const maxWidth = window.innerWidth - resizerWidth - 320; // leave room to build
 
-    const editorWidth = e.clientX;
     const clampedEditorWidth = Math.max(
       minWidth,
-      Math.min(editorWidth, maxWidth)
+      Math.min(e.clientX, maxWidth)
     );
-    const calculatedPreviewWidth =
-      window.innerWidth - clampedEditorWidth - resizerWidth;
-
+    // Set ONLY the chat pane; the preview region (flex-1) absorbs the rest.
     editor.current.style.width = `${clampedEditorWidth}px`;
-    preview.current.style.width = `${calculatedPreviewWidth}px`;
   };
 
   const handleMouseDown = () => {
@@ -251,8 +252,6 @@ export const AppEditor = ({
         onNewTab={setCurrentTab}
         device={device}
         setDevice={setDevice}
-        htmlHistory={htmlHistory}
-        setPages={setPages}
         iframeRef={iframeRef}
         pages={pages}
         currentPage={currentPage}
@@ -260,6 +259,7 @@ export const AppEditor = ({
         onOpenExternal={openInNewTab}
         sidebarCollapsed={sidebarCollapsed}
         onToggleSidebar={() => setSidebarCollapsed((v) => !v)}
+        project={project}
       >
         {/* Secondary actions (Share / Load / Push) share ONE treatment so the
             action cluster reads as a set; Publish is the sole solid primary. */}
@@ -267,9 +267,9 @@ export const AppEditor = ({
           variant="outline"
           size="sm"
           onClick={() => setIsShareModalOpen(true)}
-          className="gap-2 !border-white/15 !bg-white/[0.04] !text-white hover:!bg-white/10"
+          className="!h-7 gap-1.5 px-2.5 text-xs !border-white/15 !bg-white/[0.04] !text-white transition-colors duration-150 hover:!bg-white/10"
         >
-          <Share2 className="w-4 h-4" />
+          <Share2 className="size-3.5" />
           <span className="hidden md:inline">Share</span>
         </Button>
         <LoadProject
@@ -293,181 +293,256 @@ export const AppEditor = ({
         <div
           ref={editor}
           className={classNames(
-            "bg-neutral-900 relative flex-1 overflow-hidden h-full flex flex-col gap-2 pb-3",
+            // Distinct-but-subtle panel field, one shade off the flat workspace
+            // (#0a0a0a) so the chat/history panel reads as its own surface with
+            // NO hard border seam. Desktop: a fixed, resizable width (shrink-0 so
+            // the inline width is authoritative). Mobile: fills the column.
+            "relative bg-[#141414] overflow-hidden h-full flex flex-col max-lg:flex-1 lg:shrink-0",
             currentTab === "chat" ? "flex" : "hidden",
             sidebarCollapsed ? "lg:hidden" : "lg:flex"
           )}
         >
-          <AskAI
-            isNew={isNew}
-            project={project}
-            images={images}
-            currentPage={currentPageData}
-            htmlHistory={htmlHistory}
-            previousPrompts={prompts}
-            onSuccess={(newPages, p: string) => {
-              // Content-free reward signal: a generation succeeded and the
-              // user is building on it. Attaches the last gateway response id
-              // (no-ops if a generation produced none). Fire-and-forget.
-              sendRewardSignal(getLastGenerationRequestId(), "accept");
-              const currentHistory = [...htmlHistory];
-              currentHistory.unshift({
-                pages: newPages,
-                createdAt: new Date(),
-                prompt: p,
-              });
-              setHtmlHistory(currentHistory);
-              setSelectedElement(null);
-              setSelectedFiles([]);
-              // if xs or sm — surface the result on mobile (one pane at a time).
-              if (window.innerWidth <= 1024) {
-                setCurrentTab("preview");
-              }
-            }}
-            setPages={setPages}
-            pages={pages}
-            setCurrentPage={setCurrentPage}
-            isAiWorking={isAiWorking}
-            setisAiWorking={setIsAiWorking}
-            onNewPrompt={(prompt: string) => {
-              setPrompts((prev) => [...prev, prompt]);
-            }}
-            onScrollToBottom={() => {
-              editorRef.current?.revealLine(
-                editorRef.current?.getLineCount() ?? 0
-              );
-            }}
-            isEditableModeEnabled={isEditableModeEnabled}
-            setIsEditableModeEnabled={setIsEditableModeEnabled}
-            selectedElement={selectedElement}
-            setSelectedElement={setSelectedElement}
-            setSelectedFiles={setSelectedFiles}
-            selectedFiles={selectedFiles}
-          />
+          {/* Left-panel view switcher — Chat · History · Bookmarks (Lovable). */}
+          <div className="shrink-0 px-3 pt-3">
+            <div
+              role="tablist"
+              aria-label="Left panel"
+              className="flex items-center gap-0.5 rounded-lg bg-white/[0.03] p-0.5 ring-1 ring-white/10"
+            >
+              {[
+                { value: "chat", label: "Chat", icon: MessageCircleCode },
+                { value: "history", label: "History", icon: HistoryIcon },
+                { value: "bookmarks", label: "Bookmarks", icon: Bookmark },
+              ].map((item) => {
+                const active = leftTab === item.value;
+                return (
+                  <button
+                    key={item.value}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    onClick={() =>
+                      setLeftTab(item.value as "chat" | "history" | "bookmarks")
+                    }
+                    className={classNames(
+                      "inline-flex flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
+                      active
+                        ? "bg-white/10 text-white shadow-sm"
+                        : "text-white/50 hover:bg-white/[0.06] hover:text-white/90"
+                    )}
+                  >
+                    <item.icon className="size-3.5 shrink-0" />
+                    {item.label}
+                    {item.value === "history" &&
+                      (htmlHistory?.length ?? 0) > 0 && (
+                        <span className="font-mono text-[10px] text-white/40">
+                          {htmlHistory?.length ?? 0}
+                        </span>
+                      )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Chat — ALWAYS mounted (generation state persists); just hidden when
+              the History / Bookmarks timeline is showing. */}
+          <div
+            className={classNames(
+              "min-h-0 flex-1 flex-col",
+              leftTab === "chat" ? "flex" : "hidden"
+            )}
+          >
+            <AskAI
+              isNew={isNew}
+              project={project}
+              images={images}
+              currentPage={currentPageData}
+              htmlHistory={htmlHistory}
+              previousPrompts={prompts}
+              onSuccess={(newPages, p: string) => {
+                // Content-free reward signal: a generation succeeded and the
+                // user is building on it. Attaches the last gateway response id
+                // (no-ops if a generation produced none). Fire-and-forget.
+                sendRewardSignal(getLastGenerationRequestId(), "accept");
+                const currentHistory = [...htmlHistory];
+                currentHistory.unshift({
+                  pages: newPages,
+                  createdAt: new Date(),
+                  prompt: p,
+                });
+                setHtmlHistory(currentHistory);
+                setSelectedElement(null);
+                setSelectedFiles([]);
+                // if xs or sm — surface the result on mobile (one pane at a time).
+                if (window.innerWidth <= 1024) {
+                  setCurrentTab("preview");
+                }
+              }}
+              setPages={setPages}
+              pages={pages}
+              setCurrentPage={setCurrentPage}
+              isAiWorking={isAiWorking}
+              setisAiWorking={setIsAiWorking}
+              onNewPrompt={(prompt: string) => {
+                setPrompts((prev) => [...prev, prompt]);
+              }}
+              onScrollToBottom={() => {
+                editorRef.current?.revealLine(
+                  editorRef.current?.getLineCount() ?? 0
+                );
+              }}
+              isEditableModeEnabled={isEditableModeEnabled}
+              setIsEditableModeEnabled={setIsEditableModeEnabled}
+              selectedElement={selectedElement}
+              setSelectedElement={setSelectedElement}
+              setSelectedFiles={setSelectedFiles}
+              selectedFiles={selectedFiles}
+            />
+          </div>
+
+          {/* History / Bookmarks — the version timeline. Clicking a row restores
+              that version's HTML into the preview + editor (via setPages). */}
+          {leftTab !== "chat" && (
+            <HistoryPanel
+              history={htmlHistory}
+              setPages={setPages}
+              tab={leftTab}
+            />
+          )}
         </div>
-        {/* Resizer — desktop only, and only while the chat pane is docked. */}
+        {/* Resizer — desktop only, and only while the chat pane is docked. A
+            transparent hit-target with a hairline that lifts on hover, so there
+            is no hard border seam between the panel and the preview card. */}
         <div
           ref={resizer}
           className={classNames(
-            "bg-neutral-800 hover:bg-neutral-600 active:bg-neutral-500 w-1.5 cursor-col-resize h-full max-lg:hidden",
+            "group/resizer relative w-1.5 cursor-col-resize h-full max-lg:hidden shrink-0",
             sidebarCollapsed && "lg:hidden"
           )}
-        />
-        {/* RIGHT — Preview OR Code, driven by the header's view switcher. Preview
-            stays mounted (iframe warm, iframeRef valid); Code overlays it when
-            selected. On mobile this pane is hidden on the Chat tab. */}
+        >
+          <div className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-white/5 transition-colors duration-150 group-hover/resizer:bg-white/20 group-active/resizer:bg-white/30" />
+        </div>
+        {/* RIGHT — Preview OR Code as a RAISED, rounded card that fills the whole
+            remaining width to the viewport's right edge (flex-1, min-w-0). The
+            card is the only element that lifts off the flat workspace. Preview
+            stays mounted (iframe warm, iframeRef valid); Code overlays it. */}
         <div
           className={classNames(
-            "relative flex-1 h-full",
+            "relative flex-1 min-w-0 h-full p-2 lg:p-3",
             currentTab === "chat" ? "hidden lg:block" : "block"
           )}
         >
-          <Preview
-            html={currentPageData?.html}
-            isResizing={isResizing}
-            isAiWorking={isAiWorking}
-            ref={preview}
-            device={device}
-            pages={pages}
-            setCurrentPage={setCurrentPage}
-            currentTab={currentTab}
-            isEditableModeEnabled={isEditableModeEnabled}
-            iframeRef={iframeRef}
-            onClickElement={(element) => {
-              setIsEditableModeEnabled(false);
-              setSelectedElement(element);
-              setCurrentTab("chat");
-            }}
-          />
-          {currentTab === "preview" && (
-            <VisualEditor
+          <div className="relative h-full w-full overflow-hidden rounded-xl border border-white/10 bg-black shadow-2xl shadow-black/40 ring-1 ring-white/5">
+            {/* Faint top highlight — a crisp edge that reads as raised glass. */}
+            <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+            <Preview
+              html={currentPageData?.html}
+              isResizing={isResizing}
+              isAiWorking={isAiWorking}
+              ref={preview}
+              device={device}
+              pages={pages}
+              setCurrentPage={setCurrentPage}
+              currentTab={currentTab}
+              isEditableModeEnabled={isEditableModeEnabled}
               iframeRef={iframeRef}
-              editorRef={editorRef}
-              isEnabled={isEditableModeEnabled}
-              onToggle={setIsEditableModeEnabled}
-              onElementSelect={(_info) => {
-                // Element selection handled by VisualEditor
-              }}
-              onCodeUpdate={(newHtml, _location) => {
-                // Update the current page with new HTML
-                setPages((prev) =>
-                  prev.map((page) =>
-                    page.path === currentPage ? { ...page, html: newHtml } : page
-                  )
-                );
+              onClickElement={(element) => {
+                setIsEditableModeEnabled(false);
+                setSelectedElement(element);
+                setCurrentTab("chat");
               }}
             />
-          )}
-          {/* CODE view — the CodeMirror editor overlaid on the right pane when the
-              header switches to Code. The left pane stays chat; code lives here. */}
-          {currentTab === "code" && (
-            <div className="absolute inset-0 z-10 flex flex-col bg-neutral-900">
-              <ListPages
-                pages={pages}
-                currentPage={currentPage}
-                onSelectPage={(path, newPath) => {
-                  if (newPath) {
-                    setPages((prev) =>
-                      prev.map((page) =>
-                        page.path === path ? { ...page, path: newPath } : page
-                      )
-                    );
-                    setCurrentPage(newPath);
-                  } else {
-                    setCurrentPage(path);
-                  }
+            {currentTab === "preview" && (
+              <VisualEditor
+                iframeRef={iframeRef}
+                editorRef={editorRef}
+                isEnabled={isEditableModeEnabled}
+                onToggle={setIsEditableModeEnabled}
+                onElementSelect={(_info) => {
+                  // Element selection handled by VisualEditor
                 }}
-                onDeletePage={(path) => {
-                  const newPages = pages.filter((page) => page.path !== path);
-                  setPages(newPages);
-                  if (currentPage === path) {
-                    setCurrentPage(newPages[0]?.path ?? "index.html");
-                  }
-                }}
-                onNewPage={() => {
-                  setPages((prev) => [
-                    ...prev,
-                    {
-                      path: `page-${prev.length + 1}.html`,
-                      html: defaultHTML,
-                    },
-                  ]);
-                  setCurrentPage(`page-${pages.length + 1}.html`);
+                onCodeUpdate={(newHtml, _location) => {
+                  // Update the current page with new HTML
+                  setPages((prev) =>
+                    prev.map((page) =>
+                      page.path === currentPage ? { ...page, html: newHtml } : page
+                    )
+                  );
                 }}
               />
-              <div className="relative flex-1 overflow-hidden">
-                <CopyIcon
-                  className="size-4 absolute top-3 right-5 text-neutral-500 hover:text-neutral-300 z-20 cursor-pointer"
-                  onClick={() => {
-                    copyToClipboard(currentPageData.html);
-                    toast.success("HTML copied to clipboard!");
-                  }}
-                />
-                <CodeEditor
-                  language="html"
-                  className={classNames(
-                    "h-full w-full bg-neutral-900 transition-all duration-200 absolute left-0 top-0",
-                    {
-                      "pointer-events-none": isAiWorking,
+            )}
+            {/* CODE view — the CodeMirror editor overlaid inside the card when the
+                header switches to Code. The left panel stays chat; code lives here. */}
+            {currentTab === "code" && (
+              <div className="absolute inset-0 z-10 flex flex-col bg-neutral-950">
+                <ListPages
+                  pages={pages}
+                  currentPage={currentPage}
+                  onSelectPage={(path, newPath) => {
+                    if (newPath) {
+                      setPages((prev) =>
+                        prev.map((page) =>
+                          page.path === path ? { ...page, path: newPath } : page
+                        )
+                      );
+                      setCurrentPage(newPath);
+                    } else {
+                      setCurrentPage(path);
                     }
-                  )}
-                  value={currentPageData.html}
-                  onChange={(value) => {
-                    setPages((prev) =>
-                      prev.map((page) =>
-                        page.path === currentPageData.path
-                          ? { ...page, html: value }
-                          : page
-                      )
-                    );
                   }}
-                  onReady={(handle) => {
-                    editorRef.current = handle;
+                  onDeletePage={(path) => {
+                    const newPages = pages.filter((page) => page.path !== path);
+                    setPages(newPages);
+                    if (currentPage === path) {
+                      setCurrentPage(newPages[0]?.path ?? "index.html");
+                    }
+                  }}
+                  onNewPage={() => {
+                    setPages((prev) => [
+                      ...prev,
+                      {
+                        path: `page-${prev.length + 1}.html`,
+                        html: defaultHTML,
+                      },
+                    ]);
+                    setCurrentPage(`page-${pages.length + 1}.html`);
                   }}
                 />
+                <div className="relative flex-1 overflow-hidden">
+                  <CopyIcon
+                    className="size-4 absolute top-3 right-5 text-neutral-500 hover:text-neutral-300 z-20 cursor-pointer"
+                    onClick={() => {
+                      copyToClipboard(currentPageData.html);
+                      toast.success("HTML copied to clipboard!");
+                    }}
+                  />
+                  <CodeEditor
+                    language="html"
+                    className={classNames(
+                      "h-full w-full bg-neutral-900 transition-all duration-200 absolute left-0 top-0",
+                      {
+                        "pointer-events-none": isAiWorking,
+                      }
+                    )}
+                    value={currentPageData.html}
+                    onChange={(value) => {
+                      setPages((prev) =>
+                        prev.map((page) =>
+                          page.path === currentPageData.path
+                            ? { ...page, html: value }
+                            : page
+                        )
+                      );
+                    }}
+                    onReady={(handle) => {
+                      editorRef.current = handle;
+                    }}
+                  />
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </main>
 
