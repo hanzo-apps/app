@@ -65,8 +65,8 @@ importers:
         specifier: ^0.13.1
         version: 0.13.1(react@19.2.4)
       '@hanzo/ui':
-        specifier: npm:@hanzo/ui-shadcn@^5.7.5
-        version: '@hanzo/ui-shadcn@5.7.5(495a9ae17bd447062be47a9d5e4a9784)'
+        specifier: npm:@hanzo/ui-shadcn@^5.9.0
+        version: '@hanzo/ui-shadcn@5.9.0(495a9ae17bd447062be47a9d5e4a9784)'
       '@hanzo/usage':
         specifier: ^0.1.6
         version: 0.1.6(@hanzo/gui@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native-web@0.21.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0)(utf-8-validate@5.0.10))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@5.0.10))(react@19.2.4)(sf-symbols-typescript@2.2.0))(@hanzogui/lucide-icons-2@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0)(utf-8-validate@5.0.10))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@5.0.10))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0)(utf-8-validate@5.0.10))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@5.0.10))(react@19.2.4)(sf-symbols-typescript@2.2.0))(react@19.2.4)
@@ -2161,8 +2161,8 @@ packages:
       react:
         optional: true
 
-  '@hanzo/ui-shadcn@5.7.5':
-    resolution: {integrity: sha512-gFLNkq/nOCv8x6zI58w8mggrkD3wihxkQ5lx2HkUi1QIWNDAg78tmJ8nA/6Oi31J7dtX+R7n7X2yP4I3DXoB5w==}
+  '@hanzo/ui-shadcn@5.9.0':
+    resolution: {integrity: sha512-6I3w4eAIt4pDANKzOyE1nvHi5iZeczeiZ+FEqpXtTeZvqroUe5PnwV7coOJze4rMuhT8LLLiuJWbpKJVCGvPDw==}
     hasBin: true
     peerDependencies:
       '@dnd-kit/core': ^6.0.0
@@ -16010,7 +16010,7 @@ snapshots:
     optionalDependencies:
       react: 19.2.4
 
-  '@hanzo/ui-shadcn@5.7.5(495a9ae17bd447062be47a9d5e4a9784)':
+  '@hanzo/ui-shadcn@5.9.0(495a9ae17bd447062be47a9d5e4a9784)':
     dependencies:
       '@hookform/resolvers': 3.10.0(react-hook-form@7.71.2(react@19.2.4))
       '@next/third-parties': 16.2.10(next@16.2.1(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.54.1)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
