@@ -30,17 +30,23 @@ export type ModelOption = {
 // until Enso's upstream is healthy + brand-masked.
 export const DEFAULT_MODEL = "zen5-coder";
 
-// The Hanzo gateway (api.hanzo.ai) serves the Zen ladder + connected providers —
-// NOT OpenAI `gpt-*` / `o1|o3` / legacy `-codex` ids. A stale selection persisted
-// in `localStorage["model"]` by an OLDER build (when the picker still listed such
-// ids) would otherwise be sent verbatim, the gateway would reply "model … is not
-// available", and the empty stream surfaces to the user as "The model didn't
-// return a usable page. Please try again." — editing appears broken. This is the
-// ONE predicate for "a dead id we must never send", shared by the client model
-// state (components/editor/ask-ai) and the server BFF (app/v1/generate). `auto`
-// (smart routing) and every real gateway id pass through untouched.
+// The Hanzo gateway (api.hanzo.ai) serves the Zen/Enso ladder + connected
+// providers AND — since DO GenAI funded the proprietary catalog — a CURATED set
+// of modern Anthropic/OpenAI ids (`claude-*`, `gpt-4o`, `gpt-4.1`, `gpt-5*`,
+// `gpt-*-codex`). Those are live; they must pass. What the gateway does NOT serve
+// is the genuinely-dead legacy families that an OLDER build may have persisted in
+// `localStorage["model"]`: the o1/o3 reasoning line, the davinci/cushman
+// completion+codex models, gpt-3.x, and the pre-4o gpt-4 line. Sending one of
+// those verbatim makes the gateway reply "model … is not available" and the empty
+// stream surfaces as "The model didn't return a usable page." — editing appears
+// broken. This is the ONE predicate for "a dead id we must never send", shared by
+// the client model state (components/editor/ask-ai) and the server BFF
+// (app/v1/generate). `auto` (smart routing) and every real gateway id pass through.
 export const isDeadModelId = (id?: string | null): boolean =>
-  !!id && /^(gpt-[0-9]|o[13]($|-)|text-davinci|.*-codex$)/i.test(id.trim());
+  !!id &&
+  /^(o[13]($|-)|text-davinci|davinci|cushman|code-(davinci|cushman)|gpt-3|gpt-4($|-))/i.test(
+    id.trim()
+  );
 
 // Coerce a possibly-stale/blank model id to a servable one. Used server-side to
 // harden the BFF and client-side to sanitize a persisted selection on read.
@@ -145,16 +151,20 @@ const NON_BUILD_SEGMENTS = new Set([
   "moderation",
 ]);
 
-// A build model is a Zen or Enso chat/code SKU: id starts with `zen` or `enso`
-// (Enso is Hanzo's proprietary frontier family, the current default) and carries
-// none of the non-build segments. Pure rule — the LIST of ids stays dynamic (it
-// comes from the gateway); this only decides membership.
+// Build-model FAMILIES: the house Zen/Enso ladder (Enso is Hanzo's proprietary
+// frontier family, the current default) PLUS the third-party chat/code brands the
+// gateway now resells by real name — Anthropic Claude and OpenAI GPT (served via
+// DO GenAI). A build model starts with one of these family prefixes, is not a
+// dead legacy id, and carries none of the non-build segments (embeddings / ASR /
+// generative-media / rerank). Pure rule — the LIST of ids stays dynamic (it comes
+// from the gateway); this only decides membership.
+const BUILD_FAMILY_PREFIXES = ["zen", "enso", "claude", "gpt"];
+
 export function isBuildModel(id: string): boolean {
-  if (!id.startsWith("zen") && !id.startsWith("enso")) return false;
-  return !id
-    .toLowerCase()
-    .split(/[-_]/)
-    .some((seg) => NON_BUILD_SEGMENTS.has(seg));
+  if (isDeadModelId(id)) return false;
+  const lower = id.toLowerCase();
+  if (!BUILD_FAMILY_PREFIXES.some((p) => lower.startsWith(p))) return false;
+  return !lower.split(/[-_]/).some((seg) => NON_BUILD_SEGMENTS.has(seg));
 }
 
 // Prettify a gateway id into a human label: "zen5-coder" → "Zen 5 Coder",
@@ -200,4 +210,7 @@ export const FALLBACK_MODELS: ModelOption[] = [
   { value: "zen5-pro", label: "Zen 5 Pro" },
   { value: "zen5-max", label: "Zen 5 Max" },
   { value: "zen5-nano", label: "Zen 5 Nano" },
+  // Frontier third-party tiers now resold through the gateway (DO GenAI funded).
+  { value: "claude-opus-4.8", label: "Claude Opus 4.8" },
+  { value: "gpt-5.2", label: "GPT 5.2" },
 ];
