@@ -59,14 +59,15 @@ export class GitSyncError extends Error {
   }
 }
 
-const GITHUB_API = 'https://api.github.com';
+export const GITHUB_API = 'https://api.github.com';
 /**
  * GitLab API base — gitlab.com by default; self-managed via `GITLAB_ENDPOINT`.
  * Mirrors `lib/git/server.ts` so the PUSH path and the IMPORT path resolve the
  * SAME GitLab host (DRY — no divergent literal that would let import list repos
  * from a self-hosted instance while push silently targeted gitlab.com).
+ * Exported so the commit-log reader (`lib/git/log.ts`) resolves the SAME host.
  */
-const GITLAB_API = `${(process.env.GITLAB_ENDPOINT || 'https://gitlab.com').replace(/\/+$/, '')}/api/v4`;
+export const GITLAB_API = `${(process.env.GITLAB_ENDPOINT || 'https://gitlab.com').replace(/\/+$/, '')}/api/v4`;
 
 /**
  * Hanzo git base (`…/v1/git`). Resolved from the SAME env the cloud base uses
@@ -74,9 +75,9 @@ const GITLAB_API = `${(process.env.GITLAB_ENDPOINT || 'https://gitlab.com').repl
  * truth for the api.hanzo.ai origin — no second literal to drift. In-cluster
  * deploys point at the internal gateway via that env; the public gateway is the
  * default. Kept as a bare const (not imported from `server.ts`) so this module
- * stays runtime-pure / unit-testable.
+ * stays runtime-pure / unit-testable. Exported so `lib/git/log.ts` shares it.
  */
-const HANZO_GIT_API = `${(
+export const HANZO_GIT_API = `${(
   process.env.CLOUD_API_URL ||
   process.env.HANZO_API_URL ||
   'https://api.hanzo.ai'

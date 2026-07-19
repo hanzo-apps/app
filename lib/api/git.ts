@@ -171,6 +171,173 @@ export async function syncToGit(
   }
 }
 
+/** Best-effort provider from a stored clone/remote URL (host family). Hanzo is
+ *  our own git (api.hanzo.ai/…) and the default when the host is neither forge. */
+export function providerFromRepoUrl(url: string): GitProvider {
+  const h = (url || '').toLowerCase();
+  if (h.includes('gitlab')) return 'gitlab';
+  if (h.includes('github')) return 'github';
+  return 'hanzo';
+}
+
+/** One file a commit touched (the History "maps to code" row + diff view). */
+export interface GitCommitFile {
+  path: string;
+  status: 'added' | 'modified' | 'removed' | 'renamed';
+  patch?: string;
+}
+
+/** A normalized commit from `/v1/git/commits` — the History timeline row source. */
+export interface GitCommit {
+  sha: string;
+  shortSha: string;
+  message: string;
+  rawMessage: string;
+  author: string;
+  authoredAt: string;
+  url: string;
+  filesChanged?: GitCommitFile[];
+}
+
+export interface GitCommitsResult {
+  commits: GitCommit[];
+  /** false ⇒ the provider (e.g. Hanzo git) exposes no commit log yet. */
+  supported: boolean;
+  connected: boolean;
+  reason?: string;
+}
+
+/**
+ * The branch commit history for a connected repo (`GET /v1/git/commits`). Never
+ * throws: a not-connected (401) or error response resolves to an empty,
+ * `connected:false`/`supported:false` result so the panel degrades honestly.
+ */
+export async function fetchGitCommits(
+  provider: GitProvider,
+  repo: string,
+  branch = 'main',
+): Promise<GitCommitsResult> {
+  try {
+    const params = new URLSearchParams({ provider, repo, branch });
+    const res = await fetch(`/v1/git/commits?${params.toString()}`, {
+      credentials: 'include',
+      headers: { Accept: 'application/json' },
+    });
+    const body = (await res.json().catch(() => ({}))) as Partial<GitCommitsResult>;
+    return {
+      commits: Array.isArray(body.commits) ? body.commits : [],
+      supported: body.supported !== false && res.ok,
+      connected: res.ok || body.connected === true,
+      reason: body.reason,
+    };
+  } catch {
+    return { commits: [], supported: false, connected: false };
+  }
+}
+
+/**
+ * ONE commit's detail incl. its changed-files list + per-file patch (`GET …&sha=`),
+ * fetched lazily when a History row expands or the Details view opens. Null on any
+ * failure.
+ */
+export async function fetchGitCommitDetail(
+  provider: GitProvider,
+  repo: string,
+  sha: string,
+): Promise<GitCommit | null> {
+  try {
+    const params = new URLSearchParams({ provider, repo, sha });
+    const res = await fetch(`/v1/git/commits?${params.toString()}`, {
+      credentials: 'include',
+      headers: { Accept: 'application/json' },
+    });
+    if (!res.ok) return null;
+    const body = (await res.json()) as { commit?: GitCommit };
+    return body.commit ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Reconstruct a commit's HTML pages so the builder can PREVIEW that past version
+ * (`GET …&sha=&pages=1`). Null on any failure (incl. Hanzo git, which has no
+ * page reconstruction yet) so the caller keeps the working preview.
+ */
+export async function fetchCommitPages(
+  provider: GitProvider,
+  repo: string,
+  sha: string,
+): Promise<{ path: string; html: string }[] | null> {
+  try {
+    const params = new URLSearchParams({ provider, repo, sha, pages: '1' });
+    const res = await fetch(`/v1/git/commits?${params.toString()}`, {
+      credentials: 'include',
+      headers: { Accept: 'application/json' },
+    });
+    if (!res.ok) return null;
+    const body = (await res.json()) as { pages?: { path: string; html: string }[] };
+    return Array.isArray(body.pages) ? body.pages : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * AI-clean a batch of raw commit messages for display (`POST …/summarize` with
+ * `{commits}`) → a `sha → clean line` map. Server-cached by sha. On any failure
+ * resolves to `{}` so the caller keeps the raw message (never blank).
+ */
+export async function summarizeCommitMessages(
+  commits: { sha: string; message: string }[],
+  orgHeader?: string,
+): Promise<Record<string, string>> {
+  if (commits.length === 0) return {};
+  try {
+    const res = await fetch('/v1/git/commits/summarize', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(orgHeader ? { 'X-Org-Id': orgHeader } : {}),
+      },
+      body: JSON.stringify({ commits }),
+    });
+    if (!res.ok) return {};
+    const body = (await res.json()) as { summaries?: Record<string, string> };
+    return body.summaries && typeof body.summaries === 'object' ? body.summaries : {};
+  } catch {
+    return {};
+  }
+}
+
+/**
+ * Compose ONE clean commit subject from the session's edit prompts (`POST
+ * …/summarize` with `{prompts}`), authored before a push. Null on failure so the
+ * caller can fall back to its own default.
+ */
+export async function composeCommitMessage(
+  prompts: string[],
+  orgHeader?: string,
+): Promise<string | null> {
+  try {
+    const res = await fetch('/v1/git/commits/summarize', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(orgHeader ? { 'X-Org-Id': orgHeader } : {}),
+      },
+      body: JSON.stringify({ prompts }),
+    });
+    if (!res.ok) return null;
+    const body = (await res.json()) as { message?: string };
+    return typeof body.message === 'string' && body.message.trim() ? body.message : null;
+  } catch {
+    return null;
+  }
+}
+
 /** "updated 2h ago" — compact relative time for a repo's last push. */
 export function relativeTime(iso: string): string {
   if (!iso) return '';
