@@ -219,6 +219,129 @@ export async function POST(request: NextRequest) {
   return response;
 }
 
+// Plan mode: a CONVERSATIONAL planning turn. Same gateway, same per-user auth —
+// but the model discusses/plans the app and NEVER emits code or SEARCH/REPLACE
+// blocks. The reply streams back as plain chat text; nothing is applied to the
+// project. This is the "chat, then flip to Build to execute" half of the flow.
+const PLAN_SYSTEM_PROMPT = `You are Hanzo, a senior product engineer helping a user plan a web app inside a builder. You are in PLAN mode: converse naturally, ask clarifying questions when useful, and propose a clear, concrete plan (structure, pages, components, data, states, edge cases). Be concise and specific.
+
+Hard rules for PLAN mode:
+- Do NOT write full HTML documents, code files, or SEARCH/REPLACE blocks.
+- Do NOT try to build or modify the app — the user will switch to Build mode to execute.
+- Short, focused Markdown is fine (bullet lists, a few inline snippets at most).
+- When the plan is ready, end by inviting the user to switch to Build to generate it.`;
+
+/**
+ * PATCH — Plan mode. Streams a conversational planning reply (plain text) from
+ * the gateway. No HTML, no page apply — the thread renders it as an assistant
+ * chat bubble. Mirrors POST's streaming envelope (incl. the routed-model +
+ * response-id trailer) so the client reuses the same read loop.
+ */
+export async function PATCH(request: NextRequest) {
+  const csrf = requireSameOrigin(request);
+  if (csrf) return csrf;
+
+  const token = request.cookies.get(MY_TOKEN_KEY())?.value;
+  if (!token) return unauthorized();
+
+  const body = await request.json();
+  const { prompt, model, previousPrompts, pages } = body;
+
+  if (!prompt) {
+    return NextResponse.json(
+      { ok: false, message: "Missing prompt" },
+      { status: 400 }
+    );
+  }
+
+  const selectedModel = builderModel(model);
+
+  const messages: ChatMessage[] = [
+    { role: "system", content: PLAN_SYSTEM_PROMPT },
+    ...(Array.isArray(pages) && pages.length
+      ? [
+          {
+            role: "assistant" as const,
+            content: `The app currently has these pages: ${pages
+              .map((p: Page) => p.path)
+              .join(", ")}.`,
+          },
+        ]
+      : []),
+    ...((previousPrompts ?? []) as string[]).map((p) => ({
+      role: "user" as const,
+      content: p,
+    })),
+    { role: "user", content: prompt },
+  ];
+
+  const gateway = await callGateway(token, messages, selectedModel, true);
+
+  if (!gateway.ok || !gateway.body) {
+    const detail = await gateway.text().catch(() => "");
+    if (gateway.status === 401 || gateway.status === 403) return unauthorized();
+    return NextResponse.json(
+      {
+        ok: false,
+        message: detail || `Gateway error (${gateway.status}) while planning.`,
+      },
+      { status: 502 }
+    );
+  }
+
+  const encoder = new TextEncoder();
+  const stream = new TransformStream();
+  const writer = stream.writable.getWriter();
+
+  const response = new NextResponse(stream.readable, {
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
+    },
+  });
+
+  (async () => {
+    try {
+      const { model: servedModel, id: responseId } = await pipeGatewaySse(
+        gateway.body!,
+        (delta) => writer.write(encoder.encode(delta))
+      );
+      if (servedModel || responseId) {
+        await writer.write(
+          encoder.encode(
+            `${ROUTED_MODEL_SEP}${servedModel ?? ""}${ROUTED_MODEL_SEP}${
+              responseId ?? ""
+            }`
+          )
+        );
+      }
+    } catch (error: any) {
+      try {
+        await writer.write(
+          encoder.encode(
+            JSON.stringify({
+              ok: false,
+              message:
+                error?.message || "An error occurred while planning.",
+            })
+          )
+        );
+      } catch {
+        // stream already broken
+      }
+    } finally {
+      try {
+        await writer.close();
+      } catch {
+        // already closed
+      }
+    }
+  })();
+
+  return response;
+}
+
 /**
  * PUT — follow-up edit. Applies the model's SEARCH/REPLACE + NEW_PAGE blocks
  * to the current pages server-side and returns the updated pages. This mirrors
