@@ -9,7 +9,7 @@ interface AuthContextValue {
   isLoading: boolean;
   isAuthenticated: boolean;
   error: string | null;
-  login: (redirectPath?: string) => void;
+  login: (redirectPath?: string, opts?: { signup?: boolean }) => void;
   logout: () => Promise<void>;
   refetch: () => Promise<void>;
 }
