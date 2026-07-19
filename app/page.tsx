@@ -79,6 +79,15 @@ export default function LandingPage() {
   const delRef = useRef(false);
   useEffect(() => {
     if (!idle) return;
+    // Respect reduced-motion (as the Reveal entrances do): show the first phrase
+    // statically instead of a perpetual typewriter loop.
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+    ) {
+      setTyped(TYPED[0]);
+      return;
+    }
     let t: ReturnType<typeof setTimeout>;
     const tick = () => {
       const phrase = TYPED[phraseRef.current % TYPED.length];
@@ -174,7 +183,7 @@ export default function LandingPage() {
     : "Ask Hanzo to build a customer portal with login and a dashboard…";
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-black text-white">
+    <div className="landing-root relative min-h-screen overflow-x-hidden bg-black text-white">
       {/* Monochrome hero glow — single soft white radial, zero hue. */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="absolute left-1/2 top-[-12%] h-[560px] w-[900px] -translate-x-1/2 rounded-full bg-white/[0.06] blur-[130px]" />
