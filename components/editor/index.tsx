@@ -47,7 +47,6 @@ import { HistoryPanel } from "./history";
 import { RevisionDetails, type DetailsRev } from "./history/details";
 import { ShareModal } from "./share-modal";
 import { VisualEditor } from "./visual-editor";
-import { AISupervisor } from "./ai-supervisor";
 import { OrgProvider } from "@/lib/org/client";
 import { Button, TooltipProvider } from "@hanzo/ui";
 
@@ -115,7 +114,6 @@ export const AppEditor = ({
   );
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-  const [showSupervisor, setShowSupervisor] = useState(false);
 
   const resetLayout = () => {
     if (!editor.current) return;
@@ -385,7 +383,10 @@ export const AppEditor = ({
             sidebarCollapsed && "lg:hidden"
           )}
         >
-          <div className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-white/5 transition-colors duration-150 group-hover/resizer:bg-white/20 group-active/resizer:bg-white/30" />
+          {/* No static seam — the left pane and workspace share one flat field;
+              the hairline only appears on hover/drag so the resize target is
+              discoverable without drawing a permanent border on the sidebar. */}
+          <div className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-transparent transition-colors duration-150 group-hover/resizer:bg-white/20 group-active/resizer:bg-white/30" />
         </div>
         {/* RIGHT — Preview OR Code as a RAISED, rounded card that fills the whole
             remaining width to the viewport's right edge (flex-1, min-w-0). The
@@ -514,71 +515,6 @@ export const AppEditor = ({
           </div>
         </div>
       </main>
-
-      {/* AI Supervisor Panel — fixed to the viewport bottom-right so it pins
-          reliably, with its own close button (the toggle below is hidden while
-          open, so it can never cover/trap the panel). */}
-      {showSupervisor && (
-        <div className="fixed bottom-4 right-4 w-96 max-h-[60vh] overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950 shadow-2xl z-50">
-          <button
-            type="button"
-            onClick={() => setShowSupervisor(false)}
-            title="Close AI Supervisor"
-            aria-label="Close AI Supervisor"
-            className="absolute top-2 right-2 z-10 flex size-7 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-neutral-800 hover:text-white"
-          >
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-          <AISupervisor
-            pages={pages}
-            iframeRef={iframeRef}
-            isAiWorking={isAiWorking}
-            onAutoFix={(fixes) => {
-              // Apply fixes to the current page
-              fixes.forEach(fix => {
-                toast.info(`Applying fix: ${fix}`);
-              });
-              // Trigger re-render with fixes
-              const currentHtml = currentPageData.html;
-              // In real implementation, apply the actual code fixes here
-              setPages((prev) =>
-                prev.map((page) =>
-                  page.path === currentPage
-                    ? { ...page, html: currentHtml }
-                    : page
-                )
-              );
-            }}
-          />
-        </div>
-      )}
-
-      {/* Supervisor Toggle Button — hidden while the panel is open (the panel's
-          own X closes it), so the button can never be covered/trapped. */}
-      {!showSupervisor && (
-      <button
-        onClick={() => setShowSupervisor(true)}
-        className="fixed bottom-4 right-4 p-3 rounded-full shadow-lg transition-all z-40 bg-neutral-800 text-neutral-400 hover:bg-neutral-700"
-        title="AI Supervisor"
-      >
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"
-          />
-        </svg>
-      </button>
-      )}
 
       <ShareModal
         isOpen={isShareModalOpen}

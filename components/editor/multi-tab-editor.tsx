@@ -1,12 +1,38 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { CodeEditor } from '@/components/code-editor';
 import { VirtualFile, ProjectRuntime } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';
-import { X, Code2, Save, FileCode, Image as ImageIcon, AlertCircle } from 'lucide-react';
+import { X, Code2, Save, FileCode, Image as ImageIcon, AlertCircle, Search, Folder } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn, logger } from '@/lib/utils';
+
+// index.html floats to the top of its folder; everything else alphabetical.
+function fileIndexRank(name: string): number {
+  return /^index\.html?$/i.test(name) ? 0 : 1;
+}
+
+// Group VFS files by their containing folder for the browse list.
+function groupFiles(files: VirtualFile[]): { folder: string; items: VirtualFile[] }[] {
+  const map = new Map<string, VirtualFile[]>();
+  for (const file of files) {
+    const norm = file.path.replace(/^\/+/, '');
+    const folder = norm.split('/').slice(0, -1).join('/');
+    const arr = map.get(folder) ?? [];
+    arr.push(file);
+    map.set(folder, arr);
+  }
+  const folders = Array.from(map.keys()).sort((a, b) =>
+    a === b ? 0 : a === '' ? -1 : b === '' ? 1 : a.localeCompare(b)
+  );
+  return folders.map((folder) => ({
+    folder,
+    items: (map.get(folder) ?? []).sort(
+      (a, b) => fileIndexRank(a.name) - fileIndexRank(b.name) || a.name.localeCompare(b.name)
+    ),
+  }));
+}
 
 interface MultiTabEditorProps {
   projectId: string;
@@ -25,6 +51,9 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
   const [openFiles, setOpenFiles] = useState<Map<string, OpenFile>>(new Map());
   const [activeFilePath, setActiveFilePath] = useState<string | null>(null);
   const savingPathsRef = React.useRef<Set<string>>(new Set());
+  // All project files, for the browse list shown when no tab is open.
+  const [allFiles, setAllFiles] = useState<VirtualFile[]>([]);
+  const [browseQuery, setBrowseQuery] = useState('');
 
   useEffect(() => {
     const handleFileOpen = (event: CustomEvent<VirtualFile>) => {
@@ -32,11 +61,32 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
     };
 
     window.addEventListener('openFile', handleFileOpen as EventListener);
-    
+
     return () => {
       window.removeEventListener('openFile', handleFileOpen as EventListener);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId]);
+
+  // Keep the browse list (shown when no tab is open) in sync with the VFS.
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        await vfs.init();
+        const files = await vfs.listFiles(projectId);
+        if (!cancelled) setAllFiles(files);
+      } catch (error) {
+        logger.error('Failed to list project files:', error);
+      }
+    };
+    load();
+    const onChanged = () => load();
+    window.addEventListener('filesChanged', onChanged);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('filesChanged', onChanged);
+    };
   }, [projectId]);
 
   useEffect(() => {
@@ -262,6 +312,15 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
 
   const activeFile = activeFilePath ? openFiles.get(activeFilePath) : null;
 
+  // Browse list: every project file except hidden/transient (dot) paths,
+  // filtered by the search box and grouped by folder.
+  const browseFiltered = useMemo(() => {
+    const visible = allFiles.filter((f) => !f.path.startsWith('/.'));
+    const q = browseQuery.trim().toLowerCase();
+    return q ? visible.filter((f) => f.path.toLowerCase().includes(q)) : visible;
+  }, [allFiles, browseQuery]);
+  const browseGroups = useMemo(() => groupFiles(browseFiltered), [browseFiltered]);
+
   return (
     <div className="h-full flex flex-col">
       <div className="p-3 border-b bg-muted/70 flex items-center justify-between">
@@ -305,13 +364,64 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
       </div>
       
       {openFiles.size === 0 ? (
-        <div className="flex-1 flex items-center justify-center text-muted-foreground">
-          <div className="text-center space-y-3">
-            <FileCode className="h-12 w-12 mx-auto opacity-50" />
-            <div className="space-y-1">
-              <p className="text-base font-medium">No files open</p>
-              <p className="text-sm">Select a file from the explorer to edit</p>
-            </div>
+        <div className="flex-1 min-h-0 flex flex-col">
+          <div className="flex items-center gap-2 border-b px-3 py-2">
+            <Search className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+            <input
+              value={browseQuery}
+              onChange={(e) => setBrowseQuery(e.target.value)}
+              placeholder="Search files…"
+              aria-label="Search files"
+              className="w-full bg-transparent py-0.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+            />
+            <span className="shrink-0 font-mono text-[10px] text-muted-foreground">
+              {browseFiltered.length}
+            </span>
+          </div>
+          <div className="min-h-0 flex-1 overflow-y-auto py-1">
+            {browseGroups.length === 0 ? (
+              <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center text-muted-foreground">
+                <FileCode className="h-10 w-10 opacity-40" />
+                <div className="space-y-1">
+                  <p className="text-sm font-medium">
+                    {allFiles.length === 0
+                      ? 'No files in this project yet'
+                      : 'No files match your search'}
+                  </p>
+                  <p className="text-xs">Pick a file to open it in the editor.</p>
+                </div>
+              </div>
+            ) : (
+              browseGroups.map((group) => (
+                <div key={group.folder || '/'} className="py-0.5">
+                  {group.folder && (
+                    <div className="flex items-center gap-1.5 px-3 py-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground/70">
+                      <Folder className="h-3 w-3 shrink-0" />
+                      <span className="truncate">{group.folder}</span>
+                    </div>
+                  )}
+                  {group.items.map((file) => (
+                    <button
+                      key={file.path}
+                      type="button"
+                      onClick={() => openFile(file)}
+                      title={file.path}
+                      className={cn(
+                        'flex w-full items-center gap-2 px-3 py-1.5 text-left transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none',
+                        group.folder ? 'pl-7' : ''
+                      )}
+                    >
+                      {getFileType(file.path).type === 'image' ? (
+                        <ImageIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                      ) : (
+                        <FileCode className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                      )}
+                      <span className="truncate font-mono text-xs">{file.name}</span>
+                    </button>
+                  ))}
+                </div>
+              ))
+            )}
           </div>
         </div>
       ) : (

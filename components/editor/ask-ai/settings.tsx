@@ -1,6 +1,5 @@
 import classNames from "classnames";
 import { PiGearSixFill } from "react-icons/pi";
-import { RiCheckboxCircleFill } from "react-icons/ri";
 import { Check } from "lucide-react";
 
 import {
@@ -10,7 +9,6 @@ import {
 } from "@hanzo/ui";
 import { ModelSelector, type ModelCatalogEntry } from "@hanzo/ui/models";
 import {
-  PROVIDERS,
   AUTO_MODEL,
   FALLBACK_MODELS,
   isBuildModel,
@@ -20,8 +18,6 @@ import {
 import { useModels } from "@/lib/hooks/use-models";
 import { Button } from "@hanzo/ui";
 import { useMemo } from "react";
-import { useUpdateEffect } from "react-use";
-import Image from "next/image";
 
 /**
  * Adapt the builder's live model ladder (from /v1/models via useModels — the
@@ -85,13 +81,15 @@ function ModelRow({
 export function Settings({
   open,
   onClose,
-  provider,
   model,
   error,
-  onChange,
   onModelChange,
 }: {
   open: boolean;
+  // `provider`/`onChange` stay in the contract: the parent (ask-ai/index.tsx)
+  // still owns a persisted `provider` value and passes both. Enso does the
+  // smart routing (it auto-picks the provider AND the model per request), so
+  // this popover renders NO provider control — the props are accepted, ignored.
   provider: string;
   model: string;
   error?: string;
@@ -108,16 +106,6 @@ export function Settings({
     () => toCatalogEntries(models.length ? models : FALLBACK_MODELS),
     [models]
   );
-
-  // Every gateway model is served by the single `hanzo` provider, so the
-  // available providers are simply the provider set.
-  const modelAvailableProviders = useMemo(() => Object.keys(PROVIDERS), []);
-
-  useUpdateEffect(() => {
-    if (provider !== "auto" && !modelAvailableProviders.includes(provider)) {
-      onChange("auto");
-    }
-  }, [provider]);
 
   const isAuto = !model || model === AUTO_MODEL;
 
@@ -143,103 +131,36 @@ export function Settings({
         className="z-50 w-96 overflow-hidden !rounded-2xl !border !border-neutral-800 !bg-neutral-900 p-0 text-neutral-100 shadow-2xl shadow-black/60"
       >
         <header className="border-b border-neutral-800 bg-neutral-950 px-4 py-3 text-center text-sm font-medium text-neutral-200">
-          Model &amp; routing
+          Model
         </header>
-        <main className="max-h-[70vh] space-y-5 overflow-y-auto px-4 pt-5 pb-6">
+        <main className="space-y-2.5 px-4 pt-4 pb-5">
           {error && error !== "" && (
-            <p className="mb-2 flex items-center justify-between rounded-md bg-red-500/10 p-2 text-sm font-medium text-red-500">
+            <p className="flex items-center justify-between rounded-md bg-red-500/10 p-2 text-sm font-medium text-red-500">
               {error}
             </p>
           )}
 
-          <div>
-            <p className="mb-2.5 text-sm text-neutral-300">Choose a model</p>
-            {/* Auto (smart routing) stays a first-class choice: it is a VALUE of
-                the persisted `model`, read by the builder's "Routed: …" banner
-                and the smart-routing card. Concrete models are the unified,
-                family-grouped selector (Enso / Zen / Anthropic / OpenAI). */}
-            <div className="space-y-2">
-              <div className="rounded-xl border border-neutral-800 bg-neutral-950/60 p-1">
-                <ModelRow
-                  label="Auto"
-                  hint="Best/cheapest model per request · smart routing"
-                  selected={isAuto}
-                  onClick={() => onModelChange(AUTO_MODEL)}
-                />
-              </div>
-              <ModelSelector
-                models={entries}
-                value={isAuto ? undefined : model}
-                onChange={onModelChange}
-                size="sm"
-                chatOnly
-              />
-            </div>
+          {/* Auto (Enso smart routing) is the default and a first-class VALUE of
+              the persisted `model` — the builder's "Routed: …" banner and the
+              smart-routing card read it. Enso auto-picks the best model AND the
+              provider per request, so there is no separate provider choice. The
+              dropdown below is an optional explicit override (family-grouped:
+              Enso / Zen / Anthropic / OpenAI). */}
+          <div className="rounded-xl border border-neutral-800 bg-neutral-950/60 p-1">
+            <ModelRow
+              label="Auto · smart routing"
+              hint="Enso picks the best model & provider per request"
+              selected={isAuto}
+              onClick={() => onModelChange(AUTO_MODEL)}
+            />
           </div>
-
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="mb-1.5 text-sm text-neutral-300">
-                  Use auto-provider
-                </p>
-                <p className="text-xs text-neutral-400/70">
-                  We&apos;ll automatically select the best provider for you
-                  based on your prompt.
-                </p>
-              </div>
-              <div
-                className={classNames(
-                  "flex h-6 w-10 min-w-10 cursor-pointer items-center justify-between rounded-full bg-neutral-700 p-1 transition-all duration-200",
-                  {
-                    "!bg-white": provider === "auto",
-                  }
-                )}
-                onClick={() => {
-                  onChange(
-                    provider === "auto" ? modelAvailableProviders[0] : "auto"
-                  );
-                }}
-              >
-                <div
-                  className={classNames(
-                    "h-4 w-4 rounded-full shadow-md transition-all duration-200",
-                    {
-                      "translate-x-4 bg-neutral-900": provider === "auto",
-                      "bg-neutral-200": provider !== "auto",
-                    }
-                  )}
-                />
-              </div>
-            </div>
-            <label className="block">
-              <p className="mb-2 text-sm text-neutral-300">Inference Provider</p>
-              <div className="grid grid-cols-2 gap-1.5">
-                {modelAvailableProviders.map((id: string) => (
-                  <Button
-                    key={id}
-                    variant={id === provider ? "default" : "secondary"}
-                    size="sm"
-                    onClick={() => {
-                      onChange(id);
-                    }}
-                  >
-                    <Image
-                      src={`/providers/${id}.svg`}
-                      alt={PROVIDERS[id as keyof typeof PROVIDERS].name}
-                      className="mr-2 size-5"
-                      width={20}
-                      height={20}
-                    />
-                    {PROVIDERS[id as keyof typeof PROVIDERS].name}
-                    {id === provider && (
-                      <RiCheckboxCircleFill className="ml-2 size-4 text-white" />
-                    )}
-                  </Button>
-                ))}
-              </div>
-            </label>
-          </div>
+          <ModelSelector
+            models={entries}
+            value={isAuto ? undefined : model}
+            onChange={onModelChange}
+            size="sm"
+            chatOnly
+          />
         </main>
       </PopoverContent>
     </Popover>

@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import {
   ChevronDown,
   Code2,
@@ -14,11 +14,11 @@ import { FaLaptopCode } from "react-icons/fa6";
 import { FaMobileAlt } from "react-icons/fa";
 
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@hanzo/ui";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { PagePanel } from "@/components/editor/page-navigator";
 import { WorkspaceMenu } from "@/components/editor/workspace-menu";
 import type { Page, Project } from "@/types";
 import classNames from "classnames";
@@ -88,6 +88,9 @@ export function Header({
   project?: Project | null;
   onRenamed?: (name: string) => void;
 }) {
+  // Controls the page-browser popover so selecting a page closes it.
+  const [pageMenuOpen, setPageMenuOpen] = useState(false);
+
   // Hard reload of the preview iframe (blank then restore srcdoc).
   const handleRefreshIframe = () => {
     if (iframeRef?.current) {
@@ -215,13 +218,15 @@ export function Header({
             <RefreshCcw className="size-3.5" />
           </button>
 
-          {/* Page selector — the working page among the project's pages. */}
+          {/* Page browser — search + folder-grouped list of every page in the
+              project (not just index.html). The working page is highlighted. */}
           {pages.length > 0 && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+            <Popover open={pageMenuOpen} onOpenChange={setPageMenuOpen}>
+              <PopoverTrigger asChild>
                 <button
                   type="button"
-                  title="Select page"
+                  title="Browse pages"
+                  aria-label="Browse pages"
                   className="flex max-w-[12rem] items-center gap-1.5 rounded-lg bg-white/[0.03] px-2.5 py-1.5 text-sm text-white/70 ring-1 ring-white/10 transition-colors duration-150 hover:bg-white/[0.06] hover:text-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
                 >
                   <span className="truncate font-mono text-xs">
@@ -229,27 +234,21 @@ export function Header({
                   </span>
                   <ChevronDown className="size-3.5 shrink-0 text-white/40" />
                 </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
+              </PopoverTrigger>
+              <PopoverContent
                 align="center"
-                className="max-h-72 w-56 overflow-y-auto rounded-xl border border-white/10 bg-[#0a0a0a] p-1 text-white shadow-2xl"
+                sideOffset={6}
+                className="w-64 overflow-hidden rounded-xl border border-white/10 bg-[#0a0a0a] p-0 text-white shadow-2xl"
               >
-                {pages.map((page) => (
-                  <DropdownMenuItem
-                    key={page.path}
-                    onSelect={() => onSelectPage(page.path)}
-                    className={classNames(
-                      "cursor-pointer rounded-md px-2 py-1.5 font-mono text-xs focus:bg-white/10 focus:text-white",
-                      page.path === currentPage
-                        ? "bg-white/[0.06] text-white"
-                        : "text-white/70"
-                    )}
-                  >
-                    {page.path}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+                <PagePanel
+                  pages={pages}
+                  currentPage={currentPage}
+                  onSelectPage={onSelectPage}
+                  onClose={() => setPageMenuOpen(false)}
+                  autoFocus
+                />
+              </PopoverContent>
+            </Popover>
           )}
 
           <button
