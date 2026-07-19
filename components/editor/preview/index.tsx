@@ -1,6 +1,6 @@
 "use client";
 import { useUpdateEffect } from "react-use";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import classNames from "classnames";
 import { toast } from "sonner";
 import { Maximize2, Minimize2 } from "lucide-react";
@@ -169,7 +169,93 @@ export const Preview = ({
     return hoveredElement;
   }, [hoveredElement, isEditableModeEnabled]);
 
-  const throttledHtml = useThrottleFn((html) => html, 1000, [html]);
+  // ── Double-buffered preview ──────────────────────────────────────────────
+  // Streaming a build used to write `srcDoc` on the ONE iframe every update —
+  // each write is a full document teardown/reload → a visible white flash. We
+  // now keep TWO stacked iframes: while the model streams, updates paint into
+  // the HIDDEN back-buffer at a ≥500ms cadence; on its load event we crossfade
+  // and swap roles, so the VISIBLE frame never reloads in place. Idle settles to
+  // the single front frame (the parent's `iframeRef`), leaving the editable /
+  // visual-editor path exactly as before.
+  const iframeA = useRef<HTMLIFrameElement | null>(null);
+  const iframeB = useRef<HTMLIFrameElement | null>(null);
+  const [frontA, setFrontA] = useState(true);
+  // Ref mirror of `frontA`, kept in lock-step so the back-buffer paint doesn't
+  // depend on `frontA` state (which would repaint the new back on every swap
+  // and ping-pong). It flips synchronously at the moment we reveal a frame.
+  const frontRef = useRef(true);
+  const [srcA, setSrcA] = useState(html);
+  const [srcB, setSrcB] = useState("");
+  const reduced = useMemo(
+    () =>
+      typeof window !== "undefined" &&
+      !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches,
+    []
+  );
+  // Back-buffer paint cadence (≥500ms) so long streams don't thrash the swap.
+  const streamHtml = useThrottleFn((h: string) => h, 500, [html]) as string;
+
+  // Keep the parent's ref (used by the visual editor / element selection)
+  // pointed at whichever frame is currently visible.
+  useEffect(() => {
+    frontRef.current = frontA;
+    if (iframeRef) iframeRef.current = frontA ? iframeA.current : iframeB.current;
+  }, [frontA, iframeRef]);
+
+  // Idle: settle the FRONT frame on the final html (one reload, no stream).
+  useEffect(() => {
+    if (isAiWorking) return;
+    if (frontRef.current) setSrcA(html);
+    else setSrcB(html);
+  }, [html, isAiWorking]);
+
+  // Streaming: paint the throttled html into the hidden BACK frame only. Depends
+  // on the stream (not `frontA`) so a swap never re-triggers a paint.
+  useEffect(() => {
+    if (!isAiWorking) return;
+    if (frontRef.current) setSrcB(streamHtml);
+    else setSrcA(streamHtml);
+  }, [streamHtml, isAiWorking]);
+
+  const wireFrame = (el: HTMLIFrameElement | null) => {
+    const doc = el?.contentWindow?.document;
+    if (!doc) return;
+    if (doc.body) {
+      doc.body.scrollIntoView({
+        block: isAiWorking ? "end" : "start",
+        inline: "nearest",
+        behavior: isAiWorking ? "instant" : "smooth",
+      });
+    }
+    doc
+      .querySelectorAll("a")
+      .forEach((link) => link.addEventListener("click", handleCustomNavigation));
+  };
+
+  const handleFrameLoad = (which: "a" | "b") => {
+    const isFront = (which === "a") === frontRef.current;
+    wireFrame(which === "a" ? iframeA.current : iframeB.current);
+    // The BACK frame just finished painting the newest stream → reveal it.
+    // Flip the ref synchronously so the next stream paint targets the new back.
+    if (isAiWorking && !isFront) {
+      frontRef.current = !frontRef.current;
+      setFrontA(frontRef.current);
+    }
+  };
+
+  const frameClass = (visible: boolean) =>
+    classNames(
+      "absolute inset-0 w-full select-none bg-black h-full transition-opacity ease-out",
+      {
+        "opacity-100": visible,
+        "opacity-0": !visible,
+        "pointer-events-none": !visible || isResizing || isAiWorking,
+        "lg:max-w-md lg:mx-auto lg:!rounded-[42px] lg:border-[8px] lg:border-neutral-700 lg:shadow-2xl lg:h-[80dvh] lg:max-h-[996px]":
+          device === "mobile" && !isFullscreen,
+        "!h-full !max-w-none !rounded-none !border-0 !ring-0": isFullscreen,
+      }
+    );
+  const frameStyle = { transitionDuration: reduced ? "0ms" : "180ms" };
 
   return (
     <div
@@ -244,39 +330,30 @@ export const Preview = ({
           </span>
         </div>
       )}
-      <iframe
-        id="preview-iframe"
-        ref={iframeRef}
-        title="output"
-        className={classNames(
-          "w-full select-none transition-all duration-200 bg-black h-full",
-          {
-            "pointer-events-none": isResizing || isAiWorking,
-            "lg:max-w-md lg:mx-auto lg:!rounded-[42px] lg:border-[8px] lg:border-neutral-700 lg:shadow-2xl lg:h-[80dvh] lg:max-h-[996px]":
-              device === "mobile" && !isFullscreen,
-            // Fullscreen wins over every device frame: fill the surface flat.
-            "!h-full !max-w-none !rounded-none !border-0 !ring-0": isFullscreen,
-          }
-        )}
-        srcDoc={isAiWorking ? (throttledHtml as string) : html}
-        onLoad={() => {
-          if (iframeRef?.current?.contentWindow?.document?.body) {
-            iframeRef.current.contentWindow.document.body.scrollIntoView({
-              block: isAiWorking ? "end" : "start",
-              inline: "nearest",
-              behavior: isAiWorking ? "instant" : "smooth",
-            });
-          }
-          // add event listener to all links in the iframe to handle navigation
-          if (iframeRef?.current?.contentWindow?.document) {
-            const links =
-              iframeRef.current.contentWindow.document.querySelectorAll("a");
-            links.forEach((link) => {
-              link.addEventListener("click", handleCustomNavigation);
-            });
-          }
-        }}
-      />
+      {/* Two stacked frames: the visible one holds the settled/streamed result;
+          the hidden one paints the next stream update and crossfades in on load.
+          The container fills the surface so both frames share the same box. */}
+      <div className="relative h-full w-full">
+        <iframe
+          id={frontA ? "preview-iframe" : undefined}
+          ref={iframeA}
+          title="output"
+          className={frameClass(frontA)}
+          style={frameStyle}
+          srcDoc={srcA}
+          onLoad={() => handleFrameLoad("a")}
+        />
+        <iframe
+          id={!frontA ? "preview-iframe" : undefined}
+          ref={iframeB}
+          title="output"
+          aria-hidden={frontA}
+          className={frameClass(!frontA)}
+          style={frameStyle}
+          srcDoc={srcB}
+          onLoad={() => handleFrameLoad("b")}
+        />
+      </div>
     </div>
   );
 };
