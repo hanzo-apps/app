@@ -20,8 +20,70 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
 import { cloudBase } from '@/lib/org/server';
+import { getCatalog } from '@/lib/gallery-catalog';
 
 export const runtime = 'nodejs';
+
+/** Minimal HTML-attribute/text escaper for the few interpolated fields. */
+function esc(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/**
+ * `/v1/templates/:slug/html` — the template's ready-to-show preview as a
+ * self-contained HTML document, so the builder can render it in the preview
+ * IMMEDIATELY (before/without any AI call) and let the AI only augment from
+ * there.
+ *
+ * Gallery templates are multi-file repos (github.com/hanzo-apps/<slug>), not a
+ * single fetchable index.html — so the honest, always-correct "existing" view
+ * is the template's REAL screenshot. We wrap it full-bleed in a tiny document
+ * (no external CSS/JS) that renders cleanly as an iframe `srcDoc`. Never
+ * fabricated: 404 when the catalog has no screenshot for the slug.
+ */
+async function templateHtmlResponse(slug: string): Promise<Response> {
+  const clean = slug.trim();
+  if (!clean) return NextResponse.json({ error: 'invalid slug' }, { status: 400 });
+
+  try {
+    const catalog = await getCatalog();
+    const t = (catalog.templates ?? []).find((x) => x.slug === clean);
+    const shot = t?.screenshotUrl || t?.screenshot || '';
+    if (!t || !shot) {
+      return NextResponse.json({ error: 'no preview for slug' }, { status: 404 });
+    }
+    const title = t.displayName || t.name || clean;
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>${esc(title)}</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{min-height:100%;background:#0a0a0a}
+  img{display:block;width:100%;height:auto}
+</style>
+</head>
+<body>
+<img src="${esc(shot)}" alt="${esc(title)} template preview" />
+</body>
+</html>`;
+    return new Response(html, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/html; charset=utf-8',
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=86400',
+      },
+    });
+  } catch {
+    return NextResponse.json({ error: 'template preview unavailable' }, { status: 502 });
+  }
+}
 
 interface Ctx {
   params: Promise<{ path?: string[] }>;
@@ -56,6 +118,13 @@ function cleanSubpath(segments: string[] | undefined): string | null {
 
 export async function GET(req: NextRequest, ctx: Ctx) {
   const { path } = await ctx.params;
+
+  // `/v1/templates/:slug/html` → the template's immediate, self-contained
+  // preview document (handled locally from the gallery catalog, not proxied).
+  if (Array.isArray(path) && path.length === 2 && path[1] === 'html') {
+    return templateHtmlResponse(path[0]);
+  }
+
   const base = cleanSubpath(path);
   if (base === null) {
     return NextResponse.json({ error: 'invalid path' }, { status: 400 });
