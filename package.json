@@ -24,7 +24,7 @@
     "@hanzo/capture": "^0.1.0",
     "@hanzo/gui": "7.3.0",
     "@hanzo/iam": "^0.13.1",
-    "@hanzo/ui": "npm:@hanzo/ui-shadcn@^5.7.4",
+    "@hanzo/ui": "npm:@hanzo/ui-shadcn@^5.7.5",
     "@hanzo/usage": "^0.1.6",
     "@hanzogui/config": "7.3.0",
     "@hanzogui/lucide-icons-2": "7.3.0",
