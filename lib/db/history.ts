@@ -38,20 +38,23 @@ export interface RevisionRecordInput {
   meta?: Record<string, unknown>;
 }
 
-interface BookmarkRow {
+// `type` (not `interface`) so these satisfy the BaseClient generic's `BaseRecord`
+// constraint — only type-alias object literals get the implicit string index
+// signature that `BaseRecord`'s `[key: string]: unknown` requires.
+type BookmarkRow = {
   id: string;
   app: string;
   user_id: string;
   rev_key: string;
-}
+};
 
-interface RevisionRow {
+type RevisionRow = {
   id: string;
   app: string;
   user_id: string;
   rev_key: string;
   data: RevisionRecordInput;
-}
+};
 
 /** Escape single quotes for a Base filter literal (mirrors lib/db/projects). */
 const lit = (s: string) => (s || '').replace(/'/g, "\\'");
