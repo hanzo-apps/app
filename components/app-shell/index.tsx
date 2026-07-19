@@ -2,7 +2,7 @@
 
 /**
  * AppShell — the ONE chrome for authenticated top-level content pages
- * (dashboard, settings, templates, games, skills, gallery, …).
+ * (dashboard, resources, connectors, settings, skills, gallery, …).
  *
  * It mounts the SAME left `Sidebar` the builder/admin uses — so the org/project
  * `OrgSwitcher` sits at the top-left and the identity/credit cluster at the
@@ -11,18 +11,23 @@
  * the workspace). Content is a scrollable flex child so each page owns its own
  * scroll region beside the in-flow sidebar.
  *
+ * The shell also owns the ⌘K command palette: a global keydown opens it, the
+ * sidebar's "Search" item opens it (`onOpenSearch`), and it renders here so it is
+ * reachable from every content page.
+ *
  * Responsive: at ≥md the sidebar is a static in-flow column (collapsible via the
  * toggle at its top). Below md it is an off-canvas drawer opened by the mobile
  * top-bar hamburger here — without which a phone would have NO way to reach the
  * nav. The Sidebar's own nav items self-route (absolute canonical routes);
  * selecting a recent project opens it in the builder.
  */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Menu } from 'lucide-react';
+import { Menu, Search } from 'lucide-react';
 
 import { Sidebar } from '@/components/sidebar';
 import { HanzoLogo } from '@/components/HanzoLogo';
+import { CommandPalette } from '@/components/command-palette';
 import type { Project } from '@/lib/vfs/types';
 
 interface AppShellProps {
@@ -34,6 +39,19 @@ interface AppShellProps {
 export function AppShell({ children, currentView = 'templates' }: AppShellProps) {
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+
+  // Global ⌘K / Ctrl+K opens the command palette (toggles).
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setPaletteOpen((o) => !o);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   return (
     <div className="relative flex h-screen overflow-hidden bg-black text-white">
@@ -44,6 +62,7 @@ export function AppShell({ children, currentView = 'templates' }: AppShellProps)
           router.push(`/dev?project=${encodeURIComponent(project.id || project.name)}`)
         }
         onLogoClick={() => router.push('/')}
+        onOpenSearch={() => setPaletteOpen(true)}
         mobileOpen={mobileOpen}
         onMobileOpenChange={setMobileOpen}
       />
@@ -62,10 +81,19 @@ export function AppShell({ children, currentView = 'templates' }: AppShellProps)
           </button>
           <HanzoLogo className="h-5 w-5 text-white" />
           <span className="text-sm font-medium">Hanzo App</span>
+          <button
+            onClick={() => setPaletteOpen(true)}
+            aria-label="Search"
+            className="ml-auto flex h-9 w-9 items-center justify-center rounded-md text-white/70 hover:bg-white/10 hover:text-white"
+          >
+            <Search className="h-5 w-5" />
+          </button>
         </div>
 
         {children}
       </div>
+
+      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
     </div>
   );
 }
