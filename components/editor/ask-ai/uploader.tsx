@@ -108,7 +108,9 @@ export const Uploader = ({
           </Button>
         </PopoverTrigger>
         <PopoverContent
+          side="top"
           align="start"
+          sideOffset={8}
           className="!rounded-2xl !p-0 !bg-white !border-neutral-100 min-w-xs text-center overflow-hidden"
         >
           {project?.space_id ? (
