@@ -1,375 +1,252 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Button } from "@hanzo/ui";
-import {
-  FolderOpen,
-  Plus,
-  ExternalLink,
-  CreditCard,
-  BarChart3,
-  Cpu,
-  Globe,
-  LineChart,
-  Wallet,
-  Clock,
-  ArrowUpRight,
-} from "lucide-react";
-import { useAccount, useBalance } from "wagmi";
-import { formatUnits } from "viem";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@hanzo/ui";
+import { FolderOpen, Clock, Circle, BarChart3, ArrowUpRight } from "lucide-react";
 
 import { useUser } from "@/hooks/useUser";
-import { WalletBoundary } from "@/components/providers/WalletBoundary";
+import { useProjects } from "@/hooks/useProjects";
 import { AppShell } from "@/components/app-shell";
 import { HanzoLogo } from "@/components/HanzoLogo";
-import { StartComposer } from "@/components/start-composer";
+import { BuildComposer } from "@/components/build-composer";
+import { relativeTime } from "@/lib/projects-view";
+import { markProjectOpened, orderByRecentlyOpened } from "@/lib/recent-projects";
 import {
-  toDashboardProject,
-  relativeTime,
-  type DashboardProject,
-  type BaseProjectRow,
-} from "@/lib/projects-view";
-import { buildUsage } from "@/lib/usage";
+  snapshotCatalog,
+  popularTemplates,
+  type GalleryTemplate,
+} from "@/lib/gallery-catalog";
 
-// Real Hanzo surfaces — the same control plane the console links to.
-const QUICK_LINKS = [
-  {
-    title: "Console",
-    description: "Manage your Hanzo Cloud projects",
-    href: "https://console.hanzo.ai",
-    icon: Cpu,
-  },
-  {
-    title: "Platform",
-    description: "Deploy and operate services",
-    href: "https://platform.hanzo.ai",
-    icon: Globe,
-  },
-  {
-    title: "Analytics",
-    description: "Product metrics and insights",
-    href: "https://analytics.hanzo.ai",
-    icon: LineChart,
-  },
-];
-
-function WalletSection() {
-  const { address, isConnected } = useAccount();
-  const { data: balance } = useBalance({ address });
-
-  if (!isConnected || !address) {
-    return null;
-  }
-
-  const shortAddress = `${address.slice(0, 6)}...${address.slice(-4)}`;
-  const formattedBalance = balance
-    ? `${parseFloat(formatUnits(balance.value, balance.decimals)).toFixed(4)} ${balance.symbol}`
-    : "Loading...";
-
-  return (
-    <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center">
-          <Wallet className="w-5 h-5 text-white/70" />
-        </div>
-        <h3 className="text-lg font-medium text-white">Wallet</h3>
-      </div>
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-white/50">Address</span>
-          <span className="text-sm text-white/80 font-mono">{shortAddress}</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-white/50">Balance</span>
-          <span className="text-sm text-white font-medium">{formattedBalance}</span>
-        </div>
-      </div>
-    </div>
-  );
+/** Dashboard project row — every field from the real /v1/projects record. */
+interface DashProject {
+  id: string;
+  slug: string;
+  name: string;
+  status: string;
+  updatedAtIso: string | null;
 }
 
 export default function DashboardPage() {
   const { user, loading } = useUser();
   const router = useRouter();
 
-  // null = still loading; [] = loaded, none. Never fabricated.
-  const [projects, setProjects] = useState<DashboardProject[] | null>(null);
+  // REAL projects: the org-scoped cloud list (client-side; survives reloads and
+  // devices). ONE shared source with the sidebar + palette (hooks/useProjects).
+  const { projects: apiProjects, loading: projectsLoading } = useProjects();
+  const [templates] = useState<GalleryTemplate[]>(() =>
+    popularTemplates(snapshotCatalog().templates, 8),
+  );
+  const [tab, setTab] = useState("mine");
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push("/login");
-    }
+    if (!loading && !user) router.push("/login");
   }, [user, loading, router]);
 
-  useEffect(() => {
-    if (loading || !user) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        // ONE canonical projects source: the same-origin /v1/projects BFF, called
-        // CLIENT-SIDE so the browser session cookie carries auth (proven path —
-        // identical to console). The in-pod getProjects() server action can't reach
-        // cloud from the pod, so we read the BFF directly here.
-        const r = await fetch("/v1/projects", { credentials: "include", cache: "no-store" });
-        const cloud = r.ok
-          ? ((await r.json()) as Array<{ id: string; slug: string; name?: string; updatedAt?: number; createdAt?: number }>)
-          : [];
-        if (cancelled) return;
-        const rows: BaseProjectRow[] = cloud.map((p) => ({
-          id: p.id,
-          name: p.name,
-          space_id: p.slug,
-          updated: p.updatedAt ? new Date(p.updatedAt * 1000).toISOString() : undefined,
-          created: p.createdAt ? new Date(p.createdAt * 1000).toISOString() : undefined,
-        }));
-        setProjects(rows.map(toDashboardProject));
-      } catch {
-        if (!cancelled) setProjects([]);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [loading, user]);
+  const projects = useMemo<DashProject[]>(
+    () =>
+      apiProjects.map((p) => ({
+        id: p.id || p.slug,
+        slug: p.slug,
+        name: p.name || p.slug,
+        status: p.status || "draft",
+        updatedAtIso: p.updatedAt ? new Date(p.updatedAt * 1000).toISOString() : null,
+      })),
+    [apiProjects],
+  );
+  const showSkeleton = projectsLoading && projects.length === 0;
 
-  if (loading) {
+  const recentlyViewed = useMemo(
+    () => orderByRecentlyOpened(projects, (p) => p.slug || p.id),
+    [projects],
+  );
+
+  const openProject = (p: DashProject) => {
+    markProjectOpened(p.slug || p.id);
+    router.push(`/dev?project=${encodeURIComponent(p.slug || p.id)}`);
+  };
+
+  if (loading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+      <div className="flex min-h-screen items-center justify-center bg-black">
         <div className="text-center">
-          <HanzoLogo className="w-12 h-12 mx-auto mb-4 animate-pulse text-white" />
-          <p className="text-white/40">Loading your workspace...</p>
+          <HanzoLogo className="mx-auto mb-4 h-12 w-12 animate-pulse text-white" />
+          <p className="text-white/40">
+            {loading ? "Loading your workspace…" : "Redirecting to login…"}
+          </p>
         </div>
       </div>
     );
   }
 
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-950">
-        <div className="text-center">
-          <HanzoLogo className="w-12 h-12 mx-auto mb-4 animate-pulse text-white" />
-          <p className="text-white/40">Redirecting to login...</p>
-        </div>
-      </div>
-    );
-  }
-
-  const usage = buildUsage(projects?.length ?? 0);
+  const greetingName = user.fullname || user.name || "there";
 
   return (
     <AppShell currentView="dashboard">
-    <div className="flex-1 overflow-y-auto bg-neutral-950">
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome / User Info */}
-        <div className="mb-10">
-          <div className="flex items-center gap-4 mb-2">
-            {user.avatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={user.avatarUrl}
-                alt={user.name}
-                className="w-12 h-12 rounded-full border border-white/10"
-              />
-            ) : (
-              <div className="w-12 h-12 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-white text-lg font-medium">
-                {(user.fullname || user.name || "U").charAt(0).toUpperCase()}
-              </div>
-            )}
-            <div>
-              <h1 className="text-2xl font-medium text-white">
-                Welcome back, {user.fullname || user.name || "Developer"}
-              </h1>
-              <p className="text-white/50 text-sm">
-                {user.email || user.username || user.id}
-                {user.isPro && (
-                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-white/10 text-white/80 border border-white/20">
-                    PRO
-                  </span>
-                )}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Start something new — the fast path to a fresh project. */}
-        <StartComposer className="mb-10" />
-
-        {/* Quick Links */}
-        <section className="mb-10">
-          <h2 className="text-sm font-medium text-white/40 uppercase tracking-wider mb-4">
-            Quick Links
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {QUICK_LINKS.map((link) => (
-              <a
-                key={link.title}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group rounded-xl border border-white/10 bg-white/[0.03] p-5 hover:bg-white/[0.06] hover:border-white/20 transition-all"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors">
-                    <link.icon className="w-5 h-5 text-white/70" />
-                  </div>
-                  <ExternalLink className="w-4 h-4 text-white/30 group-hover:text-white/60 transition-colors" />
-                </div>
-                <h3 className="text-white font-medium">{link.title}</h3>
-                <p className="text-sm text-white/40 mt-1">{link.description}</p>
-              </a>
-            ))}
-          </div>
+      <div className="flex-1 overflow-y-auto bg-black">
+        {/* ── Hero: greeting + the animated-gradient build composer ── */}
+        <section className="px-4 pb-10 pt-16 md:pt-24">
+          <BuildComposer greetingName={greetingName} showPill />
         </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Projects - spans 2 columns */}
-          <section className="lg:col-span-2">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-medium text-white/40 uppercase tracking-wider">
-                Projects
-              </h2>
-              <Button
-                onClick={() => router.push("/new")}
-                size="sm"
-                variant="outline"
-                className="gap-1.5"
-              >
-                <Plus className="w-4 h-4" />
-                New
-              </Button>
-            </div>
-
-            {projects === null ? (
-              <ProjectsSkeleton />
-            ) : projects.length === 0 ? (
-              <EmptyProjects onCreate={() => router.push("/new")} />
-            ) : (
-              <div className="space-y-3">
-                {projects.map((project) => (
-                  <Link
-                    key={project.id}
-                    href={`/dev?project=${encodeURIComponent(project.spaceId || project.id)}`}
-                    className="group flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] p-4 hover:bg-white/[0.06] hover:border-white/20 transition-all"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors">
-                        <FolderOpen className="w-5 h-5 text-white/60" />
-                      </div>
-                      <div>
-                        <h3 className="text-white font-medium group-hover:text-white/90">
-                          {project.name}
-                        </h3>
-                        <div className="flex items-center gap-3 mt-1">
-                          {project.spaceId && (
-                            <span className="text-xs text-white/40 font-mono">
-                              {project.spaceId}
-                            </span>
-                          )}
-                          <span className="text-xs text-white/30 flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            {relativeTime(project.updatedAt)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <ArrowUpRight className="w-4 h-4 text-white/20 group-hover:text-white/50 transition-colors" />
-                  </Link>
-                ))}
-
-                <Link
-                  href="/projects"
-                  className="block text-center py-3 text-sm text-white/40 hover:text-white/60 transition-colors"
-                >
-                  View all projects
-                </Link>
-              </div>
-            )}
-          </section>
-
-          {/* Right sidebar */}
-          <aside className="space-y-6">
-            {/* Usage / Plan Summary */}
-            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6">
-              <div className="flex items-center gap-3 mb-5">
-                <div className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center">
-                  <BarChart3 className="w-5 h-5 text-white/70" />
-                </div>
-                <h3 className="text-lg font-medium text-white">Usage</h3>
-              </div>
-
-              <div className="space-y-4">
-                {usage.metrics.map((metric) => (
-                  <div
-                    key={metric.label}
-                    className="flex items-center justify-between"
-                  >
-                    <span className="text-sm text-white/60">{metric.label}</span>
-                    <span className="text-sm text-white/80">
-                      {metric.value}
-                      {metric.limit != null && (
-                        <span className="text-white/30"> / {metric.limit}</span>
-                      )}
-                      {metric.unit ? ` ${metric.unit}` : ""}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {!usage.metered && usage.note && (
-                <p className="mt-4 text-xs text-white/35 leading-relaxed">
-                  {usage.note}
-                </p>
-              )}
-
-              <div className="mt-5 pt-4 border-t border-white/10">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm text-white/50">Current Plan</span>
-                  <span className="text-sm text-white font-medium">
-                    {user.isPro ? "Pro" : "Free"}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-white/50">Billing Cycle</span>
-                  <span className="text-sm text-white/70">Monthly</span>
-                </div>
-              </div>
+        {/* ── Projects: tabs + scrollable grid ── */}
+        <section className="mx-auto max-w-6xl px-4 pb-24 sm:px-6">
+          <Tabs value={tab} onValueChange={setTab}>
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
+              <TabsList className="bg-transparent p-0">
+                <TabsTrigger value="mine" className="data-[state=active]:bg-white/10">
+                  My projects
+                </TabsTrigger>
+                <TabsTrigger value="recent" className="data-[state=active]:bg-white/10">
+                  Recently viewed
+                </TabsTrigger>
+                <TabsTrigger value="visitors" className="data-[state=active]:bg-white/10">
+                  Most visitors today
+                </TabsTrigger>
+                <TabsTrigger value="templates" className="data-[state=active]:bg-white/10">
+                  Templates
+                </TabsTrigger>
+              </TabsList>
 
               <Link
-                href="/billing"
-                className="mt-4 flex items-center justify-center gap-2 w-full py-2.5 rounded-lg border border-white/10 text-sm text-white/60 hover:text-white hover:border-white/20 transition-all"
+                href={tab === "templates" ? "/resources" : "/projects"}
+                className="text-sm text-white/50 transition-colors hover:text-white"
               >
-                <CreditCard className="w-4 h-4" />
-                Manage Billing
+                Browse all →
               </Link>
             </div>
 
-            {/* Wallet (conditional on Web3 connection) — web3 stack scoped here */}
-            <WalletBoundary>
-              <WalletSection />
-            </WalletBoundary>
-          </aside>
-        </div>
-      </main>
-    </div>
+            {/* My projects */}
+            <TabsContent value="mine">
+              {showSkeleton ? (
+                <ProjectsSkeleton />
+              ) : projects.length === 0 ? (
+                <EmptyProjects />
+              ) : (
+                <ProjectGrid projects={projects} onOpen={openProject} />
+              )}
+            </TabsContent>
+
+            {/* Recently viewed — the real local "opened here" signal. */}
+            <TabsContent value="recent">
+              {showSkeleton ? (
+                <ProjectsSkeleton />
+              ) : recentlyViewed.length === 0 ? (
+                <EmptyState
+                  icon={Clock}
+                  title="No recently viewed projects"
+                  body="Projects you open will show up here, most recent first."
+                />
+              ) : (
+                <ProjectGrid projects={recentlyViewed} onOpen={openProject} />
+              )}
+            </TabsContent>
+
+            {/* Most visitors today — honest: per-project traffic analytics isn't
+                wired into this list yet, so we don't fabricate numbers. */}
+            <TabsContent value="visitors">
+              <EmptyState
+                icon={BarChart3}
+                title="Visitor analytics coming to your dashboard"
+                body="Once your apps are published and receiving traffic, your busiest projects today will rank here. Live traffic is captured per deployment."
+                action={{ label: "View analytics", href: "https://analytics.hanzo.ai" }}
+              />
+            </TabsContent>
+
+            {/* Templates — a peek at the gallery; Browse all → /resources. */}
+            <TabsContent value="templates">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {templates.map((t) => (
+                  <Link
+                    key={t.slug}
+                    href="/resources"
+                    className="group overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] transition-all hover:-translate-y-0.5 hover:border-white/25"
+                  >
+                    <div className="relative aspect-[16/10] overflow-hidden bg-white/[0.02]">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={t.screenshotUrl}
+                        alt={`${t.displayName} preview`}
+                        loading="lazy"
+                        className="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.04]"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).style.opacity = "0";
+                        }}
+                      />
+                    </div>
+                    <div className="p-3">
+                      <p className="truncate text-sm font-medium text-white/85">{t.displayName}</p>
+                      <p className="truncate text-xs text-white/35">{t.category}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </section>
+      </div>
     </AppShell>
+  );
+}
+
+function ProjectGrid({
+  projects,
+  onOpen,
+}: {
+  projects: DashProject[];
+  onOpen: (p: DashProject) => void;
+}) {
+  return (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {projects.map((p) => {
+        const live = p.status === "live" || p.status === "published";
+        return (
+          <button
+            key={p.id}
+            onClick={() => onOpen(p)}
+            className="group overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.03]"
+          >
+            {/* Honest monogram tile — we don't fabricate a screenshot. */}
+            <div className="relative flex aspect-video items-center justify-center bg-gradient-to-br from-white/[0.07] to-transparent">
+              <span className="text-4xl font-medium text-white/60">
+                {(p.name || "?").charAt(0).toUpperCase()}
+              </span>
+              <ArrowUpRight className="absolute right-3 top-3 h-4 w-4 text-white/20 transition-colors group-hover:text-white/60" />
+            </div>
+            <div className="p-4">
+              <h3 className="truncate text-sm font-medium text-white">{p.name}</h3>
+              <div className="mt-1.5 flex items-center gap-3">
+                <span
+                  className={`inline-flex items-center gap-1 text-[11px] uppercase tracking-wide ${
+                    live ? "text-emerald-400" : "text-white/35"
+                  }`}
+                >
+                  <Circle className={`h-1.5 w-1.5 ${live ? "fill-emerald-400" : "fill-white/35"}`} />
+                  {live ? "Live" : "Draft"}
+                </span>
+                <span className="flex items-center gap-1 text-[11px] text-white/30">
+                  <Clock className="h-3 w-3" />
+                  {relativeTime(p.updatedAtIso)}
+                </span>
+              </div>
+            </div>
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
 function ProjectsSkeleton() {
   return (
-    <div className="space-y-3" aria-hidden>
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-hidden>
       {[0, 1, 2].map((i) => (
-        <div
-          key={i}
-          className="flex items-center gap-4 rounded-xl border border-white/10 bg-white/[0.03] p-4"
-        >
-          <div className="w-10 h-10 rounded-lg bg-white/[0.06] animate-pulse" />
-          <div className="flex-1 space-y-2">
-            <div className="h-3.5 w-40 rounded bg-white/[0.06] animate-pulse" />
-            <div className="h-3 w-24 rounded bg-white/[0.04] animate-pulse" />
+        <div key={i} className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02]">
+          <div className="aspect-video animate-pulse bg-white/[0.05]" />
+          <div className="space-y-2 p-4">
+            <div className="h-3.5 w-32 animate-pulse rounded bg-white/[0.06]" />
+            <div className="h-3 w-24 animate-pulse rounded bg-white/[0.04]" />
           </div>
         </div>
       ))}
@@ -377,21 +254,45 @@ function ProjectsSkeleton() {
   );
 }
 
-function EmptyProjects({ onCreate }: { onCreate: () => void }) {
+function EmptyProjects() {
   return (
-    <div className="rounded-xl border border-dashed border-white/15 bg-white/[0.02] p-10 text-center">
+    <EmptyState
+      icon={FolderOpen}
+      title="No projects yet"
+      body="Describe what you want to build in the composer above and Hanzo will generate it. Your projects appear here."
+    />
+  );
+}
+
+function EmptyState({
+  icon: Icon,
+  title,
+  body,
+  action,
+}: {
+  icon: React.ElementType;
+  title: string;
+  body: string;
+  action?: { label: string; href: string };
+}) {
+  return (
+    <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.02] p-12 text-center">
       <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-white/5">
-        <FolderOpen className="h-6 w-6 text-white/50" />
+        <Icon className="h-6 w-6 text-white/50" />
       </div>
-      <h3 className="text-white font-medium">No projects yet</h3>
-      <p className="mx-auto mt-1 max-w-xs text-sm text-white/40">
-        Describe what you want to build and Hanzo will generate it. Your projects
-        will appear here.
-      </p>
-      <Button onClick={onCreate} size="sm" variant="outline" className="mt-5 gap-1.5">
-        <Plus className="w-4 h-4" />
-        Create your first project
-      </Button>
+      <h3 className="font-medium text-white">{title}</h3>
+      <p className="mx-auto mt-1 max-w-md text-sm text-white/40">{body}</p>
+      {action && (
+        <a
+          href={action.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 inline-flex items-center gap-1.5 text-sm text-white/60 transition-colors hover:text-white"
+        >
+          {action.label}
+          <ArrowUpRight className="h-3.5 w-3.5" />
+        </a>
+      )}
     </div>
   );
 }

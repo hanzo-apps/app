@@ -70,10 +70,100 @@
   animation: threadShimmer 1.8s linear infinite;
 }
 
+/* ── Build-composer living gradient ──────────────────────────────────────────
+   The ONE deliberate colorful flourish on an otherwise monochrome surface: a
+   slow-drifting conic gradient border + soft glow on the "Ask Hanzo to build…"
+   bubble. Blue → violet → pink → warm, ~10s loop. Raw color literals (NOT
+   Tailwind violet/purple/rose, which globals.css remaps to zero-chroma gray).
+   Reduced-motion → the gradient holds a static frame (still colorful, no drift).
+
+   Structure (see components/build-composer): a padded `.hz-composer` hosts the
+   conic ring (::before, fills the box) + the blurred glow (::after, extends past
+   the box); an opaque inner panel (`> *`, z-1) covers the center so only a
+   ~1.5px ring shows around it. `@property` lets the conic angle animate; where
+   it is unsupported the ring is simply static. */
+@property --hz-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes hzComposerSpin {
+  to {
+    --hz-angle: 360deg;
+  }
+}
+
+@keyframes hzComposerGlow {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.hz-composer {
+  position: relative;
+  isolation: isolate;
+  padding: 1.5px;
+}
+
+.hz-composer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--hz-angle),
+    #2f6bff,
+    #7c5cff,
+    #ff5db1,
+    #ff9d5c,
+    #2f6bff
+  );
+  animation: hzComposerSpin 10s linear infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hz-composer::after {
+  content: "";
+  position: absolute;
+  inset: -12px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--hz-angle),
+    #2f6bff,
+    #7c5cff,
+    #ff5db1,
+    #ff9d5c,
+    #2f6bff
+  );
+  filter: blur(28px);
+  opacity: 0.5;
+  z-index: -1;
+  pointer-events: none;
+  animation:
+    hzComposerSpin 10s linear infinite,
+    hzComposerGlow 10s ease-in-out infinite;
+}
+
+/* Direct children (the opaque inner panel) sit above the ring + glow. */
+.hz-composer > * {
+  position: relative;
+  z-index: 1;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .thread-shimmer-text {
     animation: none;
     color: rgba(255, 255, 255, 0.72);
+  }
+  .hz-composer::before,
+  .hz-composer::after {
+    animation: none;
   }
 }
 
