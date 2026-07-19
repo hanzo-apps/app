@@ -3,7 +3,7 @@ import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { CodeEditorHandle } from "@/components/code-editor";
 import dynamic from "next/dynamic";
-import { Bookmark, CopyIcon, History as HistoryIcon, MessageCircleCode, Share2 } from "lucide-react";
+import { CopyIcon, Share2 } from "lucide-react";
 
 // CodeMirror bundles locally (no CDN, no web workers) so it is CSP-clean.
 // Still code-split out of the /dev first-load chunk and rendered client-only
@@ -44,6 +44,7 @@ import { LoadProject } from "../my-projects/load-project";
 import { isTheSameHtml } from "@/lib/compare-html-diff";
 import { ListPages } from "./pages";
 import { HistoryPanel } from "./history";
+import { RevisionDetails, type DetailsRev } from "./history/details";
 import { ShareModal } from "./share-modal";
 import { VisualEditor } from "./visual-editor";
 import { AISupervisor } from "./ai-supervisor";
@@ -84,12 +85,12 @@ export const AppEditor = ({
   // docked on the left; this drives what the RIGHT pane shows — preview or the
   // code editor — and, on mobile, which single pane is visible.
   const [currentTab, setCurrentTab] = useState("chat");
-  // The left panel's own view (Lovable parity): the composer, or the version
-  // History / Bookmarks timeline. Chat stays MOUNTED across switches (generation
-  // state persists); History/Bookmarks mount on demand.
-  const [leftTab, setLeftTab] = useState<"chat" | "history" | "bookmarks">(
-    "chat"
-  );
+  // The left pane is ALWAYS the chat composer; a history/rollback ICON in the
+  // header toggles the version-history panel as an OVERLAY over it (item 10).
+  const [historyOpen, setHistoryOpen] = useState(false);
+  // The revision whose Details view (Timeline | Changes) overlays the right pane
+  // (item 12); null = the normal preview/code view.
+  const [detailsRev, setDetailsRev] = useState<DetailsRev | null>(null);
   // The chat pane can be collapsed on desktop to give preview/code the full
   // width; on mobile the tab switcher already shows one pane at a time.
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -259,6 +260,13 @@ export const AppEditor = ({
         onOpenExternal={openInNewTab}
         sidebarCollapsed={sidebarCollapsed}
         onToggleSidebar={() => setSidebarCollapsed((v) => !v)}
+        historyOpen={historyOpen}
+        onToggleHistory={() => {
+          const next = !historyOpen;
+          setHistoryOpen(next);
+          // Opening history must reveal the left pane if it was collapsed.
+          if (next) setSidebarCollapsed(false);
+        }}
         project={project}
       >
         {/* Secondary actions (Share / Load / Push) share ONE treatment so the
@@ -293,66 +301,18 @@ export const AppEditor = ({
         <div
           ref={editor}
           className={classNames(
-            // Distinct-but-subtle panel field, one shade off the flat workspace
-            // (#0a0a0a) so the chat/history panel reads as its own surface with
-            // NO hard border seam. Desktop: a fixed, resizable width (shrink-0 so
-            // the inline width is authoritative). Mobile: fills the column.
-            "relative bg-[#141414] overflow-hidden h-full flex flex-col max-lg:flex-1 lg:shrink-0",
+            // ONE flat black chrome — the left pane shares the workspace field
+            // (no card/border/distinct bg); only the RIGHT preview card lifts off
+            // it. Desktop: a fixed, resizable width (shrink-0 so the inline width
+            // is authoritative). Mobile: fills the column.
+            "relative overflow-hidden h-full flex flex-col max-lg:flex-1 lg:shrink-0",
             currentTab === "chat" ? "flex" : "hidden",
             sidebarCollapsed ? "lg:hidden" : "lg:flex"
           )}
         >
-          {/* Left-panel view switcher — Chat · History · Bookmarks (Lovable). */}
-          <div className="shrink-0 px-3 pt-3">
-            <div
-              role="tablist"
-              aria-label="Left panel"
-              className="flex items-center gap-0.5 rounded-lg bg-white/[0.03] p-0.5 ring-1 ring-white/10"
-            >
-              {[
-                { value: "chat", label: "Chat", icon: MessageCircleCode },
-                { value: "history", label: "History", icon: HistoryIcon },
-                { value: "bookmarks", label: "Bookmarks", icon: Bookmark },
-              ].map((item) => {
-                const active = leftTab === item.value;
-                return (
-                  <button
-                    key={item.value}
-                    type="button"
-                    role="tab"
-                    aria-selected={active}
-                    onClick={() =>
-                      setLeftTab(item.value as "chat" | "history" | "bookmarks")
-                    }
-                    className={classNames(
-                      "inline-flex flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
-                      active
-                        ? "bg-white/10 text-white shadow-sm"
-                        : "text-white/50 hover:bg-white/[0.06] hover:text-white/90"
-                    )}
-                  >
-                    <item.icon className="size-3.5 shrink-0" />
-                    {item.label}
-                    {item.value === "history" &&
-                      (htmlHistory?.length ?? 0) > 0 && (
-                        <span className="font-mono text-[10px] text-white/40">
-                          {htmlHistory?.length ?? 0}
-                        </span>
-                      )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Chat — ALWAYS mounted (generation state persists); just hidden when
-              the History / Bookmarks timeline is showing. */}
-          <div
-            className={classNames(
-              "min-h-0 flex-1 flex-col",
-              leftTab === "chat" ? "flex" : "hidden"
-            )}
-          >
+          {/* Chat — ALWAYS the left pane (composer/thread live here permanently);
+              the history panel OVERLAYS it when toggled from the header icon. */}
+          <div className="min-h-0 flex-1 flex flex-col">
             <AskAI
               isNew={isNew}
               project={project}
@@ -401,13 +361,17 @@ export const AppEditor = ({
             />
           </div>
 
-          {/* History / Bookmarks — the version timeline. Clicking a row restores
-              that version's HTML into the preview + editor (via setPages). */}
-          {leftTab !== "chat" && (
+          {/* History overlay — the git changeset timeline (commits + working
+              changes), toggled by the header history icon. Absolute-fills the
+              left pane over the chat; a commit's "Details" opens the right-pane
+              Details view via onOpenDetails. */}
+          {historyOpen && (
             <HistoryPanel
               history={htmlHistory}
               setPages={setPages}
-              tab={leftTab}
+              pages={pages}
+              onClose={() => setHistoryOpen(false)}
+              onOpenDetails={setDetailsRev}
             />
           )}
         </div>
@@ -541,6 +505,11 @@ export const AppEditor = ({
                   />
                 </div>
               </div>
+            )}
+            {/* Revision Details (Timeline | Changes) — overlays the preview card
+                when a History revision's "Details" is opened (item 12). */}
+            {detailsRev && (
+              <RevisionDetails rev={detailsRev} onClose={() => setDetailsRev(null)} />
             )}
           </div>
         </div>

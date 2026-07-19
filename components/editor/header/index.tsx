@@ -4,6 +4,7 @@ import {
   Code2,
   Eye,
   ExternalLink,
+  History,
   MessageCircleCode,
   PanelLeft,
   PanelLeftClose,
@@ -63,6 +64,8 @@ export function Header({
   onOpenExternal,
   sidebarCollapsed,
   onToggleSidebar,
+  historyOpen,
+  onToggleHistory,
   project,
   onRenamed,
 }: {
@@ -78,6 +81,10 @@ export function Header({
   onOpenExternal: () => void;
   sidebarCollapsed: boolean;
   onToggleSidebar: () => void;
+  /** Whether the left-pane history/rollback panel is showing (item 10). */
+  historyOpen?: boolean;
+  /** Toggle the history/rollback panel over the chat pane. */
+  onToggleHistory?: () => void;
   project?: Project | null;
   onRenamed?: (name: string) => void;
 }) {
@@ -115,6 +122,25 @@ export function Header({
             <PanelLeftClose className="size-4" />
           )}
         </button>
+        {/* History / rollback — toggles the version-history panel over the chat
+            pane (item 10). Chat is the default; this flips to the git timeline. */}
+        {onToggleHistory && (
+          <button
+            type="button"
+            onClick={onToggleHistory}
+            title={historyOpen ? "Back to chat" : "Version history"}
+            aria-label={historyOpen ? "Back to chat" : "Version history"}
+            aria-pressed={Boolean(historyOpen)}
+            className={classNames(
+              "hidden size-8 items-center justify-center rounded-lg ring-1 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 lg:flex",
+              historyOpen
+                ? "bg-white/10 text-white ring-white/20"
+                : "text-white/50 ring-white/10 hover:bg-white/[0.06] hover:text-white/90",
+            )}
+          >
+            <History className="size-4" />
+          </button>
+        )}
       </div>
 
       {/* CENTER — view switcher + device switcher + refresh + page selector +
