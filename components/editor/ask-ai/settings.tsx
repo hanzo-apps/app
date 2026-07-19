@@ -8,12 +8,40 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@hanzo/ui";
-import { PROVIDERS, AUTO_MODEL } from "@/lib/providers";
+import { ModelSelector, type ModelCatalogEntry } from "@hanzo/ui/models";
+import {
+  PROVIDERS,
+  AUTO_MODEL,
+  FALLBACK_MODELS,
+  isBuildModel,
+  isDeadModelId,
+  type ModelOption,
+} from "@/lib/providers";
 import { useModels } from "@/lib/hooks/use-models";
 import { Button } from "@hanzo/ui";
 import { useMemo } from "react";
 import { useUpdateEffect } from "react-use";
 import Image from "next/image";
+
+/**
+ * Adapt the builder's live model ladder (from /v1/models via useModels — the
+ * gateway list is already build-filtered server-side, and useModels falls back
+ * to FALLBACK_MODELS when the fetch fails, so this is never fed an empty list)
+ * into the unified selector's catalog shape. The build-model policy is
+ * re-applied here (isBuildModel + isDeadModelId) ON TOP of the selector's
+ * `chatOnly`, so the builder only ever offers models that can actually build —
+ * the family-grouped selector shows Enso, Zen, Anthropic and OpenAI (whatever
+ * the predicate admits). Family is derived from the id by the selector.
+ */
+function toCatalogEntries(models: ModelOption[]): ModelCatalogEntry[] {
+  return models
+    .filter(({ value }) => isBuildModel(value) && !isDeadModelId(value))
+    .map(({ value, label, description }) => ({
+      id: value,
+      label,
+      ...(description ? { description } : {}),
+    }));
+}
 
 /** One selectable row in the model list — a plain button (no nested Radix Select
  *  portal, which was rendering a second floating layer that overlapped the
@@ -74,6 +102,13 @@ export function Settings({
   // The list is live from the gateway (via /v1/models); never a static catalog.
   const { models } = useModels();
 
+  // The unified, family-grouped selector's catalog. Never empty: useModels
+  // already returns FALLBACK_MODELS on a failed fetch, and this guards once more.
+  const entries = useMemo(
+    () => toCatalogEntries(models.length ? models : FALLBACK_MODELS),
+    [models]
+  );
+
   // Every gateway model is served by the single `hanzo` provider, so the
   // available providers are simply the provider set.
   const modelAvailableProviders = useMemo(() => Object.keys(PROVIDERS), []);
@@ -119,24 +154,26 @@ export function Settings({
 
           <div>
             <p className="mb-2.5 text-sm text-neutral-300">Choose a model</p>
-            {/* ONE clean scrollable list. Auto (smart routing) first, then every
-                live gateway model. */}
-            <div className="max-h-64 space-y-0.5 overflow-y-auto rounded-xl border border-neutral-800 bg-neutral-950/60 p-1">
-              <ModelRow
-                label="Auto"
-                hint="Best/cheapest model per request · smart routing"
-                selected={isAuto}
-                onClick={() => onModelChange(AUTO_MODEL)}
-              />
-              {models.map(({ value, label, description }) => (
+            {/* Auto (smart routing) stays a first-class choice: it is a VALUE of
+                the persisted `model`, read by the builder's "Routed: …" banner
+                and the smart-routing card. Concrete models are the unified,
+                family-grouped selector (Enso / Zen / Anthropic / OpenAI). */}
+            <div className="space-y-2">
+              <div className="rounded-xl border border-neutral-800 bg-neutral-950/60 p-1">
                 <ModelRow
-                  key={value}
-                  label={label}
-                  hint={description}
-                  selected={!isAuto && model === value}
-                  onClick={() => onModelChange(value)}
+                  label="Auto"
+                  hint="Best/cheapest model per request · smart routing"
+                  selected={isAuto}
+                  onClick={() => onModelChange(AUTO_MODEL)}
                 />
-              ))}
+              </div>
+              <ModelSelector
+                models={entries}
+                value={isAuto ? undefined : model}
+                onChange={onModelChange}
+                size="sm"
+                chatOnly
+              />
             </div>
           </div>
 
