@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useState, type ComponentType } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ComponentType,
+} from "react";
 import { useIam } from "@hanzo/iam/react";
 import { toast } from "sonner";
 import {
@@ -26,7 +32,12 @@ import { HanzoLogo } from "@/components/HanzoLogo";
 import { useUser } from "@/hooks/useUser";
 import { currentOrg } from "@/lib/org-scope";
 import { linkProvider } from "@/lib/hanzo/iam";
-import { syncToGit, type GitProvider, type SyncGitResult } from "@/lib/api/git";
+import {
+  syncToGit,
+  composeCommitMessage,
+  type GitProvider,
+  type SyncGitResult,
+} from "@/lib/api/git";
 import { Page } from "@/types";
 
 /**
@@ -100,6 +111,7 @@ export function GitSyncButton({
   const { user } = useUser();
   const { sdk } = useIam();
 
+  const [open, setOpen] = useState(false);
   const [provider, setProvider] = useState<GitProvider>("hanzo");
   const [name, setName] = useState("");
   const [slug, setSlug] = useState<string | undefined>(undefined);
@@ -109,6 +121,14 @@ export function GitSyncButton({
   const [result, setResult] = useState<SyncGitResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [linked, setLinked] = useState<LinkedRepo | null>(null);
+  // The commit message: AI-composed from the session's edit prompts when the
+  // panel opens, but manually overridable (propose, don't force). `messageEdited`
+  // pins a user edit so a recompose never clobbers it; `composedForCount` tracks
+  // the prompt count the current proposal was authored from (recompose on change).
+  const [message, setMessage] = useState("");
+  const [messageLoading, setMessageLoading] = useState(false);
+  const messageEdited = useRef(false);
+  const composedForCount = useRef(-1);
   // When linked, the compact re-sync card leads; this reveals the full form
   // (different provider / repo name) on demand.
   const [showForm, setShowForm] = useState(false);
@@ -147,6 +167,35 @@ export function GitSyncButton({
     };
   }, []);
 
+  // Propose an AI commit message from the session's edit prompts. Skipped once
+  // the user has hand-edited the field, and re-run only when the prompt count
+  // changed (a new edit landed) — so it stays cheap and never clobbers an edit.
+  const proposeMessage = useCallback(async () => {
+    if (messageEdited.current) return;
+    const list = (prompts ?? []).map((p) => p?.trim()).filter(Boolean) as string[];
+    if (list.length === 0) return;
+    if (composedForCount.current === list.length) return;
+    setMessageLoading(true);
+    try {
+      const m = await composeCommitMessage(list, currentOrg() || undefined);
+      composedForCount.current = list.length;
+      if (!messageEdited.current && m) setMessage(m);
+    } finally {
+      setMessageLoading(false);
+    }
+  }, [prompts]);
+
+  // Open on the History panel's "Commit & push" / "Connect a repo" request, and
+  // propose a message when it does (the ONE push flow lives here).
+  useEffect(() => {
+    const openIt = () => {
+      setOpen(true);
+      void proposeMessage();
+    };
+    window.addEventListener("hanzo:open-git-sync", openIt);
+    return () => window.removeEventListener("hanzo:open-git-sync", openIt);
+  }, [proposeMessage]);
+
   if (!user?.id) return null;
 
   const meta = providerMeta(provider);
@@ -182,6 +231,9 @@ export function GitSyncButton({
           name: repoName.trim(),
           slug,
           description: prompts?.[prompts.length - 1] || "",
+          // AI-composed (or hand-edited) subject so new commits are born clean;
+          // the BFF falls back to a default only when this is blank.
+          message: message.trim() || undefined,
           private: isPrivate,
           pages,
         },
@@ -248,10 +300,14 @@ export function GitSyncButton({
 
   return (
     <Popover
-      onOpenChange={(open) => {
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        // On open, propose a fresh commit message from the session prompts.
+        if (next) void proposeMessage();
         // On close, drop the transient "just pushed" confirmation so the next
         // open leads with the linked-repo re-sync card (linked state persists).
-        if (!open && result?.ok) {
+        if (!next && result?.ok) {
           setResult(null);
           setError(null);
         }
@@ -441,6 +497,17 @@ export function GitSyncButton({
               </div>
             </div>
 
+            <div className="mt-3">
+              <CommitMessageField
+                value={message}
+                loading={messageLoading}
+                onChange={(v) => {
+                  messageEdited.current = true;
+                  setMessage(v);
+                }}
+              />
+            </div>
+
             {error && <ErrorNote message={error} />}
 
             <Button
@@ -501,6 +568,15 @@ export function GitSyncButton({
               />
             </div>
 
+            <CommitMessageField
+              value={message}
+              loading={messageLoading}
+              onChange={(v) => {
+                messageEdited.current = true;
+                setMessage(v);
+              }}
+            />
+
             <label className="flex cursor-pointer items-center justify-between rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2.5">
               <span className="flex items-center gap-2 text-sm text-white/80">
                 <Lock className="h-3.5 w-3.5 text-white/50" />
@@ -548,6 +624,40 @@ export function GitSyncButton({
         )}
       </PopoverContent>
     </Popover>
+  );
+}
+
+/**
+ * The commit-message field: an AI-proposed subject (composed from the session's
+ * edit prompts) that the user can edit before pushing. Propose, don't force.
+ */
+function CommitMessageField({
+  value,
+  loading,
+  onChange,
+}: {
+  value: string;
+  loading: boolean;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div>
+      <label className="mb-1.5 block text-xs text-white/50">Commit message</label>
+      <div className="relative">
+        <Input
+          value={value}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
+          placeholder="Describe this change"
+          className="!border-white/12 !bg-black/40 !text-white placeholder:!text-white/30"
+        />
+        {loading && (
+          <Loader2 className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 animate-spin text-white/40" />
+        )}
+      </div>
+      <p className="mt-1 text-[10px] text-white/30">
+        AI-proposed from your edits — edit before pushing.
+      </p>
+    </div>
   );
 }
 
