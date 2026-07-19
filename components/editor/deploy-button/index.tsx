@@ -27,9 +27,12 @@ export function DeployButton({
   const { user } = useUser();
   const [open, setOpen] = useState(false);
 
+  // No outer gap wrapper — the header's action row owns the inter-button gap; a
+  // local `gap-5` here made Publish float apart from Share/Push and read as a
+  // different-weight control. Just the button (+ portal-rendered login modal).
   return (
-    <div className="flex items-center justify-end gap-5">
-      <div className="relative flex items-center justify-end">
+    <div className="relative flex items-center">
+      <div className="relative flex items-center">
         {user?.id ? (
           <Popover>
             <PopoverTrigger asChild>
