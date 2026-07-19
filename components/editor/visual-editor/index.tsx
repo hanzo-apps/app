@@ -1,31 +1,52 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
-  MousePointer,
+  Wand2,
+  MousePointer2,
   Edit3,
-  Code,
-  Type,
-  Palette,
   Move,
-  Square,
-  Copy,
-  Trash2,
-  Eye,
+  SlidersHorizontal,
+  MoreVertical,
+  PanelBottom,
+  PanelLeft,
+  PanelRight,
+  PanelTop,
+  Minimize2,
   EyeOff,
-  Layers,
-  Settings,
+  Monitor,
+  Sun,
+  Moon,
+  Keyboard,
+  GripHorizontal,
+  GripVertical,
+  Box,
+  Code,
   X,
-  Check,
-  ChevronRight,
-  Box
+  Check
 } from "lucide-react";
-import { Button } from "@hanzo/ui";
-import { Input } from "@hanzo/ui";
-import { Label } from "@hanzo/ui";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
+import {
+  Button,
+  Input,
+  Label,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Switch,
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuCheckboxItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent
+} from "@hanzo/ui";
 import { cn } from "@/lib/utils";
-import { HexColorPicker } from "react-colorful";
 import type { CodeEditorHandle } from "@/components/code-editor";
 
 interface SourceLocation {
@@ -57,6 +78,50 @@ interface VisualEditorProps {
   onCodeUpdate?: (newHtml: string, location?: SourceLocation) => void;
 }
 
+// --- Floating-dock persistence -------------------------------------------------
+// All dock chrome state lives client-side in localStorage so the toolbar never
+// needs to reach up into the editor shell (index.tsx). One key per concern.
+type DockPosition = "bottom" | "top" | "left" | "right";
+type PreviewTheme = "auto" | "light" | "dark";
+
+const LS = {
+  dock: "hanzo.dev.visualEditor.dock",
+  minimized: "hanzo.dev.visualEditor.minimized",
+  hidden: "hanzo.dev.visualEditor.hidden",
+  theme: "hanzo.dev.visualEditor.theme",
+  shortcuts: "hanzo.dev.visualEditor.shortcuts"
+} as const;
+
+// Single persisted-state primitive. Initial render uses `fallback` on both
+// server and client (no hydration mismatch); the stored value is read in on
+// mount and every setter mirrors back to localStorage.
+function usePersisted<T>(key: string, fallback: T): [T, (value: T) => void] {
+  const [value, setValue] = useState<T>(fallback);
+
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(key);
+      if (raw !== null) setValue(JSON.parse(raw) as T);
+    } catch {
+      // Malformed / unavailable storage — keep the fallback.
+    }
+  }, [key]);
+
+  const set = useCallback(
+    (next: T) => {
+      setValue(next);
+      try {
+        window.localStorage.setItem(key, JSON.stringify(next));
+      } catch {
+        // Quota / disabled storage — state still updates in memory.
+      }
+    },
+    [key]
+  );
+
+  return [value, set];
+}
+
 export function VisualEditor({
   iframeRef,
   editorRef,
@@ -66,11 +131,30 @@ export function VisualEditor({
   onCodeUpdate
 }: VisualEditorProps) {
   const [selectedElement, setSelectedElement] = useState<SelectedElementInfo | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
   const [editMode, setEditMode] = useState<"select" | "edit" | "move">("select");
   const [showPanel, setShowPanel] = useState(true);
   const [highlightedElement, setHighlightedElement] = useState<HTMLElement | null>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
+
+  // Dock chrome (persisted).
+  const [dockPosition, setDockPosition] = usePersisted<DockPosition>(LS.dock, "bottom");
+  const [isMinimized, setIsMinimized] = usePersisted<boolean>(LS.minimized, false);
+  const [isHidden, setIsHidden] = usePersisted<boolean>(LS.hidden, false);
+  const [previewTheme, setPreviewTheme] = usePersisted<PreviewTheme>(LS.theme, "auto");
+  const [shortcutsEnabled, setShortcutsEnabled] = usePersisted<boolean>(LS.shortcuts, true);
+
+  // On narrow viewports the dock is forced bottom-center (still reachable, no
+  // overflow) regardless of the persisted edge — the stored choice is intact.
+  const [isNarrow, setIsNarrow] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 640px)");
+    const update = () => setIsNarrow(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  const position: DockPosition = isNarrow ? "bottom" : dockPosition;
+  const isVertical = position === "left" || position === "right";
 
   // Style editing states
   const [elementText, setElementText] = useState("");
@@ -242,7 +326,7 @@ export function VisualEditor({
       highlightedElement.style.outline = "";
     }
 
-    target.style.outline = "2px solid #8b5cf6";
+    target.style.outline = "2px solid #ffffff";
     target.style.outlineOffset = "2px";
     setHighlightedElement(target);
   }, [isEnabled, editMode, highlightedElement]);
@@ -328,11 +412,11 @@ export function VisualEditor({
       style.id = styleId;
       style.textContent = `
         .visual-editor-selected {
-          outline: 2px solid #8b5cf6 !important;
+          outline: 2px solid #ffffff !important;
           outline-offset: 2px !important;
         }
         .visual-editor-hover {
-          outline: 2px dashed #a78bfa !important;
+          outline: 2px dashed rgba(255, 255, 255, 0.6) !important;
           outline-offset: 2px !important;
         }
         [data-visual-editor-mode="edit"] * {
@@ -352,65 +436,314 @@ export function VisualEditor({
     };
   }, [iframeRef, isEnabled, handleElementClick, handleElementHover]);
 
+  // Preview theme — wired to the ref'd preview frame (the same frame the edit
+  // engine drives). Generated docs hardcode `:root{color-scheme:dark}`; an
+  // inline color-scheme on <html> overrides that stylesheet rule, and a
+  // `data-theme` attribute gives doc CSS a hook. "auto" removes the override so
+  // the document's own theme / the OS preference win. Re-applied on every frame
+  // reload so a fresh stream keeps the chosen theme.
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    const apply = () => {
+      const root = iframe?.contentDocument?.documentElement;
+      if (!root) return;
+      if (previewTheme === "auto") {
+        root.style.removeProperty("color-scheme");
+        root.removeAttribute("data-theme");
+      } else {
+        root.style.colorScheme = previewTheme;
+        root.setAttribute("data-theme", previewTheme);
+      }
+    };
+    apply();
+    iframe?.addEventListener("load", apply);
+    return () => iframe?.removeEventListener("load", apply);
+  }, [previewTheme, iframeRef]);
+
+  // Visual-editor keyboard shortcuts (gated on the persisted toggle + editing
+  // being armed). Fire only when focus is in the parent document and not in a
+  // form field. Cross-document iframe key events don't bubble here — that's the
+  // known limit of an iframe'd preview.
+  useEffect(() => {
+    if (!isEnabled || !shortcutsEnabled) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+      switch (e.key.toLowerCase()) {
+        case "v":
+          setEditMode("select");
+          break;
+        case "e":
+          setEditMode("edit");
+          break;
+        case "m":
+          setEditMode("move");
+          break;
+        case "p":
+          setShowPanel((s) => !s);
+          break;
+        case "escape":
+          setSelectedElement(null);
+          break;
+        default:
+          return;
+      }
+      e.preventDefault();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isEnabled, shortcutsEnabled]);
+
+  // Anchor the dock to the chosen edge: bottom/top → horizontal pill centered on
+  // the X axis; left/right → vertical pill centered on the Y axis.
+  const anchorClass: Record<DockPosition, string> = {
+    bottom: "bottom-3 left-1/2 -translate-x-1/2",
+    top: "top-3 left-1/2 -translate-x-1/2",
+    left: "left-3 top-1/2 -translate-y-1/2",
+    right: "right-3 top-1/2 -translate-y-1/2"
+  };
+  // Keep the bottom edge clear of the mobile safe-area inset.
+  const anchorStyle: React.CSSProperties | undefined =
+    position === "bottom" ? { bottom: "max(0.75rem, env(safe-area-inset-bottom))" } : undefined;
+  const dividerClass = cn("shrink-0 bg-white/10", isVertical ? "my-0.5 h-px w-5" : "mx-0.5 h-5 w-px");
+  const menuSide =
+    position === "bottom" ? "top" : position === "top" ? "bottom" : position === "left" ? "right" : "left";
+  const menuItemClass =
+    "gap-2 text-neutral-200 focus:bg-white/10 focus:text-white data-[highlighted]:bg-white/10 data-[highlighted]:text-white";
+
+  const dockPositionOptions: { value: DockPosition; label: string; icon: typeof PanelBottom }[] = [
+    { value: "bottom", label: "Bottom", icon: PanelBottom },
+    { value: "top", label: "Top", icon: PanelTop },
+    { value: "left", label: "Left", icon: PanelLeft },
+    { value: "right", label: "Right", icon: PanelRight }
+  ];
+
+  // The `⋮` overflow menu — rendered inline at the end of the dock's icon row.
+  // Check marks come free from Radix radio/checkbox items.
+  const overflowMenu = (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="size-8 shrink-0 p-0 text-neutral-300 hover:bg-white/10 hover:text-white"
+          title="More"
+          aria-label="Visual editor options"
+        >
+          <MoreVertical className="size-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        side={menuSide}
+        align="end"
+        sideOffset={8}
+        className="min-w-56 border-white/10 bg-neutral-900/95 text-neutral-200 shadow-xl shadow-black/40 backdrop-blur"
+      >
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger className={menuItemClass}>
+            <PanelBottom className="size-4" />
+            <span>Dock</span>
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent className="min-w-40 border-white/10 bg-neutral-900/95 text-neutral-200 backdrop-blur">
+            <DropdownMenuRadioGroup
+              value={dockPosition}
+              onValueChange={(v) => setDockPosition(v as DockPosition)}
+            >
+              {dockPositionOptions.map(({ value, label, icon: Icon }) => (
+                <DropdownMenuRadioItem key={value} value={value} className={menuItemClass}>
+                  <Icon className="size-4" />
+                  <span>{label}</span>
+                  {value === "bottom" && (
+                    <span className="ml-auto text-[10px] text-neutral-500">Default</span>
+                  )}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+
+        <DropdownMenuCheckboxItem
+          checked={isMinimized}
+          onCheckedChange={(c) => setIsMinimized(c === true)}
+          className={menuItemClass}
+        >
+          <Minimize2 className="size-4" />
+          <span>Minimize</span>
+        </DropdownMenuCheckboxItem>
+
+        <DropdownMenuCheckboxItem
+          checked={isHidden}
+          onCheckedChange={(c) => setIsHidden(c === true)}
+          className={menuItemClass}
+        >
+          <EyeOff className="size-4" />
+          <span>Hide</span>
+        </DropdownMenuCheckboxItem>
+
+        <DropdownMenuSeparator className="bg-white/10" />
+        <DropdownMenuLabel className="text-[10px] font-medium uppercase tracking-wider text-neutral-500">
+          Theme
+        </DropdownMenuLabel>
+        <DropdownMenuRadioGroup
+          value={previewTheme}
+          onValueChange={(v) => setPreviewTheme(v as PreviewTheme)}
+        >
+          <DropdownMenuRadioItem value="auto" className={menuItemClass}>
+            <Monitor className="size-4" />
+            <span>Auto</span>
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="light" className={menuItemClass}>
+            <Sun className="size-4" />
+            <span>Light</span>
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="dark" className={menuItemClass}>
+            <Moon className="size-4" />
+            <span>Dark</span>
+          </DropdownMenuRadioItem>
+        </DropdownMenuRadioGroup>
+
+        <DropdownMenuSeparator className="bg-white/10" />
+        <div
+          className="flex items-center justify-between gap-4 px-2 py-1.5 text-sm text-neutral-200"
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <span className="flex items-center gap-2">
+            <Keyboard className="size-4" />
+            Keyboard shortcuts
+          </span>
+          <Switch checked={shortcutsEnabled} onCheckedChange={setShortcutsEnabled} />
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
   return (
     <>
-      {/* Visual Editor Toolbar — compact icon rail. */}
-      <div className="absolute top-3 left-3 z-50 flex items-center gap-1 rounded-lg border border-white/10 bg-neutral-900/95 p-1 backdrop-blur-sm">
-        <Button
-          variant={isEnabled ? "default" : "ghost"}
-          size="sm"
-          onClick={() => onToggle(!isEnabled)}
-          className={cn(
-            "h-7 gap-1.5 px-2 text-xs",
-            isEnabled && "bg-white text-neutral-900 hover:bg-neutral-200"
-          )}
+      {/* Floating visual-editor dock — anchored to the chosen edge of the preview
+          card. Monochrome pill, hairline dividers between tool groups. */}
+      {isHidden ? (
+        // Always-present affordance so the toolbar is never unrecoverable.
+        <button
+          type="button"
+          onClick={() => setIsHidden(false)}
+          title="Show visual editor"
+          aria-label="Show visual editor"
+          className="absolute bottom-3 right-3 z-50 inline-flex size-8 items-center justify-center rounded-full border border-white/10 bg-neutral-900/95 text-neutral-300 shadow-lg shadow-black/40 backdrop-blur transition hover:bg-neutral-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+          style={anchorStyle}
         >
-          <MousePointer className="w-3.5 h-3.5" />
-          Edit
-        </Button>
+          <Wand2 className="size-4" />
+        </button>
+      ) : isMinimized ? (
+        // Collapsed to a single grip; click to restore the full dock.
+        <div className={cn("absolute z-50", anchorClass[position])} style={anchorStyle}>
+          <button
+            type="button"
+            onClick={() => setIsMinimized(false)}
+            title="Expand visual editor"
+            aria-label="Expand visual editor"
+            className="inline-flex size-8 items-center justify-center rounded-full border border-white/10 bg-neutral-900/95 text-neutral-300 shadow-lg shadow-black/40 backdrop-blur transition hover:bg-neutral-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+          >
+            {isVertical ? <GripVertical className="size-4" /> : <GripHorizontal className="size-4" />}
+          </button>
+        </div>
+      ) : (
+        <div
+          role="toolbar"
+          aria-label="Visual editor"
+          aria-orientation={isVertical ? "vertical" : "horizontal"}
+          className={cn(
+            "absolute z-50 flex items-center gap-1 border border-white/10 bg-neutral-900/95 p-1 shadow-lg shadow-black/40 backdrop-blur",
+            isVertical
+              ? "max-h-[calc(100%-1.5rem)] flex-col rounded-2xl"
+              : "max-w-[calc(100%-1.5rem)] flex-row rounded-full",
+            anchorClass[position]
+          )}
+          style={anchorStyle}
+        >
+          {/* Master arm/disarm — turns the visual editor on for the preview. */}
+          <Button
+            variant={isEnabled ? "default" : "ghost"}
+            size="sm"
+            onClick={() => onToggle(!isEnabled)}
+            title={isEnabled ? "Disable visual editing" : "Enable visual editing"}
+            aria-pressed={isEnabled}
+            className={cn(
+              "size-8 shrink-0 p-0",
+              isEnabled
+                ? "bg-white text-neutral-900 hover:bg-neutral-200"
+                : "text-neutral-300 hover:bg-white/10 hover:text-white"
+            )}
+          >
+            <Wand2 className="size-4" />
+          </Button>
 
-        {isEnabled && (
-          <>
-            <div className="w-px h-5 bg-white/10" />
-            <Button
-              variant={editMode === "select" ? "secondary" : "ghost"}
-              size="sm"
-              className="size-7 p-0"
-              onClick={() => setEditMode("select")}
-            >
-              <MousePointer className="w-3.5 h-3.5" />
-            </Button>
-            <Button
-              variant={editMode === "edit" ? "secondary" : "ghost"}
-              size="sm"
-              className="size-7 p-0"
-              onClick={() => setEditMode("edit")}
-            >
-              <Edit3 className="w-3.5 h-3.5" />
-            </Button>
-            <Button
-              variant={editMode === "move" ? "secondary" : "ghost"}
-              size="sm"
-              className="size-7 p-0"
-              onClick={() => setEditMode("move")}
-            >
-              <Move className="w-3.5 h-3.5" />
-            </Button>
-            <div className="w-px h-5 bg-white/10" />
-            <Button
-              variant="ghost"
-              size="sm"
-              className="size-7 p-0"
-              onClick={() => setShowPanel(!showPanel)}
-            >
-              {showPanel ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-            </Button>
-          </>
-        )}
-      </div>
+          {isEnabled && (
+            <>
+              <div className={dividerClass} />
+              <Button
+                variant={editMode === "select" ? "secondary" : "ghost"}
+                size="sm"
+                className={cn(
+                  "size-8 shrink-0 p-0",
+                  editMode !== "select" && "text-neutral-300 hover:bg-white/10 hover:text-white"
+                )}
+                onClick={() => setEditMode("select")}
+                title="Select (V)"
+                aria-pressed={editMode === "select"}
+              >
+                <MousePointer2 className="size-4" />
+              </Button>
+              <Button
+                variant={editMode === "edit" ? "secondary" : "ghost"}
+                size="sm"
+                className={cn(
+                  "size-8 shrink-0 p-0",
+                  editMode !== "edit" && "text-neutral-300 hover:bg-white/10 hover:text-white"
+                )}
+                onClick={() => setEditMode("edit")}
+                title="Edit (E)"
+                aria-pressed={editMode === "edit"}
+              >
+                <Edit3 className="size-4" />
+              </Button>
+              <Button
+                variant={editMode === "move" ? "secondary" : "ghost"}
+                size="sm"
+                className={cn(
+                  "size-8 shrink-0 p-0",
+                  editMode !== "move" && "text-neutral-300 hover:bg-white/10 hover:text-white"
+                )}
+                onClick={() => setEditMode("move")}
+                title="Move (M)"
+                aria-pressed={editMode === "move"}
+              >
+                <Move className="size-4" />
+              </Button>
+              <div className={dividerClass} />
+              <Button
+                variant={showPanel ? "secondary" : "ghost"}
+                size="sm"
+                className={cn(
+                  "size-8 shrink-0 p-0",
+                  !showPanel && "text-neutral-300 hover:bg-white/10 hover:text-white"
+                )}
+                onClick={() => setShowPanel(!showPanel)}
+                title="Properties panel (P)"
+                aria-pressed={showPanel}
+              >
+                <SlidersHorizontal className="size-4" />
+              </Button>
+            </>
+          )}
+
+          <div className={dividerClass} />
+          {overflowMenu}
+        </div>
+      )}
 
       {/* Properties Panel */}
-      {isEnabled && showPanel && selectedElement && (
+      {!isHidden && !isMinimized && isEnabled && showPanel && selectedElement && (
         <div className="absolute top-20 right-4 z-50 w-80 bg-neutral-900/95 backdrop-blur-sm rounded-lg border border-neutral-800 max-h-[600px] overflow-hidden flex flex-col">
           <div className="p-4 border-b border-neutral-800">
             <div className="flex items-center justify-between mb-2">
