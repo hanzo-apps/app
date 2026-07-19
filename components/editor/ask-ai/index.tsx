@@ -378,6 +378,9 @@ export function AskAI({
       case "network_error":
         toast.error(message || "Network error occurred");
         break;
+      case "aborted":
+        // User pressed Stop — silent by design (no stuck spinner, no toast).
+        break;
       default:
         toast.error("An unexpected error occurred");
     }

@@ -113,15 +113,15 @@ export const LoadProject = ({
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-2 !border-white/15 !bg-white/[0.04] !text-white hover:!bg-white/10 max-lg:hidden"
+                className="!h-7 gap-1.5 px-2.5 text-xs !border-white/15 !bg-white/[0.04] !text-white transition-colors duration-150 hover:!bg-white/10 max-lg:hidden"
               >
-                <Import className="size-4" />
+                <Import className="size-3.5" />
                 Load
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-2 !border-white/15 !bg-white/[0.04] !text-white hover:!bg-white/10 lg:hidden"
+                className="!h-7 gap-1.5 px-2.5 text-xs !border-white/15 !bg-white/[0.04] !text-white transition-colors duration-150 hover:!bg-white/10 lg:hidden"
               >
                 {fullXsBtn && <Import className="size-3.5" />}
                 Load
