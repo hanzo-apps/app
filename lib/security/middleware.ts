@@ -6,9 +6,16 @@ const securityHeaders = {
   // Content Security Policy
   'Content-Security-Policy': [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://*.hanzo.ai",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com data:",
+    // The /dev builder previews GENERATED apps in an `about:srcdoc` iframe,
+    // which INHERITS this page CSP. The generation system prompt (lib/prompts.ts)
+    // instructs the model to load Tailwind from cdn.tailwindcss.com and commonly
+    // emits cdnjs/unpkg/jsdelivr + Google Fonts references — without these
+    // allowlisted, EVERY generated page renders unstyled (raw links) in the
+    // preview while the published copy works. Keep this list in lockstep with
+    // the CDNs the system prompt endorses; everything else stays strict.
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://unpkg.com https://*.hanzo.ai",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com",
+    "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net data:",
     "img-src 'self' data: blob: https: http:",
     "media-src 'self' blob: data:",
     // IdP login domains (hanzo.id et al) are NOT *.hanzo.ai — the OIDC
