@@ -34,11 +34,21 @@ export function DeployButton({
           <Popover>
             <PopoverTrigger asChild>
               <div>
-                <Button variant="default" size="sm" className="max-lg:hidden" disabled={disabled}>
-                  <MdSave className="size-4" />
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="max-lg:hidden !h-7 gap-1.5 px-2.5 text-xs"
+                  disabled={disabled}
+                >
+                  <MdSave className="size-3.5" />
                   {disabled ? "Building…" : "Publish"}
                 </Button>
-                <Button variant="default" size="sm" className="lg:hidden" disabled={disabled}>
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="lg:hidden !h-7 px-2.5 text-xs"
+                  disabled={disabled}
+                >
                   {disabled ? "Building…" : "Publish"}
                 </Button>
               </div>
@@ -56,17 +66,17 @@ export function DeployButton({
             <Button
               variant="default"
               size="sm"
-              className="max-lg:hidden"
+              className="max-lg:hidden !h-7 gap-1.5 px-2.5 text-xs"
               onClick={() => setOpen(true)}
               disabled={disabled}
             >
-              <MdSave className="size-4" />
+              <MdSave className="size-3.5" />
               {disabled ? "Building…" : "Publish"}
             </Button>
             <Button
               variant="default"
               size="sm"
-              className="lg:hidden"
+              className="lg:hidden !h-7 px-2.5 text-xs"
               onClick={() => setOpen(true)}
               disabled={disabled}
             >
