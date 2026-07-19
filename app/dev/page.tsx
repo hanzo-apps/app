@@ -186,35 +186,55 @@ export default function DevPage() {
       // edition directly.
       if (repoInfo.name && !seedPrompt.trim()) {
         setShowOnboarding(false);
-        // Edit mode on a gallery template: skip the chooser and drop straight
-        // into the editor with the template rendered in the preview (the AI
-        // only augments from there). Fork/deploy still use the chooser.
-        const galleryEdit = repoInfo.platform === "gallery" && action === "edit";
-        setShowTemplateLoader(!galleryEdit);
+        // EDIT mode (ANY template — gallery / hanzo-apps / git) skips the chooser
+        // and drops straight into the editor with the template loaded in the
+        // preview + an assistant greeting — NO generation. Only fork/deploy use
+        // the chooser. (Edit used to route non-gallery templates through the
+        // chooser → a doomed "make no changes" generation → the red
+        // "didn't return a usable page" error with an empty preview.)
+        setShowTemplateLoader(action !== "edit");
       }
     }
   }, [repoUrl, action, seedPrompt]);
 
-  // Edit-mode template preview: fetch the template's ready HTML and seed the
-  // editor so the preview is populated on load — NO AI gate. Falls back to the
-  // default page when the template has no fetchable preview (never dead-ends).
+  // Edit-mode template: LOAD the template's real starting app into the preview
+  // and GREET — never generate. This is the fix for the doomed no-op generation
+  // (the seed told the model to change nothing → "didn't return a usable page"
+  // + empty preview). The template's HTML populates the preview immediately; an
+  // assistant greeting invites the first change; generation fires only when the
+  // user actually asks. Applies to ANY template edit (gallery/hanzo-apps/git),
+  // not just gallery. Falls back to the default page when there's no fetchable
+  // preview (never dead-ends).
   useEffect(() => {
     if (seedPrompt.trim()) return; // a seeded fork auto-generates instead
-    const isGalleryEdit =
-      repoData?.platform === "gallery" && action === "edit";
-    if (!isGalleryEdit || !repoData?.name || templateEditDone) return;
+    if (action !== "edit" || !repoData?.name || templateEditDone) return;
     let alive = true;
+    // Drop any stale build seed so AppEditor's mount can't auto-generate — a
+    // template edit greets, it does not build.
+    try {
+      localStorage.removeItem("initialPrompt");
+    } catch {
+      /* storage unavailable */
+    }
     (async () => {
       const html = await fetchTemplateHtml(repoData.name);
       if (!alive) return;
       if (html) setTemplatePages([{ path: "index.html", html }]);
-      // Stage the display name for the editor's workspace menu.
+      // Resolve the display name (workspace menu) and stage a user-facing
+      // greeting as the FIRST assistant bubble. Set on window BEFORE AppEditor
+      // mounts — the splash below holds the mount until templateEditDone, so
+      // AskAI's greeting effect reliably picks it up (mirrors the seed contract).
+      let title = repoData.name as string;
       try {
         const meta = await resolveTemplateSeedMeta(repoData.name);
         if (alive && meta?.displayName) {
+          title = meta.displayName;
           (window as any).__projectName = meta.displayName;
         }
       } catch {}
+      (window as any).__assistantGreeting =
+        `You're editing the ${title} template — it's loaded and running in the preview. ` +
+        `Tell me what you'd like to change and I'll build it.`;
       if (alive) setTemplateEditDone(true);
     })();
     return () => {
@@ -328,9 +348,7 @@ export default function DevPage() {
     !showOnboarding &&
     !showTemplateLoader &&
     (!repoData ||
-      (repoData.platform === "gallery" &&
-        action === "edit" &&
-        !templateEditDone));
+      (action === "edit" && !!repoData?.name && !templateEditDone));
   if (resolvingTemplate) {
     return (
       <div className="h-[100dvh] bg-neutral-950 flex items-center justify-center text-neutral-400 text-sm">
