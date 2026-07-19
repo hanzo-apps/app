@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { Page } from "@/types";
-import { parsePages, parseSinglePage } from "@/lib/format-pages";
+import { parsePages, parseSinglePage, stripThinkBlocks } from "@/lib/format-pages";
 import { setLastGenerationRequestId } from "@/lib/reward-signal";
 
 // The ONE honest message for an upstream 5xx / network failure. The caller's
@@ -554,6 +554,94 @@ export const useCallAi = ({
     }
   };
 
+  // Plan mode — a conversational turn. Streams a plain-text reply from the
+  // gateway (PATCH /v1/generate) and hands the accumulated visible text to
+  // `onDelta` for live rendering in the thread. NEVER touches pages/preview:
+  // Plan mode discusses/plans; it does not build. One gateway call.
+  const callAiChat = async (
+    prompt: string,
+    model: string | undefined,
+    provider: string | undefined,
+    previousPrompts: string[],
+    onDelta: (text: string) => void
+  ) => {
+    if (isAiWorking) return;
+    if (!prompt.trim()) return;
+
+    setisAiWorking(true);
+    const abortController = new AbortController();
+    setController(abortController);
+
+    try {
+      const request = await fetch("/v1/generate", {
+        method: "PATCH",
+        body: JSON.stringify({ prompt, provider, model, previousPrompts, pages }),
+        headers: {
+          "Content-Type": "application/json",
+          "x-forwarded-for": window.location.hostname,
+        },
+        signal: abortController.signal,
+      });
+
+      if (!request.ok && request.status >= 500) {
+        setisAiWorking(false);
+        return { error: "api_error", message: AI_UNAVAILABLE };
+      }
+      if (!request.body) {
+        setisAiWorking(false);
+        return { error: "network_error", message: AI_UNAVAILABLE };
+      }
+
+      const reader = request.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+      let contentResponse = "";
+
+      const read = async (): Promise<any> => {
+        const { done, value } = await reader.read();
+        if (done) {
+          const { content, model: served, id } = splitSideChannel(contentResponse);
+          setLastGenerationRequestId(id);
+          const trimmed = content.trim();
+          const isJson = trimmed.startsWith("{") && trimmed.endsWith("}");
+          const jsonResponse = isJson ? safeJsonParse(trimmed) : null;
+
+          if (jsonResponse && !jsonResponse.ok) {
+            setisAiWorking(false);
+            if (jsonResponse.openLogin) return { error: "login_required" };
+            if (jsonResponse.openSelectProvider)
+              return { error: "provider_required", message: jsonResponse.message };
+            if (jsonResponse.openProModal) return { error: "pro_required" };
+            return { error: "api_error", message: jsonResponse.message };
+          }
+
+          const visible = stripThinkBlocks(content).trim();
+          if (!visible) {
+            setisAiWorking(false);
+            return {
+              error: "empty_response",
+              message: "The model didn't reply. Please try again.",
+            };
+          }
+
+          onDelta(visible);
+          setisAiWorking(false);
+          return { success: true, text: visible, model: served };
+        }
+
+        contentResponse += decoder.decode(value, { stream: true });
+        onDelta(stripThinkBlocks(splitSideChannel(contentResponse).content));
+        return read();
+      };
+
+      return await read();
+    } catch (error: any) {
+      setisAiWorking(false);
+      if (error?.name === "AbortError") return { error: "aborted" };
+      if (error?.openLogin) return { error: "login_required" };
+      return { error: "network_error", message: AI_UNAVAILABLE };
+    }
+  };
+
   // Stop the current AI generation
   const stopController = () => {
     if (controller) {
@@ -609,6 +697,7 @@ export const useCallAi = ({
     callAiNewProject,
     callAiFollowUp,
     callAiNewPage,
+    callAiChat,
     stopController,
     controller,
     audio,
