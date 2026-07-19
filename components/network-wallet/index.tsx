@@ -1,29 +1,90 @@
 "use client";
 
 /**
- * Network + wallet cluster (non-custodial, injected EIP-1193).
+ * Wallet connect control (non-custodial, injected EIP-1193) — the ONE wallet
+ * affordance in the builder, rendered INSIDE the top-left workspace menu.
  *
- * The web3 primitives for this live in `@hanzo/ui`'s `network` / `wallet`
- * entry points. The `@hanzo/ui` version installed in this app (5.5.x) does
- * NOT ship those subpaths, so statically importing them breaks the build.
- * Rather than pin a divergent UI version or fork the primitives (a parallel
- * system), this renders nothing until the shared kit ships the wallet entry
- * points again — the builder's identity is carried by the org switcher +
- * account menu (credit balance included), which is the canonical bottom-left
- * cluster (mirrors hanzo.chat / console). The public API is unchanged so any
- * caller keeps working the day the primitives return.
+ * Uses the app's canonical web3 stack (`lib/web3/config` → a single `injected()`
+ * connector which, via EIP-6963 auto-discovery, picks up LUX WALLET and any
+ * other injected wallet). The heavy wagmi/viem bundle is loaded on demand behind
+ * `WalletBoundary` (dynamic, ssr:false, code-split) so it stays OUT of the
+ * builder's first-load tree and off the server — it only initializes when the
+ * workspace menu actually renders this row.
  *
- * To re-enable, once `@hanzo/ui` exports `./network` + `./wallet`:
- *   import { NetworkSwitcher } from "@hanzo/ui/network";
- *   import { injectedEvmAdapter, WalletMenu } from "@hanzo/ui/wallet";
- *   const walletAdapter = injectedEvmAdapter();
- *   return (
- *     <div className="hidden items-center gap-2 md:flex">
- *       <NetworkSwitcher />
- *       <WalletMenu adapter={walletAdapter} />
- *     </div>
- *   );
+ * Monochrome by construction: connect = white/neutral; connected = a subtle
+ * white surface with a semantic-green live dot; disconnect is the only muted
+ * destructive affordance. No brand hue.
  */
+import { Loader2, LogOut, Wallet } from "lucide-react";
+import { useAccount, useConnect, useDisconnect } from "wagmi";
+
+import { WalletBoundary } from "@/components/providers/WalletBoundary";
+
+/** Truncate an EVM address for a glanceable, monospaced label. */
+function shortAddress(address: string): string {
+  return `${address.slice(0, 6)}…${address.slice(-4)}`;
+}
+
+function WalletInner() {
+  const { address, isConnected } = useAccount();
+  const { connect, connectors, isPending } = useConnect();
+  const { disconnect } = useDisconnect();
+
+  // The canonical injected connector (LuxWallet via EIP-6963). `lib/web3/config`
+  // registers exactly one, so `connectors[0]` is it — never a third-party SDK.
+  const injectedConnector = connectors[0];
+
+  if (isConnected && address) {
+    return (
+      <div className="flex items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-2">
+        <span
+          className="size-1.5 shrink-0 rounded-full bg-green-500 shadow-[0_0_6px_0] shadow-green-500/60"
+          aria-hidden
+        />
+        <span className="flex min-w-0 flex-1 flex-col leading-tight">
+          <span className="text-[11px] font-medium text-white/40">Wallet</span>
+          <span className="truncate font-mono text-xs text-white/85">
+            {shortAddress(address)}
+          </span>
+        </span>
+        <button
+          type="button"
+          onClick={() => disconnect()}
+          title="Disconnect wallet"
+          aria-label="Disconnect wallet"
+          className="grid size-7 shrink-0 place-items-center rounded-md text-white/40 transition-colors duration-150 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+        >
+          <LogOut className="size-3.5" />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => injectedConnector && connect({ connector: injectedConnector })}
+      disabled={isPending || !injectedConnector}
+      className="flex w-full items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-2 text-sm text-white/80 transition-colors duration-150 hover:border-white/15 hover:bg-white/[0.06] hover:text-white disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+    >
+      {isPending ? (
+        <Loader2 className="size-4 shrink-0 animate-spin text-white/40 motion-reduce:animate-none" />
+      ) : (
+        <Wallet className="size-4 shrink-0 text-white/40" />
+      )}
+      <span className="flex-1 text-left">
+        {isPending ? "Connecting…" : "Connect wallet"}
+      </span>
+    </button>
+  );
+}
+
+/** Public API — unchanged name so any caller keeps working. Loads the wagmi
+ *  stack lazily behind the boundary, then renders the connect/connected row. */
 export function NetworkWallet() {
-  return null;
+  return (
+    <WalletBoundary>
+      <WalletInner />
+    </WalletBoundary>
+  );
 }
