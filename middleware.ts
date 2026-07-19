@@ -13,6 +13,7 @@ const PROTECTED_PREFIXES = [
   "/chat",
   "/dev",
   "/gallery",
+  "/connectors",
 ];
 
 // Routes that are always accessible without a token (exact or prefix match).

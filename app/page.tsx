@@ -132,6 +132,7 @@ export default function LandingPage() {
             emoji: "◆",
             short_description: p.status === "live" ? "Live" : "Draft",
             created_at: p.createdAt ? new Date(p.createdAt * 1000).toISOString() : "",
+            updated_at: p.createdAt ? new Date(p.createdAt * 1000).toISOString() : "",
           })),
         ),
       )
@@ -157,8 +158,11 @@ export default function LandingPage() {
 
   const handleCreateProject = () => {
     if (!prompt.trim()) return;
-    // Persist the prompt so the builder can pick it up post-login.
+    // Persist the prompt so the builder can pick it up post-login. `initialMode`
+    // is the only new key (the composer here has no Build/Plan toggle, so it
+    // seeds the default 'build' mode); the builder reads both on /dev mount.
     localStorage.setItem("initialPrompt", prompt);
+    localStorage.setItem("initialMode", "build");
     if (!user) {
       localStorage.setItem("redirectAfterLogin", "/dev");
       openLoginWindow();
@@ -222,12 +226,14 @@ export default function LandingPage() {
             {/* ── Prompt composer ── */}
             <Reveal delay={180}>
               <div className="mx-auto mt-8 max-w-2xl">
+                {/* The living-gradient bubble (the ONE colorful flourish):
+                    a padded gradient host wraps an opaque inner panel. See
+                    `.hz-composer` in assets/globals.css. */}
+                <div className="hz-composer rounded-2xl shadow-2xl">
                 <div
                   id="build"
-                  className={`rounded-2xl border bg-[#0a0a0a] p-2.5 text-left shadow-2xl transition-all duration-200 ${
-                    inputFocused
-                      ? "border-white/25 shadow-black/60"
-                      : "border-white/10"
+                  className={`rounded-[14px] p-2.5 text-left transition-all duration-200 ${
+                    inputFocused ? "bg-[#0d0d0d]" : "bg-[#0a0a0a]"
                   }`}
                 >
                   <input
@@ -285,6 +291,7 @@ export default function LandingPage() {
                       </button>
                     </div>
                   </div>
+                </div>
                 </div>
 
                 {/* Starter prompts — honest app types, not fabricated products. */}
