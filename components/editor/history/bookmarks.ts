@@ -30,6 +30,15 @@ export function readBookmarks(project: string): Set<string> {
   }
 }
 
+/**
+ * Persist a bookmark set for a project (the localStorage fallback layer). Used to
+ * MIRROR the durable Base set locally so a subsequent offline open is correct.
+ * Never throws.
+ */
+export function saveBookmarks(project: string, ids: Set<string>): void {
+  writeBookmarks(project, ids);
+}
+
 /** Persist a bookmark set for a project. Never throws. */
 function writeBookmarks(project: string, ids: Set<string>): void {
   if (typeof window === "undefined") return;
