@@ -508,8 +508,10 @@ export function HistoryPanel({
 
   return (
     <div className="absolute inset-0 z-20 flex flex-col bg-neutral-950">
-      {/* Panel header: title · All|Bookmarks filter · close */}
-      <div className="flex items-center gap-2 px-3 pb-2 pt-3">
+      {/* Panel header: title · All|Bookmarks filter · close. Left gutter matches
+          the top toolbar (px-3 lg:px-4) so "History" lines up under the org
+          switcher instead of sitting inset from it. */}
+      <div className="flex items-center gap-2 px-3 lg:px-4 pb-2 pt-3">
         <RotateCcw className="size-4 text-white/50" />
         <span className="text-[13px] font-medium text-white/85">History</span>
         <div className="ml-auto flex items-center gap-1.5">

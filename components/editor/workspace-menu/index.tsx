@@ -33,6 +33,7 @@ import {
   LifeBuoy,
   LogOut,
   Pencil,
+  Plug,
   Settings,
   Wallet,
 } from "lucide-react";
@@ -309,6 +310,12 @@ export function WorkspaceMenu({
             <Link href="/settings">
               <Settings className={ICON} />
               Settings
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild className={ITEM}>
+            <Link href="/connectors">
+              <Plug className={ICON} />
+              Project connectors
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem className={ITEM} onSelect={() => openRename()}>
