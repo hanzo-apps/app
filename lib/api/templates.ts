@@ -183,6 +183,29 @@ export function templateBuilderLink(source: string): string {
   return `/dev?template=${encodeURIComponent(source)}&action=deploy`;
 }
 
+/**
+ * Fetch a template's ready-to-show preview HTML from the same-origin BFF
+ * (`/v1/templates/:slug/html`). This is what lets `/dev?template=…&action=edit`
+ * render the template in the preview IMMEDIATELY — before/without any AI call —
+ * so the AI only augments from there. Resolves to `null` on any failure (no
+ * screenshot, unreachable) so the editor falls back to the default page rather
+ * than dead-ending.
+ */
+export async function fetchTemplateHtml(slug: string): Promise<string | null> {
+  const clean = (slug || '').trim();
+  if (!clean) return null;
+  try {
+    const res = await fetch(`/v1/templates/${encodeURIComponent(clean)}/html`, {
+      headers: { Accept: 'text/html' },
+    });
+    if (!res.ok) return null;
+    const html = await res.text();
+    return html.trim() ? html : null;
+  } catch {
+    return null;
+  }
+}
+
 // --- Seed resolution (the ONE way /dev turns a template slug into a real seed) ---
 
 /** Normalized metadata used to seed the builder from a template, regardless of

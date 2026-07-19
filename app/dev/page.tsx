@@ -7,7 +7,11 @@ import { DevOnboarding } from "@/components/dev-onboarding";
 import { TemplateLoader } from "@/components/template-loader";
 import { parseGitUrl } from "@/lib/git/url";
 import { readStagedProject, clearStagedProject } from "@/lib/import/staging";
-import { resolveTemplateSeedMeta, buildTemplateSeedPrompt } from "@/lib/api/templates";
+import {
+  resolveTemplateSeedMeta,
+  buildTemplateSeedPrompt,
+  fetchTemplateHtml,
+} from "@/lib/api/templates";
 import type { Page } from "@/types";
 
 /** Order staged files so the editor opens on a page: index.html, other HTML, rest. */
@@ -52,6 +56,10 @@ export default function DevPage() {
   // staged for AskAI (which reads window.__initialPrompt on mount) so the first
   // generation starts automatically — no manual TemplateLoader click.
   const [seedReady, setSeedReady] = useState(false);
+  // Edit-mode template: the template's ready HTML, loaded into the editor so the
+  // preview renders IMMEDIATELY (before/without any AI call). null until fetched.
+  const [templatePages, setTemplatePages] = useState<Page[] | null>(null);
+  const [templateEditDone, setTemplateEditDone] = useState(false);
 
   // Load initialPrompt from localStorage on client-side only
   useEffect(() => {
@@ -177,11 +185,42 @@ export default function DevPage() {
       // unchanged while the console "Open in builder" flow lands on a first
       // edition directly.
       if (repoInfo.name && !seedPrompt.trim()) {
-        setShowTemplateLoader(true);
         setShowOnboarding(false);
+        // Edit mode on a gallery template: skip the chooser and drop straight
+        // into the editor with the template rendered in the preview (the AI
+        // only augments from there). Fork/deploy still use the chooser.
+        const galleryEdit = repoInfo.platform === "gallery" && action === "edit";
+        setShowTemplateLoader(!galleryEdit);
       }
     }
   }, [repoUrl, action, seedPrompt]);
+
+  // Edit-mode template preview: fetch the template's ready HTML and seed the
+  // editor so the preview is populated on load — NO AI gate. Falls back to the
+  // default page when the template has no fetchable preview (never dead-ends).
+  useEffect(() => {
+    if (seedPrompt.trim()) return; // a seeded fork auto-generates instead
+    const isGalleryEdit =
+      repoData?.platform === "gallery" && action === "edit";
+    if (!isGalleryEdit || !repoData?.name || templateEditDone) return;
+    let alive = true;
+    (async () => {
+      const html = await fetchTemplateHtml(repoData.name);
+      if (!alive) return;
+      if (html) setTemplatePages([{ path: "index.html", html }]);
+      // Stage the display name for the editor's workspace menu.
+      try {
+        const meta = await resolveTemplateSeedMeta(repoData.name);
+        if (alive && meta?.displayName) {
+          (window as any).__projectName = meta.displayName;
+        }
+      } catch {}
+      if (alive) setTemplateEditDone(true);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [repoData, action, seedPrompt, templateEditDone]);
 
   // Stage the fork → builder seed for the editor. The seed already carries the
   // template context (title/framework/description + the user's ask), so we hand
@@ -279,11 +318,32 @@ export default function DevPage() {
     );
   }
 
-  // Pass the prompt (or imported pages) to AppEditor.
+  // A template/repo URL is still resolving, OR a gallery edit whose preview HTML
+  // is still being fetched — hold a splash so the empty editor never flashes
+  // first, then mount it with the template already rendered in the preview.
+  const resolvingTemplate =
+    !!repoUrl &&
+    !isImport &&
+    !seedPrompt.trim() &&
+    !showOnboarding &&
+    !showTemplateLoader &&
+    (!repoData ||
+      (repoData.platform === "gallery" &&
+        action === "edit" &&
+        !templateEditDone));
+  if (resolvingTemplate) {
+    return (
+      <div className="h-[100dvh] bg-neutral-950 flex items-center justify-center text-neutral-400 text-sm">
+        Loading template…
+      </div>
+    );
+  }
+
+  // Pass the seeded template pages (or imported pages) to AppEditor.
   return (
     <AppEditor
       isNew
-      pages={importedPages ?? undefined}
+      pages={templatePages ?? importedPages ?? undefined}
     />
   );
 }
