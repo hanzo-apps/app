@@ -36,6 +36,17 @@ export default function Header() {
     await logout();
   };
 
+  // "Get started" = the SIGNUP funnel: land on IAM's registration (signup hint),
+  // then after auth drop the new user into the builder — where OrgGate creates
+  // their org (onboarding) before the first build. "Sign In" (plain `login()`)
+  // is for returning users. Both go through the one canonical IAM PKCE flow.
+  const getStarted = () => {
+    setMobileMenuOpen(false);
+    // Register (signup hint) → land in the builder, where OrgGate onboards the
+    // new user (creates their org) before the first build.
+    login("/dev", { signup: true });
+  };
+
   const navigateTo = (path: string) => {
     router.push(path);
     setMobileMenuOpen(false);
@@ -165,7 +176,7 @@ export default function Header() {
                   Sign In
                 </Button>
                 <Button
-                  onClick={() => login()}
+                  onClick={getStarted}
                   className="bg-white text-black hover:bg-white/90 text-sm font-medium px-5 py-2.5 rounded-xl"
                 >
                   Get started
@@ -333,7 +344,7 @@ export default function Header() {
                     Sign In
                   </button>
                   <button
-                    onClick={() => login()}
+                    onClick={getStarted}
                     className="w-full px-4 py-3 bg-white text-black hover:bg-white/90 rounded-lg font-medium"
                   >
                     Get started
