@@ -18,8 +18,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@hanzo/ui";
-import { WorkspaceMenu } from "@/components/editor/workspace-menu";
-import type { Page, Project } from "@/types";
+import { OrgSwitcher } from "@/components/org-switcher";
+import { EditorAccountMenu } from "@/components/editor/account-menu";
+import { History } from "@/components/editor/history";
+import type { HtmlHistory, Page } from "@/types";
 import classNames from "classnames";
 
 // The ONE view switcher (Lovable's grouped segmented control). "Chat" only means
@@ -39,16 +41,17 @@ const DEVICES = [
 
 /**
  * Builder top chrome — the ONE bar (Lovable structure, Hanzo true-black
- * monochrome). It sits on the SAME flat workspace field as the panels below it,
- * with NO bottom border, so the chrome reads as one continuous surface and the
- * raised preview card is the only thing that lifts off it.
+ * monochrome). No bottom footer: every view control lives here.
  *
- *   LEFT   the workspace menu (org·project identity, credits, wallet, account —
- *          the ONE identity anchor) + the panel/sidebar toggle
+ *   LEFT   org·project switcher (the identity/home anchor — no brand mark) +
+ *          revision-history + the panel/sidebar toggle
  *   CENTER the view switcher (Chat·Preview·Code), device switcher, refresh, the
  *          page selector, and open-in-new-tab — one grouped cluster
- *   RIGHT  the primary actions passed as `children` (Share · Load · Push …
- *          the sole solid compact Publish button) — lean, no identity here
+ *   RIGHT  account + credits, then the primary actions passed as `children`
+ *          (Share … the sole solid Publish button)
+ *
+ * True-black `#080808` field, white/10 hairline border, white/[0.03–0.10]
+ * surfaces — the chrome recedes so the generated preview stays the star.
  */
 export function Header({
   tab,
@@ -56,6 +59,8 @@ export function Header({
   children,
   device,
   setDevice,
+  htmlHistory,
+  setPages,
   iframeRef,
   pages,
   currentPage,
@@ -63,14 +68,14 @@ export function Header({
   onOpenExternal,
   sidebarCollapsed,
   onToggleSidebar,
-  project,
-  onRenamed,
 }: {
   tab: string;
   onNewTab: (tab: string) => void;
   children?: ReactNode;
   device: "desktop" | "mobile";
   setDevice: React.Dispatch<React.SetStateAction<"desktop" | "mobile">>;
+  htmlHistory?: HtmlHistory[];
+  setPages: (pages: Page[]) => void;
   iframeRef?: React.RefObject<HTMLIFrameElement | null>;
   pages: Page[];
   currentPage: string;
@@ -78,8 +83,6 @@ export function Header({
   onOpenExternal: () => void;
   sidebarCollapsed: boolean;
   onToggleSidebar: () => void;
-  project?: Project | null;
-  onRenamed?: (name: string) => void;
 }) {
   // Hard reload of the preview iframe (blank then restore srcdoc).
   const handleRefreshIframe = () => {
@@ -94,20 +97,23 @@ export function Header({
   };
 
   return (
-    <header className="z-20 flex items-center gap-2 bg-neutral-950 px-3 py-2 sm:gap-3 lg:grid lg:grid-cols-[auto_1fr_auto] lg:px-4">
-      {/* LEFT — the workspace menu (identity/home anchor) + the desktop sidebar
-          toggle. Everything about who/where you are lives in the menu. */}
+    <header className="z-20 flex items-center gap-2 border-b border-white/10 bg-[#080808] px-3 py-2 sm:gap-3 lg:grid lg:grid-cols-[auto_1fr_auto] lg:px-4">
+      {/* LEFT — org·project switcher (the left anchor; no brand H) + history +
+          the desktop sidebar toggle. */}
       <div className="flex shrink-0 items-center gap-1.5">
         <div className="min-w-0">
-          <WorkspaceMenu project={project} onRenamed={onRenamed} />
+          <OrgSwitcher />
         </div>
+        {htmlHistory && htmlHistory.length > 0 && (
+          <History history={htmlHistory} setPages={setPages} />
+        )}
         <button
           type="button"
           onClick={onToggleSidebar}
           title={sidebarCollapsed ? "Show chat panel" : "Hide chat panel"}
           aria-label={sidebarCollapsed ? "Show chat panel" : "Hide chat panel"}
           aria-pressed={!sidebarCollapsed}
-          className="hidden size-8 items-center justify-center rounded-lg text-white/50 ring-1 ring-white/10 transition-colors duration-150 hover:bg-white/[0.06] hover:text-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 lg:flex"
+          className="hidden size-8 items-center justify-center rounded-lg text-white/50 ring-1 ring-white/10 transition-colors hover:bg-white/[0.06] hover:text-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 lg:flex"
         >
           {sidebarCollapsed ? (
             <PanelLeft className="size-4" />
@@ -136,7 +142,7 @@ export function Header({
                 title={item.label}
                 onClick={() => onNewTab(item.value)}
                 className={classNames(
-                  "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
+                  "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
                   "mobileOnly" in item && item.mobileOnly ? "lg:hidden" : "",
                   active
                     ? "bg-white/10 text-white shadow-sm"
@@ -169,7 +175,7 @@ export function Header({
                   title={`${d.name[0].toUpperCase()}${d.name.slice(1)} preview`}
                   onClick={() => setDevice(d.name as "desktop" | "mobile")}
                   className={classNames(
-                    "flex size-7 items-center justify-center rounded-md text-sm transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
+                    "flex size-7 items-center justify-center rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
                     active
                       ? "bg-white/10 text-white shadow-sm"
                       : "text-white/50 hover:bg-white/[0.06] hover:text-white/90"
@@ -184,7 +190,7 @@ export function Header({
             type="button"
             onClick={handleRefreshIframe}
             title="Refresh preview"
-            className="flex size-8 items-center justify-center rounded-lg text-white/50 ring-1 ring-white/10 transition-colors duration-150 hover:bg-white/[0.06] hover:text-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+            className="flex size-8 items-center justify-center rounded-lg text-white/50 ring-1 ring-white/10 transition-colors hover:bg-white/[0.06] hover:text-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
           >
             <RefreshCcw className="size-3.5" />
           </button>
@@ -196,7 +202,7 @@ export function Header({
                 <button
                   type="button"
                   title="Select page"
-                  className="flex max-w-[12rem] items-center gap-1.5 rounded-lg bg-white/[0.03] px-2.5 py-1.5 text-sm text-white/70 ring-1 ring-white/10 transition-colors duration-150 hover:bg-white/[0.06] hover:text-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+                  className="flex max-w-[12rem] items-center gap-1.5 rounded-lg bg-white/[0.03] px-2.5 py-1.5 text-sm text-white/70 ring-1 ring-white/10 transition-colors hover:bg-white/[0.06] hover:text-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
                 >
                   <span className="truncate font-mono text-xs">
                     {currentPage}
@@ -231,17 +237,17 @@ export function Header({
             onClick={onOpenExternal}
             title="Open preview in a new tab"
             aria-label="Open preview in a new tab"
-            className="flex size-8 items-center justify-center rounded-lg text-white/50 ring-1 ring-white/10 transition-colors duration-150 hover:bg-white/[0.06] hover:text-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+            className="flex size-8 items-center justify-center rounded-lg text-white/50 ring-1 ring-white/10 transition-colors hover:bg-white/[0.06] hover:text-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
           >
             <ExternalLink className="size-3.5" />
           </button>
         </div>
       </div>
 
-      {/* RIGHT — the primary actions only (`children`: Share · Load · Push …
-          Publish). No identity/account here. Scrolls within itself on tight
-          widths. */}
+      {/* RIGHT — account + credits, then the primary actions (`children`:
+          Share … Publish). Scrolls within itself on tight widths. */}
       <div className="flex min-w-0 flex-1 items-center justify-end gap-1.5 overflow-x-auto lg:flex-none lg:gap-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <EditorAccountMenu />
         {children}
       </div>
     </header>
