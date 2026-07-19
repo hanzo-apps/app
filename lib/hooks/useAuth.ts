@@ -36,19 +36,23 @@ function toAppUser(iamUser: ReturnType<typeof useIam>["user"]): User | null {
 }
 
 export function useAuth(): AuthState & {
-  login: (redirectPath?: string) => void;
+  login: (redirectPath?: string, opts?: { signup?: boolean }) => void;
   logout: () => Promise<void>;
   refetch: () => Promise<void>;
 } {
   const { user, isAuthenticated, isLoading, error, login: iamLogin, logout: iamLogout } = useIam();
 
   const login = useCallback(
-    (redirectPath?: string) => {
+    (redirectPath?: string, opts?: { signup?: boolean }) => {
       if (redirectPath && typeof window !== "undefined") {
         localStorage.setItem("redirectAfterLogin", redirectPath);
       }
       // PKCE S256 redirect to the canonical authorize endpoint (via discovery).
-      void iamLogin();
+      // `signup:true` passes a hint so IAM opens its REGISTRATION screen (the
+      // "Get started" funnel) rather than the sign-in form; returning users omit
+      // it. IAM falls back to the login page if it doesn't honor the hint, so a
+      // new user can still reach sign-up from there — never a dead end.
+      void iamLogin(opts?.signup ? { additionalParams: { signup: "true" } } : undefined);
     },
     [iamLogin],
   );
