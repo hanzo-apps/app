@@ -10,6 +10,7 @@ import { apiServer } from "@/lib/api";
 import AppContext from "@/components/contexts/app-context";
 import IframeDetector from "@/components/iframe-detector";
 import { ChunkReloader } from "@/components/chunk-reloader";
+import { PointerEventsGuard } from "@/components/pointer-events-guard";
 import { Providers } from "./providers";
 import { ErrorBoundary } from "@/components/error-boundary/error-boundary";
 import { errorLogger } from "@/lib/error-handling/error-logger";
@@ -104,6 +105,7 @@ export default async function RootLayout({
       >
         <IframeDetector />
         <ChunkReloader />
+        <PointerEventsGuard />
         <ErrorBoundary level="app">
           <Providers>
             <TanstackProvider>

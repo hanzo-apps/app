@@ -1,270 +1,420 @@
-'use client';
+"use client";
 
 /**
- * /connectors — the org's connected external resources.
+ * /connectors — the ONE org-scoped connectors surface for hanzo.app.
  *
- * A thin, org-scoped view over the ONE shared connector store (cloud
- * `/v1/integrations`, the SAME backend console reads — see lib/connectors). An
- * org connects a resource once here and it's available across every Hanzo
- * surface and usable by the apps it builds. Org scope is resolved server-side
- * from the signed-in IAM identity; the browser never chooses a tenant.
+ * "Connectors" is the product name; the data is the cloud `/v1/integrations`
+ * org-connector store (via the same-origin `/v1/integrations` BFF), the SAME
+ * store console.hanzo.ai renders — one contract, two surfaces. Connections are
+ * scoped to the signed-in user's org (derived server-side from the bearer owner),
+ * so this page manages the connectors for whichever workspace you're in.
  *
- * Honest states: a real provider list, a "sign in" prompt on 401, or an honest
- * "no connectors yet" when the store is empty / the endpoint isn't deployed —
- * never a fabricated list.
+ * This is the canonical destination the AI builder's connect chips fall back to
+ * (`ask-ai` opens `connectUrl || "/connectors"`) and the workspace menu's
+ * "Project connectors" item points here.
+ *
+ * Honesty (this app's law): every row is a REAL provider from cloud with its REAL
+ * org connection status — no fabricated integrations, no fake usage meters. If the
+ * cloud surface returns nothing (unauthenticated, or not yet enabled for the org),
+ * the page shows a clean empty state, never a crash and never invented rows.
+ *
+ * Strictly monochrome + theme-safe: black/white/neutral via theme tokens
+ * (renders correctly in light AND dark); green is kept ONLY as the semantic
+ * "connected" signal.
  */
 
-import { useCallback, useEffect, useState } from 'react';
-import { Button, Badge } from '@hanzo/ui';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
+  ArrowLeft,
+  Search,
+  RefreshCw,
+  Loader2,
   Plug,
+  Link as LinkIcon,
+  X,
   Github,
   Slack,
-  Mail,
-  Database,
+  MessageSquare,
+  Users,
+  Send,
   Cloud,
-  Boxes,
-  Check,
-  Loader2,
-  RefreshCw,
-} from 'lucide-react';
-import { AppShell } from '@/components/app-shell';
-import { useUser } from '@/hooks/useUser';
-import { listConnectors, connect, disconnect, type Provider } from '@/lib/connectors';
+  Mail,
+} from "lucide-react";
+import { Button, Input, Badge } from "@hanzo/ui";
+import { toast } from "sonner";
 
-/** Derive a logo from the provider id (the wire model carries no icon). */
-function providerIcon(id: string): React.ElementType {
-  const key = id.toLowerCase();
-  if (key.includes('github')) return Github;
-  if (key.includes('slack')) return Slack;
-  if (key.includes('google') || key.includes('gmail')) return Mail;
-  if (key.includes('salesforce')) return Cloud;
-  if (key.includes('postgres') || key.includes('mysql') || key.includes('db')) return Database;
-  if (key.includes('s3') || key.includes('storage')) return Boxes;
-  return Plug;
+import { useUser } from "@/hooks/useUser";
+import { useOrg } from "@/lib/org/client";
+import { currentOrg, orgDisplayName } from "@/lib/org-scope";
+import { cn } from "@/lib/utils";
+import {
+  fetchConnectors,
+  connectProvider,
+  disconnectProvider,
+  type Provider,
+} from "@/lib/connectors";
+
+/** Known provider marks (lucide). Unknown providers get a neutral plug — honest,
+ *  never a wrong logo. */
+const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  github: Github,
+  slack: Slack,
+  discord: MessageSquare,
+  teams: Users,
+  telegram: Send,
+  cloudflare: Cloud,
+  google: Mail,
+  gmail: Mail,
+};
+const iconFor = (id: string) => ICONS[id] ?? Plug;
+
+/** "connected 3d ago" — compact relative time; empty when the timestamp is absent. */
+function sinceLabel(iso: string): string {
+  if (!iso) return "";
+  const t = new Date(iso).getTime();
+  if (!Number.isFinite(t)) return "";
+  const s = Math.max(0, Math.floor((Date.now() - t) / 1000));
+  const units: [number, string][] = [
+    [31536000, "y"],
+    [2592000, "mo"],
+    [604800, "w"],
+    [86400, "d"],
+    [3600, "h"],
+    [60, "m"],
+  ];
+  for (const [size, label] of units) {
+    if (s >= size) return `connected ${Math.floor(s / size)}${label} ago`;
+  }
+  return "connected just now";
 }
 
-type LoadState = 'loading' | 'ready' | 'unauthed' | 'error';
-
 export default function ConnectorsPage() {
-  const { user, openLoginWindow } = useUser();
-  const [providers, setProviders] = useState<Provider[]>([]);
-  const [state, setState] = useState<LoadState>('loading');
-  const [busy, setBusy] = useState<string | null>(null);
+  const router = useRouter();
+  const { user, loading: userLoading } = useUser();
+  const { ctx } = useOrg();
 
-  // A provider callback redirects back here with ?connected=<id> or ?error=<id>.
-  // Read from the URL client-side (no useSearchParams → no Suspense requirement).
-  const [justConnected, setJustConnected] = useState<string | null>(null);
-  const [connectError, setConnectError] = useState<string | null>(null);
-  useEffect(() => {
-    const q = new URLSearchParams(window.location.search);
-    setJustConnected(q.get('connected'));
-    setConnectError(q.get('error'));
-  }, []);
+  const [providers, setProviders] = useState<Provider[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("all");
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  // Which org these connectors belong to — resolved exactly like the workspace
+  // menu / OrgSwitcher, so the header names the ORG the connections attribute to.
+  const orgId = currentOrg() || ctx?.currentOrg || "";
+  const orgName = orgDisplayName(ctx?.orgs ?? [], orgId) || "";
 
   const load = useCallback(async () => {
-    setState('loading');
-    try {
-      setProviders(await listConnectors());
-      setState('ready');
-    } catch (e) {
-      setState(e instanceof Error && e.message.includes('401') ? 'unauthed' : 'error');
-    }
+    setLoading(true);
+    const rows = await fetchConnectors();
+    setProviders(rows);
+    setLoading(false);
   }, []);
 
   useEffect(() => {
-    load();
-  }, [load, justConnected]);
+    void load();
+  }, [load]);
 
-  const onConnect = async (id: string) => {
-    setBusy(id);
-    try {
-      window.location.href = await connect(id);
-    } catch {
-      setBusy(null);
+  // Surface the outcome of an OAuth round-trip. Cloud's callback normally lands on
+  // console (its configured redirect), but if it ever returns here we report it
+  // honestly and strip the params so a refresh doesn't re-toast.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const sp = new URLSearchParams(window.location.search);
+    const connected = sp.get("connected");
+    const error = sp.get("error");
+    if (!connected && !error) return;
+    if (connected) toast.success(`Connected ${connected}`);
+    else toast.error(`Couldn't connect ${error}${sp.get("reason") ? `: ${sp.get("reason")}` : ""}`);
+    window.history.replaceState({}, "", window.location.pathname);
+    void load();
+  }, [load]);
+
+  const onConnect = async (p: Provider) => {
+    setBusyId(p.id);
+    const r = await connectProvider(p.id);
+    if (r.authorizeUrl) {
+      // Top-level navigate to the provider's consent screen (leaves the app).
+      window.location.href = r.authorizeUrl;
+      return;
     }
+    toast.error(r.error || `Couldn't start connecting ${p.name}`);
+    setBusyId(null);
   };
 
-  const onDisconnect = async (id: string) => {
-    setBusy(id);
-    try {
-      await disconnect(id);
-      await load();
-    } finally {
-      setBusy(null);
+  const onDisconnect = async (p: Provider) => {
+    setBusyId(p.id);
+    const r = await disconnectProvider(p.id);
+    if (r.ok) {
+      setProviders((prev) =>
+        prev.map((x) => (x.id === p.id ? { ...x, connected: false, connection: null } : x)),
+      );
+      toast.success(`Disconnected ${p.name}`);
+    } else {
+      toast.error(r.error || `Couldn't disconnect ${p.name}`);
     }
+    setBusyId(null);
   };
+
+  // Category filter derived from the real catalog (only shown when it helps).
+  const categories = useMemo(() => {
+    const set = new Set<string>();
+    for (const p of providers) if (p.category) set.add(p.category);
+    return ["all", ...Array.from(set).sort()];
+  }, [providers]);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return providers.filter((p) => {
+      const matchesQ =
+        !q || p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q);
+      const matchesC = category === "all" || p.category === category;
+      return matchesQ && matchesC;
+    });
+  }, [providers, query, category]);
+
+  const connected = filtered.filter((p) => p.connected);
+  const available = filtered.filter((p) => !p.connected && p.available);
+  const unavailable = filtered.filter((p) => !p.connected && !p.available);
+  const connectedCount = providers.filter((p) => p.connected).length;
+
+  // Auth gate — connectors are org-scoped, so an unauthenticated visitor gets an
+  // honest sign-in CTA rather than an empty list.
+  if (!userLoading && !user) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-6 text-center text-foreground">
+        <Plug className="size-8 text-muted-foreground" />
+        <div>
+          <h1 className="text-lg font-medium">Sign in to manage connectors</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Connectors are scoped to your workspace.
+          </p>
+        </div>
+        <Button asChild>
+          <Link href="/login">Sign in</Link>
+        </Button>
+      </div>
+    );
+  }
 
   return (
-    <AppShell currentView="connectors">
-      <div className="flex-1 overflow-y-auto bg-black text-white">
-        {/* Hero */}
-        <header className="border-b border-neutral-900 bg-gradient-to-b from-neutral-950 to-black">
-          <div className="container mx-auto px-6 py-10">
-            <div className="mb-2 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5">
-                <Plug className="h-6 w-6 text-white" />
-              </div>
-              <h1 className="text-3xl font-medium">Connectors</h1>
+    <div className="min-h-screen bg-background text-foreground">
+      {/* Header */}
+      <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur">
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-6 py-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <Button variant="ghost" size="sm" onClick={() => router.back()} className="gap-2">
+              <ArrowLeft className="size-4" />
+              Back
+            </Button>
+            <div className="min-w-0">
+              <h1 className="truncate text-xl font-medium">Connectors</h1>
+              <p className="truncate text-xs text-muted-foreground">
+                {orgName ? `Connect services to ${orgName}` : "Connect services to your workspace"}
+              </p>
             </div>
-            <p className="max-w-2xl text-neutral-400">
-              Connect a resource once for your organization and it&apos;s available across every
-              Hanzo surface — the builder, chat, and the apps you ship. Connections are scoped to
-              your org and shared by your whole team.
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
+            {connectedCount > 0 && (
+              <Badge variant="outline" className="gap-1.5">
+                <span className="size-1.5 rounded-full bg-green-500" />
+                {connectedCount} connected
+              </Badge>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => void load()}
+              aria-label="Refresh"
+              title="Refresh"
+            >
+              <RefreshCw className={cn("size-4", loading && "animate-spin")} />
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      <div className="mx-auto max-w-3xl px-6 py-6">
+        {/* Search */}
+        <div className="relative mb-4">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search connectors…"
+            className="pl-9"
+            value={query}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
+          />
+        </div>
+
+        {/* Category filter — only when the catalog spans more than one. */}
+        {categories.length > 2 && (
+          <div className="mb-6 flex flex-wrap gap-1.5">
+            {categories.map((c) => (
+              <button
+                key={c}
+                onClick={() => setCategory(c)}
+                className={cn(
+                  "rounded-full px-3 py-1 text-xs capitalize transition-colors",
+                  category === c
+                    ? "bg-foreground text-background"
+                    : "text-muted-foreground hover:bg-accent hover:text-foreground",
+                )}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Loading */}
+        {loading && providers.length === 0 ? (
+          <div className="space-y-3">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="h-[92px] animate-pulse rounded-xl border border-border bg-muted/40" />
+            ))}
+          </div>
+        ) : providers.length === 0 ? (
+          /* Empty — honest about the org-scoped surface being unpopulated. */
+          <div className="rounded-xl border border-dashed border-border px-6 py-16 text-center">
+            <Plug className="mx-auto mb-3 size-8 text-muted-foreground" />
+            <h2 className="text-sm font-medium">No connectors available yet</h2>
+            <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
+              Connectors for this workspace will appear here once they're enabled. Nothing to set
+              up in the meantime.
             </p>
           </div>
-        </header>
-
-        <div className="container mx-auto px-6 py-8">
-          {/* Callback banners */}
-          {justConnected && (
-            <div className="mb-5 flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
-              <Check className="h-4 w-4" />
-              Connected {justConnected}.
-            </div>
-          )}
-          {connectError && (
-            <div className="mb-5 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-              Couldn&apos;t connect {connectError}. Please try again.
-            </div>
-          )}
-
-          {state === 'loading' && (
-            <div className="py-20 text-center">
-              <Loader2 className="mx-auto h-6 w-6 animate-spin text-neutral-500" />
-            </div>
-          )}
-
-          {state === 'unauthed' && (
-            <EmptyPanel
-              title="Sign in to manage connectors"
-              body="Connectors are scoped to your organization. Sign in to see what's connected and add new resources."
-              action={
-                <Button
-                  className="bg-white text-black hover:bg-white/90"
-                  onClick={() => (user ? load() : openLoginWindow())}
-                >
-                  {user ? 'Reload' : 'Sign in'}
-                </Button>
-              }
-            />
-          )}
-
-          {state === 'error' && (
-            <EmptyPanel
-              title="No connectors available yet"
-              body="Your organization has no connectors configured on this deployment. Once the connector backend is enabled, connectable resources (Slack, GitHub, databases, storage, and more) appear here."
-              action={
-                <Button variant="outline" className="gap-1.5 border-white/20" onClick={load}>
-                  <RefreshCw className="h-4 w-4" />
-                  Retry
-                </Button>
-              }
-            />
-          )}
-
-          {state === 'ready' && providers.length === 0 && (
-            <EmptyPanel
-              title="No connectors yet"
-              body="Nothing is connected for your organization. Connectable providers appear here as they're enabled for your deployment."
-              action={
-                <Button variant="outline" className="gap-1.5 border-white/20" onClick={load}>
-                  <RefreshCw className="h-4 w-4" />
-                  Refresh
-                </Button>
-              }
-            />
-          )}
-
-          {state === 'ready' && providers.length > 0 && (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {providers.map((p) => {
-                const Icon = providerIcon(p.id);
-                const working = busy === p.id;
-                return (
-                  <div
-                    key={p.id}
-                    className="flex flex-col rounded-xl border border-neutral-800 bg-neutral-900/50 p-5"
-                  >
-                    <div className="mb-3 flex items-start justify-between">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5">
-                        <Icon className="h-5 w-5 text-white/80" />
-                      </div>
-                      {p.connected ? (
-                        <Badge className="border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
-                          Connected
-                        </Badge>
-                      ) : (
-                        <Badge variant="secondary" className="text-neutral-400">
-                          {p.category}
-                        </Badge>
-                      )}
-                    </div>
-                    <h3 className="font-medium text-white">{p.name}</h3>
-                    <p className="mt-1 flex-1 text-sm text-neutral-500">{p.description}</p>
-                    {p.connected && p.connection?.account && (
-                      <p className="mt-2 truncate font-mono text-[11px] text-neutral-600">
-                        {p.connection.account}
-                      </p>
-                    )}
-
-                    <div className="mt-4">
-                      {p.connected ? (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          disabled={working}
-                          onClick={() => onDisconnect(p.id)}
-                          className="w-full border-white/15 text-white/80"
-                        >
-                          {working ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Disconnect'}
-                        </Button>
-                      ) : (
-                        <Button
-                          size="sm"
-                          disabled={!p.available || working}
-                          onClick={() => onConnect(p.id)}
-                          className="w-full bg-white text-black hover:bg-white/90 disabled:opacity-40"
-                          title={p.available ? undefined : 'Not configured on this deployment'}
-                        >
-                          {working ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : p.available ? (
-                            'Connect'
-                          ) : (
-                            'Unavailable'
-                          )}
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+        ) : filtered.length === 0 ? (
+          <p className="py-16 text-center text-sm text-muted-foreground">
+            No connectors match “{query}”.
+          </p>
+        ) : (
+          <div className="space-y-8">
+            <Section title="Connected" rows={connected} busyId={busyId} onConnect={onConnect} onDisconnect={onDisconnect} />
+            <Section title="Available" rows={available} busyId={busyId} onConnect={onConnect} onDisconnect={onDisconnect} />
+            <Section title="Coming soon" rows={unavailable} busyId={busyId} onConnect={onConnect} onDisconnect={onDisconnect} muted />
+          </div>
+        )}
       </div>
-    </AppShell>
+    </div>
   );
 }
 
-function EmptyPanel({
+function Section({
   title,
-  body,
-  action,
+  rows,
+  busyId,
+  onConnect,
+  onDisconnect,
+  muted,
 }: {
   title: string;
-  body: string;
-  action?: React.ReactNode;
+  rows: Provider[];
+  busyId: string | null;
+  onConnect: (p: Provider) => void;
+  onDisconnect: (p: Provider) => void;
+  muted?: boolean;
 }) {
+  if (rows.length === 0) return null;
   return (
-    <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.02] p-12 text-center">
-      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-white/5">
-        <Plug className="h-6 w-6 text-white/50" />
+    <section>
+      <h2 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+        {title}
+      </h2>
+      <div className="space-y-3">
+        {rows.map((p) => (
+          <ConnectorRow
+            key={p.id}
+            p={p}
+            busy={busyId === p.id}
+            disabled={busyId !== null && busyId !== p.id}
+            onConnect={onConnect}
+            onDisconnect={onDisconnect}
+            muted={muted}
+          />
+        ))}
       </div>
-      <h3 className="font-medium text-white">{title}</h3>
-      <p className="mx-auto mt-1 max-w-md text-sm text-white/40">{body}</p>
-      {action && <div className="mt-5">{action}</div>}
+    </section>
+  );
+}
+
+function ConnectorRow({
+  p,
+  busy,
+  disabled,
+  onConnect,
+  onDisconnect,
+  muted,
+}: {
+  p: Provider;
+  busy: boolean;
+  disabled: boolean;
+  onConnect: (p: Provider) => void;
+  onDisconnect: (p: Provider) => void;
+  muted?: boolean;
+}) {
+  const Icon = iconFor(p.id);
+  const since = p.connection ? sinceLabel(p.connection.connectedAt) : "";
+  return (
+    <div
+      className={cn(
+        "flex items-center gap-4 rounded-xl border border-border bg-card px-4 py-3.5 transition-colors",
+        muted && "opacity-60",
+      )}
+    >
+      <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-muted text-foreground">
+        <Icon className="size-5" />
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <span className="truncate font-medium">{p.name}</span>
+          {p.connected && (
+            <span className="inline-flex items-center gap-1 text-xs text-green-600 dark:text-green-500">
+              <span className="size-1.5 rounded-full bg-green-500" />
+              Connected
+            </span>
+          )}
+          {p.category && !p.connected && (
+            <Badge variant="outline" className="hidden capitalize sm:inline-flex">
+              {p.category}
+            </Badge>
+          )}
+        </div>
+        <p className="truncate text-sm text-muted-foreground">
+          {p.connected && p.connection?.account
+            ? `${p.connection.account}${since ? ` · ${since}` : ""}`
+            : p.description}
+        </p>
+      </div>
+
+      <div className="shrink-0">
+        {p.connected ? (
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5"
+            disabled={busy || disabled}
+            onClick={() => onDisconnect(p)}
+          >
+            {busy ? <Loader2 className="size-3.5 animate-spin" /> : <X className="size-3.5" />}
+            Disconnect
+          </Button>
+        ) : p.available ? (
+          <Button
+            size="sm"
+            className="gap-1.5 !bg-foreground !text-background hover:!bg-foreground/90"
+            disabled={busy || disabled}
+            onClick={() => onConnect(p)}
+          >
+            {busy ? <Loader2 className="size-3.5 animate-spin" /> : <LinkIcon className="size-3.5" />}
+            Connect
+          </Button>
+        ) : (
+          <span className="text-xs text-muted-foreground">Unavailable</span>
+        )}
+      </div>
     </div>
   );
 }
