@@ -3,8 +3,8 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import classNames from "classnames";
 import { toast } from "sonner";
-import { useLocalStorage, useUpdateEffect } from "react-use";
-import { ArrowUp, ChevronDown, Crosshair, ImagePlus } from "lucide-react";
+import { useLocalStorage } from "react-use";
+import { ArrowUp, Crosshair, ImagePlus, X } from "lucide-react";
 import { FaStopCircle } from "react-icons/fa";
 
 import ProModal from "@/components/pro-modal";
@@ -35,12 +35,25 @@ import { sendRewardSignal, getLastGenerationRequestId } from "@/lib/reward-signa
 import { SelectedFiles } from "./selected-files";
 import { Uploader } from "./uploader";
 import { VoiceInput } from "./voice-input";
+import { ChatThread, type ThreadMessage } from "./chat-thread";
 
 // Fix mode composes this short, human intent preamble in front of the user's
 // text (empty text is fine when references are attached). The reference images
 // ride the UNCHANGED follow-up `files` path — Fix adds no new API surface.
 const FIX_PREAMBLE =
   "Fix the current design to match the attached reference. Change only what differs from the reference; keep what already matches.";
+
+// Contextual next-step suggestions shown as dismissible chips above the composer
+// (Lovable parity). Honest, app-agnostic starters — clicking one sends it as a
+// message in the current mode (Plan discusses it, Build executes it). Dynamic,
+// app-state-derived suggestions are a future refinement on top of this set.
+const SUGGESTIONS = [
+  "Review security",
+  "Review SEO",
+  "Improve accessibility",
+  "Make it responsive",
+  "Add a contact form",
+];
 
 export function AskAI({
   isNew,
@@ -85,8 +98,6 @@ export function AskAI({
   setPages: React.Dispatch<React.SetStateAction<Page[]>>;
   setCurrentPage: React.Dispatch<React.SetStateAction<string>>;
 }) {
-  const refThink = useRef<HTMLDivElement | null>(null);
-
   const { models, defaultModel, loading: modelsLoading } = useModels();
   const routingDefaults = useRoutingDefaults();
 
@@ -113,9 +124,6 @@ export function AskAI({
   const [openProvider, setOpenProvider] = useState(false);
   const [providerError, setProviderError] = useState("");
   const [openProModal, setOpenProModal] = useState(false);
-  const [openThink, setOpenThink] = useState(false);
-  const [isThinking, setIsThinking] = useState(true);
-  const [think, setThink] = useState("");
   const [isFollowUp, setIsFollowUp] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
   const [files, setFiles] = useState<string[]>(images ?? []);
@@ -123,6 +131,54 @@ export function AskAI({
   // fix-intent preamble and the send guard accepts a references-only submit.
   const [isFixMode, setIsFixMode] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+
+  // Composer mode (Lovable parity): "build" generates/patches the app (default);
+  // "plan" is a conversational back-and-forth that DOESN'T touch the app — the
+  // model discusses/plans, then the user flips to Build to execute. Persisted.
+  const [mode, setMode] = useLocalStorage<"build" | "plan">("composer-mode", "build");
+  const isPlan = mode === "plan";
+
+  // Suggestion chips: dismissible per project (persisted). Clicking a chip sends
+  // it straight as a message (respecting the mode), without touching the box.
+  const [suggestionsDismissed, setSuggestionsDismissed] = useLocalStorage<boolean>(
+    `suggestions-dismissed:${project?.space_id ?? "new"}`,
+    false
+  );
+
+  // Post-remix drop-in: pending integrations the remix handoff (localStorage
+  // `remixSetup`) asked us to surface as connect/skip chips above the composer.
+  const [remixPending, setRemixPending] = useState<
+    Array<{ name: string; connectUrl?: string; skippable?: boolean }>
+  >([]);
+
+  // Resizable composer (item 17): the input area's height is user-draggable from
+  // a grip on its top edge and auto-grows with content until the user overrides.
+  // Persisted per project; clamped to [1 line, 40% of the pane].
+  const COMPOSER_MIN_H = 44;
+  const [savedComposerH, setSavedComposerH] = useLocalStorage<number>(
+    `composer-height:${project?.space_id ?? "new"}`,
+    0
+  );
+  const [composerH, setComposerH] = useState(COMPOSER_MIN_H);
+  const composerHRef = useRef(COMPOSER_MIN_H);
+  const manualResizeRef = useRef(false);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+
+  const maxComposerH = () =>
+    Math.max(
+      COMPOSER_MIN_H,
+      Math.round(
+        (rootRef.current?.clientHeight ??
+          (typeof window !== "undefined" ? window.innerHeight : 800)) * 0.4
+      )
+    );
+  const setComposerHeight = (h: number, persist: boolean) => {
+    const clamped = Math.min(maxComposerH(), Math.max(COMPOSER_MIN_H, Math.round(h)));
+    composerHRef.current = clamped;
+    setComposerH(clamped);
+    if (persist) setSavedComposerH(clamped);
+  };
 
   // Per-project reference-image history, persisted like the ask-ai settings
   // (namespaced localStorage). Backs the uploader's "past images" picker so a
@@ -193,10 +249,95 @@ export function AskAI({
   const [messageQueue, setMessageQueue] = useState<Array<{id: string; message: string; timestamp: Date}>>([]);
   const [isProcessingQueue, setIsProcessingQueue] = useState(false);
 
+  // Chat thread — the single source of truth for what's shown ABOVE the
+  // composer: the user's submitted bubbles and the assistant's live plan/build
+  // turn. Every send appends a user message + an assistant placeholder that the
+  // ONE /v1/generate stream mutates through planning → building → done/error.
+  const [messages, setMessages] = useState<ThreadMessage[]>([]);
+  const activeAssistantId = useRef<string | null>(null);
+  const activeStartedAt = useRef<number>(0);
+  // "stream" = a full generation whose pages stream in live (drives the build
+  // activity from the `pages` prop); "edit" = a diff-patch follow-up (JSON, no
+  // live pages). null between turns.
+  const activeTurnKind = useRef<"stream" | "edit" | null>(null);
+
+  const genId = () =>
+    `m-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+
+  const updateAssistant = (id: string | null, patch: Partial<ThreadMessage>) => {
+    if (!id) return;
+    setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, ...patch } : m)));
+  };
+
+  // Append the user bubble + a fresh assistant placeholder; return the
+  // assistant id so the caller can settle it when the generation finishes.
+  const beginTurn = (userText: string, streaming: boolean) => {
+    const aid = genId();
+    activeAssistantId.current = aid;
+    activeStartedAt.current = Date.now();
+    activeTurnKind.current = streaming ? "stream" : "edit";
+    setMessages((prev) => [
+      ...prev,
+      { id: genId(), role: "user", text: userText },
+      {
+        id: aid,
+        role: "assistant",
+        phase: streaming ? "planning" : "building",
+        plan: streaming ? "" : undefined,
+        activity: streaming ? [] : ["Applying edits"],
+      },
+    ]);
+    return aid;
+  };
+
+  const elapsed = () =>
+    Math.max(1, Math.round((Date.now() - activeStartedAt.current) / 1000));
+
+  const finishTurn = (id: string, phase: "done" | "error", text: string) => {
+    updateAssistant(id, { phase, text });
+    if (activeAssistantId.current === id) {
+      activeAssistantId.current = null;
+      activeTurnKind.current = null;
+    }
+  };
+
+  // Plan mode: append the user bubble + a streaming assistant CHAT bubble.
+  const beginChatTurn = (userText: string) => {
+    const aid = genId();
+    activeAssistantId.current = aid;
+    activeStartedAt.current = Date.now();
+    activeTurnKind.current = "edit"; // not a streaming-pages turn
+    setMessages((prev) => [
+      ...prev,
+      { id: genId(), role: "user", text: userText },
+      { id: aid, role: "assistant", kind: "chat", phase: "building", text: "" },
+    ]);
+    return aid;
+  };
+
+  // Map the hook's error codes to one honest, terse thread line. Modals
+  // (login/pro/provider) still open via handleError; the thread just never
+  // dead-ends on a dangling "building" bubble.
+  const errorText = (r: { error?: string; message?: string }) => {
+    switch (r.error) {
+      case "aborted":
+        return "Stopped.";
+      case "login_required":
+        return "Sign in to continue.";
+      case "pro_required":
+        return "Upgrade to continue.";
+      case "provider_required":
+        return r.message || "Choose a provider to continue.";
+      default:
+        return r.message || "Something went wrong — please try again.";
+    }
+  };
+
   const {
     callAiNewProject,
     callAiFollowUp,
     callAiNewPage,
+    callAiChat,
     stopController,
     audio: hookAudio,
   } = useCallAi({
@@ -266,16 +407,52 @@ export function AskAI({
         : FIX_PREAMBLE
       : promptToUse;
 
-    // Clear the composer after a non-queued submit (queued prompts keep the box
-    // untouched). Fix is one-shot: it resets so the next prompt is ordinary.
-    const clearComposer = () => {
-      if (!queuedPrompt) {
-        setPrompt("");
-        setIsFixMode(false);
-      }
-    };
+    // Clear the composer IMMEDIATELY on a fresh (non-queued) submit — the send
+    // is now reflected by the thread bubble, not by text lingering in the box
+    // (which used to sit under the "AI is working…" pill). Fix is one-shot.
+    if (!queuedPrompt) {
+      setPrompt("");
+      setIsFixMode(false);
+    }
 
-    if (isFollowUp && !redesignMarkdown && !isSameHtml) {
+    // Plan mode: a conversational turn — NO build. Stream a chat reply into the
+    // thread and stop. (Re-imagine/fix are build actions; they ignore mode.)
+    if (isPlan && !redesignMarkdown && !fixSubmit) {
+      const chatId = beginChatTurn(promptToUse.trim());
+      const result = await callAiChat(
+        promptToUse.trim(),
+        model,
+        provider,
+        previousPrompts,
+        (textSoFar) => updateAssistant(chatId, { text: textSoFar, phase: "building" })
+      );
+      if (result?.error) {
+        finishTurn(chatId, "error", errorText(result));
+        handleError(result.error, result.message);
+        return;
+      }
+      if (result?.success) {
+        if (result.model) setRoutedModel(result.model);
+        updateAssistant(chatId, { phase: "done" });
+        activeAssistantId.current = null;
+        activeTurnKind.current = null;
+      }
+      return;
+    }
+
+    // Pick the generation path (same conditions as before), then append the
+    // user bubble + assistant placeholder BEFORE awaiting so the thread reflects
+    // the send instantly.
+    const useFollowUp = isFollowUp && !redesignMarkdown && !isSameHtml;
+    const useNewPage =
+      !useFollowUp && isFollowUp && pages.length > 1 && isSameHtml;
+    const streaming = !useFollowUp; // newProject + newPage stream pages live
+    const displayText = redesignMarkdown
+      ? "Re-imagine this design"
+      : promptToUse.trim() || "Fix the design to match the reference";
+    const assistantId = beginTurn(displayText, streaming);
+
+    if (useFollowUp) {
       // Use follow-up function for existing projects
       const selectedElementHtml = selectedElement
         ? selectedElement.outerHTML
@@ -291,15 +468,24 @@ export function AskAI({
       );
 
       if (result?.error) {
+        finishTurn(assistantId, "error", errorText(result));
         handleError(result.error, result.message);
         return;
       }
 
       if (result?.success) {
         if (result.model) setRoutedModel(result.model);
-        clearComposer();
+        const n = Array.isArray(result.updatedLines)
+          ? result.updatedLines.length
+          : 0;
+        const edits = n || 1;
+        finishTurn(
+          assistantId,
+          "done",
+          `${edits} edit${edits === 1 ? "" : "s"} applied · ${elapsed()}s`
+        );
       }
-    } else if (isFollowUp && pages.length > 1 && isSameHtml) {
+    } else if (useNewPage) {
       const result = await callAiNewPage(
         effectivePrompt,
         model,
@@ -312,12 +498,13 @@ export function AskAI({
         setRoutedModel
       );
       if (result?.error) {
+        finishTurn(assistantId, "error", errorText(result));
         handleError(result.error, result.message);
         return;
       }
 
       if (result?.success) {
-        clearComposer();
+        finishTurn(assistantId, "done", `Added a page · ${elapsed()}s`);
       }
     } else {
       // Regenerating a full page: when a prior generation exists, this new full
@@ -332,27 +519,86 @@ export function AskAI({
         provider,
         redesignMarkdown,
         handleThink,
-        () => {
-          setIsThinking(false);
-        },
+        () => updateAssistant(assistantId, { phase: "building" }),
         setRoutedModel
       );
 
       if (result?.error) {
+        finishTurn(assistantId, "error", errorText(result));
         handleError(result.error, result.message);
         return;
       }
 
       if (result?.success) {
-        clearComposer();
+        const n = Array.isArray(result.pages) ? result.pages.length : 1;
+        finishTurn(
+          assistantId,
+          "done",
+          `Built · ${n} file${n === 1 ? "" : "s"} · ${elapsed()}s`
+        );
       }
     }
   };
 
-  const handleThink = (think: string) => {
-    setThink(think);
-    setIsThinking(true);
-    setOpenThink(true);
+  // Reasoning stream → the active turn's plan card (streamed live, monochrome
+  // shimmer while designing). Only callAiNewProject emits <think>.
+  const handleThink = (thinkText: string) => {
+    updateAssistant(activeAssistantId.current, {
+      plan: thinkText,
+      phase: "planning",
+    });
+  };
+
+  // Suggestion chip → send the suggestion as a message in the current mode
+  // (never clobbers whatever the user has typed in the composer).
+  const runSuggestion = (text: string) => {
+    if (isAiWorking) return;
+    callAi(undefined, text);
+  };
+
+  // Remix integration chips — Connect opens the connector (new tab, so the
+  // builder isn't lost); Skip removes the chip and drops an honest system line.
+  const connectIntegration = (p: { name: string; connectUrl?: string }) => {
+    if (typeof window === "undefined") return;
+    window.open(p.connectUrl || "/connectors", "_blank", "noopener,noreferrer");
+  };
+  const skipIntegration = (name: string) => {
+    setRemixPending((prev) => prev.filter((p) => p.name !== name));
+    setMessages((prev) => [
+      ...prev,
+      { id: genId(), role: "system", text: `Skipped connecting ${name}` },
+    ]);
+  };
+
+  // Composer auto-grow: fit the textarea to its content until the user manually
+  // resizes (which pins the height). Clamped to [1 line, 40% of the pane].
+  const autoGrowComposer = () => {
+    const el = textareaRef.current;
+    if (!el || manualResizeRef.current) return;
+    el.style.height = "auto";
+    setComposerHeight(Math.max(COMPOSER_MIN_H, el.scrollHeight), false);
+  };
+
+  // Top-edge drag handle → resize the input area (up = taller). Pointer events
+  // cover mouse + touch; the height persists per project on release.
+  const onResizePointerDown = (e: React.PointerEvent) => {
+    e.preventDefault();
+    manualResizeRef.current = true;
+    const startY = e.clientY;
+    const startH = composerHRef.current;
+    const onMove = (ev: PointerEvent) =>
+      setComposerHeight(startH + (startY - ev.clientY), false);
+    const onUp = () => {
+      document.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerup", onUp);
+      setSavedComposerH(composerHRef.current);
+    };
+    document.addEventListener("pointermove", onMove);
+    document.addEventListener("pointerup", onUp);
+  };
+  const nudgeComposer = (delta: number) => {
+    manualResizeRef.current = true;
+    setComposerHeight(composerHRef.current + delta, true);
   };
 
   const handleError = (error: string, message?: string) => {
@@ -402,29 +648,22 @@ export function AskAI({
     }
   }, [isAiWorking, messageQueue, isProcessingQueue]);
 
-  // Handle initial prompt for new projects
+  // Handle initial prompt (dashboard/landing composer, ?prompt=, or a template
+  // seed) for new projects. The seed is AUTO-SUBMITTED straight into the thread
+  // — it appears as a fully-submitted user bubble and the composer stays EMPTY.
+  // No prefill ever: it is passed EXPLICITLY as the queuedPrompt so callAi's
+  // `queuedPrompt || prompt` sends the real seed (setPrompt is async, so relying
+  // on the composer state would submit nothing — the old stale-closure bug).
   useEffect(() => {
     if (isNew && typeof window !== 'undefined') {
-      // Check for initial prompt stored by AppEditor
       const initialPrompt = (window as any).__initialPrompt;
       if (initialPrompt) {
-        // Clean up the global variable
         delete (window as any).__initialPrompt;
-
-        // Set the prompt (so it shows in the composer)
-        setPrompt(initialPrompt);
-
-        // Auto-start generation. Pass the seed EXPLICITLY as the queuedPrompt —
-        // `setPrompt` above is async, so the `callAi` captured in this timeout
-        // still sees the EMPTY `prompt` state (stale closure) and would submit
-        // nothing (the "seed pre-fills but never auto-builds" bug). callAi uses
-        // `queuedPrompt || prompt`, so the explicit arg guarantees the real seed
-        // is sent on the first automatic generation.
         const timer = setTimeout(() => {
           if (!isAiWorking) {
             callAi(undefined, initialPrompt);
           }
-        }, 500);
+        }, 300);
 
         return () => clearTimeout(timer);
       }
@@ -432,26 +671,97 @@ export function AskAI({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isNew]);
 
-  useUpdateEffect(() => {
-    if (refThink.current) {
-      refThink.current.scrollTop = refThink.current.scrollHeight;
+  // Post-remix drop-in: consume the remix handoff (localStorage `remixSetup`,
+  // written by the remix/dashboard flow) ONCE on mount — exactly like the
+  // initialPrompt contract. Seeds the thread with a first ASSISTANT opener + a
+  // provisioned system line, and surfaces the pending integrations as chips.
+  // Absent handoff → nothing happens (normal seed flow).
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    let raw: string | null = null;
+    try {
+      raw = localStorage.getItem("remixSetup");
+      if (raw) localStorage.removeItem("remixSetup");
+    } catch {
+      /* storage unavailable */
     }
-  }, [think]);
+    if (!raw) return;
+    try {
+      const setup = JSON.parse(raw) as {
+        firstMessage?: string;
+        pending?: Array<{ name: string; connectUrl?: string; skippable?: boolean }>;
+        provisioned?: string[];
+      };
+      const opener = (setup.firstMessage || "").trim();
+      const seeded: ThreadMessage[] = [];
+      if (opener)
+        seeded.push({
+          id: genId(),
+          role: "assistant",
+          kind: "chat",
+          phase: "done",
+          text: opener,
+        });
+      if (Array.isArray(setup.provisioned) && setup.provisioned.length)
+        seeded.push({
+          id: genId(),
+          role: "system",
+          text: `Provisioned: ${setup.provisioned.join(", ")}`,
+        });
+      if (seeded.length) setMessages((prev) => [...prev, ...seeded]);
+      if (Array.isArray(setup.pending))
+        setRemixPending(setup.pending.filter((p) => p && p.name));
+    } catch {
+      /* malformed handoff — ignore, never dead-end */
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  useUpdateEffect(() => {
-    if (!isThinking) {
-      setOpenThink(false);
+  // Restore the persisted composer height once on mount (client-only, so no
+  // SSR/client style mismatch). A saved value means the user had resized it.
+  useEffect(() => {
+    if (savedComposerH && savedComposerH > 0) {
+      manualResizeRef.current = true;
+      composerHRef.current = savedComposerH;
+      setComposerH(savedComposerH);
     }
-  }, [isThinking]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Auto-grow the composer to fit typed content (until a manual resize pins it).
+  useEffect(() => {
+    autoGrowComposer();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prompt]);
 
   const isSameHtml = useMemo(() => {
     return isTheSameHtml(currentPage.html);
   }, [currentPage.html]);
 
+  // Drive the active turn's build phase + live activity from the ONE generation
+  // stream: for a streaming turn (newProject/newPage), pages stay untouched
+  // while reasoning streams (the hook gates page rendering on <think>), then
+  // start updating once real HTML arrives — so `!isSameHtml` is the honest
+  // "HTML generation has begun" signal. The plan card settles and the activity
+  // list ("Writing index.html…") takes over. No second model call.
+  useEffect(() => {
+    if (activeTurnKind.current !== "stream") return;
+    const id = activeAssistantId.current;
+    if (!id || !isAiWorking || isSameHtml) return;
+    updateAssistant(id, {
+      phase: "building",
+      activity: pages.map((p) => `Writing ${p.path}`),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSameHtml, pages, isAiWorking]);
+
   return (
-    // Composer is pinned to the BOTTOM of the (flex-col) chat pane: `mt-auto`
-    // pushes it down so any messages/queue scroll above it, Lovable-style.
-    <div className="mt-auto px-3 pb-1">
+    // The chat pane is a flex column: the thread scrolls at the top and the
+    // composer is pinned at the bottom. With an empty thread (ChatThread returns
+    // null) the composer's `mt-auto` keeps it docked exactly as before.
+    <div ref={rootRef} className="flex h-full min-h-0 flex-col">
+      <ChatThread messages={messages} className="min-h-0 flex-1" />
+      <div className="mt-auto px-3 pb-[calc(0.25rem+env(safe-area-inset-bottom))]">
       {/* Stacked Message Queue Cards */}
       {messageQueue.length > 0 && (
         <div className="mb-4 space-y-2">
@@ -519,6 +829,74 @@ export function AskAI({
         }
       `}</style>
 
+      {/* Post-remix integration chips — one connect/skip row per pending service,
+          horizontally scrollable on mobile, with the Plan-mode tip. */}
+      {remixPending.length > 0 && (
+        <div className="mb-2 space-y-1.5">
+          <div className="flex items-center gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+            {remixPending.map((p) => (
+              <div
+                key={p.name}
+                className="flex shrink-0 items-center gap-1.5 rounded-full border border-neutral-700 bg-white/[0.03] px-2.5 py-1 text-xs"
+              >
+                <span className="whitespace-nowrap text-neutral-200">🔥 {p.name}</span>
+                {p.skippable !== false && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => skipIntegration(p.name)}
+                      className="text-neutral-500 transition-colors hover:text-neutral-300"
+                    >
+                      Skip
+                    </button>
+                    <span className="text-neutral-700">·</span>
+                  </>
+                )}
+                <button
+                  type="button"
+                  onClick={() => connectIntegration(p)}
+                  className="font-medium text-white hover:underline"
+                >
+                  Connect
+                </button>
+              </div>
+            ))}
+          </div>
+          <p className="text-[11px] text-neutral-500">
+            Tip: switch from Build to Plan mode to brainstorm or debug without
+            code changes.
+          </p>
+        </div>
+      )}
+
+      {/* Suggestion chips — dismissible, horizontally scrollable (mobile-safe),
+          monochrome. Clicking a chip sends it as a message in the current mode.
+          Hidden while the AI is working and once dismissed for this project. */}
+      {!suggestionsDismissed && !isAiWorking && (
+        <div className="mb-2 flex items-center gap-1.5">
+          <div className="flex flex-1 items-center gap-1.5 overflow-x-auto scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {SUGGESTIONS.map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => runSuggestion(s)}
+                className="shrink-0 whitespace-nowrap rounded-full border border-neutral-700 bg-white/[0.03] px-3 py-1 text-xs text-neutral-300 transition-colors hover:border-neutral-500 hover:bg-white/[0.06] hover:text-white"
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            aria-label="Dismiss suggestions"
+            onClick={() => setSuggestionsDismissed(true)}
+            className="shrink-0 rounded-full p-1 text-neutral-500 transition-colors hover:bg-white/10 hover:text-neutral-300"
+          >
+            <X className="size-3.5" />
+          </button>
+        </div>
+      )}
+
       <div
         className="relative bg-neutral-800 border border-neutral-700 rounded-2xl ring-[4px] focus-within:ring-neutral-500/30 focus-within:border-neutral-600 ring-transparent z-10 w-full group"
         onDragOver={handleDragOver}
@@ -526,49 +904,34 @@ export function AskAI({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
+        {/* Resize grip — drag the input's top edge to grow/shrink it; keyboard
+            accessible (↑/↑ taller, ↓ shorter). Replaces the native textarea
+            resize corner so it matches the rounded chrome. */}
+        <button
+          type="button"
+          role="separator"
+          aria-orientation="horizontal"
+          aria-label="Resize chat input (Arrow Up to grow, Arrow Down to shrink)"
+          onPointerDown={onResizePointerDown}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowUp") {
+              e.preventDefault();
+              nudgeComposer(24);
+            } else if (e.key === "ArrowDown") {
+              e.preventDefault();
+              nudgeComposer(-24);
+            }
+          }}
+          className="absolute -top-1.5 left-1/2 z-20 flex h-3 w-10 -translate-x-1/2 cursor-ns-resize items-center justify-center rounded-full opacity-0 transition-opacity duration-150 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none"
+        >
+          <span className="h-0.5 w-6 rounded-full bg-neutral-500" />
+        </button>
         {isDragging && (
           <div className="absolute inset-0 z-30 rounded-2xl border-2 border-dashed border-neutral-500 bg-neutral-900/80 flex items-center justify-center pointer-events-none">
             <p className="text-sm text-neutral-200 flex items-center gap-2">
               <ImagePlus className="size-4" />
               Drop images to attach as references
             </p>
-          </div>
-        )}
-        {think && (
-          <div className="w-full border-b border-neutral-700 relative overflow-hidden">
-            <header
-              className="flex items-center justify-between px-5 py-2.5 group hover:bg-neutral-600/20 transition-colors duration-200 cursor-pointer"
-              onClick={() => {
-                setOpenThink(!openThink);
-              }}
-            >
-              <p className="text-sm font-medium text-neutral-300 group-hover:text-neutral-200 transition-colors duration-200">
-                {isThinking ? "Hanzo is thinking..." : "Hanzo's plan"}
-              </p>
-              <ChevronDown
-                className={classNames(
-                  "size-4 text-neutral-400 group-hover:text-neutral-300 transition-all duration-200",
-                  {
-                    "rotate-180": openThink,
-                  }
-                )}
-              />
-            </header>
-            <main
-              ref={refThink}
-              className={classNames(
-                "overflow-y-auto transition-all duration-200 ease-in-out",
-                {
-                  "max-h-[0px]": !openThink,
-                  "min-h-[250px] max-h-[250px] border-t border-neutral-700":
-                    openThink,
-                }
-              )}
-            >
-              <p className="text-[13px] text-neutral-400 whitespace-pre-line px-5 pb-4 pt-3">
-                {think}
-              </p>
-            </main>
           </div>
         )}
         <SelectedFiles
@@ -669,19 +1032,27 @@ export function AskAI({
             </div>
           )}
           <textarea
+            ref={textareaRef}
             disabled={isUploading}
+            style={{ height: composerH, maxHeight: "40dvh" }}
             className={classNames(
-              "w-full bg-transparent text-sm outline-none text-white placeholder:text-neutral-400 p-4 resize-none",
+              "w-full bg-transparent text-sm outline-none text-white placeholder:text-neutral-400 p-4 resize-none overflow-y-auto",
               {
                 "!pt-2.5": selectedElement && !isAiWorking,
                 "opacity-100": isAiWorking && !isUploading,
               }
             )}
             placeholder={
-              isFixMode
+              isAiWorking
+                ? // Empty while working (unless queueing) so no text sits UNDER
+                  // the "AI is working…" pill overlaying the top of the box.
+                  messageQueue.length > 0
+                  ? "Type your message... (will be queued)"
+                  : ""
+                : isFixMode
                 ? "Attach a reference (drop, paste, or pick), then send — or add a note"
-                : isAiWorking && messageQueue.length > 0
-                ? "Type your message... (will be queued)"
+                : isPlan
+                ? "Chat about your app — Plan mode won't change it"
                 : selectedElement
                 ? `Ask Hanzo about ${selectedElement.tagName.toLowerCase()}...`
                 : isFollowUp && (!isSameHtml || pages?.length > 1)
@@ -700,7 +1071,7 @@ export function AskAI({
           />
         </div>
         <div className="flex items-center justify-between gap-2 px-4 pb-3 mt-2">
-          <div className="flex-1 flex items-center justify-start gap-1.5">
+          <div className="flex min-w-0 flex-1 items-center justify-start gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden">
             <Uploader
               pages={pages}
               onLoading={setIsUploading}
@@ -753,7 +1124,36 @@ export function AskAI({
             )}
             {/* <InviteFriends /> */}
           </div>
-          <div className="flex items-center justify-end gap-2">
+          <div className="flex shrink-0 items-center justify-end gap-2">
+            {/* Build vs Plan mode. Build (default) generates/patches the app;
+                Plan is a conversational turn that never modifies it. Persisted. */}
+            <div
+              role="group"
+              aria-label="Composer mode"
+              className="flex shrink-0 items-center rounded-full border border-neutral-700 bg-neutral-900/60 p-0.5 text-xs"
+            >
+              {(["build", "plan"] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  aria-pressed={mode === m}
+                  title={
+                    m === "plan"
+                      ? "Plan: chat about your app without changing it"
+                      : "Build: generate and modify your app"
+                  }
+                  onClick={() => setMode(m)}
+                  className={classNames(
+                    "rounded-full px-2.5 py-1 font-medium capitalize transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
+                    mode === m
+                      ? "bg-white text-black"
+                      : "text-neutral-400 hover:text-neutral-200"
+                  )}
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
             {isSmartRouting(model) && routedModel && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -841,6 +1241,7 @@ export function AskAI({
         <source src="/success.mp3" type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
+      </div>
     </div>
   );
 }

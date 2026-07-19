@@ -44,6 +44,39 @@
   }
 }
 
+/* Chat-thread plan/activity shimmer — a restrained monochrome sweep across the
+   active label ("Designing…", "Writing index.html…") while the ONE generation
+   streams. Reduced-motion safe: falls back to a static dim-white label. */
+@keyframes threadShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.thread-shimmer-text {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.4) 30%,
+    rgba(255, 255, 255, 0.95) 50%,
+    rgba(255, 255, 255, 0.4) 70%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: threadShimmer 1.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thread-shimmer-text {
+    animation: none;
+    color: rgba(255, 255, 255, 0.72);
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
