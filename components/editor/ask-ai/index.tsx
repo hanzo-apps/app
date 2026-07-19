@@ -25,10 +25,8 @@ import {
   referenceImagesKey,
 } from "@/lib/reference-images";
 import Loading from "@/components/loading";
-import { Checkbox } from "@hanzo/ui";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@hanzo/ui";
 import { SelectedHtmlElement } from "./selected-html-element";
-import { FollowUpTooltip } from "./follow-up-tooltip";
 import { isTheSameHtml } from "@/lib/compare-html-diff";
 import { useCallAi } from "@/hooks/useCallAi";
 import { sendRewardSignal, getLastGenerationRequestId } from "@/lib/reward-signal";
@@ -124,7 +122,9 @@ export function AskAI({
   const [openProvider, setOpenProvider] = useState(false);
   const [providerError, setProviderError] = useState("");
   const [openProModal, setOpenProModal] = useState(false);
-  const [isFollowUp, setIsFollowUp] = useState(true);
+  // Diff-patch (follow-up) updates are now simply the default — the toggle chip
+  // + explainer popover were removed (no one toggled it). Always on.
+  const [isFollowUp] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
   const [files, setFiles] = useState<string[]>(images ?? []);
   // Fix mode: ONE flag. While on, the generate call is prefixed with a
@@ -670,6 +670,30 @@ export function AskAI({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isNew]);
+
+  // Template/remix EDIT arrival: a GREETING-only seed. The template's real HTML
+  // is already loaded into the preview (pages), so we do NOT generate — we post
+  // a friendly ASSISTANT greeting and wait for the user to ask for a change.
+  // This is the "load + greet, ready to edit" path, distinct from a build-prompt
+  // seed (__initialPrompt above), which auto-generates. dev/page stages this
+  // BEFORE the editor mounts (behind its splash), so it's set when we read it.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const greeting = (window as any).__assistantGreeting;
+    if (!greeting) return;
+    delete (window as any).__assistantGreeting;
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: genId(),
+        role: "assistant",
+        kind: "chat",
+        phase: "done",
+        text: String(greeting),
+      },
+    ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Post-remix drop-in: consume the remix handoff (localStorage `remixSetup`,
   // written by the remix/dashboard flow) ONCE on mount — exactly like the
@@ -1218,24 +1242,6 @@ export function AskAI({
           open={openProModal}
           onClose={() => setOpenProModal(false)}
         />
-        {!isSameHtml && (
-          <div className="absolute top-0 right-0 -translate-y-[calc(100%+8px)] select-none text-xs text-neutral-400 flex items-center justify-center gap-2 bg-neutral-800 border border-neutral-700 rounded-md p-1 pr-2.5">
-            <label
-              htmlFor="diff-patch-checkbox"
-              className="flex items-center gap-1.5 cursor-pointer"
-            >
-              <Checkbox
-                id="diff-patch-checkbox"
-                checked={isFollowUp}
-                onCheckedChange={(e: boolean | "indeterminate") => {
-                  setIsFollowUp(e === true);
-                }}
-              />
-              Diff-Patch Update
-            </label>
-            <FollowUpTooltip />
-          </div>
-        )}
       </div>
       <audio ref={hookAudio} id="audio" className="hidden">
         <source src="/success.mp3" type="audio/mpeg" />
