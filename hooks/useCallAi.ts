@@ -4,12 +4,6 @@ import { Page } from "@/types";
 import { parsePages, parseSinglePage } from "@/lib/format-pages";
 import { setLastGenerationRequestId } from "@/lib/reward-signal";
 
-// The ONE honest message for an upstream 5xx / network failure. The caller's
-// handleError surfaces it once so the user knows to retry — never an infinite
-// "Building…" with a stuck isAiWorking flag.
-const AI_UNAVAILABLE =
-  "AI backend is temporarily unavailable — try again in a minute.";
-
 // Guarded JSON parse: the stream-done handler only treats the response as a
 // JSON error envelope when it actually parses, so a malformed `{…}` never
 // throws (it falls through to page parsing instead).
@@ -243,18 +237,7 @@ export const useCallAi = ({
         signal: abortController.signal,
       });
 
-      // Upstream infra failure (gateway 502/503/500): stop now with an honest
-      // message instead of streaming an empty body into a stuck "Building…".
-      if (!request.ok && request.status >= 500) {
-        setisAiWorking(false);
-        return { error: "api_error", message: AI_UNAVAILABLE };
-      }
-      if (!request.body) {
-        setisAiWorking(false);
-        return { error: "network_error", message: AI_UNAVAILABLE };
-      }
-
-      {
+      if (request && request.body) {
         const reader = request.body.getReader();
         const decoder = new TextDecoder("utf-8");
         let contentResponse = "";
@@ -337,14 +320,11 @@ export const useCallAi = ({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setisAiWorking(false);
-      // User pressed Stop — an abort is not an error worth a toast.
-      if (error?.name === "AbortError") {
-        return { error: "aborted" };
-      }
-      if (error?.openLogin) {
+      toast.error(error.message);
+      if (error.openLogin) {
         return { error: "login_required" };
       }
-      return { error: "network_error", message: AI_UNAVAILABLE };
+      return { error: "network_error", message: error.message };
     }
   };
 
@@ -376,16 +356,7 @@ export const useCallAi = ({
         signal: abortController.signal,
       });
 
-      if (!request.ok && request.status >= 500) {
-        setisAiWorking(false);
-        return { error: "api_error", message: AI_UNAVAILABLE };
-      }
-      if (!request.body) {
-        setisAiWorking(false);
-        return { error: "network_error", message: AI_UNAVAILABLE };
-      }
-
-      {
+      if (request && request.body) {
         const reader = request.body.getReader();
         const decoder = new TextDecoder("utf-8");
         let contentResponse = "";
@@ -456,13 +427,11 @@ export const useCallAi = ({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setisAiWorking(false);
-      if (error?.name === "AbortError") {
-        return { error: "aborted" };
-      }
-      if (error?.openLogin) {
+      toast.error(error.message);
+      if (error.openLogin) {
         return { error: "login_required" };
       }
-      return { error: "network_error", message: AI_UNAVAILABLE };
+      return { error: "network_error", message: error.message };
     }
   };
 
@@ -496,37 +465,24 @@ export const useCallAi = ({
         signal: abortController.signal,
       });
 
-      // Upstream infra failure — stop honestly rather than JSON-parsing an HTML
-      // 502 page (which would throw into the generic catch as a stuck spinner).
-      if (!request.ok && request.status >= 500) {
-        setisAiWorking(false);
-        return { error: "api_error", message: AI_UNAVAILABLE };
-      }
-
-      {
-        const res = await request.json().catch(() => ({}));
-
+      if (request && request.body) {
+        const res = await request.json();
+        
         if (!request.ok) {
-          setisAiWorking(false);
           if (res.openLogin) {
+            setisAiWorking(false);
             return { error: "login_required" };
           } else if (res.openSelectProvider) {
+            setisAiWorking(false);
             return { error: "provider_required", message: res.message };
           } else if (res.openProModal) {
+            setisAiWorking(false);
             return { error: "pro_required" };
+          } else {
+            toast.error(res.message);
+            setisAiWorking(false);
+            return { error: "api_error", message: res.message };
           }
-          return { error: "api_error", message: res.message || AI_UNAVAILABLE };
-        }
-
-        // A 200 with no usable pages (garbled/empty) — fail honestly instead of
-        // pushing `undefined` into the editor.
-        if (!Array.isArray(res.pages)) {
-          setisAiWorking(false);
-          return {
-            error: "empty_response",
-            message:
-              "The model didn't return a usable page. Please try again.",
-          };
         }
 
         toast.success("AI responded successfully");
@@ -536,7 +492,7 @@ export const useCallAi = ({
         setLastGenerationRequestId(res.id);
         setPages(res.pages);
         onSuccess(res.pages, prompt, res.updatedLines);
-
+        
         if (audio.current) audio.current.play();
 
         return { success: true, html: res.html, updatedLines: res.updatedLines, model: res.model };
@@ -544,13 +500,11 @@ export const useCallAi = ({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setisAiWorking(false);
-      if (error?.name === "AbortError") {
-        return { error: "aborted" };
-      }
-      if (error?.openLogin) {
+      toast.error(error.message);
+      if (error.openLogin) {
         return { error: "login_required" };
       }
-      return { error: "network_error", message: AI_UNAVAILABLE };
+      return { error: "network_error", message: error.message };
     }
   };
 
