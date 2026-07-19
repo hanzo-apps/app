@@ -297,6 +297,15 @@
   }
 }
 
+/* Landing — visible keyboard focus (keyboard-only via :focus-visible) on every
+   interactive element, tuned to the monochrome dark ground. Pointer focus stays
+   quiet (the composer's own border cue handles it); the outline follows each
+   element's border-radius so pills, cards and buttons ring cleanly. */
+.landing-root :is(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.72);
+  outline-offset: 2px;
+}
+
 .background__noisy {
   @apply bg-blend-normal pointer-events-none opacity-90;
   background-size: 25ww auto;
