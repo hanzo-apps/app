@@ -5,6 +5,7 @@ import { Badge } from "@hanzo/ui";
 import { Shield, Lock, Users, Zap, Globe, HeadphonesIcon, ArrowRight, CheckCircle2, Building } from "lucide-react";
 import Header from "@/components/layout/header";
 import LogoWall from "@/components/landing/logo-wall";
+import SiteFooter from "@/components/landing/site-footer";
 
 export default function EnterprisePage() {
   const features = [
@@ -198,6 +199,8 @@ export default function EnterprisePage() {
           </Button>
         </div>
       </section>
+
+      <SiteFooter />
     </div>
   );
 }
