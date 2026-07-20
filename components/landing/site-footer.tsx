@@ -15,7 +15,7 @@ const columns: Col[] = [
   {
     title: "Product",
     links: [
-      { label: "Apps", href: "/apps" },
+      { label: "Apps", href: "/install" },
       { label: "Community", href: "/community" },
       { label: "Gallery", href: "/gallery" },
       { label: "Pricing", href: "/pricing" },
