@@ -1,10 +1,10 @@
 /**
- * OSW One-Shot - Built-in Skill
+ * One-Shot — Hanzo App built-in skill
  * Efficient complete site building in single sessions
  */
 
-export const OSW_ONE_SHOT_SKILL = String.raw`---
-name: osw-one-shot
+export const ONE_SHOT_SKILL = String.raw`---
+name: one-shot
 description: Read when building landing pages, page layouts, or complete sites. Covers execution order, Handlebars components, CDN resources, and efficient page structure.
 ---
 
