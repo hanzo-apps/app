@@ -6,7 +6,7 @@
 // invented metrics. CTA reuses the canonical signup funnel (login signup hint →
 // /dev), the same pattern as components/layout/header.tsx getStarted().
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Check, ArrowRight } from "lucide-react";
@@ -87,13 +87,38 @@ export default function PricingPage() {
     analytics.capture(EVENTS.PRICING_VIEWED);
   }, [analytics]);
 
-  // Reuse the canonical funnel: authenticated users manage/upgrade their plan in
-  // billing; everyone else lands on the IAM registration (signup hint) and drops
-  // into the builder afterward — identical to header.tsx getStarted().
-  const choosePlan = (planId: string) => {
+  const [checkingOut, setCheckingOut] = useState<string | null>(null);
+
+  // Turn a plan choice into a real subscription checkout. A signed-out visitor goes
+  // through the canonical IAM signup funnel first (header.tsx getStarted()). A
+  // signed-in user gets a Hanzo Commerce checkout session for that plan and is sent
+  // straight to it — no more pricing↔billing ping-pong. If the plan isn't purchasable
+  // yet (no SKU provisioned, or Commerce unconfigured), fall back to /billing rather
+  // than dead-end, so the CTA always does something honest.
+  const choosePlan = async (planId: string) => {
     analytics.capture(EVENTS.PLAN_CLICKED, { plan: planId });
-    if (isAuthenticated) router.push("/billing");
-    else login("/dev", { signup: true });
+    if (!isAuthenticated) {
+      login("/dev", { signup: true });
+      return;
+    }
+    setCheckingOut(planId);
+    try {
+      const res = await fetch("/api/commerce/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: planId, billing: "monthly" }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data?.url) {
+        window.location.href = data.url as string; // hosted Commerce checkout
+        return;
+      }
+      router.push("/billing"); // plan not purchasable yet — manage/credits there
+    } catch {
+      router.push("/billing");
+    } finally {
+      setCheckingOut(null);
+    }
   };
 
   return (
@@ -171,14 +196,19 @@ export default function PricingPage() {
 
                   <button
                     onClick={() => choosePlan(plan.id)}
-                    className={`mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium transition-all ${
+                    disabled={checkingOut !== null}
+                    className={`mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium transition-all disabled:opacity-60 ${
                       plan.highlighted
                         ? "bg-white text-black hover:bg-white/90"
                         : "border border-white/15 bg-white/[0.02] text-white hover:border-white/30 hover:bg-white/[0.05]"
                     }`}
                   >
-                    {isAuthenticated ? "Choose plan" : "Get started"}
-                    <ArrowRight className="h-4 w-4" />
+                    {checkingOut === plan.id
+                      ? "Starting checkout…"
+                      : isAuthenticated
+                        ? "Choose plan"
+                        : "Get started"}
+                    {checkingOut === plan.id ? null : <ArrowRight className="h-4 w-4" />}
                   </button>
 
                   <ul className="mt-7 space-y-3.5 border-t border-white/[0.06] pt-6">
