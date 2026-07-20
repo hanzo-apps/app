@@ -1,3 +1,5 @@
+"use client";
+
 // Why Hanzo — the competitive-advantage matrix.
 //
 // A single conversion centerpiece: ten buyer criteria across Hanzo and the
@@ -14,6 +16,7 @@
 // Tone → color follows the site's semantic rule (green = advantage, amber =
 // caveat, red = weakness); "—" = not applicable to that tool.
 
+import { useRef } from "react";
 import Reveal from "./reveal";
 
 type Tone = "good" | "mid" | "bad" | "na";
@@ -54,16 +57,16 @@ const ROWS: Row[] = [
     name: "Hanzo",
     hanzo: true,
     cells: [
-      g("None", "No hidden fees"),
-      g("Open source", "You own your code"),
-      g("Fast", "Optimized output"),
-      g("Unlimited", "Full-code, no ceilings"),
-      g("Best", "Highest accuracy"),
-      g("Built to scale", "Complex projects welcome"),
-      g("Secure", "Privacy-first, self-hosted option"),
-      g("Low", "Minimal upkeep"),
-      g("1M+ tokens", "1M+ token context window"),
-      g("Production-ready", "Slick, modern output"),
+      g("$0 hidden", "Transparent usage pricing — no surprise fees"),
+      g("Zero lock-in", "Open source — you own 100% of the code"),
+      g("Blazing fast", "Hand-optimized, production-grade output"),
+      g("Unlimited", "Real, editable code — no ceilings"),
+      g("Best-in-class", "Frontier models, highest accuracy"),
+      g("Built to scale", "Prototype to production, no rewrite"),
+      g("Private by default", "Privacy-first — self-host or our cloud"),
+      g("Near-zero", "We keep it running; you just build"),
+      g("1M+ tokens", "Whole-codebase context — never forgets"),
+      g("Ships polished", "Slick, modern, production-ready UI"),
     ],
   },
   {
@@ -267,6 +270,13 @@ function Dot({ tone }: { tone: Tone }) {
 }
 
 export default function Comparison() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  // Page the criteria columns; the pinned Company column stays put.
+  const slide = (dir: 1 | -1) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * Math.max(340, el.clientWidth * 0.8), behavior: "smooth" });
+  };
   return (
     <section className="relative border-t border-white/[0.06] px-4 py-20 md:px-8 md:py-28">
       <div className="mx-auto max-w-6xl">
@@ -303,85 +313,114 @@ export default function Comparison() {
           </span>
         </Reveal>
 
-        {/* ── Desktop / tablet-wide: the matrix ─────────────────── */}
-        <Reveal
-          delay={80}
-          className="mt-10 hidden lg:block"
-        >
-          <div className="-mx-4 overflow-x-auto px-4">
-            <table className="w-full min-w-[960px] border-separate border-spacing-0 text-left">
-              <thead>
-                <tr>
-                  <th className="sticky left-0 z-10 bg-black pb-4 pr-4 align-bottom" />
-                  {COLS.map((c) => (
-                    <th
-                      key={c.short}
-                      title={c.full}
-                      className="px-2.5 pb-4 align-bottom font-mono text-[10px] font-normal uppercase leading-tight tracking-[0.1em] text-white/40"
-                    >
-                      {c.short}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {ROWS.map((r) => (
-                  <tr
-                    key={r.name}
-                    className={
-                      r.hanzo
-                        ? "group"
-                        : "group transition-colors hover:bg-white/[0.015]"
-                    }
-                  >
-                    <th
-                      scope="row"
-                      className={`sticky left-0 z-10 whitespace-nowrap rounded-l-xl py-3 pl-4 pr-5 text-left align-middle font-medium ${
-                        r.hanzo
-                          ? "bg-white/[0.06] text-white"
-                          : "bg-black text-white/80"
-                      }`}
-                    >
-                      <span className="flex items-center gap-2">
-                        {r.name}
-                        {r.hanzo && (
-                          <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-emerald-300">
-                            Best
+        {/* ── Desktop / tablet-wide: sliding matrix ─────────────── */}
+        <div className="mt-10 hidden lg:block">
+          <Reveal delay={80}>
+            <div className="mb-3 flex items-center justify-between gap-4">
+              <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-white/40">
+                Slide across all {COLS.length} criteria →
+              </p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => slide(-1)}
+                  aria-label="Previous criteria"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/[0.03] text-white/70 transition-colors hover:border-white/30 hover:text-white"
+                >
+                  <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden>
+                    <path d="M10 4L6 8l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => slide(1)}
+                  aria-label="Next criteria"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/[0.03] text-white/70 transition-colors hover:border-white/30 hover:text-white"
+                >
+                  <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden>
+                    <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div className="relative">
+              {/* right edge fade — signals there's more to slide to */}
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-16 bg-gradient-to-l from-black to-transparent" />
+
+              <div
+                ref={scrollRef}
+                className="snap-x overflow-x-auto scroll-smooth scroll-pl-[188px] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              >
+                <table className="border-separate border-spacing-0 text-left">
+                  <thead>
+                    <tr>
+                      <th className="sticky left-0 z-10 w-[188px] min-w-[188px] bg-black pb-4 pr-4 align-bottom" />
+                      {COLS.map((c) => (
+                        <th
+                          key={c.short}
+                          className="w-[208px] min-w-[208px] snap-start px-4 pb-4 align-bottom font-mono text-[10px] font-normal uppercase leading-tight tracking-[0.1em] text-white/45"
+                        >
+                          {c.full}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {ROWS.map((r) => (
+                      <tr key={r.name} className="group">
+                        <th
+                          scope="row"
+                          className={`sticky left-0 z-10 w-[188px] min-w-[188px] whitespace-nowrap py-3 pl-1 pr-5 text-left align-top font-medium ${
+                            r.hanzo ? "bg-[#0e0f11] text-white" : "bg-black text-white/80"
+                          }`}
+                        >
+                          <span className="flex items-center gap-2">
+                            {r.name}
+                            {r.hanzo && (
+                              <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-emerald-300">
+                                Best
+                              </span>
+                            )}
                           </span>
-                        )}
-                      </span>
-                      {r.note && (
-                        <span className="mt-0.5 block font-mono text-[10px] font-normal text-white/30">
-                          {r.note}
-                        </span>
-                      )}
-                    </th>
-                    {r.cells.map((cell, ci) => (
-                      <td
-                        key={ci}
-                        title={cell.d ? `${cell.v} — ${cell.d}` : cell.v}
-                        className={`px-2.5 py-3 align-middle ${
-                          r.hanzo ? "bg-white/[0.06]" : ""
-                        } ${ci === r.cells.length - 1 && r.hanzo ? "rounded-r-xl" : ""}`}
-                      >
-                        <span className="flex items-center gap-2">
-                          <Dot tone={r.hanzo ? "good" : cell.t} />
-                          <span
-                            className={`text-[13px] leading-tight ${
-                              r.hanzo ? "text-white" : TEXT[cell.t]
+                          {r.note && (
+                            <span className="mt-0.5 block font-mono text-[10px] font-normal text-white/30">
+                              {r.note}
+                            </span>
+                          )}
+                        </th>
+                        {r.cells.map((cell, ci) => (
+                          <td
+                            key={ci}
+                            className={`w-[208px] min-w-[208px] snap-start px-4 py-3 align-top ${
+                              r.hanzo ? "bg-white/[0.05]" : "group-hover:bg-white/[0.015]"
                             }`}
                           >
-                            {cell.v}
-                          </span>
-                        </span>
-                      </td>
+                            <div className="flex items-start gap-2">
+                              <span className="mt-1">
+                                <Dot tone={r.hanzo ? "good" : cell.t} />
+                              </span>
+                              <div className="min-w-0">
+                                <div className={`text-[13px] leading-snug ${r.hanzo ? "text-white" : TEXT[cell.t]}`}>
+                                  {cell.v}
+                                </div>
+                                {cell.d && (
+                                  <div className="mt-0.5 text-[11px] leading-snug text-white/40">
+                                    {cell.d}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </td>
+                        ))}
+                      </tr>
                     ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Reveal>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </Reveal>
+        </div>
 
         {/* ── Mobile: Hanzo card (full) + collapsible competitors ── */}
         <div className="mt-10 space-y-3 lg:hidden">
