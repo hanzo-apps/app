@@ -1,10 +1,13 @@
 'use client';
 
 /**
- * OrgSwitcher + OrgGate — MIRRORED from console2 (`src/components/OrgSwitcher.tsx`
- * + `OrgGate.tsx` + `OrgOnboarding.tsx`), identical API + behavior, rendered with
- * hanzo.app's `@hanzo/ui` primitives instead of `@hanzo/gui` (the two apps use
- * different UI kits; the LOGIC — `lib/org-scope.ts` — is shared verbatim).
+ * OrgSwitcher + OrgGate — this app's render of the shared org-switcher contract.
+ * The CANONICAL component is `OrgSwitcher` in `@hanzo/ui@8` (`@hanzo/gui`-based,
+ * hoisted per hanzoai/ui#36); this stays a LOCAL Tailwind/Radix render (recorded
+ * debt) because `@hanzo/ui` here is aliased to `@hanzo/ui-shadcn` and the
+ * identity bar needs `direction="up"` + the personal badge/settings affordances
+ * the hoisted popover doesn't carry. The LOGIC (`lib/org-scope.ts`) matches the
+ * hoisted `orgScope` contract.
  *
  * OrgSwitcher: shows the org the builder is scoped to, filters the orgs the user
  * can see, switches IN PLACE (`switchOrg` persists + reloads so every module
@@ -16,8 +19,6 @@
  * BEFORE building — a project is never created org-less; and a normal user is
  * hard-pinned to their home org (a stale switched scope is reset), matching the
  * server which pins them to their bearer owner.
- *
- * TODO: hoist to @hanzo/ui (task #36) — share one <OrgSwitcher> across apps.
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
