@@ -7,7 +7,7 @@ import type { ProjectTemplate } from '../project-templates';
  *   - Base   → persistent data, read/written through the /api/base proxy with
  *              the signed-in user's Hanzo IAM token (per-user records).
  *   - IAM    → the user is already authenticated by Hanzo; /api/me reflects them.
- *   - LLM    → the `ask` edge function calls api.hanzo.ai (51 models) using a
+ *   - LLM    → the `ask` edge function calls api.hanzo.ai (400+ models) using a
  *              HANZO_API_KEY secret.
  *
  * The frontend is plain HTML/JS so it runs in any runtime; the cloud wiring is

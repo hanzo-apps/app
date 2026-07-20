@@ -29,7 +29,7 @@ const FOUNDATION = [
   {
     icon: Network,
     title: "One gateway",
-    body: "@hanzo/ai routes every surface to 100+ models through a single endpoint and billing account.",
+    body: "@hanzo/ai routes every surface to 400+ models through a single endpoint and billing account.",
   },
   {
     icon: KeyRound,

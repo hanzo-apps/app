@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AppEditor } from "@/components/editor";
+import { builderLink, fetchProject } from "@/lib/api/projects";
 import { DevOnboarding } from "@/components/dev-onboarding";
 import { TemplateLoader } from "@/components/template-loader";
 import { parseGitUrl } from "@/lib/git/url";
@@ -67,21 +68,36 @@ export default function DevPage() {
     setInitialPrompt(prompt);
   }, [searchParams]);
 
-  // Open an existing org-scoped project by slug: validate it exists in the
-  // shared store, prefill its name, and stash the slug so a re-publish updates
-  // the SAME record (not a new one). Honest: if the slug is unknown we still open
-  // the builder (a new project keyed by that slug).
+  // Open an existing org-scoped project by slug. The query form is LEGACY: once
+  // the record resolves (it carries the org) we canonicalize to the ONE nice URL
+  // — /dev/<org>/<slug> — which loads the deployed site + history. Honest: if
+  // the slug is unknown we still open the builder here (a new project keyed by
+  // that slug), exactly as before.
+  const router = useRouter();
+  const [projectResolving, setProjectResolving] = useState(!!projectSlug);
   useEffect(() => {
     if (!projectSlug) return;
+    let alive = true;
     (window as any).__projectSlug = projectSlug;
     setShowOnboarding(false);
-    fetch(`/v1/projects/${encodeURIComponent(projectSlug)}`, { credentials: "include" })
-      .then((r) => (r.ok ? r.json() : null))
+    fetchProject(projectSlug)
       .then((p) => {
+        if (!alive) return;
         if (p?.name) (window as any).__projectName = p.name;
+        if (p?.org) {
+          // Canonical nice URL — the org-scoped page takes over from the splash.
+          router.replace(builderLink(p.slug || projectSlug, p.org));
+          return;
+        }
+        setProjectResolving(false);
       })
-      .catch(() => {});
-  }, [projectSlug]);
+      .catch(() => {
+        if (alive) setProjectResolving(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [projectSlug, router]);
 
   // Load the staged drag-and-drop project (once) and seed the editor with its
   // files. Cleared after read so the import is one-shot; a missing/empty stage
@@ -314,6 +330,17 @@ export default function DevPage() {
         initialPrompt={initialPrompt}
         onComplete={handleOnboardingComplete}
       />
+    );
+  }
+
+  // Legacy ?project= deep link: hold a splash while the record resolves so the
+  // canonical /dev/<org>/<slug> page (site + history loaded) takes over without
+  // an empty editor flashing first.
+  if (projectSlug && projectResolving) {
+    return (
+      <div className="h-[100dvh] bg-neutral-950 flex items-center justify-center text-neutral-400 text-sm">
+        Opening {projectSlug}…
+      </div>
     );
   }
 

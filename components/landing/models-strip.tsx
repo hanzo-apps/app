@@ -1,4 +1,4 @@
-// "One API, 100+ models" — the real Hanzo LLM Gateway. Provider logos are the
+// "One API, 400+ models" — the real Hanzo LLM Gateway. Provider logos are the
 // actual model providers the gateway routes to (Zen models are Hanzo's own).
 // Rendered monochrome-white on true-black via CSS filter. The endpoint shown
 // is real (api.hanzo.ai/v1, OpenAI-compatible); the model value is illustrative.
@@ -29,12 +29,13 @@ export default function ModelsStrip() {
             Hanzo LLM Gateway
           </p>
           <h2 className="mt-4 text-3xl font-medium tracking-tight md:text-4xl">
-            One API. 100+ models.
+            One API. 400+ models.
           </h2>
           <p className="mt-4 max-w-md text-base text-white/55 md:text-lg">
             Your app calls any frontier model — Hanzo&apos;s own Zen family plus
-            Anthropic, OpenAI, Google, Mistral and more — through a single
-            OpenAI-compatible endpoint. Swap models with one string.
+            Anthropic, OpenAI, Google, Mistral and more — through OpenAI-
+            and Anthropic-compatible endpoints. Swap models with one string,
+            and connect MCP tool servers the gateway can call mid-completion.
           </p>
 
           <a

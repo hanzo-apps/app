@@ -20,6 +20,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import {
+  BASE_SYSTEM_PROMPT,
   DIVIDER,
   FOLLOW_UP_SYSTEM_PROMPT,
   INITIAL_SYSTEM_PROMPT,
@@ -108,7 +109,7 @@ export async function POST(request: NextRequest) {
   if (!token) return unauthorized();
 
   const body = await request.json();
-  const { prompt, model, redesignMarkdown, previousPrompts, pages } = body;
+  const { prompt, model, redesignMarkdown, previousPrompts, pages, base } = body;
 
   if (!prompt && !redesignMarkdown) {
     return NextResponse.json(
@@ -120,7 +121,10 @@ export async function POST(request: NextRequest) {
   const selectedModel = builderModel(model);
 
   const messages: ChatMessage[] = [
-    { role: "system", content: INITIAL_SYSTEM_PROMPT },
+    {
+      role: "system",
+      content: base ? INITIAL_SYSTEM_PROMPT + BASE_SYSTEM_PROMPT : INITIAL_SYSTEM_PROMPT,
+    },
     ...(pages?.length > 1
       ? [
           {
@@ -359,6 +363,7 @@ export async function PUT(request: NextRequest) {
     model,
     pages,
     files,
+    base,
   } = body;
 
   if (!prompt || !pages || pages.length === 0) {
@@ -371,7 +376,10 @@ export async function PUT(request: NextRequest) {
   const selectedModel = builderModel(model);
 
   const messages: ChatMessage[] = [
-    { role: "system", content: FOLLOW_UP_SYSTEM_PROMPT },
+    {
+      role: "system",
+      content: base ? FOLLOW_UP_SYSTEM_PROMPT + BASE_SYSTEM_PROMPT : FOLLOW_UP_SYSTEM_PROMPT,
+    },
     {
       role: "user",
       content: previousPrompts

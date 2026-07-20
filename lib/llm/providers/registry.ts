@@ -159,7 +159,7 @@ export const providers: Record<ProviderId, ProviderConfig> = {
   hanzo: {
     id: 'hanzo',
     name: 'Hanzo AI',
-    description: 'Unified gateway to 100+ models with Hanzo Cloud agentic coding, MCP tools, memory, and RAG',
+    description: 'Unified gateway to 400+ models with Hanzo Cloud agentic coding, MCP tools, memory, and RAG',
     apiKeyRequired: true,
     apiKeyPlaceholder: 'sk-hanzo-...',
     apiKeyHelpUrl: 'https://hanzo.ai/settings/api-keys',
