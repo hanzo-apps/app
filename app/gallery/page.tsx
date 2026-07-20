@@ -64,8 +64,8 @@ export default function TemplateGallery() {
   }, [templates, selectedCategory, searchQuery]);
 
   const startFromPrompt = () => {
-    if (!prompt.trim()) return;
-    router.push(`/dev?prompt=${encodeURIComponent(prompt.trim())}`);
+    const q = prompt.trim();
+    router.push(q ? `/dev?prompt=${encodeURIComponent(q)}` : "/dev");
   };
 
   return (
@@ -104,7 +104,6 @@ export default function TemplateGallery() {
             <Button
               className="h-12 gap-2 bg-gradient-to-r from-neutral-700 to-neutral-900 hover:from-neutral-900 hover:to-neutral-700"
               onClick={startFromPrompt}
-              disabled={!prompt.trim()}
             >
               <Sparkles className="w-4 h-4" />
               Generate with AI
@@ -186,7 +185,7 @@ export default function TemplateGallery() {
                 <p className="text-xs text-neutral-500 mt-1 line-clamp-2 flex-1">
                   {t.description || t.useCase || `${t.framework} template`}
                 </p>
-                <p className="text-[11px] text-neutral-600 mt-2">{t.framework}</p>
+                <p className="text-[11px] text-neutral-400 mt-2">{t.framework}</p>
 
                 <div className="flex gap-2 mt-3">
                   <a href={forkHref(t)} className="flex-1">

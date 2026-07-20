@@ -80,9 +80,17 @@ export default function ProjectDevPage() {
       (window as any).__projectName = name;
       if (site.pages.length > 0) {
         setPages(site.pages);
-        (window as any).__assistantGreeting =
-          `${name} is loaded — your live site is in the preview, and its history is in the clock icon up top. ` +
-          `Tell me what to change and I'll build it.`;
+        // Only promise the clock-icon history when a durable source backs it.
+        // Working edits seed [] and VFS checkpoints are per-device, so on a
+        // fresh/cross-device open the panel is empty UNLESS the project has a
+        // git repo (its commits reconstruct the timeline). Otherwise omit the
+        // clause rather than point at an empty panel.
+        const hasHistory = !!record?.repo?.url;
+        (window as any).__assistantGreeting = hasHistory
+          ? `${name} is loaded — your live site is in the preview, and its history is in the clock icon up top. ` +
+            `Tell me what to change and I'll build it.`
+          : `${name} is loaded — your live site is in the preview. ` +
+            `Tell me what to change and I'll build it.`;
       }
       setPhase("open");
     })();

@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { Button } from "@hanzo/ui";
-import { HanzoLogo } from "@/components/HanzoLogo";
 import { Badge } from "@hanzo/ui";
-import { BookOpen, Video, FileCode, Users, Trophy, Clock, ArrowRight, PlayCircle, Star } from "lucide-react";
+import { BookOpen, Video, FileCode, Users, Trophy, Clock, ArrowRight, PlayCircle } from "lucide-react";
 import { useState } from "react";
+import Header from "@/components/layout/header";
 
 export default function LearnPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -21,11 +21,7 @@ export default function LearnPage() {
       level: "Beginner",
       category: "Getting Started",
       lessons: 12,
-      students: 5420,
-      rating: 4.9,
-      featured: true,
-      instructor: "Sarah Chen",
-      instructorAvatar: "👩‍💻"
+      featured: true
     },
     {
       id: "2",
@@ -34,11 +30,7 @@ export default function LearnPage() {
       duration: "4 hours",
       level: "Advanced",
       category: "AI & ML",
-      lessons: 24,
-      students: 2890,
-      rating: 4.8,
-      instructor: "Dr. Alex Kim",
-      instructorAvatar: "👨‍🔬"
+      lessons: 24
     },
     {
       id: "3",
@@ -47,11 +39,7 @@ export default function LearnPage() {
       duration: "3 hours",
       level: "Intermediate",
       category: "Best Practices",
-      lessons: 18,
-      students: 3567,
-      rating: 4.9,
-      instructor: "Mike Johnson",
-      instructorAvatar: "🧑‍💼"
+      lessons: 18
     },
     {
       id: "4",
@@ -60,11 +48,7 @@ export default function LearnPage() {
       duration: "2.5 hours",
       level: "Intermediate",
       category: "Tutorials",
-      lessons: 15,
-      students: 4123,
-      rating: 4.7,
-      instructor: "Emma Davis",
-      instructorAvatar: "👩‍🎨"
+      lessons: 15
     },
     {
       id: "5",
@@ -73,11 +57,7 @@ export default function LearnPage() {
       duration: "2 hours",
       level: "Advanced",
       category: "Advanced",
-      lessons: 10,
-      students: 1890,
-      rating: 4.8,
-      instructor: "Tom Wilson",
-      instructorAvatar: "🚀"
+      lessons: 10
     },
     {
       id: "6",
@@ -87,11 +67,7 @@ export default function LearnPage() {
       level: "Intermediate",
       category: "Best Practices",
       lessons: 8,
-      students: 2456,
-      rating: 4.9,
-      featured: true,
-      instructor: "Lisa Park",
-      instructorAvatar: "🔐"
+      featured: true
     }
   ];
 
@@ -125,45 +101,23 @@ export default function LearnPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
-      {/* Navigation */}
-      <nav className="border-b border-white/10 sticky top-0 bg-[#0a0a0a]/80 backdrop-blur-xl z-50">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <Link href="/" className="flex items-center gap-2.5">
-              <HanzoLogo className="w-8 h-8 text-white" />
-              <span className="text-xl font-medium">Hanzo</span>
-            </Link>
-            <div className="hidden md:flex items-center gap-6">
-              <Link href="/community" className="text-white/70 hover:text-white">Community</Link>
-              <Link href="/pricing" className="text-white/70 hover:text-white">Pricing</Link>
-              <Link href="/enterprise" className="text-white/70 hover:text-white">Enterprise</Link>
-              <Link href="/learn" className="text-white font-medium">Learn</Link>
-            </div>
-          </div>
-          <Button className="bg-white text-black hover:bg-white/90">
-            Get Started
-          </Button>
-        </div>
-      </nav>
+      <Header />
 
       {/* Hero Section */}
       <section className="px-4 md:px-8 py-16 md:py-24 text-center">
         <div className="max-w-4xl mx-auto">
-          <Badge className="mb-4 bg-gradient-to-r from-violet-600 to-purple-600 text-white border-0">
+          <Badge className="mb-4 bg-white text-black border-0">
             <BookOpen className="w-4 h-4 mr-2" />
             Hanzo Academy
           </Badge>
           <h1 className="text-4xl md:text-6xl font-medium mb-6">
-            Learn to build with{" "}
-            <span className="bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
-              AI superpowers
-            </span>
+            Learn to build with AI superpowers
           </h1>
           <p className="text-xl text-white/60 mb-8 max-w-2xl mx-auto">
             Free courses, tutorials, and resources to help you master AI development
           </p>
           <div className="flex items-center gap-4 justify-center">
-            <Button size="lg" className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-400 hover:to-purple-400">
+            <Button size="lg" className="bg-white text-black hover:bg-white/90">
               <PlayCircle className="mr-2 w-5 h-5" />
               Start Learning
             </Button>
@@ -231,7 +185,7 @@ export default function LearnPage() {
           {/* Course Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCourses.map(course => (
-              <div key={course.id} className="bg-[#1a1a1a] rounded-2xl border border-white/10 hover:border-violet-500/50 transition-all overflow-hidden group cursor-pointer">
+              <div key={course.id} className="bg-[#1a1a1a] rounded-2xl border border-white/10 overflow-hidden">
                 {course.featured && (
                   <div className="bg-gradient-to-r from-violet-500 to-purple-500 text-white text-xs px-3 py-1.5 flex items-center gap-1">
                     <Trophy className="w-3 h-3" />
@@ -239,33 +193,18 @@ export default function LearnPage() {
                   </div>
                 )}
                 <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <Badge className={`
-                      ${course.level === "Beginner" ? "bg-green-500/20 text-green-400 border-green-500/30" :
-                        course.level === "Intermediate" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" :
-                        "bg-red-500/20 text-red-400 border-red-500/30"}
-                    `}>
+                  <div className="mb-4">
+                    <Badge className="bg-white/5 text-white/70 border-white/10">
                       {course.level}
                     </Badge>
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                      <span className="text-sm text-white/60">{course.rating}</span>
-                    </div>
                   </div>
 
-                  <h3 className="font-medium text-lg mb-2 group-hover:text-violet-400 transition-colors">
+                  <h3 className="font-medium text-lg mb-2">
                     {course.title}
                   </h3>
                   <p className="text-sm text-white/60 mb-4">
                     {course.description}
                   </p>
-
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center">
-                      <span className="text-xs">{course.instructorAvatar}</span>
-                    </div>
-                    <span className="text-sm text-white/50">{course.instructor}</span>
-                  </div>
 
                   <div className="flex items-center justify-between text-sm text-white/40 pt-4 border-t border-white/10">
                     <span className="flex items-center gap-1">
@@ -275,10 +214,6 @@ export default function LearnPage() {
                     <span className="flex items-center gap-1">
                       <Clock className="w-4 h-4" />
                       {course.duration}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Users className="w-4 h-4" />
-                      {course.students.toLocaleString()}
                     </span>
                   </div>
                 </div>

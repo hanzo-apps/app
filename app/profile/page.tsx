@@ -51,6 +51,12 @@ export default function ProfilePage() {
     );
   }
 
+  // @handle from username (slugified — usernames may contain spaces) or email local-part
+  const handle = (user?.username || user?.email?.split('@')[0] || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
   return (
     <div className="min-h-screen bg-black">
       {/* Header */}
@@ -117,14 +123,14 @@ export default function ProfilePage() {
                 ) : (
                   <h2 className="text-3xl font-medium text-white mb-2">{user?.fullname}</h2>
                 )}
-                <p className="text-neutral-400">@{user?.username || user?.email?.split('@')[0]}</p>
+                <p className="text-neutral-400">@{handle}</p>
               </div>
             </div>
           </div>
 
           {/* Profile Content */}
           <div className="bg-neutral-900 rounded-b-lg border border-neutral-800 p-6">
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Basic Info */}
               <div className="space-y-4">
                 <h3 className="text-lg font-medium text-white mb-4">Basic Information</h3>
@@ -155,7 +161,7 @@ export default function ProfilePage() {
                       className="w-full bg-neutral-800 text-white border border-neutral-700 rounded-lg px-3 py-2"
                     />
                   ) : (
-                    <p className="text-white">{user?.email}</p>
+                    <p className="text-white break-all">{user?.email}</p>
                   )}
                 </div>
 
@@ -166,11 +172,11 @@ export default function ProfilePage() {
                   {isEditing ? (
                     <input
                       type="text"
-                      defaultValue={user?.username || user?.email?.split('@')[0]}
+                      defaultValue={handle}
                       className="w-full bg-neutral-800 text-white border border-neutral-700 rounded-lg px-3 py-2"
                     />
                   ) : (
-                    <p className="text-white">@{user?.username || user?.email?.split('@')[0]}</p>
+                    <p className="text-white">@{handle}</p>
                   )}
                 </div>
               </div>
@@ -243,7 +249,7 @@ export default function ProfilePage() {
             {/* Stats */}
             <div className="mt-8 pt-6 border-t border-neutral-800">
               <h3 className="text-lg font-medium text-white mb-4">Statistics</h3>
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-neutral-800/50 rounded-lg p-4 text-center">
                   <p className="text-2xl font-medium text-purple-400">12</p>
                   <p className="text-sm text-neutral-400">Projects</p>
