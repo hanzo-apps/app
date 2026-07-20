@@ -17,6 +17,19 @@ import { skillsService } from './skills';
 import { StorageAdapter } from './adapters/types';
 import { createClientAdapter } from './adapters/factory';
 import { IndexedDBAdapter } from './adapters/indexeddb-adapter';
+import { replaceBlobUrlsWithPaths } from '@/lib/publishing/rewrite-asset-urls';
+import { stripPreviewScripts } from '@/lib/preview/strip-preview-scripts';
+import { arrayBufferToBase64, base64ToArrayBuffer } from './binary-encoding';
+
+/**
+ * A VirtualFile prepared for JSON export. Binary content is base64-encoded and
+ * flagged with `encoding: 'base64'`; text files keep their string content and
+ * omit the flag.
+ */
+export interface ExportedFile extends Omit<VirtualFile, 'content'> {
+  content: string | ArrayBuffer;
+  encoding?: 'base64';
+}
 
 export class VirtualFileSystem {
   private adapter: StorageAdapter;
@@ -1754,12 +1767,21 @@ export class VirtualFileSystem {
     };
   }
 
-  async exportProject(projectId: string): Promise<{ project: Project; files: VirtualFile[] }> {
+  async exportProject(projectId: string): Promise<{ project: Project; files: ExportedFile[] }> {
     this.ensureInitialized();
-    
+
     const project = await this.getProject(projectId);
-    const files = await this.adapter.listFiles(projectId);
-    
+    const rawFiles = await this.adapter.listFiles(projectId);
+
+    // Encode binary content (ArrayBuffer) as base64 so it survives JSON.stringify,
+    // which would otherwise turn an ArrayBuffer into `{}` and drop the file.
+    const files: ExportedFile[] = rawFiles.map((file) => {
+      if (file.content instanceof ArrayBuffer) {
+        return { ...file, content: arrayBufferToBase64(file.content), encoding: 'base64' as const };
+      }
+      return { ...file, content: file.content };
+    });
+
     return { project, files };
   }
 
@@ -1773,17 +1795,37 @@ export class VirtualFileSystem {
       const project = await this.getProject(projectId);
       const server = new VirtualServer(this, projectId, undefined, undefined, undefined, project?.settings?.runtime);
       const compiledProject = await server.compileProject();
-      
+
+      // compileProject() rewrites internal asset references into instance-local
+      // blob: URLs for the live preview. Build a reverse map so the export can
+      // restore the real root-relative paths — otherwise the exported HTML/CSS
+      // points at blob URLs from the machine that ran the export and fails to
+      // load anywhere else.
+      const blobUrlToPath = new Map<string, string>();
+      for (const [filePath, blobUrl] of compiledProject.blobUrls) {
+        blobUrlToPath.set(blobUrl, filePath);
+      }
+
       // Add compiled files to ZIP, filtering out template-related files
       for (const file of compiledProject.files) {
         const zipPath = file.path.startsWith('/') ? file.path.slice(1) : file.path;
-        
+
         // Skip template files, data files, and template directories
         if (this.shouldExcludeFromExport(file.path)) {
           continue;
         }
 
-        zip.file(zipPath, file.content);
+        let content = file.content;
+        if (typeof content === 'string') {
+          content = replaceBlobUrlsWithPaths(content, blobUrlToPath);
+          // Strip the preview-only instrumentation (VFS Asset Interceptor) so the
+          // exported HTML doesn't reference this machine's blob URLs.
+          if (file.path.endsWith('.html')) {
+            content = stripPreviewScripts(content);
+          }
+        }
+
+        zip.file(zipPath, content);
       }
 
       // For bundled projects: also include raw source files (.tsx/.ts/.jsx)
@@ -1885,7 +1927,14 @@ export class VirtualFileSystem {
       newName,
       originalProject.description
     );
-    
+
+    // Carry over project settings (runtime, default template, etc.) so the copy
+    // isn't silently reset to the legacy default.
+    if (originalProject.settings && Object.keys(originalProject.settings).length > 0) {
+      newProject.settings = { ...originalProject.settings };
+      await this.updateProject(newProject);
+    }
+
     await saveManager.runWithSuppressedDirty(newProject.id, async () => {
       for (const file of files) {
         await this.createFile(newProject.id, file.path, file.content);
@@ -1895,14 +1944,26 @@ export class VirtualFileSystem {
     return newProject;
   }
 
-  async importProject(data: { project: Project; files: VirtualFile[] }): Promise<Project> {
+  async importProject(data: { project: Project; files: ExportedFile[] }): Promise<Project> {
     this.ensureInitialized();
-    
+
     const newProject = await this.createProject(data.project.name, data.project.description);
-    
+
+    // Preserve project settings (runtime, default template, etc.) from the export
+    // so the imported project isn't reset to the legacy default.
+    if (data.project.settings && Object.keys(data.project.settings).length > 0) {
+      newProject.settings = { ...data.project.settings };
+      await this.updateProject(newProject);
+    }
+
     await saveManager.runWithSuppressedDirty(newProject.id, async () => {
       for (const file of data.files) {
-        await this.createFile(newProject.id, file.path, file.content as string);
+        // Restore base64-encoded binary content back to an ArrayBuffer; text
+        // files (and older exports without the flag) pass through as strings.
+        const content = file.encoding === 'base64' && typeof file.content === 'string'
+          ? base64ToArrayBuffer(file.content)
+          : (file.content as string);
+        await this.createFile(newProject.id, file.path, content);
       }
     });
 
