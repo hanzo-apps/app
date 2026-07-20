@@ -95,7 +95,7 @@ test.describe('Authentication Flow', () => {
 
     if (await logoutButton.count() > 0) {
       // Mock logout API
-      await page.route('**/api/auth/logout', route => {
+      await page.route('**/v1/auth/logout', route => {
         route.fulfill({
           status: 200,
           contentType: 'application/json',
