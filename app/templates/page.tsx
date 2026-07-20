@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { AppShell } from '@/components/app-shell';
 import { TemplatesView } from '@/components/views/templates-view';
+import { builderLink } from '@/lib/api/projects';
 
 /**
  * /templates — the deep-linkable Templates gallery. Mirrors the in-app sidebar
