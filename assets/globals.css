@@ -510,3 +510,15 @@ code, pre, kbd, samp, .font-mono, [class~="font-mono"] {
     animation: hanzoWordmarkCollapse 2.4s cubic-bezier(0.4, 0, 0.2, 1) 1.2s forwards;
   }
 }
+
+/* ── @hanzo/ui Tabs must stack List above Content ────────────────────────────
+   The Tabs root ships `data-[orientation=horizontal]:flex-col`, but that
+   arbitrary variant is never compiled (Tailwind v4 doesn't scan
+   node_modules/@hanzo/ui), so a horizontal tab set fell back to the base `flex`
+   (row) — laying the tab LIST beside the CONTENT and squishing content grids
+   (the dashboard project grid) into a narrow right-hand strip. Force the
+   shadcn/Radix convention directly via the data attributes — no Tailwind
+   compilation required, fixes every horizontal Tabs in one place. */
+[data-slot="tabs"][data-orientation="horizontal"] {
+  flex-direction: column;
+}
