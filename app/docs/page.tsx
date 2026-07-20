@@ -109,7 +109,7 @@ export default function DocsPage() {
 
       <main>
         {/* ── Hero ─────────────────────────────────────────────── */}
-        <section className="relative overflow-hidden px-4 py-20 text-center md:px-8 md:py-28">
+        <section className="relative overflow-hidden px-4 py-12 text-center sm:py-16 md:px-8 md:py-24">
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
             <div className="absolute left-1/2 top-[-30%] h-[420px] w-[720px] -translate-x-1/2 rounded-full bg-white/[0.05] blur-[130px]" />
           </div>
@@ -167,7 +167,7 @@ export default function DocsPage() {
         <section className="border-y border-white/[0.06] px-4 py-16 md:px-8 md:py-24">
           <div className="mx-auto max-w-6xl">
             <Reveal>
-              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">
+              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/50">
                 Quick start
               </p>
               <h2 className="mt-3 text-3xl font-medium tracking-tight md:text-4xl">
@@ -178,7 +178,7 @@ export default function DocsPage() {
               </p>
             </Reveal>
 
-            <div className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-3">
+            <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-3">
               {steps.map((s, i) => (
                 <Reveal key={s.n} delay={i * 80}>
                   <div className="flex h-full flex-col rounded-2xl border border-white/10 bg-white/[0.02] p-6">
@@ -200,7 +200,7 @@ export default function DocsPage() {
         <section className="px-4 py-16 md:px-8 md:py-24">
           <div className="mx-auto max-w-6xl">
             <Reveal>
-              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">
+              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/50">
                 Explore
               </p>
               <h2 className="mt-3 text-3xl font-medium tracking-tight md:text-4xl">
@@ -253,7 +253,7 @@ export default function DocsPage() {
         <section className="border-t border-white/[0.06] px-4 py-16 md:px-8 md:py-24">
           <div className="mx-auto grid max-w-6xl items-center gap-12 [&>*]:min-w-0 lg:grid-cols-2 lg:gap-16">
             <Reveal>
-              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">
+              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/50">
                 API
               </p>
               <h2 className="mt-3 text-3xl font-medium tracking-tight md:text-4xl">

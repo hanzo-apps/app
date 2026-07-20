@@ -8,6 +8,7 @@ import SpaceIcon from "@/assets/space.svg";
 import { Page } from "@/types";
 import { builderLink } from "@/lib/api/projects";
 import { baseEnabled } from "@/lib/base/flag";
+import { syncToGit } from "@/lib/api/git";
 import { currentOrg } from "@/lib/org-scope";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
@@ -107,6 +108,27 @@ export const DeployButtonContent = ({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ projectId: data.slug }),
         }).catch(() => {});
+      }
+
+      // Native git: commit + push the app's source to its Hanzo git repo
+      // (api.hanzo.ai/v1/git/<org>/<slug>.git — auto-created on first push, S3-
+      // backed). Every published app is versioned in Hanzo git, one commit per
+      // publish, with an honest message. Fire-and-forget — a git hiccup never
+      // fails the deploy (the site is already live). Reuses the ONE push path
+      // (/v1/git/sync → cloud client-less push) the "Push to Git" button uses.
+      if (data?.slug) {
+        syncToGit(
+          {
+            provider: "hanzo",
+            name: config.title.trim(),
+            slug: data.slug,
+            description: prompts?.[prompts.length - 1] || "",
+            message: prompts?.[prompts.length - 1] || "Publish",
+            private: true,
+            pages,
+          },
+          selectedOrg || undefined,
+        ).catch(() => {});
       }
 
       const liveUrl: string | undefined =

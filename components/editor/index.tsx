@@ -42,7 +42,7 @@ import { sendRewardSignal, getLastGenerationRequestId } from "@/lib/reward-signa
 import { SaveButton } from "./save-button";
 import { LoadProject } from "../my-projects/load-project";
 import { isTheSameHtml } from "@/lib/compare-html-diff";
-import { ListPages } from "./pages";
+import { FileTree } from "./file-tree";
 import { HistoryPanel } from "./history";
 import { RevisionDetails, type DetailsRev } from "./history/details";
 import { ShareModal } from "./share-modal";
@@ -440,8 +440,9 @@ export const AppEditor = ({
             {/* CODE view — the CodeMirror editor overlaid inside the card when the
                 header switches to Code. The left panel stays chat; code lives here. */}
             {currentTab === "code" && (
-              <div className="absolute inset-0 z-10 flex flex-col bg-neutral-950">
-                <ListPages
+              <div className="absolute inset-0 z-10 flex bg-neutral-950">
+                {/* File browser rail — see + navigate every project file. */}
+                <FileTree
                   pages={pages}
                   currentPage={currentPage}
                   onSelectPage={(path, newPath) => {
@@ -474,7 +475,7 @@ export const AppEditor = ({
                     setCurrentPage(`page-${pages.length + 1}.html`);
                   }}
                 />
-                <div className="relative flex-1 overflow-hidden">
+                <div className="relative min-w-0 flex-1 overflow-hidden">
                   <CopyIcon
                     className="size-4 absolute top-3 right-5 text-neutral-500 hover:text-neutral-300 z-20 cursor-pointer"
                     onClick={() => {

@@ -152,7 +152,7 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
         title="Active organization"
       >
         <OrgAvatar name={currentName} logo={currentLogo} />
-        <span className="hidden max-w-[10rem] truncate font-medium text-white sm:inline">{currentName}</span>
+        <span className="inline max-w-[7.5rem] truncate font-medium text-white">{currentName}</span>
         {isScopedAway() && <span className="rounded border border-white/20 px-1 text-[10px] text-white/60">scoped</span>}
         <ChevronsUpDown className="h-3.5 w-3.5 text-white/40" />
       </button>

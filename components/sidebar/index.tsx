@@ -6,6 +6,7 @@ import { getSyncOverviewStatus, SyncOverviewStatus } from '@/lib/vfs/auto-sync';
 import { Button } from '@/components/ui/button';
 import { HanzoLogo } from '@/components/HanzoLogo';
 import {
+  Activity,
   FolderOpen,
   Folder,
   FolderPlus,
@@ -89,6 +90,7 @@ const PROJECT_ITEMS: SidebarItem[] = [
 const SECONDARY_ITEMS: SidebarItem[] = [
   { id: 'deployments', label: 'Deployments', icon: Globe, route: '/admin/deployments', serverModeOnly: true },
   { id: 'skills', label: 'Skills', icon: GraduationCap, route: '/skills' },
+  { id: 'usage', label: 'Usage', icon: Activity, route: '/usage' },
   { id: 'docs', label: 'Docs', icon: BookOpen, route: '/docs' },
   { id: 'settings', label: 'Settings', icon: Settings, action: 'open-settings' },
   { id: 'tour', label: 'Guided Tour', icon: Info, action: 'start-tour' },
@@ -362,7 +364,7 @@ function SidebarContent({
           )}
 
           {/* Scrollable nav */}
-          <nav className="flex-1 space-y-0.5 overflow-y-auto p-2">
+          <nav className="flex-1 space-y-0.5 overflow-y-auto p-2 pb-4 [mask-image:linear-gradient(to_bottom,#000_calc(100%-1.5rem),transparent)]">
             {/* Primary */}
             {PRIMARY_ITEMS.map(renderNavButton)}
 

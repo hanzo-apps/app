@@ -15,11 +15,11 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("general");
 
   const tabs = [
-    { id: "general", label: "General", icon: <Palette className="w-4 h-4" /> },
-    { id: "api-keys", label: "API Keys", icon: <Key className="w-4 h-4" /> },
-    { id: "notifications", label: "Notifications", icon: <Bell className="w-4 h-4" /> },
-    { id: "security", label: "Security", icon: <Shield className="w-4 h-4" /> },
-    { id: "billing", label: "Billing", icon: <CreditCard className="w-4 h-4" /> },
+    { id: "general", label: "General", icon: <Palette className="w-4 h-4 shrink-0" /> },
+    { id: "api-keys", label: "API Keys", icon: <Key className="w-4 h-4 shrink-0" /> },
+    { id: "notifications", label: "Notifications", icon: <Bell className="w-4 h-4 shrink-0" /> },
+    { id: "security", label: "Security", icon: <Shield className="w-4 h-4 shrink-0" /> },
+    { id: "billing", label: "Billing", icon: <CreditCard className="w-4 h-4 shrink-0" /> },
   ];
 
   // Use effect for navigation to avoid calling router.push during render
@@ -57,7 +57,7 @@ export default function SettingsPage() {
     <AppShell currentView="settings">
     <div className="flex-1 overflow-y-auto bg-black">
       <div className="container mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 max-w-4xl mx-auto">
           {/* Sidebar */}
           <div className="col-span-12 md:col-span-3">
             <nav className="space-y-1">
@@ -65,7 +65,7 @@ export default function SettingsPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-sm transition-colors ${
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm whitespace-nowrap transition-colors ${
                     activeTab === tab.id
                       ? "bg-white/10 text-white border border-white/20"
                       : "text-neutral-400 hover:text-white hover:bg-neutral-800"
@@ -79,13 +79,13 @@ export default function SettingsPage() {
           </div>
 
           {/* Content */}
-          <div className="col-span-12 md:col-span-9">
+          <div className="col-span-12 md:col-span-6">
             <div className="bg-neutral-900 rounded-lg border border-neutral-800 p-6">
               {activeTab === "general" && (
                 <div className="space-y-6">
                   <h2 className="text-xl font-medium text-white mb-4">General Settings</h2>
 
-                  <div className="space-y-4">
+                  <div className="space-y-4 max-w-md">
                     <div>
                       <label className="block text-sm font-medium text-neutral-300 mb-2">
                         Theme
