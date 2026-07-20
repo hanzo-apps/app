@@ -11,6 +11,7 @@ import LogoWall from "@/components/landing/logo-wall";
 import CloudIntegration from "@/components/landing/cloud-integration";
 import ModelsStrip from "@/components/landing/models-strip";
 import HowItWorks from "@/components/landing/how-it-works";
+import Comparison from "@/components/landing/comparison";
 import SiteFooter from "@/components/landing/site-footer";
 import { BuildComposer, type ComposerMode } from "@/components/build-composer";
 import { ProjectThumb } from "@/components/project-thumb";
@@ -272,6 +273,7 @@ export default function LandingPage() {
         <CloudIntegration />
         <ModelsStrip />
         <HowItWorks />
+        <Comparison />
 
         {/* ── Continue building (logged-in) ── */}
         {user && projects.length > 0 && (
