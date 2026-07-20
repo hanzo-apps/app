@@ -66,7 +66,7 @@ export default function Header() {
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-8">
             <Link
-              href="/apps"
+              href="/install"
               className="text-white/70 hover:text-white text-sm font-medium transition-colors"
             >
               Apps
@@ -272,7 +272,7 @@ export default function Header() {
                   <div className="h-px bg-white/10 my-4" />
 
                   <button
-                    onClick={() => navigateTo("/apps")}
+                    onClick={() => navigateTo("/install")}
                     className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
                   >
                     <span>Apps</span>
@@ -305,7 +305,7 @@ export default function Header() {
               ) : (
                 <>
                   <button
-                    onClick={() => navigateTo("/apps")}
+                    onClick={() => navigateTo("/install")}
                     className="w-full px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
                   >
                     Apps
