@@ -114,11 +114,12 @@ export function Settings({
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
-          size="sm"
-          className="gap-1.5 !text-neutral-300 hover:!bg-white/10 hover:!text-white"
+          size="iconXs"
+          title="Settings — model, mode & options"
+          aria-label="Settings"
+          className="rounded-full !text-neutral-300 hover:!bg-white/10 hover:!text-white"
         >
           <PiGearSixFill className="size-4" />
-          <span className="hidden sm:inline">Settings</span>
         </Button>
       </PopoverTrigger>
       {/* ONE popover surface: solid bg-neutral-900, a single hairline border, high
