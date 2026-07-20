@@ -203,7 +203,7 @@ export function SkillsManager() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `osw-skills-${new Date().toISOString().split('T')[0]}.zip`;
+      a.download = `hanzo-skills-${new Date().toISOString().split('T')[0]}.zip`;
       a.click();
       URL.revokeObjectURL(url);
       toast.success(`Exported ${customSkills.length} skill(s)`);
