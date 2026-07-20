@@ -60,11 +60,11 @@ export default function Header() {
       <nav className="relative z-20 flex items-center justify-between px-4 md:px-8 py-4 md:py-5 bg-black/80 backdrop-blur-sm border-b border-white/10">
         <div className="flex items-center gap-6 md:gap-10">
           <Link href="/" className="flex items-center">
-            <HanzoBrand className="text-white" markClassName="w-8 md:w-9 h-8 md:h-9" />
+            <HanzoBrand className="text-white" collapse />
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-8">
             <Link
               href="/apps"
               className="text-white/70 hover:text-white text-sm font-medium transition-colors"
@@ -100,7 +100,7 @@ export default function Header() {
 
         <div className="flex items-center gap-4">
           {/* Desktop User Menu */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-3">
             {isAuthenticated && user ? (
               <>
                 <Button
@@ -188,7 +188,7 @@ export default function Header() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
+            className="lg:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
           >
             {mobileMenuOpen ? (
               <X className="w-6 h-6" />

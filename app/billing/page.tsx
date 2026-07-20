@@ -111,7 +111,7 @@ export default function BillingPage() {
       const usageResponse = await fetch('/api/usage');
       if (usageResponse.ok) {
         const usageData = await usageResponse.json();
-        if (usageData.usage) {
+        if (usageData.usage?.api_calls) {
           setUsage(usageData.usage);
         }
       }
@@ -372,15 +372,15 @@ export default function BillingPage() {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-white/60">API Calls</span>
-                  <span>{usage.api_calls.used.toLocaleString()}</span>
+                  <span>{(usage.api_calls?.used ?? 0).toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-white/60">AI Responses</span>
-                  <span>{usage.ai_responses.used.toLocaleString()}</span>
+                  <span>{(usage.ai_responses?.used ?? 0).toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-white/60">Storage</span>
-                  <span>{usage.storage.used} GB</span>
+                  <span>{usage.storage?.used ?? 0} GB</span>
                 </div>
               </div>
             </CardContent>
@@ -638,13 +638,13 @@ export default function BillingPage() {
                       <span>API Calls</span>
                     </div>
                     <span className="text-sm text-white/60">
-                      {usage.api_calls.used.toLocaleString()} / {usage.api_calls.limit.toLocaleString()}
+                      {(usage.api_calls?.used ?? 0).toLocaleString()} / {(usage.api_calls?.limit ?? 0).toLocaleString()}
                     </span>
                   </div>
                   <Progress
-                    value={calculateUsagePercentage(usage.api_calls.used, usage.api_calls.limit)}
+                    value={calculateUsagePercentage(usage.api_calls?.used ?? 0, usage.api_calls?.limit ?? 0)}
                     className="h-2 bg-white/10"
-                    indicatorClassName={getUsageColor(calculateUsagePercentage(usage.api_calls.used, usage.api_calls.limit))}
+                    indicatorClassName={getUsageColor(calculateUsagePercentage(usage.api_calls?.used ?? 0, usage.api_calls?.limit ?? 0))}
                   />
                 </div>
 
@@ -656,13 +656,13 @@ export default function BillingPage() {
                       <span>AI Responses</span>
                     </div>
                     <span className="text-sm text-white/60">
-                      {usage.ai_responses.used.toLocaleString()} / {usage.ai_responses.limit.toLocaleString()}
+                      {(usage.ai_responses?.used ?? 0).toLocaleString()} / {(usage.ai_responses?.limit ?? 0).toLocaleString()}
                     </span>
                   </div>
                   <Progress
-                    value={calculateUsagePercentage(usage.ai_responses.used, usage.ai_responses.limit)}
+                    value={calculateUsagePercentage(usage.ai_responses?.used ?? 0, usage.ai_responses?.limit ?? 0)}
                     className="h-2 bg-white/10"
-                    indicatorClassName={getUsageColor(calculateUsagePercentage(usage.ai_responses.used, usage.ai_responses.limit))}
+                    indicatorClassName={getUsageColor(calculateUsagePercentage(usage.ai_responses?.used ?? 0, usage.ai_responses?.limit ?? 0))}
                   />
                 </div>
 
@@ -674,13 +674,13 @@ export default function BillingPage() {
                       <span>Storage</span>
                     </div>
                     <span className="text-sm text-white/60">
-                      {usage.storage.used} GB / {usage.storage.limit} GB
+                      {usage.storage?.used ?? 0} GB / {usage.storage?.limit ?? 0} GB
                     </span>
                   </div>
                   <Progress
-                    value={calculateUsagePercentage(usage.storage.used, usage.storage.limit)}
+                    value={calculateUsagePercentage(usage.storage?.used ?? 0, usage.storage?.limit ?? 0)}
                     className="h-2 bg-white/10"
-                    indicatorClassName={getUsageColor(calculateUsagePercentage(usage.storage.used, usage.storage.limit))}
+                    indicatorClassName={getUsageColor(calculateUsagePercentage(usage.storage?.used ?? 0, usage.storage?.limit ?? 0))}
                   />
                 </div>
 
@@ -689,7 +689,7 @@ export default function BillingPage() {
                   <h4 className="text-sm font-medium text-white/60 mb-3">Credit Consumption</h4>
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div className="p-3 rounded-lg bg-[#0a0a0a] border border-white/10">
-                      <div className="text-lg font-medium">{usage.ai_responses.used}</div>
+                      <div className="text-lg font-medium">{usage.ai_responses?.used ?? 0}</div>
                       <div className="text-xs text-white/60">AI credits used</div>
                     </div>
                     <div className="p-3 rounded-lg bg-[#0a0a0a] border border-white/10">
@@ -698,8 +698,8 @@ export default function BillingPage() {
                     </div>
                     <div className="p-3 rounded-lg bg-[#0a0a0a] border border-white/10">
                       <div className="text-lg font-medium">
-                        {credits > 0 && usage.ai_responses.used > 0
-                          ? Math.ceil(credits / (usage.ai_responses.used / 30))
+                        {credits > 0 && (usage.ai_responses?.used ?? 0) > 0
+                          ? Math.ceil(credits / ((usage.ai_responses?.used ?? 0) / 30))
                           : '--'}
                       </div>
                       <div className="text-xs text-white/60">Est. days left</div>

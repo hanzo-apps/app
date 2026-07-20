@@ -214,8 +214,10 @@
 
    So we keep exactly TWO kinds of color:
      1. FUNCTIONAL / SEMANTIC hue stays real  → red (error/destructive),
-        amber+yellow (warning/building), orange (invalid), green+emerald
-        (success/live/online), blue+sky (running/active/info + search-match).
+        amber+yellow (warning/building), green+emerald (success/live/online),
+        blue+sky (running/active/info + search-match). Orange is NOT semantic —
+        it is neutralized below (warnings use amber); this keeps the reserved
+        set tight: green=live, red=error, amber=warning, emerald=git-push.
         These are NOT remapped below — they render their true Tailwind color,
         so a status dot, badge, or diff stays legible.
      2. DECORATIVE cool hue is neutralized  → the violet/purple/indigo/pink/…
@@ -316,6 +318,19 @@
   --color-pink-800: oklch(0.269 0 0);
   --color-pink-900: oklch(0.205 0 0);
   --color-pink-950: oklch(0.145 0 0);
+  /* orange = the last decorative-hue leak (amber stays TRUE amber for the
+     semantic 'warning' role; orange is neutralized to zero-chroma gray). */
+  --color-orange-50: oklch(0.985 0 0);
+  --color-orange-100: oklch(0.97 0 0);
+  --color-orange-200: oklch(0.922 0 0);
+  --color-orange-300: oklch(0.87 0 0);
+  --color-orange-400: oklch(0.708 0 0);
+  --color-orange-500: oklch(0.556 0 0);
+  --color-orange-600: oklch(0.439 0 0);
+  --color-orange-700: oklch(0.371 0 0);
+  --color-orange-800: oklch(0.269 0 0);
+  --color-orange-900: oklch(0.205 0 0);
+  --color-orange-950: oklch(0.145 0 0);
   --color-rose-50: oklch(0.985 0 0);
   --color-rose-100: oklch(0.97 0 0);
   --color-rose-200: oklch(0.922 0 0);
@@ -448,4 +463,50 @@
 
 .matched-line {
   @apply bg-white/15;
+}
+
+/* ── Portaled menus must always be opaque ────────────────────────────────────
+   @hanzo/ui menus reference its own design tokens (--bg, --divider, --gray)
+   which THIS app does not define — so those menus render with no background and
+   bleed the page/sidebar through (the sidebar "…" menu, workspace menus, etc.).
+   Force every portaled menu/select surface onto the app's popover tokens. Radix
+   sets role="menu" on DropdownMenu/ContextMenu content and role="listbox" on
+   Select content; items keep role="menuitem"/"option", so only the container is
+   targeted. Tooltips/dialogs are untouched. This is the ONE fix for the whole
+   class of transparent-menu bug. */
+[role="menu"],
+[role="listbox"] {
+  background-color: var(--popover, #0a0a0a);
+  color: var(--popover-foreground, #ededed);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  border-radius: 0.625rem;
+  box-shadow:
+    0 16px 40px -16px rgba(0, 0, 0, 0.9),
+    0 0 0 0.5px rgba(255, 255, 255, 0.04);
+  backdrop-filter: none;
+}
+
+/* ── Geist everywhere — no OS/UA fonts leak in ───────────────────────────────
+   Form controls (button/input/textarea/select) do NOT inherit font-family: the
+   UA sheet pins them to a system font, so every input/button in the app was
+   rendering in the OS face, not Geist. Force the two — and only two — brand
+   fonts: Geist Sans for UI, Geist Mono for code/data. */
+button, input, textarea, select, optgroup {
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+code, pre, kbd, samp, .font-mono, [class~="font-mono"] {
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* Brand reveal: the header lockup shows "Hanzo App", then the wordmark collapses
+   away (width + opacity) leaving just the H mark. One-time, ~2.4s in, eased.
+   Reduced-motion users keep the full wordmark (no animation). */
+@keyframes hanzoWordmarkCollapse {
+  0%, 55%   { max-width: 8rem; opacity: 1; margin-left: 0; }
+  100%      { max-width: 0;    opacity: 0; margin-left: -0.5rem; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hanzo-wordmark-collapse {
+    animation: hanzoWordmarkCollapse 2.4s cubic-bezier(0.4, 0, 0.2, 1) 1.2s forwards;
+  }
 }

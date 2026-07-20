@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { Children, ReactNode, useState } from "react";
 import {
   ChevronDown,
   Code2,
@@ -102,6 +102,14 @@ export function Header({
       }, 10);
     }
   };
+
+  // The action cluster is authored `Share · Load · Push … Publish`, the solid
+  // Publish primary always LAST. Split it so the secondaries scroll within their
+  // own track on tight widths while the primary stays pinned and fully visible —
+  // never clipped off the right on mobile.
+  const actions = Children.toArray(children);
+  const primary = actions.length ? actions[actions.length - 1] : null;
+  const secondary = actions.slice(0, -1);
 
   return (
     <header className="z-20 flex items-center gap-2 bg-neutral-950 px-3 py-2 sm:gap-3 lg:grid lg:grid-cols-[auto_1fr_auto] lg:px-4">
@@ -263,11 +271,16 @@ export function Header({
         </div>
       </div>
 
-      {/* RIGHT — the primary actions only (`children`: Share · Load · Push …
-          Publish). No identity/account here. Scrolls within itself on tight
-          widths. */}
-      <div className="flex min-w-0 flex-1 items-center justify-end gap-1.5 overflow-x-auto lg:flex-none lg:gap-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {children}
+      {/* RIGHT — the solid Publish primary is pinned `shrink-0` OUTSIDE the
+          scroll track so it always paints fully; the secondary actions
+          (Share · Load · Push) scroll within their own track on tight widths. */}
+      <div className="flex min-w-0 flex-1 items-center justify-end gap-1.5 lg:flex-none lg:gap-2">
+        {secondary.length > 0 && (
+          <div className="flex min-w-0 items-center gap-1.5 overflow-x-auto lg:gap-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {secondary}
+          </div>
+        )}
+        {primary && <div className="shrink-0">{primary}</div>}
       </div>
     </header>
   );

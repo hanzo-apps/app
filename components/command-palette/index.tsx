@@ -46,9 +46,11 @@ import {
 
 import { useUser } from '@/hooks/useUser';
 import { useProjects } from '@/hooks/useProjects';
-import { builderLink } from '@/lib/api/projects';
+import { builderLink, liveUrlOf } from '@/lib/api/projects';
+import { ProjectThumb } from '@/components/project-thumb';
 import { markProjectOpened, lastOpenedAt, recentProjectIds } from '@/lib/recent-projects';
 import { relativeTime } from '@/lib/projects-view';
+import { statusOf } from '@/lib/project-status';
 
 interface PaletteProject {
   id: string;
@@ -56,6 +58,7 @@ interface PaletteProject {
   name: string;
   org?: string;
   status: string;
+  liveUrl?: string | null;
   createdAtIso: string | null;
   updatedAtIso: string | null;
 }
@@ -101,6 +104,7 @@ export function CommandPalette({
       name: p.name || p.slug,
       org: p.org,
       status: p.status || 'draft',
+      liveUrl: liveUrlOf(p),
       createdAtIso: p.createdAt ? new Date(p.createdAt * 1000).toISOString() : null,
       updatedAtIso: p.updatedAt ? new Date(p.updatedAt * 1000).toISOString() : null,
     }));
@@ -247,15 +251,13 @@ export function CommandPalette({
 }
 
 function StatusDot({ status, className }: { status: string; className?: string }) {
-  const live = status === 'live' || status === 'published';
+  const st = statusOf(status);
   return (
     <span
-      className={`inline-flex items-center gap-1 text-[10px] uppercase tracking-wide ${
-        live ? 'text-emerald-400' : 'text-white/35'
-      } ${className ?? ''}`}
+      className={`inline-flex items-center gap-1 text-[10px] uppercase tracking-wide ${st.text} ${className ?? ''}`}
     >
-      <Circle className={`h-1.5 w-1.5 ${live ? 'fill-emerald-400' : 'fill-white/35'}`} />
-      {live ? 'Live' : 'Draft'}
+      <Circle className={`h-1.5 w-1.5 ${st.dot.replace('bg-', 'fill-')}`} />
+      {st.label}
     </span>
   );
 }
@@ -271,18 +273,18 @@ function PreviewPanel({ project, authorName }: { project: PaletteProject | null;
   const opened = lastOpenedAt(project.slug || project.id);
   const rows: Array<[string, string]> = [
     ['Created by', authorName],
-    ['Status', project.status === 'live' || project.status === 'published' ? 'Live' : 'Draft'],
+    ['Status', statusOf(project.status).label],
     ['Created', relativeTime(project.createdAtIso)],
     ['Last edited', relativeTime(project.updatedAtIso)],
     ['Last opened', opened ? relativeTime(new Date(opened).toISOString()) : '—'],
   ];
-  const initial = (project.name || '?').charAt(0).toUpperCase();
   return (
     <div className="flex h-full flex-col p-4">
-      {/* Thumbnail — an honest monogram tile (we don't fabricate a screenshot). */}
-      <div className="relative mb-3 flex aspect-[16/10] items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-gradient-to-br from-white/[0.08] to-white/[0.01]">
-        <span className="text-3xl font-medium text-white/70">{initial}</span>
-        <span className="absolute bottom-2 left-2 truncate font-mono text-[10px] text-white/40">
+      {/* Thumbnail — the REAL live site (inert, sandboxed) for a published
+          project; an honest monogram tile otherwise. */}
+      <div className="relative mb-3 overflow-hidden rounded-lg border border-white/10">
+        <ProjectThumb name={project.name} liveUrl={project.liveUrl} />
+        <span className="absolute bottom-2 left-2 truncate rounded bg-black/60 px-1.5 py-0.5 font-mono text-[10px] text-white/60 backdrop-blur-sm">
           {project.slug}
         </span>
       </div>

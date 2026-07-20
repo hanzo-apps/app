@@ -287,7 +287,7 @@ export default function PlaygroundPage() {
       {/* Header */}
       <header className="border-b border-neutral-800 px-6 py-4">
         <div className="container mx-auto">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-y-3">
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
@@ -344,9 +344,9 @@ export default function PlaygroundPage() {
       </header>
 
       <div className="container mx-auto px-6 py-6">
-        <div className="grid grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Panel - Prompt Input */}
-          <div className="col-span-3">
+          <div className="col-span-full lg:col-span-3">
             <Card className="bg-neutral-900 border-neutral-800">
               <CardHeader>
                 <CardTitle>Prompt</CardTitle>
@@ -448,8 +448,8 @@ export default function PlaygroundPage() {
           </div>
 
           {/* Main Content - Model Outputs */}
-          <div className="col-span-9">
-            <div className={cn("grid gap-4", splitView ? "grid-cols-2" : "grid-cols-1")}>
+          <div className="col-span-full lg:col-span-9">
+            <div className={cn("grid gap-4", splitView ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1")}>
               {/* Left Model */}
               <Card className="bg-neutral-900 border-neutral-800">
                 <CardHeader>
