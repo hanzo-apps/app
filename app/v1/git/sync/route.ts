@@ -25,7 +25,6 @@ import { requireSameOrigin } from '@/lib/org/csrf';
 import { slugifyProject } from '@/lib/org/policy';
 import { resolveConnection } from '@/lib/git/server';
 import { GitSyncError, pushProject, toFiles, type GitProvider } from '@/lib/git/sync';
-import { ensureAppForPush } from '@/lib/platform';
 
 export const runtime = 'nodejs';
 
@@ -233,28 +232,6 @@ export async function POST(req: NextRequest) {
     /* the repo is pushed + the record exists; the link is a convenience */
   }
 
-  // 4) Native CD: register a platform Application that tracks this Hanzo git repo
-  //    so the cloud's `git push → build → deploy` pipeline fires on every push
-  //    (buildFromPush matches Application.RepoURL to the push CloneURL, byte-for-
-  //    byte — hence result.repoUrl VERBATIM). Hanzo provider ONLY: github/gitlab
-  //    repos aren't on api.hanzo.ai, so the cloud CD can't build them. Best-effort
-  //    — the commit is pushed and the site is already live, so a CD hiccup never
-  //    fails the sync. This is the ONE place the CD app gets registered: both
-  //    Publish and "Push to Git" funnel through here. See lib/platform.
-  let cd = false;
-  if (provider === 'hanzo') {
-    try {
-      await ensureAppForPush(id.token, {
-        project: { name, slug, description: (body.description || '').slice(0, 280) },
-        app: { name, slug },
-        repo: { url: result.repoUrl, branch: result.branch },
-      });
-      cd = true;
-    } catch {
-      /* CD registration is best-effort; the commit is pushed + the site is live */
-    }
-  }
-
   return NextResponse.json({
     ok: true,
     provider: result.provider,
@@ -264,7 +241,6 @@ export async function POST(req: NextRequest) {
     commitSha: result.commitSha,
     created: result.created,
     linked,
-    cd,
     slug,
     org,
     project,

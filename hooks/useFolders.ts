@@ -6,7 +6,7 @@
  * Re-reads whenever any surface mutates folders (via the `hanzo:folders-changed`
  * event) and on cross-tab `storage` events, so the sidebar and dashboard stay in
  * sync. See lib/folders for the flagged backend gap (folders are local until the
- * projectsvc record carries a folderId).
+ * projects service record carries a folderId).
  */
 
 import { useCallback, useEffect, useState } from 'react';
