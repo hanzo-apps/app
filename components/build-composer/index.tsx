@@ -215,7 +215,7 @@ export function BuildComposer({
       {showPill && (
         <div className="mb-6 flex justify-center">
           <a
-            href="https://hanzo.ai/cloud"
+            href="https://cloud.hanzo.ai"
             target="_blank"
             rel="noopener noreferrer"
             className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-white/60 transition-colors hover:border-white/20 hover:text-white"
@@ -223,7 +223,7 @@ export function BuildComposer({
             <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-white/80">
               New
             </span>
-            Hanzo apps run on your own cloud
+            Hanzo apps now run in Hanzo Cloud
             <span className="transition-transform group-hover:translate-x-0.5">→</span>
           </a>
         </div>
