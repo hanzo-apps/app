@@ -12,6 +12,7 @@ import {
   snapshotCatalog,
 } from "@/lib/gallery-catalog";
 import { AppShell } from "@/components/app-shell";
+import { TemplateThumb } from "@/components/template-thumb";
 
 // Fork a real template into the editor: /dev parses ?template=owner/repo and the
 // TemplateLoader clones github.com/hanzo-apps/<slug>.
@@ -161,15 +162,11 @@ export default function TemplateGallery() {
                 href={forkHref(t)}
                 className="relative block aspect-[16/10] bg-neutral-950 overflow-hidden"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={t.screenshotUrl}
-                  alt={`${t.displayName} preview`}
-                  loading="lazy"
-                  className="w-full h-full object-cover object-top group-hover:scale-[1.03] transition-transform duration-300"
-                  onError={(e) => {
-                    (e.currentTarget as HTMLImageElement).style.display = "none";
-                  }}
+                <TemplateThumb
+                  name={t.displayName}
+                  category={t.category}
+                  slug={t.slug}
+                  className="group-hover:scale-[1.03] transition-transform duration-300"
                 />
                 <div className="absolute top-2 left-2 flex items-center gap-1 rounded-full bg-black/70 px-2 py-0.5 text-[11px] text-neutral-200">
                   <Star className="w-3 h-3 fill-neutral-200" />

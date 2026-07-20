@@ -11,6 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { TemplateThumb } from '@/components/template-thumb';
 import { Search, Star, Code, Eye, Sparkles, Package } from 'lucide-react';
 
 interface TemplatesViewProps {
@@ -195,15 +196,11 @@ export function TemplatesView({ onProjectSelect }: TemplatesViewProps) {
                         className="relative block aspect-[16/10] bg-muted overflow-hidden text-left"
                         aria-label={`Start from ${t.displayName}`}
                       >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={t.screenshotUrl}
-                          alt={`${t.displayName} preview`}
-                          loading="lazy"
-                          className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.03]"
-                          onError={(e) => {
-                            (e.currentTarget as HTMLImageElement).style.display = 'none';
-                          }}
+                        <TemplateThumb
+                          name={t.displayName}
+                          category={t.category}
+                          slug={t.slug}
+                          className="transition-transform duration-300 group-hover:scale-[1.03]"
                         />
                         <div className="absolute top-2 left-2 flex items-center gap-1 rounded-full bg-black/70 px-2 py-0.5 text-[11px] text-white">
                           <Star className="h-3 w-3 fill-white" />

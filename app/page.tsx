@@ -13,6 +13,7 @@ import ModelsStrip from "@/components/landing/models-strip";
 import HowItWorks from "@/components/landing/how-it-works";
 import Comparison from "@/components/landing/comparison";
 import SiteFooter from "@/components/landing/site-footer";
+import { TemplateThumb } from "@/components/template-thumb";
 import { BuildComposer, type ComposerMode } from "@/components/build-composer";
 import { ProjectThumb } from "@/components/project-thumb";
 import { builderLink } from "@/lib/api/projects";
@@ -212,15 +213,11 @@ export default function LandingPage() {
                             className="group overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] text-left transition-all hover:border-white/25 hover:bg-white/[0.04]"
                           >
                             <div className="relative aspect-[16/10] overflow-hidden bg-white/[0.02]">
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img
-                                src={t.screenshotUrl}
-                                alt={`${t.displayName} preview`}
-                                loading="lazy"
-                                className="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.04]"
-                                onError={(e) => {
-                                  (e.currentTarget as HTMLImageElement).style.opacity = "0";
-                                }}
+                              <TemplateThumb
+                                name={t.displayName}
+                                category={t.category}
+                                slug={t.slug}
+                                className="transition-transform duration-300 group-hover:scale-[1.04]"
                               />
                             </div>
                             <div className="px-2.5 py-2">
