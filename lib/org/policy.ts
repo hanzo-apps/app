@@ -79,7 +79,7 @@ export function validateOrgName(input: string): OrgNameResult {
 
 /**
  * The slug a project is created under. A project slug is org-unique and part of
- * the public URL; mirrors the cloud projectsvc `slugify` (lowercase, non-alnum →
+ * the public URL; mirrors the cloud projects service `slugify` (lowercase, non-alnum →
  * `-`, collapse, trim, cap 40) so the client and server agree on the slug and
  * the record is never created with `name: None` / an empty slug.
  */
