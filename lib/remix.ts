@@ -5,7 +5,7 @@
  * a project the user OWNS. Each animated setup step is tied to genuine work:
  *
  *   1. Creating project      → POST /v1/projects (the shared, org-scoped
- *                              projectsvc record — same store console reads).
+ *                              projects service record — same store console reads).
  *   2. Setting up integrations→ POST /v1/provision (enables the app's Hanzo
  *                              stack for the new project: Hanzo Base data plane
  *                              + Analytics; see app/v1/provision).
@@ -47,7 +47,7 @@ export interface RemixSetup {
 /** localStorage key the builder reads once on mount. */
 export const REMIX_SETUP_KEY = 'remixSetup';
 
-/** URL-safe slug from a human project name (mirrors projectsvc slugging). */
+/** URL-safe slug from a human project name (mirrors projects service slugging). */
 export function slugifyName(name: string): string {
   const base = name
     .toLowerCase()

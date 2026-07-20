@@ -5,7 +5,7 @@
  *
  * ROOT-CAUSE FIX: the sidebar previously read `vfs.listProjects()` — the LOCAL
  * IndexedDB VFS, which is per-device and ephemeral. Projects the user created or
- * published live in the CLOUD (org-scoped projectsvc) never appeared there, and
+ * published live in the CLOUD (org-scoped projects service) never appeared there, and
  * a reload restored nothing because the local store is empty on a fresh device.
  *
  * This hook fetches the REAL cloud list CLIENT-SIDE via `fetchProjects()` (the
