@@ -257,64 +257,6 @@ export async function deploy(token: string, input: DeployInput): Promise<DeployR
   return { project, app, deployment, url: appURL(app) };
 }
 
-/**
- * Register a git-source Application that tracks `repo` so the cloud's native
- * `git push → build → deploy` CD fires on every push — and seed the FIRST build.
- *
- * Ordering matters: the caller PUSHES first, then calls this. The cloud matches a
- * push to an Application by comparing `Application.RepoURL` to the push CloneURL as
- * an exact string, so:
- *   • First publish — the app didn't exist yet, so that push matched nothing (no
- *     build). We CREATE the app here and kick the initial deploy once.
- *   • Every later publish — the app already exists, so the push ITSELF fired the
- *     build (buildFromPush). We create-or-get, see 409, and do NOT call deployApp
- *     again — no double build.
- * That keeps the git push as the ONE build trigger, with a single manual kick only
- * to seed the very first deploy.
- *
- * `repo.url` MUST be the verbatim clone URL the push returned (the api.hanzo.ai
- * form) — a reconstructed URL risks never matching the push CloneURL.
- */
-export async function ensureAppForPush(
-  token: string,
-  input: {
-    project: { name: string; slug?: string; description?: string };
-    app: { name: string; slug?: string };
-    repo: { url: string; branch?: string };
-  },
-): Promise<{
-  project: PlatformProject;
-  app: PlatformApp;
-  created: boolean;
-  deployment: PlatformDeployment | null;
-}> {
-  const project = await ensureProject(token, input.project);
-  const slug = input.app.slug || slugify(input.app.name);
-  const spec: AppSpec = {
-    name: input.app.name,
-    slug,
-    source: 'git',
-    // hanzoai/pack (the zero-config BuildKit frontend) detects static sites AND
-    // every buildable framework, so ONE build type covers all published apps.
-    buildType: 'pack',
-    repo: { url: input.repo.url, branch: input.repo.branch || 'main' },
-  };
-  try {
-    const app = await createApp(token, project.slug, spec);
-    // Newly created ⇒ the push that just happened predated this app and matched
-    // nothing; seed the first build (best-effort — the repo is already pushed).
-    const deployment = await deployApp(token, project.slug, app.slug).catch(() => null);
-    return { project, app, created: true, deployment };
-  } catch (err) {
-    if (err instanceof PlatformError && err.status === 409) {
-      // Already tracked ⇒ the push already fired the CD build; do NOT double-build.
-      const app = await getApp(token, project.slug, slug);
-      return { project, app, created: false, deployment: null };
-    }
-    throw err;
-  }
-}
-
 /** Live status of an app + its latest deployment, for the builder's status panel. */
 export async function deployStatus(token: string, project: string, app: string) {
   const [appView, deployments] = await Promise.all([
