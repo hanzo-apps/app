@@ -19,17 +19,17 @@ export function Fix({
     <Tooltip>
       <TooltipTrigger asChild>
         <Button
-          size="xs"
+          size="iconXs"
           variant={active ? "default" : "ghost"}
           onClick={onToggle}
           aria-pressed={active}
-          className={classNames("h-[28px]", {
+          aria-label="Fix design to match a reference"
+          className={classNames("rounded-full", {
             "text-neutral-400 hover:bg-white/10 hover:!text-neutral-200":
               !active,
           })}
         >
           <Wrench className="size-4" />
-          Fix
         </Button>
       </TooltipTrigger>
       <TooltipContent

@@ -62,6 +62,7 @@ export function ReImagine({
             size="iconXs"
             variant="ghost"
             aria-label="Redesign from a URL"
+            title="Redesign: recreate an existing site's look from its URL"
             className="rounded-full text-neutral-400 hover:bg-white/10 hover:text-neutral-200"
           >
             <Paintbrush className="size-4" />
