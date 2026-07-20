@@ -52,7 +52,11 @@ export function ChatThread({
 
   return (
     <div ref={scrollRef} className={classNames("overflow-y-auto px-3 pt-3", className)}>
-      <div className="flex flex-col gap-3 pb-2">
+      <div
+        className={classNames("flex flex-col gap-3 pb-2", {
+          "min-h-full justify-center": messages.length <= 1,
+        })}
+      >
         {messages.map((m) =>
           m.role === "user" ? (
             <UserBubble key={m.id} text={m.text ?? ""} />

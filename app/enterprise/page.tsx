@@ -47,25 +47,25 @@ export default function EnterprisePage() {
       {/* Hero Section */}
       <section className="px-4 md:px-8 py-16 md:py-24 text-center">
         <div className="max-w-4xl mx-auto">
-          <Badge className="mb-4 bg-gradient-to-r from-violet-600 to-purple-600 text-white border-0">
+          <Badge className="mb-4 bg-white text-black border-0">
             <Building className="w-4 h-4 mr-2" />
             Enterprise Ready
           </Badge>
-          <h1 className="text-4xl md:text-6xl font-medium mb-6">
+          <h1 className="text-4xl md:text-6xl font-medium mb-6 text-balance">
             AI Development at
-            <span className="bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
+            <span className="text-white">
               {" "}Enterprise Scale
             </span>
           </h1>
           <p className="text-xl text-white/60 mb-8 max-w-2xl mx-auto">
             Build, deploy, and scale AI applications with enterprise-grade security, compliance, and dedicated support
           </p>
-          <div className="flex items-center gap-4 justify-center">
-            <Button size="lg" className="bg-white text-black hover:bg-white/90">
+          <div className="flex flex-col sm:flex-row items-center gap-4 justify-center">
+            <Button size="lg" className="w-full sm:w-auto bg-white text-black hover:bg-white/90">
               Schedule Demo
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
-            <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10">
+            <Button size="lg" variant="outline" className="w-full sm:w-auto border-white/20 text-white hover:bg-white/10">
               Download Whitepaper
             </Button>
           </div>

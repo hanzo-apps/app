@@ -302,9 +302,9 @@ export default function PlaygroundPage() {
               <Badge variant="outline">Compare Models</Badge>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-2">
               <Select value={selectedPreset} onValueChange={applyPreset}>
-                <SelectTrigger className="w-[180px] bg-neutral-900 border-neutral-700">
+                <SelectTrigger className="w-full sm:w-[180px] bg-neutral-900 border-neutral-700">
                   <SelectValue placeholder="Select preset" />
                 </SelectTrigger>
                 <SelectContent>
@@ -344,9 +344,9 @@ export default function PlaygroundPage() {
       </header>
 
       <div className="container mx-auto px-6 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-6">
           {/* Left Panel - Prompt Input */}
-          <div className="col-span-full lg:col-span-3">
+          <div className="col-span-full md:col-span-5 lg:col-span-3">
             <Card className="bg-neutral-900 border-neutral-800">
               <CardHeader>
                 <CardTitle>Prompt</CardTitle>
@@ -448,14 +448,14 @@ export default function PlaygroundPage() {
           </div>
 
           {/* Main Content - Model Outputs */}
-          <div className="col-span-full lg:col-span-9">
+          <div className="col-span-full md:col-span-7 lg:col-span-9">
             <div className={cn("grid gap-4", splitView ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1")}>
               {/* Left Model */}
               <Card className="bg-neutral-900 border-neutral-800">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-purple-500 rounded-full" />
+                      <div className="w-2 h-2 bg-neutral-500 rounded-full" />
                       <CardTitle className="text-lg">{leftConfig.model}</CardTitle>
                     </div>
                     <DropdownMenu>
@@ -538,7 +538,7 @@ export default function PlaygroundPage() {
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                        <div className="w-2 h-2 bg-neutral-500 rounded-full" />
                         <CardTitle className="text-lg">{rightConfig.model}</CardTitle>
                       </div>
                       <DropdownMenu>

@@ -5,7 +5,7 @@ import { Activity, ExternalLink } from 'lucide-react';
 import { isAuthenticated } from '@/lib/auth';
 import { listProjects } from '@/lib/db/projects';
 import { buildUsage } from '@/lib/usage';
-import Header from '@/components/layout/header';
+import { AppShell } from '@/components/app-shell';
 import SmartRoutingCard from '@/components/usage/smart-routing-card';
 import CloudUsagePanel from '@/components/usage/cloud-usage-panel';
 import { Button } from '@hanzo/ui';
@@ -28,13 +28,12 @@ export default async function UsagePage() {
   const account = buildUsage(projectCount);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
-      <Header />
-
+    <AppShell currentView="usage">
+    <div className="flex-1 overflow-y-auto bg-[#0a0a0a] text-white">
       <div className="max-w-5xl mx-auto px-4 md:px-8 py-8 md:py-12">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">Usage</h1>
+            <h1 className="text-3xl md:text-4xl font-medium mb-2">Usage</h1>
             <p className="text-white/60">
               Your account consumption
               {user.email && <span className="ml-2 text-white/40">({user.email})</span>}
@@ -83,5 +82,6 @@ export default async function UsagePage() {
         <CloudUsagePanel />
       </div>
     </div>
+    </AppShell>
   );
 }
