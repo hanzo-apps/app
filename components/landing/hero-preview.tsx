@@ -264,7 +264,7 @@ export default function HeroPreview() {
           </span>
 
           {/* View tabs (chat | preview | code) — the builder's ONE view state. */}
-          <div className="mx-auto flex items-center rounded-lg border border-white/10 p-0.5">
+          <div className="mx-auto hidden items-center rounded-lg border border-white/10 p-0.5 sm:flex">
             {[
               { id: "chat", icon: MessageSquare },
               { id: "preview", icon: Eye },
@@ -279,7 +279,7 @@ export default function HeroPreview() {
             ))}
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="ml-auto flex items-center gap-1.5 sm:ml-0">
             <button
               type="button"
               aria-label="Replay the demo build"
@@ -320,7 +320,8 @@ export default function HeroPreview() {
             >
               {live ? (
                 <>
-                  <Check className="h-3 w-3" strokeWidth={3} /> Published
+                  <Check className="h-3 w-3" strokeWidth={3} />
+                  <span className="hidden sm:inline">Published</span>
                 </>
               ) : phase === "publishing" ? (
                 <>
