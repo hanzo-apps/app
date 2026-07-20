@@ -4,15 +4,25 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@hanzo/ui";
-import { FolderOpen, Clock, Circle, BarChart3, ArrowUpRight } from "lucide-react";
+import {
+  FolderOpen,
+  Clock,
+  Circle,
+  BarChart3,
+  ArrowUpRight,
+  ChevronDown,
+} from "lucide-react";
 
 import { useUser } from "@/hooks/useUser";
 import { useProjects } from "@/hooks/useProjects";
 import { AppShell } from "@/components/app-shell";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { BuildComposer } from "@/components/build-composer";
+import { ProjectThumb } from "@/components/project-thumb";
+import { builderLink, liveUrlOf } from "@/lib/api/projects";
 import { relativeTime } from "@/lib/projects-view";
 import { markProjectOpened, orderByRecentlyOpened } from "@/lib/recent-projects";
+import Reveal from "@/components/landing/reveal";
 import {
   snapshotCatalog,
   popularTemplates,
@@ -23,8 +33,10 @@ import {
 interface DashProject {
   id: string;
   slug: string;
+  org?: string;
   name: string;
   status: string;
+  liveUrl: string | null;
   updatedAtIso: string | null;
 }
 
@@ -49,8 +61,10 @@ export default function DashboardPage() {
       apiProjects.map((p) => ({
         id: p.id || p.slug,
         slug: p.slug,
+        org: p.org,
         name: p.name || p.slug,
         status: p.status || "draft",
+        liveUrl: liveUrlOf(p),
         updatedAtIso: p.updatedAt ? new Date(p.updatedAt * 1000).toISOString() : null,
       })),
     [apiProjects],
@@ -64,7 +78,7 @@ export default function DashboardPage() {
 
   const openProject = (p: DashProject) => {
     markProjectOpened(p.slug || p.id);
-    router.push(`/dev?project=${encodeURIComponent(p.slug || p.id)}`);
+    router.push(builderLink(p.slug || p.id, p.org));
   };
 
   if (loading || !user) {
@@ -85,105 +99,125 @@ export default function DashboardPage() {
   return (
     <AppShell currentView="dashboard">
       <div className="flex-1 overflow-y-auto bg-black">
-        {/* ── Hero: greeting + the animated-gradient build composer ── */}
-        <section className="px-4 pb-10 pt-16 md:pt-24">
+        {/* ── Hero viewport: ONLY the centered composer until you scroll ── */}
+        <section className="relative flex min-h-[calc(100dvh-4rem)] flex-col items-center justify-center px-4">
           <BuildComposer greetingName={greetingName} showPill />
+
+          {/* Scroll invitation — the projects panel waits below the fold. */}
+          <button
+            type="button"
+            onClick={() =>
+              document
+                .getElementById("projects-panel")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" })
+            }
+            className="group absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 text-white/35 transition-colors hover:text-white/70"
+          >
+            <span className="font-mono text-[10px] uppercase tracking-[0.16em]">
+              Your projects
+            </span>
+            <ChevronDown className="h-4 w-4 animate-bounce" />
+          </button>
         </section>
 
-        {/* ── Projects: tabs + scrollable grid ── */}
-        <section className="mx-auto max-w-6xl px-4 pb-24 sm:px-6">
-          <Tabs value={tab} onValueChange={setTab}>
-            <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
-              <TabsList className="bg-transparent p-0">
-                <TabsTrigger value="mine" className="data-[state=active]:bg-white/10">
-                  My projects
-                </TabsTrigger>
-                <TabsTrigger value="recent" className="data-[state=active]:bg-white/10">
-                  Recently viewed
-                </TabsTrigger>
-                <TabsTrigger value="visitors" className="data-[state=active]:bg-white/10">
-                  Most visitors today
-                </TabsTrigger>
-                <TabsTrigger value="templates" className="data-[state=active]:bg-white/10">
-                  Templates
-                </TabsTrigger>
-              </TabsList>
+        {/* ── Projects: a rounded panel that slides up as you scroll ── */}
+        <section id="projects-panel" className="mx-auto max-w-6xl scroll-mt-6 px-4 pb-24 sm:px-6">
+          <Reveal>
+            <div className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-5 shadow-2xl shadow-black/50 md:p-8">
+              <Tabs value={tab} onValueChange={setTab}>
+                <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
+                  <TabsList className="bg-transparent p-0">
+                    <TabsTrigger value="mine" className="data-[state=active]:bg-white/10">
+                      My projects
+                    </TabsTrigger>
+                    <TabsTrigger value="recent" className="data-[state=active]:bg-white/10">
+                      Recently viewed
+                    </TabsTrigger>
+                    <TabsTrigger value="visitors" className="data-[state=active]:bg-white/10">
+                      Most visitors today
+                    </TabsTrigger>
+                    <TabsTrigger value="templates" className="data-[state=active]:bg-white/10">
+                      Templates
+                    </TabsTrigger>
+                  </TabsList>
 
-              <Link
-                href={tab === "templates" ? "/resources" : "/projects"}
-                className="text-sm text-white/50 transition-colors hover:text-white"
-              >
-                Browse all →
-              </Link>
-            </div>
-
-            {/* My projects */}
-            <TabsContent value="mine">
-              {showSkeleton ? (
-                <ProjectsSkeleton />
-              ) : projects.length === 0 ? (
-                <EmptyProjects />
-              ) : (
-                <ProjectGrid projects={projects} onOpen={openProject} />
-              )}
-            </TabsContent>
-
-            {/* Recently viewed — the real local "opened here" signal. */}
-            <TabsContent value="recent">
-              {showSkeleton ? (
-                <ProjectsSkeleton />
-              ) : recentlyViewed.length === 0 ? (
-                <EmptyState
-                  icon={Clock}
-                  title="No recently viewed projects"
-                  body="Projects you open will show up here, most recent first."
-                />
-              ) : (
-                <ProjectGrid projects={recentlyViewed} onOpen={openProject} />
-              )}
-            </TabsContent>
-
-            {/* Most visitors today — honest: per-project traffic analytics isn't
-                wired into this list yet, so we don't fabricate numbers. */}
-            <TabsContent value="visitors">
-              <EmptyState
-                icon={BarChart3}
-                title="Visitor analytics coming to your dashboard"
-                body="Once your apps are published and receiving traffic, your busiest projects today will rank here. Live traffic is captured per deployment."
-                action={{ label: "View analytics", href: "https://analytics.hanzo.ai" }}
-              />
-            </TabsContent>
-
-            {/* Templates — a peek at the gallery; Browse all → /resources. */}
-            <TabsContent value="templates">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {templates.map((t) => (
                   <Link
-                    key={t.slug}
-                    href="/resources"
-                    className="group overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] transition-all hover:-translate-y-0.5 hover:border-white/25"
+                    href={tab === "templates" ? "/resources" : "/projects"}
+                    className="text-sm text-white/50 transition-colors hover:text-white"
                   >
-                    <div className="relative aspect-[16/10] overflow-hidden bg-white/[0.02]">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={t.screenshotUrl}
-                        alt={`${t.displayName} preview`}
-                        loading="lazy"
-                        className="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.04]"
-                        onError={(e) => {
-                          (e.currentTarget as HTMLImageElement).style.opacity = "0";
-                        }}
-                      />
-                    </div>
-                    <div className="p-3">
-                      <p className="truncate text-sm font-medium text-white/85">{t.displayName}</p>
-                      <p className="truncate text-xs text-white/35">{t.category}</p>
-                    </div>
+                    Browse all →
                   </Link>
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
+                </div>
+
+                {/* My projects */}
+                <TabsContent value="mine">
+                  {showSkeleton ? (
+                    <ProjectsSkeleton />
+                  ) : projects.length === 0 ? (
+                    <EmptyProjects />
+                  ) : (
+                    <ProjectGrid projects={projects} onOpen={openProject} />
+                  )}
+                </TabsContent>
+
+                {/* Recently viewed — the real local "opened here" signal. */}
+                <TabsContent value="recent">
+                  {showSkeleton ? (
+                    <ProjectsSkeleton />
+                  ) : recentlyViewed.length === 0 ? (
+                    <EmptyState
+                      icon={Clock}
+                      title="No recently viewed projects"
+                      body="Projects you open will show up here, most recent first."
+                    />
+                  ) : (
+                    <ProjectGrid projects={recentlyViewed} onOpen={openProject} />
+                  )}
+                </TabsContent>
+
+                {/* Most visitors today — honest: per-project traffic analytics isn't
+                    wired into this list yet, so we don't fabricate numbers. */}
+                <TabsContent value="visitors">
+                  <EmptyState
+                    icon={BarChart3}
+                    title="Visitor analytics coming to your dashboard"
+                    body="Once your apps are published and receiving traffic, your busiest projects today will rank here. Live traffic is captured per deployment."
+                    action={{ label: "View analytics", href: "https://analytics.hanzo.ai" }}
+                  />
+                </TabsContent>
+
+                {/* Templates — a peek at the gallery; Browse all → /resources. */}
+                <TabsContent value="templates">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    {templates.map((t) => (
+                      <Link
+                        key={t.slug}
+                        href="/resources"
+                        className="group overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] transition-all hover:-translate-y-0.5 hover:border-white/25"
+                      >
+                        <div className="relative aspect-[16/10] overflow-hidden bg-white/[0.02]">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={t.screenshotUrl}
+                            alt={`${t.displayName} preview`}
+                            loading="lazy"
+                            className="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.04]"
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).style.opacity = "0";
+                            }}
+                          />
+                        </div>
+                        <div className="p-3">
+                          <p className="truncate text-sm font-medium text-white/85">{t.displayName}</p>
+                          <p className="truncate text-xs text-white/35">{t.category}</p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </div>
+          </Reveal>
         </section>
       </div>
     </AppShell>
@@ -207,11 +241,9 @@ function ProjectGrid({
             onClick={() => onOpen(p)}
             className="group overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.03]"
           >
-            {/* Honest monogram tile — we don't fabricate a screenshot. */}
-            <div className="relative flex aspect-video items-center justify-center bg-gradient-to-br from-white/[0.07] to-transparent">
-              <span className="text-4xl font-medium text-white/60">
-                {(p.name || "?").charAt(0).toUpperCase()}
-              </span>
+            {/* Real thumbnail: the live site itself (inert); monogram otherwise. */}
+            <div className="relative">
+              <ProjectThumb name={p.name} liveUrl={p.liveUrl} />
               <ArrowUpRight className="absolute right-3 top-3 h-4 w-4 text-white/20 transition-colors group-hover:text-white/60" />
             </div>
             <div className="p-4">

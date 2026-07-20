@@ -75,7 +75,7 @@ const features = [
     icon: <Zap className="w-4 h-4" />
   },
   {
-    title: "100+ AI Models",
+    title: "400+ AI Models",
     description: "Latest LLMs available",
     icon: <Brain className="w-4 h-4" />
   },
@@ -467,7 +467,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
               <p className="text-xs text-neutral-500">generation</p>
             </div>
             <div>
-              <p className="text-2xl font-medium text-white">100+</p>
+              <p className="text-2xl font-medium text-white">400+</p>
               <p className="text-xs text-neutral-500">AI models</p>
             </div>
           </div>

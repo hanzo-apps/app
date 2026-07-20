@@ -207,7 +207,7 @@ export default function LoginPage() {
                 <p className="text-xs text-white/30 mt-1">Response time</p>
               </div>
               <div className="text-center">
-                <p className="text-3xl font-light text-white/80">100+</p>
+                <p className="text-3xl font-light text-white/80">400+</p>
                 <p className="text-xs text-white/30 mt-1">AI models</p>
               </div>
             </div>
