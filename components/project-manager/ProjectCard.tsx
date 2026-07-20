@@ -13,19 +13,13 @@ import {
 import { Pencil, Trash2, MoreVertical, ExternalLink, Globe } from 'lucide-react';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { builderLink, liveUrlOf, type Project, type ProjectStatus } from '@/lib/api/projects';
+import { builderLink, liveUrlOf, type Project } from '@/lib/api/projects';
+import { statusOf } from '@/lib/project-status';
 
 interface ProjectCardProps {
   project: Project;
   onDelete: (project: Project) => void;
 }
-
-const STATUS_CONFIG: Record<ProjectStatus, { color: string; label: string }> = {
-  draft:    { color: 'bg-slate-400',   label: 'Draft' },
-  building: { color: 'bg-amber-500',   label: 'Building' },
-  live:     { color: 'bg-emerald-500', label: 'Live' },
-  error:    { color: 'bg-red-500',     label: 'Error' },
-};
 
 function timeAgo(unixSeconds: number): string {
   const d = new Date(unixSeconds * 1000);
@@ -35,7 +29,7 @@ function timeAgo(unixSeconds: number): string {
 
 export function ProjectCard({ project, onDelete }: ProjectCardProps) {
   const router = useRouter();
-  const status = STATUS_CONFIG[project.status] ?? STATUS_CONFIG.draft;
+  const status = statusOf(project.status);
   // The SERVABLE public URL — normalizes any legacy two-label liveUrl to the
   // bare <slug>.hanzo.app host that actually resolves.
   const visitUrl = liveUrlOf(project);
@@ -45,7 +39,7 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
       <div className="p-4 pb-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0 flex-1">
-            <span className={`h-2.5 w-2.5 rounded-full shrink-0 ${status.color}`} title={status.label} />
+            <span className={`h-2.5 w-2.5 rounded-full shrink-0 ${status.dot}`} title={status.label} />
             <h3 className="font-medium text-base truncate">{project.name}</h3>
           </div>
 

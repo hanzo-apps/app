@@ -7,7 +7,7 @@
 
 import Link from "next/link";
 import { ArrowRight, Download, Fingerprint, KeyRound, Network, Plug } from "lucide-react";
-import { AppShell } from "@/components/app-shell";
+import Header from "@/components/layout/header";
 import Reveal from "@/components/landing/reveal";
 import SiteFooter from "@/components/landing/site-footer";
 import AppCatalogSection from "@/components/apps/app-catalog";
@@ -40,8 +40,8 @@ const FOUNDATION = [
 
 export default function AppsPage() {
   return (
-    <AppShell currentView="apps">
-    <div className="relative flex-1 overflow-y-auto bg-black text-white">
+    <div className="min-h-screen bg-black text-white">
+      <Header />
       {/* Monochrome hero glow — single soft white radial, matching the homepage. */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="absolute left-1/2 top-[-12%] h-[560px] w-[900px] -translate-x-1/2 rounded-full bg-white/[0.06] blur-[130px]" />
@@ -158,6 +158,5 @@ export default function AppsPage() {
 
       <SiteFooter />
     </div>
-    </AppShell>
   );
 }

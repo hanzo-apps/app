@@ -12,6 +12,7 @@ import {
   Settings,
   Info,
   BookOpen,
+  Bot,
   Cloud,
   LogOut,
   LayoutDashboard,
@@ -73,6 +74,7 @@ const PRIMARY_ITEMS: SidebarItem[] = [
   { id: 'search', label: 'Search', icon: Search, action: 'open-search', kbd: '⌘K' },
   { id: 'resources', label: 'Resources', icon: Sparkles, route: '/resources' },
   { id: 'connectors', label: 'Connectors', icon: Plug, route: '/connectors' },
+  { id: 'agents', label: 'Agents', icon: Bot, route: '/agents' },
 ];
 
 // ── Projects group ──────────────────────────────────────────────────────────

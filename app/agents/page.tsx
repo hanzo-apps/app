@@ -34,6 +34,7 @@ import { Input } from "@hanzo/ui";
 import { Badge } from "@hanzo/ui";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@hanzo/ui";
 import { HanzoLogo } from "@/components/HanzoLogo";
+import { AppShell } from "@/components/app-shell";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
@@ -226,7 +227,8 @@ export default function AgentsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black">
+    <AppShell currentView="agents">
+    <div className="flex-1 overflow-y-auto bg-black">
       {/* Header */}
       <header className="border-b border-neutral-800 px-4 py-4 sm:px-6">
         <div className="container mx-auto">
@@ -631,5 +633,6 @@ export default function AgentsPage() {
         )}
       </div>
     </div>
+    </AppShell>
   );
 }
