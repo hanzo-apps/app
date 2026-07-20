@@ -26,6 +26,7 @@ import { useRouter } from 'next/navigation';
 import { Menu, Search } from 'lucide-react';
 
 import { Sidebar } from '@/components/sidebar';
+import { OrgProvider } from '@/lib/org/client';
 import { HanzoLogo } from '@/components/HanzoLogo';
 import { CommandPalette } from '@/components/command-palette';
 import type { Project } from '@/lib/vfs/types';
@@ -55,6 +56,10 @@ export function AppShell({ children, currentView = 'templates' }: AppShellProps)
   }, []);
 
   return (
+    // ONE org scope for the whole shell — the Sidebar's org switcher AND every
+    // page rendered as {children} (Connectors, Settings, …) read the SAME context,
+    // so a page that calls useOrg never crashes for lack of a provider ancestor.
+    <OrgProvider>
     <div className="relative flex h-screen overflow-hidden bg-black text-white">
       <Sidebar
         currentView={currentView}
@@ -96,6 +101,7 @@ export function AppShell({ children, currentView = 'templates' }: AppShellProps)
 
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
     </div>
+    </OrgProvider>
   );
 }
 
