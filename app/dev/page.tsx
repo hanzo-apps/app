@@ -11,7 +11,6 @@ import { readStagedProject, clearStagedProject } from "@/lib/import/staging";
 import {
   resolveTemplateSeedMeta,
   buildTemplateSeedPrompt,
-  fetchTemplateHtml,
 } from "@/lib/api/templates";
 import type { Page } from "@/types";
 
@@ -59,7 +58,9 @@ export default function DevPage() {
   const [seedReady, setSeedReady] = useState(false);
   // Edit-mode template: the template's ready HTML, loaded into the editor so the
   // preview renders IMMEDIATELY (before/without any AI call). null until fetched.
-  const [templatePages, setTemplatePages] = useState<Page[] | null>(null);
+  // Templates no longer preload page HTML (they generate their landing page);
+  // kept for the imported-project path which passes pages through unchanged.
+  const [templatePages] = useState<Page[] | null>(null);
   const [templateEditDone, setTemplateEditDone] = useState(false);
 
   // Load initialPrompt from localStorage on client-side only
@@ -213,45 +214,58 @@ export default function DevPage() {
     }
   }, [repoUrl, action, seedPrompt]);
 
-  // Edit-mode template: LOAD the template's real starting app into the preview
-  // and GREET — never generate. This is the fix for the doomed no-op generation
-  // (the seed told the model to change nothing → "didn't return a usable page"
-  // + empty preview). The template's HTML populates the preview immediately; an
-  // assistant greeting invites the first change; generation fires only when the
-  // user actually asks. Applies to ANY template edit (gallery/hanzo-apps/git),
-  // not just gallery. Falls back to the default page when there's no fetchable
-  // preview (never dead-ends).
+  // Edit-mode template: BUILD the template's ONE landing page. Gallery templates
+  // are full running apps (Next.js, multi-page), NOT fetchable single-page HTML —
+  // the old path loaded a dead SCREENSHOT (and non-gallery slugs fell back to a
+  // directory-of-pages), neither of which is a usable, editable template. Instead
+  // we resolve the template's design brief (category · use case · features) and
+  // seed a REAL generation of the SINGLE primary landing page (the dashboard/home)
+  // as editable HTML the user immediately builds on. A rich, concrete brief (never
+  // a no-op) avoids the old "didn't return a usable page" failure. Applies to ANY
+  // template edit; falls back to a slug-derived brief when the catalog is silent.
   useEffect(() => {
-    if (seedPrompt.trim()) return; // a seeded fork auto-generates instead
+    if (seedPrompt.trim()) return; // a seeded fork already auto-generates
     if (action !== "edit" || !repoData?.name || templateEditDone) return;
     let alive = true;
-    // Drop any stale build seed so AppEditor's mount can't auto-generate — a
-    // template edit greets, it does not build.
-    try {
-      localStorage.removeItem("initialPrompt");
-    } catch {
-      /* storage unavailable */
-    }
     (async () => {
-      const html = await fetchTemplateHtml(repoData.name);
-      if (!alive) return;
-      if (html) setTemplatePages([{ path: "index.html", html }]);
-      // Resolve the display name (workspace menu) and stage a user-facing
-      // greeting as the FIRST assistant bubble. Set on window BEFORE AppEditor
-      // mounts — the splash below holds the mount until templateEditDone, so
-      // AskAI's greeting effect reliably picks it up (mirrors the seed contract).
-      let title = repoData.name as string;
+      const slug = repoData.name as string;
+      let title = slug.replace(/[-/]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+      let brief = "";
       try {
-        const meta = await resolveTemplateSeedMeta(repoData.name);
-        if (alive && meta?.displayName) {
-          title = meta.displayName;
-          (window as any).__projectName = meta.displayName;
+        const meta = await resolveTemplateSeedMeta(slug);
+        if (meta) {
+          title = meta.displayName || title;
+          const feats = meta.features?.length
+            ? ` Include these areas: ${meta.features.join(", ")}.`
+            : "";
+          const use = meta.useCase ? ` It is used for: ${meta.useCase}.` : "";
+          const desc = meta.description ? ` ${meta.description}` : "";
+          const cat = meta.category || "modern";
+          brief =
+            `Build the primary landing page for "${title}" — a ${cat} app.${desc}${use}${feats} ` +
+            `Design ONE polished, self-contained, fully responsive page (the main ${cat.toLowerCase()} view): ` +
+            `real navigation, a hero/summary, KPI or content cards, charts or sections, and a footer. ` +
+            `Production-quality, modern, dark-mode friendly, realistic placeholder content (no lorem).`;
         }
-      } catch {}
-      (window as any).__assistantGreeting =
-        `You're editing the ${title} template — it's loaded and running in the preview. ` +
-        `Tell me what you'd like to change and I'll build it.`;
-      if (alive) setTemplateEditDone(true);
+      } catch {
+        /* fall through to the generic brief */
+      }
+      if (!brief) {
+        brief =
+          `Build the primary, self-contained, responsive landing page for "${title}" — one polished view ` +
+          `with real navigation, a hero/summary, content cards or sections, and a footer. Modern, production-quality, dark-mode friendly.`;
+      }
+      if (!alive) return;
+      // Leave templatePages null: AppEditor mounts BLANK (no screenshot) and
+      // AskAI reads __initialPrompt on mount to auto-build the real landing page.
+      (window as any).__projectName = title;
+      (window as any).__initialPrompt = brief;
+      try {
+        localStorage.setItem("initialPrompt", brief);
+      } catch {
+        /* window.__initialPrompt is sufficient */
+      }
+      setTemplateEditDone(true); // lift the "Loading template…" splash → generate
     })();
     return () => {
       alive = false;
