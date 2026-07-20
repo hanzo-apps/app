@@ -263,7 +263,10 @@ export function BuildComposer({
                     <ChevronDown className="h-3 w-3 text-white/40" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-56">
+                <DropdownMenuContent
+                  align="start"
+                  className="w-56 rounded-xl border border-white/10 bg-[#0e0e12] text-white shadow-2xl"
+                >
                   {MODES.map((m) => (
                     <DropdownMenuItem
                       key={m.value}
@@ -274,7 +277,7 @@ export function BuildComposer({
                         <m.icon className="h-4 w-4" />
                         {m.label}
                       </span>
-                      <span className="pl-6 text-xs text-muted-foreground">{m.hint}</span>
+                      <span className="pl-6 text-xs text-white/45">{m.hint}</span>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
