@@ -45,6 +45,7 @@ import { OrgSwitcher } from '@/components/org-switcher';
 import { SidebarWallet } from '@/components/SidebarWallet';
 import { useRouter } from 'next/navigation';
 import { useProjects } from '@/hooks/useProjects';
+import { builderLink } from '@/lib/api/projects';
 import { useFolders } from '@/hooks/useFolders';
 import { markProjectOpened, orderByRecentlyOpened } from '@/lib/recent-projects';
 import pkg from '@/package.json';
@@ -208,10 +209,10 @@ function SidebarContent({
     return out;
   }, [cloudProjects]);
 
-  const openCloudProject = (slug: string) => {
+  const openCloudProject = (slug: string, org?: string) => {
     onMobileOpenChange?.(false);
     markProjectOpened(slug);
-    router.push(`/dev?project=${encodeURIComponent(slug)}`);
+    router.push(builderLink(slug, org));
   };
 
   const submitNewFolder = () => {
@@ -441,7 +442,7 @@ function SidebarContent({
                     variant="ghost"
                     size="sm"
                     className={cn(collapsed ? 'h-8 w-full justify-center p-0' : 'w-full justify-start')}
-                    onClick={() => openCloudProject(project.slug || project.id)}
+                    onClick={() => openCloudProject(project.slug || project.id, project.org)}
                     title={project.name}
                   >
                     <FolderOpen

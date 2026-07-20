@@ -49,7 +49,7 @@ const capabilities: Capability[] = [
     name: "AI, built in",
     product: "LLM Gateway",
     href: "https://hanzo.ai/llm",
-    desc: "Call 100+ models — Zen plus Anthropic, OpenAI, Google, Mistral — from your app through one gateway.",
+    desc: "Call 400+ models — Zen plus Anthropic, OpenAI, Google, Mistral — from your app through one gateway.",
     snippet: "POST api.hanzo.ai/v1/chat/completions",
   },
   {

@@ -17,7 +17,7 @@ export default function TemplatesPage() {
   return (
     <AppShell currentView="templates">
       <TemplatesView
-        onProjectSelect={(project) => router.push(`/dev?project=${encodeURIComponent(project.id)}`)}
+        onProjectSelect={(project) => router.push(builderLink(project.id))}
         onNavigate={(view) => router.push(view.startsWith('/') ? view : `/${view}`)}
       />
     </AppShell>
