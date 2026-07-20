@@ -86,8 +86,15 @@ export default function LandingPage() {
               org: p.org,
               name: p.name || p.slug,
               status: p.status || "draft",
+              // Servable host: live → bare <slug>.hanzo.app (a legacy two-label
+              // liveUrl never resolves and would break the thumbnail iframe);
+              // else a bound custom (non-hanzo) domain, else none.
               liveUrl:
-                p.liveUrl || (p.status === "live" ? `https://${p.slug}.hanzo.app` : null),
+                p.status === "live"
+                  ? `https://${p.slug}.hanzo.app`
+                  : p.liveUrl && !p.liveUrl.includes(".hanzo.app")
+                    ? p.liveUrl
+                    : null,
               updatedAtIso: p.updatedAt
                 ? new Date(p.updatedAt * 1000).toISOString()
                 : p.createdAt
