@@ -13,7 +13,7 @@ import { cloudBase } from "@/lib/org/server";
 import { Project as ProjectType } from "@/types";
 
 /**
- * The ONE canonical projects store is the org-scoped cloud projectsvc
+ * The ONE canonical projects store is the org-scoped cloud projects service
  * (`api.hanzo.ai/v1/projects`) — the SAME records console.hanzo.ai and the
  * same-origin `/v1/projects` BFF read, tenant-derived from the bearer `owner`
  * claim. We reach it here EXACTLY the way that (proven-working) BFF does: the raw

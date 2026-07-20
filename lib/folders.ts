@@ -1,13 +1,13 @@
 /**
  * Project folders — app-side grouping over the cloud projects list.
  *
- * BACKEND GAP (flagged honestly): the cloud projectsvc `Project` model has NO
+ * BACKEND GAP (flagged honestly): the cloud projects service `Project` model has NO
  * folder/parent field (see lib/api/projects.ts — id, org, slug, name, repo,
  * framework, status, timestamps only). So folders are persisted HERE, in the
  * browser (localStorage), as a real-but-local grouping: a folder list + a
  * slug→folderId assignment map. This persists across reloads on THIS device but
  * does not yet sync across devices/teammates — that needs a `folderId` on the
- * projectsvc record (or a `/v1/folders` store). We do the real local part rather
+ * projects service record (or a `/v1/folders` store). We do the real local part rather
  * than fake a cloud folder that wouldn't persist.
  *
  * Reactive: mutations emit `hanzo:folders-changed` so `useFolders` consumers
