@@ -10,6 +10,7 @@ import HeroPreview from "@/components/landing/hero-preview";
 import LogoWall from "@/components/landing/logo-wall";
 import CloudIntegration from "@/components/landing/cloud-integration";
 import ModelsStrip from "@/components/landing/models-strip";
+import HanzoModels from "@/components/landing/hanzo-models";
 import HowItWorks from "@/components/landing/how-it-works";
 import Comparison from "@/components/landing/comparison";
 import SiteFooter from "@/components/landing/site-footer";
@@ -269,6 +270,7 @@ export default function LandingPage() {
         <LogoWall />
         <CloudIntegration />
         <ModelsStrip />
+        <HanzoModels />
         <HowItWorks />
         <Comparison />
 
