@@ -3,6 +3,7 @@ export { BAREBONES_PROJECT_TEMPLATE } from './barebones';
 export { CONTACT_LANDING_PROJECT_TEMPLATE } from './contact-landing';
 export { HANZO_FULLSTACK_PROJECT_TEMPLATE } from './hanzo-fullstack';
 export { BLOG_PROJECT_TEMPLATE } from './blog';
+export { VIBE_CHECK_PROJECT_TEMPLATE } from './vibe-check';
 export { REACT_STARTER_PROJECT_TEMPLATE } from './react-starter';
 export { REACT_DEMO_PROJECT_TEMPLATE } from './react-demo';
 export { PREACT_STARTER_PROJECT_TEMPLATE } from './preact-starter';

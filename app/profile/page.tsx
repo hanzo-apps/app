@@ -61,7 +61,7 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-black">
       {/* Header */}
       <header className="border-b border-neutral-800 px-6 py-4">
-        <div className="container mx-auto flex items-center justify-between">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
@@ -251,19 +251,19 @@ export default function ProfilePage() {
               <h3 className="text-lg font-medium text-white mb-4">Statistics</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-neutral-800/50 rounded-lg p-4 text-center">
-                  <p className="text-2xl font-medium text-purple-400">12</p>
+                  <p className="text-2xl font-medium text-white">12</p>
                   <p className="text-sm text-neutral-400">Projects</p>
                 </div>
                 <div className="bg-neutral-800/50 rounded-lg p-4 text-center">
-                  <p className="text-2xl font-medium text-purple-400">342</p>
+                  <p className="text-2xl font-medium text-white">342</p>
                   <p className="text-sm text-neutral-400">AI Generations</p>
                 </div>
                 <div className="bg-neutral-800/50 rounded-lg p-4 text-center">
-                  <p className="text-2xl font-medium text-purple-400">89</p>
+                  <p className="text-2xl font-medium text-white">89</p>
                   <p className="text-sm text-neutral-400">Deployments</p>
                 </div>
                 <div className="bg-neutral-800/50 rounded-lg p-4 text-center">
-                  <p className="text-2xl font-medium text-purple-400">2.3k</p>
+                  <p className="text-2xl font-medium text-white">2.3k</p>
                   <p className="text-sm text-neutral-400">Views</p>
                 </div>
               </div>

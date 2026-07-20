@@ -10,10 +10,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@hanzo/ui';
-import { Pencil, Trash2, MoreVertical, ExternalLink, Globe } from 'lucide-react';
+import { Pencil, Trash2, MoreVertical, ExternalLink, Globe, Settings } from 'lucide-react';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { builderLink, liveUrlOf, type Project } from '@/lib/api/projects';
+import { builderLink, configLink, liveUrlOf, type Project } from '@/lib/api/projects';
 import { statusOf } from '@/lib/project-status';
 
 interface ProjectCardProps {
@@ -53,6 +53,10 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
               <DropdownMenuItem onClick={() => router.push(builderLink(project.slug, project.org))}>
                 <Pencil className="mr-2 h-4 w-4" />
                 Edit in builder
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push(configLink(project.slug, project.org))}>
+                <Settings className="mr-2 h-4 w-4" />
+                Configure
               </DropdownMenuItem>
               {visitUrl && (
                 <DropdownMenuItem onClick={() => window.open(visitUrl, '_blank', 'noopener')}>

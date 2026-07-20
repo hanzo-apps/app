@@ -10,15 +10,15 @@
 import Reveal from "./reveal";
 
 const partners = [
-  { src: "/logos/partners/techstars.svg", alt: "Techstars", w: 132 },
-  { src: "/logos/partners/nvidia.svg", alt: "NVIDIA", w: 104 },
-  { src: "/logos/partners/aws.svg", alt: "Amazon Web Services", w: 62 },
-  { src: "/logos/partners/microsoft.svg", alt: "Microsoft", w: 122 },
-  { src: "/logos/partners/google.svg", alt: "Google", w: 96 },
-  { src: "/logos/partners/digitalocean.svg", alt: "DigitalOcean", w: 140 },
-  { src: "/logos/partners/nebius.svg", alt: "Nebius", w: 104 },
-  { src: "/logos/partners/lux-network.svg", alt: "Lux Network", w: 42 },
-  { src: "/logos/partners/zoo-labs-foundation.svg", alt: "Zoo Labs Foundation", w: 42 },
+  { src: "/logos/partners/techstars.svg", alt: "Techstars" },
+  { src: "/logos/partners/nvidia.svg", alt: "NVIDIA" },
+  { src: "/logos/partners/aws.svg", alt: "Amazon Web Services" },
+  { src: "/logos/partners/microsoft.svg", alt: "Microsoft" },
+  { src: "/logos/partners/google.svg", alt: "Google" },
+  { src: "/logos/partners/digitalocean.svg", alt: "DigitalOcean" },
+  { src: "/logos/partners/nebius.svg", alt: "Nebius" },
+  { src: "/logos/partners/lux-network.svg", alt: "Lux Network" },
+  { src: "/logos/partners/zoo-labs-foundation.svg", alt: "Zoo Labs Foundation" },
 ];
 
 export default function LogoWall() {
@@ -29,15 +29,14 @@ export default function LogoWall() {
           Backed by Techstars · Built on world-class infrastructure
         </Reveal>
 
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-8 md:gap-x-14">
+        <div className="mt-10 grid grid-cols-3 items-center gap-x-10 gap-y-8 md:gap-x-14">
           {partners.map((p, i) => (
-            <Reveal key={p.alt} delay={i * 40}>
+            <Reveal key={p.alt} delay={i * 40} className="text-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={p.src}
                 alt={p.alt}
-                style={{ width: p.w }}
-                className="h-6 w-auto object-contain opacity-45 transition-opacity duration-200 [filter:brightness(0)_invert(1)] hover:opacity-90 md:h-7"
+                className="h-6 w-auto max-w-full object-contain opacity-45 transition-opacity duration-200 [filter:brightness(0)_invert(1)] hover:opacity-90 md:h-7"
               />
             </Reveal>
           ))}

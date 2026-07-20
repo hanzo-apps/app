@@ -358,8 +358,8 @@ export function BuildComposer({
 
       {/* Subtle honest sub-line — no fabricated claims. */}
       {subline && (
-        <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-xs text-white/35">
-          <Sparkles className="h-3 w-3" />
+        <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-xs text-white/55">
+          <Sparkles className="h-3 w-3 hidden sm:inline-block" />
           UI, database, auth, and 400+ AI models — wired in and deployed to Hanzo Cloud.
         </p>
       )}

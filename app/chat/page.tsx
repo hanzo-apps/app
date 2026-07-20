@@ -124,7 +124,9 @@ export default function ChatPage() {
   const [activeChat, setActiveChat] = useState<Chat | null>(chats[0]);
   const [inputMessage, setInputMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(
+    () => typeof window !== "undefined" && !window.matchMedia("(min-width:1024px)").matches
+  );
   const [selectedModel, setSelectedModel] = useState("Claude 3.5 Sonnet");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -296,6 +298,14 @@ export default function ChatPage() {
     }, 50);
   };
 
+  const selectChat = (chat: Chat) => {
+    setActiveChat(chat);
+    // Below lg the sidebar is an overlay — dismiss it once a chat is chosen
+    if (typeof window !== "undefined" && !window.matchMedia("(min-width:1024px)").matches) {
+      setSidebarCollapsed(true);
+    }
+  };
+
   const createNewChat = () => {
     const newChat: Chat = {
       id: Date.now().toString(),
@@ -398,7 +408,7 @@ export default function ChatPage() {
             {sortedChats.map(chat => (
               <button
                 key={chat.id}
-                onClick={() => setActiveChat(chat)}
+                onClick={() => selectChat(chat)}
                 className={cn(
                   "w-full text-left p-3 rounded-lg transition-all group relative",
                   activeChat?.id === chat.id
@@ -471,7 +481,7 @@ export default function ChatPage() {
               <div className="flex items-center gap-2">
                 {/* Agent Selector */}
                 <Select value={selectedAgentId} onValueChange={setSelectedAgentId}>
-                  <SelectTrigger className="w-[160px] bg-neutral-900 border-neutral-700 text-white">
+                  <SelectTrigger className="min-w-0 flex-1 md:flex-none md:w-[160px] bg-neutral-900 border-neutral-700 text-white">
                     <SelectValue>
                       <span className="flex items-center gap-2">
                         <span>{selectedAgent?.emoji}</span>
@@ -500,7 +510,7 @@ export default function ChatPage() {
 
                 {/* Model Selector */}
                 <Select value={selectedModel} onValueChange={setSelectedModel}>
-                  <SelectTrigger className="w-[180px] bg-neutral-900 border-neutral-700 text-white">
+                  <SelectTrigger className="min-w-0 flex-1 md:flex-none md:w-[180px] bg-neutral-900 border-neutral-700 text-white">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-neutral-900 border-neutral-700">
@@ -522,14 +532,14 @@ export default function ChatPage() {
             <div className="flex items-center gap-2">
               <Link href="/playground">
                 <Button variant="ghost" size="sm" className="text-neutral-400 hover:text-white">
-                  <Code2 className="w-4 h-4 mr-2" />
-                  Playground
+                  <Code2 className="w-4 h-4 md:mr-2" />
+                  <span className="hidden md:inline">Playground</span>
                 </Button>
               </Link>
               <Link href="/agents">
                 <Button variant="ghost" size="sm" className="text-neutral-400 hover:text-white">
-                  <Bot className="w-4 h-4 mr-2" />
-                  Agents
+                  <Bot className="w-4 h-4 md:mr-2" />
+                  <span className="hidden md:inline">Agents</span>
                 </Button>
               </Link>
               <Link href="/integrations">
@@ -577,7 +587,7 @@ export default function ChatPage() {
                         <div className="text-neutral-200 prose prose-invert max-w-none">
                           <p className="whitespace-pre-wrap">{message.content}</p>
                           {message.isStreaming && (
-                            <span className="inline-block w-2 h-4 ml-1 bg-purple-500 animate-pulse" />
+                            <span className="inline-block w-2 h-4 ml-1 bg-white animate-pulse" />
                           )}
                         </div>
                         {message.role === "assistant" && !message.isStreaming && (
@@ -661,7 +671,7 @@ export default function ChatPage() {
                     onClick={sendMessage}
                     disabled={!inputMessage.trim() || isStreaming}
                     size="sm"
-                    className="absolute right-2 bottom-2 h-8 w-8 p-0 bg-purple-600 hover:bg-purple-700 disabled:opacity-50"
+                    className="absolute right-2 bottom-2 h-8 w-8 p-0 bg-white text-black hover:bg-neutral-200 disabled:opacity-50"
                   >
                     {isStreaming ? (
                       <StopCircle className="w-4 h-4" />

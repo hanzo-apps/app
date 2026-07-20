@@ -98,12 +98,12 @@ export default function ResourcesPage() {
         <header className="border-b border-neutral-900 bg-gradient-to-b from-neutral-950 to-black">
           <div className="container mx-auto px-6 py-10">
             <div className="mb-2 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-neutral-800">
                 <Sparkles className="h-6 w-6 text-white" />
               </div>
               <h1 className="text-3xl font-medium">Resources</h1>
               <Badge variant="secondary" className="ml-1">
-                {items.length}
+                {items.length} resources
               </Badge>
             </div>
             <p className="max-w-2xl text-neutral-400">
@@ -116,22 +116,22 @@ export default function ResourcesPage() {
 
         {/* Filters */}
         <div className="sticky top-0 z-30 border-b border-neutral-900 bg-black/95 backdrop-blur">
-          <div className="container mx-auto flex flex-wrap items-center gap-3 px-6 py-3">
-            <div className="relative">
+          <div className="container mx-auto flex flex-wrap items-start gap-3 px-6 py-3">
+            <div className="relative w-full sm:w-auto">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
               <Input
                 placeholder="Search resources…"
                 value={query}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
-                className="w-64 border-neutral-800 bg-neutral-900 pl-9 text-white"
+                className="w-full sm:w-64 border-neutral-800 bg-neutral-900 pl-9 text-white"
               />
             </div>
-            <div className="flex flex-wrap items-center gap-1.5">
+            <div className="flex flex-nowrap items-center gap-1.5 overflow-x-auto sm:flex-wrap [scrollbar-width:none]">
               {categories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setCategory(cat)}
-                  className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                  className={`rounded-full px-3 py-2 sm:py-1.5 text-xs font-medium shrink-0 whitespace-nowrap transition-colors ${
                     category === cat
                       ? 'bg-white text-black'
                       : 'bg-neutral-900 text-neutral-400 hover:bg-neutral-800 hover:text-white'
@@ -250,8 +250,8 @@ function ResourceCard({
       </div>
       <div className="flex flex-1 flex-col p-4">
         <h3 className="font-medium text-white">{item.title}</h3>
-        <p className="mt-1 line-clamp-2 flex-1 text-xs text-neutral-500">{item.description}</p>
-        <p className="mt-2 text-[11px] text-neutral-400">{item.meta || item.framework}</p>
+        <p className="mt-1 line-clamp-2 min-h-[2.5rem] text-xs text-neutral-500">{item.description}</p>
+        <p className="mt-auto pt-3 text-[11px] text-neutral-400">{item.meta || item.framework}</p>
       </div>
     </button>
   );
