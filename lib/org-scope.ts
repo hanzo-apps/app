@@ -1,19 +1,16 @@
 /**
  * Active org scope — which organization the builder is currently acting in.
  *
- * MIRRORED FROM console2's `src/lib/org-scope.ts` (identical API + behavior) so
- * hanzo.app and console.hanzo.ai switch orgs the SAME way. The one adaptation:
- * console2 defaults to a fixed brand org (`config.iamOrgName`); hanzo.app is a
- * customer app, so the default is the signed-in user's HOME org (their IAM owner
- * claim), seeded once by the OrgProvider via `setHomeOrg`.
- *
- * The scope is a VALUE (Hickey): `currentOrg()` reads a localStorage override,
- * else the home org. `client.ts`-equivalent callers stamp it as `X-Org-Id`; the
- * server honors it only for a global admin (a normal user is pinned to their
- * owner), so switching is safe.
- *
- * TODO: hoist to @hanzo/ui (task #36) — share this module + <OrgSwitcher> between
- * console2 and hanzo.app instead of mirroring.
+ * The CANONICAL contract is `orgScope`/`filterOrgs` in `@hanzo/ui@8` (hoisted
+ * per hanzoai/ui#36); this module matches it. It stays LOCAL here (recorded
+ * debt) because (a) this app aliases `@hanzo/ui` → `@hanzo/ui-shadcn`, so the
+ * hoisted package would need a second import name, and (b) the hoisted factory
+ * fixes `brandOrg` at construction while hanzo.app's default is the signed-in
+ * user's HOME org (their IAM owner claim), seeded late by the OrgProvider via
+ * `setHomeOrg`. Behavior is identical: `currentOrg()` reads a localStorage
+ * override, else the home org; switching persists + reloads so every module
+ * refetches under the new `X-Org-Id` (the server honors it only for a global
+ * admin — a normal user is pinned to their owner).
  */
 
 const KEY = 'hanzo.app.org';
