@@ -2,17 +2,17 @@
  * Cloud projects client — the ONE client for the org-scoped shared store.
  *
  * Talks to the SAME-ORIGIN `/v1/projects` BFF (app/v1/projects/[[...path]]),
- * which forwards to the cloud projectsvc as the signed-in user. The org is
+ * which forwards to the cloud projects service as the signed-in user. The org is
  * derived server-side from the bearer owner claim, so every record is org-scoped
  * and billed to the right org — and the httpOnly `hanzo_token` is NEVER read by
  * browser JS (the cookie rides the same-origin request; least privilege).
  *
- * Shape mirrors the projectsvc CONTRACT.md exactly (name + slug + framework +
+ * Shape mirrors the projects service CONTRACT.md exactly (name + slug + framework +
  * status + liveUrl) so hanzo.app and console.hanzo.ai render the SAME records
  * from the SAME store. No fabricated fields (no cpu/memory/region mock).
  */
 
-// --- Types (projectsvc CONTRACT.md) ---
+// --- Types (projects service CONTRACT.md) ---
 
 export type ProjectStatus = 'draft' | 'building' | 'live' | 'error';
 
@@ -180,16 +180,6 @@ export function configLink(slug: string, org?: string | null): string {
   const o = (org || '').trim();
   if (o) return `/dev/${encodeURIComponent(o)}/${encodeURIComponent(slug)}/settings`;
   return `/dev?project=${encodeURIComponent(slug)}`;
-}
-
-/**
- * Canonical CD deep-link for a published app — the ArgoCD-style resource tree,
- * build logs, sync + health detail at cd.hanzo.ai (the "nitty gritty"). The
- * platform writes each app's Service CR as `metadata.name = <slug>`, and the CD
- * UI addresses apps at `/applications/<name>`. ONE place for the convention.
- */
-export function cdAppLink(slug: string): string {
-  return `https://cd.hanzo.ai/applications/${encodeURIComponent(slug)}`;
 }
 
 /**
