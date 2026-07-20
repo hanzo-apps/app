@@ -7,35 +7,48 @@ interface HanzoLogoProps extends SVGProps<SVGSVGElement> {
 interface HanzoBrandProps {
   /** Wrapper classes — set the text color here; the mark inherits currentColor. */
   className?: string
-  /** Size/position of the logomark (defaults to a header-sized 8×8). */
+  /** Size/position of the logomark. Defaults to the ONE canonical 32×32 chrome
+   *  size (matches the dashboard sidebar) — pass a size only for a deliberate
+   *  exception, never to re-tune the default. */
   markClassName?: string
-  /** Extra classes for the "Hanzo" wordmark text. */
+  /** Extra classes for the wordmark text. */
   wordmarkClassName?: string
   /** Hide the wordmark to show the mark alone (compact/collapsed chrome). */
   showWordmark?: boolean
-  /** Label — the product surface can read "Hanzo", "Hanzo Dev", etc. */
+  /** Label — the product surface reads "Hanzo App", "Hanzo Dev", etc. */
   label?: string
+  /** One-time brand reveal: show the wordmark, then animate it away leaving just
+   *  the H (a slow width+opacity collapse, ~2.4s in). No-op under
+   *  prefers-reduced-motion (the wordmark stays put). */
+  collapse?: boolean
 }
 
 /**
- * The canonical Hanzo brand lockup: the real geometric logomark + the "Hanzo"
- * wordmark, side by side. This is the ONE brand mark for chrome (header /
- * sidebar / footer / auth) — never a bare letter "H". The mark inherits
- * `currentColor`, so a neutral wrapper (`text-white`, `text-foreground`) keeps
- * the whole lockup monochrome with no per-call color plumbing.
+ * The canonical Hanzo brand lockup: the real geometric logomark + the wordmark,
+ * side by side. This is the ONE brand mark for ALL chrome (header / sidebar /
+ * footer / auth) — never a bare letter "H", never a per-call size/label re-tune.
+ * The mark inherits `currentColor`, so a neutral wrapper (`text-white`) keeps the
+ * whole lockup monochrome with no per-call color plumbing. Default size 32×32 and
+ * default label "Hanzo App" are the single source of brand truth — override only
+ * for a deliberate, documented exception.
  */
 export function HanzoBrand({
   className = "",
-  markClassName = "w-8 h-8",
+  markClassName = "h-8 w-8",
   wordmarkClassName = "",
   showWordmark = true,
-  label = "Hanzo",
+  label = "Hanzo App",
+  collapse = false,
 }: HanzoBrandProps) {
   return (
     <span className={`inline-flex items-center gap-2 ${className}`}>
       <HanzoLogo className={markClassName} />
       {showWordmark && (
-        <span className={`font-medium text-lg tracking-tight ${wordmarkClassName}`}>
+        <span
+          className={`overflow-hidden whitespace-nowrap text-lg font-medium tracking-tight ${
+            collapse ? "hanzo-wordmark-collapse" : ""
+          } ${wordmarkClassName}`}
+        >
           {label}
         </span>
       )}

@@ -251,7 +251,7 @@ function ResourceCard({
       <div className="flex flex-1 flex-col p-4">
         <h3 className="font-medium text-white">{item.title}</h3>
         <p className="mt-1 line-clamp-2 flex-1 text-xs text-neutral-500">{item.description}</p>
-        <p className="mt-2 text-[11px] text-neutral-600">{item.meta || item.framework}</p>
+        <p className="mt-2 text-[11px] text-neutral-400">{item.meta || item.framework}</p>
       </div>
     </button>
   );

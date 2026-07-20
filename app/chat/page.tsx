@@ -362,10 +362,10 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="h-screen flex bg-black">
-      {/* Sidebar */}
+    <div className="relative h-screen flex bg-black">
+      {/* Sidebar — overlay drawer below lg so it never steals width; in flow at lg+ */}
       <div className={cn(
-        "flex flex-col bg-neutral-950 border-r border-neutral-800 transition-all duration-200",
+        "absolute inset-y-0 left-0 z-30 flex flex-col bg-neutral-950 border-r border-neutral-800 transition-all duration-200 lg:relative lg:z-auto",
         sidebarCollapsed ? "w-0 overflow-hidden" : "w-64"
       )}>
         {/* Sidebar Header */}
@@ -455,10 +455,10 @@ export default function ChatPage() {
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Chat Header */}
         <div className="border-b border-neutral-800 p-3">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-y-2">
             <div className="flex items-center gap-3">
               <Button
                 variant="ghost"
