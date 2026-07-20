@@ -90,11 +90,11 @@ const blackChrome = EditorView.theme(
     ".cm-content": {
       caretColor: "#fafafa",
       fontFamily:
-        "ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace",
+        "var(--font-geist-mono), ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace",
     },
     ".cm-scroller": {
       fontFamily:
-        "ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace",
+        "var(--font-geist-mono), ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace",
     },
     ".cm-gutters": {
       backgroundColor: "#0a0a0a",

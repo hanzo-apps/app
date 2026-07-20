@@ -37,6 +37,8 @@ import {
   snapshotCatalog,
   popularTemplates,
 } from "@/lib/gallery-catalog";
+import { repoImportLink } from "@/lib/api/git";
+import { isGitUrl } from "@/lib/git/url";
 
 // Fork a real template into the editor.
 function forkHref(t: GalleryTemplate) {
@@ -71,7 +73,7 @@ const getCategoryIcon = (category: string) => {
 const features = [
   {
     title: "Instant Generation",
-    description: "5ms response time",
+    description: "Streams as it builds",
     icon: <Zap className="w-4 h-4" />
   },
   {
@@ -320,13 +322,18 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
     router.push(forkHref(template));
   };
 
+  // Import a real repository: collect the URL, then hand it to the shared /dev
+  // import wire (repoImportLink → parseGitUrl / TemplateLoader / hanzo matcher).
+  // Only a real URL navigates — an empty or cancelled prompt is a no-op.
   const handleImportProject = (source: "github" | "hanzo") => {
-    // This would open a dialog to enter repo URL
-    const exampleUrl = source === "github"
-      ? "https://github.com/username/repo"
-      : "https://hanzo.ai/projects/username/project";
-
-    startPlanning(`Import and enhance project from ${exampleUrl}`);
+    const url = window.prompt(
+      source === "github"
+        ? "Paste a public GitHub repository URL"
+        : "Paste a Hanzo project URL",
+    )?.trim();
+    if (!url) return;
+    if (source === "github" && !isGitUrl(url)) return;
+    router.push(repoImportLink(url));
   };
 
   if (stage === "welcome") {
@@ -388,6 +395,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                 <Button
                   variant="outline"
                   className="w-full justify-start gap-2"
+                  onClick={() => router.push("/new")}
                 >
                   <FolderOpen className="w-4 h-4" />
                   Upload project files
@@ -456,15 +464,11 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
             ))}
           </div>
 
-          {/* Stats */}
+          {/* Proof — real only: Techstars '17 backing + the real model count. */}
           <div className="flex justify-center gap-8 mt-8 text-center">
             <div>
-              <p className="text-2xl font-medium text-white">10,000+</p>
-              <p className="text-xs text-neutral-500">apps built</p>
-            </div>
-            <div>
-              <p className="text-2xl font-medium text-white">5ms</p>
-              <p className="text-xs text-neutral-500">generation</p>
+              <p className="text-2xl font-medium text-white">Techstars &apos;17</p>
+              <p className="text-xs text-neutral-500">backed</p>
             </div>
             <div>
               <p className="text-2xl font-medium text-white">400+</p>

@@ -235,7 +235,7 @@ export default function NodesPage() {
       case "online": return "text-green-500";
       case "offline": return "text-red-500";
       case "maintenance": return "text-yellow-500";
-      case "degraded": return "text-orange-500";
+      case "degraded": return "text-amber-500";
       case "healthy": return "text-green-500";
       case "critical": return "text-red-500";
       default: return "text-neutral-400";
@@ -326,7 +326,7 @@ export default function NodesPage() {
           ctx.beginPath();
           ctx.arc(pos.x, pos.y, 30, 0, Math.PI * 2);
           ctx.fillStyle = node.status === "online" ? "#10b981" :
-                         node.status === "degraded" ? "#737373" : "#737373";
+                         node.status === "degraded" ? "#f59e0b" : "#737373";
           ctx.fill();
 
           // Node label
@@ -358,10 +358,10 @@ export default function NodesPage() {
       {/* Header */}
       <header className="border-b border-neutral-800 px-6 py-4">
         <div className="container mx-auto">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-4">
               <Link href="/" className="flex items-center gap-2">
-                <HanzoLogo className="w-8 h-8 text-purple-500" />
+                <HanzoLogo className="w-8 h-8 text-white" />
                 <span className="text-xl font-medium text-white">Node Infrastructure</span>
               </Link>
               <Badge variant="outline" className="gap-1">
@@ -393,7 +393,7 @@ export default function NodesPage() {
 
       <div className="container mx-auto px-6 py-6">
         {/* Stats Overview */}
-        <div className="grid grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <Card className="bg-neutral-900 border-neutral-800">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm text-neutral-400">Total Resources</CardTitle>
@@ -477,7 +477,7 @@ export default function NodesPage() {
         </div>
 
         {/* View Controls */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
           <div className="flex items-center gap-2">
             <Button
               variant={selectedView === "topology" ? "default" : "outline"}
@@ -507,7 +507,7 @@ export default function NodesPage() {
 
           <Input
             placeholder="Search nodes..."
-            className="w-64 bg-neutral-900 border-neutral-800"
+            className="w-full md:w-64 bg-neutral-900 border-neutral-800"
             value={searchQuery}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
           />
@@ -525,7 +525,7 @@ export default function NodesPage() {
             {filteredNodes.map(node => (
               <Card
                 key={node.id}
-                className="bg-neutral-900 border-neutral-800 cursor-pointer hover:border-purple-500/50 transition-colors"
+                className="bg-neutral-900 border-neutral-800 cursor-pointer hover:border-neutral-700 transition-colors"
                 onClick={() => setSelectedNode(node)}
               >
                 <CardHeader>

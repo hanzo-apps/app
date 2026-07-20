@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { Button } from "@hanzo/ui";
-import { HanzoLogo } from "@/components/HanzoLogo";
 import { Badge } from "@hanzo/ui";
 import { Shield, Lock, Users, Zap, Globe, HeadphonesIcon, ArrowRight, CheckCircle2, Building } from "lucide-react";
+import Header from "@/components/layout/header";
+import LogoWall from "@/components/landing/logo-wall";
 
 export default function EnterprisePage() {
   const features = [
@@ -40,32 +40,9 @@ export default function EnterprisePage() {
     }
   ];
 
-  const companies = [
-    "Microsoft", "Google", "Amazon", "Meta", "Apple", "Netflix", "Spotify", "Uber"
-  ];
-
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
-      {/* Navigation */}
-      <nav className="border-b border-white/10 sticky top-0 bg-[#0a0a0a]/80 backdrop-blur-xl z-50">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <Link href="/" className="flex items-center gap-2.5">
-              <HanzoLogo className="w-8 h-8 text-white" />
-              <span className="text-xl font-medium">Hanzo</span>
-            </Link>
-            <div className="hidden md:flex items-center gap-6">
-              <Link href="/community" className="text-white/70 hover:text-white">Community</Link>
-              <Link href="/pricing" className="text-white/70 hover:text-white">Pricing</Link>
-              <Link href="/enterprise" className="text-white font-medium">Enterprise</Link>
-              <Link href="/learn" className="text-white/70 hover:text-white">Learn</Link>
-            </div>
-          </div>
-          <Button className="bg-white text-black hover:bg-white/90">
-            Contact Sales
-          </Button>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-black text-white">
+      <Header />
 
       {/* Hero Section */}
       <section className="px-4 md:px-8 py-16 md:py-24 text-center">
@@ -81,10 +58,10 @@ export default function EnterprisePage() {
             </span>
           </h1>
           <p className="text-xl text-white/60 mb-8 max-w-2xl mx-auto">
-            Trusted by Fortune 500 companies to build, deploy, and scale AI applications with confidence
+            Build, deploy, and scale AI applications with enterprise-grade security, compliance, and dedicated support
           </p>
           <div className="flex items-center gap-4 justify-center">
-            <Button size="lg" className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-400 hover:to-purple-400">
+            <Button size="lg" className="bg-white text-black hover:bg-white/90">
               Schedule Demo
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
@@ -95,19 +72,8 @@ export default function EnterprisePage() {
         </div>
       </section>
 
-      {/* Trust Section */}
-      <section className="px-4 md:px-8 py-12 border-y border-white/10">
-        <div className="max-w-7xl mx-auto">
-          <p className="text-center text-white/60 mb-8">Trusted by leading companies worldwide</p>
-          <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
-            {companies.map(company => (
-              <div key={company} className="text-white/40 text-lg font-medium hover:text-white/60 transition-colors">
-                {company}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Trust Section — real Techstars '17 + infra-partner proof (shared with landing) */}
+      <LogoWall />
 
       {/* Features Grid */}
       <section className="px-4 md:px-8 py-20">
@@ -123,7 +89,7 @@ export default function EnterprisePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map(feature => (
-              <div key={feature.title} className="bg-[#1a1a1a] rounded-2xl p-8 border border-white/10 hover:border-violet-500/50 transition-all">
+              <div key={feature.title} className="bg-white/[0.03] rounded-2xl p-8 border border-white/10 hover:border-violet-500/50 transition-all">
                 <div className="p-3 bg-gradient-to-br from-violet-500/20 to-purple-500/20 rounded-xl inline-block mb-6">
                   {feature.icon}
                 </div>
@@ -180,7 +146,7 @@ export default function EnterprisePage() {
                 </div>
               </div>
             </div>
-            <div className="bg-[#1a1a1a] rounded-2xl p-8 border border-white/10">
+            <div className="bg-white/[0.03] rounded-2xl p-8 border border-white/10">
               <h3 className="text-2xl font-medium mb-6">Get a custom quote</h3>
               <p className="text-white/60 mb-8">
                 Tell us about your needs and we'll create a custom plan for your organization

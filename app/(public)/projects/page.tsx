@@ -10,7 +10,6 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-import Header from '@/components/layout/header';
 import { OrgProvider, useOrg } from '@/lib/org/client';
 import { OrgGate } from '@/components/org-switcher';
 import { ProjectList } from '@/components/project-manager/ProjectList';
@@ -38,7 +37,6 @@ function ProjectsInner() {
 export default function ProjectsPage() {
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
-      <Header />
       <OrgProvider>
         <ProjectsInner />
       </OrgProvider>
