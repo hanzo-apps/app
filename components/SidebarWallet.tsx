@@ -41,7 +41,7 @@ function openTopUp(): void {
 export function SidebarWallet({ collapsed }: { collapsed: boolean }) {
   // ONE logout: the @hanzo/iam SDK (useUser().logout) clears the SDK token
   // store, which lets IamCookieBridge clear the hanzo_token cookie and lands
-  // the user on `/`. A server-only /api/auth/logout cleared the cookie but not
+  // the user on `/`. A server-only /v1/auth/logout cleared the cookie but not
   // the SDK store, so the bridge resurrected it on the next mount.
   const { user, logout } = useUser();
   const { ctx } = useOrg();

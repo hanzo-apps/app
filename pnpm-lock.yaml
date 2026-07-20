@@ -64,6 +64,9 @@ importers:
       '@hanzo/iam':
         specifier: ^0.13.1
         version: 0.13.1(react@19.2.4)
+      '@hanzo/logo':
+        specifier: ^1.0.13
+        version: 1.0.13(react@19.2.4)
       '@hanzo/ui':
         specifier: npm:@hanzo/ui-shadcn@^5.9.0
         version: '@hanzo/ui-shadcn@5.9.0(495a9ae17bd447062be47a9d5e4a9784)'
@@ -2157,6 +2160,14 @@ packages:
     engines: {node: '>=18'}
     peerDependencies:
       react: '>=17'
+    peerDependenciesMeta:
+      react:
+        optional: true
+
+  '@hanzo/logo@1.0.13':
+    resolution: {integrity: sha512-94VA6S7oVY5UZ816295Ez12p8a76ZGEct14JQwE6r5UCutD3K9TBgx5V01gjwxwVL9tWnXn/yut4PHRAY/9RNQ==}
+    peerDependencies:
+      react: '>=16.8.0'
     peerDependenciesMeta:
       react:
         optional: true
@@ -16007,6 +16018,10 @@ snapshots:
       jose: 6.2.2
       libphonenumber-js: 1.13.7
       passport-oauth2: 1.8.0
+    optionalDependencies:
+      react: 19.2.4
+
+  '@hanzo/logo@1.0.13(react@19.2.4)':
     optionalDependencies:
       react: 19.2.4
 
