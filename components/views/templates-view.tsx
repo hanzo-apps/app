@@ -134,7 +134,7 @@ export function TemplatesView({ onProjectSelect }: TemplatesViewProps) {
           {/* Gallery search + category filters */}
           <div className="px-4 pb-3 sm:px-6 shrink-0">
             <div className="mx-auto max-w-7xl flex flex-col gap-3">
-              <div className="relative">
+              <div className="relative max-w-xl">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search templates..."
@@ -143,12 +143,12 @@ export function TemplatesView({ onProjectSelect }: TemplatesViewProps) {
                   className="pl-9"
                 />
               </div>
-              <div className="flex flex-wrap items-center gap-1.5">
+              <div className="flex flex-nowrap items-center gap-1.5 overflow-x-auto sm:flex-wrap [scrollbar-width:none]">
                 {categories.map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setCategory(cat)}
-                    className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                    className={`rounded-full px-3 py-2 sm:py-1.5 text-xs font-medium shrink-0 whitespace-nowrap transition-colors ${
                       category === cat
                         ? 'bg-foreground text-background'
                         : 'bg-muted text-muted-foreground hover:text-foreground'
@@ -218,15 +218,15 @@ export function TemplatesView({ onProjectSelect }: TemplatesViewProps) {
                         <h3 className="font-medium line-clamp-1" title={t.displayName}>
                           {t.displayName}
                         </h3>
-                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2 flex-1">
+                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2 min-h-[2.5rem]">
                           {t.description || t.useCase || `${t.framework} template`}
                         </p>
                         <p className="text-[11px] text-muted-foreground/70 mt-2">{t.framework}</p>
 
-                        <div className="flex gap-2 mt-3">
+                        <div className="flex gap-2 mt-auto pt-3">
                           <Button
                             size="sm"
-                            className="flex-1 gap-1"
+                            className="flex-1 gap-1 h-10 sm:h-9"
                             onClick={() => router.push(forkHref(t))}
                           >
                             <Code className="h-3 w-3" />
@@ -236,7 +236,7 @@ export function TemplatesView({ onProjectSelect }: TemplatesViewProps) {
                             <Button
                               size="icon"
                               variant="outline"
-                              className="h-8 w-8"
+                              className="h-10 w-10 sm:h-9 sm:w-9"
                               aria-label={`Preview ${t.displayName}`}
                             >
                               <Eye className="h-3 w-3" />

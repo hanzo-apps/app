@@ -54,7 +54,7 @@ export default function AppsPage() {
             <Reveal>
               <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
-                <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-white/55">
+                <span className="whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.08em] text-white/55 sm:text-[11px] sm:tracking-[0.15em]">
                   One identity · One gateway · {TOTAL} surfaces
                 </span>
               </div>
@@ -80,14 +80,14 @@ export default function AppsPage() {
               <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <a
                   href="#install"
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition-all hover:bg-white/90"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition-all hover:bg-white/90 sm:w-auto"
                 >
                   <Download className="h-4 w-4" />
                   Install extensions
                 </a>
                 <a
                   href="#connect"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium text-white transition-all hover:bg-white/10"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium text-white transition-all hover:bg-white/10 sm:w-auto"
                 >
                   <Plug className="h-4 w-4" />
                   Connect apps

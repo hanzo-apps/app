@@ -783,9 +783,9 @@ export function AskAI({
     // The chat pane is a flex column: the thread scrolls at the top and the
     // composer is pinned at the bottom. With an empty thread (ChatThread returns
     // null) the composer's `mt-auto` keeps it docked exactly as before.
-    <div ref={rootRef} className="flex h-full min-h-0 flex-col">
+    <div ref={rootRef} className="mx-auto flex h-full min-h-0 w-full max-w-2xl flex-col">
       <ChatThread messages={messages} className="min-h-0 flex-1" />
-      <div className="mt-auto px-3 pb-[calc(0.25rem+env(safe-area-inset-bottom))]">
+      <div className="mt-auto px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
       {/* Stacked Message Queue Cards */}
       {messageQueue.length > 0 && (
         <div className="mb-4 space-y-2">
@@ -898,7 +898,7 @@ export function AskAI({
           Hidden while the AI is working and once dismissed for this project. */}
       {!suggestionsDismissed && !isAiWorking && (
         <div className="mb-2 flex items-center gap-1.5">
-          <div className="flex flex-1 items-center gap-1.5 overflow-x-auto scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex flex-1 items-center gap-1.5 overflow-x-auto scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,#000_88%,transparent)]">
             {SUGGESTIONS.map((s) => (
               <button
                 key={s}
@@ -922,7 +922,7 @@ export function AskAI({
       )}
 
       <div
-        className="relative bg-neutral-800 border border-neutral-700 rounded-2xl ring-[4px] focus-within:ring-neutral-500/30 focus-within:border-neutral-600 ring-transparent z-10 w-full group"
+        className="relative bg-neutral-900 border border-neutral-700 rounded-2xl ring-2 focus-within:ring-neutral-500/25 focus-within:border-neutral-600 ring-transparent z-10 w-full group"
         onDragOver={handleDragOver}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}

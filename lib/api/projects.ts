@@ -175,6 +175,13 @@ export function builderLink(slug: string, org?: string | null): string {
   return `/dev?project=${encodeURIComponent(slug)}`;
 }
 
+/** The per-project CONFIG page (settings/integrations/Base) — needs the org. */
+export function configLink(slug: string, org?: string | null): string {
+  const o = (org || '').trim();
+  if (o) return `/dev/${encodeURIComponent(o)}/${encodeURIComponent(slug)}/settings`;
+  return `/dev?project=${encodeURIComponent(slug)}`;
+}
+
 /**
  * The SERVABLE live-site URL for a project. A published site is served at the
  * bare `<slug>.hanzo.app` (the one host a wildcard Ingress + wildcard cert can

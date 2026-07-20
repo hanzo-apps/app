@@ -5,7 +5,7 @@ import { CustomTemplate, BackendFeatures } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';
 import { templateService } from '@/lib/vfs/template-service';
 import { createProjectFromTemplate, BUILT_IN_TEMPLATES, type BuiltInTemplateMetadata } from '@/lib/vfs/templates';
-import { BAREBONES_PROJECT_TEMPLATE, DEMO_PROJECT_TEMPLATE, CONTACT_LANDING_PROJECT_TEMPLATE, BLOG_PROJECT_TEMPLATE } from '@/lib/vfs/project-templates';
+import { BAREBONES_PROJECT_TEMPLATE, DEMO_PROJECT_TEMPLATE, CONTACT_LANDING_PROJECT_TEMPLATE, BLOG_PROJECT_TEMPLATE, VIBE_CHECK_PROJECT_TEMPLATE } from '@/lib/vfs/project-templates';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { TemplateCard } from './template-card';
@@ -127,6 +127,8 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
           await createProjectFromTemplate(vfs, tempProject.id, CONTACT_LANDING_PROJECT_TEMPLATE);
         } else if (template.id === 'blog') {
           await createProjectFromTemplate(vfs, tempProject.id, BLOG_PROJECT_TEMPLATE);
+        } else if (template.id === 'vibe-check') {
+          await createProjectFromTemplate(vfs, tempProject.id, VIBE_CHECK_PROJECT_TEMPLATE);
         }
 
         // Export as template
@@ -200,6 +202,8 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
           await createProjectFromTemplate(vfs, project.id, CONTACT_LANDING_PROJECT_TEMPLATE);
         } else if (template.id === 'blog') {
           await createProjectFromTemplate(vfs, project.id, BLOG_PROJECT_TEMPLATE);
+        } else if (template.id === 'vibe-check') {
+          await createProjectFromTemplate(vfs, project.id, VIBE_CHECK_PROJECT_TEMPLATE);
         }
 
         backendFeatures = template.backendFeatures;

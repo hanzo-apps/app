@@ -288,7 +288,7 @@ export default function BillingPage() {
         </div>
 
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Current Plan */}
           <Card className="bg-[#1a1a1a] border-white/10 hover:border-white/20 transition-colors">
             <CardHeader className="pb-3">
@@ -402,7 +402,7 @@ export default function BillingPage() {
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
-              <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <Button
                   className="bg-white text-black hover:bg-white/90"
                   onClick={() => { setPaymentMethod('crypto'); setCreditModalOpen(true); }}
@@ -438,10 +438,10 @@ export default function BillingPage() {
             </Card>
 
             {/* Recent transactions in overview */}
-            {invoices.length > 0 && (
-              <Card className="bg-[#1a1a1a] border-white/10">
-                <CardHeader className="flex flex-row items-center justify-between">
-                  <CardTitle>Recent Transactions</CardTitle>
+            <Card className="bg-[#1a1a1a] border-white/10">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle>Recent Transactions</CardTitle>
+                {invoices.length > 0 && (
                   <Button
                     variant="ghost"
                     size="sm"
@@ -450,16 +450,24 @@ export default function BillingPage() {
                   >
                     View All <ArrowRight className="w-4 h-4 ml-1" />
                   </Button>
-                </CardHeader>
-                <CardContent>
+                )}
+              </CardHeader>
+              <CardContent>
+                {invoices.length === 0 ? (
+                  <div className="text-center py-12">
+                    <FileText className="w-12 h-12 mx-auto text-white/20 mb-3" />
+                    <p className="text-white/60 mb-1">No transactions yet</p>
+                    <p className="text-sm text-white/40">Purchase credits to see your transaction history</p>
+                  </div>
+                ) : (
                   <div className="space-y-3">
                     {invoices.slice(0, 3).map((invoice) => (
                       <TransactionRow key={invoice.id} invoice={invoice} />
                     ))}
                   </div>
-                </CardContent>
-              </Card>
-            )}
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Add Credits Tab */}

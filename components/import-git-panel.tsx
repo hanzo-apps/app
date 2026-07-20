@@ -510,7 +510,7 @@ function ConnectCta({
   gitlabConnectable: boolean;
 }) {
   return (
-    <div className="flex flex-col items-center rounded-xl border border-dashed border-white/15 bg-white/[0.02] px-6 py-10 text-center">
+    <div className="mx-auto flex max-w-md flex-col items-center rounded-xl border border-dashed border-white/15 bg-white/[0.02] px-6 py-10 text-center">
       <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/[0.04]">
         <Github className="h-6 w-6 text-white/80" />
       </div>

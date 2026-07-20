@@ -246,15 +246,15 @@ export default function AgentsPage() {
               )}
             </div>
 
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-              <Link href="/nodes" className="flex-1 sm:flex-none">
-                <Button variant="outline" className="w-full gap-2 sm:w-auto">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:flex lg:w-auto">
+              <Link href="/nodes">
+                <Button variant="outline" className="w-full gap-2 lg:w-auto">
                   <Network className="w-4 h-4" />
                   Nodes
                 </Button>
               </Link>
-              <Link href="/dev" className="flex-1 sm:flex-none">
-                <Button variant="outline" className="w-full gap-2 sm:w-auto">
+              <Link href="/dev">
+                <Button variant="outline" className="w-full gap-2 lg:w-auto">
                   <Code2 className="w-4 h-4" />
                   Dev
                 </Button>
@@ -421,8 +421,8 @@ export default function AgentsPage() {
               {[
                 { label: "Total", value: stats.total, tone: "text-white" },
                 { label: "Ready", value: stats.ready, tone: "text-green-400" },
-                { label: "Runs", value: stats.runs, tone: "text-blue-400" },
-                { label: "Models", value: stats.models, tone: "text-purple-400" },
+                { label: "Runs", value: stats.runs, tone: "text-white" },
+                { label: "Models", value: stats.models, tone: "text-white" },
               ].map((s) => (
                 <Card key={s.label} className="bg-neutral-900 border-neutral-800">
                   <CardHeader className="pb-2">
@@ -546,7 +546,7 @@ export default function AgentsPage() {
                         </div>
 
                         {/* Run input + action */}
-                        <div className="mt-auto flex flex-col gap-2 sm:flex-row">
+                        <div className="mt-auto flex flex-col gap-2 lg:flex-row">
                           <Input
                             placeholder="Message this agent…"
                             className="bg-neutral-950 border-neutral-800 text-sm"

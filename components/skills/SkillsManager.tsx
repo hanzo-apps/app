@@ -248,7 +248,7 @@ export function SkillsManager() {
       <div className="h-full flex flex-col">
         {/* Toolbar */}
         <div className="pt-4 px-4 pb-3 sm:pt-6 sm:px-6 sm:pb-3 shrink-0">
-          <div className="mx-auto max-w-7xl flex flex-col gap-3">
+          <div className="mx-auto max-w-4xl flex flex-col gap-3">
             <div className="flex flex-col sm:flex-row gap-3">
               {/* Search */}
               <div className="relative flex-1">
@@ -263,15 +263,15 @@ export function SkillsManager() {
 
               {/* Actions */}
               <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={handleImport}>
+                <Button variant="outline" size="sm" onClick={handleImport} className="h-10 sm:h-9">
                   <Upload className="w-4 h-4 mr-2" />
                   Import
                 </Button>
-                <Button variant="outline" size="sm" onClick={handleExportAll}>
+                <Button variant="outline" size="sm" onClick={handleExportAll} className="h-10 sm:h-9">
                   <Download className="w-4 h-4 mr-2" />
                   Export
                 </Button>
-                <Button onClick={handleCreateNew} size="sm">
+                <Button onClick={handleCreateNew} size="sm" className="h-10 sm:h-9">
                   <Plus className="w-4 h-4 mr-2" />
                   New
                 </Button>
@@ -279,7 +279,7 @@ export function SkillsManager() {
             </div>
 
             {/* Global Enable/Disable Toggle */}
-            <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg border border-border">
               <div className="flex items-center gap-2">
                 <Power className="w-4 h-4" />
                 <Label htmlFor="global-toggle" className="text-sm font-medium cursor-pointer">
@@ -294,7 +294,7 @@ export function SkillsManager() {
             </div>
 
             {/* Skill Evaluation Toggle */}
-            <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg border border-border">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4" />
                 <div>
@@ -318,7 +318,7 @@ export function SkillsManager() {
 
         {/* Skills List */}
         <div className="flex-1 px-4 pt-3 pb-4 sm:px-6 sm:pt-3 sm:pb-6 overflow-auto">
-          <div className="mx-auto max-w-7xl">
+          <div className="mx-auto max-w-4xl">
             {filteredSkills.length === 0 ? (
               <div className="text-center py-12">
                 <Sparkles className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
