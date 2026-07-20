@@ -74,11 +74,11 @@ export default function TemplateGallery() {
       {/* Hero: prompt-first onboarding */}
       <header className="border-b border-neutral-900 bg-gradient-to-b from-neutral-950 to-black">
         <div className="container mx-auto px-6 py-10">
-          <div className="flex items-center gap-3 mb-3">
+          <div className="flex flex-wrap items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center">
               <Sparkles className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-3xl font-medium">Hanzo Templates</h1>
+            <h1 className="text-2xl sm:text-3xl font-medium">Hanzo Templates</h1>
             <Badge variant="secondary" className="ml-1">
               {templates.length} templates
             </Badge>
@@ -102,7 +102,7 @@ export default function TemplateGallery() {
               />
             </div>
             <Button
-              className="h-12 gap-2 bg-gradient-to-r from-neutral-700 to-neutral-900 hover:from-neutral-900 hover:to-neutral-700"
+              className="h-12 gap-2 bg-white text-black hover:bg-white/90"
               onClick={startFromPrompt}
             >
               <Sparkles className="w-4 h-4" />
@@ -117,21 +117,21 @@ export default function TemplateGallery() {
       <div className="sticky top-0 z-40 border-b border-neutral-900 bg-black/95 backdrop-blur">
         <div className="container mx-auto px-6 py-3">
           <div className="flex items-center gap-3 flex-wrap">
-            <div className="relative">
+            <div className="relative w-full sm:w-auto">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
               <Input
                 placeholder="Search templates…"
                 value={searchQuery}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-                className="w-64 pl-9 bg-neutral-900 border-neutral-800 text-white"
+                className="w-full sm:w-64 pl-9 bg-neutral-900 border-neutral-800 text-white"
               />
             </div>
-            <div className="flex items-center gap-1.5 flex-wrap">
+            <div className="flex flex-nowrap items-center gap-1.5 overflow-x-auto sm:flex-wrap [scrollbar-width:none]">
               {categories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                  className={`px-3 py-2 sm:py-1.5 rounded-full text-xs font-medium shrink-0 whitespace-nowrap transition-colors ${
                     selectedCategory === cat
                       ? "bg-white text-black"
                       : "bg-neutral-900 text-neutral-400 hover:bg-neutral-800 hover:text-white"
@@ -182,12 +182,12 @@ export default function TemplateGallery() {
 
               <div className="flex flex-col flex-1 p-4">
                 <h3 className="font-medium text-white">{t.displayName}</h3>
-                <p className="text-xs text-neutral-500 mt-1 line-clamp-2 flex-1">
+                <p className="text-xs text-neutral-500 mt-1 line-clamp-2 min-h-[2.5rem]">
                   {t.description || t.useCase || `${t.framework} template`}
                 </p>
                 <p className="text-[11px] text-neutral-400 mt-2">{t.framework}</p>
 
-                <div className="flex gap-2 mt-3">
+                <div className="flex gap-2 mt-auto pt-3">
                   <a href={forkHref(t)} className="flex-1">
                     <Button
                       size="sm"

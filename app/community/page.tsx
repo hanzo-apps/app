@@ -131,7 +131,7 @@ export default function CommunityPage() {
 
         {/* ── Stat strip (real, catalog-derived) ───────────────── */}
         <section className="border-y border-white/[0.06] px-4 py-10 md:px-8">
-          <div className="mx-auto grid max-w-5xl grid-cols-2 gap-6 md:grid-cols-4">
+          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 md:grid-cols-4">
             {stats.map((s) => (
               <div key={s.label} className="text-center">
                 <div className="font-mono text-3xl font-medium tracking-tight text-white md:text-4xl">
@@ -172,12 +172,12 @@ export default function CommunityPage() {
             </Reveal>
 
             {/* Category filter */}
-            <div className="mb-8 flex flex-wrap gap-2">
+            <div className="mb-8 flex flex-nowrap overflow-x-auto sm:flex-wrap gap-2">
               {categories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-all ${
+                  className={`shrink-0 whitespace-nowrap h-10 sm:h-9 rounded-full px-3.5 py-1.5 text-xs font-medium transition-all ${
                     selectedCategory === cat
                       ? "bg-white text-black"
                       : "border border-white/10 bg-white/[0.02] text-white/60 hover:border-white/20 hover:text-white"

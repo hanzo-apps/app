@@ -101,7 +101,7 @@ export default function DashboardPage() {
     <AppShell currentView="dashboard">
       <div className="flex-1 overflow-y-auto bg-black">
         {/* ── Hero viewport: ONLY the centered composer until you scroll ── */}
-        <section className="relative flex min-h-[calc(100dvh-4rem)] flex-col items-center justify-center px-4">
+        <section className="relative flex min-h-[calc(100dvh-4rem)] flex-col justify-start pt-[14vh] md:justify-center md:pt-0 px-4">
           <BuildComposer greetingName={greetingName} showPill />
 
           {/* Scroll invitation — the projects panel waits below the fold. */}

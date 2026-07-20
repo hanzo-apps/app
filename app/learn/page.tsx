@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "@hanzo/ui";
 import { Badge } from "@hanzo/ui";
-import { BookOpen, Video, FileCode, Users, Trophy, Clock, ArrowRight, PlayCircle } from "lucide-react";
+import { BookOpen, Video, FileCode, Users, Trophy, Clock, ArrowRight, PlayCircle, Code2, Bot, Rocket } from "lucide-react";
 import { useState } from "react";
 import Header from "@/components/layout/header";
 
@@ -81,26 +81,26 @@ export default function LearnPage() {
       description: "Master both frontend and backend development",
       courses: 8,
       duration: "24 hours",
-      icon: "💻"
+      icon: Code2
     },
     {
       title: "AI Engineer",
       description: "Become an expert in AI model development",
       courses: 10,
       duration: "32 hours",
-      icon: "🤖"
+      icon: Bot
     },
     {
       title: "Product Builder",
       description: "Learn to build and launch successful products",
       courses: 6,
       duration: "18 hours",
-      icon: "🚀"
+      icon: Rocket
     }
   ];
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
+    <div className="min-h-screen bg-black text-white">
       <Header />
 
       {/* Hero Section */}
@@ -134,11 +134,13 @@ export default function LearnPage() {
           <h2 className="text-2xl font-medium mb-8">Popular Learning Paths</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {learningPaths.map(path => (
-              <div key={path.title} className="bg-[#1a1a1a] rounded-2xl p-6 border border-white/10 hover:border-violet-500/50 transition-all cursor-pointer">
-                <div className="text-3xl mb-4">{path.icon}</div>
+              <div key={path.title} className="bg-white/[0.02] hover:bg-white/[0.03] rounded-2xl p-6 border border-white/10 hover:border-violet-500/50 transition-all cursor-pointer">
+                <div className="inline-flex rounded-lg border border-white/10 bg-white/[0.03] p-2 mb-4">
+                  <path.icon className="w-6 h-6" />
+                </div>
                 <h3 className="text-lg font-medium mb-2">{path.title}</h3>
                 <p className="text-sm text-white/60 mb-4">{path.description}</p>
-                <div className="flex items-center gap-4 text-sm text-white/40">
+                <div className="flex items-center gap-4 text-sm text-white/55">
                   <span className="flex items-center gap-1">
                     <FileCode className="w-4 h-4" />
                     {path.courses} courses
@@ -185,7 +187,7 @@ export default function LearnPage() {
           {/* Course Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCourses.map(course => (
-              <div key={course.id} className="bg-[#1a1a1a] rounded-2xl border border-white/10 overflow-hidden">
+              <div key={course.id} className="bg-white/[0.02] hover:bg-white/[0.03] rounded-2xl border border-white/10 overflow-hidden">
                 {course.featured && (
                   <div className="bg-gradient-to-r from-violet-500 to-purple-500 text-white text-xs px-3 py-1.5 flex items-center gap-1">
                     <Trophy className="w-3 h-3" />
@@ -206,7 +208,7 @@ export default function LearnPage() {
                     {course.description}
                   </p>
 
-                  <div className="flex items-center justify-between text-sm text-white/40 pt-4 border-t border-white/10">
+                  <div className="flex items-center justify-between text-sm text-white/55 pt-4 border-t border-white/10">
                     <span className="flex items-center gap-1">
                       <Video className="w-4 h-4" />
                       {course.lessons} lessons
@@ -235,7 +237,7 @@ export default function LearnPage() {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-[#1a1a1a] rounded-2xl p-6 border border-white/10">
+            <div className="bg-white/[0.02] hover:bg-white/[0.03] rounded-2xl p-6 border border-white/10">
               <BookOpen className="w-8 h-8 mb-4 text-violet-400" />
               <h3 className="text-xl font-medium mb-2">Documentation</h3>
               <p className="text-white/60 mb-4">Comprehensive guides and API references</p>
@@ -243,7 +245,7 @@ export default function LearnPage() {
                 Explore Docs <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
-            <div className="bg-[#1a1a1a] rounded-2xl p-6 border border-white/10">
+            <div className="bg-white/[0.02] hover:bg-white/[0.03] rounded-2xl p-6 border border-white/10">
               <Users className="w-8 h-8 mb-4 text-violet-400" />
               <h3 className="text-xl font-medium mb-2">Community Forum</h3>
               <p className="text-white/60 mb-4">Get help and share knowledge with others</p>
@@ -251,7 +253,7 @@ export default function LearnPage() {
                 Join Community <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
-            <div className="bg-[#1a1a1a] rounded-2xl p-6 border border-white/10">
+            <div className="bg-white/[0.02] hover:bg-white/[0.03] rounded-2xl p-6 border border-white/10">
               <Video className="w-8 h-8 mb-4 text-violet-400" />
               <h3 className="text-xl font-medium mb-2">YouTube Channel</h3>
               <p className="text-white/60 mb-4">Video tutorials and live coding sessions</p>

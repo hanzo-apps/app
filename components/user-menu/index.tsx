@@ -41,11 +41,7 @@ export const UserMenu = ({ className }: { className?: string }) => {
               {userInitial}
             </AvatarFallback>
           </Avatar>
-          <span className="max-lg:hidden">{displayName}</span>
-          <span className="hidden sm:inline lg:hidden">
-            {displayName.slice(0, 10)}
-            {displayName.length > 10 ? "..." : ""}
-          </span>
+          <span className="hidden sm:inline max-w-[12rem] truncate">{displayName}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="start">

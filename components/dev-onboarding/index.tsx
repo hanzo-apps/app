@@ -338,7 +338,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
 
   if (stage === "welcome") {
     return (
-      <div className="min-h-screen h-screen overflow-y-auto bg-black flex items-center justify-center p-6">
+      <div className="min-h-screen h-screen overflow-y-auto bg-black flex justify-center items-start px-6 py-16">
         <div className="max-w-6xl w-full">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-medium text-white mb-4">
@@ -350,7 +350,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
           </div>
 
           {/* Quick Start Options */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <Card className="bg-neutral-900 border-neutral-800 p-6">
               <h3 className="text-lg font-medium text-white mb-4">
                 Start with a prompt
@@ -362,7 +362,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPrompt(e.target.value)}
               />
               <Button
-                className="w-full gap-2"
+                className="w-full gap-2 bg-white text-black hover:bg-white/90"
                 onClick={() => prompt && startPlanning(prompt)}
                 disabled={!prompt.trim()}
               >

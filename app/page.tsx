@@ -167,9 +167,9 @@ export default function LandingPage() {
             </Reveal>
 
             <Reveal delay={60}>
-              <h1 className="text-balance text-4xl font-medium leading-[1.02] tracking-tight sm:text-5xl md:text-6xl">
+              <h1 className="text-balance text-[1.9rem] font-medium leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
                 Describe your app.
-                <br />
+                <br className="hidden sm:block" />
                 Hanzo builds and ships it.
               </h1>
             </Reveal>
@@ -196,41 +196,43 @@ export default function LandingPage() {
                     into the builder, seeded from that template. */}
                 {starterTemplates.length > 0 && (
                   <div className="mt-6">
-                    <div className="mb-3 flex items-center justify-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.12em] text-white/30">
+                    <div className="mb-3 flex items-center justify-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.12em] text-white/50">
                       <span className="h-px w-6 bg-white/10" />
                       or start from a template
                       <span className="h-px w-6 bg-white/10" />
                     </div>
-                    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-                      {starterTemplates.map((t) => (
-                        <button
-                          key={t.slug}
-                          type="button"
-                          onClick={() => startFromTemplate(t)}
-                          className="group overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] text-left transition-all hover:border-white/25 hover:bg-white/[0.04]"
-                        >
-                          <div className="relative aspect-[16/10] overflow-hidden bg-white/[0.02]">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={t.screenshotUrl}
-                              alt={`${t.displayName} preview`}
-                              loading="lazy"
-                              className="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.04]"
-                              onError={(e) => {
-                                (e.currentTarget as HTMLImageElement).style.opacity = "0";
-                              }}
-                            />
-                          </div>
-                          <div className="px-2.5 py-2">
-                            <p className="truncate text-xs font-medium text-white/80">
-                              {t.displayName}
-                            </p>
-                            <p className="truncate text-[11px] text-white/35">
-                              {t.category}
-                            </p>
-                          </div>
-                        </button>
-                      ))}
+                    <div className="mx-auto lg:max-w-4xl">
+                      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+                        {starterTemplates.map((t) => (
+                          <button
+                            key={t.slug}
+                            type="button"
+                            onClick={() => startFromTemplate(t)}
+                            className="group overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] text-left transition-all hover:border-white/25 hover:bg-white/[0.04]"
+                          >
+                            <div className="relative aspect-[16/10] overflow-hidden bg-white/[0.02]">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={t.screenshotUrl}
+                                alt={`${t.displayName} preview`}
+                                loading="lazy"
+                                className="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.04]"
+                                onError={(e) => {
+                                  (e.currentTarget as HTMLImageElement).style.opacity = "0";
+                                }}
+                              />
+                            </div>
+                            <div className="px-2.5 py-2">
+                              <p className="truncate text-xs font-medium text-white/80">
+                                {t.displayName}
+                              </p>
+                              <p className="truncate text-[11px] text-white/55">
+                                {t.category}
+                              </p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
                     </div>
                     <div className="mt-3 text-center">
                       <Link
