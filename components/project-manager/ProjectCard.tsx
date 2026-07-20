@@ -13,7 +13,7 @@ import {
 import { Pencil, Trash2, MoreVertical, ExternalLink, Globe } from 'lucide-react';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { builderLink, type Project, type ProjectStatus } from '@/lib/api/projects';
+import { builderLink, liveUrlOf, type Project, type ProjectStatus } from '@/lib/api/projects';
 
 interface ProjectCardProps {
   project: Project;
@@ -36,6 +36,9 @@ function timeAgo(unixSeconds: number): string {
 export function ProjectCard({ project, onDelete }: ProjectCardProps) {
   const router = useRouter();
   const status = STATUS_CONFIG[project.status] ?? STATUS_CONFIG.draft;
+  // The SERVABLE public URL — normalizes any legacy two-label liveUrl to the
+  // bare <slug>.hanzo.app host that actually resolves.
+  const visitUrl = liveUrlOf(project);
 
   return (
     <div className="group border border-border rounded-lg bg-card hover:shadow-lg hover:border-primary/50 transition-all">
@@ -53,12 +56,12 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => router.push(builderLink(project.slug))}>
+              <DropdownMenuItem onClick={() => router.push(builderLink(project.slug, project.org))}>
                 <Pencil className="mr-2 h-4 w-4" />
                 Edit in builder
               </DropdownMenuItem>
-              {project.liveUrl && (
-                <DropdownMenuItem onClick={() => window.open(project.liveUrl, '_blank', 'noopener')}>
+              {visitUrl && (
+                <DropdownMenuItem onClick={() => window.open(visitUrl, '_blank', 'noopener')}>
                   <ExternalLink className="mr-2 h-4 w-4" />
                   Visit site
                 </DropdownMenuItem>
@@ -91,18 +94,18 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
             size="sm"
             variant="ghost"
             className="h-7 px-2 text-xs"
-            onClick={() => router.push(builderLink(project.slug))}
+            onClick={() => router.push(builderLink(project.slug, project.org))}
           >
             <Pencil className="h-3 w-3 mr-1" />
             Edit
           </Button>
-          {project.liveUrl && (
+          {visitUrl && (
             // Plain anchor, NOT the shared Button with `asChild`: the @hanzo/ui
             // Button wraps its children in an array for the loading slot, which
             // trips Radix Slot's React.Children.only when it renders as a Slot.
             // See components/editor/cross-surface-links.tsx for the same footgun.
             <a
-              href={project.liveUrl}
+              href={visitUrl}
               target="_blank"
               rel="noopener noreferrer"
               className={cn(
