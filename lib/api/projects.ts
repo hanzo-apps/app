@@ -183,6 +183,16 @@ export function configLink(slug: string, org?: string | null): string {
 }
 
 /**
+ * Canonical CD deep-link for a published app — the ArgoCD-style resource tree,
+ * build logs, sync + health detail at cd.hanzo.ai (the "nitty gritty"). The
+ * platform writes each app's Service CR as `metadata.name = <slug>`, and the CD
+ * UI addresses apps at `/applications/<name>`. ONE place for the convention.
+ */
+export function cdAppLink(slug: string): string {
+  return `https://cd.hanzo.ai/applications/${encodeURIComponent(slug)}`;
+}
+
+/**
  * The SERVABLE live-site URL for a project. A published site is served at the
  * bare `<slug>.hanzo.app` (the one host a wildcard Ingress + wildcard cert can
  * actually route/secure). Records published before the cloud fix carry a legacy
