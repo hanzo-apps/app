@@ -72,8 +72,20 @@ export interface AppEntry {
   icon: LucideIcon;
   /** Grouping bucket within a section (e.g. "Browser", "Verticals"). */
   category: string;
-  /** Drives the card's link and label — see ACTION_URL / ACTION_LABEL. */
+  /** Drives the card's LABEL, and its link when no per-app `href` is set. */
   action: AppAction;
+  /**
+   * The exact download / listing this surface installs from, when it has its
+   * own published destination (a store listing or a per-OS release asset). When
+   * omitted the card falls back to the action's generic URL (ACTION_URL). Only
+   * REAL, verified URLs live here — the same links the Hanzo extension site uses.
+   */
+  href?: string;
+}
+
+/** The one link a card opens: its own `href` if published, else the action URL. */
+export function appUrl(app: AppEntry): string {
+  return app.href ?? ACTION_URL[app.action];
 }
 
 // =============================================================================
@@ -98,16 +110,16 @@ export const ACTION_LABEL: Record<AppAction, string> = {
 
 export const appCatalog: AppEntry[] = [
   // ── Install: browser ──────────────────────────────────────────────────────
-  { name: "Chrome", category: "Browser", action: "install", icon: Chrome, blurb: "Ask Hanzo about any page, capture context, and run agents from the toolbar." },
-  { name: "Edge", category: "Browser", action: "install", icon: AppWindow, blurb: "The full Hanzo assistant for Microsoft Edge with the Chromium feature set." },
-  { name: "Firefox", category: "Browser", action: "install", icon: Flame, blurb: "Privacy-first Hanzo add-on for Mozilla Firefox." },
-  { name: "Safari", category: "Browser", action: "install", icon: Compass, blurb: "Native Hanzo extension for Safari on macOS and iOS." },
+  { name: "Chrome", category: "Browser", action: "install", icon: Chrome, href: "https://chrome.google.com/webstore/detail/hanzo-ai", blurb: "Ask Hanzo about any page, capture context, and run agents from the toolbar." },
+  { name: "Edge", category: "Browser", action: "install", icon: AppWindow, href: "https://microsoftedge.microsoft.com/addons/detail/hanzo-ai", blurb: "The full Hanzo assistant for Microsoft Edge with the Chromium feature set." },
+  { name: "Firefox", category: "Browser", action: "install", icon: Flame, href: "https://addons.mozilla.org/addon/hanzo-ai", blurb: "Privacy-first Hanzo add-on for Mozilla Firefox." },
+  { name: "Safari", category: "Browser", action: "install", icon: Compass, href: "https://apps.apple.com/app/hanzo-ai", blurb: "Native Hanzo extension for Safari on macOS and iOS." },
 
   // ── Install: IDEs & editors ───────────────────────────────────────────────
-  { name: "VS Code", category: "IDEs & editors", action: "install", icon: Code, blurb: "Inline completions, chat, and agentic edits inside Visual Studio Code." },
-  { name: "Cursor", category: "IDEs & editors", action: "install", icon: MousePointer2, blurb: "Wire Hanzo models and MCP tools into the Cursor editor." },
-  { name: "Windsurf", category: "IDEs & editors", action: "install", icon: Wind, blurb: "Hanzo agents and gateway models in the Windsurf editor." },
-  { name: "Antigravity", category: "IDEs & editors", action: "install", icon: Orbit, blurb: "Connect Hanzo to the Antigravity agentic IDE." },
+  { name: "VS Code", category: "IDEs & editors", action: "install", icon: Code, href: "https://marketplace.visualstudio.com/items?itemName=hanzo-ai.hanzo-ai", blurb: "Inline completions, chat, and agentic edits inside Visual Studio Code." },
+  { name: "Cursor", category: "IDEs & editors", action: "install", icon: MousePointer2, href: "https://open-vsx.org/namespace/hanzo-ai", blurb: "Wire Hanzo models and MCP tools into the Cursor editor." },
+  { name: "Windsurf", category: "IDEs & editors", action: "install", icon: Wind, href: "https://open-vsx.org/namespace/hanzo-ai", blurb: "Hanzo agents and gateway models in the Windsurf editor." },
+  { name: "Antigravity", category: "IDEs & editors", action: "install", icon: Orbit, href: "https://open-vsx.org/namespace/hanzo-ai", blurb: "Connect Hanzo to the Antigravity agentic IDE." },
   { name: "JetBrains", category: "IDEs & editors", action: "install", icon: Braces, blurb: "One plugin for IntelliJ, PyCharm, GoLand, WebStorm, and the rest." },
 
   // ── Install: Office ───────────────────────────────────────────────────────
@@ -123,9 +135,9 @@ export const appCatalog: AppEntry[] = [
   { name: "Zendesk", category: "Team apps", action: "install", icon: Headset, blurb: "Draft, triage, and resolve support tickets with Hanzo in Zendesk." },
 
   // ── Install: desktop app ──────────────────────────────────────────────────
-  { name: "macOS", category: "Desktop app", action: "install", icon: Command, blurb: "Menubar app with a global hotkey — Hanzo anywhere on your Mac." },
-  { name: "Windows", category: "Desktop app", action: "install", icon: AppWindow, blurb: "System-tray app with a global hotkey for Hanzo on Windows." },
-  { name: "Linux", category: "Desktop app", action: "install", icon: Terminal, blurb: "Native desktop app with a global hotkey for Hanzo on Linux." },
+  { name: "macOS", category: "Desktop app", action: "install", icon: Command, href: "https://github.com/hanzoai/desktop/releases/latest/download/hanzo-macos.dmg", blurb: "Menubar app with a global hotkey — Hanzo anywhere on your Mac." },
+  { name: "Windows", category: "Desktop app", action: "install", icon: AppWindow, href: "https://github.com/hanzoai/desktop/releases/latest/download/hanzo-windows.exe", blurb: "System-tray app with a global hotkey for Hanzo on Windows." },
+  { name: "Linux", category: "Desktop app", action: "install", icon: Terminal, href: "https://github.com/hanzoai/desktop/releases/latest/download/hanzo-linux.AppImage", blurb: "Native desktop app with a global hotkey for Hanzo on Linux." },
 
   // ── Install: AI hosts & notebooks ─────────────────────────────────────────
   { name: "Claude Desktop", category: "AI hosts & notebooks", action: "install", icon: Bot, blurb: "One-click .dxt bundle that adds Hanzo tools to Claude Desktop." },
@@ -161,31 +173,3 @@ export const appCatalog: AppEntry[] = [
   { name: "Workday", category: "Verticals", action: "connect", icon: Briefcase, blurb: "HR — automate onboarding, approvals, and reporting in Workday." },
   { name: "iManage", category: "Verticals", action: "connect", icon: Gavel, blurb: "Legal — search, summarize, and draft against your iManage vault." },
 ];
-
-// =============================================================================
-// SELECTORS — derived once from the flat catalog
-// =============================================================================
-
-export const installApps: AppEntry[] = appCatalog.filter((a) => a.action === "install");
-export const connectApps: AppEntry[] = appCatalog.filter((a) => a.action === "connect");
-
-export interface AppGroup {
-  category: string;
-  apps: AppEntry[];
-}
-
-/** Group entries by category, preserving first-seen order (pure, view-agnostic). */
-export function groupByCategory(entries: AppEntry[]): AppGroup[] {
-  const groups: AppGroup[] = [];
-  const index = new Map<string, AppGroup>();
-  for (const app of entries) {
-    let group = index.get(app.category);
-    if (!group) {
-      group = { category: app.category, apps: [] };
-      index.set(app.category, group);
-      groups.push(group);
-    }
-    group.apps.push(app);
-  }
-  return groups;
-}
