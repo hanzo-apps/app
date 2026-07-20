@@ -24,6 +24,7 @@ import {
   templatesByCategory,
   type TemplateEntry,
 } from "@/lib/templates-catalog";
+import { authorOf } from "@/lib/template-authors";
 import { TemplateThumb } from "@/components/template-thumb";
 
 const ALL = "all";
@@ -51,7 +52,7 @@ function RailPill({
   );
 }
 
-function TemplateCard({ t }: { t: TemplateEntry }) {
+function TemplateCard({ t, showAuthor = false }: { t: TemplateEntry; showAuthor?: boolean }) {
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] transition-all duration-200 hover:-translate-y-1 hover:border-white/25 hover:bg-white/[0.04]">
       {/* Preview — image-first via TemplateThumb; on-brand tile when no real shot. */}
@@ -81,7 +82,7 @@ function TemplateCard({ t }: { t: TemplateEntry }) {
 
         <div className="mt-auto flex items-center justify-between gap-3 pt-4">
           <span className="truncate font-mono text-[10px] uppercase tracking-[0.12em] text-white/35">
-            {t.framework}
+            {showAuthor ? `by ${authorOf(t.slug)}` : t.framework}
           </span>
           <Link
             href={t.fork}
@@ -105,7 +106,19 @@ function TemplateCard({ t }: { t: TemplateEntry }) {
   );
 }
 
-export function TemplateGallery({ className = "" }: { className?: string }) {
+export function TemplateGallery({
+  className = "",
+  eyebrow = "Built with AI",
+  heading = "Website & app templates",
+  lead = "Production-ready apps from the Hanzo community.",
+  showAuthor = false,
+}: {
+  className?: string;
+  eyebrow?: string;
+  heading?: string;
+  lead?: string;
+  showAuthor?: boolean;
+}) {
   const [active, setActive] = useState<string>(ALL);
 
   // Only surface categories that actually have templates (resilient to an empty
@@ -126,14 +139,12 @@ export function TemplateGallery({ className = "" }: { className?: string }) {
       {/* Header — true-black monochrome, landing aesthetic. */}
       <header className="max-w-2xl">
         <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">
-          Built with AI
+          {eyebrow}
         </p>
         <h1 className="mt-3 text-3xl font-medium tracking-tight text-white sm:text-4xl md:text-[2.75rem] md:leading-[1.05]">
-          Website &amp; app templates
+          {heading}
         </h1>
-        <p className="mt-4 text-base text-white/55 sm:text-lg">
-          Production-ready apps from the Hanzo community.
-        </p>
+        <p className="mt-4 text-base text-white/55 sm:text-lg">{lead}</p>
       </header>
 
       {/* Category rail — instant client-side filtering. */}
@@ -156,7 +167,7 @@ export function TemplateGallery({ className = "" }: { className?: string }) {
       {shown.length > 0 ? (
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
           {shown.map((t) => (
-            <TemplateCard key={t.slug} t={t} />
+            <TemplateCard key={t.slug} t={t} showAuthor={showAuthor} />
           ))}
         </div>
       ) : (
