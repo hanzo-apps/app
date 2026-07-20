@@ -23,7 +23,7 @@ interface BaseField {
 }
 
 // Reserved field names Base manages itself; never re-declared.
-const RESERVED = new Set(['id', 'created', 'updated']);
+const RESERVED = new Set(['id', 'created', 'updated', 'owner', 'org']);
 
 /** Map a SQLite column type to the closest Base field type. */
 export function sqliteTypeToBaseType(sqlType: string): BaseField['type'] {
@@ -38,6 +38,8 @@ export function sqliteTypeToBaseType(sqlType: string): BaseField['type'] {
 
 interface ParsedTable {
   name: string;
+  /** True when the DDL carries an `@public` marker → anonymous form submit. */
+  public: boolean;
   columns: Array<{ name: string; type: string; notNull: boolean }>;
 }
 
@@ -68,7 +70,10 @@ export function parseDDL(ddl: string): ParsedTable[] {
         notNull: /\bnot\s+null\b/i.test(line),
       });
     }
-    tables.push({ name: m[1], columns });
+    // PUBLIC FORM (anonymous submit allowed) when the CREATE TABLE carries an
+    // `@public` marker comment (e.g. a `-- @public` line inside it).
+    const isPublic = /@public\b/i.test(m[0]);
+    tables.push({ name: m[1], public: isPublic, columns });
   }
   return tables;
 }
@@ -93,11 +98,17 @@ function splitColumns(body: string): string[] {
 }
 
 function tableToFields(table: ParsedTable): BaseField[] {
-  return table.columns.map((col) => ({
+  const fields: BaseField[] = table.columns.map((col) => ({
     name: col.name,
     type: sqliteTypeToBaseType(col.type),
     required: col.notNull,
   }));
+  // System-managed tenant columns — stamped from the verified IAM principal by
+  // Base's create hook (the client cannot set them). `org` is the tenant key the
+  // org-scoped rules enforce isolation on; `owner` is provenance.
+  fields.push({ name: 'owner', type: 'text' });
+  fields.push({ name: 'org', type: 'text' });
+  return fields;
 }
 
 /**
@@ -122,7 +133,11 @@ export async function provisionBaseFromDDL(client: BaseClient, ddl: string): Pro
     // If listing fails we still attempt creates; duplicate-name errors are caught per-table.
   }
 
-  const authed = "@request.auth.id != ''";
+  // Team-shared, tenant-isolated: any member of the caller's IAM org can read/
+  // write the org's rows; other orgs cannot see them. `@request.auth.org_id` is
+  // the verified IAM org on the auth record (Base stamps it from the JWT once the
+  // users collection carries the org_id field — base migration 1780600000).
+  const orgScope = '@request.auth.org_id = org';
 
   for (const table of tables) {
     if (existing.has(table.name)) {
@@ -137,11 +152,14 @@ export async function provisionBaseFromDDL(client: BaseClient, ddl: string): Pro
           name: table.name,
           type: 'base',
           fields: tableToFields(table),
-          listRule: authed,
-          viewRule: authed,
-          createRule: authed,
-          updateRule: authed,
-          deleteRule: authed,
+          listRule: orgScope,
+          viewRule: orgScope,
+          // Public form → anonymous create ("" = anyone). Otherwise authenticated
+          // create. Either way Base's hook stamps owner+org from the principal, so
+          // isolation holds regardless of who created the row.
+          createRule: table.public ? '' : "@request.auth.id != ''",
+          updateRule: orgScope,
+          deleteRule: orgScope,
         }),
       });
       result.created.push(table.name);
