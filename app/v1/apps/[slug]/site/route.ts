@@ -28,16 +28,32 @@ interface Ctx {
   params: Promise<{ slug: string }>;
 }
 
-/** Only a Hanzo-served site is ever fetched (SSRF guard). */
-function safeLiveUrl(raw: string): URL | null {
+// SSRF allowlist for the artifact fetch: a published site lives either at its
+// vanity host (`<slug>.hanzo.app`) OR directly in the Hanzo sites object store
+// (`s3.hanzo.ai/hanzo-sites/<org>/<slug>/…`, the record's authoritative liveUrl).
+// Nothing else is ever fetched.
+function safeHost(host: string): boolean {
+  const h = host.toLowerCase();
+  return h === 's3.hanzo.ai' || h.endsWith('.hanzo.app');
+}
+
+/**
+ * The directory URL (no trailing slash) the site's pages are served from,
+ * derived from an allowlisted URL. A URL whose last path segment is a file
+ * (`…/index.html`) is reduced to its containing directory so page discovery
+ * fetches siblings correctly (this is the shape of the record's S3 liveUrl).
+ */
+function siteBase(raw: string): string | null {
+  let u: URL;
   try {
-    const u = new URL(raw);
-    if (u.protocol !== 'https:') return null;
-    if (!u.hostname.endsWith('.hanzo.app')) return null;
-    return u;
+    u = new URL(raw);
   } catch {
     return null;
   }
+  if (u.protocol !== 'https:' || !safeHost(u.hostname)) return null;
+  let p = u.pathname;
+  if (/\/[^/]+\.[a-z0-9]+$/i.test(p)) p = p.replace(/\/[^/]+$/, ''); // strip trailing file
+  return (u.origin + p).replace(/\/+$/, '');
 }
 
 /** Relative same-site *.html hrefs in a page, normalized + deduped. */
@@ -56,9 +72,10 @@ function localPages(html: string): string[] {
   return [...found];
 }
 
-async function fetchPage(origin: string, path: string): Promise<string | null> {
+async function fetchPage(base: string, rel: string): Promise<string | null> {
   try {
-    const res = await fetch(`${origin}/${path}`, {
+    const url = rel ? `${base}/${rel}` : base;
+    const res = await fetch(url, {
       cache: 'no-store',
       redirect: 'follow',
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
@@ -90,35 +107,57 @@ export async function GET(req: NextRequest, ctx: Ctx) {
   const record = (await recRes.json().catch(() => null)) as {
     liveUrl?: string;
     status?: string;
+    org?: string;
+    bucket?: string;
   } | null;
 
-  const candidate =
-    (record?.liveUrl && safeLiveUrl(record.liveUrl)) || safeLiveUrl(`https://${clean}.hanzo.app`);
-  if (!candidate) {
-    return NextResponse.json({ liveUrl: null, pages: [] });
-  }
-  const origin = candidate.origin;
+  // Source the pages from the record's OWN authoritative artifact first (its
+  // liveUrl — an s3.hanzo.ai object URL that is always up), then the canonical
+  // object path from org+bucket, then the vanity subdomain. The vanity host
+  // depends on the edge/DNS being wired; the S3 bases do not, so a project
+  // reloads into the editor even mid-rollout of the sites edge.
+  const org = (record?.org || '').replace(/[^a-z0-9_-]/gi, '');
+  const bucket = (record?.bucket || 'hanzo-sites').replace(/[^a-z0-9_.-]/gi, '');
+  const bases = [
+    record?.liveUrl ? siteBase(record.liveUrl) : null,
+    org ? siteBase(`https://s3.hanzo.ai/${bucket}/${org}/${clean}/index.html`) : null,
+    siteBase(`https://${clean}.hanzo.app/index.html`),
+  ].filter((b): b is string => !!b);
 
-  const index = await fetchPage(origin, 'index.html').then(
-    async (html) => html ?? (await fetchPage(origin, '')),
-  );
-  // Honest: nothing deployed (or unreachable) — the editor starts fresh. A page
-  // referencing /_next/static is the platform shell (wildcard *.hanzo.app
-  // fallthrough), NOT the published artifact — never import that as the app.
-  if (!index || index.includes('/_next/static')) {
-    return NextResponse.json({ liveUrl: origin, pages: [] });
+  // The friendly URL shown in the editor ("your live site"): the vanity host when
+  // the project is live, else whatever the record declares.
+  const liveUrl =
+    record?.status === 'live' ? `https://${clean}.hanzo.app` : record?.liveUrl || null;
+
+  let base: string | null = null;
+  let index: string | null = null;
+  for (const b of bases) {
+    const html = await fetchPage(b, 'index.html').then(async (h) => h ?? (await fetchPage(b, '')));
+    // A page referencing /_next/static is the platform shell (wildcard
+    // *.hanzo.app fallthrough / console), NOT the published artifact — skip it.
+    if (html && !html.includes('/_next/static')) {
+      base = b;
+      index = html;
+      break;
+    }
+  }
+
+  // Honest: nothing fetchable — the editor opens on the record (name) with an
+  // empty preview rather than dead-ending.
+  if (!base || !index) {
+    return NextResponse.json({ liveUrl, pages: [] });
   }
 
   const extras = await Promise.all(
     localPages(index).map(async (path) => {
-      const html = await fetchPage(origin, path);
+      const html = await fetchPage(base as string, path);
       return html ? { path, html } : null;
     }),
   );
 
   return NextResponse.json(
     {
-      liveUrl: origin,
+      liveUrl,
       pages: [{ path: 'index.html', html: index }, ...extras.filter(Boolean)],
     },
     { headers: { 'Cache-Control': 'no-store' } },
