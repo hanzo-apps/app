@@ -1132,9 +1132,9 @@ export function AskAI({
                       "text-neutral-400 hover:bg-white/10 hover:!text-neutral-200":
                         !isEditableModeEnabled,
                     })}
+                    aria-label="Select an element to edit"
                   >
                     <Crosshair className="size-4" />
-                    Edit
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent

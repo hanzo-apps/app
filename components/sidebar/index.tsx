@@ -11,7 +11,6 @@ import {
   FolderPlus,
   Settings,
   Info,
-  Github,
   BookOpen,
   Cloud,
   LogOut,
@@ -38,7 +37,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@hanzo/ui';
-import { DiscordIcon } from '@/components/ui/discord-icon';
 import { cn } from '@/lib/utils';
 import { OrgProvider } from '@/lib/org/client';
 import { OrgSwitcher } from '@/components/org-switcher';
@@ -256,7 +254,13 @@ function SidebarContent({
       <Button
         key={item.id}
         variant={isActive ? 'default' : 'ghost'}
-        className={cn('w-full', collapsed ? 'justify-center px-2' : 'justify-start')}
+        className={cn(
+          'w-full',
+          collapsed ? 'justify-center px-2' : 'justify-start',
+          // Vercel-calm: inactive nav is muted, brightens on hover; only the
+          // active item is full-strength.
+          !isActive && 'text-muted-foreground hover:text-foreground',
+        )}
         onClick={() => handleItemAction(item)}
         title={collapsed ? item.label : undefined}
       >
@@ -503,30 +507,6 @@ function SidebarContent({
             </div>
           )}
 
-          {/* Discord + GitHub — compact footer links */}
-          {!collapsed && (
-            <div className="flex items-center gap-1 px-3 pb-1">
-              <a
-                href="https://discord.gg/mAJ8Ss4u"
-                target="_blank"
-                rel="noopener noreferrer"
-                title="Discord"
-                className="rounded-md p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
-              >
-                <DiscordIcon className="h-4 w-4" />
-              </a>
-              <a
-                href="https://github.com/hanzoai/app"
-                target="_blank"
-                rel="noopener noreferrer"
-                title="GitHub"
-                className="rounded-md p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
-              >
-                <Github className="h-4 w-4" />
-              </a>
-            </div>
-          )}
-
           {/* Per-org identity + credit balance, pinned to the bottom. */}
           <SidebarWallet collapsed={collapsed} />
         </OrgProvider>
@@ -556,17 +536,15 @@ function ShareCard() {
   return (
     <button
       onClick={share}
-      className="flex w-full items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2 text-left text-xs transition-colors hover:bg-muted"
+      title="Invite a friend to build"
+      className="flex w-full items-center gap-2 rounded-md border border-border bg-muted/30 px-2.5 py-1.5 text-left text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
     >
       {copied ? (
-        <Check className="h-4 w-4 shrink-0 text-emerald-500" />
+        <Check className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
       ) : (
-        <Share2 className="h-4 w-4 shrink-0 text-muted-foreground" />
+        <Share2 className="h-3.5 w-3.5 shrink-0" />
       )}
-      <span className="flex min-w-0 flex-col">
-        <span className="font-medium text-foreground">{copied ? 'Link copied' : 'Share Hanzo App'}</span>
-        <span className="truncate text-muted-foreground">Invite a friend to build</span>
-      </span>
+      <span className="truncate font-medium">{copied ? 'Link copied' : 'Share app'}</span>
     </button>
   );
 }
@@ -576,13 +554,11 @@ function UpgradeCard({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="flex w-full items-center gap-2 rounded-lg border border-border bg-gradient-to-br from-white/[0.06] to-transparent px-3 py-2 text-left text-xs transition-colors hover:from-white/[0.1]"
+      title="More credits & private apps"
+      className="flex w-full items-center gap-2 rounded-md border border-border bg-gradient-to-br from-white/[0.06] to-transparent px-2.5 py-1.5 text-left text-xs text-foreground transition-colors hover:from-white/[0.1]"
     >
-      <Zap className="h-4 w-4 shrink-0 text-foreground" />
-      <span className="flex min-w-0 flex-col">
-        <span className="font-medium text-foreground">Upgrade to Pro</span>
-        <span className="truncate text-muted-foreground">More credits &amp; private apps</span>
-      </span>
+      <Zap className="h-3.5 w-3.5 shrink-0" />
+      <span className="truncate font-medium">Upgrade to Pro</span>
     </button>
   );
 }

@@ -46,7 +46,7 @@ import { Button, Input, Badge } from "@hanzo/ui";
 import { toast } from "sonner";
 
 import { useUser } from "@/hooks/useUser";
-import { useOrg } from "@/lib/org/client";
+import { OrgProvider, useOrg } from "@/lib/org/client";
 import { currentOrg, orgDisplayName } from "@/lib/org-scope";
 import { cn } from "@/lib/utils";
 import {
@@ -91,6 +91,16 @@ function sinceLabel(iso: string): string {
 }
 
 export default function ConnectorsPage() {
+  // The page reads org scope via useOrg — provide it here (this route renders
+  // standalone, not under AppShell), so useOrg has a provider ancestor.
+  return (
+    <OrgProvider>
+      <ConnectorsInner />
+    </OrgProvider>
+  );
+}
+
+function ConnectorsInner() {
   const router = useRouter();
   const { user, loading: userLoading } = useUser();
   const { ctx } = useOrg();

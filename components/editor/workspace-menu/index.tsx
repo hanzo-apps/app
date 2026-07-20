@@ -27,7 +27,6 @@ import { toast } from "sonner";
 import {
   Check,
   ChevronsUpDown,
-  CreditCard,
   Info,
   LayoutDashboard,
   LifeBuoy,
@@ -267,35 +266,34 @@ export function WorkspaceMenu({
             </div>
           )}
 
-          {/* Credits — the real per-org balance + a smooth spendable meter. */}
-          <div className="mx-0.5 mt-1 flex flex-col gap-2 rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-2.5">
-            <div className="flex items-center justify-between">
-              <span className="flex items-center gap-1.5 text-xs font-medium text-white/70">
-                <Wallet className="size-3.5 text-white/40" />
-                Credits
-              </span>
-              <span className="font-mono text-sm tabular-nums text-white">{balanceText}</span>
-            </div>
-            <div
-              role="progressbar"
-              aria-valuenow={pct}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-label="Credits spendable"
-              className="h-1.5 w-full overflow-hidden rounded-full bg-white/10"
+          {/* Credits — the balance IS the entry point: the whole card is a link to
+              billing/usage (top up + see spend). No separate "Get more credits". */}
+          <DropdownMenuItem asChild className="mx-0.5 mt-1 rounded-lg p-0 focus:bg-transparent">
+            <Link
+              href="/billing"
+              className="flex w-full flex-col gap-2 rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-2.5 transition-colors hover:border-white/15 hover:bg-white/[0.05] focus-visible:border-white/20"
             >
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-1.5 text-xs font-medium text-white/70">
+                  <Wallet className="size-3.5 text-white/40" />
+                  Credits
+                </span>
+                <span className="font-mono text-sm tabular-nums text-white">{balanceText}</span>
+              </div>
               <div
-                className="h-full rounded-full bg-gradient-to-r from-white/70 to-white transition-[width] duration-700 ease-out motion-reduce:transition-none"
-                style={{ width: `${pct}%` }}
-              />
-            </div>
-            <span className="truncate text-[11px] text-white/40">{creditHint}</span>
-          </div>
-
-          <DropdownMenuItem asChild className={ITEM}>
-            <Link href="/billing">
-              <CreditCard className={ICON} />
-              Get more credits
+                role="progressbar"
+                aria-valuenow={pct}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label="Credits spendable"
+                className="h-1.5 w-full overflow-hidden rounded-full bg-white/10"
+              >
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-white/70 to-white transition-[width] duration-700 ease-out motion-reduce:transition-none"
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+              <span className="truncate text-[11px] text-white/40">{creditHint}</span>
             </Link>
           </DropdownMenuItem>
 
