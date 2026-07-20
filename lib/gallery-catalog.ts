@@ -9,6 +9,7 @@
 // onboarding "Popular templates". Never hardcode a fake template list again.
 
 import snapshotJson from './gallery-snapshot.json';
+import { TEMPLATE_SHOTS } from './template-shots';
 
 export const GALLERY_ORIGIN = 'https://gallery.hanzo.ai';
 
@@ -89,8 +90,14 @@ export function catalogCategories(templates: GalleryTemplate[]): string[] {
  * real screenshot, one per category for variety, capped at `count`.
  */
 export function popularTemplates(templates: GalleryTemplate[], count = 6): GalleryTemplate[] {
-  const withShots = templates.filter((t) => t.hasScreenshot);
-  const byRating = [...withShots].sort((a, b) => b.rating - a.rating || a.tier - b.tier);
+  // Prefer templates with a REAL self-hosted preview shot so the surfaced cards
+  // show a genuine picture, not the generated tile. Fall back to any with the
+  // legacy screenshot flag, then to all — never return empty.
+  const real = templates.filter((t) => TEMPLATE_SHOTS.has(t.slug));
+  const pool = real.length >= count ? real : templates.filter((t) => t.hasScreenshot);
+  const byRating = [...(pool.length ? pool : templates)].sort(
+    (a, b) => b.rating - a.rating || a.tier - b.tier,
+  );
   const picked: GalleryTemplate[] = [];
   const usedCategory = new Set<string>();
   for (const t of byRating) {
