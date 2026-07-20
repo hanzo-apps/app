@@ -125,7 +125,7 @@ export default function DashboardPage() {
         <section id="projects-panel" className="mx-auto max-w-6xl scroll-mt-6 px-4 pb-24 sm:px-6">
           <Reveal>
             <div className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-5 shadow-2xl shadow-black/50 md:p-8">
-              <Tabs value={tab} onValueChange={setTab}>
+              <Tabs value={tab} onValueChange={setTab} className="w-full">
                 <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
                   <TabsList className="bg-transparent p-0">
                     <TabsTrigger value="mine" className="data-[state=active]:bg-white/10">
