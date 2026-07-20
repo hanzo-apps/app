@@ -108,6 +108,27 @@ export const BUILT_IN_TEMPLATES: BuiltInTemplateMetadata[] = [
     },
   },
   {
+    id: 'vibe-check',
+    name: 'Team Vibe Check (Realtime)',
+    description: 'Realtime team pulse — one-tap voting on Hanzo Base with a live SSE results bar that syncs to every viewer.',
+    isBuiltIn: true,
+    runtime: 'static',
+    updatedAt: new Date('2025-01-01T00:00:00Z'),
+    backendFeatures: {
+      edgeFunctions: [],
+      serverFunctions: [],
+      secrets: [],
+      // Provisioned into Hanzo Base as the org-scoped `votes` collection. Base
+      // manages id/created/updated; the app sorts by the built-in `created` and
+      // streams every change over the Base realtime SSE subscription.
+      databaseSchema: `CREATE TABLE IF NOT EXISTS votes (\n  choice TEXT NOT NULL,\n  voter TEXT NOT NULL\n);`,
+    },
+    metadata: {
+      author: 'Hanzo',
+      tags: ['realtime', 'base', 'sse', 'voting', 'server-mode'],
+    },
+  },
+  {
     id: 'react-starter',
     name: 'Starter (React + TypeScript)',
     description: 'Minimal React app with TypeScript and auto-bundling',
