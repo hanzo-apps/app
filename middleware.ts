@@ -49,7 +49,7 @@ export async function middleware(request: NextRequest) {
   // --- Rate limiting (unchanged) ---
   let rateLimitType: "auth" | "api" | "public" | "ai" | "payment" = "public";
 
-  if (path.startsWith("/api/auth")) {
+  if (path.startsWith("/api/auth") || path.startsWith("/v1/auth")) {
     rateLimitType = "auth";
   } else if (path.startsWith("/api/commerce")) {
     rateLimitType = "payment";

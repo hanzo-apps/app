@@ -243,7 +243,7 @@ function SidebarContent({
       onServerSync?.();
     } else if (item.action === 'logout') {
       try {
-        const response = await fetch('/api/auth/logout', { method: 'POST' });
+        const response = await fetch('/v1/auth/logout', { method: 'POST' });
         if (response.ok) router.push('/admin/login');
       } catch (error) {
         console.error('Logout failed:', error);
