@@ -11,10 +11,11 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { HanzoBrand } from "@/components/HanzoLogo";
+import Reveal from "@/components/landing/reveal";
 import {
   appCatalog,
   ACTION_LABEL,
-  ACTION_URL,
+  appUrl,
   type AppEntry,
 } from "@/data/app-catalog";
 
@@ -34,11 +35,14 @@ const CATEGORIES: { label: string; cats: string[] }[] = [
 // One catalog cell: the app's mark + name as the wordmark lockup, its real blurb,
 // then the action verb — links to the same install/connect destination as the
 // card grid. Borderless, editorial, matching the reference's logo + copy columns.
-function AppCell({ app }: { app: AppEntry }) {
+function AppCell({ app, index = 0 }: { app: AppEntry; index?: number }) {
   const Icon = app.icon;
   return (
+    // Reveal fades each card up as it scrolls into view — so panning/scrolling the
+    // grid cascades through every integration. `index` staggers cards in a row.
+    <Reveal delay={Math.min(index * 40, 240)} className="h-full">
     <a
-      href={ACTION_URL[app.action]}
+      href={appUrl(app)}
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`${ACTION_LABEL[app.action]} ${app.name}`}
@@ -62,6 +66,7 @@ function AppCell({ app }: { app: AppEntry }) {
         <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
       </span>
     </a>
+    </Reveal>
   );
 }
 
@@ -216,8 +221,8 @@ export default function AppsPage() {
                   {c.label}
                 </div>
                 <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-                  {apps.map((app) => (
-                    <AppCell key={app.name} app={app} />
+                  {apps.map((app, i) => (
+                    <AppCell key={app.name} app={app} index={i} />
                   ))}
                 </div>
               </section>
