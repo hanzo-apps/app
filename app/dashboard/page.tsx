@@ -21,6 +21,7 @@ import { BuildComposer } from "@/components/build-composer";
 import { ProjectThumb } from "@/components/project-thumb";
 import { builderLink, liveUrlOf } from "@/lib/api/projects";
 import { relativeTime } from "@/lib/projects-view";
+import { statusOf } from "@/lib/project-status";
 import { markProjectOpened, orderByRecentlyOpened } from "@/lib/recent-projects";
 import Reveal from "@/components/landing/reveal";
 import {
@@ -234,7 +235,9 @@ function ProjectGrid({
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {projects.map((p) => {
-        const live = p.status === "live" || p.status === "published";
+        // ONE four-state status map (live/building/error/draft) — a failed deploy
+        // never looks like an untouched draft. See lib/project-status.
+        const st = statusOf(p.status);
         return (
           <button
             key={p.id}
@@ -250,12 +253,10 @@ function ProjectGrid({
               <h3 className="truncate text-sm font-medium text-white">{p.name}</h3>
               <div className="mt-1.5 flex items-center gap-3">
                 <span
-                  className={`inline-flex items-center gap-1 text-[11px] uppercase tracking-wide ${
-                    live ? "text-emerald-400" : "text-white/35"
-                  }`}
+                  className={`inline-flex items-center gap-1 text-[11px] uppercase tracking-wide ${st.text}`}
                 >
-                  <Circle className={`h-1.5 w-1.5 ${live ? "fill-emerald-400" : "fill-white/35"}`} />
-                  {live ? "Live" : "Draft"}
+                  <Circle className={`h-1.5 w-1.5 ${st.dot.replace("bg-", "fill-")}`} />
+                  {st.label}
                 </span>
                 <span className="flex items-center gap-1 text-[11px] text-white/30">
                   <Clock className="h-3 w-3" />

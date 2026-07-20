@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Save, Key, Bell, Palette, Shield, CreditCard } from "lucide-react";
+import { Key, Bell, Palette, Shield, CreditCard } from "lucide-react";
 import { Button } from "@hanzo/ui";
 import { useUser } from "@/hooks/useUser";
-import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
 import { HanzoLogo } from "@/components/HanzoLogo";
 
@@ -22,10 +21,6 @@ export default function SettingsPage() {
     { id: "security", label: "Security", icon: <Shield className="w-4 h-4" /> },
     { id: "billing", label: "Billing", icon: <CreditCard className="w-4 h-4" /> },
   ];
-
-  const handleSave = () => {
-    toast.success("Settings saved successfully");
-  };
 
   // Use effect for navigation to avoid calling router.push during render
   useEffect(() => {
@@ -62,9 +57,9 @@ export default function SettingsPage() {
     <AppShell currentView="settings">
     <div className="flex-1 overflow-y-auto bg-black">
       <div className="container mx-auto px-6 py-8">
-        <div className="grid grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
           {/* Sidebar */}
-          <div className="col-span-3">
+          <div className="col-span-12 md:col-span-3">
             <nav className="space-y-1">
               {tabs.map((tab) => (
                 <button
@@ -84,7 +79,7 @@ export default function SettingsPage() {
           </div>
 
           {/* Content */}
-          <div className="col-span-9">
+          <div className="col-span-12 md:col-span-9">
             <div className="bg-neutral-900 rounded-lg border border-neutral-800 p-6">
               {activeTab === "general" && (
                 <div className="space-y-6">
@@ -95,7 +90,7 @@ export default function SettingsPage() {
                       <label className="block text-sm font-medium text-neutral-300 mb-2">
                         Theme
                       </label>
-                      <select className="w-full bg-neutral-800 text-white border border-neutral-700 rounded-lg px-4 py-2">
+                      <select disabled className="w-full bg-neutral-800 text-white border border-neutral-700 rounded-lg px-4 py-2 opacity-70 cursor-not-allowed">
                         <option value="dark">Dark</option>
                         <option value="light">Light</option>
                         <option value="system">System</option>
@@ -106,7 +101,7 @@ export default function SettingsPage() {
                       <label className="block text-sm font-medium text-neutral-300 mb-2">
                         Language
                       </label>
-                      <select className="w-full bg-neutral-800 text-white border border-neutral-700 rounded-lg px-4 py-2">
+                      <select disabled className="w-full bg-neutral-800 text-white border border-neutral-700 rounded-lg px-4 py-2 opacity-70 cursor-not-allowed">
                         <option value="en">English</option>
                         <option value="es">Spanish</option>
                         <option value="fr">French</option>
@@ -117,10 +112,10 @@ export default function SettingsPage() {
                       <label className="block text-sm font-medium text-neutral-300 mb-2">
                         Default AI Model
                       </label>
-                      <select className="w-full bg-neutral-800 text-white border border-neutral-700 rounded-lg px-4 py-2">
-                        <option value="claude-3.5">Claude 3.5 Sonnet</option>
-                        <option value="gpt-4">GPT-4</option>
-                        <option value="gemini">Gemini Pro</option>
+                      <select disabled className="w-full bg-neutral-800 text-white border border-neutral-700 rounded-lg px-4 py-2 opacity-70 cursor-not-allowed">
+                        <option value="zen5-coder">Zen 5 Coder</option>
+                        <option value="zen5-pro">Zen 5 Pro</option>
+                        <option value="zen3-omni">Zen 3 Omni</option>
                       </select>
                     </div>
                   </div>
