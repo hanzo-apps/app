@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/hooks/useUser';
 import { AppShell } from '@/components/app-shell';
-import { CryptoPayment } from '@/components/crypto-payment';
+import { CryptoPayment, CRYPTO_PAYMENTS_ENABLED } from '@/components/crypto-payment';
 import { WalletBoundary } from '@/components/providers/WalletBoundary';
 
 // UI Components
@@ -403,13 +403,15 @@ export default function BillingPage() {
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                <Button
-                  className="bg-white text-black hover:bg-white/90"
-                  onClick={() => { setPaymentMethod('crypto'); setCreditModalOpen(true); }}
-                >
-                  <Wallet className="w-4 h-4 mr-2" />
-                  Pay with USDC
-                </Button>
+                {CRYPTO_PAYMENTS_ENABLED && (
+                  <Button
+                    className="bg-white text-black hover:bg-white/90"
+                    onClick={() => { setPaymentMethod('crypto'); setCreditModalOpen(true); }}
+                  >
+                    <Wallet className="w-4 h-4 mr-2" />
+                    Pay with USDC
+                  </Button>
+                )}
                 <Button
                   variant="outline"
                   className="border-white/20 text-white hover:bg-white/10"
@@ -472,7 +474,9 @@ export default function BillingPage() {
 
           {/* Add Credits Tab */}
           <TabsContent value="add-credits" className="mt-6 space-y-6">
-            {/* Payment method toggle */}
+            {/* Payment method toggle — only when crypto is live; otherwise card-only
+                (paymentMethod stays 'card', so the USDC section + modal never show). */}
+            {CRYPTO_PAYMENTS_ENABLED && (
             <div className="flex gap-2 p-1 bg-[#1a1a1a] border border-white/10 rounded-lg w-fit">
               <button
                 onClick={() => setPaymentMethod('card')}
@@ -497,6 +501,7 @@ export default function BillingPage() {
                 USDC
               </button>
             </div>
+            )}
 
             {paymentMethod === 'card' ? (
               <Card className="bg-[#1a1a1a] border-white/10">
@@ -720,10 +725,11 @@ export default function BillingPage() {
         </Tabs>
       </div>
 
-      {/* Crypto Payment Modal — web3 stack (wagmi/WalletConnect/Coinbase) scoped here */}
+      {/* Crypto Payment Modal — web3 stack (wagmi/WalletConnect/Coinbase) scoped here.
+          Gated off while crypto is killed (open can never be true anyway). */}
       <WalletBoundary>
         <CryptoPayment
-          open={creditModalOpen && paymentMethod === 'crypto'}
+          open={CRYPTO_PAYMENTS_ENABLED && creditModalOpen && paymentMethod === 'crypto'}
           onOpenChange={(open) => {
             setCreditModalOpen(open);
             if (!open) setPaymentMethod('card');
