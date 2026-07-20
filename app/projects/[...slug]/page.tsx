@@ -15,6 +15,11 @@ export default async function ProjectRedirect({
   params: Promise<{ slug: string[] }>;
 }) {
   const { slug } = await params;
-  const project = (slug ?? []).map(decodeURIComponent).join("/");
-  redirect(`/dev?project=${encodeURIComponent(project)}`);
+  const parts = (slug ?? []).map(decodeURIComponent).filter(Boolean);
+  // /projects/<org>/<slug> → the canonical nice URL; /projects/<slug> → the
+  // legacy query form (which canonicalizes once the record resolves).
+  if (parts.length === 2) {
+    redirect(`/dev/${encodeURIComponent(parts[0])}/${encodeURIComponent(parts[1])}`);
+  }
+  redirect(`/dev?project=${encodeURIComponent(parts.join("/"))}`);
 }

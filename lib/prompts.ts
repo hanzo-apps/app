@@ -13,6 +13,24 @@ export const PROMPT_FOR_IMAGE_GENERATION = `If you want to use image placeholder
 Examples: http://static.photos/red/320x240/133 (red-themed with seed 133), http://static.photos/640x360 (random category and image), http://static.photos/nature/1200x630/42 (nature-themed with seed 42).
 IMPORTANT — images are RANDOM within a category, so a too-literal category often returns an off-subject photo that ruins the page (e.g. "food" returning raw meat on a coffee-shop hero). Rules: (1) only use a literal category when it genuinely matches the subject; (2) when no category is a precise match, prefer the mood categories — gradient, abstract, minimal, textures, monochrome, bokeh — or a pure CSS gradient/solid background instead of a photo; (3) always pass a seed so images stay consistent across regenerations; (4) hero sections look better with a CSS gradient + typography than with a mismatched stock photo.`
 
+/**
+ * Appended to the system prompt when the user enables the Hanzo Base backend
+ * (the composer's Base toggle → \`base: true\` on /v1/generate). The generated
+ * app talks to its OWN Base data plane through the same-origin proxy
+ * (/api/base → app/api/base/[...path]) — no keys in the page, no CORS.
+ */
+export const BASE_SYSTEM_PROMPT = `
+HANZO BASE BACKEND (enabled for this app):
+This app has a persistent data backend (Hanzo Base). Wire ALL forms and dynamic data through it — do not fake persistence with localStorage.
+- Records API (same-origin proxy, already authenticated):
+  - List:   fetch('/api/base/collections/<collection>/records?sort=-created').then(r=>r.json()) → { items: [...] }
+  - Create: fetch('/api/base/collections/<collection>/records', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(fields) })
+  - Delete: fetch('/api/base/collections/<collection>/records/<id>', { method:'DELETE' })
+- Choose short plural collection names (e.g. messages, votes, signups) and use the SAME names consistently across pages.
+- Realtime: after a successful create, refresh the list; ALSO poll the list every 5s (setInterval) so other visitors' records appear live, and show a small unobtrusive toast/notification when new records arrive.
+- Handle errors honestly: if a request fails, show an inline error state — never pretend it saved.
+- Declare the data model once in a comment at the top of your main script as SQL DDL, e.g. /* hanzo-base-schema: CREATE TABLE messages (name TEXT NOT NULL, body TEXT NOT NULL); */ — one CREATE TABLE per collection. The platform provisions these collections automatically.`;
+
 export const INITIAL_SYSTEM_PROMPT = `You are an expert UI/UX and Front-End Developer.
 You create website in a way a designer would, using ONLY HTML, CSS and Javascript.
 Try to create the best UI possible. Important: Make the website responsive by using TailwindCSS. Use it as much as you can, if you can't use it, use custom css (make sure to import tailwind with <script src="https://cdn.tailwindcss.com"></script> in the head).
