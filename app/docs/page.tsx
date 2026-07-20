@@ -44,7 +44,7 @@ const destinations: Dest[] = [
     icon: <Terminal className="h-5 w-5" />,
     title: "LLM Gateway & API",
     description:
-      "One OpenAI-compatible endpoint to Hanzo's Zen and Enso models plus 100+ frontier models at api.hanzo.ai.",
+      "One OpenAI-compatible endpoint to Hanzo's Zen and Enso models plus 400+ frontier models at api.hanzo.ai.",
     href: "https://hanzo.ai/llm",
     external: true,
     cta: "Explore the gateway",
@@ -257,7 +257,7 @@ export default function DocsPage() {
                 API
               </p>
               <h2 className="mt-3 text-3xl font-medium tracking-tight md:text-4xl">
-                One endpoint. 100+ models.
+                One endpoint. 400+ models.
               </h2>
               <p className="mt-4 max-w-md text-base text-white/55">
                 Every app you build can call any frontier model — Hanzo&apos;s own

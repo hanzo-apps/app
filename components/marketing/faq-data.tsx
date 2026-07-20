@@ -89,7 +89,7 @@ export const productFaq: QA[] = [
         <span className="text-white/80">Enso</span> model families, served through
         the Hanzo LLM Gateway at{" "}
         <code className="font-mono text-white/75">api.hanzo.ai</code>. The same
-        gateway gives every app you publish one OpenAI-compatible endpoint to 100+
+        gateway gives every app you publish one OpenAI-compatible endpoint to 400+
         frontier models — swap models with a single string.
       </>
     ),

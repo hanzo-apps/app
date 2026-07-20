@@ -7,6 +7,7 @@ import { Input } from "@hanzo/ui";
 import SpaceIcon from "@/assets/space.svg";
 import { Page } from "@/types";
 import { builderLink } from "@/lib/api/projects";
+import { baseEnabled } from "@/lib/base/flag";
 import { currentOrg } from "@/lib/org-scope";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
@@ -96,6 +97,18 @@ export const DeployButtonContent = ({
       // the last gateway response id (no-ops if none). Fire-and-forget.
       sendRewardSignal(getLastGenerationRequestId(), "up");
 
+      // Base backend: when the composer's Base toggle was on, spawn/refresh the
+      // app's own Base (per-project data plane) so the published app's forms +
+      // realtime actually persist. Fire-and-forget — publish never blocks on it.
+      if (baseEnabled() && data?.slug) {
+        fetch("/v1/provision", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ projectId: data.slug }),
+        }).catch(() => {});
+      }
+
       const liveUrl: string | undefined =
         data?.project?.liveUrl || data?.deployment?.liveUrl;
       if (data?.deployError && !liveUrl) {
@@ -108,9 +121,9 @@ export const DeployButtonContent = ({
         });
       }
 
-      // Deep-link back into the builder by the stable project slug (the same
-      // link console.hanzo.ai uses for "Edit in hanzo.app").
-      router.push(builderLink(data.slug));
+      // Deep-link back into the builder at the canonical nice URL
+      // (/dev/<org>/<slug> — the same link console.hanzo.ai uses).
+      router.push(builderLink(data.slug, data?.org || data?.project?.org));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to publish project");
     } finally {

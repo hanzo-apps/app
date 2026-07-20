@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { Page } from "@/types";
 import { parsePages, parseSinglePage, stripThinkBlocks } from "@/lib/format-pages";
 import { setLastGenerationRequestId } from "@/lib/reward-signal";
+import { baseEnabled } from "@/lib/base/flag";
 
 // The ONE honest message for an upstream 5xx / network failure. The caller's
 // handleError surfaces it once so the user knows to retry — never an infinite
@@ -235,6 +236,7 @@ export const useCallAi = ({
           provider,
           model,
           redesignMarkdown,
+          base: baseEnabled(),
         }),
         headers: {
           "Content-Type": "application/json",
@@ -368,6 +370,7 @@ export const useCallAi = ({
           model,
           pages,
           previousPrompts,
+          base: baseEnabled(),
         }),
         headers: {
           "Content-Type": "application/json",
@@ -488,6 +491,7 @@ export const useCallAi = ({
           pages,
           selectedElementHtml,
           files,
+          base: baseEnabled(),
         }),
         headers: {
           "Content-Type": "application/json",

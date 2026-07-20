@@ -163,7 +163,42 @@ export async function listDeployments(slug: string): Promise<Deployment[]> {
   return req<Deployment[]>(`/${encodeURIComponent(slug)}/deployments`);
 }
 
-/** The stable deep-link that opens a project in the builder (console can link here). */
-export function builderLink(slug: string): string {
+/**
+ * The stable deep-link that opens a project in the builder (console can link
+ * here). With the org known it is the canonical nice URL
+ * (`/dev/<org>/<slug>`); without it, the legacy query form — which /dev
+ * canonicalizes to the nice URL once the record resolves.
+ */
+export function builderLink(slug: string, org?: string | null): string {
+  const o = (org || '').trim();
+  if (o) return `/dev/${encodeURIComponent(o)}/${encodeURIComponent(slug)}`;
   return `/dev?project=${encodeURIComponent(slug)}`;
+}
+
+/** The live site URL for a project (record liveUrl, else <slug>.hanzo.app when live). */
+export function liveUrlOf(p: Pick<Project, 'slug' | 'status' | 'liveUrl'>): string | null {
+  if (p.liveUrl) return p.liveUrl;
+  if (p.status === 'live') return `https://${p.slug}.hanzo.app`;
+  return null;
+}
+
+/**
+ * The deployed site's editable pages, reconstructed server-side from the live
+ * deployment (same-origin BFF /v1/apps/:slug/site). This is what lets an
+ * existing project open IN the editor with its real content on any device.
+ */
+export async function fetchProjectSite(
+  slug: string,
+): Promise<{ liveUrl: string | null; pages: { path: string; html: string }[] }> {
+  const res = await fetch(`/v1/apps/${encodeURIComponent(slug)}/site`, {
+    credentials: 'include',
+    headers: { Accept: 'application/json', ...orgHeader() },
+    cache: 'no-store',
+  });
+  if (!res.ok) return { liveUrl: null, pages: [] };
+  const data = await res.json().catch(() => null);
+  return {
+    liveUrl: typeof data?.liveUrl === 'string' ? data.liveUrl : null,
+    pages: Array.isArray(data?.pages) ? data.pages : [],
+  };
 }
