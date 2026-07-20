@@ -1,0 +1,74 @@
+# Native image build — Hanzo Git (git.hanzo.ai) act_runners, NOT GitHub.
+#
+# WHY: GitHub Actions outages (and the org runner collisions) must NEVER block a
+# hanzo.app deploy. This workflow builds + pushes the container image ENTIRELY on
+# our own stack — the git.hanzo.ai act_runner (gitea/act_runner:*-dind, privileged,
+# docker-in-docker) — so nothing on github.com is in the deploy path. GitHub.com
+# ignores .gitea/workflows, so the legacy .github/workflows/release.yml still runs
+# there as a MIRROR only; git.hanzo.ai is the source of truth.
+#
+# CONTRACT (mirrors .github/workflows/release.yml): a git tag v<X.Y.Z> <=> an image
+# ghcr.io/hanzoai/hanzo-app:v<X.Y.Z>. The operator (universe CR) then reconciles the
+# tag — CD is already fully native (no GitHub in deploy). We keep pushing to GHCR for
+# now so the operator's pull path is unchanged; a follow-up flips the registry to the
+# in-cluster registry.hanzo.ai for FULL independence (the runner's docker-auth volume
+# already carries both credentials).
+#
+# PREREQ (one-time, per the console/id/platform pattern): mirror hanzoai/app ->
+# git.hanzo.ai/hanzoai/app with an app-git-token, and expose GHCR push creds to the
+# runner (docker-auth volume, already mounted). Then every push to main builds here.
+
+name: build-image
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+
+concurrency:
+  group: build-image-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: hanzo-build-linux-amd64
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      # Version: on a v<X.Y.Z> tag push, use it verbatim. On a main push, compute
+      # the next patch off the highest v1.42.* tag (same floor logic as release.yml),
+      # then create + push that tag so the image and the git tag stay 1:1.
+      - name: Resolve version
+        id: ver
+        run: |
+          set -euo pipefail
+          if [ "${GITHUB_REF_TYPE:-}" = "tag" ]; then
+            V="${GITHUB_REF_NAME}"
+          else
+            LAST=$(git tag -l 'v1.42.*' | sed 's/^v1\.42\.//' | grep -E '^[0-9]+$' | sort -n | tail -1)
+            V="v1.42.$(( ${LAST:-64} + 1 ))"
+            git tag "$V"
+            git push origin "$V" || true
+          fi
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+          echo "Building $V"
+
+      # The runner is dind (privileged) — a real docker daemon is available. The
+      # docker-auth volume carries the GHCR push credential (ghcr-credentials), so no
+      # explicit login/secret is needed here; it is mounted at build time.
+      - name: Build + push image (native, dind)
+        env:
+          TAG: ${{ steps.ver.outputs.version }}
+        run: |
+          set -euo pipefail
+          IMG="ghcr.io/hanzoai/hanzo-app:${TAG}"
+          docker build \
+            -f Dockerfile.production \
+            --build-arg SOURCE_COMMIT="${GITHUB_SHA}" \
+            -t "$IMG" \
+            .
+          docker push "$IMG"
+          echo "Pushed $IMG — bump the operator CR (universe: hanzo-app.yaml) to deploy."
