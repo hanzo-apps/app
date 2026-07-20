@@ -1,18 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  ArrowUp,
-  Plus,
-  Loader2,
-  Globe2,
-  Mic,
-  Github,
-  ArrowRight,
-  CornerDownLeft,
-} from "lucide-react";
+import { Github } from "lucide-react";
 import Header from "@/components/layout/header";
 import Reveal from "@/components/landing/reveal";
 import HeroPreview from "@/components/landing/hero-preview";
@@ -21,6 +12,9 @@ import CloudIntegration from "@/components/landing/cloud-integration";
 import ModelsStrip from "@/components/landing/models-strip";
 import HowItWorks from "@/components/landing/how-it-works";
 import SiteFooter from "@/components/landing/site-footer";
+import { BuildComposer, type ComposerMode } from "@/components/build-composer";
+import { ProjectThumb } from "@/components/project-thumb";
+import { builderLink } from "@/lib/api/projects";
 import { useUser } from "@/hooks/useUser";
 import {
   type GalleryTemplate,
@@ -28,14 +22,13 @@ import {
   popularTemplates,
 } from "@/lib/gallery-catalog";
 
-interface Project {
-  namespace: string;
-  id: string;
+interface LandingProject {
+  slug: string;
+  org?: string;
   name: string;
-  emoji: string;
-  short_description?: string;
-  created_at: string;
-  updated_at: string;
+  status: string;
+  liveUrl: string | null;
+  updatedAtIso: string | null;
 }
 
 // Honest app-type starters (not fabricated products) — shown as pills.
@@ -60,10 +53,7 @@ const TYPED = [
 export default function LandingPage() {
   const { openLoginWindow, user } = useUser();
   const router = useRouter();
-  const [prompt, setPrompt] = useState("");
-  const [isCreating, setIsCreating] = useState(false);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [inputFocused, setInputFocused] = useState(false);
+  const [projects, setProjects] = useState<LandingProject[]>([]);
   // A few real gallery templates surfaced beside the prompt: the bundled
   // snapshot seeds them instantly, then the live catalog (gallery.hanzo.ai)
   // refreshes below.
@@ -71,70 +61,40 @@ export default function LandingPage() {
     () => popularTemplates(snapshotCatalog().templates, 4),
   );
 
-  // Animated typewriter placeholder — pauses once the user focuses or types.
-  const [typed, setTyped] = useState("");
-  const idle = !inputFocused && prompt.length === 0;
-  const phraseRef = useRef(0);
-  const charRef = useRef(0);
-  const delRef = useRef(false);
-  useEffect(() => {
-    if (!idle) return;
-    // Respect reduced-motion (as the Reveal entrances do): show the first phrase
-    // statically instead of a perpetual typewriter loop.
-    if (
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
-    ) {
-      setTyped(TYPED[0]);
-      return;
-    }
-    let t: ReturnType<typeof setTimeout>;
-    const tick = () => {
-      const phrase = TYPED[phraseRef.current % TYPED.length];
-      if (!delRef.current) {
-        charRef.current += 1;
-        setTyped(phrase.slice(0, charRef.current));
-        if (charRef.current >= phrase.length) {
-          delRef.current = true;
-          t = setTimeout(tick, 1800); // hold the full phrase
-          return;
-        }
-        t = setTimeout(tick, 38);
-      } else {
-        charRef.current -= 1;
-        setTyped(phrase.slice(0, Math.max(0, charRef.current)));
-        if (charRef.current <= 0) {
-          delRef.current = false;
-          phraseRef.current += 1;
-          t = setTimeout(tick, 320);
-          return;
-        }
-        t = setTimeout(tick, 18);
-      }
-    };
-    t = setTimeout(tick, 400);
-    return () => clearTimeout(t);
-  }, [idle]);
-
   // Fetch the user's REAL projects from the ONE canonical org store (the same
-  // same-origin /v1/projects BFF console + the dashboard use). Mapped to the
-  // landing card shape; the builder opens by slug (/dev?project=<slug>).
+  // same-origin /v1/projects BFF console + the dashboard use). The builder opens
+  // at the canonical nice URL (/dev/<org>/<slug>).
   useEffect(() => {
     if (!user) return;
     fetch("/v1/projects", { credentials: "include", cache: "no-store" })
       .then((res) => (res.ok ? res.json() : []))
-      .then((rows: Array<{ id: string; slug: string; name?: string; status?: string; createdAt?: number }>) =>
-        setProjects(
-          (Array.isArray(rows) ? rows : []).map((p) => ({
-            namespace: p.slug,
-            id: p.slug,
-            name: p.name || p.slug,
-            emoji: "◆",
-            short_description: p.status === "live" ? "Live" : "Draft",
-            created_at: p.createdAt ? new Date(p.createdAt * 1000).toISOString() : "",
-            updated_at: p.createdAt ? new Date(p.createdAt * 1000).toISOString() : "",
-          })),
-        ),
+      .then(
+        (
+          rows: Array<{
+            slug: string;
+            org?: string;
+            name?: string;
+            status?: string;
+            liveUrl?: string;
+            updatedAt?: number;
+            createdAt?: number;
+          }>,
+        ) =>
+          setProjects(
+            (Array.isArray(rows) ? rows : []).map((p) => ({
+              slug: p.slug,
+              org: p.org,
+              name: p.name || p.slug,
+              status: p.status || "draft",
+              liveUrl:
+                p.liveUrl || (p.status === "live" ? `https://${p.slug}.hanzo.app` : null),
+              updatedAtIso: p.updatedAt
+                ? new Date(p.updatedAt * 1000).toISOString()
+                : p.createdAt
+                  ? new Date(p.createdAt * 1000).toISOString()
+                  : null,
+            })),
+          ),
       )
       .catch(() => setProjects([]));
   }, [user]);
@@ -156,21 +116,16 @@ export default function LandingPage() {
     };
   }, []);
 
-  const handleCreateProject = () => {
-    if (!prompt.trim()) return;
-    // Persist the prompt so the builder can pick it up post-login. `initialMode`
-    // is the only new key (the composer here has no Build/Plan toggle, so it
-    // seeds the default 'build' mode); the builder reads both on /dev mount.
-    localStorage.setItem("initialPrompt", prompt);
-    localStorage.setItem("initialMode", "build");
+  // ONE submit for both composers (hero + final CTA): persist the seed, bounce
+  // anon visitors through login, land signed-in users straight in the builder.
+  const startBuild = (text: string, mode: ComposerMode) => {
+    localStorage.setItem("initialPrompt", text);
+    localStorage.setItem("initialMode", mode);
     if (!user) {
       localStorage.setItem("redirectAfterLogin", "/dev");
       openLoginWindow();
       return;
     }
-    setIsCreating(true);
-    // `/dev` is the builder IDE; it reads localStorage.initialPrompt and starts
-    // generating immediately. `/new` is the Git-import surface.
     router.push("/dev");
   };
 
@@ -181,10 +136,6 @@ export default function LandingPage() {
   const startFromTemplate = (t: GalleryTemplate) => {
     router.push(`/dev?template=hanzo-apps/${t.slug}&action=edit`);
   };
-
-  const placeholder = idle
-    ? `Ask Hanzo to build ${typed}█`
-    : "Ask Hanzo to build a customer portal with login and a dashboard…";
 
   return (
     <div className="landing-root relative min-h-screen overflow-x-hidden bg-black text-white">
@@ -219,94 +170,20 @@ export default function LandingPage() {
             <Reveal delay={120}>
               <p className="mx-auto mt-5 max-w-xl text-pretty text-base text-white/55 md:text-lg">
                 One prompt becomes a live app on Hanzo Cloud — UI, database,
-                auth, and 100+ AI models, wired in and deployed.
+                auth, and 400+ AI models, wired in and deployed.
               </p>
             </Reveal>
 
-            {/* ── Prompt composer ── */}
+            {/* ── Prompt composer — the ONE BuildComposer ── */}
             <Reveal delay={180}>
-              <div className="mx-auto mt-8 max-w-2xl">
-                {/* The living-gradient bubble (the ONE colorful flourish):
-                    a padded gradient host wraps an opaque inner panel. See
-                    `.hz-composer` in assets/globals.css. */}
-                <div className="hz-composer rounded-2xl shadow-2xl">
-                <div
-                  id="build"
-                  className={`rounded-[14px] p-2.5 text-left transition-all duration-200 ${
-                    inputFocused ? "bg-[#0d0d0d]" : "bg-[#0a0a0a]"
-                  }`}
-                >
-                  <input
-                    type="text"
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleCreateProject()}
-                    onFocus={() => setInputFocused(true)}
-                    onBlur={() => setInputFocused(false)}
-                    placeholder={placeholder}
-                    className="w-full bg-transparent px-3 pb-2 pt-3 text-base text-white placeholder:text-white/30 focus:outline-none md:text-lg"
-                    disabled={isCreating}
-                  />
-                  <div className="flex items-center justify-between px-1 pt-1">
-                    <div className="flex items-center gap-1">
-                      <button
-                        type="button"
-                        aria-label="Attach"
-                        className="rounded-lg p-2 text-white/40 transition-colors hover:bg-white/5 hover:text-white/70"
-                      >
-                        <Plus className="h-5 w-5" />
-                      </button>
-                      <button
-                        type="button"
-                        className="flex items-center gap-1.5 rounded-lg px-2 py-2 text-white/40 transition-colors hover:bg-white/5 hover:text-white/70"
-                      >
-                        <Globe2 className="h-4 w-4" />
-                        <span className="text-xs">Public</span>
-                      </button>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="hidden items-center gap-1 pr-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/25 sm:flex">
-                        <CornerDownLeft className="h-3 w-3" />
-                        to build
-                      </span>
-                      <button
-                        type="button"
-                        aria-label="Voice"
-                        className="rounded-lg p-2 text-white/40 transition-colors hover:bg-white/5 hover:text-white/70"
-                      >
-                        <Mic className="h-5 w-5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleCreateProject}
-                        disabled={isCreating || !prompt.trim()}
-                        aria-label="Start building"
-                        className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-black transition-all hover:bg-white/90 disabled:cursor-not-allowed disabled:bg-white/20 disabled:text-white/40"
-                      >
-                        {isCreating ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <ArrowUp className="h-4 w-4" strokeWidth={2.5} />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                </div>
-
-                {/* Starter prompts — honest app types, not fabricated products. */}
-                <div className="mt-4 flex flex-wrap justify-center gap-2">
-                  {STARTERS.map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      onClick={() => setPrompt(s)}
-                      className="rounded-full border border-white/10 bg-white/[0.02] px-3.5 py-1.5 text-xs text-white/60 transition-all hover:border-white/20 hover:text-white"
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
+              <div id="build" className="mx-auto mt-8 max-w-2xl text-left">
+                <BuildComposer
+                  showPill={false}
+                  subline={false}
+                  typewriter={TYPED}
+                  starters={STARTERS}
+                  onSubmit={startBuild}
+                />
 
                 {/* Or start from one of our great templates — one click forks it
                     into the builder, seeded from that template. */}
@@ -376,7 +253,7 @@ export default function LandingPage() {
             </Reveal>
           </div>
 
-          {/* Hero focal visual — the app running live on Hanzo Cloud. */}
+          {/* Hero focal visual — the builder building an app, live. */}
           <Reveal delay={240} className="mt-16 md:mt-20">
             <HeroPreview />
           </Reveal>
@@ -411,25 +288,23 @@ export default function LandingPage() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {projects.slice(0, 4).map((project) => (
                   <button
-                    key={project.id}
-                    onClick={() => router.push(`/dev?project=${encodeURIComponent(project.id)}`)}
+                    key={project.slug}
+                    onClick={() => router.push(builderLink(project.slug, project.org))}
                     className="group overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] text-left transition-all duration-200 hover:border-white/20 hover:bg-white/[0.03]"
                   >
-                    <div className="flex aspect-video items-center justify-center bg-white/[0.02] text-4xl md:text-5xl">
-                      {project.emoji || "◆"}
-                    </div>
+                    <ProjectThumb name={project.name} liveUrl={project.liveUrl} />
                     <div className="p-5">
                       <h3 className="text-sm font-medium text-white md:text-base">
                         {project.name}
                       </h3>
-                      {project.short_description && (
-                        <p className="mt-1 line-clamp-2 text-xs text-white/50 md:text-sm">
-                          {project.short_description}
-                        </p>
+                      <p className="mt-1 line-clamp-2 text-xs text-white/50 md:text-sm">
+                        {project.status === "live" ? "Live" : "Draft"}
+                      </p>
+                      {project.updatedAtIso && (
+                        <div className="mt-3 font-mono text-[11px] text-white/30">
+                          {new Date(project.updatedAtIso).toLocaleDateString()}
+                        </div>
                       )}
-                      <div className="mt-3 font-mono text-[11px] text-white/30">
-                        {new Date(project.updated_at).toLocaleDateString()}
-                      </div>
                     </div>
                   </button>
                 ))}
@@ -438,22 +313,24 @@ export default function LandingPage() {
           </section>
         )}
 
-        {/* ── Final CTA ── */}
+        {/* ── Final CTA — the SAME composer as the hero, ready to type ── */}
         <section className="border-t border-white/[0.06] px-4 py-24 md:px-8 md:py-32">
-          <Reveal className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-medium tracking-tight md:text-5xl">
-              Ship your first app today.
-            </h2>
-            <p className="mx-auto mt-4 max-w-md text-base text-white/55 md:text-lg">
-              Start with a sentence. Deploy to Hanzo Cloud in one click.
-            </p>
-            <a
-              href="#build"
-              className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition-all hover:bg-white/90"
-            >
-              Start building
-              <ArrowRight className="h-4 w-4" />
-            </a>
+          <Reveal className="mx-auto max-w-2xl">
+            <div className="text-center">
+              <h2 className="text-3xl font-medium tracking-tight md:text-5xl">
+                Ship your first app today.
+              </h2>
+              <p className="mx-auto mt-4 max-w-md text-base text-white/55 md:text-lg">
+                Start with a sentence. Deploy to Hanzo Cloud in one click.
+              </p>
+            </div>
+            <div className="mt-8">
+              <BuildComposer
+                showPill={false}
+                typewriter={TYPED}
+                onSubmit={startBuild}
+              />
+            </div>
           </Reveal>
         </section>
       </main>

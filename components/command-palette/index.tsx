@@ -46,6 +46,7 @@ import {
 
 import { useUser } from '@/hooks/useUser';
 import { useProjects } from '@/hooks/useProjects';
+import { builderLink } from '@/lib/api/projects';
 import { markProjectOpened, lastOpenedAt, recentProjectIds } from '@/lib/recent-projects';
 import { relativeTime } from '@/lib/projects-view';
 
@@ -53,6 +54,7 @@ interface PaletteProject {
   id: string;
   slug: string;
   name: string;
+  org?: string;
   status: string;
   createdAtIso: string | null;
   updatedAtIso: string | null;
@@ -97,6 +99,7 @@ export function CommandPalette({
       id: p.id || p.slug,
       slug: p.slug,
       name: p.name || p.slug,
+      org: p.org,
       status: p.status || 'draft',
       createdAtIso: p.createdAt ? new Date(p.createdAt * 1000).toISOString() : null,
       updatedAtIso: p.updatedAt ? new Date(p.updatedAt * 1000).toISOString() : null,
@@ -126,7 +129,7 @@ export function CommandPalette({
     (p: PaletteProject) => {
       markProjectOpened(p.slug || p.id);
       onOpenChange(false);
-      router.push(`/dev?project=${encodeURIComponent(p.slug || p.id)}`);
+      router.push(builderLink(p.slug || p.id, p.org));
     },
     [onOpenChange, router],
   );

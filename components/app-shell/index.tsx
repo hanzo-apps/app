@@ -29,6 +29,7 @@ import { Sidebar } from '@/components/sidebar';
 import { HanzoLogo } from '@/components/HanzoLogo';
 import { CommandPalette } from '@/components/command-palette';
 import type { Project } from '@/lib/vfs/types';
+import { builderLink } from '@/lib/api/projects';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -59,7 +60,7 @@ export function AppShell({ children, currentView = 'templates' }: AppShellProps)
         currentView={currentView}
         onNavigate={() => {}}
         onProjectSelect={(project: Project) =>
-          router.push(`/dev?project=${encodeURIComponent(project.id || project.name)}`)
+          router.push(builderLink(project.id || project.name))
         }
         onLogoClick={() => router.push('/')}
         onOpenSearch={() => setPaletteOpen(true)}

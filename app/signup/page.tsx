@@ -74,7 +74,7 @@ export default function SignupPage() {
                 <div className="grid grid-cols-1 gap-2">
                   <div className="flex items-center gap-3">
                     <Sparkles className="w-4 h-4 text-white/70" />
-                    <span className="text-sm text-white/70">Access to 100+ AI models</span>
+                    <span className="text-sm text-white/70">Access to 400+ AI models</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Zap className="w-4 h-4 text-white/70" />
