@@ -1,10 +1,10 @@
 /**
- * OSW Planning - Built-in Skill
+ * Planning — Hanzo App built-in skill
  * Project planning workflow and JAMstack tech stack options
  */
 
-export const OSW_PLANNING_SKILL = String.raw`---
-name: osw-planning
+export const PLANNING_SKILL = String.raw`---
+name: planning
 description: Read when starting new projects. Covers PLAN.md workflow, JAMstack-compatible tech stack options, and project structure.
 ---
 
