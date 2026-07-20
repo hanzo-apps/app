@@ -175,10 +175,19 @@ export function builderLink(slug: string, org?: string | null): string {
   return `/dev?project=${encodeURIComponent(slug)}`;
 }
 
-/** The live site URL for a project (record liveUrl, else <slug>.hanzo.app when live). */
+/**
+ * The SERVABLE live-site URL for a project. A published site is served at the
+ * bare `<slug>.hanzo.app` (the one host a wildcard Ingress + wildcard cert can
+ * actually route/secure). Records published before the cloud fix carry a legacy
+ * two-label `liveUrl` (`<slug>.<org>.hanzo.app`) that never resolves — so for a
+ * live project we ALWAYS return the bare host, normalizing any legacy value.
+ * A non-hanzo liveUrl (a bound custom domain) is honored as-is. Draft with no
+ * liveUrl → null.
+ */
 export function liveUrlOf(p: Pick<Project, 'slug' | 'status' | 'liveUrl'>): string | null {
-  if (p.liveUrl) return p.liveUrl;
   if (p.status === 'live') return `https://${p.slug}.hanzo.app`;
+  // Not live: only a bound CUSTOM (non-hanzo.app) domain is a real public URL.
+  if (p.liveUrl && !p.liveUrl.includes('.hanzo.app')) return p.liveUrl;
   return null;
 }
 
