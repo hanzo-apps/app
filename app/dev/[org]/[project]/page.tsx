@@ -16,19 +16,26 @@
  */
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useParams } from "next/navigation";
+import { LockKeyhole } from "lucide-react";
 import { AppEditor } from "@/components/editor";
 import { fetchProject, fetchProjectSite } from "@/lib/api/projects";
 import { currentOrg, setCurrentOrg } from "@/lib/org-scope";
 import type { Page } from "@/types";
+
+type Phase = "loading" | "open" | "denied";
 
 export default function ProjectDevPage() {
   const params = useParams<{ org: string; project: string }>();
   const org = decodeURIComponent(params.org || "");
   const slug = decodeURIComponent(params.project || "");
 
-  const [ready, setReady] = useState(false);
+  const [phase, setPhase] = useState<Phase>("loading");
   const [pages, setPages] = useState<Page[] | null>(null);
+  // The org the signed-in user actually acts in (their bearer owner), read from
+  // the ONE org context BFF. Used only to explain a denied open ("you're in X").
+  const [signedInOrg, setSignedInOrg] = useState("");
 
   useEffect(() => {
     if (!slug) return;
@@ -46,13 +53,29 @@ export default function ProjectDevPage() {
     (window as any).__projectSlug = slug;
 
     (async () => {
-      // Record (name) + deployed site (pages) in parallel; both are best-effort —
-      // an unknown slug still opens the builder as a new project keyed by it.
+      // Record (name) + deployed site (pages) in parallel.
       const [record, site] = await Promise.all([
         fetchProject(slug).catch(() => null),
         fetchProjectSite(slug).catch(() => ({ liveUrl: null, pages: [] })),
       ]);
       if (!alive) return;
+
+      // HONEST access gate: this is an EXPLICIT org/slug deep link. If neither the
+      // record nor a deployed site is visible in the current scope, the project is
+      // NOT accessible as this user — show why (wrong org / no access) instead of
+      // silently opening an empty "new project" that reads as data loss.
+      if (!record && site.pages.length === 0) {
+        // Learn the caller's real org so the message can name it (best-effort).
+        const home = await fetch("/v1/orgs", { credentials: "include" })
+          .then((r) => (r.ok ? r.json() : null))
+          .then((ctx) => ctx?.currentOrg || ctx?.homeOrg || ctx?.effectiveOrg || "")
+          .catch(() => "");
+        if (!alive) return;
+        setSignedInOrg(typeof home === "string" ? home : "");
+        setPhase("denied");
+        return;
+      }
+
       const name = record?.name || slug;
       (window as any).__projectName = name;
       if (site.pages.length > 0) {
@@ -61,7 +84,7 @@ export default function ProjectDevPage() {
           `${name} is loaded — your live site is in the preview, and its history is in the clock icon up top. ` +
           `Tell me what to change and I'll build it.`;
       }
-      setReady(true);
+      setPhase("open");
     })();
 
     return () => {
@@ -69,10 +92,57 @@ export default function ProjectDevPage() {
     };
   }, [org, slug]);
 
-  if (!ready) {
+  if (phase === "loading") {
     return (
       <div className="h-[100dvh] bg-neutral-950 flex items-center justify-center text-neutral-400 text-sm">
         Opening {slug}…
+      </div>
+    );
+  }
+
+  if (phase === "denied") {
+    const wrongOrg = !!signedInOrg && !!org && signedInOrg !== org;
+    return (
+      <div className="flex h-[100dvh] items-center justify-center bg-neutral-950 px-6 text-center">
+        <div className="max-w-md">
+          <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-white/5">
+            <LockKeyhole className="h-6 w-6 text-white/50" />
+          </div>
+          <h1 className="text-lg font-medium text-white">
+            Can’t open <span className="font-mono">{org}/{slug}</span>
+          </h1>
+          <p className="mx-auto mt-2 text-sm leading-relaxed text-white/50">
+            {wrongOrg ? (
+              <>
+                This project is in the <span className="text-white/80">{org}</span> organization,
+                but you’re signed in under <span className="text-white/80">{signedInOrg}</span>.
+                Its files and history are safe — sign in with an account in{" "}
+                <span className="text-white/80">{org}</span> to open it, with its full
+                version history.
+              </>
+            ) : (
+              <>
+                This project isn’t available to your account. It may belong to another
+                organization, or the link may be wrong. Its files and history are not lost —
+                they’re scoped to the owning account.
+              </>
+            )}
+          </p>
+          <div className="mt-6 flex items-center justify-center gap-3">
+            <Link
+              href="/dashboard"
+              className="rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition-colors hover:bg-white/90"
+            >
+              Go to your dashboard
+            </Link>
+            <Link
+              href="/login"
+              className="rounded-full border border-white/15 px-5 py-2.5 text-sm text-white/70 transition-colors hover:border-white/30 hover:text-white"
+            >
+              Switch account
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }
