@@ -4,8 +4,8 @@
  */
 
 import { BuiltInSkillDefinition } from './types';
-import { OSW_PLANNING_SKILL } from './built-in/osw-planning';
-import { OSW_ONE_SHOT_SKILL } from './built-in/osw-one-shot';
+import { PLANNING_SKILL } from './built-in/planning';
+import { ONE_SHOT_SKILL } from './built-in/one-shot';
 import { HANDLEBARS_ADVANCED_SKILL } from './built-in/handlebars-advanced';
 import { ACCESSIBILITY_SKILL } from './built-in/accessibility';
 import { SERVER_SKILL } from './built-in/server';
@@ -19,12 +19,12 @@ import { SECRETS_SKILL } from './built-in/secrets';
  */
 export const BUILT_IN_SKILLS: BuiltInSkillDefinition[] = [
   {
-    id: 'osw-planning',
-    content: OSW_PLANNING_SKILL
+    id: 'planning',
+    content: PLANNING_SKILL
   },
   {
-    id: 'osw-one-shot',
-    content: OSW_ONE_SHOT_SKILL
+    id: 'one-shot',
+    content: ONE_SHOT_SKILL
   },
   {
     id: 'handlebars-advanced',
