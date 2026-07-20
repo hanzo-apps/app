@@ -24,6 +24,7 @@ import {
   Loader2,
   Trash2,
   GitBranch,
+  Rocket,
 } from "lucide-react";
 
 import { AppShell } from "@/components/app-shell";
@@ -34,6 +35,7 @@ import {
   deleteProject,
   liveUrlOf,
   builderLink,
+  cdAppLink,
   FRAMEWORKS,
   type Project,
 } from "@/lib/api/projects";
@@ -236,6 +238,17 @@ export default function ProjectSettingsPage() {
               </div>
             </Section>
 
+            {/* Deployments — the native CD pipeline */}
+            <Section icon={Rocket} title="Deployments">
+              <p className="text-sm text-white/55">
+                Publishing commits this app to Hanzo Git and runs the native build
+                pipeline —{" "}
+                <span className="font-mono text-white/70">git push → build → deploy</span>.
+                Every push rebuilds and redeploys automatically.
+              </p>
+              <DeploymentStatus slug={slug} />
+            </Section>
+
             {/* Integrations */}
             <Section icon={Plug} title="Integrations & connections">
               <p className="text-sm text-white/55">
@@ -315,4 +328,120 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       {children}
     </label>
   );
+}
+
+/**
+ * Live CD status for this app + a deep-link into the full cd.hanzo.ai detail.
+ * Reads the SAME /v1/platform status the pipeline writes (via /api/platform/deploy).
+ * A 404 = no platform Application yet (project predates the CD wiring, or was
+ * never published) — shown as an honest "not deployed yet", never an error.
+ */
+function DeploymentStatus({ slug }: { slug: string }) {
+  const [state, setState] = useState<
+    | { kind: "loading" }
+    | { kind: "none" }
+    | { kind: "error" }
+    | { kind: "active"; status: string; version?: number }
+  >({ kind: "loading" });
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const res = await fetch(
+          `/api/platform/deploy?project=${encodeURIComponent(slug)}&app=${encodeURIComponent(slug)}`,
+          { credentials: "include", cache: "no-store" },
+        );
+        if (!alive) return;
+        if (res.status === 404) return setState({ kind: "none" });
+        if (!res.ok) return setState({ kind: "error" });
+        const data = await res.json().catch(() => null);
+        const d = data?.latestDeployment;
+        const status = String(data?.phase || d?.status || data?.app?.status || "unknown");
+        setState({ kind: "active", status, version: d?.version });
+      } catch {
+        if (alive) setState({ kind: "error" });
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [slug]);
+
+  if (state.kind === "loading") {
+    return (
+      <div className="mt-3 flex items-center gap-2 text-xs text-white/40">
+        <Loader2 className="h-3.5 w-3.5 animate-spin" /> Checking deployment status…
+      </div>
+    );
+  }
+
+  if (state.kind === "none") {
+    return (
+      <p className="mt-3 rounded-lg border border-white/[0.08] bg-black/40 px-3 py-2.5 text-xs text-white/45">
+        Not deployed through the pipeline yet. Publish from the builder to register
+        this app and start the first build.
+      </p>
+    );
+  }
+
+  if (state.kind === "error") {
+    return (
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-xs text-white/40">Couldn’t load deployment status.</p>
+        <CdLink slug={slug} />
+      </div>
+    );
+  }
+
+  const c = cdStatus(state.status);
+  return (
+    <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-white/10 bg-black/40 px-3 py-2.5">
+      <div className="flex items-center gap-2">
+        <span className={`inline-flex items-center gap-1.5 text-xs ${c.text}`}>
+          <Circle className={`h-2 w-2 ${c.dot} ${c.pulse ? "animate-pulse" : ""}`} />
+          {c.label}
+        </span>
+        {typeof state.version === "number" && state.version > 0 && (
+          <span className="font-mono text-[11px] text-white/30">v{state.version}</span>
+        )}
+      </div>
+      <CdLink slug={slug} />
+    </div>
+  );
+}
+
+function CdLink({ slug }: { slug: string }) {
+  return (
+    <a
+      href={cdAppLink(slug)}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-1.5 text-xs text-white/60 transition-colors hover:text-white"
+    >
+      View in CD <ExternalLink className="h-3 w-3" />
+    </a>
+  );
+}
+
+/**
+ * Map a CD phase/status to a dot + label. Kept to the app's semantic palette:
+ * green = live, amber = in-flight (build/deploy), red = failed, neutral = other.
+ */
+function cdStatus(status: string): { dot: string; text: string; label: string; pulse: boolean } {
+  const s = status.toLowerCase();
+  if (["live", "running", "healthy", "deployed", "succeeded"].includes(s))
+    return { dot: "fill-green-500", text: "text-green-400", label: "Live", pulse: false };
+  if (["building", "build", "pending", "queued"].includes(s))
+    return { dot: "fill-amber-500", text: "text-amber-400", label: "Building", pulse: true };
+  if (["deploying", "progressing", "syncing", "rollout"].includes(s))
+    return { dot: "fill-amber-500", text: "text-amber-400", label: "Deploying", pulse: true };
+  if (["failed", "error", "degraded"].includes(s))
+    return { dot: "fill-red-500", text: "text-red-400", label: "Failed", pulse: false };
+  return {
+    dot: "fill-white/40",
+    text: "text-white/50",
+    label: status ? status.charAt(0).toUpperCase() + status.slice(1) : "Unknown",
+    pulse: false,
+  };
 }
