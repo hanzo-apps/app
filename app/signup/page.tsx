@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useIam } from '@hanzo/iam/react';
-import { EVENTS } from '@hanzo/capture';
-import { useAnalytics } from '@hanzo/capture/react';
+import { EVENTS } from '@hanzo/event';
+import { useAnalytics } from '@hanzo/event/react';
 import { HanzoLogo } from '@/components/HanzoLogo';
 import { Button } from '@hanzo/ui';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@hanzo/ui';
