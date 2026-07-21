@@ -77,7 +77,7 @@ function statusColor(status: string) {
     case "error":
       return "text-red-500";
     default:
-      return "text-neutral-400";
+      return "text-muted-foreground";
   }
 }
 
@@ -227,15 +227,15 @@ export default function AgentsPage() {
 
   return (
     <AppShell currentView="agents">
-    <div className="flex-1 overflow-y-auto bg-black">
+    <div className="flex-1 overflow-y-auto bg-background">
       {/* Header */}
-      <header className="border-b border-neutral-800 px-4 py-4 sm:px-6">
+      <header className="border-b border-border px-4 py-4 sm:px-6">
         <div className="container mx-auto">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-wrap items-center gap-3">
               <Link href="/" className="flex items-center gap-2">
                 <HanzoLogo className="w-8 h-8 text-purple-500" />
-                <span className="text-xl font-medium text-white">Agents</span>
+                <span className="text-xl font-medium text-foreground">Agents</span>
               </Link>
               {state.kind === "ready" && (
                 <Badge variant="outline" className="gap-1">
@@ -292,7 +292,7 @@ export default function AgentsPage() {
       <div className="container mx-auto px-4 py-6 sm:px-6">
         {/* Loading */}
         {state.kind === "loading" && (
-          <div className="flex flex-col items-center justify-center py-24 text-neutral-400">
+          <div className="flex flex-col items-center justify-center py-24 text-muted-foreground">
             <Loader2 className="w-8 h-8 animate-spin mb-4" />
             <p>Loading agents…</p>
           </div>
@@ -300,12 +300,12 @@ export default function AgentsPage() {
 
         {/* Unauthenticated */}
         {state.kind === "unauthenticated" && (
-          <Card className="bg-neutral-900 border-neutral-800 mx-auto max-w-lg mt-12">
+          <Card className="bg-card border-border mx-auto max-w-lg mt-12">
             <CardHeader className="text-center">
               <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-purple-500/10">
                 <Bot className="w-6 h-6 text-purple-400" />
               </div>
-              <CardTitle className="text-white">Sign in to view agents</CardTitle>
+              <CardTitle className="text-foreground">Sign in to view agents</CardTitle>
               <CardDescription>
                 Your agents are scoped to your organization. Sign in to see and
                 run them.
@@ -326,7 +326,7 @@ export default function AgentsPage() {
               <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10">
                 <AlertCircle className="w-6 h-6 text-red-400" />
               </div>
-              <CardTitle className="text-white">
+              <CardTitle className="text-foreground">
                 Couldn&apos;t load agents
               </CardTitle>
               <CardDescription className="text-red-300">
@@ -346,9 +346,9 @@ export default function AgentsPage() {
           <>
             {/* Create agent — name + model + instructions */}
             {creating && (
-              <Card className="bg-neutral-900 border-neutral-800 mb-6">
+              <Card className="bg-card border-border mb-6">
                 <CardHeader>
-                  <CardTitle className="text-base text-white">
+                  <CardTitle className="text-base text-foreground">
                     New agent
                   </CardTitle>
                   <CardDescription>
@@ -359,7 +359,7 @@ export default function AgentsPage() {
                 <CardContent className="flex flex-col gap-3">
                   <Input
                     placeholder="Name (e.g. release-notes)"
-                    className="bg-neutral-950 border-neutral-800"
+                    className="bg-card border-border"
                     value={form.name}
                     disabled={submitting}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -368,7 +368,7 @@ export default function AgentsPage() {
                   />
                   <Input
                     placeholder="Model (e.g. zen5)"
-                    className="bg-neutral-950 border-neutral-800"
+                    className="bg-card border-border"
                     value={form.model}
                     disabled={submitting}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -377,7 +377,7 @@ export default function AgentsPage() {
                   />
                   <textarea
                     placeholder="Instructions — the agent's system prompt (optional)"
-                    className="min-h-24 rounded-md border border-neutral-800 bg-neutral-950 p-3 text-sm text-white placeholder:text-neutral-500 focus:outline-none"
+                    className="min-h-24 rounded-md border border-border bg-card p-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
                     value={form.instructions}
                     disabled={submitting}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
@@ -412,14 +412,14 @@ export default function AgentsPage() {
             {/* Stats — responsive: 2 cols on phones, 4 on larger */}
             <div className="grid grid-cols-2 gap-3 mb-6 sm:grid-cols-4 sm:gap-4">
               {[
-                { label: "Total", value: stats.total, tone: "text-white" },
+                { label: "Total", value: stats.total, tone: "text-foreground" },
                 { label: "Ready", value: stats.ready, tone: "text-green-400" },
-                { label: "Runs", value: stats.runs, tone: "text-white" },
-                { label: "Models", value: stats.models, tone: "text-white" },
+                { label: "Runs", value: stats.runs, tone: "text-foreground" },
+                { label: "Models", value: stats.models, tone: "text-foreground" },
               ].map((s) => (
-                <Card key={s.label} className="bg-neutral-900 border-neutral-800">
+                <Card key={s.label} className="bg-card border-border">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-neutral-400">
+                    <CardTitle className="text-sm text-muted-foreground">
                       {s.label}
                     </CardTitle>
                   </CardHeader>
@@ -433,10 +433,10 @@ export default function AgentsPage() {
             {/* Search */}
             {agents.length > 0 && (
               <div className="relative mb-6 w-full max-w-md">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   placeholder="Search agents…"
-                  className="pl-10 bg-neutral-900 border-neutral-800"
+                  className="pl-10 bg-card border-border"
                   value={search}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setSearch(e.target.value)
@@ -447,12 +447,12 @@ export default function AgentsPage() {
 
             {/* Empty — no agents at all */}
             {agents.length === 0 && (
-              <Card className="bg-neutral-900 border-neutral-800 mx-auto max-w-lg mt-12">
+              <Card className="bg-card border-border mx-auto max-w-lg mt-12">
                 <CardHeader className="text-center">
                   <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-purple-500/10">
                     <Bot className="w-6 h-6 text-purple-400" />
                   </div>
-                  <CardTitle className="text-white">
+                  <CardTitle className="text-foreground">
                     Create your first agent
                   </CardTitle>
                   <CardDescription>
@@ -465,7 +465,7 @@ export default function AgentsPage() {
 
             {/* No search matches */}
             {agents.length > 0 && filtered.length === 0 && (
-              <p className="py-12 text-center text-neutral-500">
+              <p className="py-12 text-center text-muted-foreground">
                 No agents match “{search}”.
               </p>
             )}
@@ -480,12 +480,12 @@ export default function AgentsPage() {
                   return (
                     <Card
                       key={agent.id}
-                      className="bg-neutral-900 border-neutral-800 flex flex-col"
+                      className="bg-card border-border flex flex-col"
                     >
                       <CardHeader className="pb-3">
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0 space-y-1">
-                            <CardTitle className="text-base text-white truncate">
+                            <CardTitle className="text-base text-foreground truncate">
                               {agent.name}
                             </CardTitle>
                             <CardDescription className="flex items-center gap-1 text-xs">
@@ -506,14 +506,14 @@ export default function AgentsPage() {
                           </div>
                         </div>
                         {agent.description && (
-                          <p className="mt-2 text-sm text-neutral-400 line-clamp-2">
+                          <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
                             {agent.description}
                           </p>
                         )}
                       </CardHeader>
 
                       <CardContent className="flex flex-1 flex-col gap-3 pt-0">
-                        <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-500">
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <Cpu className="w-3 h-3" />
                             {agent.runs} {agent.runs === 1 ? "run" : "runs"}
@@ -530,7 +530,7 @@ export default function AgentsPage() {
                                 </Badge>
                               ))}
                               {agent.tools.length > 3 && (
-                                <span className="text-neutral-600">
+                                <span className="text-muted-foreground">
                                   +{agent.tools.length - 3}
                                 </span>
                               )}
@@ -542,7 +542,7 @@ export default function AgentsPage() {
                         <div className="mt-auto flex flex-col gap-2 lg:flex-row">
                           <Input
                             placeholder="Message this agent…"
-                            className="bg-neutral-950 border-neutral-800 text-sm"
+                            className="bg-card border-border text-sm"
                             value={inputs[agent.name] || ""}
                             disabled={isRunning}
                             onChange={(
@@ -582,7 +582,7 @@ export default function AgentsPage() {
                               onClick={() =>
                                 setExpanded(isOpen ? null : agent.name)
                               }
-                              className="flex items-center gap-1 text-xs text-neutral-400 hover:text-neutral-200"
+                              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
                             >
                               {isOpen ? (
                                 <ChevronDown className="w-3 h-3" />
@@ -602,9 +602,9 @@ export default function AgentsPage() {
                               </span>
                             </button>
                             {isOpen && (
-                              <div className="mt-2 rounded bg-neutral-950 p-3">
+                              <div className="mt-2 rounded bg-card p-3">
                                 {result.status === "ok" ? (
-                                  <pre className="whitespace-pre-wrap break-words text-xs text-neutral-300 max-h-64 overflow-y-auto">
+                                  <pre className="whitespace-pre-wrap break-words text-xs text-muted-foreground max-h-64 overflow-y-auto">
                                     {result.output || "(empty response)"}
                                   </pre>
                                 ) : (
