@@ -34,6 +34,7 @@ import { SelectedFiles } from "./selected-files";
 import { Uploader } from "./uploader";
 import { VoiceInput } from "./voice-input";
 import { ChatThread, type ThreadMessage } from "./chat-thread";
+import { isConversational } from "./intent";
 
 // Fix mode composes this short, human intent preamble in front of the user's
 // text (empty text is fine when references are attached). The reference images
@@ -415,9 +416,11 @@ export function AskAI({
       setIsFixMode(false);
     }
 
-    // Plan mode: a conversational turn — NO build. Stream a chat reply into the
-    // thread and stop. (Re-imagine/fix are build actions; they ignore mode.)
-    if (isPlan && !redesignMarkdown && !fixSubmit) {
+    // A conversational turn — NO build. Stream a chat reply into the thread and stop.
+    // Plan mode is always conversational; Build mode is too when the message is a
+    // plain question/greeting (so "what can you do" answers instead of nuking the
+    // app). Re-imagine/fix are build actions; they ignore this.
+    if ((isPlan || isConversational(promptToUse)) && !redesignMarkdown && !fixSubmit) {
       const chatId = beginChatTurn(promptToUse.trim());
       const result = await callAiChat(
         promptToUse.trim(),
