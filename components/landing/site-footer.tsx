@@ -1,7 +1,9 @@
-// Refined multi-column footer. Internal links point at real hanzo.app routes
-// (Community/Pricing/Enterprise/Learn/Gallery exist); product, company and
-// legal links point at the real pages on hanzo.ai and docs.hanzo.ai. No dead
-// invented routes.
+// Multi-column footer aligned with hanzo.ai's Footer.tsx groupings — Products,
+// Cloud, Build, Models + Resources (stacked, as hanzo.ai stacks Models + Learn),
+// and Company — with hanzo.app-appropriate links. Internal links point at real
+// hanzo.app routes; product/company/legal links point at the real pages on
+// hanzo.ai and docs.hanzo.ai. No dead invented routes. True-black, shared
+// @hanzo/logo lockup.
 
 import Link from "next/link";
 import { HanzoBrand } from "@/components/HanzoLogo";
@@ -11,54 +13,79 @@ interface Col {
   links: { label: string; href: string; external?: boolean }[];
 }
 
-const columns: Col[] = [
-  {
-    title: "Product",
-    links: [
-      { label: "Apps", href: "/install" },
-      { label: "Community", href: "/community" },
-      { label: "Gallery", href: "/gallery" },
-      { label: "Pricing", href: "/pricing" },
-      { label: "Enterprise", href: "/enterprise" },
-      { label: "Learn", href: "/learn" },
-    ],
-  },
-  {
-    title: "Cloud",
-    links: [
-      { label: "Hanzo Cloud", href: "https://hanzo.ai/cloud", external: true },
-      { label: "Base (Database)", href: "https://hanzo.ai/base", external: true },
-      { label: "IAM (Auth)", href: "https://hanzo.ai/iam", external: true },
-      { label: "LLM Gateway", href: "https://hanzo.ai/llm", external: true },
-      { label: "KMS (Secrets)", href: "https://hanzo.ai/kms", external: true },
-    ],
-  },
-  {
-    title: "Resources",
-    links: [
-      { label: "Documentation", href: "https://docs.hanzo.ai", external: true },
-      { label: "Blog", href: "https://hanzo.ai/blog", external: true },
-      { label: "GitHub", href: "https://github.com/hanzoai", external: true },
-      { label: "Status", href: "https://status.hanzo.ai", external: true },
-    ],
-  },
-  {
-    title: "Company",
-    links: [
-      { label: "About", href: "https://hanzo.ai/about", external: true },
-      { label: "Careers", href: "https://hanzo.ai/careers", external: true },
-      { label: "Press", href: "https://hanzo.ai/press", external: true },
-      { label: "Contact", href: "https://hanzo.ai/contact", external: true },
-    ],
-  },
-  {
-    title: "Legal",
-    links: [
-      { label: "Privacy", href: "https://hanzo.ai/privacy", external: true },
-      { label: "Terms", href: "https://hanzo.ai/terms", external: true },
-      { label: "Security", href: "https://hanzo.ai/security", external: true },
-    ],
-  },
+// Products — the Hanzo product surfaces (Build is this site; the rest siblings).
+const products: Col = {
+  title: "Products",
+  links: [
+    { label: "Build", href: "/" },
+    { label: "Chat", href: "https://hanzo.ai/chat", external: true },
+    { label: "Code", href: "https://hanzo.ai/code", external: true },
+    { label: "Cloud", href: "https://cloud.hanzo.ai", external: true },
+    { label: "Studio", href: "https://studio.hanzo.ai", external: true },
+    { label: "All products", href: "https://hanzo.ai/products", external: true },
+  ],
+};
+
+// Cloud — the infra primitives every build runs on.
+const cloud: Col = {
+  title: "Cloud",
+  links: [
+    { label: "Hanzo Cloud", href: "https://hanzo.ai/cloud", external: true },
+    { label: "Base (Database)", href: "https://hanzo.ai/base", external: true },
+    { label: "IAM (Auth)", href: "https://hanzo.ai/iam", external: true },
+    { label: "LLM Gateway", href: "https://hanzo.ai/llm", external: true },
+    { label: "KMS (Secrets)", href: "https://hanzo.ai/kms", external: true },
+  ],
+};
+
+// Build — what you do on hanzo.app.
+const build: Col = {
+  title: "Build",
+  links: [
+    { label: "Apps", href: "/install" },
+    { label: "Templates", href: "/templates" },
+    { label: "Gallery", href: "/gallery" },
+    { label: "Community", href: "/community" },
+    { label: "Learn", href: "/learn" },
+  ],
+};
+
+const models: Col = {
+  title: "Models",
+  links: [
+    { label: "Enso", href: "https://hanzo.ai/enso", external: true },
+    { label: "Zen", href: "https://hanzo.ai/zen", external: true },
+    { label: "All models", href: "https://hanzo.ai/models", external: true },
+  ],
+};
+
+const resources: Col = {
+  title: "Resources",
+  links: [
+    { label: "Documentation", href: "https://docs.hanzo.ai", external: true },
+    { label: "Blog", href: "https://hanzo.ai/blog", external: true },
+    { label: "GitHub", href: "https://github.com/hanzoai", external: true },
+    { label: "Status", href: "https://status.hanzo.ai", external: true },
+  ],
+};
+
+const company: Col = {
+  title: "Company",
+  links: [
+    { label: "About", href: "https://hanzo.ai/about", external: true },
+    { label: "Careers", href: "https://hanzo.ai/careers", external: true },
+    { label: "Press", href: "https://hanzo.ai/press", external: true },
+    { label: "Enterprise", href: "/enterprise" },
+    { label: "Pricing", href: "/pricing" },
+    { label: "Contact", href: "https://hanzo.ai/contact", external: true },
+  ],
+};
+
+// Legal — the Help-and-security tail, kept inline in the bottom bar.
+const legal: { label: string; href: string }[] = [
+  { label: "Privacy", href: "https://hanzo.ai/privacy" },
+  { label: "Terms", href: "https://hanzo.ai/terms" },
+  { label: "Security", href: "https://hanzo.ai/security" },
 ];
 
 const social = [
@@ -79,6 +106,37 @@ const social = [
   },
 ];
 
+function FooterCol({ title, links }: Col) {
+  return (
+    <div>
+      <h3 className="text-sm font-medium text-white">{title}</h3>
+      <ul className="mt-4 space-y-3">
+        {links.map((l) => (
+          <li key={l.label}>
+            {l.external ? (
+              <a
+                href={l.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-white/45 transition-colors hover:text-white"
+              >
+                {l.label}
+              </a>
+            ) : (
+              <Link
+                href={l.href}
+                className="text-sm text-white/45 transition-colors hover:text-white"
+              >
+                {l.label}
+              </Link>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export default function SiteFooter() {
   return (
     <footer className="relative z-10 border-t border-white/[0.06] px-4 pb-10 pt-16 md:px-8 md:pt-20">
@@ -95,40 +153,36 @@ export default function SiteFooter() {
             </p>
           </div>
 
-          {columns.map((col) => (
-            <div key={col.title}>
-              <h3 className="text-sm font-medium text-white">{col.title}</h3>
-              <ul className="mt-4 space-y-3">
-                {col.links.map((l) => (
-                  <li key={l.label}>
-                    {l.external ? (
-                      <a
-                        href={l.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-white/45 transition-colors hover:text-white"
-                      >
-                        {l.label}
-                      </a>
-                    ) : (
-                      <Link
-                        href={l.href}
-                        className="text-sm text-white/45 transition-colors hover:text-white"
-                      >
-                        {l.label}
-                      </Link>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <FooterCol {...products} />
+          <FooterCol {...cloud} />
+          <FooterCol {...build} />
+          {/* Models + Resources stacked in one cell, mirroring hanzo.ai. */}
+          <div className="space-y-8">
+            <FooterCol {...models} />
+            <FooterCol {...resources} />
+          </div>
+          <FooterCol {...company} />
         </div>
 
         <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-white/[0.06] pt-8 md:flex-row">
-          <p className="text-xs text-white/35">
-            © {new Date().getFullYear()} Hanzo AI, Inc. · Techstars &apos;17
-          </p>
+          <div className="flex flex-col items-center gap-3 md:flex-row md:gap-5">
+            <p className="text-xs text-white/35">
+              © {new Date().getFullYear()} Hanzo AI, Inc. · Techstars &apos;17
+            </p>
+            <div className="flex items-center gap-4">
+              {legal.map((l) => (
+                <a
+                  key={l.label}
+                  href={l.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-white/35 transition-colors hover:text-white"
+                >
+                  {l.label}
+                </a>
+              ))}
+            </div>
+          </div>
           <div className="flex items-center gap-5">
             {social.map((s) => (
               <a

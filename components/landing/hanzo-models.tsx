@@ -1,7 +1,8 @@
 // Hanzo's own models — the flagship Enso (proprietary) and the open Zen family.
 // Complements ModelsStrip (the gateway / 400+ story); this section is
-// specifically about the models Hanzo builds. Real product/report links only:
-// hanzo.ai/enso (technical report) and hanzo.ai/zen (OSS family).
+// specifically about the models Hanzo builds. Real product links only:
+// hanzo.ai/enso (Enso overview) and hanzo.ai/zen (OSS family). There is no
+// published Enso technical report yet, so the CTA says "Learn more", not "report".
 
 import { Orbit, Boxes } from "lucide-react";
 import Reveal from "./reveal";
@@ -51,7 +52,7 @@ export default function HanzoModels() {
                 do it well, so AI doesn&apos;t cost you an arm and a robot leg.
               </p>
               <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-white/70 transition-colors group-hover:text-white">
-                Read the technical report <span aria-hidden>→</span>
+                Learn more about Enso <span aria-hidden>→</span>
               </span>
             </a>
           </Reveal>

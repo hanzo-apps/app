@@ -24,6 +24,7 @@ import {
   DollarSign,
 } from "lucide-react";
 import { HanzoBrand } from "@/components/HanzoLogo";
+import MeetHanzoMenu from "@/components/layout/meet-hanzo-menu";
 import { useAuthContext } from "@/components/providers/AuthProvider";
 
 export default function Header() {
@@ -63,20 +64,11 @@ export default function Header() {
             <HanzoBrand className="text-white" collapse />
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Navigation — Meet Hanzo mega-menu + the key conversion
+              links, matching hanzo.ai's dropdown-plus-Pricing shape. Apps,
+              Community, Learn, Docs and Models all live inside the menu. */}
           <div className="hidden lg:flex items-center gap-8">
-            <Link
-              href="/install"
-              className="text-white/70 hover:text-white text-sm font-medium transition-colors"
-            >
-              Apps
-            </Link>
-            <Link
-              href="/community"
-              className="text-white/70 hover:text-white text-sm font-medium transition-colors"
-            >
-              Community
-            </Link>
+            <MeetHanzoMenu />
             <Link
               href="/pricing"
               className="text-white/70 hover:text-white text-sm font-medium transition-colors"
@@ -88,12 +80,6 @@ export default function Header() {
               className="text-white/70 hover:text-white text-sm font-medium transition-colors"
             >
               Enterprise
-            </Link>
-            <Link
-              href="/learn"
-              className="text-white/70 hover:text-white text-sm font-medium transition-colors"
-            >
-              Learn
             </Link>
           </div>
         </div>
