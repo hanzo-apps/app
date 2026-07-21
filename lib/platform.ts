@@ -274,9 +274,23 @@ export async function deployStatus(token: string, project: string, app: string) 
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
-/** Public URL for an app: its first attached domain, else null. */
+// The sites apex the cloud serves apps under. The platform ALWAYS attaches a
+// structural default host per app — clients/platform/domains.go defaultHost =
+// `<slug>.<org>.<sitesHost>` — so a deployed app is reachable there immediately,
+// before any custom domain. Matches the cloud's production sitesHost.
+const SITES_HOST = process.env.HANZO_SITES_HOST || "hanzo.app";
+
+/**
+ * Public URL for a deployed app. A bound custom/verified domain wins; otherwise
+ * the app's ALWAYS-ATTACHED default host (`<slug>.<org>.<sitesHost>`) that the
+ * cloud serves it on. Previously this returned null when `domains` was empty — so
+ * a freshly-deployed app showed no URL even though it was already live. Only null
+ * when we genuinely can't identify the app (no slug/org).
+ */
 function appURL(app: PlatformApp): string | null {
-  return app.domains && app.domains.length > 0 ? `https://${app.domains[0]}` : null;
+  if (app.domains && app.domains.length > 0) return `https://${app.domains[0]}`;
+  if (app.slug && app.org) return `https://${app.slug}.${app.org}.${SITES_HOST}`;
+  return null;
 }
 
 /** Local, lossless slug derivation matching the control plane's slug rule. */
