@@ -90,7 +90,7 @@ export default function PlaygroundPage() {
   const [selectedPreset, setSelectedPreset] = useState("default");
 
   const [leftConfig, setLeftConfig] = useState<ModelConfig>({
-    model: "Claude 3.5 Sonnet",
+    model: "enso",
     temperature: 0.7,
     maxTokens: 2048,
     topP: 1,
@@ -100,7 +100,7 @@ export default function PlaygroundPage() {
   });
 
   const [rightConfig, setRightConfig] = useState<ModelConfig>({
-    model: "GPT-4 Turbo",
+    model: "gpt-5.2",
     temperature: 0.7,
     maxTokens: 2048,
     topP: 1,
@@ -112,15 +112,18 @@ export default function PlaygroundPage() {
   const [results, setResults] = useState<ComparisonResult[]>([]);
   const [activeResult, setActiveResult] = useState<ComparisonResult | null>(null);
 
+  // Current models served by api.hanzo.ai/v1 (values are the gateway model ids).
   const models = [
-    { value: "Claude 3.5 Sonnet", label: "Claude 3.5 Sonnet", provider: "Anthropic" },
-    { value: "Claude 3.5 Haiku", label: "Claude 3.5 Haiku", provider: "Anthropic" },
-    { value: "GPT-4 Turbo", label: "GPT-4 Turbo", provider: "OpenAI" },
-    { value: "GPT-4", label: "GPT-4", provider: "OpenAI" },
-    { value: "GPT-3.5 Turbo", label: "GPT-3.5 Turbo", provider: "OpenAI" },
-    { value: "Gemini Pro", label: "Gemini Pro", provider: "Google" },
-    { value: "Llama 3 70B", label: "Llama 3 70B", provider: "Meta" },
-    { value: "Mixtral 8x7B", label: "Mixtral 8x7B", provider: "Mistral" }
+    { value: "enso", label: "Enso (smart routing)", provider: "Hanzo" },
+    { value: "enso-flash", label: "Enso Flash", provider: "Hanzo" },
+    { value: "claude-opus-4.8", label: "Claude Opus 4.8", provider: "Anthropic" },
+    { value: "claude-5-sonnet", label: "Claude Sonnet 5", provider: "Anthropic" },
+    { value: "claude-haiku-4.5", label: "Claude Haiku 4.5", provider: "Anthropic" },
+    { value: "gpt-5.2", label: "GPT-5.2", provider: "OpenAI" },
+    { value: "gpt-5.4", label: "GPT-5.4", provider: "OpenAI" },
+    { value: "deepseek-v4-pro", label: "DeepSeek V4 Pro", provider: "DeepSeek" },
+    { value: "llama-4-maverick", label: "Llama 4 Maverick", provider: "Meta" },
+    { value: "gemma-4-31b", label: "Gemma 4", provider: "Google" }
   ];
 
   const presets = [
