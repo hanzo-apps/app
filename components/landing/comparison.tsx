@@ -17,6 +17,19 @@
 // caveat, red = weakness); "—" = not applicable to that tool.
 
 import { useRef } from "react";
+import {
+  Wallet,
+  Lock,
+  Zap,
+  SlidersHorizontal,
+  Target,
+  TrendingUp,
+  ShieldCheck,
+  Wrench,
+  Layers,
+  Palette,
+  type LucideIcon,
+} from "lucide-react";
 import Reveal from "./reveal";
 
 type Tone = "good" | "mid" | "bad" | "na";
@@ -32,18 +45,19 @@ interface Row {
   cells: Cell[];
 }
 
-// Column criteria — concise header, full phrasing in `full` (tooltip + a11y).
-const COLS: { short: string; full: string }[] = [
-  { short: "Hidden costs", full: "Hidden costs" },
-  { short: "Lock-in", full: "Vendor lock-in" },
-  { short: "Performance", full: "Performance — bloated / slow?" },
-  { short: "Customization", full: "Customization limits" },
-  { short: "AI accuracy", full: "AI accuracy / reliability" },
-  { short: "Scales up", full: "Scales to complex projects" },
-  { short: "Security", full: "Security risk" },
-  { short: "Maintenance", full: "Maintenance burden" },
-  { short: "AI context", full: "Context limits — AI / large projects" },
-  { short: "Design", full: "Design quality / output" },
+// Column criteria — concise header + an icon (scannability), full phrasing in
+// `full` (tooltip + a11y).
+const COLS: { short: string; full: string; icon: LucideIcon }[] = [
+  { short: "Hidden costs", full: "Hidden costs", icon: Wallet },
+  { short: "Lock-in", full: "Vendor lock-in", icon: Lock },
+  { short: "Performance", full: "Performance — bloated / slow?", icon: Zap },
+  { short: "Customization", full: "Customization limits", icon: SlidersHorizontal },
+  { short: "AI accuracy", full: "AI accuracy / reliability", icon: Target },
+  { short: "Scales up", full: "Scales to complex projects", icon: TrendingUp },
+  { short: "Security", full: "Security risk", icon: ShieldCheck },
+  { short: "Maintenance", full: "Maintenance burden", icon: Wrench },
+  { short: "AI context", full: "Context limits — AI / large projects", icon: Layers },
+  { short: "Design", full: "Design quality / output", icon: Palette },
 ];
 
 // Cell constructors keep the data table below readable.
@@ -269,6 +283,12 @@ function Dot({ tone }: { tone: Tone }) {
   );
 }
 
+// The criterion's icon by column index (JSX can't render COLS[ci].icon inline).
+function ColIcon({ i, className }: { i: number; className?: string }) {
+  const Icon = COLS[i].icon;
+  return <Icon className={className} strokeWidth={1.5} aria-hidden />;
+}
+
 export default function Comparison() {
   const scrollRef = useRef<HTMLDivElement>(null);
   // Page the criteria columns; the pinned Company column stays put.
@@ -361,6 +381,11 @@ export default function Comparison() {
                           key={c.short}
                           className="w-[208px] min-w-[208px] snap-start px-4 pb-4 align-bottom font-mono text-[10px] font-normal uppercase leading-tight tracking-[0.1em] text-white/45"
                         >
+                          <c.icon
+                            className="mb-2 h-4 w-4 text-white/30"
+                            strokeWidth={1.5}
+                            aria-hidden
+                          />
                           {c.full}
                         </th>
                       ))}
@@ -445,7 +470,8 @@ export default function Comparison() {
                           <Dot tone="good" />
                         </span>
                         <div className="min-w-0">
-                          <dt className="font-mono text-[10px] uppercase tracking-[0.1em] text-white/40">
+                          <dt className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-white/40">
+                            <ColIcon i={ci} className="h-3 w-3 text-white/30" />
                             {COLS[ci].short}
                           </dt>
                           <dd className="text-sm text-white">
@@ -507,7 +533,8 @@ export default function Comparison() {
                         <Dot tone={cell.t} />
                       </span>
                       <div className="min-w-0">
-                        <dt className="font-mono text-[10px] uppercase tracking-[0.1em] text-white/40">
+                        <dt className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-white/40">
+                          <ColIcon i={ci} className="h-3 w-3 text-white/30" />
                           {COLS[ci].short}
                         </dt>
                         <dd className={`text-sm ${TEXT[cell.t]}`}>
