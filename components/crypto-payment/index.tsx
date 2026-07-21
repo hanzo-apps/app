@@ -121,13 +121,13 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-lg bg-[#1a1a1a] border-white/10 text-white">
+      <DialogContent className="max-w-lg bg-popover border-border text-foreground">
         <DialogHeader>
           <DialogTitle className="flex items-center text-xl">
             <Wallet className="w-5 h-5 mr-2" />
             {step === 'success' ? 'Payment Complete!' : 'Purchase Credits with USDC'}
           </DialogTitle>
-          <DialogDescription className="text-white/60">
+          <DialogDescription className="text-muted-foreground">
             {step === 'success'
               ? 'Your credits have been added to your account'
               : 'Pay with USDC on Base, Ethereum, or Arbitrum'}
@@ -147,7 +147,7 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
                 href={`${explorerUrl}/tx/${hash}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-white/60 hover:text-white flex items-center justify-center gap-1"
+                className="text-sm text-muted-foreground hover:text-foreground flex items-center justify-center gap-1"
               >
                 View on {selectedChainInfo?.name} <ExternalLink className="w-3 h-3" />
               </a>
@@ -158,13 +158,13 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
           </div>
         ) : !isConnected ? (
           <div className="py-6 space-y-3">
-            <p className="text-sm text-white/60 text-center mb-4">Connect your wallet to continue</p>
+            <p className="text-sm text-muted-foreground text-center mb-4">Connect your wallet to continue</p>
             {connectors.map((connector) => (
               <Button
                 key={connector.uid}
                 onClick={() => connect({ connector })}
                 variant="outline"
-                className="w-full border-white/20 text-white hover:bg-white/10"
+                className="w-full border-border text-foreground hover:bg-accent"
               >
                 <Wallet className="w-4 h-4 mr-2" />
                 {connector.name}
@@ -174,8 +174,8 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
         ) : step === 'select' ? (
           <div className="py-4 space-y-4">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-white/60">Connected: {address?.slice(0, 6)}...{address?.slice(-4)}</span>
-              <Button variant="ghost" size="sm" onClick={() => disconnect()} className="text-white/60 hover:text-white">
+              <span className="text-muted-foreground">Connected: {address?.slice(0, 6)}...{address?.slice(-4)}</span>
+              <Button variant="ghost" size="sm" onClick={() => disconnect()} className="text-muted-foreground hover:text-foreground">
                 Disconnect
               </Button>
             </div>
@@ -184,21 +184,21 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
             <div className="relative">
               <button
                 onClick={() => setChainMenuOpen(!chainMenuOpen)}
-                className="w-full flex items-center justify-between p-3 rounded-lg border border-white/10 bg-[#0a0a0a] hover:border-white/30 transition-colors"
+                className="w-full flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:border-foreground/30 transition-colors"
               >
                 <span className="text-sm">
                   Network: <span className="font-medium">{SUPPORTED_CHAINS.find(c => c.id === selectedChainId)?.name}</span>
                 </span>
-                <ChevronDown className="w-4 h-4 text-white/60" />
+                <ChevronDown className="w-4 h-4 text-muted-foreground" />
               </button>
               {chainMenuOpen && (
-                <div className="absolute top-full left-0 right-0 mt-1 rounded-lg border border-white/10 bg-[#1a1a1a] overflow-hidden z-10">
+                <div className="absolute top-full left-0 right-0 mt-1 rounded-lg border border-border bg-popover overflow-hidden z-10">
                   {SUPPORTED_CHAINS.map((c) => (
                     <button
                       key={c.id}
                       onClick={() => { setSelectedChainId(c.id); setChainMenuOpen(false) }}
-                      className={`w-full text-left px-4 py-3 text-sm hover:bg-white/10 transition-colors ${
-                        selectedChainId === c.id ? 'bg-white/5 text-white' : 'text-white/70'
+                      className={`w-full text-left px-4 py-3 text-sm hover:bg-accent transition-colors ${
+                        selectedChainId === c.id ? 'bg-accent text-foreground' : 'text-foreground'
                       }`}
                     >
                       {c.name}
@@ -216,21 +216,21 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
                   className={`relative p-4 rounded-lg cursor-pointer transition-all border ${
                     selectedAmount === option.amount
                       ? 'border-violet-500 bg-violet-500/10'
-                      : 'border-white/10 hover:border-white/30 bg-[#0a0a0a]'
+                      : 'border-border hover:border-foreground/30 bg-card'
                   }`}
                 >
                   {option.popular && (
-                    <Badge className="absolute -top-2 -right-2 bg-gradient-to-r from-violet-500 to-purple-500 text-white text-xs">
+                    <Badge className="absolute -top-2 -right-2 bg-gradient-to-r from-violet-500 to-purple-500 text-foreground text-xs">
                       Popular
                     </Badge>
                   )}
                   <div className="text-xl font-medium">${option.amount}</div>
-                  <div className="flex items-center text-sm text-white/60 mt-1">
+                  <div className="flex items-center text-sm text-muted-foreground mt-1">
                     <Zap className="w-3 h-3 mr-1" />
                     {option.credits.toLocaleString()} credits
                   </div>
                   {option.bonus > 0 && (
-                    <Badge variant="secondary" className="mt-2 text-xs bg-white/10">
+                    <Badge variant="secondary" className="mt-2 text-xs bg-accent">
                       +{option.bonus.toLocaleString()} bonus
                     </Badge>
                   )}
@@ -248,24 +248,24 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
           </div>
         ) : step === 'confirm' ? (
           <div className="py-4 space-y-4">
-            <div className="p-4 rounded-lg bg-[#0a0a0a] border border-white/10">
+            <div className="p-4 rounded-lg bg-card border border-border">
               <div className="flex justify-between items-center">
-                <span className="text-white/60">Amount</span>
+                <span className="text-muted-foreground">Amount</span>
                 <span className="font-medium">${selectedAmount} USDC</span>
               </div>
               <div className="flex justify-between items-center mt-2">
-                <span className="text-white/60">Credits</span>
+                <span className="text-muted-foreground">Credits</span>
                 <span className="font-medium text-green-500">
                   +{CREDIT_PRICING[selectedAmount as keyof typeof CREDIT_PRICING]?.credits.toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between items-center mt-2">
-                <span className="text-white/60">Network</span>
+                <span className="text-muted-foreground">Network</span>
                 <span className="text-sm">{SUPPORTED_CHAINS.find(c => c.id === selectedChainId)?.name}</span>
               </div>
               <div className="flex justify-between items-center mt-2">
-                <span className="text-white/60">Treasury</span>
-                <span className="text-xs font-mono text-white/40">
+                <span className="text-muted-foreground">Treasury</span>
+                <span className="text-xs font-mono text-muted-foreground">
                   {TREASURY_ADDRESS.slice(0, 6)}...{TREASURY_ADDRESS.slice(-4)}
                 </span>
               </div>
@@ -275,7 +275,7 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
               <Button
                 variant="outline"
                 onClick={() => setStep('select')}
-                className="flex-1 border-white/20 text-white hover:bg-white/10"
+                className="flex-1 border-border text-foreground hover:bg-accent"
               >
                 Back
               </Button>
@@ -294,7 +294,7 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
             <p className="text-lg font-medium">
               {isConfirming ? 'Confirming transaction...' : 'Waiting for wallet...'}
             </p>
-            <p className="text-sm text-white/60 mt-2">
+            <p className="text-sm text-muted-foreground mt-2">
               Please confirm the transaction in your wallet
             </p>
           </div>

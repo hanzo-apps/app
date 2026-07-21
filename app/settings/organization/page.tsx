@@ -37,35 +37,35 @@ function OrganizationSettingsInner() {
 
   if (loading) {
     return (
-      <div className="flex flex-1 items-center justify-center bg-black">
-        <Loader2 className="h-8 w-8 animate-spin text-white/40" />
+      <div className="flex flex-1 items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   return (
-    <div className="flex-1 overflow-y-auto bg-black">
+    <div className="flex-1 overflow-y-auto bg-background">
       <div className="mx-auto max-w-2xl px-6 py-10">
-        <h1 className="text-2xl font-medium text-white">Organization settings</h1>
-        <p className="mt-1 text-sm text-white/50">
+        <h1 className="text-2xl font-medium text-foreground">Organization settings</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
           Personalize how {name} appears across Hanzo.
         </p>
 
-        <div className="mt-8 rounded-xl border border-white/10 bg-white/[0.03] p-6">
+        <div className="mt-8 rounded-xl border border-border bg-muted p-6">
           {/* Current org — avatar live-previews the picked emoji. */}
           <div className="flex items-center gap-4">
             <OrgAvatar name={name} logo={serverLogo} className="h-12 w-12 text-lg" />
             <div className="min-w-0">
-              <div className="truncate font-medium text-white">{name}</div>
+              <div className="truncate font-medium text-foreground">{name}</div>
               {currentId && (
-                <div className="truncate font-mono text-xs text-white/40">{currentId}</div>
+                <div className="truncate font-mono text-xs text-muted-foreground">{currentId}</div>
               )}
             </div>
           </div>
 
           {/* Emoji picker — persists to the shared override. */}
           <div className="mt-6">
-            <label htmlFor="org-emoji" className="mb-2 block text-sm font-medium text-white/70">
+            <label htmlFor="org-emoji" className="mb-2 block text-sm font-medium text-foreground">
               Emoji
             </label>
             <div className="flex items-center gap-3">
@@ -82,16 +82,16 @@ function OrganizationSettingsInner() {
                 maxLength={4}
                 aria-label={`Set an emoji for ${name}`}
                 disabled={!currentId}
-                className="w-16 rounded-lg border border-white/15 bg-transparent px-2 py-2 text-center text-lg outline-none focus:border-white/40 disabled:opacity-40"
+                className="w-16 rounded-lg border border-border bg-transparent px-2 py-2 text-center text-lg outline-none focus:border-foreground/40 disabled:opacity-40"
               />
-              <p className="text-xs text-white/40">
+              <p className="text-xs text-muted-foreground">
                 Pick a single emoji to represent the org. Leave empty to fall back to the
                 org&apos;s initial.
               </p>
             </div>
           </div>
 
-          <p className="mt-6 border-t border-white/10 pt-4 text-xs leading-relaxed text-white/35">
+          <p className="mt-6 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
             An uploaded image logo will be supported once Hanzo IAM carries it for your
             organization. Until then, this emoji is stored on this device.
           </p>
@@ -111,10 +111,10 @@ export default function OrganizationSettingsPage() {
 
   if (loading || !user) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-black">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
-          <HanzoLogo className="mx-auto mb-4 h-12 w-12 animate-pulse text-white" />
-          <p className="text-white/40">
+          <HanzoLogo className="mx-auto mb-4 h-12 w-12 animate-pulse text-foreground" />
+          <p className="text-muted-foreground">
             {loading ? "Loading settings..." : "Redirecting to login..."}
           </p>
         </div>

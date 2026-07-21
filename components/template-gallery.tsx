@@ -43,8 +43,8 @@ function RailPill({
       onClick={onClick}
       className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
         active
-          ? "bg-white text-black"
-          : "border border-white/10 bg-white/[0.02] text-white/55 hover:border-white/20 hover:text-white"
+          ? "bg-primary text-primary-foreground"
+          : "border border-border bg-muted text-muted-foreground hover:border-foreground/30 hover:text-foreground"
       }`}
     >
       {label}
@@ -54,9 +54,9 @@ function RailPill({
 
 function TemplateCard({ t, showAuthor = false }: { t: TemplateEntry; showAuthor?: boolean }) {
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] transition-all duration-200 hover:-translate-y-1 hover:border-white/25 hover:bg-white/[0.04]">
+    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-muted transition-all duration-200 hover:-translate-y-1 hover:border-foreground/30 hover:bg-muted">
       {/* Preview — image-first via TemplateThumb; on-brand tile when no real shot. */}
-      <div className="relative aspect-[16/10] overflow-hidden bg-neutral-950">
+      <div className="relative aspect-[16/10] overflow-hidden bg-card">
         <TemplateThumb
           name={t.name}
           category={t.category}
@@ -69,24 +69,24 @@ function TemplateCard({ t, showAuthor = false }: { t: TemplateEntry; showAuthor?
       </div>
 
       <div className="flex flex-1 flex-col p-4 sm:p-5">
-        <h3 className="flex items-start gap-1.5 text-[15px] font-medium leading-snug tracking-tight text-white">
+        <h3 className="flex items-start gap-1.5 text-[15px] font-medium leading-snug tracking-tight text-foreground">
           <span className="line-clamp-1">{t.name}</span>
           <ArrowUpRight
-            className="mt-0.5 h-4 w-4 shrink-0 text-white/25 transition-colors group-hover:text-white/60"
+            className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground"
             strokeWidth={1.6}
           />
         </h3>
-        <p className="mt-1.5 line-clamp-2 min-h-[2.5rem] text-[13px] leading-relaxed text-white/50">
+        <p className="mt-1.5 line-clamp-2 min-h-[2.5rem] text-[13px] leading-relaxed text-muted-foreground">
           {t.tagline}
         </p>
 
         <div className="mt-auto flex items-center justify-between gap-3 pt-4">
-          <span className="truncate font-mono text-[10px] uppercase tracking-[0.12em] text-white/35">
+          <span className="truncate font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
             {showAuthor ? `by ${authorOf(t.slug)}` : t.framework}
           </span>
           <Link
             href={t.fork}
-            className="relative z-10 inline-flex shrink-0 items-center gap-1 rounded-full bg-white px-3.5 py-1.5 text-xs font-medium text-black transition-colors hover:bg-white/90"
+            className="relative z-10 inline-flex shrink-0 items-center gap-1 rounded-full bg-primary px-3.5 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Use template
             <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} />
@@ -139,13 +139,13 @@ export function TemplateGallery({
     <div className={`mx-auto w-full max-w-7xl px-5 py-10 sm:px-8 sm:py-14 ${className}`}>
       {/* Header — true-black monochrome, landing aesthetic. */}
       <header className="max-w-2xl">
-        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">
+        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
           {eyebrow}
         </p>
-        <h1 className="mt-3 text-3xl font-medium tracking-tight text-white sm:text-4xl md:text-[2.75rem] md:leading-[1.05]">
+        <h1 className="mt-3 text-3xl font-medium tracking-tight text-foreground sm:text-4xl md:text-[2.75rem] md:leading-[1.05]">
           {heading}
         </h1>
-        <p className="mt-4 text-base text-white/55 sm:text-lg">{lead}</p>
+        <p className="mt-4 text-base text-muted-foreground sm:text-lg">{lead}</p>
       </header>
 
       {/* Category rail — instant client-side filtering. */}
@@ -160,7 +160,7 @@ export function TemplateGallery({
           />
         ))}
       </div>
-      <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.14em] text-white/30">
+      <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
         {shown.length} template{shown.length === 1 ? "" : "s"}
       </p>
 
@@ -172,24 +172,24 @@ export function TemplateGallery({
           ))}
         </div>
       ) : (
-        <p className="mt-16 text-center text-sm text-white/40">
+        <p className="mt-16 text-center text-sm text-muted-foreground">
           No templates in this category yet.
         </p>
       )}
 
       {/* Footer CTA — the honest build path (no fabricated metrics). */}
-      <div className="mt-14 flex flex-col items-start gap-4 rounded-2xl border border-white/10 bg-white/[0.02] p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+      <div className="mt-14 flex flex-col items-start gap-4 rounded-2xl border border-border bg-muted p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
         <div>
-          <h2 className="text-lg font-medium tracking-tight text-white">
+          <h2 className="text-lg font-medium tracking-tight text-foreground">
             Don&apos;t see the right fit?
           </h2>
-          <p className="mt-1 text-sm text-white/50">
+          <p className="mt-1 text-sm text-muted-foreground">
             Describe your app and Hanzo builds it from scratch — deployed live in minutes.
           </p>
         </div>
         <Link
           href="/dev"
-          className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition-colors hover:bg-white/90"
+          className="inline-flex shrink-0 items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
         >
           <Sparkles className="h-4 w-4" strokeWidth={1.8} />
           Start building
