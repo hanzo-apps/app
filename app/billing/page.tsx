@@ -259,7 +259,7 @@ export default function BillingPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center">
+      <div className="min-h-screen bg-card text-foreground flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin" />
       </div>
     );
@@ -267,20 +267,20 @@ export default function BillingPage() {
 
   return (
     <AppShell currentView="billing">
-    <div className="flex-1 overflow-y-auto bg-[#0a0a0a] text-white">
+    <div className="flex-1 overflow-y-auto bg-card text-foreground">
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
             <h1 className="text-3xl md:text-4xl font-medium mb-2">Billing & Usage</h1>
-            <p className="text-white/60">
+            <p className="text-muted-foreground">
               Manage your credits, subscriptions, and monitor usage
-              {user?.email && <span className="ml-2 text-white/40">({user.email})</span>}
+              {user?.email && <span className="ml-2 text-muted-foreground">({user.email})</span>}
             </p>
           </div>
           <Button
             onClick={() => setActiveTab('add-credits')}
-            className="bg-white text-black hover:bg-white/90"
+            className="bg-primary text-primary-foreground hover:bg-primary/90"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Credits
@@ -290,21 +290,21 @@ export default function BillingPage() {
         {/* Key Metrics */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Current Plan */}
-          <Card className="bg-[#1a1a1a] border-white/10 hover:border-white/20 transition-colors">
+          <Card className="bg-card border-border hover:border-foreground/20 transition-colors">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-white/60">Current Plan</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Current Plan</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 <Badge className={
                   subscription?.plan === 'Pro'
-                    ? 'bg-white text-black'
-                    : 'bg-white/10 text-white/70'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-accent text-foreground'
                 }>
                   {subscription?.plan || 'Free'}
                 </Badge>
                 {subscription?.nextBillingDate && (
-                  <p className="text-xs text-white/60">
+                  <p className="text-xs text-muted-foreground">
                     Next billing: {new Date(subscription.nextBillingDate).toLocaleDateString()}
                   </p>
                 )}
@@ -315,7 +315,7 @@ export default function BillingPage() {
                   {(!subscription || subscription.plan === 'Pay as you go') ? (
                     <Button
                       onClick={() => router.push('/pricing')}
-                      className="w-full bg-white text-black hover:bg-white/90"
+                      className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                       size="sm"
                     >
                       <Sparkles className="w-4 h-4 mr-2" />
@@ -325,7 +325,7 @@ export default function BillingPage() {
                     <Button
                       onClick={handleManageSubscription}
                       variant="outline"
-                      className="w-full border-white/20 text-white hover:bg-white/10"
+                      className="w-full border-border text-foreground hover:bg-accent"
                       size="sm"
                     >
                       Manage Subscription
@@ -337,9 +337,9 @@ export default function BillingPage() {
           </Card>
 
           {/* Credits */}
-          <Card className="bg-[#1a1a1a] border-white/10 hover:border-white/20 transition-colors">
+          <Card className="bg-card border-border hover:border-foreground/20 transition-colors">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-white/60">Credits Balance</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Credits Balance</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -347,14 +347,14 @@ export default function BillingPage() {
                   <span className="text-2xl font-medium">{credits.toLocaleString()}</span>
                   <TrendingUp className="w-5 h-5 text-green-500" />
                 </div>
-                <p className="text-xs text-white/40">
+                <p className="text-xs text-muted-foreground">
                   1 credit = 1 AI response
                 </p>
                 <Button
                   onClick={() => setActiveTab('add-credits')}
                   variant="outline"
                   size="sm"
-                  className="w-full border-white/20 text-white hover:bg-white/10"
+                  className="w-full border-border text-foreground hover:bg-accent"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Credits
@@ -364,22 +364,22 @@ export default function BillingPage() {
           </Card>
 
           {/* Usage Summary */}
-          <Card className="bg-[#1a1a1a] border-white/10 hover:border-white/20 transition-colors">
+          <Card className="bg-card border-border hover:border-foreground/20 transition-colors">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-white/60">This Month</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">This Month</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-white/60">API Calls</span>
+                  <span className="text-muted-foreground">API Calls</span>
                   <span>{(usage.api_calls?.used ?? 0).toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-white/60">AI Responses</span>
+                  <span className="text-muted-foreground">AI Responses</span>
                   <span>{(usage.ai_responses?.used ?? 0).toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-white/60">Storage</span>
+                  <span className="text-muted-foreground">Storage</span>
                   <span>{usage.storage?.used ?? 0} GB</span>
                 </div>
               </div>
@@ -389,23 +389,23 @@ export default function BillingPage() {
 
         {/* Tabbed Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid grid-cols-4 w-full max-w-lg bg-[#1a1a1a] border border-white/10">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-white/10">Overview</TabsTrigger>
-            <TabsTrigger value="add-credits" className="data-[state=active]:bg-white/10">Add Credits</TabsTrigger>
-            <TabsTrigger value="history" className="data-[state=active]:bg-white/10">History</TabsTrigger>
-            <TabsTrigger value="usage" className="data-[state=active]:bg-white/10">Usage</TabsTrigger>
+          <TabsList className="grid grid-cols-4 w-full max-w-lg bg-card border border-border">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-accent">Overview</TabsTrigger>
+            <TabsTrigger value="add-credits" className="data-[state=active]:bg-accent">Add Credits</TabsTrigger>
+            <TabsTrigger value="history" className="data-[state=active]:bg-accent">History</TabsTrigger>
+            <TabsTrigger value="usage" className="data-[state=active]:bg-accent">Usage</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="mt-6 space-y-6">
-            <Card className="bg-[#1a1a1a] border-white/10">
+            <Card className="bg-card border-border">
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {CRYPTO_PAYMENTS_ENABLED && (
                   <Button
-                    className="bg-white text-black hover:bg-white/90"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90"
                     onClick={() => { setPaymentMethod('crypto'); setCreditModalOpen(true); }}
                   >
                     <Wallet className="w-4 h-4 mr-2" />
@@ -414,7 +414,7 @@ export default function BillingPage() {
                 )}
                 <Button
                   variant="outline"
-                  className="border-white/20 text-white hover:bg-white/10"
+                  className="border-border text-foreground hover:bg-accent"
                   onClick={() => setActiveTab('add-credits')}
                 >
                   <CreditCard className="w-4 h-4 mr-2" />
@@ -422,7 +422,7 @@ export default function BillingPage() {
                 </Button>
                 <Button
                   variant="outline"
-                  className="border-white/20 text-white hover:bg-white/10"
+                  className="border-border text-foreground hover:bg-accent"
                   onClick={() => router.push('/pricing')}
                 >
                   <Sparkles className="w-4 h-4 mr-2" />
@@ -430,7 +430,7 @@ export default function BillingPage() {
                 </Button>
                 <Button
                   variant="outline"
-                  className="border-white/20 text-white hover:bg-white/10"
+                  className="border-border text-foreground hover:bg-accent"
                   onClick={() => setActiveTab('usage')}
                 >
                   <Activity className="w-4 h-4 mr-2" />
@@ -440,14 +440,14 @@ export default function BillingPage() {
             </Card>
 
             {/* Recent transactions in overview */}
-            <Card className="bg-[#1a1a1a] border-white/10">
+            <Card className="bg-card border-border">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Recent Transactions</CardTitle>
                 {invoices.length > 0 && (
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-white/60 hover:text-white"
+                    className="text-muted-foreground hover:text-foreground"
                     onClick={() => setActiveTab('history')}
                   >
                     View All <ArrowRight className="w-4 h-4 ml-1" />
@@ -457,9 +457,9 @@ export default function BillingPage() {
               <CardContent>
                 {invoices.length === 0 ? (
                   <div className="text-center py-12">
-                    <FileText className="w-12 h-12 mx-auto text-white/20 mb-3" />
-                    <p className="text-white/60 mb-1">No transactions yet</p>
-                    <p className="text-sm text-white/40">Purchase credits to see your transaction history</p>
+                    <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-3" />
+                    <p className="text-muted-foreground mb-1">No transactions yet</p>
+                    <p className="text-sm text-muted-foreground">Purchase credits to see your transaction history</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -477,13 +477,13 @@ export default function BillingPage() {
             {/* Payment method toggle — only when crypto is live; otherwise card-only
                 (paymentMethod stays 'card', so the USDC section + modal never show). */}
             {CRYPTO_PAYMENTS_ENABLED && (
-            <div className="flex gap-2 p-1 bg-[#1a1a1a] border border-white/10 rounded-lg w-fit">
+            <div className="flex gap-2 p-1 bg-card border border-border rounded-lg w-fit">
               <button
                 onClick={() => setPaymentMethod('card')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                   paymentMethod === 'card'
-                    ? 'bg-white/10 text-white'
-                    : 'text-white/60 hover:text-white'
+                    ? 'bg-accent text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <CreditCard className="w-4 h-4 inline mr-2" />
@@ -493,8 +493,8 @@ export default function BillingPage() {
                 onClick={() => setPaymentMethod('crypto')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                   paymentMethod === 'crypto'
-                    ? 'bg-white/10 text-white'
-                    : 'text-white/60 hover:text-white'
+                    ? 'bg-accent text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <Wallet className="w-4 h-4 inline mr-2" />
@@ -504,7 +504,7 @@ export default function BillingPage() {
             )}
 
             {paymentMethod === 'card' ? (
-              <Card className="bg-[#1a1a1a] border-white/10">
+              <Card className="bg-card border-border">
                 <CardHeader>
                   <CardTitle>Purchase Credits with Card</CardTitle>
                   <CardDescription>Powered by Hanzo Commerce. All major cards accepted.</CardDescription>
@@ -516,20 +516,20 @@ export default function BillingPage() {
                         key={tier.amount}
                         className={`relative p-5 rounded-xl border transition-all ${
                           tier.popular
-                            ? 'border-white/30 bg-white/5'
-                            : 'border-white/10 hover:border-white/30 bg-[#0a0a0a]'
+                            ? 'border-foreground/30 bg-muted'
+                            : 'border-border hover:border-foreground/30 bg-card'
                         }`}
                       >
                         {tier.popular && (
-                          <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-white text-black text-xs">
+                          <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs">
                             Most Popular
                           </Badge>
                         )}
                         <div className="text-center mb-4">
                           <div className="text-3xl font-medium">${tier.amount}</div>
-                          <div className="text-sm text-white/60 mt-1">{tier.label}</div>
+                          <div className="text-sm text-muted-foreground mt-1">{tier.label}</div>
                         </div>
-                        <div className="flex items-center justify-center text-sm text-white/80 mb-4">
+                        <div className="flex items-center justify-center text-sm text-foreground mb-4">
                           <Zap className="w-4 h-4 mr-1 text-yellow-500" />
                           {tier.credits.toLocaleString()} credits
                         </div>
@@ -538,8 +538,8 @@ export default function BillingPage() {
                           disabled={checkoutLoading !== null}
                           className={`w-full ${
                             tier.popular
-                              ? 'bg-white text-black hover:bg-white/90'
-                              : 'bg-white/10 hover:bg-white/20'
+                              ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                              : 'bg-accent hover:bg-foreground/20'
                           }`}
                           size="sm"
                         >
@@ -558,7 +558,7 @@ export default function BillingPage() {
                 </CardContent>
               </Card>
             ) : (
-              <Card className="bg-[#1a1a1a] border-white/10">
+              <Card className="bg-card border-border">
                 <CardHeader>
                   <CardTitle>Purchase Credits with USDC</CardTitle>
                   <CardDescription>Pay with USDC on Base, Ethereum, or Arbitrum.</CardDescription>
@@ -570,20 +570,20 @@ export default function BillingPage() {
                         key={tier.amount}
                         className={`relative p-5 rounded-xl border transition-all ${
                           tier.popular
-                            ? 'border-white/30 bg-white/5'
-                            : 'border-white/10 hover:border-white/30 bg-[#0a0a0a]'
+                            ? 'border-foreground/30 bg-muted'
+                            : 'border-border hover:border-foreground/30 bg-card'
                         }`}
                       >
                         {tier.popular && (
-                          <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-white text-black text-xs">
+                          <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs">
                             Most Popular
                           </Badge>
                         )}
                         <div className="text-center mb-4">
                           <div className="text-3xl font-medium">${tier.amount}</div>
-                          <div className="text-sm text-white/60 mt-1">USDC</div>
+                          <div className="text-sm text-muted-foreground mt-1">USDC</div>
                         </div>
-                        <div className="flex items-center justify-center text-sm text-white/80 mb-4">
+                        <div className="flex items-center justify-center text-sm text-foreground mb-4">
                           <Zap className="w-4 h-4 mr-1 text-yellow-500" />
                           {tier.credits.toLocaleString()} credits
                         </div>
@@ -591,8 +591,8 @@ export default function BillingPage() {
                           onClick={() => setCreditModalOpen(true)}
                           className={`w-full ${
                             tier.popular
-                              ? 'bg-white text-black hover:bg-white/90'
-                              : 'bg-white/10 hover:bg-white/20'
+                              ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                              : 'bg-accent hover:bg-foreground/20'
                           }`}
                           size="sm"
                         >
@@ -602,7 +602,7 @@ export default function BillingPage() {
                       </div>
                     ))}
                   </div>
-                  <p className="text-xs text-white/40 mt-4 text-center">
+                  <p className="text-xs text-muted-foreground mt-4 text-center">
                     Treasury: 0xda93...f5c -- USDC on Base, Ethereum Mainnet, and Arbitrum
                   </p>
                 </CardContent>
@@ -612,7 +612,7 @@ export default function BillingPage() {
 
           {/* History / Invoices Tab */}
           <TabsContent value="history" className="mt-6">
-            <Card className="bg-[#1a1a1a] border-white/10">
+            <Card className="bg-card border-border">
               <CardHeader>
                 <CardTitle>Transaction History</CardTitle>
                 <CardDescription>All payments, invoices, and crypto transactions</CardDescription>
@@ -620,9 +620,9 @@ export default function BillingPage() {
               <CardContent>
                 {invoices.length === 0 ? (
                   <div className="text-center py-12">
-                    <FileText className="w-12 h-12 mx-auto text-white/20 mb-3" />
-                    <p className="text-white/60 mb-1">No transactions yet</p>
-                    <p className="text-sm text-white/40">Purchase credits to see your transaction history</p>
+                    <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-3" />
+                    <p className="text-muted-foreground mb-1">No transactions yet</p>
+                    <p className="text-sm text-muted-foreground">Purchase credits to see your transaction history</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -637,7 +637,7 @@ export default function BillingPage() {
 
           {/* Usage Tab */}
           <TabsContent value="usage" className="mt-6 space-y-6">
-            <Card className="bg-[#1a1a1a] border-white/10">
+            <Card className="bg-card border-border">
               <CardHeader>
                 <CardTitle>Usage Details</CardTitle>
                 <CardDescription>Current billing period usage across all services</CardDescription>
@@ -647,16 +647,16 @@ export default function BillingPage() {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center">
-                      <Activity className="w-4 h-4 mr-2 text-white/60" />
+                      <Activity className="w-4 h-4 mr-2 text-muted-foreground" />
                       <span>API Calls</span>
                     </div>
-                    <span className="text-sm text-white/60">
+                    <span className="text-sm text-muted-foreground">
                       {(usage.api_calls?.used ?? 0).toLocaleString()} / {(usage.api_calls?.limit ?? 0).toLocaleString()}
                     </span>
                   </div>
                   <Progress
                     value={calculateUsagePercentage(usage.api_calls?.used ?? 0, usage.api_calls?.limit ?? 0)}
-                    className="h-2 bg-white/10"
+                    className="h-2 bg-accent"
                     indicatorClassName={getUsageColor(calculateUsagePercentage(usage.api_calls?.used ?? 0, usage.api_calls?.limit ?? 0))}
                   />
                 </div>
@@ -665,16 +665,16 @@ export default function BillingPage() {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center">
-                      <Brain className="w-4 h-4 mr-2 text-white/60" />
+                      <Brain className="w-4 h-4 mr-2 text-muted-foreground" />
                       <span>AI Responses</span>
                     </div>
-                    <span className="text-sm text-white/60">
+                    <span className="text-sm text-muted-foreground">
                       {(usage.ai_responses?.used ?? 0).toLocaleString()} / {(usage.ai_responses?.limit ?? 0).toLocaleString()}
                     </span>
                   </div>
                   <Progress
                     value={calculateUsagePercentage(usage.ai_responses?.used ?? 0, usage.ai_responses?.limit ?? 0)}
-                    className="h-2 bg-white/10"
+                    className="h-2 bg-accent"
                     indicatorClassName={getUsageColor(calculateUsagePercentage(usage.ai_responses?.used ?? 0, usage.ai_responses?.limit ?? 0))}
                   />
                 </div>
@@ -683,39 +683,39 @@ export default function BillingPage() {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center">
-                      <Database className="w-4 h-4 mr-2 text-white/60" />
+                      <Database className="w-4 h-4 mr-2 text-muted-foreground" />
                       <span>Storage</span>
                     </div>
-                    <span className="text-sm text-white/60">
+                    <span className="text-sm text-muted-foreground">
                       {usage.storage?.used ?? 0} GB / {usage.storage?.limit ?? 0} GB
                     </span>
                   </div>
                   <Progress
                     value={calculateUsagePercentage(usage.storage?.used ?? 0, usage.storage?.limit ?? 0)}
-                    className="h-2 bg-white/10"
+                    className="h-2 bg-accent"
                     indicatorClassName={getUsageColor(calculateUsagePercentage(usage.storage?.used ?? 0, usage.storage?.limit ?? 0))}
                   />
                 </div>
 
                 {/* Credit consumption */}
-                <div className="pt-4 border-t border-white/10">
-                  <h4 className="text-sm font-medium text-white/60 mb-3">Credit Consumption</h4>
+                <div className="pt-4 border-t border-border">
+                  <h4 className="text-sm font-medium text-muted-foreground mb-3">Credit Consumption</h4>
                   <div className="grid grid-cols-3 gap-4 text-center">
-                    <div className="p-3 rounded-lg bg-[#0a0a0a] border border-white/10">
+                    <div className="p-3 rounded-lg bg-card border border-border">
                       <div className="text-lg font-medium">{usage.ai_responses?.used ?? 0}</div>
-                      <div className="text-xs text-white/60">AI credits used</div>
+                      <div className="text-xs text-muted-foreground">AI credits used</div>
                     </div>
-                    <div className="p-3 rounded-lg bg-[#0a0a0a] border border-white/10">
+                    <div className="p-3 rounded-lg bg-card border border-border">
                       <div className="text-lg font-medium">{credits.toLocaleString()}</div>
-                      <div className="text-xs text-white/60">Credits remaining</div>
+                      <div className="text-xs text-muted-foreground">Credits remaining</div>
                     </div>
-                    <div className="p-3 rounded-lg bg-[#0a0a0a] border border-white/10">
+                    <div className="p-3 rounded-lg bg-card border border-border">
                       <div className="text-lg font-medium">
                         {credits > 0 && (usage.ai_responses?.used ?? 0) > 0
                           ? Math.ceil(credits / ((usage.ai_responses?.used ?? 0) / 30))
                           : '--'}
                       </div>
-                      <div className="text-xs text-white/60">Est. days left</div>
+                      <div className="text-xs text-muted-foreground">Est. days left</div>
                     </div>
                   </div>
                 </div>
@@ -759,17 +759,17 @@ function TransactionRow({ invoice }: { invoice: Invoice }) {
     : 'https://basescan.org';
 
   return (
-    <div className="flex items-center justify-between p-4 border border-white/10 rounded-lg hover:bg-white/5 transition-colors">
+    <div className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted transition-colors">
       <div className="flex items-center gap-3">
         {statusIcon}
         <div>
           <div className="flex items-center gap-2">
             <p className="font-medium">{invoice.description || 'Payment'}</p>
-            <Badge variant="secondary" className="text-xs bg-white/10">
+            <Badge variant="secondary" className="text-xs bg-accent">
               {invoice.type === 'crypto' ? 'USDC' : 'Card'}
             </Badge>
           </div>
-          <p className="text-sm text-white/60">
+          <p className="text-sm text-muted-foreground">
             {new Date(invoice.date).toLocaleDateString()} -- ${invoice.amount.toFixed(2)}
           </p>
         </div>
@@ -780,7 +780,7 @@ function TransactionRow({ invoice }: { invoice: Invoice }) {
             href={`${explorerBaseUrl}/tx/${invoice.txHash}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-white/40 hover:text-white transition-colors"
+            className="text-muted-foreground hover:text-foreground transition-colors"
           >
             <ExternalLink className="w-4 h-4" />
           </a>
@@ -790,7 +790,7 @@ function TransactionRow({ invoice }: { invoice: Invoice }) {
             variant="ghost"
             size="sm"
             onClick={() => window.open(invoice.pdfUrl || invoice.hostedUrl, '_blank')}
-            className="text-white/60 hover:text-white"
+            className="text-muted-foreground hover:text-foreground"
           >
             <Download className="w-4 h-4" />
           </Button>

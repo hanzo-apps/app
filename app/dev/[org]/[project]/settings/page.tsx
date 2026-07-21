@@ -100,8 +100,8 @@ export default function ProjectSettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-black">
-        <HanzoLogo className="h-10 w-10 animate-pulse text-white" />
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <HanzoLogo className="h-10 w-10 animate-pulse text-foreground" />
       </div>
     );
   }
@@ -109,13 +109,13 @@ export default function ProjectSettingsPage() {
   if (!project) {
     return (
       <AppShell currentView="all-projects">
-        <div className="flex flex-1 items-center justify-center bg-black px-6 text-center">
+        <div className="flex flex-1 items-center justify-center bg-background px-6 text-center">
           <div className="max-w-sm">
-            <h1 className="text-lg font-medium text-white">Project not found</h1>
-            <p className="mt-2 text-sm text-white/50">
+            <h1 className="text-lg font-medium text-foreground">Project not found</h1>
+            <p className="mt-2 text-sm text-muted-foreground">
               <span className="font-mono">{org}/{slug}</span> isn’t available to your account.
             </p>
-            <Link href="/projects" className="mt-4 inline-block rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black hover:bg-white/90">
+            <Link href="/projects" className="mt-4 inline-block rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90">
               Back to projects
             </Link>
           </div>
@@ -130,19 +130,19 @@ export default function ProjectSettingsPage() {
 
   return (
     <AppShell currentView="all-projects">
-      <div className="flex-1 overflow-y-auto bg-black">
+      <div className="flex-1 overflow-y-auto bg-background">
         <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:py-10">
           {/* Header */}
           <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
             <div className="min-w-0">
               <Link
                 href="/projects"
-                className="mb-2 inline-flex items-center gap-1.5 text-xs text-white/40 transition-colors hover:text-white"
+                className="mb-2 inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
               >
                 <ArrowLeft className="h-3.5 w-3.5" /> Projects
               </Link>
               <div className="flex items-center gap-3">
-                <h1 className="truncate text-2xl font-medium tracking-tight text-white">
+                <h1 className="truncate text-2xl font-medium tracking-tight text-foreground">
                   {project.name}
                 </h1>
                 <span className={`inline-flex items-center gap-1 text-[11px] uppercase tracking-wide ${st.text}`}>
@@ -150,11 +150,11 @@ export default function ProjectSettingsPage() {
                   {st.label}
                 </span>
               </div>
-              <p className="mt-1 font-mono text-xs text-white/35">{org}/{slug}</p>
+              <p className="mt-1 font-mono text-xs text-muted-foreground">{org}/{slug}</p>
             </div>
             <Link
               href={builderLink(slug, org)}
-              className="inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-sm text-white/80 transition-colors hover:border-white/30 hover:text-white"
+              className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm text-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
             >
               <Pencil className="h-3.5 w-3.5" /> Open in builder
             </Link>
@@ -167,17 +167,17 @@ export default function ProjectSettingsPage() {
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-white outline-none focus:border-white/25"
+                  className="w-full rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground outline-none focus:border-foreground/25"
                 />
               </Field>
               <Field label="Framework">
                 <select
                   value={framework}
                   onChange={(e) => setFramework(e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-white outline-none focus:border-white/25"
+                  className="w-full rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground outline-none focus:border-foreground/25"
                 >
                   {FRAMEWORKS.map((f) => (
-                    <option key={f.value} value={f.value} className="bg-neutral-900">
+                    <option key={f.value} value={f.value} className="bg-card">
                       {f.label}
                     </option>
                   ))}
@@ -188,7 +188,7 @@ export default function ProjectSettingsPage() {
                   type="button"
                   onClick={save}
                   disabled={!dirty || saving}
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-medium text-black transition-all hover:bg-white/90 disabled:cursor-not-allowed disabled:bg-white/20 disabled:text-white/40"
+                  className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
                 >
                   {saving && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                   Save changes
@@ -200,31 +200,31 @@ export default function ProjectSettingsPage() {
             <Section icon={Globe} title="Domain">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-sm text-white/80">Live URL</p>
+                  <p className="text-sm text-foreground">Live URL</p>
                   {live ? (
                     <a href={live} target="_blank" rel="noopener noreferrer" className="mt-0.5 inline-flex items-center gap-1.5 font-mono text-xs text-green-400/90 hover:text-green-400">
                       {live.replace(/^https?:\/\//, "")}
                       <ExternalLink className="h-3 w-3" />
                     </a>
                   ) : (
-                    <p className="mt-0.5 text-xs text-white/40">Not published yet — publish from the builder to get a live URL.</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">Not published yet — publish from the builder to get a live URL.</p>
                   )}
                 </div>
               </div>
-              <p className="mt-3 border-t border-white/[0.06] pt-3 text-xs text-white/40">
+              <p className="mt-3 border-t border-border pt-3 text-xs text-muted-foreground">
                 Custom domains are coming to project settings. For now every published app is served at{" "}
-                <span className="font-mono text-white/60">{slug}.hanzo.app</span>.
+                <span className="font-mono text-muted-foreground">{slug}.hanzo.app</span>.
               </p>
             </Section>
 
             {/* Source (Git) */}
             <Section icon={GitBranch} title="Source repository">
-              <p className="text-sm text-white/55">
+              <p className="text-sm text-muted-foreground">
                 Every published app is versioned in Hanzo Git (S3-backed). Its source is committed and pushed on each publish.
               </p>
-              <div className="mt-3 flex items-center gap-2 rounded-lg border border-white/10 bg-black/40 px-3 py-2">
-                <GitBranch className="h-3.5 w-3.5 shrink-0 text-white/40" />
-                <code className="min-w-0 flex-1 truncate font-mono text-xs text-white/70">
+              <div className="mt-3 flex items-center gap-2 rounded-lg border border-border bg-background/40 px-3 py-2">
+                <GitBranch className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                <code className="min-w-0 flex-1 truncate font-mono text-xs text-foreground">
                   https://git.hanzo.ai/{org}/{slug}.git
                 </code>
                 <button
@@ -233,7 +233,7 @@ export default function ProjectSettingsPage() {
                     navigator.clipboard?.writeText(`https://git.hanzo.ai/${org}/${slug}.git`);
                     toast.success("Clone URL copied.");
                   }}
-                  className="shrink-0 rounded px-2 py-1 text-xs text-white/50 transition-colors hover:bg-white/10 hover:text-white"
+                  className="shrink-0 rounded px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                 >
                   Copy
                 </button>
@@ -242,9 +242,9 @@ export default function ProjectSettingsPage() {
 
             {/* Deployments — the ONE serve (S3 → <slug>.hanzo.app) */}
             <Section icon={Rocket} title="Deployments">
-              <p className="text-sm text-white/55">
+              <p className="text-sm text-muted-foreground">
                 Publishing deploys your site to Hanzo Cloud — live at{" "}
-                <span className="font-mono text-white/70">{slug}.hanzo.app</span> — and
+                <span className="font-mono text-foreground">{slug}.hanzo.app</span> — and
                 commits the source to Hanzo Git. Each publish is a new versioned deployment.
               </p>
               <DeploymentStatus slug={slug} />
@@ -252,12 +252,12 @@ export default function ProjectSettingsPage() {
 
             {/* Integrations */}
             <Section icon={Plug} title="Integrations & connections">
-              <p className="text-sm text-white/55">
+              <p className="text-sm text-muted-foreground">
                 Connect data sources, auth providers, and third-party services your app uses.
               </p>
               <Link
                 href="/connectors"
-                className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-white/80 transition-colors hover:border-white/20 hover:text-white"
+                className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-border bg-muted px-3.5 py-2 text-sm text-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
               >
                 <Plug className="h-3.5 w-3.5" /> Manage connectors
               </Link>
@@ -265,12 +265,12 @@ export default function ProjectSettingsPage() {
 
             {/* Base backend */}
             <Section icon={Database} title="Base backend">
-              <p className="text-sm text-white/55">
+              <p className="text-sm text-muted-foreground">
                 This app’s data plane — forms, records, and realtime run on its own Hanzo Base. It is provisioned on publish when the Base option is enabled.
               </p>
               <Link
                 href={builderLink(slug, org)}
-                className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2 text-sm text-white/80 transition-colors hover:border-white/20 hover:text-white"
+                className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-border bg-muted px-3.5 py-2 text-sm text-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
               >
                 <Database className="h-3.5 w-3.5" /> Open data & schema in builder
               </Link>
@@ -279,7 +279,7 @@ export default function ProjectSettingsPage() {
             {/* Danger */}
             <Section icon={Trash2} title="Danger zone" danger>
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-sm text-white/55">
+                <p className="text-sm text-muted-foreground">
                   Delete this project and its live site. This cannot be undone.
                 </p>
                 <button
@@ -311,11 +311,11 @@ function Section({
 }) {
   return (
     <section
-      className={`rounded-2xl border p-5 ${danger ? "border-red-500/20 bg-red-500/[0.02]" : "border-white/10 bg-white/[0.02]"}`}
+      className={`rounded-2xl border p-5 ${danger ? "border-red-500/20 bg-red-500/[0.02]" : "border-border bg-muted"}`}
     >
       <div className="mb-4 flex items-center gap-2">
-        <Icon className={`h-4 w-4 ${danger ? "text-red-400/70" : "text-white/40"}`} />
-        <h2 className="text-sm font-medium text-white">{title}</h2>
+        <Icon className={`h-4 w-4 ${danger ? "text-red-400/70" : "text-muted-foreground"}`} />
+        <h2 className="text-sm font-medium text-foreground">{title}</h2>
       </div>
       <div className="space-y-3">{children}</div>
     </section>
@@ -325,7 +325,7 @@ function Section({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-xs text-white/50">{label}</span>
+      <span className="mb-1.5 block text-xs text-muted-foreground">{label}</span>
       {children}
     </label>
   );
@@ -362,7 +362,7 @@ function DeploymentStatus({ slug }: { slug: string }) {
 
   if (state.kind === "loading") {
     return (
-      <div className="mt-3 flex items-center gap-2 text-xs text-white/40">
+      <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
         <Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading deploy history…
       </div>
     );
@@ -370,35 +370,35 @@ function DeploymentStatus({ slug }: { slug: string }) {
 
   if (state.kind === "none") {
     return (
-      <p className="mt-3 rounded-lg border border-white/[0.08] bg-black/40 px-3 py-2.5 text-xs text-white/45">
+      <p className="mt-3 rounded-lg border border-border bg-background/40 px-3 py-2.5 text-xs text-muted-foreground">
         Not deployed yet. Publish from the builder to go live at{" "}
-        <span className="font-mono text-white/60">{slug}.hanzo.app</span>.
+        <span className="font-mono text-muted-foreground">{slug}.hanzo.app</span>.
       </p>
     );
   }
 
   if (state.kind === "error") {
-    return <p className="mt-3 text-xs text-white/40">Couldn’t load deploy history.</p>;
+    return <p className="mt-3 text-xs text-muted-foreground">Couldn’t load deploy history.</p>;
   }
 
   const d = state.d;
   const c = deployStatusStyle(d.status);
   const when = d.updatedAt ? relativeTime(new Date(d.updatedAt * 1000).toISOString()) : null;
   return (
-    <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-white/10 bg-black/40 px-3 py-2.5">
+    <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-background/40 px-3 py-2.5">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <span className={`inline-flex items-center gap-1.5 text-xs ${c.text}`}>
           <Circle className={`h-2 w-2 ${c.dot} ${c.pulse ? "animate-pulse" : ""}`} />
           {c.label}
         </span>
-        {d.version > 0 && <span className="font-mono text-[11px] text-white/30">v{d.version}</span>}
-        {when && <span className="text-[11px] text-white/30">{when}</span>}
+        {d.version > 0 && <span className="font-mono text-[11px] text-muted-foreground">v{d.version}</span>}
+        {when && <span className="text-[11px] text-muted-foreground">{when}</span>}
       </div>
       <a
         href="https://console.hanzo.ai"
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-1.5 text-xs text-white/60 transition-colors hover:text-white"
+        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
       >
         History in console <ExternalLink className="h-3 w-3" />
       </a>
@@ -429,8 +429,8 @@ function deployStatusStyle(status: string): {
       };
     default:
       return {
-        dot: "fill-white/40",
-        text: "text-white/50",
+        dot: "fill-muted-foreground",
+        text: "text-muted-foreground",
         label: status ? status.charAt(0).toUpperCase() + status.slice(1) : "Unknown",
         pulse: false,
       };
