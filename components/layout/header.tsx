@@ -70,6 +70,18 @@ export default function Header() {
           <div className="hidden lg:flex items-center gap-8">
             <MeetHanzoMenu />
             <Link
+              href="/templates"
+              className="text-white/70 hover:text-white text-sm font-medium transition-colors"
+            >
+              Templates
+            </Link>
+            <Link
+              href="/resources"
+              className="text-white/70 hover:text-white text-sm font-medium transition-colors"
+            >
+              Resources
+            </Link>
+            <Link
               href="/pricing"
               className="text-white/70 hover:text-white text-sm font-medium transition-colors"
             >
@@ -290,6 +302,18 @@ export default function Header() {
                 </>
               ) : (
                 <>
+                  <button
+                    onClick={() => navigateTo("/templates")}
+                    className="w-full px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
+                  >
+                    Templates
+                  </button>
+                  <button
+                    onClick={() => navigateTo("/resources")}
+                    className="w-full px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
+                  >
+                    Resources
+                  </button>
                   <button
                     onClick={() => navigateTo("/install")}
                     className="w-full px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
