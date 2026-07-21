@@ -25,7 +25,7 @@ export function Fix({
           aria-pressed={active}
           aria-label="Fix design to match a reference"
           className={classNames("rounded-full", {
-            "text-neutral-400 hover:bg-white/10 hover:!text-neutral-200":
+            "text-muted-foreground hover:bg-accent hover:!text-foreground":
               !active,
           })}
         >
@@ -34,7 +34,7 @@ export function Fix({
       </TooltipTrigger>
       <TooltipContent
         align="start"
-        className="bg-neutral-950 text-xs text-neutral-200 py-1 px-2 rounded-md -translate-y-0.5 max-w-[220px]"
+        className="bg-card text-xs text-foreground py-1 px-2 rounded-md -translate-y-0.5 max-w-[220px]"
       >
         Fix the current design to match a reference. Attach reference images —
         drop or paste them here, or pick from your uploads — then send.

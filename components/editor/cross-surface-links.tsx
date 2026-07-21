@@ -50,7 +50,7 @@ function useProjectSlug(): string {
 }
 
 const linkClass =
-  "inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium text-neutral-400 transition-colors hover:bg-neutral-800 hover:text-white";
+  "inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground";
 
 /** Compact "Chat" + "Console" links for the linked project, shown in the
  *  builder header only when the builder was opened for a project. */

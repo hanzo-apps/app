@@ -318,7 +318,7 @@ export function GitSyncButton({
           variant="outline"
           size="sm"
           disabled={disabled}
-          className="!h-7 gap-1.5 px-2.5 text-xs !border-white/15 !bg-white/[0.04] !text-white transition-colors duration-150 hover:!bg-white/10"
+          className="!h-7 gap-1.5 px-2.5 text-xs !border-border !bg-white/[0.04] !text-foreground transition-colors duration-150 hover:!bg-muted"
           title="Push your project to Hanzo git, GitHub, or GitLab"
         >
           <UploadCloud className="size-3.5" />
@@ -330,14 +330,14 @@ export function GitSyncButton({
       </PopoverTrigger>
       <PopoverContent
         align="end"
-        className="w-[360px] !rounded-2xl !border-white/10 !bg-neutral-950 !p-0 text-white shadow-2xl shadow-black/60"
+        className="w-[360px] !rounded-2xl !border-border !bg-card !p-0 text-foreground shadow-2xl shadow-black/60"
       >
-        <div className="border-b border-white/10 p-5">
+        <div className="border-b border-border p-5">
           <div className="mb-1 flex items-center gap-2">
-            <UploadCloud className="h-[18px] w-[18px] text-white/70" />
+            <UploadCloud className="h-[18px] w-[18px] text-foreground" />
             <h3 className="text-[15px] font-medium">Push to a Git repository</h3>
           </div>
-          <p className="text-sm text-white/45">
+          <p className="text-sm text-muted-foreground">
             Push your generated project to a repo you own — one commit, on the
             default branch. Re-syncing pushes to the same repo.
           </p>
@@ -345,17 +345,17 @@ export function GitSyncButton({
 
         {needsConnect ? (
           <div className="flex flex-col items-center px-6 py-8 text-center">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/[0.04]">
-              <ProviderIcon className="h-6 w-6 text-white/80" />
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-border bg-white/[0.04]">
+              <ProviderIcon className="h-6 w-6 text-foreground" />
             </div>
             <p className="text-sm font-medium">Connect {providerName}</p>
-            <p className="mx-auto mt-1.5 max-w-xs text-sm text-white/45">
+            <p className="mx-auto mt-1.5 max-w-xs text-sm text-muted-foreground">
               Link {providerName} to your Hanzo account, then push your project.
             </p>
             <button
               type="button"
               onClick={connect}
-              className="mt-5 inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-medium text-black transition-colors hover:bg-white/90"
+              className="mt-5 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               <ProviderIcon className="h-4 w-4" />
               Connect {providerName}
@@ -363,7 +363,7 @@ export function GitSyncButton({
             <button
               type="button"
               onClick={() => setNeedsConnect(false)}
-              className="mt-3 text-xs text-white/40 hover:text-white/70"
+              className="mt-3 text-xs text-muted-foreground hover:text-foreground"
             >
               I&apos;ve connected — try again
             </button>
@@ -377,24 +377,24 @@ export function GitSyncButton({
               {result.created ? "Repository created" : "Commit pushed"}
             </p>
 
-            <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.02] p-3 text-left">
+            <div className="mt-3 rounded-xl border border-border bg-white/[0.02] p-3 text-left">
               <div className="flex items-center gap-2">
                 {(() => {
                   const I = providerMeta(result.provider || provider).Icon;
-                  return <I className="h-4 w-4 shrink-0 text-white/70" />;
+                  return <I className="h-4 w-4 shrink-0 text-foreground" />;
                 })()}
                 <a
                   href={result.htmlUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="min-w-0 flex-1 truncate text-sm text-white/85 hover:text-white"
+                  className="min-w-0 flex-1 truncate text-sm text-foreground hover:text-foreground"
                 >
                   {repoLabel(result.htmlUrl || result.repoUrl || "")}
                 </a>
                 <button
                   type="button"
                   onClick={() => copyUrl(result.htmlUrl || result.repoUrl || "")}
-                  className="text-white/40 transition-colors hover:text-white"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
                   title="Copy URL"
                 >
                   {copied ? (
@@ -407,14 +407,14 @@ export function GitSyncButton({
                   href={result.htmlUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white/40 transition-colors hover:text-white"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
                   title="Open repository"
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
                 </a>
               </div>
               {(result.branch || result.commitSha) && (
-                <div className="mt-2 flex items-center gap-1.5 font-mono text-xs text-white/35">
+                <div className="mt-2 flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
                   <GitBranch className="h-3 w-3" />
                   {result.branch}
                   {result.commitSha ? ` · ${result.commitSha.slice(0, 7)}` : ""}
@@ -443,7 +443,7 @@ export function GitSyncButton({
                   setResult(null);
                   setShowForm(true);
                 }}
-                className="rounded-lg px-3 py-1.5 text-xs text-white/50 transition-colors hover:text-white/80"
+                className="rounded-lg px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
               >
                 Push elsewhere
               </button>
@@ -451,28 +451,28 @@ export function GitSyncButton({
           </div>
         ) : linked && !showForm ? (
           <div className="p-5">
-            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3.5">
-              <div className="mb-1.5 flex items-center gap-1.5 text-[11px] uppercase tracking-wide text-white/35">
+            <div className="rounded-xl border border-border bg-white/[0.02] p-3.5">
+              <div className="mb-1.5 flex items-center gap-1.5 text-[11px] uppercase tracking-wide text-muted-foreground">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                 Linked repository
               </div>
               <div className="flex items-center gap-2">
                 {(() => {
                   const I = providerMeta(linked.provider).Icon;
-                  return <I className="h-4 w-4 shrink-0 text-white/70" />;
+                  return <I className="h-4 w-4 shrink-0 text-foreground" />;
                 })()}
                 <a
                   href={linked.htmlUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="min-w-0 flex-1 truncate text-sm font-medium text-white hover:text-white/80"
+                  className="min-w-0 flex-1 truncate text-sm font-medium text-foreground hover:text-foreground"
                 >
                   {linked.label}
                 </a>
                 <button
                   type="button"
                   onClick={() => copyUrl(linked.htmlUrl)}
-                  className="text-white/40 transition-colors hover:text-white"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
                   title="Copy URL"
                 >
                   {copied ? (
@@ -485,13 +485,13 @@ export function GitSyncButton({
                   href={linked.htmlUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white/40 transition-colors hover:text-white"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
                   title="Open repository"
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
                 </a>
               </div>
-              <div className="mt-1.5 flex items-center gap-1.5 font-mono text-xs text-white/35">
+              <div className="mt-1.5 flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
                 <GitBranch className="h-3 w-3" />
                 {linked.branch}
               </div>
@@ -529,7 +529,7 @@ export function GitSyncButton({
                 setShowForm(true);
                 setError(null);
               }}
-              className="mt-2 w-full text-center text-xs text-white/40 transition-colors hover:text-white/70"
+              className="mt-2 w-full text-center text-xs text-muted-foreground transition-colors hover:text-foreground"
             >
               Push to a different repository
             </button>
@@ -547,8 +547,8 @@ export function GitSyncButton({
                     onClick={() => setProvider(id)}
                     className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border text-sm transition-colors ${
                       activeP
-                        ? "border-white/25 bg-white/10 text-white"
-                        : "border-white/10 bg-transparent text-white/50 hover:border-white/20 hover:text-white/80"
+                        ? "border-border bg-muted text-foreground"
+                        : "border-border bg-transparent text-muted-foreground hover:border-border hover:text-foreground"
                     }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -559,12 +559,12 @@ export function GitSyncButton({
             </div>
 
             <div>
-              <label className="mb-1.5 block text-xs text-white/50">Repository name</label>
+              <label className="mb-1.5 block text-xs text-muted-foreground">Repository name</label>
               <Input
                 value={name}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
                 placeholder="my-awesome-site"
-                className="!border-white/12 !bg-black/40 !text-white placeholder:!text-white/30"
+                className="!border-border !bg-background/40 !text-foreground placeholder:!text-muted-foreground"
               />
             </div>
 
@@ -577,9 +577,9 @@ export function GitSyncButton({
               }}
             />
 
-            <label className="flex cursor-pointer items-center justify-between rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2.5">
-              <span className="flex items-center gap-2 text-sm text-white/80">
-                <Lock className="h-3.5 w-3.5 text-white/50" />
+            <label className="flex cursor-pointer items-center justify-between rounded-lg border border-border bg-white/[0.02] px-3 py-2.5">
+              <span className="flex items-center gap-2 text-sm text-foreground">
+                <Lock className="h-3.5 w-3.5 text-muted-foreground" />
                 Private repository
               </span>
               <Switch checked={isPrivate} onCheckedChange={setIsPrivate} />
@@ -608,13 +608,13 @@ export function GitSyncButton({
                   setShowForm(false);
                   setError(null);
                 }}
-                className="w-full truncate text-center text-xs text-white/40 transition-colors hover:text-white/70"
+                className="w-full truncate text-center text-xs text-muted-foreground transition-colors hover:text-foreground"
               >
                 Back to {linked.label}
               </button>
             )}
 
-            <p className="flex items-center gap-1 text-xs text-white/35">
+            <p className="flex items-center gap-1 text-xs text-muted-foreground">
               <ExternalLink className="size-3" />
               {provider === "hanzo"
                 ? "Pushes to your Hanzo account. Credentials stay server-side."
@@ -642,19 +642,19 @@ function CommitMessageField({
 }) {
   return (
     <div>
-      <label className="mb-1.5 block text-xs text-white/50">Commit message</label>
+      <label className="mb-1.5 block text-xs text-muted-foreground">Commit message</label>
       <div className="relative">
         <Input
           value={value}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
           placeholder="Describe this change"
-          className="!border-white/12 !bg-black/40 !text-white placeholder:!text-white/30"
+          className="!border-border !bg-background/40 !text-foreground placeholder:!text-muted-foreground"
         />
         {loading && (
-          <Loader2 className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 animate-spin text-white/40" />
+          <Loader2 className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 animate-spin text-muted-foreground" />
         )}
       </div>
-      <p className="mt-1 text-[10px] text-white/30">
+      <p className="mt-1 text-[10px] text-muted-foreground">
         AI-proposed from your edits — edit before pushing.
       </p>
     </div>

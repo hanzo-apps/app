@@ -59,19 +59,19 @@ export const UserMenu = ({ className }: { className?: string }) => {
         <DropdownMenuGroup>
           <Link href="/dashboard">
             <DropdownMenuItem>
-              <Home className="size-4 text-neutral-400" />
+              <Home className="size-4 text-muted-foreground" />
               Dashboard
             </DropdownMenuItem>
           </Link>
           <Link href="/chat">
             <DropdownMenuItem>
-              <MessageCircle className="size-4 text-neutral-400" />
+              <MessageCircle className="size-4 text-muted-foreground" />
               Chat
             </DropdownMenuItem>
           </Link>
           <Link href="/new">
             <DropdownMenuItem>
-              <CirclePlus className="size-4 text-neutral-400" />
+              <CirclePlus className="size-4 text-muted-foreground" />
               New Project
             </DropdownMenuItem>
           </Link>
@@ -83,19 +83,19 @@ export const UserMenu = ({ className }: { className?: string }) => {
         <DropdownMenuGroup>
           <Link href="/projects">
             <DropdownMenuItem>
-              <FolderCode className="size-4 text-neutral-400" />
+              <FolderCode className="size-4 text-muted-foreground" />
               My Projects
             </DropdownMenuItem>
           </Link>
           <Link href="/projects">
             <DropdownMenuItem>
-              <Import className="size-4 text-neutral-400" />
+              <Import className="size-4 text-muted-foreground" />
               Import Project
             </DropdownMenuItem>
           </Link>
           <Link href="/gallery">
             <DropdownMenuItem>
-              <Sparkles className="size-4 text-neutral-400" />
+              <Sparkles className="size-4 text-muted-foreground" />
               Gallery
             </DropdownMenuItem>
           </Link>
@@ -107,19 +107,19 @@ export const UserMenu = ({ className }: { className?: string }) => {
         <DropdownMenuGroup>
           <Link href="/settings">
             <DropdownMenuItem>
-              <Settings className="size-4 text-neutral-400" />
+              <Settings className="size-4 text-muted-foreground" />
               Settings
             </DropdownMenuItem>
           </Link>
           <Link href="/profile">
             <DropdownMenuItem>
-              <User className="size-4 text-neutral-400" />
+              <User className="size-4 text-muted-foreground" />
               Profile
             </DropdownMenuItem>
           </Link>
           <Link href="/billing">
             <DropdownMenuItem>
-              <DollarSign className="size-4 text-neutral-400" />
+              <DollarSign className="size-4 text-muted-foreground" />
               Billing
             </DropdownMenuItem>
           </Link>

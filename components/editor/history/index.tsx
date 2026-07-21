@@ -507,13 +507,13 @@ export function HistoryPanel({
   const nothing = working.length === 0 && commitsShown.length === 0;
 
   return (
-    <div className="absolute inset-0 z-20 flex flex-col bg-neutral-950">
+    <div className="absolute inset-0 z-20 flex flex-col bg-card">
       {/* Panel header: title · All|Bookmarks filter · close. Left gutter matches
           the top toolbar (px-3 lg:px-4) so "History" lines up under the org
           switcher instead of sitting inset from it. */}
       <div className="flex items-center gap-2 px-3 lg:px-4 pb-2 pt-3">
-        <RotateCcw className="size-4 text-white/50" />
-        <span className="text-[13px] font-medium text-white/85">History</span>
+        <RotateCcw className="size-4 text-muted-foreground" />
+        <span className="text-[13px] font-medium text-foreground">History</span>
         <div className="ml-auto flex items-center gap-1.5">
           <div className="flex items-center gap-0.5 rounded-lg bg-white/[0.03] p-0.5 ring-1 ring-white/10">
             {(["all", "bookmarks"] as const).map((f) => (
@@ -523,7 +523,7 @@ export function HistoryPanel({
                 onClick={() => setFilter(f)}
                 className={classNames(
                   "rounded-md px-2 py-1 text-[11px] font-medium transition-colors",
-                  filter === f ? "bg-white/10 text-white shadow-sm" : "text-white/50 hover:bg-white/[0.06] hover:text-white/90",
+                  filter === f ? "bg-muted text-foreground shadow-sm" : "text-muted-foreground hover:bg-white/[0.06] hover:text-foreground",
                 )}
               >
                 {f === "all" ? "All" : "Bookmarks"}
@@ -535,7 +535,7 @@ export function HistoryPanel({
               type="button"
               onClick={onClose}
               title="Close history"
-              className="grid size-7 place-items-center rounded-md text-white/40 transition-colors hover:bg-white/10 hover:text-white"
+              className="grid size-7 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
               <X className="size-4" />
             </button>
@@ -553,7 +553,7 @@ export function HistoryPanel({
           <button
             type="button"
             onClick={exitPreview}
-            className="shrink-0 rounded-md bg-white/10 px-2 py-1 font-medium text-white transition-colors hover:bg-white/20"
+            className="shrink-0 rounded-md bg-muted px-2 py-1 font-medium text-foreground transition-colors hover:bg-white/20"
           >
             Back to working
           </button>
@@ -571,7 +571,7 @@ export function HistoryPanel({
                   <button
                     type="button"
                     onClick={openGitSync}
-                    className="inline-flex items-center gap-1 rounded-md px-1.5 py-1 text-[11px] font-medium text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+                    className="inline-flex items-center gap-1 rounded-md px-1.5 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                     title="Commit & push these changes"
                   >
                     <UploadCloud className="size-3" />
@@ -586,12 +586,12 @@ export function HistoryPanel({
               <section>
                 <GroupHeader label="Commits" hint={repo ? `${repo.provider}/${repo.branch}` : ""} />
                 {commitsLoading && commitsShown.length === 0 ? (
-                  <div className="flex items-center gap-2 px-2 py-6 text-xs text-white/40">
+                  <div className="flex items-center gap-2 px-2 py-6 text-xs text-muted-foreground">
                     <Loader2 className="size-3.5 animate-spin motion-reduce:animate-none" />
                     Loading commits…
                   </div>
                 ) : commitsShown.length === 0 ? (
-                  <div className="px-2 py-6 text-xs text-white/40">
+                  <div className="px-2 py-6 text-xs text-muted-foreground">
                     {showBookmarksOnly
                       ? "No bookmarked commits."
                       : logSupported
@@ -652,13 +652,13 @@ function RevCard({
         isPreviewing
           ? "border-amber-400/30 bg-amber-400/[0.04]"
           : isActive
-            ? "border-white/20 bg-white/[0.05]"
-            : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]",
+            ? "border-border bg-white/[0.05]"
+            : "border-border bg-white/[0.02] hover:border-border hover:bg-white/[0.04]",
       )}
     >
       <div className="flex items-start gap-2">
         {Icon ? (
-          <Icon className="mt-0.5 size-3.5 shrink-0 text-white/55" />
+          <Icon className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
         ) : (
           <span
             className={classNames("mt-1 size-1.5 shrink-0 rounded-full", isActive ? "bg-white" : "bg-white/30")}
@@ -666,19 +666,19 @@ function RevCard({
           />
         )}
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[13px] leading-snug text-white/85">{rev.title}</p>
-          <div className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] text-white/35">
+          <p className="truncate text-[13px] leading-snug text-foreground">{rev.title}</p>
+          <div className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] text-muted-foreground">
             <span>{rel(rev.at)}</span>
             {isCommit && (
               <>
-                <span className="text-white/20">·</span>
-                <span className="truncate text-white/30">{rev.author}</span>
-                <span className="text-white/20">·</span>
-                <span className="text-white/30">{rev.shortSha}</span>
+                <span className="text-muted-foreground">·</span>
+                <span className="truncate text-muted-foreground">{rev.author}</span>
+                <span className="text-muted-foreground">·</span>
+                <span className="text-muted-foreground">{rev.shortSha}</span>
               </>
             )}
             {rev.kind === "checkpoint" && (
-              <span className="uppercase tracking-wide text-white/30">· {rev.cpKind === "manual" ? "save" : rev.cpKind}</span>
+              <span className="uppercase tracking-wide text-muted-foreground">· {rev.cpKind === "manual" ? "save" : rev.cpKind}</span>
             )}
           </div>
         </div>
@@ -689,7 +689,7 @@ function RevCard({
           aria-pressed={isBookmarked}
           className={classNames(
             "grid size-6 shrink-0 place-items-center rounded-md transition-colors",
-            isBookmarked ? "text-white/85" : "text-white/35 hover:text-white/80",
+            isBookmarked ? "text-foreground" : "text-muted-foreground hover:text-foreground",
           )}
         >
           {isBookmarked ? <BookmarkCheck className="size-3.5" /> : <Bookmark className="size-3.5" />}
@@ -722,14 +722,14 @@ function RevCard({
               <button
                 type="button"
                 title="More"
-                className="grid size-6 place-items-center rounded-md text-white/40 transition hover:bg-white/10 hover:text-white data-[state=open]:bg-white/10"
+                className="grid size-6 place-items-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground data-[state=open]:bg-muted"
               >
                 <MoreVertical className="size-3.5" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="min-w-[190px] !rounded-xl !border-white/10 !bg-[#0a0a0a] !p-1 text-white shadow-2xl shadow-black/60"
+              className="min-w-[190px] !rounded-xl !border-border !bg-card !p-1 text-foreground shadow-2xl shadow-black/60"
             >
               <MenuItem onSelect={onRestore}>
                 <Undo2 className="size-3.5" />
@@ -780,7 +780,7 @@ function CardButton({
       disabled={disabled}
       className={classNames(
         "inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium transition-colors disabled:opacity-50",
-        active ? "bg-amber-400/15 text-amber-100" : "bg-white/[0.04] text-white/60 hover:bg-white/10 hover:text-white",
+        active ? "bg-amber-400/15 text-amber-100" : "bg-white/[0.04] text-muted-foreground hover:bg-muted hover:text-foreground",
       )}
     >
       {children}
@@ -791,8 +791,8 @@ function CardButton({
 function GroupHeader({ label, hint, children }: { label: string; hint?: string; children?: ReactNode }) {
   return (
     <div className="flex items-center gap-2 px-1 pb-1.5 pt-1">
-      <span className="text-[10px] font-medium uppercase tracking-wide text-white/40">{label}</span>
-      {hint && <span className="font-mono text-[10px] text-white/25">{hint}</span>}
+      <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{label}</span>
+      {hint && <span className="font-mono text-[10px] text-muted-foreground">{hint}</span>}
       {children && <span className="ml-auto">{children}</span>}
     </div>
   );
@@ -802,7 +802,7 @@ function MenuItem({ onSelect, children }: { onSelect: () => void; children: Reac
   return (
     <DropdownMenuItem
       onSelect={onSelect}
-      className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-xs text-white/80 focus:!bg-white/10 focus:!text-white"
+      className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-xs text-foreground focus:!bg-muted focus:!text-foreground"
     >
       {children}
     </DropdownMenuItem>
@@ -811,18 +811,18 @@ function MenuItem({ onSelect, children }: { onSelect: () => void; children: Reac
 
 function ConnectRepoCta() {
   return (
-    <div className="mt-2 rounded-xl border border-white/10 bg-white/[0.02] p-3.5">
-      <div className="mb-1 flex items-center gap-1.5 text-[13px] font-medium text-white/85">
-        <GitBranch className="size-3.5 text-white/50" />
+    <div className="mt-2 rounded-xl border border-border bg-white/[0.02] p-3.5">
+      <div className="mb-1 flex items-center gap-1.5 text-[13px] font-medium text-foreground">
+        <GitBranch className="size-3.5 text-muted-foreground" />
         Keep full version history
       </div>
-      <p className="text-xs text-white/45">
+      <p className="text-xs text-muted-foreground">
         Connect a repository to record every change as a git commit — a durable timeline you can preview and review.
       </p>
       <button
         type="button"
         onClick={openGitSync}
-        className="mt-2.5 inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-black transition-colors hover:bg-white/90"
+        className="mt-2.5 inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
       >
         <UploadCloud className="size-3.5" />
         Connect a repo
@@ -834,9 +834,9 @@ function ConnectRepoCta() {
 function EmptyState({ bookmarks }: { bookmarks: boolean }) {
   return (
     <div className="flex flex-col items-center justify-center gap-2 px-4 py-16 text-center">
-      <Bookmark className="size-7 text-white/20" />
-      <p className="text-[13px] font-medium text-white/70">{bookmarks ? "No bookmarks yet" : "No revisions yet"}</p>
-      <p className="max-w-[220px] text-xs text-white/35">
+      <Bookmark className="size-7 text-muted-foreground" />
+      <p className="text-[13px] font-medium text-foreground">{bookmarks ? "No bookmarks yet" : "No revisions yet"}</p>
+      <p className="max-w-[220px] text-xs text-muted-foreground">
         {bookmarks
           ? "Bookmark any revision to pin it here for quick access."
           : "Your edits and commits appear here — preview or restore any version."}

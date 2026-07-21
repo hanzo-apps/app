@@ -793,12 +793,12 @@ export function AskAI({
       {messageQueue.length > 0 && (
         <div className="mb-4 space-y-2">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs text-white font-medium">
+            <span className="text-xs text-foreground font-medium">
               Queued Messages ({messageQueue.length})
             </span>
             <button
               onClick={() => setMessageQueue([])}
-              className="text-xs text-neutral-400 hover:text-white underline"
+              className="text-xs text-muted-foreground hover:text-foreground underline"
             >
               Clear all
             </button>
@@ -807,16 +807,16 @@ export function AskAI({
             {messageQueue.map((msg, index) => (
               <div
                 key={msg.id}
-                className="relative bg-neutral-800/50 border border-neutral-700 rounded-lg p-3 animate-slideIn"
+                className="relative bg-muted/50 border border-border rounded-lg p-3 animate-slideIn"
                 style={{
                   animationDelay: `${index * 0.05}s`,
                 }}
               >
                 <div className="flex items-start justify-between gap-2">
-                  <p className="text-sm text-neutral-300 flex-1">{msg.message}</p>
+                  <p className="text-sm text-muted-foreground flex-1">{msg.message}</p>
                   <button
                     onClick={() => setMessageQueue(prev => prev.filter(m => m.id !== msg.id))}
-                    className="text-neutral-500 hover:text-neutral-300"
+                    className="text-muted-foreground hover:text-foreground"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -824,12 +824,12 @@ export function AskAI({
                   </button>
                 </div>
                 <div className="flex items-center gap-2 mt-2">
-                  <span className="text-xs text-neutral-500">
+                  <span className="text-xs text-muted-foreground">
                     {msg.timestamp.toLocaleTimeString()}
                   </span>
                   {index === 0 && (
-                    <span className="text-xs text-neutral-300 flex items-center gap-1">
-                      <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 bg-foreground rounded-full animate-pulse" />
                       Next in queue
                     </span>
                   )}
@@ -864,32 +864,32 @@ export function AskAI({
             {remixPending.map((p) => (
               <div
                 key={p.name}
-                className="flex shrink-0 items-center gap-1.5 rounded-full border border-neutral-700 bg-white/[0.03] px-2.5 py-1 text-xs"
+                className="flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-muted/50 px-2.5 py-1 text-xs"
               >
-                <span className="whitespace-nowrap text-neutral-200">🔥 {p.name}</span>
+                <span className="whitespace-nowrap text-foreground">🔥 {p.name}</span>
                 {p.skippable !== false && (
                   <>
                     <button
                       type="button"
                       onClick={() => skipIntegration(p.name)}
-                      className="text-neutral-500 transition-colors hover:text-neutral-300"
+                      className="text-muted-foreground transition-colors hover:text-foreground"
                     >
                       Skip
                     </button>
-                    <span className="text-neutral-700">·</span>
+                    <span className="text-muted-foreground">·</span>
                   </>
                 )}
                 <button
                   type="button"
                   onClick={() => connectIntegration(p)}
-                  className="font-medium text-white hover:underline"
+                  className="font-medium text-foreground hover:underline"
                 >
                   Connect
                 </button>
               </div>
             ))}
           </div>
-          <p className="text-[11px] text-neutral-500">
+          <p className="text-[11px] text-muted-foreground">
             Tip: switch from Build to Plan mode to brainstorm or debug without
             code changes.
           </p>
@@ -907,7 +907,7 @@ export function AskAI({
                 key={s}
                 type="button"
                 onClick={() => runSuggestion(s)}
-                className="shrink-0 whitespace-nowrap rounded-full border border-neutral-700 bg-white/[0.03] px-3 py-1 text-xs text-neutral-300 transition-colors hover:border-neutral-500 hover:bg-white/[0.06] hover:text-white"
+                className="shrink-0 whitespace-nowrap rounded-full border border-border bg-muted/50 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-ring hover:bg-muted hover:text-foreground"
               >
                 {s}
               </button>
@@ -917,7 +917,7 @@ export function AskAI({
             type="button"
             aria-label="Dismiss suggestions"
             onClick={() => setSuggestionsDismissed(true)}
-            className="shrink-0 rounded-full p-1 text-neutral-500 transition-colors hover:bg-white/10 hover:text-neutral-300"
+            className="shrink-0 rounded-full p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
             <X className="size-3.5" />
           </button>
@@ -925,7 +925,7 @@ export function AskAI({
       )}
 
       <div
-        className="relative bg-neutral-900 border border-neutral-700 rounded-2xl ring-2 focus-within:ring-neutral-500/25 focus-within:border-neutral-600 ring-transparent z-10 w-full group"
+        className="relative bg-card border border-border rounded-2xl ring-2 focus-within:ring-ring/25 focus-within:border-ring ring-transparent z-10 w-full group"
         onDragOver={handleDragOver}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
@@ -951,11 +951,11 @@ export function AskAI({
           }}
           className="absolute -top-1.5 left-1/2 z-20 flex h-3 w-10 -translate-x-1/2 cursor-ns-resize items-center justify-center rounded-full opacity-0 transition-opacity duration-150 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none"
         >
-          <span className="h-0.5 w-6 rounded-full bg-neutral-500" />
+          <span className="h-0.5 w-6 rounded-full bg-muted-foreground" />
         </button>
         {isDragging && (
-          <div className="absolute inset-0 z-30 rounded-2xl border-2 border-dashed border-neutral-500 bg-neutral-900/80 flex items-center justify-center pointer-events-none">
-            <p className="text-sm text-neutral-200 flex items-center gap-2">
+          <div className="absolute inset-0 z-30 rounded-2xl border-2 border-dashed border-muted-foreground bg-card/80 flex items-center justify-center pointer-events-none">
+            <p className="text-sm text-foreground flex items-center gap-2">
               <ImagePlus className="size-4" />
               Drop images to attach as references
             </p>
@@ -980,16 +980,16 @@ export function AskAI({
         <div className="w-full relative flex items-center justify-between">
           {(isAiWorking || isUploading) && (
             <div className="absolute top-0 left-4 right-12 h-8 z-10 flex items-center justify-between pointer-events-none">
-              <div className="flex items-center justify-start gap-2 bg-neutral-800 px-2 py-1 rounded-md">
+              <div className="flex items-center justify-start gap-2 bg-muted px-2 py-1 rounded-md">
                 <Loading overlay={false} className="!size-3 opacity-50" />
-                <p className="text-neutral-400 text-xs">
+                <p className="text-muted-foreground text-xs">
                   {isUploading ? (
                     "Uploading images..."
                   ) : isAiWorking && !isSameHtml ? (
                     <>
                       AI is working...
                       {messageQueue.length > 0 && (
-                        <span className="ml-1 text-neutral-400">
+                        <span className="ml-1 text-muted-foreground">
                           ({messageQueue.length} queued)
                         </span>
                       )}
@@ -1037,7 +1037,7 @@ export function AskAI({
                       ].map((char, index) => (
                         <span
                           key={index}
-                          className="bg-gradient-to-r from-neutral-100 to-neutral-300 bg-clip-text text-transparent animate-pulse"
+                          className="bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent animate-pulse"
                           style={{
                             animationDelay: `${index * 0.1}s`,
                             animationDuration: "1.3s",
@@ -1048,7 +1048,7 @@ export function AskAI({
                         </span>
                       ))}
                       {messageQueue.length > 0 && (
-                        <span className="ml-2 text-neutral-400">
+                        <span className="ml-2 text-muted-foreground">
                           ({messageQueue.length} queued)
                         </span>
                       )}
@@ -1063,7 +1063,7 @@ export function AskAI({
             disabled={isUploading}
             style={{ height: composerH, maxHeight: "40dvh" }}
             className={classNames(
-              "w-full bg-transparent text-sm outline-none text-white placeholder:text-neutral-400 p-4 resize-none overflow-y-auto",
+              "w-full bg-transparent text-sm outline-none text-foreground placeholder:text-muted-foreground p-4 resize-none overflow-y-auto",
               {
                 "!pt-2.5": selectedElement && !isAiWorking,
                 "opacity-100": isAiWorking && !isUploading,
@@ -1132,7 +1132,7 @@ export function AskAI({
                       setIsEditableModeEnabled?.(!isEditableModeEnabled);
                     }}
                     className={classNames("h-[28px]", {
-                      "text-neutral-400 hover:bg-white/10 hover:!text-neutral-200":
+                      "text-muted-foreground hover:bg-accent hover:!text-foreground":
                         !isEditableModeEnabled,
                     })}
                     aria-label="Select an element to edit"
@@ -1142,7 +1142,7 @@ export function AskAI({
                 </TooltipTrigger>
                 <TooltipContent
                   align="start"
-                  className="bg-neutral-950 text-xs text-neutral-200 py-1 px-2 rounded-md -translate-y-0.5"
+                  className="bg-card text-xs text-foreground py-1 px-2 rounded-md -translate-y-0.5"
                 >
                   Select an element on the page to ask Hanzo edit it
                   directly.
@@ -1157,7 +1157,7 @@ export function AskAI({
             <div
               role="group"
               aria-label="Composer mode"
-              className="flex shrink-0 items-center rounded-full border border-neutral-700 bg-neutral-900/60 p-0.5 text-xs"
+              className="flex shrink-0 items-center rounded-full border border-border bg-card/60 p-0.5 text-xs"
             >
               {(["build", "plan"] as const).map((m) => (
                 <button
@@ -1171,10 +1171,10 @@ export function AskAI({
                   }
                   onClick={() => setMode(m)}
                   className={classNames(
-                    "rounded-full px-2.5 py-1 font-medium capitalize transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
+                    "rounded-full px-2.5 py-1 font-medium capitalize transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     mode === m
-                      ? "bg-white text-black"
-                      : "text-neutral-400 hover:text-neutral-200"
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground"
                   )}
                 >
                   {m}
@@ -1184,13 +1184,13 @@ export function AskAI({
             {isSmartRouting(model) && routedModel && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <span className="text-xs text-neutral-400 px-2 py-1 rounded-md bg-neutral-800 truncate max-w-[10rem]">
+                  <span className="text-xs text-muted-foreground px-2 py-1 rounded-md bg-muted truncate max-w-[10rem]">
                     Routed: {routedModel}
                   </span>
                 </TooltipTrigger>
                 <TooltipContent
                   align="end"
-                  className="bg-neutral-950 text-xs text-neutral-200 py-1 px-2 rounded-md -translate-y-0.5"
+                  className="bg-card text-xs text-foreground py-1 px-2 rounded-md -translate-y-0.5"
                 >
                   Smart routing sent this request to {routedModel}. You&apos;re
                   billed as what served you.

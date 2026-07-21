@@ -28,10 +28,10 @@ export default function ProjectsPage() {
 
   if (loading || !user) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-black">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
-          <HanzoLogo className="mx-auto mb-4 h-12 w-12 animate-pulse text-white" />
-          <p className="text-white/40">
+          <HanzoLogo className="mx-auto mb-4 h-12 w-12 animate-pulse text-foreground" />
+          <p className="text-muted-foreground">
             {loading ? "Loading your projects…" : "Redirecting to login…"}
           </p>
         </div>
@@ -41,9 +41,9 @@ export default function ProjectsPage() {
 
   return (
     <AppShell currentView="all-projects">
-      <div className="flex-1 overflow-y-auto bg-black">
+      <div className="flex-1 overflow-y-auto bg-background">
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:py-10">
-          <h1 className="mb-6 text-2xl font-medium tracking-tight text-white">
+          <h1 className="mb-6 text-2xl font-medium tracking-tight text-foreground">
             Projects
           </h1>
           {/* Sidebar already renders the org switcher — suppress the duplicate in

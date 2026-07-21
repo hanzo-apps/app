@@ -19,7 +19,7 @@ export const SelectedHtmlElement = ({
   return (
     <Collapsible
       className={classNames(
-        "border border-neutral-700 rounded-xl p-1.5 pr-3 max-w-max hover:brightness-110 transition-all duration-200 ease-in-out !cursor-pointer",
+        "border border-border rounded-xl p-1.5 pr-3 max-w-max hover:brightness-110 transition-all duration-200 ease-in-out !cursor-pointer",
         {
           "!cursor-pointer": !isAiWorking,
           "opacity-50 !cursor-not-allowed": isAiWorking,
@@ -33,16 +33,16 @@ export const SelectedHtmlElement = ({
       }}
     >
       <CollapsibleTrigger className="flex items-center justify-start gap-2 cursor-pointer">
-        <div className="rounded-lg bg-neutral-700 size-6 flex items-center justify-center">
-          <Code className="text-neutral-300 size-3.5" />
+        <div className="rounded-lg bg-muted size-6 flex items-center justify-center">
+          <Code className="text-muted-foreground size-3.5" />
         </div>
-        <p className="text-sm font-medium text-neutral-300">
+        <p className="text-sm font-medium text-muted-foreground">
           {element.textContent?.trim().split(/\s+/)[0]} {htmlTagToText(tagName)}
         </p>
-        <XCircle className="text-neutral-300 size-4" />
+        <XCircle className="text-muted-foreground size-4" />
       </CollapsibleTrigger>
-      {/* <CollapsibleContent className="border-t border-neutral-700 pt-2 mt-2">
-        <div className="text-xs text-neutral-400">
+      {/* <CollapsibleContent className="border-t border-border pt-2 mt-2">
+        <div className="text-xs text-muted-foreground">
           <p>
             <span className="font-medium">ID:</span> {element.id || "No ID"}
           </p>

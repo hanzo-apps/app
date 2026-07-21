@@ -160,18 +160,18 @@ export function RevisionDetails({
   };
 
   return (
-    <div className="absolute inset-0 z-30 flex flex-col bg-neutral-950 text-white">
+    <div className="absolute inset-0 z-30 flex flex-col bg-card text-foreground">
       {/* Header: back · title · Timeline|Changes · close */}
-      <div className="flex items-center gap-2 border-b border-white/10 px-3 py-2">
+      <div className="flex items-center gap-2 border-b border-border px-3 py-2">
         <button
           type="button"
           onClick={onClose}
-          className="inline-flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-white/55 transition-colors hover:bg-white/10 hover:text-white"
+          className="inline-flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
           <ArrowLeft className="size-3.5" />
           Back to latest
         </button>
-        <span className="ml-1 truncate text-[13px] font-medium text-white/85">Details</span>
+        <span className="ml-1 truncate text-[13px] font-medium text-foreground">Details</span>
         <div className="ml-auto flex items-center gap-1.5">
           <div className="flex items-center gap-0.5 rounded-lg bg-white/[0.03] p-0.5 ring-1 ring-white/10">
             {(["timeline", "changes"] as const).map((v) => (
@@ -182,8 +182,8 @@ export function RevisionDetails({
                 className={classNames(
                   "rounded-md px-2.5 py-1 text-xs font-medium capitalize transition-colors",
                   view === v
-                    ? "bg-white/10 text-white shadow-sm"
-                    : "text-white/50 hover:bg-white/[0.06] hover:text-white/90",
+                    ? "bg-muted text-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-white/[0.06] hover:text-foreground",
                 )}
               >
                 {v}
@@ -194,7 +194,7 @@ export function RevisionDetails({
             type="button"
             onClick={onClose}
             title="Close details"
-            className="grid size-7 place-items-center rounded-md text-white/40 transition-colors hover:bg-white/10 hover:text-white"
+            className="grid size-7 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             <X className="size-4" />
           </button>
@@ -224,17 +224,17 @@ function Changes({
 }) {
   if (files === "loading") {
     return (
-      <div className="flex items-center gap-2 px-4 py-8 text-sm text-white/40">
+      <div className="flex items-center gap-2 px-4 py-8 text-sm text-muted-foreground">
         <Loader2 className="size-4 animate-spin motion-reduce:animate-none" />
         Loading changes…
       </div>
     );
   }
   if (files === "error") {
-    return <p className="px-4 py-8 text-sm text-white/40">Couldn&apos;t load the diff for this revision.</p>;
+    return <p className="px-4 py-8 text-sm text-muted-foreground">Couldn&apos;t load the diff for this revision.</p>;
   }
   if (files.length === 0) {
-    return <p className="px-4 py-8 text-sm text-white/40">No file changes in this revision.</p>;
+    return <p className="px-4 py-8 text-sm text-muted-foreground">No file changes in this revision.</p>;
   }
   return (
     <div className="space-y-2 p-3">
@@ -257,7 +257,7 @@ function FileCard({
   const [open, setOpen] = useState(false);
   const stat = useMemo(() => diffStat(file.lines), [file.lines]);
   return (
-    <div className="overflow-hidden rounded-xl border border-white/10 bg-white/[0.02]">
+    <div className="overflow-hidden rounded-xl border border-border bg-white/[0.02]">
       <div className="flex items-center gap-2 px-3 py-2">
         <button
           type="button"
@@ -266,13 +266,13 @@ function FileCard({
         >
           <ChevronRight
             className={classNames(
-              "size-3.5 shrink-0 text-white/30 transition-transform duration-150 motion-reduce:transition-none",
+              "size-3.5 shrink-0 text-muted-foreground transition-transform duration-150 motion-reduce:transition-none",
               open && "rotate-90",
             )}
           />
           <StatusBadge status={file.status} />
-          <span className="truncate font-mono text-xs text-white/80">{file.path}</span>
-          <span className="ml-1 shrink-0 font-mono text-[10px] text-white/30">
+          <span className="truncate font-mono text-xs text-foreground">{file.path}</span>
+          <span className="ml-1 shrink-0 font-mono text-[10px] text-muted-foreground">
             <span className="text-emerald-400/80">+{stat.added}</span>{" "}
             <span className="text-red-400/80">−{stat.removed}</span>
           </span>
@@ -309,13 +309,13 @@ function FileCard({
 function DiffView({ lines }: { lines: DiffLine[] }) {
   if (lines.length === 0) {
     return (
-      <div className="border-t border-white/[0.06] px-3 py-2 font-mono text-[11px] text-white/35">
+      <div className="border-t border-border px-3 py-2 font-mono text-[11px] text-muted-foreground">
         No inline diff available — view the file to see its contents.
       </div>
     );
   }
   return (
-    <div className="overflow-x-auto border-t border-white/[0.06] bg-black/30">
+    <div className="overflow-x-auto border-t border-border bg-background/30">
       <table className="w-full border-collapse font-mono text-[11px] leading-relaxed">
         <tbody>
           {lines.map((l, i) => (
@@ -327,10 +327,10 @@ function DiffView({ lines }: { lines: DiffLine[] }) {
                 l.type === "hunk" && "bg-white/[0.04]",
               )}
             >
-              <td className="select-none border-r border-white/[0.06] px-2 text-right text-white/25 tabular-nums">
+              <td className="select-none border-r border-border px-2 text-right text-muted-foreground tabular-nums">
                 {l.oldNo ?? ""}
               </td>
-              <td className="select-none border-r border-white/[0.06] px-2 text-right text-white/25 tabular-nums">
+              <td className="select-none border-r border-border px-2 text-right text-muted-foreground tabular-nums">
                 {l.newNo ?? ""}
               </td>
               <td
@@ -338,11 +338,11 @@ function DiffView({ lines }: { lines: DiffLine[] }) {
                   "w-full whitespace-pre px-2",
                   l.type === "add" && "text-emerald-200/90",
                   l.type === "del" && "text-red-200/90",
-                  l.type === "hunk" && "text-white/40",
-                  l.type === "ctx" && "text-white/55",
+                  l.type === "hunk" && "text-muted-foreground",
+                  l.type === "ctx" && "text-muted-foreground",
                 )}
               >
-                <span className="select-none text-white/30">
+                <span className="select-none text-muted-foreground">
                   {l.type === "add" ? "+" : l.type === "del" ? "−" : l.type === "hunk" ? "" : " "}
                 </span>
                 {l.text}
@@ -370,7 +370,7 @@ function Timeline({ rev, commit }: { rev: DetailsRev; commit: GitCommit | null }
             href={rev.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-white/70 hover:text-white"
+            className="inline-flex items-center gap-1 text-foreground hover:text-foreground"
           >
             View on provider <ExternalLink className="size-3" />
           </a>
@@ -386,30 +386,30 @@ function Timeline({ rev, commit }: { rev: DetailsRev; commit: GitCommit | null }
 
   return (
     <div className="space-y-4 p-4">
-      <div className="flex items-center gap-2 text-[13px] font-medium text-white/85">
-        <GitCommitHorizontal className="size-4 text-white/50" />
+      <div className="flex items-center gap-2 text-[13px] font-medium text-foreground">
+        <GitCommitHorizontal className="size-4 text-muted-foreground" />
         {rev.title}
       </div>
       <dl className="space-y-1.5">
         {rows.map((r) => (
           <div key={r.label} className="flex gap-3 text-xs">
-            <dt className="w-16 shrink-0 text-white/35">{r.label}</dt>
-            <dd className="min-w-0 flex-1 text-white/75">{r.value}</dd>
+            <dt className="w-16 shrink-0 text-muted-foreground">{r.label}</dt>
+            <dd className="min-w-0 flex-1 text-foreground">{r.value}</dd>
           </div>
         ))}
       </dl>
       {fullMessage && (
         <div>
-          <div className="mb-1 flex items-center gap-1.5 text-[11px] uppercase tracking-wide text-white/35">
+          <div className="mb-1 flex items-center gap-1.5 text-[11px] uppercase tracking-wide text-muted-foreground">
             <FileText className="size-3" />
             Message
           </div>
-          <pre className="whitespace-pre-wrap rounded-lg border border-white/10 bg-white/[0.02] p-3 font-mono text-[11px] leading-relaxed text-white/70">
+          <pre className="whitespace-pre-wrap rounded-lg border border-border bg-white/[0.02] p-3 font-mono text-[11px] leading-relaxed text-foreground">
             {fullMessage}
           </pre>
         </div>
       )}
-      <p className="text-[11px] text-white/30">
+      <p className="text-[11px] text-muted-foreground">
         Step-by-step agent activity for a revision appears here as the builder records it.
       </p>
     </div>
@@ -422,7 +422,7 @@ function StatusBadge({ status }: { status: GitCommitFile["status"] }) {
       ? "border-emerald-400/20 text-emerald-300/90"
       : status === "removed"
         ? "border-red-400/20 text-red-300/90"
-        : "border-white/15 text-white/60";
+        : "border-border text-muted-foreground";
   return (
     <span
       className={classNames(
@@ -449,7 +449,7 @@ function IconBtn({
       type="button"
       title={title}
       onClick={onClick}
-      className="grid size-6 place-items-center rounded-md text-white/40 transition-colors hover:bg-white/10 hover:text-white"
+      className="grid size-6 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
     >
       {children}
     </button>
