@@ -3,7 +3,9 @@
 import { ReactNode, useEffect, useMemo, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { useIam } from '@hanzo/iam/react';
-import { AnalyticsProvider, useAnalytics, usePageview } from '@hanzo/capture/react';
+import { createAnalytics } from '@hanzo/event';
+import { AnalyticsProvider, ErrorBoundary, useAnalytics, usePageview } from '@hanzo/event/react';
+import { setErrorReporter, type ErrorContext } from '@/lib/error-handling/error-logger';
 
 /** Cloud analytics ingest — api.hanzo.ai fronts /v1/analytics (+ /v1/tracker). */
 const HOST = 'https://api.hanzo.ai';
@@ -24,30 +26,49 @@ function Identity() {
 }
 
 /**
- * Product-analytics root. Wraps the app in the shared @hanzo/capture client
- * bound to the bearer the @hanzo/iam SDK already holds, and emits pageviews plus
- * a stable-id identify() once auth resolves. The token is read through a live ref
- * so a single stable config survives token refresh without re-initializing.
+ * Telemetry root. Wraps the app in the ONE shared @hanzo/event client bound to
+ * the bearer the @hanzo/iam SDK already holds — it emits pageviews, a stable-id
+ * identify() once auth resolves, AND captures errors (auto: window.onerror +
+ * unhandledrejection; React: the ErrorBoundary below; manual: errorLogger, wired
+ * through setErrorReporter). One client, one stream — errors are just events.
+ * The token is read through a live ref so a single stable client survives token
+ * refresh without re-initializing.
  */
 export function AnalyticsRoot({ children }: { children: ReactNode }) {
   const { accessToken } = useIam();
   const tokenRef = useRef<string | null>(accessToken);
   tokenRef.current = accessToken;
 
-  const config = useMemo(
-    () => ({
-      product: 'app' as const,
-      host: HOST,
-      getToken: () => tokenRef.current ?? undefined,
-    }),
+  // ONE client instance — shared with the AnalyticsProvider and the module-level
+  // errorLogger (so manual reports ride the same authed stream).
+  const client = useMemo(
+    () =>
+      createAnalytics({
+        product: 'app',
+        host: HOST,
+        getToken: () => tokenRef.current ?? undefined,
+      }),
     [],
   );
 
+  // Route the module-level errorLogger through the authed client. Its queued
+  // errors flush on wire-up (setErrorReporter drains them).
+  useEffect(() => {
+    setErrorReporter((error, severity, context?: ErrorContext) =>
+      client.captureError(error, {
+        handled: true,
+        properties: { severity, ...context },
+      }),
+    );
+  }, [client]);
+
   return (
-    <AnalyticsProvider config={config}>
-      <Pageview />
-      <Identity />
-      {children}
+    <AnalyticsProvider client={client}>
+      <ErrorBoundary>
+        <Pageview />
+        <Identity />
+        {children}
+      </ErrorBoundary>
     </AnalyticsProvider>
   );
 }

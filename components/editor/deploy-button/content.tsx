@@ -13,8 +13,8 @@ import { currentOrg } from "@/lib/org-scope";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { EVENTS } from "@hanzo/capture";
-import { useAnalytics } from "@hanzo/capture/react";
+import { EVENTS } from "@hanzo/event";
+import { useAnalytics } from "@hanzo/event/react";
 import { sendRewardSignal, getLastGenerationRequestId } from "@/lib/reward-signal";
 
 export const DeployButtonContent = ({
