@@ -16,10 +16,13 @@
 // (arcd BuildKit) + deploy (operator) mechanics. The builder BINDS to the
 // control plane; it is not a second control plane.
 
+// The ONE Hanzo API host — the unified gateway (api.hanzo.ai) routes /v1/platform
+// to the cloud control plane. api.* is the single front door for everything; never
+// a separate per-service cloud subdomain. Env vars only override for local/staging.
 const PLATFORM_API_URL =
   process.env.HANZO_PLATFORM_API_URL ||
   process.env.HANZO_CLOUD_API_URL ||
-  'https://api.cloud.hanzo.ai';
+  'https://api.hanzo.ai';
 
 /** Base for the per-org PaaS control plane. */
 export const PLATFORM_BASE = `${PLATFORM_API_URL.replace(/\/+$/, '')}/v1/platform`;
