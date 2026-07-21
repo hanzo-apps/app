@@ -37,8 +37,8 @@ import { categorySlug, type TemplateEntry } from "@/lib/templates-catalog";
 // visual rhythm — never a fabricated claim.
 const HIGHLIGHT_ICONS: LucideIcon[] = [Sparkles, Layers, Zap, Boxes, Gauge, Blocks];
 
-const EYEBROW = "font-mono text-[11px] uppercase tracking-[0.2em] text-white/40";
-const SECTION = "border-t border-white/[0.06] px-4 py-20 md:px-8 md:py-24";
+const EYEBROW = "font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground";
+const SECTION = "border-t border-border px-4 py-20 md:px-8 md:py-24";
 
 export function TemplateDetail({
   template: t,
@@ -50,10 +50,10 @@ export function TemplateDetail({
   const catHref = `/templates?category=${categorySlug(t.category)}`;
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-black text-white">
-      {/* Monochrome glow — single soft white radial, zero hue (matches landing). */}
+    <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
+      {/* Monochrome glow — single soft radial, zero hue (matches landing). */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute left-1/2 top-[-14%] h-[520px] w-[860px] -translate-x-1/2 rounded-full bg-white/[0.05] blur-[130px]" />
+        <div className="absolute left-1/2 top-[-14%] h-[520px] w-[860px] -translate-x-1/2 rounded-full bg-foreground/[0.05] blur-[130px]" />
       </div>
 
       <Header />
@@ -63,17 +63,17 @@ export function TemplateDetail({
         <section className="px-4 pt-9 md:px-8 md:pt-14">
           <div className="mx-auto max-w-6xl">
             <nav aria-label="Breadcrumb">
-              <ol className="flex flex-wrap items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-white/40">
+              <ol className="flex flex-wrap items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
                 <li>
-                  <Link href="/templates" className="transition-colors hover:text-white">
+                  <Link href="/templates" className="transition-colors hover:text-foreground">
                     Templates
                   </Link>
                 </li>
                 <li aria-hidden="true">
-                  <ChevronRight className="h-3 w-3 text-white/25" />
+                  <ChevronRight className="h-3 w-3 text-muted-foreground" />
                 </li>
                 <li>
-                  <Link href={catHref} className="transition-colors hover:text-white">
+                  <Link href={catHref} className="transition-colors hover:text-foreground">
                     {t.category}
                   </Link>
                 </li>
@@ -84,13 +84,13 @@ export function TemplateDetail({
               {/* Left — identity + CTAs */}
               <Reveal>
                 <div className="mb-5 flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 font-mono text-[11px] text-white/60">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted px-3 py-1 font-mono text-[11px] text-muted-foreground">
                     {t.framework}
                   </span>
                   {t.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="inline-flex items-center rounded-full border border-white/[0.07] bg-white/[0.02] px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/40"
+                      className="inline-flex items-center rounded-full border border-border bg-muted px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
                     >
                       {tag}
                     </span>
@@ -100,14 +100,14 @@ export function TemplateDetail({
                 <h1 className="text-balance text-3xl font-medium leading-[1.08] tracking-tight sm:text-4xl md:text-[2.9rem]">
                   {t.name}
                 </h1>
-                <p className="mt-4 max-w-xl text-pretty text-base leading-relaxed text-white/60 md:text-lg">
+                <p className="mt-4 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
                   {t.tagline}
                 </p>
 
                 <div className="mt-8 flex flex-wrap items-center gap-3">
                   <Link
                     href={t.fork}
-                    className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-medium text-black transition-colors hover:bg-white/90"
+                    className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                   >
                     <Code2 className="h-4 w-4" />
                     Use template
@@ -116,7 +116,7 @@ export function TemplateDetail({
                     href={t.previewUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.02] px-5 py-3 text-sm font-medium text-white/80 transition-colors hover:border-white/30 hover:text-white"
+                    className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-5 py-3 text-sm font-medium text-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
                   >
                     Preview
                     <ArrowUpRight className="h-4 w-4" />
@@ -129,9 +129,9 @@ export function TemplateDetail({
                 <Link
                   href={t.fork}
                   aria-label={`Use the ${t.name} template`}
-                  className="group block overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] shadow-2xl shadow-black/40 transition-colors hover:border-white/20"
+                  className="group block overflow-hidden rounded-2xl border border-border bg-muted shadow-2xl shadow-black/40 transition-colors hover:border-foreground/30"
                 >
-                  <div className="relative aspect-[16/10] overflow-hidden bg-white/[0.02]">
+                  <div className="relative aspect-[16/10] overflow-hidden bg-muted">
                     <TemplateThumb
                       name={t.name}
                       category={t.category}
@@ -158,20 +158,20 @@ export function TemplateDetail({
 
               <Reveal
                 delay={80}
-                className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/[0.06] sm:grid-cols-2 lg:grid-cols-3"
+                className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-border bg-muted sm:grid-cols-2 lg:grid-cols-3"
               >
                 {t.keyHighlights.map((h, i) => {
                   const Icon = HIGHLIGHT_ICONS[i % HIGHLIGHT_ICONS.length];
                   return (
                     <div
                       key={h.title}
-                      className="flex flex-col bg-[#050505] p-7 transition-colors duration-200 hover:bg-[#0a0a0a] md:p-8"
+                      className="flex flex-col bg-card p-7 transition-colors duration-200 hover:bg-muted md:p-8"
                     >
-                      <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03]">
-                        <Icon className="h-4 w-4 text-white/70" strokeWidth={1.5} />
+                      <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-muted">
+                        <Icon className="h-4 w-4 text-foreground" strokeWidth={1.5} />
                       </span>
-                      <h3 className="mt-5 text-base font-medium text-white">{h.title}</h3>
-                      <p className="mt-2 text-sm leading-relaxed text-white/55">{h.body}</p>
+                      <h3 className="mt-5 text-base font-medium text-foreground">{h.title}</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{h.body}</p>
                     </div>
                   );
                 })}
@@ -188,19 +188,19 @@ export function TemplateDetail({
               <h2 className="mt-4 text-2xl font-medium tracking-tight md:text-3xl">
                 {t.name}
               </h2>
-              <p className="mt-5 text-base leading-relaxed text-white/60">{t.about}</p>
-              <p className="mt-4 text-base leading-relaxed text-white/60">{t.description}</p>
+              <p className="mt-5 text-base leading-relaxed text-muted-foreground">{t.about}</p>
+              <p className="mt-4 text-base leading-relaxed text-muted-foreground">{t.description}</p>
             </Reveal>
 
             {t.perfectFor.length > 0 && (
               <Reveal delay={80}>
-                <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-7 md:p-8">
+                <div className="rounded-2xl border border-border bg-muted p-7 md:p-8">
                   <p className={EYEBROW}>Perfect for</p>
                   <ul className="mt-5 space-y-3.5">
                     {t.perfectFor.map((p) => (
-                      <li key={p} className="flex items-start gap-3 text-sm text-white/70">
-                        <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04]">
-                          <Check className="h-3 w-3 text-white/60" strokeWidth={2} />
+                      <li key={p} className="flex items-start gap-3 text-sm text-foreground">
+                        <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-border bg-muted">
+                          <Check className="h-3 w-3 text-muted-foreground" strokeWidth={2} />
                         </span>
                         <span className="leading-relaxed">{p}</span>
                       </li>
@@ -225,7 +225,7 @@ export function TemplateDetail({
                 </div>
                 <Link
                   href={catHref}
-                  className="hidden shrink-0 text-sm text-white/50 transition-colors hover:text-white sm:inline"
+                  className="hidden shrink-0 text-sm text-muted-foreground transition-colors hover:text-foreground sm:inline"
                 >
                   View all →
                 </Link>
@@ -236,9 +236,9 @@ export function TemplateDetail({
                   <Link
                     key={r.slug}
                     href={`/templates/${r.slug}`}
-                    className="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] transition-all duration-200 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.04]"
+                    className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-muted transition-all duration-200 hover:-translate-y-0.5 hover:border-foreground/30 hover:bg-muted"
                   >
-                    <div className="relative aspect-[16/10] overflow-hidden bg-white/[0.02]">
+                    <div className="relative aspect-[16/10] overflow-hidden bg-muted">
                       <TemplateThumb
                         name={r.name}
                         category={r.category}
@@ -247,10 +247,10 @@ export function TemplateDetail({
                       />
                     </div>
                     <div className="flex flex-1 flex-col p-4">
-                      <h3 className="truncate text-sm font-medium text-white/85" title={r.name}>
+                      <h3 className="truncate text-sm font-medium text-foreground" title={r.name}>
                         {r.name}
                       </h3>
-                      <p className="mt-1 truncate text-xs text-white/45">{r.framework}</p>
+                      <p className="mt-1 truncate text-xs text-muted-foreground">{r.framework}</p>
                     </div>
                   </Link>
                 ))}
@@ -260,26 +260,26 @@ export function TemplateDetail({
         )}
 
         {/* ── Final CTA ─────────────────────────────────────────── */}
-        <section className="border-t border-white/[0.06] px-4 py-24 md:px-8 md:py-28">
+        <section className="border-t border-border px-4 py-24 md:px-8 md:py-28">
           <Reveal className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-medium tracking-tight md:text-4xl">
               Make {t.name} yours.
             </h2>
-            <p className="mx-auto mt-4 max-w-md text-base text-white/55 md:text-lg">
+            <p className="mx-auto mt-4 max-w-md text-base text-muted-foreground md:text-lg">
               Fork it into the Hanzo builder, edit it with AI, and ship it to a live
               hanzo.app URL — database, auth, and AI wired in.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Link
                 href={t.fork}
-                className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition-colors hover:bg-white/90"
+                className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               >
                 Use this template
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/templates"
-                className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.02] px-6 py-3 text-sm font-medium text-white/80 transition-colors hover:border-white/30 hover:text-white"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-6 py-3 text-sm font-medium text-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
               >
                 Browse all templates
               </Link>
