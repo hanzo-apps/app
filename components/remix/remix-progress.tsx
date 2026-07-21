@@ -136,14 +136,14 @@ export function RemixProgress({
     <Dialog open={open} onOpenChange={() => {}}>
       <DialogContent
         showCloseButton={false}
-        className="max-w-sm border-white/10 bg-neutral-950 text-white"
+        className="max-w-sm border-border bg-card text-foreground"
       >
         <DialogTitle className="sr-only">Remixing project</DialogTitle>
 
         <div className="flex flex-col items-center pb-1 pt-2 text-center">
-          <HanzoLogo animated className="mb-3 h-8 w-8 text-white" />
+          <HanzoLogo animated className="mb-3 h-8 w-8 text-foreground" />
           <h2 className="text-base font-medium">Remixing project</h2>
-          <p className="mt-1 text-xs text-white/40">This may take a few moments.</p>
+          <p className="mt-1 text-xs text-muted-foreground">This may take a few moments.</p>
         </div>
 
         <div className="mt-3 space-y-3">
@@ -163,14 +163,14 @@ function Step({ state, label, subline }: { state: StepState; label: string; subl
         {state === 'done' ? (
           <Check className="h-4 w-4 text-emerald-400" />
         ) : state === 'active' ? (
-          <Loader2 className="h-4 w-4 animate-spin text-white/80 motion-reduce:animate-none" />
+          <Loader2 className="h-4 w-4 animate-spin text-foreground motion-reduce:animate-none" />
         ) : (
-          <Circle className="h-2.5 w-2.5 fill-white/15 text-white/15" />
+          <Circle className="h-2.5 w-2.5 fill-muted-foreground text-muted-foreground" />
         )}
       </span>
       <div className="min-w-0">
-        <p className={state === 'pending' ? 'text-sm text-white/35' : 'text-sm text-white/85'}>{label}</p>
-        {subline && <p className="mt-0.5 text-xs text-white/40">{subline}</p>}
+        <p className={state === 'pending' ? 'text-sm text-muted-foreground' : 'text-sm text-foreground'}>{label}</p>
+        {subline && <p className="mt-0.5 text-xs text-muted-foreground">{subline}</p>}
       </div>
     </div>
   );

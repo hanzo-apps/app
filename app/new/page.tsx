@@ -192,9 +192,9 @@ function NewProjectInner() {
   );
 
   return (
-    <div className="min-h-screen bg-black text-white antialiased">
+    <div className="min-h-screen bg-background text-foreground antialiased">
       {/* Header */}
-      <header className="sticky top-0 z-20 border-b border-white/10 bg-black/70 backdrop-blur-xl">
+      <header className="sticky top-0 z-20 border-b border-border bg-background/70 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-2">
@@ -209,7 +209,7 @@ function NewProjectInner() {
                 <Link
                   key={l.href}
                   href={l.href}
-                  className="rounded-md px-3 py-1.5 text-sm text-white/55 transition-colors hover:bg-white/5 hover:text-white"
+                  className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >
                   {l.label}
                 </Link>
@@ -247,7 +247,7 @@ function NewProjectInner() {
           <h1 className="text-balance text-4xl font-medium tracking-[-0.02em] sm:text-5xl">
             Let&rsquo;s build something new
           </h1>
-          <p className="mx-auto mt-4 max-w-xl text-pretty text-base text-white/50 sm:text-lg">
+          <p className="mx-auto mt-4 max-w-xl text-pretty text-base text-muted-foreground sm:text-lg">
             Describe an app to build, or paste a Git repository to deploy as a
             service. Hanzo builds, ships, and manages it.
           </p>
@@ -258,13 +258,13 @@ function NewProjectInner() {
               onDrop={onComposerDrop}
               onDragOver={onComposerDragOver}
               onDragLeave={onComposerDragLeave}
-              className={`group relative rounded-2xl border bg-white/[0.03] p-2 shadow-2xl shadow-black/40 transition-colors focus-within:border-white/25 ${
-                dragActive ? "border-white/40 bg-white/[0.06]" : "border-white/12"
+              className={`group relative rounded-2xl border bg-muted p-2 shadow-2xl shadow-black/40 transition-colors focus-within:border-foreground/25 ${
+                dragActive ? "border-foreground/40 bg-accent" : "border-border"
               }`}
             >
               {dragActive && (
-                <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-2xl border-2 border-dashed border-white/40 bg-black/50 backdrop-blur-sm">
-                  <span className="flex items-center gap-2 text-sm font-medium text-white">
+                <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-2xl border-2 border-dashed border-foreground/40 bg-background/50 backdrop-blur-sm">
+                  <span className="flex items-center gap-2 text-sm font-medium text-foreground">
                     <FolderUp className="h-5 w-5" />
                     Drop your project folder or .zip to import
                   </span>
@@ -282,7 +282,7 @@ function NewProjectInner() {
                   }
                 }}
                 placeholder="Describe the app you want, or paste a GitHub / GitLab repository URL…"
-                className="max-h-40 min-h-[52px] w-full resize-none bg-transparent px-3 pt-2 text-[15px] leading-relaxed text-white placeholder:text-white/35 focus:outline-none"
+                className="max-h-40 min-h-[52px] w-full resize-none bg-transparent px-3 pt-2 text-[15px] leading-relaxed text-foreground placeholder:text-muted-foreground focus:outline-none"
               />
               <div className="flex items-center justify-between px-2 pb-1 pt-1">
                 <div className="flex items-center gap-1">
@@ -290,11 +290,11 @@ function NewProjectInner() {
                     type="button"
                     title="Import a project — .zip or files"
                     onClick={() => fileInputRef.current?.click()}
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-white/40 transition-colors hover:bg-white/5 hover:text-white/80"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   >
                     <Paperclip className="h-[18px] w-[18px]" />
                   </button>
-                  <span className="ml-1 hidden text-xs text-white/35 sm:inline">
+                  <span className="ml-1 hidden text-xs text-muted-foreground sm:inline">
                     {looksLikeRepo
                       ? "Deploys this repository as a service"
                       : "Press ⏎ to build · ⇧⏎ for a new line"}
@@ -318,28 +318,28 @@ function NewProjectInner() {
             </div>
 
             {/* Import affordance — drag & drop, or pick a folder / .zip. */}
-            <div className="mt-2.5 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-xs text-white/40">
+            <div className="mt-2.5 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground">
               {importing ? (
-                <span className="inline-flex items-center gap-1.5 text-white/60">
+                <span className="inline-flex items-center gap-1.5 text-muted-foreground">
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
                   Importing your project…
                 </span>
               ) : (
                 <>
-                  <FolderUp className="h-3.5 w-3.5 text-white/35" />
+                  <FolderUp className="h-3.5 w-3.5 text-muted-foreground" />
                   <span>Drag &amp; drop your project, or</span>
                   <button
                     type="button"
                     onClick={() => folderInputRef.current?.click()}
-                    className="rounded text-white/70 underline decoration-white/20 underline-offset-2 transition-colors hover:text-white hover:decoration-white/40"
+                    className="rounded text-foreground underline decoration-foreground/20 underline-offset-2 transition-colors hover:text-foreground hover:decoration-foreground/40"
                   >
                     choose a folder
                   </button>
-                  <span className="text-white/25">·</span>
+                  <span className="text-muted-foreground">·</span>
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="rounded text-white/70 underline decoration-white/20 underline-offset-2 transition-colors hover:text-white hover:decoration-white/40"
+                    className="rounded text-foreground underline decoration-foreground/20 underline-offset-2 transition-colors hover:text-foreground hover:decoration-foreground/40"
                   >
                     .zip or files
                   </button>
@@ -390,9 +390,9 @@ function NewProjectInner() {
                       setValue(q.prompt);
                       taRef.current?.focus();
                     }}
-                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1.5 text-sm text-white/70 transition-all hover:-translate-y-px hover:border-white/20 hover:bg-white/[0.06] hover:text-white"
+                    className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3.5 py-1.5 text-sm text-foreground transition-all hover:-translate-y-px hover:border-foreground/20 hover:bg-accent hover:text-foreground"
                   >
-                    <Icon className="h-4 w-4 text-white/45" />
+                    <Icon className="h-4 w-4 text-muted-foreground" />
                     {q.label}
                   </button>
                 );
@@ -410,19 +410,19 @@ function NewProjectInner() {
           <ImportGitPanel />
 
           {/* Clone Template */}
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 sm:p-6">
+          <div className="rounded-2xl border border-border bg-muted p-5 sm:p-6">
             <div className="mb-4 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <Boxes className="h-[18px] w-[18px] text-white/70" />
+                <Boxes className="h-[18px] w-[18px] text-foreground" />
                 <h2 className="text-[15px] font-medium">Clone a Template</h2>
               </div>
               <div className="relative hidden w-40 sm:block">
-                <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/30" />
+                <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                 <input
                   value={repoFilter}
                   onChange={(e) => setRepoFilter(e.target.value)}
                   placeholder="Filter"
-                  className="h-8 w-full rounded-lg border border-white/10 bg-black/40 pl-8 pr-2 text-xs text-white placeholder:text-white/30 focus:border-white/25 focus:outline-none"
+                  className="h-8 w-full rounded-lg border border-border bg-background/40 pl-8 pr-2 text-xs text-foreground placeholder:text-muted-foreground focus:border-foreground/25 focus:outline-none"
                 />
               </div>
             </div>
@@ -439,7 +439,7 @@ function NewProjectInner() {
                 ? Array.from({ length: 5 }).map((_, i) => (
                     <div
                       key={i}
-                      className="h-[68px] animate-pulse rounded-xl border border-white/10 bg-white/[0.03]"
+                      className="h-[68px] animate-pulse rounded-xl border border-border bg-muted"
                     />
                   ))
                 : filteredTemplates.map((t) => (
@@ -447,22 +447,22 @@ function NewProjectInner() {
                       key={t.slug}
                       type="button"
                       onClick={() => handleTemplate(t.source)}
-                      className="group flex w-full items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] px-3.5 py-3 text-left transition-all hover:-translate-y-px hover:border-white/20 hover:bg-white/[0.05]"
+                      className="group flex w-full items-center gap-3 rounded-xl border border-border bg-muted px-3.5 py-3 text-left transition-all hover:-translate-y-px hover:border-foreground/20 hover:bg-accent"
                     >
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-white/60">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted text-muted-foreground">
                         <FileCode2 className="h-[18px] w-[18px]" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="truncate text-sm font-medium text-white">{t.title}</div>
-                        <div className="truncate text-xs text-white/40">
+                        <div className="truncate text-sm font-medium text-foreground">{t.title}</div>
+                        <div className="truncate text-xs text-muted-foreground">
                           {[t.framework, t.category].filter(Boolean).join(" · ") || "Starter"}
                         </div>
                       </div>
-                      <ArrowRight className="h-4 w-4 shrink-0 text-white/30 transition-colors group-hover:text-white" />
+                      <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground" />
                     </button>
                   ))}
               {!galleryLoading && filteredTemplates.length === 0 && (
-                <div className="py-10 text-center text-sm text-white/40">
+                <div className="py-10 text-center text-sm text-muted-foreground">
                   No templates match &ldquo;{repoFilter}&rdquo;.
                 </div>
               )}
@@ -470,7 +470,7 @@ function NewProjectInner() {
 
             <Link
               href="/gallery"
-              className="mt-4 inline-flex items-center gap-1 text-sm text-white/45 transition-colors hover:text-white"
+              className="mt-4 inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               Browse all templates
               <ChevronRight className="h-4 w-4" />
