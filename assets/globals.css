@@ -416,6 +416,22 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* @hanzo/gui's Tamagui theme keeps `t_dark` on <html> permanently: GuiProvider is
+   context-only and is NOT synced to next-themes, so it never switches to a light
+   theme. Tamagui pins --background to its own dark value (hsla(0,0%,8%)), which beats
+   this palette in source order and would freeze the app background dark in BOTH
+   themes — the sidebar/cards (bg-sidebar/bg-card, tokens Tamagui doesn't set) flip to
+   light while the main bg-background surface stays dark. Re-assert --background so it
+   follows the app theme (next-themes toggles `.dark` on <html>). !important
+   guarantees the win over Tamagui regardless of its selector specificity; --background
+   is a root palette token never overridden per-element, so !important is safe. */
+html.dark {
+  --background: oklch(0 0 0) !important;
+}
+html:not(.dark) {
+  --background: oklch(1 0 0) !important;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
