@@ -1,4 +1,4 @@
-// POST /api/store/cart — create a cart in the org's store.
+// POST /v1/store/cart — create a cart in the org's store.
 import { NextRequest, NextResponse } from "next/server";
 import { resolveBinding, notConfigured, commerceErrorResponse } from "@/lib/store-bff";
 import { createCart } from "@/lib/store";
