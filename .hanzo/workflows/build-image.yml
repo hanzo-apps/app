@@ -1,11 +1,11 @@
-# Native image build — Hanzo Git (git.hanzo.ai) act_runners, NOT GitHub.
+# Native image build — Hanzo Git (git.hanzo.ai) runners, NOT GitHub.
 #
-# WHY: GitHub Actions outages (and the org runner collisions) must NEVER block a
-# hanzo.app deploy. This workflow builds + pushes the container image ENTIRELY on
-# our own stack — the git.hanzo.ai act_runner (gitea/act_runner:*-dind, privileged,
-# docker-in-docker) — so nothing on github.com is in the deploy path. GitHub.com
-# ignores .gitea/workflows, so the legacy .github/workflows/release.yml still runs
-# there as a MIRROR only; git.hanzo.ai is the source of truth.
+# WHY: an upstream CI outage must NEVER block a hanzo.app deploy. This workflow
+# builds + pushes the container image ENTIRELY on our own stack — the Hanzo Git
+# dind runner (privileged, docker-in-docker) — so nothing external is in the
+# deploy path. git.hanzo.ai reads .hanzo/workflows (WORKFLOW_DIRS); the legacy
+# .github lane still runs there as a downstream MIRROR only, until the mirror
+# flips — git.hanzo.ai is the source of truth.
 #
 # CONTRACT (mirrors .github/workflows/release.yml): a git tag v<X.Y.Z> <=> an image
 # ghcr.io/hanzoai/hanzo-app:v<X.Y.Z>. The operator (universe CR) then reconciles the
