@@ -399,6 +399,14 @@ export class VirtualServer {
   // Helper function to resolve VFS paths to blob URLs
   function resolveVfsUrl(url) {
     if (!url || typeof url !== 'string') return url;
+    // Prefer the complete runtime map injected by the preview host. The baked
+    // vfsBlobUrls map only holds files processed before this page, so it can miss
+    // component files fetched at runtime (e.g. fetch('/components/nav.html')).
+    try {
+      if (window.__hanzoVfsBlobUrls && window.__hanzoVfsBlobUrls[url]) {
+        return window.__hanzoVfsBlobUrls[url];
+      }
+    } catch {}
     if (vfsBlobUrls[url]) {
       return vfsBlobUrls[url];
     }
