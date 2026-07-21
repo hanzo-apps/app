@@ -1,35 +1,21 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   Sparkles,
-  Code2,
   Zap,
-  Rocket,
-  Send,
   Github,
   Upload,
   FolderOpen,
-  CheckCircle,
-  Loader2,
-  MessageSquare,
-  ArrowRight,
   Brain,
   Palette,
   Database,
-  Shield,
   Globe,
-  Terminal,
-  Clock
 } from "lucide-react";
 import { Button } from "@hanzo/ui";
-import { Input } from "@hanzo/ui";
 import { Textarea } from "@hanzo/ui";
 import { Card } from "@hanzo/ui";
 import { Badge } from "@hanzo/ui";
-import { Progress } from "@hanzo/ui";
-import { cn } from "@/lib/utils";
-import { MarkdownRenderer } from "@/components/markdown-renderer";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -50,26 +36,6 @@ interface DevOnboardingProps {
   onComplete: (prompt: string, plan?: string) => void;
 }
 
-interface PlanStep {
-  id: string;
-  title: string;
-  description: string;
-  status: "pending" | "current" | "completed";
-  icon: React.ReactNode;
-}
-
-const getCategoryIcon = (category: string) => {
-  const icons: { [key: string]: React.ReactNode } = {
-    "web": <Globe className="w-4 h-4" />,
-    "ai": <Brain className="w-4 h-4" />,
-    "design": <Palette className="w-4 h-4" />,
-    "database": <Database className="w-4 h-4" />,
-    "security": <Shield className="w-4 h-4" />,
-    "code": <Code2 className="w-4 h-4" />
-  };
-  return icons[category] || <Code2 className="w-4 h-4" />;
-};
-
 const features = [
   {
     title: "Instant Generation",
@@ -82,8 +48,8 @@ const features = [
     icon: <Brain className="w-4 h-4" />
   },
   {
-    title: "Full-Stack Apps",
-    description: "Frontend to backend",
+    title: "Real Data",
+    description: "Hanzo Base, built in",
     icon: <Database className="w-4 h-4" />
   },
   {
@@ -94,19 +60,7 @@ const features = [
 ];
 
 export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingProps) {
-  const [stage, setStage] = useState<"welcome" | "planning" | "ready">(
-    initialPrompt ? "planning" : "welcome"
-  );
   const [prompt, setPrompt] = useState(initialPrompt);
-  const [planLines, setPlanLines] = useState<string[]>([]);
-  const [currentThought, setCurrentThought] = useState("");
-  const [inputMessage, setInputMessage] = useState("");
-  const [isStreaming, setIsStreaming] = useState(false);
-  const [executionSteps, setExecutionSteps] = useState<Array<{ text: string; status: "thinking" | "done" }>>([]);
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [progress, setProgress] = useState(0);
-  const planEndRef = useRef<HTMLDivElement>(null);
-  const thoughtsEndRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   // Real "popular" templates from the gallery catalog. Seed from the bundled
@@ -129,192 +83,13 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
     };
   }, []);
 
-  // Start planning if we have an initial prompt
+  // A prompt handed in from the landing composer or a fork goes STRAIGHT to the
+  // real builder — no fake "planning" interstitial. AskAI reads
+  // window.__initialPrompt on mount and streams the ACTUAL generation.
   useEffect(() => {
-    if (initialPrompt && stage === "planning") {
-      startPlanning(initialPrompt);
-    }
-  }, [initialPrompt, stage]);
-
-  // A prompt that arrives AFTER mount (localStorage fallback, or a param that
-  // resolves late) must still kick off planning: the stage initializer only
-  // runs once, so promote welcome→planning here instead of dead-ending on a
-  // disabled "Start Building".
-  useEffect(() => {
-    if (initialPrompt && stage === "welcome" && !prompt) {
-      setPrompt(initialPrompt);
-      setStage("planning");
-    }
-  }, [initialPrompt, stage, prompt]);
-
-  // Auto-scroll plan and thoughts (only when streaming, with debounce)
-  useEffect(() => {
-    if (isStreaming && planLines.length > 0) {
-      const timer = setTimeout(() => {
-        planEndRef.current?.scrollIntoView({ behavior: "auto", block: "nearest" });
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [planLines.length, isStreaming]);
-
-  useEffect(() => {
-    if (isStreaming && executionSteps.length > 0) {
-      const timer = setTimeout(() => {
-        thoughtsEndRef.current?.scrollIntoView({ behavior: "auto", block: "nearest" });
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [executionSteps.length, isStreaming]);
-
-  const startPlanning = async (userPrompt: string) => {
-    setStage("planning");
-    setPrompt(userPrompt);
-    setIsStreaming(true);
-
-    // Execution thoughts that will appear on the left
-    const thoughts = [
-      "🔍 Analyzing user requirements...",
-      "🧠 Understanding project scope and identifying key features...",
-      "🏗️ Designing optimal architecture for scalability...",
-      "📦 Selecting best packages and dependencies...",
-      "🎨 Planning UI component structure with @hanzo/ui...",
-      "⚡ Mapping out data flow and state management...",
-      "🔐 Configuring authentication and security layers...",
-      "🚀 Optimizing for performance and user experience...",
-      "✨ Adding final touches and enhancements...",
-      "✅ Finalizing development plan..."
-    ];
-
-    // Development plan as GitHub-flavored markdown. Each array entry is one
-    // line so the existing 80ms/line stream reveals it progressively; joined
-    // with "\n" the growing string is rendered through <MarkdownRenderer/>.
-    const planContent = [
-      `**Building:** ${userPrompt}`,
-      "",
-      "## Technology Stack",
-      "",
-      "- **Next.js 15** with the App Router and React Server Components",
-      "- **React 19** and **TypeScript** for type-safe UI",
-      "- **@hanzo/ui** components styled with **Tailwind CSS**",
-      "- **Hanzo Base** for storage — SQLite in dev, Postgres in production",
-      "- **Hanzo IAM** for authentication and single sign-on",
-      "- **Hanzo Cloud** `/v1` APIs for shared, org-scoped state",
-      "",
-      "## Core Features",
-      "",
-      "1. **Authentication** — sign in with Hanzo IAM, org-scoped access and protected routes",
-      "2. **Persistent data** — typed records in Hanzo Base, scoped per user and org",
-      "3. **Responsive UI** — mobile-first layout with light and dark themes",
-      "4. **Accessible by default** — keyboard navigation and semantic markup",
-      "",
-      "## Implementation Phases",
-      "",
-      "### Phase 1 — Foundation",
-      "",
-      "- Scaffold the project and core configuration",
-      "- Wire routing and the @hanzo/ui theme",
-      "",
-      "### Phase 2 — Interface",
-      "",
-      "- Build layout, navigation, and key screens",
-      "- Compose interactive @hanzo/ui components",
-      "",
-      "### Phase 3 — Functionality",
-      "",
-      "- Implement feature logic against the `/v1` APIs",
-      "- Persist data in Hanzo Base",
-      "",
-      "### Phase 4 — Ship",
-      "",
-      "- Performance pass, testing, and review",
-      "- Deploy to Hanzo Cloud",
-      "",
-      "---",
-      "",
-      "**Ready to start building! 🚀**",
-    ];
-
-    let thoughtIndex = 0;
-    let lineIndex = 0;
-    let thoughtInterval: NodeJS.Timeout;
-    let planInterval: NodeJS.Timeout;
-
-    // Start showing thoughts on the left
-    thoughtInterval = setInterval(() => {
-      if (thoughtIndex < thoughts.length) {
-        const newThought = thoughts[thoughtIndex];
-        setCurrentThought(newThought);
-        setExecutionSteps(prev => [
-          ...prev.map(s => ({ ...s, status: "done" as const })),
-          { text: newThought, status: "thinking" as const }
-        ]);
-        thoughtIndex++;
-
-        // Update progress based on thoughts
-        const thoughtProgress = (thoughtIndex / thoughts.length) * 100;
-        setProgress(thoughtProgress);
-      } else {
-        clearInterval(thoughtInterval);
-        // Mark last thought as done
-        setExecutionSteps(prev =>
-          prev.map(s => ({ ...s, status: "done" as const }))
-        );
-      }
-    }, 1500);
-
-    // Start streaming plan lines on the right
-    setTimeout(() => {
-      planInterval = setInterval(() => {
-        if (lineIndex < planContent.length) {
-          setPlanLines(prev => [...prev, planContent[lineIndex]]);
-          lineIndex++;
-        } else {
-          clearInterval(planInterval);
-          setIsStreaming(false);
-
-          setTimeout(() => {
-            setStage("ready");
-          }, 1000);
-        }
-      }, 80); // Faster line streaming for better effect
-    }, 500); // Small delay before starting plan
-
-    return () => {
-      clearInterval(thoughtInterval);
-      clearInterval(planInterval);
-    };
-  };
-
-  const sendMessage = () => {
-    if (!inputMessage.trim()) return;
-
-    // Add user input to the plan (markdown, same stream as the plan template)
-    setPlanLines(prev => [
-      ...prev,
-      "",
-      "---",
-      "",
-      "## Your Request",
-      "",
-      inputMessage,
-      "",
-      "**Requirements updated — folding this into the plan.**",
-    ]);
-
-    // Add a thinking step
-    setExecutionSteps(prev => [
-      ...prev,
-      { text: `💭 Processing: "${inputMessage}"`, status: "thinking" as const }
-    ]);
-
-    setTimeout(() => {
-      setExecutionSteps(prev =>
-        prev.map(s => ({ ...s, status: "done" as const }))
-      );
-    }, 1000);
-
-    setInputMessage("");
-  };
+    if (initialPrompt) onComplete(initialPrompt);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialPrompt]);
 
   // Selecting a real template forks it into the editor (clone + customize),
   // rather than running the canned plan animation.
@@ -336,7 +111,6 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
     router.push(repoImportLink(url));
   };
 
-  if (stage === "welcome") {
     return (
       <div className="min-h-screen h-screen overflow-y-auto bg-black flex justify-center items-start px-6 py-16">
         <div className="max-w-6xl w-full">
@@ -363,7 +137,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
               />
               <Button
                 className="w-full gap-2 bg-white text-black hover:bg-white/90"
-                onClick={() => prompt && startPlanning(prompt)}
+                onClick={() => prompt && onComplete(prompt)}
                 disabled={!prompt.trim()}
               >
                 <Sparkles className="w-4 h-4" />
@@ -478,137 +252,4 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
         </div>
       </div>
     );
-  }
-
-  if (stage === "planning" || stage === "ready") {
-    return (
-      <div className="h-screen overflow-hidden bg-black flex">
-        {/* Left Side - AI Thinking */}
-        <div className="w-1/2 border-r border-neutral-800 p-6 overflow-y-auto">
-          <div className="flex flex-col">
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-medium text-white mb-2">
-                {stage === "planning" ? "Building your app..." : "Ready to build! 🚀"}
-              </h2>
-              <p className="text-neutral-400">
-                {stage === "planning" ? "AI is thinking and executing" : "Everything is configured"}
-              </p>
-            </div>
-
-            {/* Progress */}
-            {stage === "planning" && (
-              <div className="mb-6">
-                <div className="flex justify-between text-sm mb-2">
-                  <span className="text-neutral-400">Progress</span>
-                  <span className="text-white">{Math.round(progress)}%</span>
-                </div>
-                <Progress value={progress} className="h-2" />
-              </div>
-            )}
-
-            {/* AI Thoughts / Execution Steps */}
-            <div className="flex-1 overflow-y-auto">
-              <div className="space-y-2">
-                {executionSteps.map((step, index) => (
-                  <div
-                    key={index}
-                    className={cn(
-                      "flex items-center gap-3 p-3 rounded-lg transition-all",
-                      step.status === "thinking"
-                        ? "bg-white/10 border border-white/30"
-                        : "bg-neutral-900 border border-neutral-800 opacity-60"
-                    )}
-                  >
-                    {step.status === "thinking" ? (
-                      <Loader2 className="w-4 h-4 text-white animate-spin" />
-                    ) : (
-                      <CheckCircle className="w-4 h-4 text-green-400" />
-                    )}
-                    <p className={cn(
-                      "text-sm",
-                      step.status === "thinking" ? "text-neutral-300" : "text-neutral-400"
-                    )}>
-                      {step.text}
-                    </p>
-                  </div>
-                ))}
-                <div ref={thoughtsEndRef} />
-              </div>
-            </div>
-
-            {/* Action Button */}
-            {stage === "ready" && (
-              <Button
-                className="w-full mt-6 gap-2"
-                size="lg"
-                onClick={() => onComplete(prompt, planLines.join("\n"))}
-              >
-                <Rocket className="w-4 h-4" />
-                Start Building
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            )}
-          </div>
-        </div>
-
-        {/* Right Side - Plan Output */}
-        <div className="w-1/2 flex flex-col">
-          <div className="p-4 border-b border-neutral-800">
-            <div className="flex items-center gap-3">
-              <Terminal className="w-5 h-5 text-white" />
-              <div>
-                <h3 className="text-white font-medium">Development Plan</h3>
-                <p className="text-xs text-neutral-500">Streaming line by line</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-y-auto bg-neutral-950 p-4">
-            {/* The plan streams line-by-line into planLines; joined it forms a
-                growing markdown document rendered through the shared
-                MarkdownRenderer (react-markdown + remark-gfm). react-markdown
-                tolerates the partial markdown produced mid-stream. */}
-            <MarkdownRenderer
-              content={planLines.join("\n")}
-              className="text-sm text-neutral-200"
-              skipNormalization
-            />
-            {isStreaming && (
-              <span className="inline-block w-2 h-4 bg-white animate-pulse align-text-bottom" />
-            )}
-            <div ref={planEndRef} />
-          </div>
-
-          <div className="p-4 border-t border-neutral-800">
-            <div className="flex gap-2">
-              <Input
-                placeholder="Add requirements or ask questions..."
-                className="flex-1 bg-neutral-900 border-neutral-700 text-white"
-                value={inputMessage}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputMessage(e.target.value)}
-                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                  }
-                }}
-              />
-              <Button
-                onClick={sendMessage}
-                disabled={!inputMessage.trim()}
-                size="icon"
-              >
-                <Send className="w-4 h-4" />
-              </Button>
-            </div>
-            <p className="text-xs text-neutral-500 mt-2">
-              Add additional requirements while the plan generates
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return null;
 }
