@@ -10,6 +10,15 @@ import { Badge } from '@hanzo/ui'
 import { Wallet, Loader2, Check, ExternalLink, Zap, ChevronDown } from 'lucide-react'
 import { TREASURY_ADDRESS, USDC_ADDRESSES, ERC20_ABI, CREDIT_PRICING, CHAIN_INFO } from '@/lib/web3/config'
 
+// Crypto credit top-ups are KILLED until the backend is real. `app/api/crypto/
+// payment` is a 503 stub that credits NOTHING, so initiating an on-chain USDC
+// transfer would take the user's money and add zero credits (money in, nothing
+// out — with a false "Payment Complete!"). Do NOT flip this true until that route
+// verifies the on-chain receipt (confirmations + replay-guard) AND credits the
+// account, and until the success flow only reports success on that credited
+// response. SHIP OR KILL IT — killed in code, one line to revive.
+export const CRYPTO_PAYMENTS_ENABLED = false
+
 const SUPPORTED_CHAINS = [
   { id: base.id, name: 'Base', icon: null },
   { id: mainnet.id, name: 'Ethereum', icon: null },
@@ -45,6 +54,8 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
   ]
 
   const handlePayment = async () => {
+    // Disabled: never initiate an on-chain transfer while the backend can't credit it.
+    if (!CRYPTO_PAYMENTS_ENABLED) return
     if (!selectedAmount || !address) return
 
     // Switch chain if needed
@@ -73,9 +84,12 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
     }
   }
 
-  // Watch for transaction success
-  if (isSuccess && step === 'pending') {
-    setStep('success')
+  // Watch for transaction success. Guarded by CRYPTO_PAYMENTS_ENABLED (inert while
+  // killed). When revived, the account must be credited ONLY on a backend-confirmed
+  // receipt: setStep('success')/onSuccess move inside the res.ok branch so a 503
+  // stub can never show "Payment Complete!" or grant credits. (A proper revive
+  // should also move this out of render into a useEffect to avoid a double-fetch.)
+  if (CRYPTO_PAYMENTS_ENABLED && isSuccess && step === 'pending') {
     const pricing = CREDIT_PRICING[selectedAmount as keyof typeof CREDIT_PRICING]
     if (pricing && hash) {
       const chainName = SUPPORTED_CHAINS.find(c => c.id === selectedChainId)?.name || 'base'
@@ -88,9 +102,11 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
           credits: pricing.credits,
           chain: chainName.toLowerCase(),
         }),
-      }).then(() => {
+      }).then((res) => {
+        if (!res.ok) return   // backend did not credit — do NOT claim success
+        setStep('success')
         onSuccess?.(hash, pricing.credits)
-      })
+      }).catch(() => {})
     }
   }
 

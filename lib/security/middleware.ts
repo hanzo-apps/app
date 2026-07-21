@@ -48,7 +48,10 @@ const securityHeaders = {
   // Permissions Policy
   'Permissions-Policy': [
     'camera=()',
-    'microphone=()',
+    // First-party mic MUST stay open: the composer's Web-Speech button runs
+    // in this origin. `()` disallows mic for ALL origins (incl. self) and the
+    // Web Speech API then silently no-ops. `(self)` = same-origin only.
+    'microphone=(self)',
     'geolocation=()',
     'interest-cohort=()',
     'payment=(self)',

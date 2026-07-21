@@ -35,8 +35,8 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { EVENTS } from '@hanzo/capture';
-import { useAnalytics } from '@hanzo/capture/react';
+import { EVENTS } from '@hanzo/event';
+import { useAnalytics } from '@hanzo/event/react';
 import { provisionBackendFeatures } from '@/lib/vfs/provision-backend-features';
 import {
   BAREBONES_PROJECT_TEMPLATE,
