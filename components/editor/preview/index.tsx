@@ -250,7 +250,7 @@ export const Preview = ({
         "opacity-100": visible,
         "opacity-0": !visible,
         "pointer-events-none": !visible || isResizing || isAiWorking,
-        "lg:max-w-md lg:mx-auto lg:!rounded-[42px] lg:border-[8px] lg:border-neutral-700 lg:shadow-2xl lg:h-[80dvh] lg:max-h-[996px]":
+        "lg:max-w-md lg:mx-auto lg:!rounded-[42px] lg:border-[8px] lg:border-border lg:shadow-2xl lg:h-[80dvh] lg:max-h-[996px]":
           device === "mobile" && !isFullscreen,
         "!h-full !max-w-none !rounded-none !border-0 !ring-0": isFullscreen,
       }
@@ -290,7 +290,7 @@ export const Preview = ({
         aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
         aria-pressed={isFullscreen}
         className={classNames(
-          "absolute right-3 z-20 inline-flex size-9 items-center justify-center rounded-lg bg-neutral-900/80 text-neutral-300 ring-1 ring-white/10 backdrop-blur transition-all hover:bg-neutral-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50",
+          "absolute right-3 z-20 inline-flex size-9 items-center justify-center rounded-lg bg-card/80 text-muted-foreground ring-1 ring-white/10 backdrop-blur transition-all hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50",
           // Fade in on hover of the surface (always visible while fullscreen).
           isFullscreen
             ? "top-3 opacity-100"

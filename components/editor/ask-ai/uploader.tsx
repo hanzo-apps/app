@@ -102,7 +102,7 @@ export const Uploader = ({
             size="iconXs"
             variant="ghost"
             aria-label="Add images"
-            className="rounded-full text-neutral-400 hover:bg-white/10 hover:text-neutral-200"
+            className="rounded-full text-muted-foreground hover:bg-accent hover:text-foreground"
           >
             <Plus className="size-4" />
           </Button>
@@ -257,7 +257,7 @@ export const Uploader = ({
         size="iconXs"
         variant="ghost"
         aria-label="Add images"
-        className="rounded-full text-neutral-400 hover:bg-white/10 hover:text-neutral-200"
+        className="rounded-full text-muted-foreground hover:bg-accent hover:text-foreground"
         onClick={() => setOpen(true)}
       >
         <Plus className="size-4" />

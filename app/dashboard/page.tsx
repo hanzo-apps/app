@@ -84,10 +84,10 @@ export default function DashboardPage() {
 
   if (loading || !user) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-black">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
-          <HanzoLogo className="mx-auto mb-4 h-12 w-12 animate-pulse text-white" />
-          <p className="text-white/40">
+          <HanzoLogo className="mx-auto mb-4 h-12 w-12 animate-pulse text-foreground" />
+          <p className="text-muted-foreground">
             {loading ? "Loading your workspace…" : "Redirecting to login…"}
           </p>
         </div>
@@ -99,7 +99,7 @@ export default function DashboardPage() {
 
   return (
     <AppShell currentView="dashboard">
-      <div className="flex-1 overflow-y-auto bg-black">
+      <div className="flex-1 overflow-y-auto bg-background">
         {/* ── Hero viewport: ONLY the centered composer until you scroll ── */}
         <section className="relative flex min-h-[calc(100dvh-4rem)] flex-col justify-start pt-[14vh] md:justify-center md:pt-0 px-4">
           <BuildComposer greetingName={greetingName} showPill />
@@ -112,7 +112,7 @@ export default function DashboardPage() {
                 .getElementById("projects-panel")
                 ?.scrollIntoView({ behavior: "smooth", block: "start" })
             }
-            className="group absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 text-white/35 transition-colors hover:text-white/70"
+            className="group absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
           >
             <span className="font-mono text-[10px] uppercase tracking-[0.16em]">
               Your projects
@@ -124,27 +124,27 @@ export default function DashboardPage() {
         {/* ── Projects: a rounded panel that slides up as you scroll ── */}
         <section id="projects-panel" className="mx-auto max-w-6xl scroll-mt-6 px-4 pb-24 sm:px-6">
           <Reveal>
-            <div className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-5 shadow-2xl shadow-black/50 md:p-8">
+            <div className="rounded-[1.75rem] border border-border bg-card p-5 shadow-2xl shadow-black/50 md:p-8">
               <Tabs value={tab} onValueChange={setTab} className="w-full">
-                <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
+                <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
                   <TabsList className="bg-transparent p-0">
-                    <TabsTrigger value="mine" className="data-[state=active]:bg-white/10">
+                    <TabsTrigger value="mine" className="data-[state=active]:bg-accent">
                       My projects
                     </TabsTrigger>
-                    <TabsTrigger value="recent" className="data-[state=active]:bg-white/10">
+                    <TabsTrigger value="recent" className="data-[state=active]:bg-accent">
                       Recently viewed
                     </TabsTrigger>
-                    <TabsTrigger value="visitors" className="data-[state=active]:bg-white/10">
+                    <TabsTrigger value="visitors" className="data-[state=active]:bg-accent">
                       Most visitors today
                     </TabsTrigger>
-                    <TabsTrigger value="templates" className="data-[state=active]:bg-white/10">
+                    <TabsTrigger value="templates" className="data-[state=active]:bg-accent">
                       Templates
                     </TabsTrigger>
                   </TabsList>
 
                   <Link
                     href={tab === "templates" ? "/resources" : "/projects"}
-                    className="text-sm text-white/50 transition-colors hover:text-white"
+                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                   >
                     Browse all →
                   </Link>
@@ -194,9 +194,9 @@ export default function DashboardPage() {
                       <Link
                         key={t.slug}
                         href="/resources"
-                        className="group overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] transition-all hover:-translate-y-0.5 hover:border-white/25"
+                        className="group overflow-hidden rounded-2xl border border-border bg-card transition-all hover:-translate-y-0.5 hover:border-foreground/30"
                       >
-                        <div className="relative aspect-[16/10] overflow-hidden bg-white/[0.02]">
+                        <div className="relative aspect-[16/10] overflow-hidden bg-card">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={t.screenshotUrl}
@@ -209,8 +209,8 @@ export default function DashboardPage() {
                           />
                         </div>
                         <div className="p-3">
-                          <p className="truncate text-sm font-medium text-white/85">{t.displayName}</p>
-                          <p className="truncate text-xs text-white/35">{t.category}</p>
+                          <p className="truncate text-sm font-medium text-foreground">{t.displayName}</p>
+                          <p className="truncate text-xs text-muted-foreground">{t.category}</p>
                         </div>
                       </Link>
                     ))}
@@ -242,15 +242,15 @@ function ProjectGrid({
           <button
             key={p.id}
             onClick={() => onOpen(p)}
-            className="group overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.03]"
+            className="group overflow-hidden rounded-2xl border border-border bg-card text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-foreground/30 hover:bg-accent"
           >
             {/* Real thumbnail: the live site itself (inert); monogram otherwise. */}
             <div className="relative">
               <ProjectThumb name={p.name} liveUrl={p.liveUrl} />
-              <ArrowUpRight className="absolute right-3 top-3 h-4 w-4 text-white/20 transition-colors group-hover:text-white/60" />
+              <ArrowUpRight className="absolute right-3 top-3 h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
             </div>
             <div className="p-4">
-              <h3 className="truncate text-sm font-medium text-white">{p.name}</h3>
+              <h3 className="truncate text-sm font-medium text-foreground">{p.name}</h3>
               <div className="mt-1.5 flex items-center gap-3">
                 <span
                   className={`inline-flex items-center gap-1 text-[11px] uppercase tracking-wide ${st.text}`}
@@ -258,7 +258,7 @@ function ProjectGrid({
                   <Circle className={`h-1.5 w-1.5 ${st.dot.replace("bg-", "fill-")}`} />
                   {st.label}
                 </span>
-                <span className="flex items-center gap-1 text-[11px] text-white/30">
+                <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
                   <Clock className="h-3 w-3" />
                   {relativeTime(p.updatedAtIso)}
                 </span>
@@ -275,11 +275,11 @@ function ProjectsSkeleton() {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-hidden>
       {[0, 1, 2].map((i) => (
-        <div key={i} className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02]">
-          <div className="aspect-video animate-pulse bg-white/[0.05]" />
+        <div key={i} className="overflow-hidden rounded-2xl border border-border bg-card">
+          <div className="aspect-video animate-pulse bg-muted" />
           <div className="space-y-2 p-4">
-            <div className="h-3.5 w-32 animate-pulse rounded bg-white/[0.06]" />
-            <div className="h-3 w-24 animate-pulse rounded bg-white/[0.04]" />
+            <div className="h-3.5 w-32 animate-pulse rounded bg-muted" />
+            <div className="h-3 w-24 animate-pulse rounded bg-muted" />
           </div>
         </div>
       ))}
@@ -309,18 +309,18 @@ function EmptyState({
   action?: { label: string; href: string };
 }) {
   return (
-    <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.02] p-12 text-center">
-      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-white/5">
-        <Icon className="h-6 w-6 text-white/50" />
+    <div className="rounded-2xl border border-dashed border-border bg-card p-12 text-center">
+      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-muted">
+        <Icon className="h-6 w-6 text-muted-foreground" />
       </div>
-      <h3 className="font-medium text-white">{title}</h3>
-      <p className="mx-auto mt-1 max-w-md text-sm text-white/40">{body}</p>
+      <h3 className="font-medium text-foreground">{title}</h3>
+      <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">{body}</p>
       {action && (
         <a
           href={action.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-4 inline-flex items-center gap-1.5 text-sm text-white/60 transition-colors hover:text-white"
+          className="mt-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           {action.label}
           <ArrowUpRight className="h-3.5 w-3.5" />

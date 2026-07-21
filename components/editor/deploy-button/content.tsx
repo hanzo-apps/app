@@ -169,20 +169,20 @@ export const DeployButtonContent = ({
     const host = published.url.replace(/^https?:\/\//, "");
     return (
       <>
-        <header className="border-b border-white/10 bg-neutral-900 p-4">
+        <header className="border-b border-border bg-card p-4">
           <div className="mb-2 flex items-center justify-center">
             <div className="flex size-9 items-center justify-center rounded-lg border border-green-500/30 bg-green-500/10">
               <Rocket className="size-4 text-green-400" />
             </div>
           </div>
-          <p className="text-center text-base font-medium text-white">Your app is live</p>
-          <p className="mt-1 text-center text-xs leading-relaxed text-white/50">
+          <p className="text-center text-base font-medium text-foreground">Your app is live</p>
+          <p className="mt-1 text-center text-xs leading-relaxed text-muted-foreground">
             Share this link — anyone can open it.
           </p>
         </header>
-        <main className="space-y-3 bg-neutral-950 p-4">
-          <div className="flex items-center gap-2 rounded-lg border border-white/15 bg-white/[0.04] px-3 py-2">
-            <span className="flex-1 truncate font-mono text-sm text-white/85">{host}</span>
+        <main className="space-y-3 bg-card p-4">
+          <div className="flex items-center gap-2 rounded-lg border border-border bg-white/[0.04] px-3 py-2">
+            <span className="flex-1 truncate font-mono text-sm text-foreground">{host}</span>
             <button
               type="button"
               aria-label="Copy link"
@@ -195,7 +195,7 @@ export const DeployButtonContent = ({
                   () => {},
                 );
               }}
-              className="flex size-7 flex-shrink-0 items-center justify-center rounded-md text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+              className="flex size-7 flex-shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
               {copied ? <Check className="size-4 text-green-400" /> : <Copy className="size-4" />}
             </button>
@@ -204,14 +204,14 @@ export const DeployButtonContent = ({
             href={published.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex w-full items-center justify-center gap-1.5 rounded-md !bg-white px-3 py-2 text-sm font-medium !text-black transition-colors hover:!bg-white/90"
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded-md !bg-primary px-3 py-2 text-sm font-medium !text-primary-foreground transition-colors hover:!bg-primary/90"
           >
             Open site <ExternalLink className="size-4" />
           </a>
           <button
             type="button"
             onClick={() => router.push(builderLink(published.slug, published.org))}
-            className="w-full rounded-md border border-white/15 px-3 py-2 text-sm font-medium text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+            className="w-full rounded-md border border-border px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             Back to editor
           </button>
@@ -223,21 +223,21 @@ export const DeployButtonContent = ({
   return (
     <>
       {/* Black chrome to match the builder — compact header. */}
-      <header className="border-b border-white/10 bg-neutral-900 p-4">
+      <header className="border-b border-border bg-card p-4">
         <div className="mb-2 flex items-center justify-center">
-          <div className="flex size-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.06]">
+          <div className="flex size-9 items-center justify-center rounded-lg border border-border bg-white/[0.06]">
             <Image src={SpaceIcon} alt="" className="size-5" />
           </div>
         </div>
-        <p className="text-center text-base font-medium text-white">Publish your project</p>
-        <p className="mt-1 text-center text-xs leading-relaxed text-white/50">
+        <p className="text-center text-base font-medium text-foreground">Publish your project</p>
+        <p className="mt-1 text-center text-xs leading-relaxed text-muted-foreground">
           {options?.description ??
             "Publish to your org on Hanzo Cloud — billed to your org, live across your Hanzo tools."}
         </p>
       </header>
-      <main className="space-y-3 bg-neutral-950 p-4">
+      <main className="space-y-3 bg-card p-4">
         <div>
-          <label className="mb-1.5 block text-xs font-medium text-white/50">Project title</label>
+          <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Project title</label>
           <Input
             type="text"
             placeholder="My Awesome Website"
@@ -245,14 +245,14 @@ export const DeployButtonContent = ({
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setConfig({ ...config, title: e.target.value })
             }
-            className="!border-white/15 !bg-white/[0.04] !text-white !placeholder:text-white/30 selection:!bg-white/20"
+            className="!border-border !bg-white/[0.04] !text-foreground !placeholder:text-muted-foreground selection:!bg-white/20"
           />
         </div>
         <Button
           variant="default"
           size="sm"
           onClick={publish}
-          className="relative w-full gap-1.5 !bg-white font-medium !text-black hover:!bg-white/90"
+          className="relative w-full gap-1.5 !bg-primary font-medium !text-primary-foreground hover:!bg-primary/90"
           disabled={loading}
         >
           {loading ? (

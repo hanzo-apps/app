@@ -61,19 +61,19 @@ function ModelRow({
       className={classNames(
         "flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm transition-colors",
         selected
-          ? "bg-white/10 text-white"
-          : "text-neutral-300 hover:bg-white/[0.06] hover:text-white"
+          ? "bg-accent text-foreground"
+          : "text-muted-foreground hover:bg-accent hover:text-foreground"
       )}
     >
       <span className="min-w-0 flex-1">
         <span className="block truncate font-medium">{label}</span>
         {hint && (
-          <span className="mt-0.5 block truncate text-xs text-neutral-400">
+          <span className="mt-0.5 block truncate text-xs text-muted-foreground">
             {hint}
           </span>
         )}
       </span>
-      {selected && <Check className="size-4 shrink-0 text-white" />}
+      {selected && <Check className="size-4 shrink-0 text-foreground" />}
     </button>
   );
 }
@@ -117,21 +117,21 @@ export function Settings({
           size="iconXs"
           title="Settings — model, mode & options"
           aria-label="Settings"
-          className="rounded-full !text-neutral-300 hover:!bg-white/10 hover:!text-white"
+          className="rounded-full !text-muted-foreground hover:!bg-accent hover:!text-foreground"
         >
           <PiGearSixFill className="size-4" />
         </Button>
       </PopoverTrigger>
-      {/* ONE popover surface: solid bg-neutral-900, a single hairline border, high
+      {/* ONE popover surface: solid bg-card, a single hairline border, high
           z-index. The model list is inline (not a nested Select portal), so the
           menu can no longer render a second overlapping layer. */}
       <PopoverContent
         side="top"
         align="end"
         sideOffset={8}
-        className="z-50 w-96 overflow-hidden !rounded-2xl !border !border-neutral-800 !bg-neutral-900 p-0 text-neutral-100 shadow-2xl shadow-black/60"
+        className="z-50 w-96 overflow-hidden !rounded-2xl !border !border-border !bg-card p-0 text-foreground shadow-2xl shadow-black/60"
       >
-        <header className="border-b border-neutral-800 bg-neutral-950 px-4 py-3 text-center text-sm font-medium text-neutral-200">
+        <header className="border-b border-border bg-card px-4 py-3 text-center text-sm font-medium text-foreground">
           Model
         </header>
         <main className="space-y-2.5 px-4 pt-4 pb-5">
@@ -147,7 +147,7 @@ export function Settings({
               provider per request, so there is no separate provider choice. The
               dropdown below is an optional explicit override (family-grouped:
               Enso / Zen / Anthropic / OpenAI). */}
-          <div className="rounded-xl border border-neutral-800 bg-neutral-950/60 p-1">
+          <div className="rounded-xl border border-border bg-card/60 p-1">
             <ModelRow
               label="Auto · smart routing"
               hint="Enso picks the best model & provider per request"

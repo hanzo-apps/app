@@ -29,18 +29,18 @@ export default async function UsagePage() {
 
   return (
     <AppShell currentView="usage">
-    <div className="flex-1 overflow-y-auto bg-[#0a0a0a] text-white">
+    <div className="flex-1 overflow-y-auto bg-card text-foreground">
       <div className="max-w-5xl mx-auto px-4 md:px-8 py-8 md:py-12">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
             <h1 className="text-3xl md:text-4xl font-medium mb-2">Usage</h1>
-            <p className="text-white/60">
+            <p className="text-muted-foreground">
               Your account consumption
-              {user.email && <span className="ml-2 text-white/40">({user.email})</span>}
+              {user.email && <span className="ml-2 text-muted-foreground">({user.email})</span>}
             </p>
           </div>
           <Link href="https://console.hanzo.ai/ai-accounts" target="_blank" rel="noopener noreferrer">
-            <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
+            <Button variant="outline" className="border-border text-foreground hover:bg-muted">
               <ExternalLink className="w-4 h-4 mr-2" />
               Multi-provider dashboard
             </Button>
@@ -51,10 +51,10 @@ export default async function UsagePage() {
         <SmartRoutingCard />
 
         {/* Account usage — real figures from the Hanzo Base data plane. */}
-        <Card className="bg-[#1a1a1a] border-white/10 mb-6">
+        <Card className="bg-card border-border mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Activity className="w-4 h-4 text-white/60" />
+              <Activity className="w-4 h-4 text-muted-foreground" />
               Account
             </CardTitle>
             <CardDescription>Current, known-good figures for your account</CardDescription>
@@ -62,7 +62,7 @@ export default async function UsagePage() {
           <CardContent className="space-y-4">
             {account.metrics.map((m) => (
               <div key={m.label} className="flex items-center justify-between">
-                <span className="text-white/80">{m.label}</span>
+                <span className="text-foreground/80">{m.label}</span>
                 <span className="font-medium">
                   {m.value.toLocaleString()}
                   {m.unit ? ` ${m.unit}` : ''}
@@ -71,7 +71,7 @@ export default async function UsagePage() {
               </div>
             ))}
             {!account.metered && account.note && (
-              <p className="text-sm text-white/40 pt-2 border-t border-white/10">{account.note}</p>
+              <p className="text-sm text-muted-foreground pt-2 border-t border-border">{account.note}</p>
             )}
           </CardContent>
         </Card>
