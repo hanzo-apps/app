@@ -27,7 +27,7 @@ export function MyProjects({
       <section className="max-w-[86rem] py-12 px-4 mx-auto">
         <header className="flex items-center justify-between max-lg:flex-col gap-4">
           <div className="text-left">
-            <h1 className="text-3xl font-medium text-white">
+            <h1 className="text-3xl font-medium text-foreground">
               <span className="capitalize">{user.fullname || user.name || 'Your'}</span>&apos;s
               Hanzo Projects
             </h1>
@@ -45,7 +45,7 @@ export function MyProjects({
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           <Link
             href="/new"
-            className="bg-neutral-900 rounded-xl h-44 flex items-center justify-center text-neutral-300 border border-neutral-800 hover:brightness-110 transition-all duration-200"
+            className="bg-card rounded-xl h-44 flex items-center justify-center text-muted-foreground border border-border hover:brightness-110 transition-all duration-200"
           >
             <Plus className="size-5 mr-1.5" />
             Create Project

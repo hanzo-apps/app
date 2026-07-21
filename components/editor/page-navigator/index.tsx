@@ -106,8 +106,8 @@ export function PagePanel({
 
   return (
     <div className="flex max-h-[min(60vh,24rem)] w-full flex-col">
-      <div className="flex items-center gap-2 border-b border-white/10 px-2.5 pb-2 pt-0.5">
-        <Search className="size-3.5 shrink-0 text-white/30" />
+      <div className="flex items-center gap-2 border-b border-border px-2.5 pb-2 pt-0.5">
+        <Search className="size-3.5 shrink-0 text-muted-foreground" />
         <input
           ref={inputRef}
           value={query}
@@ -115,23 +115,23 @@ export function PagePanel({
           onKeyDown={handleKeyDown}
           placeholder="Search pages…"
           aria-label="Search pages"
-          className="w-full bg-transparent py-1 text-sm text-white placeholder:text-white/30 focus:outline-none"
+          className="w-full bg-transparent py-1 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
         />
-        <span className="shrink-0 font-mono text-[10px] text-white/25">
+        <span className="shrink-0 font-mono text-[10px] text-muted-foreground">
           {filteredPaths.length}
         </span>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto py-1">
         {groups.length === 0 ? (
-          <p className="px-3 py-6 text-center text-xs text-white/40">
+          <p className="px-3 py-6 text-center text-xs text-muted-foreground">
             No pages match “{query}”.
           </p>
         ) : (
           groups.map((group) => (
             <div key={group.folder || "/"} className="py-0.5">
               {group.folder && (
-                <div className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-white/35">
+                <div className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
                   <Folder className="size-3 shrink-0" />
                   <span className="truncate">{group.folder}</span>
                 </div>
@@ -148,11 +148,11 @@ export function PagePanel({
                       "flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
                       group.folder ? "pl-6" : "",
                       active
-                        ? "bg-white/10 text-white"
-                        : "text-white/70 hover:bg-white/[0.06] hover:text-white/90"
+                        ? "bg-muted text-foreground"
+                        : "text-foreground hover:bg-white/[0.06] hover:text-foreground"
                     )}
                   >
-                    <FileCode className="size-3.5 shrink-0 text-white/40" />
+                    <FileCode className="size-3.5 shrink-0 text-muted-foreground" />
                     <span className="truncate font-mono text-xs">
                       {item.name}
                     </span>

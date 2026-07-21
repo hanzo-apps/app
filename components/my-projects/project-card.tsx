@@ -14,10 +14,10 @@ import {
 
 export function ProjectCard({ project }: { project: Project }) {
   return (
-    <div className="text-neutral-200 space-y-4 group cursor-pointer">
+    <div className="text-foreground space-y-4 group cursor-pointer">
       <Link
         href={`/projects/${project.space_id}`}
-        className="relative bg-neutral-900 rounded-2xl overflow-hidden h-44 w-full flex items-center justify-end flex-col px-3 border border-neutral-800"
+        className="relative bg-card rounded-2xl overflow-hidden h-44 w-full flex items-center justify-end flex-col px-3 border border-border"
       >
         <iframe
           src={`/api/preview/${project.space_id}`}
@@ -34,10 +34,10 @@ export function ProjectCard({ project }: { project: Project }) {
       </Link>
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-neutral-200 text-base font-medium line-clamp-1">
+          <p className="text-foreground text-base font-medium line-clamp-1">
             {project.space_id}
           </p>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-muted-foreground">
             Updated{" "}
             {formatDistance(
               new Date(project._updatedAt || Date.now()),
@@ -51,7 +51,7 @@ export function ProjectCard({ project }: { project: Project }) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
-              <EllipsisVertical className="text-neutral-400 size-5 hover:text-neutral-300 transition-colors duration-200 cursor-pointer" />
+              <EllipsisVertical className="text-muted-foreground size-5 hover:text-muted-foreground transition-colors duration-200 cursor-pointer" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="start">
@@ -60,7 +60,7 @@ export function ProjectCard({ project }: { project: Project }) {
                 href={`/projects/${project.space_id}/settings`}
               >
                 <DropdownMenuItem>
-                  <Settings className="size-4 text-neutral-100" />
+                  <Settings className="size-4 text-foreground" />
                   Project Settings
                 </DropdownMenuItem>
               </a>

@@ -19,7 +19,7 @@ export const SelectedFiles = ({
         {files.map((file) => (
           <div
             key={file}
-            className="flex items-center relative justify-start gap-2 p-1 bg-neutral-700 rounded-md"
+            className="flex items-center relative justify-start gap-2 p-1 bg-muted rounded-md"
           >
             <Image
               src={file}

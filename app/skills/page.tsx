@@ -17,7 +17,7 @@ import { SkillsView } from '@/components/views/skills-view';
 export default function SkillsPage() {
   return (
     <AppShell currentView="skills">
-      <div className="flex min-h-0 flex-1 flex-col bg-black text-white">
+      <div className="flex min-h-0 flex-1 flex-col bg-background text-foreground">
         <SkillsView />
       </div>
     </AppShell>

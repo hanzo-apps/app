@@ -60,7 +60,7 @@ export function AppShell({ children, currentView = 'templates' }: AppShellProps)
     // page rendered as {children} (Connectors, Settings, …) read the SAME context,
     // so a page that calls useOrg never crashes for lack of a provider ancestor.
     <OrgProvider>
-    <div className="relative flex h-screen overflow-hidden bg-black text-white">
+    <div className="relative flex h-screen overflow-hidden bg-background text-foreground">
       <Sidebar
         currentView={currentView}
         onNavigate={() => {}}
@@ -77,20 +77,20 @@ export function AppShell({ children, currentView = 'templates' }: AppShellProps)
         {/* Mobile top bar — the ONLY way to reach the nav below md (the sidebar is
             an off-canvas drawer there). Hidden at md+, where the sidebar is
             always visible in-flow. */}
-        <div className="flex h-12 items-center gap-2 border-b border-white/10 bg-black px-3 md:hidden">
+        <div className="flex h-12 items-center gap-2 border-b border-border bg-background px-3 md:hidden">
           <button
             onClick={() => setMobileOpen(true)}
             aria-label="Open menu"
-            className="flex h-9 w-9 items-center justify-center rounded-md text-white/70 hover:bg-white/10 hover:text-white"
+            className="flex h-9 w-9 items-center justify-center rounded-md text-foreground hover:bg-muted hover:text-foreground"
           >
             <Menu className="h-5 w-5" />
           </button>
-          <HanzoLogo className="h-5 w-5 text-white" />
+          <HanzoLogo className="h-5 w-5 text-foreground" />
           <span className="text-sm font-medium">Hanzo App</span>
           <button
             onClick={() => setPaletteOpen(true)}
             aria-label="Search"
-            className="ml-auto flex h-9 w-9 items-center justify-center rounded-md text-white/70 hover:bg-white/10 hover:text-white"
+            className="ml-auto flex h-9 w-9 items-center justify-center rounded-md text-foreground hover:bg-muted hover:text-foreground"
           >
             <Search className="h-5 w-5" />
           </button>

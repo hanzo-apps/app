@@ -73,8 +73,8 @@ const fmtUsd = (cents: number): string => `$${(cents / 100).toFixed(2)}`;
 // Shared item styling — Hanzo darker chrome: white-on-black, hairline focus,
 // a crisp 150ms hover.
 const ITEM =
-  "cursor-pointer gap-2.5 rounded-md px-2 py-2 text-sm text-white/80 transition-colors duration-150 focus:bg-white/[0.06] focus:text-white";
-const ICON = "size-4 shrink-0 text-white/40";
+  "cursor-pointer gap-2.5 rounded-md px-2 py-2 text-sm text-foreground transition-colors duration-150 focus:bg-white/[0.06] focus:text-foreground";
+const ICON = "size-4 shrink-0 text-muted-foreground";
 
 export function WorkspaceMenu({
   project,
@@ -177,13 +177,13 @@ export function WorkspaceMenu({
           <button
             type="button"
             title="Workspace"
-            className="flex min-w-0 items-center gap-2 rounded-lg border border-white/10 bg-white/[0.02] px-2.5 py-1.5 text-sm text-white/80 transition-all duration-150 hover:border-white/20 hover:bg-white/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 data-[state=open]:border-white/20 data-[state=open]:bg-white/[0.06]"
+            className="flex min-w-0 items-center gap-2 rounded-lg border border-border bg-white/[0.02] px-2.5 py-1.5 text-sm text-foreground transition-all duration-150 hover:border-border hover:bg-white/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 data-[state=open]:border-border data-[state=open]:bg-white/[0.06]"
           >
             <OrgAvatar name={orgName} logo={activeOrg?.logo} />
-            <span className="max-w-[9rem] truncate font-medium text-white">
+            <span className="max-w-[9rem] truncate font-medium text-foreground">
               {projectName}
             </span>
-            <ChevronsUpDown className="size-3.5 shrink-0 text-white/40" />
+            <ChevronsUpDown className="size-3.5 shrink-0 text-muted-foreground" />
           </button>
         </DropdownMenuTrigger>
 
@@ -191,7 +191,7 @@ export function WorkspaceMenu({
           side="bottom"
           align="start"
           sideOffset={8}
-          className="w-[19rem] rounded-xl border border-white/10 bg-[#0a0a0a]/95 p-1.5 text-white shadow-2xl shadow-black/60 backdrop-blur-xl"
+          className="w-[19rem] rounded-xl border border-border bg-card/95 p-1.5 text-foreground shadow-2xl shadow-black/60 backdrop-blur-xl"
         >
           {/* Back to the dashboard. */}
           <DropdownMenuItem asChild className={ITEM}>
@@ -201,22 +201,22 @@ export function WorkspaceMenu({
             </Link>
           </DropdownMenuItem>
 
-          <DropdownMenuSeparator className="-mx-1.5 my-1.5 bg-white/10" />
+          <DropdownMenuSeparator className="-mx-1.5 my-1.5 bg-border" />
 
           {/* Who you're signed in as. */}
           <div className="flex items-center gap-2.5 px-2 py-1.5">
             <Avatar className="size-7">
               <AvatarImage src={avatarSrc} alt={uname} />
-              <AvatarFallback className="bg-white/10 text-xs text-white">
+              <AvatarFallback className="bg-muted text-xs text-foreground">
                 {initial}
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0">
-              <p className="truncate text-sm font-medium leading-tight text-white">
+              <p className="truncate text-sm font-medium leading-tight text-foreground">
                 {uname}
               </p>
               {user.email && (
-                <p className="truncate text-xs leading-tight text-white/50">
+                <p className="truncate text-xs leading-tight text-muted-foreground">
                   {user.email}
                 </p>
               )}
@@ -226,28 +226,28 @@ export function WorkspaceMenu({
           {/* Active workspace + plan badge — a switcher when there's more than one. */}
           {canSwitch ? (
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-white/80 transition-colors duration-150 focus:bg-white/[0.06] focus:text-white data-[state=open]:bg-white/[0.06]">
+              <DropdownMenuSubTrigger className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-foreground transition-colors duration-150 focus:bg-white/[0.06] focus:text-foreground data-[state=open]:bg-white/[0.06]">
                 <OrgAvatar name={orgName} logo={activeOrg?.logo} className="size-7 text-[11px]" />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-medium text-white">{orgName}</span>
-                  <span className="block text-[11px] text-white/40">Switch workspace</span>
+                  <span className="block truncate text-sm font-medium text-foreground">{orgName}</span>
+                  <span className="block text-[11px] text-muted-foreground">Switch workspace</span>
                 </span>
-                <span className="shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-1.5 py-0.5 text-[10px] font-medium text-white/50">
+                <span className="shrink-0 rounded-md border border-border bg-white/[0.03] px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
                   {orgKind}
                 </span>
               </DropdownMenuSubTrigger>
-              <DropdownMenuSubContent className="max-h-72 w-64 overflow-y-auto rounded-lg border border-white/10 bg-[#0a0a0a]/95 p-1 text-white shadow-2xl backdrop-blur-xl">
+              <DropdownMenuSubContent className="max-h-72 w-64 overflow-y-auto rounded-lg border border-border bg-card/95 p-1 text-foreground shadow-2xl backdrop-blur-xl">
                 {orgs.map((o) => {
                   const isCurrent = o.name === orgId;
                   return (
                     <DropdownMenuItem
                       key={o.name}
                       onSelect={() => !isCurrent && switchOrg(o.name)}
-                      className="cursor-pointer gap-2 rounded-md px-2 py-2 text-sm text-white/80 transition-colors duration-150 focus:bg-white/[0.06] focus:text-white"
+                      className="cursor-pointer gap-2 rounded-md px-2 py-2 text-sm text-foreground transition-colors duration-150 focus:bg-white/[0.06] focus:text-foreground"
                     >
                       <OrgAvatar name={orgDisplayName(orgs, o.name)} logo={o.logo} />
                       <span className="min-w-0 flex-1 truncate">{orgDisplayName(orgs, o.name)}</span>
-                      {isCurrent && <Check className="size-4 shrink-0 text-white" />}
+                      {isCurrent && <Check className="size-4 shrink-0 text-foreground" />}
                     </DropdownMenuItem>
                   );
                 })}
@@ -257,10 +257,10 @@ export function WorkspaceMenu({
             <div className="flex items-center gap-2.5 px-2 py-1.5">
               <OrgAvatar name={orgName} logo={activeOrg?.logo} className="size-7 text-[11px]" />
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-medium text-white">{orgName}</span>
-                <span className="block text-[11px] text-white/40">Workspace</span>
+                <span className="block truncate text-sm font-medium text-foreground">{orgName}</span>
+                <span className="block text-[11px] text-muted-foreground">Workspace</span>
               </span>
-              <span className="shrink-0 rounded-md border border-white/10 bg-white/[0.03] px-1.5 py-0.5 text-[10px] font-medium text-white/50">
+              <span className="shrink-0 rounded-md border border-border bg-white/[0.03] px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
                 {orgKind}
               </span>
             </div>
@@ -271,14 +271,14 @@ export function WorkspaceMenu({
           <DropdownMenuItem asChild className="mx-0.5 mt-1 rounded-lg p-0 focus:bg-transparent">
             <Link
               href="/billing"
-              className="flex w-full flex-col gap-2 rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-2.5 transition-colors hover:border-white/15 hover:bg-white/[0.05] focus-visible:border-white/20"
+              className="flex w-full flex-col gap-2 rounded-lg border border-border bg-white/[0.03] px-3 py-2.5 transition-colors hover:border-border hover:bg-white/[0.05] focus-visible:border-border"
             >
               <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5 text-xs font-medium text-white/70">
-                  <Wallet className="size-3.5 text-white/40" />
+                <span className="flex items-center gap-1.5 text-xs font-medium text-foreground">
+                  <Wallet className="size-3.5 text-muted-foreground" />
                   Credits
                 </span>
-                <span className="font-mono text-sm tabular-nums text-white">{balanceText}</span>
+                <span className="font-mono text-sm tabular-nums text-foreground">{balanceText}</span>
               </div>
               <div
                 role="progressbar"
@@ -286,14 +286,14 @@ export function WorkspaceMenu({
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-label="Credits spendable"
-                className="h-1.5 w-full overflow-hidden rounded-full bg-white/10"
+                className="h-1.5 w-full overflow-hidden rounded-full bg-muted"
               >
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-white/70 to-white transition-[width] duration-700 ease-out motion-reduce:transition-none"
                   style={{ width: `${pct}%` }}
                 />
               </div>
-              <span className="truncate text-[11px] text-white/40">{creditHint}</span>
+              <span className="truncate text-[11px] text-muted-foreground">{creditHint}</span>
             </Link>
           </DropdownMenuItem>
 
@@ -302,7 +302,7 @@ export function WorkspaceMenu({
             <NetworkWallet />
           </div>
 
-          <DropdownMenuSeparator className="-mx-1.5 my-1.5 bg-white/10" />
+          <DropdownMenuSeparator className="-mx-1.5 my-1.5 bg-border" />
 
           <DropdownMenuItem asChild className={ITEM}>
             <Link href="/settings">
@@ -331,11 +331,11 @@ export function WorkspaceMenu({
             </a>
           </DropdownMenuItem>
 
-          <DropdownMenuSeparator className="-mx-1.5 my-1.5 bg-white/10" />
+          <DropdownMenuSeparator className="-mx-1.5 my-1.5 bg-border" />
 
           <DropdownMenuItem
             onSelect={() => void logout()}
-            className={`${ITEM} text-white/70`}
+            className={`${ITEM} text-foreground`}
           >
             <LogOut className="size-4 shrink-0" />
             Sign out
@@ -345,10 +345,10 @@ export function WorkspaceMenu({
 
       {/* Rename — a small modal so the menu's typeahead never fights the input. */}
       <Dialog open={renameOpen} onOpenChange={setRenameOpen}>
-        <DialogContent className="max-w-sm border-white/10 bg-[#0a0a0a] text-white">
+        <DialogContent className="max-w-sm border-border bg-card text-foreground">
           <DialogHeader>
             <DialogTitle>Rename project</DialogTitle>
-            <DialogDescription className="text-white/50">
+            <DialogDescription className="text-muted-foreground">
               {slug
                 ? "Updates the project name across your Hanzo tools."
                 : "Sets the name this project publishes under."}
@@ -365,14 +365,14 @@ export function WorkspaceMenu({
                 if (!renaming) void submitRename();
               }
             }}
-            className="!border-white/15 !bg-white/[0.04] !text-white selection:!bg-white/20"
+            className="!border-border !bg-white/[0.04] !text-foreground selection:!bg-white/20"
           />
           <div className="flex justify-end gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setRenameOpen(false)}
-              className="!border-white/15 !bg-transparent !text-white hover:!bg-white/10"
+              className="!border-border !bg-transparent !text-foreground hover:!bg-muted"
               disabled={renaming}
             >
               Cancel
@@ -381,7 +381,7 @@ export function WorkspaceMenu({
               size="sm"
               onClick={() => void submitRename()}
               disabled={renaming || !renameValue.trim()}
-              className="!bg-white font-medium !text-black hover:!bg-white/90"
+              className="!bg-primary font-medium !text-primary-foreground hover:!bg-primary/90"
             >
               {renaming ? "Saving…" : "Save"}
             </Button>
@@ -391,10 +391,10 @@ export function WorkspaceMenu({
 
       {/* Project details — real known fields only. */}
       <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
-        <DialogContent className="max-w-sm border-white/10 bg-[#0a0a0a] text-white">
+        <DialogContent className="max-w-sm border-border bg-card text-foreground">
           <DialogHeader>
             <DialogTitle>Project details</DialogTitle>
-            <DialogDescription className="text-white/50">
+            <DialogDescription className="text-muted-foreground">
               {slug ? "This project is saved to your workspace." : "This project isn’t published yet."}
             </DialogDescription>
           </DialogHeader>
@@ -427,8 +427,8 @@ function DetailRow({
 }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <dt className="text-white/40">{label}</dt>
-      <dd className={`min-w-0 truncate text-white/85 ${mono ? "font-mono text-xs" : ""}`}>
+      <dt className="text-muted-foreground">{label}</dt>
+      <dd className={`min-w-0 truncate text-foreground ${mono ? "font-mono text-xs" : ""}`}>
         {value}
       </dd>
     </div>
