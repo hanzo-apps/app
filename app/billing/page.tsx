@@ -90,6 +90,14 @@ export default function BillingPage() {
 
   // State
   const [loading, setLoading] = useState(true);
+  // Boot deadline: never spin forever. If auth or the first data fetch hasn't
+  // settled within 12s (e.g. a hung upstream), drop the skeleton and render the
+  // page's own honest empty/zero states rather than an endless spinner.
+  const [bootTimedOut, setBootTimedOut] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setBootTimedOut(true), 12000);
+    return () => clearTimeout(t);
+  }, []);
   const [activeTab, setActiveTab] = useState('overview');
   const [creditModalOpen, setCreditModalOpen] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'crypto'>('card');
@@ -257,18 +265,18 @@ export default function BillingPage() {
     return 'bg-green-500';
   };
 
-  if (authLoading || loading) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin" />
-      </div>
-    );
-  }
+  // The shell is ALWAYS present — the loading state renders a skeleton INSIDE
+  // AppShell (never a bare full-screen spinner with no sidebar).
+  const booting = (authLoading || loading) && !bootTimedOut;
 
   return (
     <AppShell currentView="billing">
     <div className="flex-1 overflow-y-auto bg-[#0a0a0a] text-white">
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12">
+        {booting ? (
+          <BillingSkeleton />
+        ) : (
+        <>
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
@@ -723,6 +731,8 @@ export default function BillingPage() {
             </Card>
           </TabsContent>
         </Tabs>
+        </>
+        )}
       </div>
 
       {/* Crypto Payment Modal — web3 stack (wagmi/WalletConnect/Coinbase) scoped here.
@@ -739,6 +749,30 @@ export default function BillingPage() {
       </WalletBoundary>
     </div>
     </AppShell>
+  );
+}
+
+// Loading skeleton — the billing layout's shape (header + 3 metric cards + a
+// content block) rendered as calm pulse blocks INSIDE the shell, so the page
+// never flashes a bare spinner and the chrome stays put while data resolves.
+function BillingSkeleton() {
+  return (
+    <div className="animate-pulse">
+      <div className="mb-8 flex items-center justify-between gap-4">
+        <div className="space-y-2">
+          <div className="h-9 w-56 rounded-md bg-white/10" />
+          <div className="h-4 w-80 rounded bg-white/[0.06]" />
+        </div>
+        <div className="h-9 w-32 rounded-md bg-white/10" />
+      </div>
+      <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="h-40 rounded-xl border border-white/10 bg-[#1a1a1a]" />
+        ))}
+      </div>
+      <div className="h-10 w-full max-w-lg rounded-md bg-[#1a1a1a]" />
+      <div className="mt-6 h-56 rounded-xl border border-white/10 bg-[#1a1a1a]" />
+    </div>
   );
 }
 
