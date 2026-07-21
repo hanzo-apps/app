@@ -3,7 +3,7 @@
 // Ecommerce storefront — the REAL per-org store surface.
 //
 // This template used to render a hardcoded fixture array. It now BINDS to the
-// org's cloud commerce catalog via the BFF (/api/store/*): it reads the real
+// org's cloud commerce catalog via the BFF (/v1/store/*): it reads the real
 // catalog, builds a real cart, and turns checkout into a real Square-hosted
 // session. Honest-empty when the catalog is empty; nothing is faked.
 // See universe/docs/architecture/hanzo-app-cloud-integration.md §6.
@@ -78,7 +78,7 @@ export function Storefront() {
     let alive = true;
     (async () => {
       try {
-        const res = await fetch("/api/store/products", { cache: "no-store" });
+        const res = await fetch("/v1/store/products", { cache: "no-store" });
         const body = await res.json();
         if (!alive) return;
         if (!res.ok) {
@@ -105,7 +105,7 @@ export function Storefront() {
 
   const ensureCart = useCallback(async (): Promise<string> => {
     if (cartId) return cartId;
-    const res = await fetch("/api/store/cart", { method: "POST" });
+    const res = await fetch("/v1/store/cart", { method: "POST" });
     const body = await res.json();
     if (!res.ok) throw new Error(body?.message || "Could not create a cart");
     const id = body?.cart?.id as string;
@@ -120,7 +120,7 @@ export function Storefront() {
       try {
         const id = await ensureCart();
         const ref = itemRef(p);
-        await fetch(`/api/store/cart/${encodeURIComponent(id)}/items`, {
+        await fetch(`/v1/store/cart/${encodeURIComponent(id)}/items`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...ref, quantity: nextQty }),
@@ -141,7 +141,7 @@ export function Storefront() {
     if (items.length === 0) return;
     setCheckingOut(true);
     try {
-      const res = await fetch("/api/store/checkout", {
+      const res = await fetch("/v1/store/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ items }),
