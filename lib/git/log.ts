@@ -15,8 +15,8 @@
  *     `patch`).
  *   - GitLab: `GET /projects/{id}/repository/commits?ref_name={branch}` (list),
  *     `.../commits/{sha}` + `/diff` (detail file list with `diff`).
- *   - Hanzo (`api.hanzo.ai/v1/git`): the Gitea-lineage backend. We ATTEMPT its
- *     GitHub/Gitea-compatible commits endpoint; if it is not exposed yet we throw
+ *   - Hanzo (`api.hanzo.ai/v1/git`): the Hanzo Git backend. We ATTEMPT its
+ *     GitHub-compatible commits endpoint; if it is not exposed yet we throw
  *     `GitSyncError(code:'unsupported')` so the route degrades honestly to an
  *     empty log + `supported:false` — never a fabricated history.
  */
@@ -276,7 +276,7 @@ async function getCommitGitlab(
 }
 
 // ---------------------------------------------------------------------------
-// Hanzo (api.hanzo.ai/v1/git) — Gitea-lineage; commits API is best-effort
+// Hanzo (api.hanzo.ai/v1/git) — Hanzo Git; commits API is best-effort
 // ---------------------------------------------------------------------------
 
 function hzHeaders(token: string): Record<string, string> {
@@ -289,7 +289,7 @@ function hzHeaders(token: string): Record<string, string> {
 
 /**
  * The Hanzo git service addresses repos by NAME (tenancy = the gateway-derived
- * JWT owner). We ATTEMPT the Gitea-compatible commits endpoint. A 404/501 (not
+ * JWT owner). We ATTEMPT the GitHub-compatible commits endpoint. A 404/501 (not
  * exposed) becomes `code:'unsupported'` so the route degrades to an honest empty
  * log — we NEVER fabricate commits for a backend that does not answer.
  */
