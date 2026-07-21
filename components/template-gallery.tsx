@@ -129,10 +129,11 @@ export function TemplateGallery({
     return CATEGORIES.filter((c) => (counts.get(c.label) ?? 0) > 0);
   }, []);
 
-  const shown = useMemo(
-    () => (active === ALL ? [...TEMPLATES] : templatesByCategory(active)),
-    [active],
-  );
+  const shown = useMemo(() => {
+    const base = active === ALL ? [...TEMPLATES] : templatesByCategory(active);
+    // Default builder starters (featured) float to the top; stable within groups.
+    return [...base].sort((a, b) => Number(!!b.featured) - Number(!!a.featured));
+  }, [active]);
 
   return (
     <div className={`mx-auto w-full max-w-7xl px-5 py-10 sm:px-8 sm:py-14 ${className}`}>
