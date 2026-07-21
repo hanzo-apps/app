@@ -164,7 +164,7 @@ export default function LandingPage() {
               <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
                 <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-white/55">
-                  Full-stack apps on Hanzo Cloud
+                  Sites, wired to real data &amp; AI
                 </span>
               </div>
             </Reveal>
