@@ -96,12 +96,12 @@ export default function ChatPage() {
           role: "assistant",
           content: "Here are key strategies for optimizing React performance:\n\n1. **Code Splitting & Lazy Loading**\n   - Use React.lazy() and Suspense for route-based splitting\n   - Implement dynamic imports for heavy components\n\n2. **Memoization Techniques**\n   - Use React.memo() for expensive components\n   - Apply useMemo() for costly computations\n   - Utilize useCallback() for function references\n\n3. **Virtual List Rendering**\n   - Implement react-window or react-virtualized for long lists\n   - Only render visible items in viewport\n\n4. **State Management**\n   - Keep state as local as possible\n   - Use context API judiciously\n   - Consider state management libraries for complex apps\n\n5. **Bundle Optimization**\n   - Tree shaking and dead code elimination\n   - Minimize bundle size with tools like webpack-bundle-analyzer\n\nWould you like me to elaborate on any of these techniques?",
           timestamp: new Date(Date.now() - 3500000),
-          model: "Claude 3.5 Sonnet"
+          model: "enso"
         }
       ],
       createdAt: new Date(Date.now() - 86400000),
       updatedAt: new Date(Date.now() - 3500000),
-      model: "Claude 3.5 Sonnet"
+      model: "enso"
     },
     {
       id: "2",
@@ -109,7 +109,7 @@ export default function ChatPage() {
       messages: [],
       createdAt: new Date(Date.now() - 172800000),
       updatedAt: new Date(Date.now() - 172800000),
-      model: "GPT-4"
+      model: "gpt-5.2"
     },
     {
       id: "3",
@@ -117,7 +117,7 @@ export default function ChatPage() {
       messages: [],
       createdAt: new Date(Date.now() - 259200000),
       updatedAt: new Date(Date.now() - 259200000),
-      model: "Claude 3.5 Sonnet"
+      model: "enso"
     }
   ]);
 
@@ -127,7 +127,7 @@ export default function ChatPage() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     () => typeof window !== "undefined" && !window.matchMedia("(min-width:1024px)").matches
   );
-  const [selectedModel, setSelectedModel] = useState("Claude 3.5 Sonnet");
+  const [selectedModel, setSelectedModel] = useState("enso");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -514,11 +514,12 @@ export default function ChatPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-neutral-900 border-neutral-700">
-                    <SelectItem value="Claude 3.5 Sonnet">Claude 3.5 Sonnet</SelectItem>
-                    <SelectItem value="Claude 3.5 Haiku">Claude 3.5 Haiku</SelectItem>
-                    <SelectItem value="GPT-4">GPT-4</SelectItem>
-                    <SelectItem value="GPT-4 Turbo">GPT-4 Turbo</SelectItem>
-                    <SelectItem value="Gemini Pro">Gemini Pro</SelectItem>
+                    <SelectItem value="enso">Enso (auto)</SelectItem>
+                    <SelectItem value="claude-opus-4.8">Claude Opus 4.8</SelectItem>
+                    <SelectItem value="claude-5-sonnet">Claude Sonnet 5</SelectItem>
+                    <SelectItem value="claude-haiku-4.5">Claude Haiku 4.5</SelectItem>
+                    <SelectItem value="gpt-5.2">GPT-5.2</SelectItem>
+                    <SelectItem value="gpt-5.4">GPT-5.4</SelectItem>
                   </SelectContent>
                 </Select>
 

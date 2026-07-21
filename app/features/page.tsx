@@ -45,7 +45,7 @@ export default function FeaturesPage() {
       icon: <Brain className="w-6 h-6 text-violet-400" />,
       title: "AI-Powered Code Generation",
       description: "Advanced AI models generate production-ready code from natural language descriptions",
-      features: ["GPT-4 Turbo integration", "Custom code patterns", "Context-aware generation", "Multi-language support"]
+      features: ["Frontier model integration", "Custom code patterns", "Context-aware generation", "Multi-language support"]
     },
     {
       icon: <Code className="w-6 h-6 text-blue-400" />,
