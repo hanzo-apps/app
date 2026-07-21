@@ -346,6 +346,13 @@
 
 :root {
   --radius: 0.5rem;
+  /* Tailwind Preflight applies `font-family: var(--default-font-family)` to
+     <html> and `var(--default-mono-font-family)` to code/pre. Our --font-sans /
+     --font-mono are @theme-inline (never emitted as vars), so those Preflight
+     defaults fell back to the OS stack at the document root. Point them at the
+     Geist faces so the ROOT font is Geist before any component styles load. */
+  --default-font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --default-mono-font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -496,6 +503,32 @@ button, input, textarea, select, optgroup {
 }
 code, pre, kbd, samp, .font-mono, [class~="font-mono"] {
   font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* ── @hanzo/gui (Tamagui) font re-point — the ROOT cause of "headings/body in a
+   system font" ──────────────────────────────────────────────────────────────
+   Tamagui wraps the whole app in a `.is_View` span (BODY > span._dsp_contents)
+   and applies `font-family: var(--f-family)` to .font_body / .font_heading /
+   .is_View. Its default --f-family is an OS stack (-apple-system, …), so EVERY
+   page's content — body text AND headings — inherited the system face; the
+   `body { font-family: Geist }` rule above never reached past that wrapper.
+   Re-point Tamagui's font variable to the brand faces at the source. !important
+   beats Tamagui's own scoped `.font_body`/`.font_heading` defaults (which are
+   more specific than :root); this is the ONE place the whole class of
+   Geist-not-applied bugs is fixed. Mono faces are unaffected (code/pre/.font-mono
+   are pinned to Geist Mono above and the editor sets Geist Mono inline). */
+:root,
+.font_body,
+.font_heading,
+.is_View {
+  --f-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif !important;
+}
+
+/* Headings are the largest text on every page — declare Geist on them directly
+   too (an explicit declaration beats any inherited value, belt-and-suspenders
+   over the inheritance fix above). */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Brand reveal: the header lockup shows "Hanzo App", then the wordmark collapses
