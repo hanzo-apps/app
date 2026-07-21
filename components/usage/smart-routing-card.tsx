@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import classNames from "classnames";
 import { Zap, ExternalLink } from "lucide-react";
 import { useLocalStorage } from "react-use";
@@ -36,7 +37,13 @@ export default function SmartRoutingCard() {
   const [model, setModel] = useLocalStorage<string>("model");
   const defaults = useRoutingDefaults();
 
-  const localPref = model == null ? null : isSmartRouting(model);
+  // Gate the localStorage read until after mount: the server has no localStorage
+  // and renders the org-default state, so reading the stored override on the very
+  // first client render would diverge from the server HTML (hydration error).
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const localPref = !mounted || model == null ? null : isSmartRouting(model);
   const { enabled: on, toggleDisabled } = resolveSmartRouting(localPref, defaults);
 
   return (
