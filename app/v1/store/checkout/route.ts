@@ -1,4 +1,4 @@
-// POST /api/store/checkout — turn a cart (or explicit items) into a REAL
+// POST /v1/store/checkout — turn a cart (or explicit items) into a REAL
 // Square-hosted checkout session. Public: no shopper login required to pay.
 // The org is resolved server-side (never from client input); items reference
 // the catalog by productId/slug so commerce prices them from the org's real
