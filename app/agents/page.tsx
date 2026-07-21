@@ -23,7 +23,6 @@ import {
   ChevronDown,
   Search,
   Cpu,
-  Network,
   Code2,
   Bot,
   Plus,
@@ -247,12 +246,6 @@ export default function AgentsPage() {
             </div>
 
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:flex lg:w-auto">
-              <Link href="/nodes">
-                <Button variant="outline" className="w-full gap-2 lg:w-auto">
-                  <Network className="w-4 h-4" />
-                  Nodes
-                </Button>
-              </Link>
               <Link href="/dev">
                 <Button variant="outline" className="w-full gap-2 lg:w-auto">
                   <Code2 className="w-4 h-4" />
