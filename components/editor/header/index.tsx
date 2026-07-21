@@ -112,7 +112,7 @@ export function Header({
   const secondary = actions.slice(0, -1);
 
   return (
-    <header className="z-20 flex items-center gap-2 bg-neutral-950 px-3 py-2 sm:gap-3 lg:grid lg:grid-cols-[auto_1fr_auto] lg:px-4">
+    <header className="z-20 flex items-center gap-2 bg-card px-3 py-2 sm:gap-3 lg:grid lg:grid-cols-[auto_1fr_auto] lg:px-4">
       {/* LEFT — the workspace menu (identity/home anchor) + the desktop sidebar
           toggle. Everything about who/where you are lives in the menu. */}
       <div className="flex shrink-0 items-center gap-1.5">
@@ -125,7 +125,7 @@ export function Header({
           title={sidebarCollapsed ? "Show chat panel" : "Hide chat panel"}
           aria-label={sidebarCollapsed ? "Show chat panel" : "Hide chat panel"}
           aria-pressed={!sidebarCollapsed}
-          className="hidden size-8 items-center justify-center rounded-lg text-white/50 ring-1 ring-white/10 transition-colors duration-150 hover:bg-white/[0.06] hover:text-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 lg:flex"
+          className="hidden size-8 items-center justify-center rounded-lg text-muted-foreground ring-1 ring-white/10 transition-colors duration-150 hover:bg-white/[0.06] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 lg:flex"
         >
           {sidebarCollapsed ? (
             <PanelLeft className="size-4" />
@@ -145,8 +145,8 @@ export function Header({
             className={classNames(
               "hidden size-8 items-center justify-center rounded-lg ring-1 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 lg:flex",
               historyOpen
-                ? "bg-white/10 text-white ring-white/20"
-                : "text-white/50 ring-white/10 hover:bg-white/[0.06] hover:text-white/90",
+                ? "bg-muted text-foreground ring-white/20"
+                : "text-muted-foreground ring-white/10 hover:bg-white/[0.06] hover:text-foreground",
             )}
           >
             <History className="size-4" />
@@ -176,8 +176,8 @@ export function Header({
                   "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
                   "mobileOnly" in item && item.mobileOnly ? "lg:hidden" : "",
                   active
-                    ? "bg-white/10 text-white shadow-sm"
-                    : "text-white/50 hover:bg-white/[0.06] hover:text-white/90"
+                    ? "bg-muted text-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-white/[0.06] hover:text-foreground"
                 )}
               >
                 <item.icon className="size-4 shrink-0" />
@@ -208,8 +208,8 @@ export function Header({
                   className={classNames(
                     "flex size-7 items-center justify-center rounded-md text-sm transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
                     active
-                      ? "bg-white/10 text-white shadow-sm"
-                      : "text-white/50 hover:bg-white/[0.06] hover:text-white/90"
+                      ? "bg-muted text-foreground shadow-sm"
+                      : "text-muted-foreground hover:bg-white/[0.06] hover:text-foreground"
                   )}
                 >
                   <d.icon />
@@ -221,7 +221,7 @@ export function Header({
             type="button"
             onClick={handleRefreshIframe}
             title="Refresh preview"
-            className="flex size-8 items-center justify-center rounded-lg text-white/50 ring-1 ring-white/10 transition-colors duration-150 hover:bg-white/[0.06] hover:text-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+            className="flex size-8 items-center justify-center rounded-lg text-muted-foreground ring-1 ring-white/10 transition-colors duration-150 hover:bg-white/[0.06] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
           >
             <RefreshCcw className="size-3.5" />
           </button>
@@ -235,18 +235,18 @@ export function Header({
                   type="button"
                   title="Browse pages"
                   aria-label="Browse pages"
-                  className="flex max-w-[12rem] items-center gap-1.5 rounded-lg bg-white/[0.03] px-2.5 py-1.5 text-sm text-white/70 ring-1 ring-white/10 transition-colors duration-150 hover:bg-white/[0.06] hover:text-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+                  className="flex max-w-[12rem] items-center gap-1.5 rounded-lg bg-white/[0.03] px-2.5 py-1.5 text-sm text-foreground ring-1 ring-white/10 transition-colors duration-150 hover:bg-white/[0.06] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
                 >
                   <span className="truncate font-mono text-xs">
                     {currentPage}
                   </span>
-                  <ChevronDown className="size-3.5 shrink-0 text-white/40" />
+                  <ChevronDown className="size-3.5 shrink-0 text-muted-foreground" />
                 </button>
               </PopoverTrigger>
               <PopoverContent
                 align="center"
                 sideOffset={6}
-                className="w-64 overflow-hidden rounded-xl border border-white/10 bg-[#0a0a0a] p-0 text-white shadow-2xl"
+                className="w-64 overflow-hidden rounded-xl border border-border bg-card p-0 text-foreground shadow-2xl"
               >
                 <PagePanel
                   pages={pages}
@@ -264,7 +264,7 @@ export function Header({
             onClick={onOpenExternal}
             title="Open preview in a new tab"
             aria-label="Open preview in a new tab"
-            className="flex size-8 items-center justify-center rounded-lg text-white/50 ring-1 ring-white/10 transition-colors duration-150 hover:bg-white/[0.06] hover:text-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+            className="flex size-8 items-center justify-center rounded-lg text-muted-foreground ring-1 ring-white/10 transition-colors duration-150 hover:bg-white/[0.06] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
           >
             <ExternalLink className="size-3.5" />
           </button>

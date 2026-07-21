@@ -506,11 +506,11 @@ export function VisualEditor({
   // Keep the bottom edge clear of the mobile safe-area inset.
   const anchorStyle: React.CSSProperties | undefined =
     position === "bottom" ? { bottom: "max(0.75rem, env(safe-area-inset-bottom))" } : undefined;
-  const dividerClass = cn("shrink-0 bg-white/10", isVertical ? "my-0.5 h-px w-5" : "mx-0.5 h-5 w-px");
+  const dividerClass = cn("shrink-0 bg-border", isVertical ? "my-0.5 h-px w-5" : "mx-0.5 h-5 w-px");
   const menuSide =
     position === "bottom" ? "top" : position === "top" ? "bottom" : position === "left" ? "right" : "left";
   const menuItemClass =
-    "gap-2 text-neutral-200 focus:bg-white/10 focus:text-white data-[highlighted]:bg-white/10 data-[highlighted]:text-white";
+    "gap-2 text-foreground focus:bg-muted focus:text-foreground data-[highlighted]:bg-muted data-[highlighted]:text-foreground";
 
   const dockPositionOptions: { value: DockPosition; label: string; icon: typeof PanelBottom }[] = [
     { value: "bottom", label: "Bottom", icon: PanelBottom },
@@ -527,7 +527,7 @@ export function VisualEditor({
         <Button
           variant="ghost"
           size="sm"
-          className="size-8 shrink-0 p-0 text-neutral-300 hover:bg-white/10 hover:text-white"
+          className="size-8 shrink-0 p-0 text-muted-foreground hover:bg-muted hover:text-foreground"
           title="More"
           aria-label="Visual editor options"
         >
@@ -538,14 +538,14 @@ export function VisualEditor({
         side={menuSide}
         align="end"
         sideOffset={8}
-        className="min-w-56 border-white/10 bg-neutral-900/95 text-neutral-200 shadow-xl shadow-black/40 backdrop-blur"
+        className="min-w-56 border-border bg-card/95 text-foreground shadow-xl shadow-black/40 backdrop-blur"
       >
         <DropdownMenuSub>
           <DropdownMenuSubTrigger className={menuItemClass}>
             <PanelBottom className="size-4" />
             <span>Dock</span>
           </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent className="min-w-40 border-white/10 bg-neutral-900/95 text-neutral-200 backdrop-blur">
+          <DropdownMenuSubContent className="min-w-40 border-border bg-card/95 text-foreground backdrop-blur">
             <DropdownMenuRadioGroup
               value={dockPosition}
               onValueChange={(v) => setDockPosition(v as DockPosition)}
@@ -555,7 +555,7 @@ export function VisualEditor({
                   <Icon className="size-4" />
                   <span>{label}</span>
                   {value === "bottom" && (
-                    <span className="ml-auto text-[10px] text-neutral-500">Default</span>
+                    <span className="ml-auto text-[10px] text-muted-foreground">Default</span>
                   )}
                 </DropdownMenuRadioItem>
               ))}
@@ -581,8 +581,8 @@ export function VisualEditor({
           <span>Hide</span>
         </DropdownMenuCheckboxItem>
 
-        <DropdownMenuSeparator className="bg-white/10" />
-        <DropdownMenuLabel className="text-[10px] font-medium uppercase tracking-wider text-neutral-500">
+        <DropdownMenuSeparator className="bg-border" />
+        <DropdownMenuLabel className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
           Theme
         </DropdownMenuLabel>
         <DropdownMenuRadioGroup
@@ -603,9 +603,9 @@ export function VisualEditor({
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
 
-        <DropdownMenuSeparator className="bg-white/10" />
+        <DropdownMenuSeparator className="bg-border" />
         <div
-          className="flex items-center justify-between gap-4 px-2 py-1.5 text-sm text-neutral-200"
+          className="flex items-center justify-between gap-4 px-2 py-1.5 text-sm text-foreground"
           onPointerDown={(e) => e.stopPropagation()}
         >
           <span className="flex items-center gap-2">
@@ -629,7 +629,7 @@ export function VisualEditor({
           onClick={() => setIsHidden(false)}
           title="Show visual editor"
           aria-label="Show visual editor"
-          className="absolute bottom-3 right-3 z-50 inline-flex size-8 items-center justify-center rounded-full border border-white/10 bg-neutral-900/95 text-neutral-300 shadow-lg shadow-black/40 backdrop-blur transition hover:bg-neutral-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+          className="absolute bottom-3 right-3 z-50 inline-flex size-8 items-center justify-center rounded-full border border-border bg-card/95 text-muted-foreground shadow-lg shadow-black/40 backdrop-blur transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
           style={anchorStyle}
         >
           <Wand2 className="size-4" />
@@ -642,7 +642,7 @@ export function VisualEditor({
             onClick={() => setIsMinimized(false)}
             title="Expand visual editor"
             aria-label="Expand visual editor"
-            className="inline-flex size-8 items-center justify-center rounded-full border border-white/10 bg-neutral-900/95 text-neutral-300 shadow-lg shadow-black/40 backdrop-blur transition hover:bg-neutral-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+            className="inline-flex size-8 items-center justify-center rounded-full border border-border bg-card/95 text-muted-foreground shadow-lg shadow-black/40 backdrop-blur transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
           >
             {isVertical ? <GripVertical className="size-4" /> : <GripHorizontal className="size-4" />}
           </button>
@@ -653,7 +653,7 @@ export function VisualEditor({
           aria-label="Visual editor"
           aria-orientation={isVertical ? "vertical" : "horizontal"}
           className={cn(
-            "absolute z-50 flex items-center gap-1 border border-white/10 bg-neutral-900/95 p-1 shadow-lg shadow-black/40 backdrop-blur",
+            "absolute z-50 flex items-center gap-1 border border-border bg-card/95 p-1 shadow-lg shadow-black/40 backdrop-blur",
             isVertical
               ? "max-h-[calc(100%-1.5rem)] flex-col rounded-2xl"
               : "max-w-[calc(100%-1.5rem)] flex-row rounded-full",
@@ -671,8 +671,8 @@ export function VisualEditor({
             className={cn(
               "size-8 shrink-0 p-0",
               isEnabled
-                ? "bg-white text-neutral-900 hover:bg-neutral-200"
-                : "text-neutral-300 hover:bg-white/10 hover:text-white"
+                ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
             <Wand2 className="size-4" />
@@ -686,7 +686,7 @@ export function VisualEditor({
                 size="sm"
                 className={cn(
                   "size-8 shrink-0 p-0",
-                  editMode !== "select" && "text-neutral-300 hover:bg-white/10 hover:text-white"
+                  editMode !== "select" && "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
                 onClick={() => setEditMode("select")}
                 title="Select (V)"
@@ -699,7 +699,7 @@ export function VisualEditor({
                 size="sm"
                 className={cn(
                   "size-8 shrink-0 p-0",
-                  editMode !== "edit" && "text-neutral-300 hover:bg-white/10 hover:text-white"
+                  editMode !== "edit" && "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
                 onClick={() => setEditMode("edit")}
                 title="Edit (E)"
@@ -712,7 +712,7 @@ export function VisualEditor({
                 size="sm"
                 className={cn(
                   "size-8 shrink-0 p-0",
-                  editMode !== "move" && "text-neutral-300 hover:bg-white/10 hover:text-white"
+                  editMode !== "move" && "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
                 onClick={() => setEditMode("move")}
                 title="Move (M)"
@@ -726,7 +726,7 @@ export function VisualEditor({
                 size="sm"
                 className={cn(
                   "size-8 shrink-0 p-0",
-                  !showPanel && "text-neutral-300 hover:bg-white/10 hover:text-white"
+                  !showPanel && "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
                 onClick={() => setShowPanel(!showPanel)}
                 title="Properties panel (P)"
@@ -744,10 +744,10 @@ export function VisualEditor({
 
       {/* Properties Panel */}
       {!isHidden && !isMinimized && isEnabled && showPanel && selectedElement && (
-        <div className="absolute top-20 right-4 z-50 w-80 bg-neutral-900/95 backdrop-blur-sm rounded-lg border border-neutral-800 max-h-[600px] overflow-hidden flex flex-col">
-          <div className="p-4 border-b border-neutral-800">
+        <div className="absolute top-20 right-4 z-50 w-80 bg-card/95 backdrop-blur-sm rounded-lg border border-border max-h-[600px] overflow-hidden flex flex-col">
+          <div className="p-4 border-b border-border">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-white">Element Properties</h3>
+              <h3 className="text-sm font-medium text-foreground">Element Properties</h3>
               <Button
                 variant="ghost"
                 size="sm"
@@ -757,21 +757,21 @@ export function VisualEditor({
                 <X className="w-4 h-4" />
               </Button>
             </div>
-            <div className="space-y-1 text-xs text-neutral-400">
+            <div className="space-y-1 text-xs text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Box className="w-3 h-3" />
                 <span className="font-mono">{selectedElement.tagName}</span>
                 {selectedElement.id && (
-                  <span className="text-neutral-300">#{selectedElement.id}</span>
+                  <span className="text-muted-foreground">#{selectedElement.id}</span>
                 )}
               </div>
               {selectedElement.className && (
-                <div className="text-xs text-neutral-500 truncate">
+                <div className="text-xs text-muted-foreground truncate">
                   .{selectedElement.className.split(' ').join('.')}
                 </div>
               )}
               {selectedElement.sourceLocation && (
-                <div className="flex items-center gap-1 text-xs text-neutral-300">
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
                   <Code className="w-3 h-3" />
                   Line {selectedElement.sourceLocation.line}
                 </div>
@@ -780,7 +780,7 @@ export function VisualEditor({
           </div>
 
           <Tabs defaultValue="content" className="flex-1 overflow-hidden">
-            <TabsList className="grid w-full grid-cols-3 bg-neutral-800">
+            <TabsList className="grid w-full grid-cols-3 bg-muted">
               <TabsTrigger value="content">Content</TabsTrigger>
               <TabsTrigger value="styles">Styles</TabsTrigger>
               <TabsTrigger value="layout">Layout</TabsTrigger>
@@ -789,12 +789,12 @@ export function VisualEditor({
             <div className="overflow-y-auto max-h-[400px]">
               <TabsContent value="content" className="p-4 space-y-4">
                 <div>
-                  <Label className="text-xs text-neutral-400">Text Content</Label>
+                  <Label className="text-xs text-muted-foreground">Text Content</Label>
                   <div className="flex gap-2 mt-1">
                     <Input
                       value={elementText}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setElementText(e.target.value)}
-                      className="flex-1 bg-neutral-800 border-neutral-700 text-white text-sm"
+                      className="flex-1 bg-muted border-border text-foreground text-sm"
                     />
                     <Button size="sm" onClick={applyTextChange}>
                       <Check className="w-4 h-4" />
@@ -803,8 +803,8 @@ export function VisualEditor({
                 </div>
 
                 <div>
-                  <Label className="text-xs text-neutral-400">CSS Selector</Label>
-                  <code className="block mt-1 p-2 bg-neutral-800 rounded text-xs text-neutral-300 font-mono">
+                  <Label className="text-xs text-muted-foreground">CSS Selector</Label>
+                  <code className="block mt-1 p-2 bg-muted rounded text-xs text-muted-foreground font-mono">
                     {selectedElement.selector}
                   </code>
                 </div>
@@ -812,10 +812,10 @@ export function VisualEditor({
 
               <TabsContent value="styles" className="p-4 space-y-4">
                 <div>
-                  <Label className="text-xs text-neutral-400">Text Color</Label>
+                  <Label className="text-xs text-muted-foreground">Text Color</Label>
                   <div className="flex gap-2 mt-1">
                     <div
-                      className="w-10 h-10 rounded border border-neutral-700 cursor-pointer"
+                      className="w-10 h-10 rounded border border-border cursor-pointer"
                       style={{ backgroundColor: elementStyles.color }}
                       onClick={() => {
                         const color = prompt("Enter color (hex, rgb, or name):", elementStyles.color);
@@ -825,16 +825,16 @@ export function VisualEditor({
                     <Input
                       value={elementStyles.color}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("color", e.target.value)}
-                      className="flex-1 bg-neutral-800 border-neutral-700 text-white text-sm"
+                      className="flex-1 bg-muted border-border text-foreground text-sm"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <Label className="text-xs text-neutral-400">Background</Label>
+                  <Label className="text-xs text-muted-foreground">Background</Label>
                   <div className="flex gap-2 mt-1">
                     <div
-                      className="w-10 h-10 rounded border border-neutral-700 cursor-pointer"
+                      className="w-10 h-10 rounded border border-border cursor-pointer"
                       style={{ backgroundColor: elementStyles.backgroundColor }}
                       onClick={() => {
                         const color = prompt("Enter background color:", elementStyles.backgroundColor);
@@ -844,26 +844,26 @@ export function VisualEditor({
                     <Input
                       value={elementStyles.backgroundColor}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("backgroundColor", e.target.value)}
-                      className="flex-1 bg-neutral-800 border-neutral-700 text-white text-sm"
+                      className="flex-1 bg-muted border-border text-foreground text-sm"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <Label className="text-xs text-neutral-400">Font Size</Label>
+                  <Label className="text-xs text-muted-foreground">Font Size</Label>
                   <Input
                     value={elementStyles.fontSize}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("fontSize", e.target.value)}
-                    className="bg-neutral-800 border-neutral-700 text-white text-sm mt-1"
+                    className="bg-muted border-border text-foreground text-sm mt-1"
                   />
                 </div>
 
                 <div>
-                  <Label className="text-xs text-neutral-400">Font Weight</Label>
+                  <Label className="text-xs text-muted-foreground">Font Weight</Label>
                   <select
                     value={elementStyles.fontWeight}
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => applyStyleChange("fontWeight", e.target.value)}
-                    className="w-full bg-neutral-800 border border-neutral-700 text-white text-sm rounded px-3 py-1 mt-1"
+                    className="w-full bg-muted border border-border text-foreground text-sm rounded px-3 py-1 mt-1"
                   >
                     <option value="normal">Normal</option>
                     <option value="bold">Bold</option>
@@ -883,51 +883,51 @@ export function VisualEditor({
               <TabsContent value="layout" className="p-4 space-y-4">
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label className="text-xs text-neutral-400">Width</Label>
+                    <Label className="text-xs text-muted-foreground">Width</Label>
                     <Input
                       value={elementStyles.width}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("width", e.target.value)}
                       placeholder="auto"
-                      className="bg-neutral-800 border-neutral-700 text-white text-sm mt-1"
+                      className="bg-muted border-border text-foreground text-sm mt-1"
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-neutral-400">Height</Label>
+                    <Label className="text-xs text-muted-foreground">Height</Label>
                     <Input
                       value={elementStyles.height}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("height", e.target.value)}
                       placeholder="auto"
-                      className="bg-neutral-800 border-neutral-700 text-white text-sm mt-1"
+                      className="bg-muted border-border text-foreground text-sm mt-1"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <Label className="text-xs text-neutral-400">Padding</Label>
+                  <Label className="text-xs text-muted-foreground">Padding</Label>
                   <Input
                     value={elementStyles.padding}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("padding", e.target.value)}
                     placeholder="0px"
-                    className="bg-neutral-800 border-neutral-700 text-white text-sm mt-1"
+                    className="bg-muted border-border text-foreground text-sm mt-1"
                   />
                 </div>
 
                 <div>
-                  <Label className="text-xs text-neutral-400">Margin</Label>
+                  <Label className="text-xs text-muted-foreground">Margin</Label>
                   <Input
                     value={elementStyles.margin}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("margin", e.target.value)}
                     placeholder="0px"
-                    className="bg-neutral-800 border-neutral-700 text-white text-sm mt-1"
+                    className="bg-muted border-border text-foreground text-sm mt-1"
                   />
                 </div>
 
                 <div>
-                  <Label className="text-xs text-neutral-400">Display</Label>
+                  <Label className="text-xs text-muted-foreground">Display</Label>
                   <select
                     value={elementStyles.display}
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => applyStyleChange("display", e.target.value)}
-                    className="w-full bg-neutral-800 border border-neutral-700 text-white text-sm rounded px-3 py-1 mt-1"
+                    className="w-full bg-muted border border-border text-foreground text-sm rounded px-3 py-1 mt-1"
                   >
                     <option value="block">Block</option>
                     <option value="inline">Inline</option>
@@ -939,11 +939,11 @@ export function VisualEditor({
                 </div>
 
                 <div>
-                  <Label className="text-xs text-neutral-400">Position</Label>
+                  <Label className="text-xs text-muted-foreground">Position</Label>
                   <select
                     value={elementStyles.position}
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => applyStyleChange("position", e.target.value)}
-                    className="w-full bg-neutral-800 border border-neutral-700 text-white text-sm rounded px-3 py-1 mt-1"
+                    className="w-full bg-muted border border-border text-foreground text-sm rounded px-3 py-1 mt-1"
                   >
                     <option value="static">Static</option>
                     <option value="relative">Relative</option>

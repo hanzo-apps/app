@@ -21,9 +21,9 @@ export function ListPagesItem({
     <div
       key={index}
       className={classNames(
-        "pl-6 pr-1 py-3 text-neutral-400 cursor-pointer text-sm hover:bg-neutral-900 flex items-center justify-center gap-1 group text-nowrap border-r border-neutral-800",
+        "pl-6 pr-1 py-3 text-muted-foreground cursor-pointer text-sm hover:bg-card flex items-center justify-center gap-1 group text-nowrap border-r border-border",
         {
-          "bg-neutral-900 !text-white": currentPage === page.path,
+          "bg-card !text-foreground": currentPage === page.path,
           "!pr-6": index === 0, // Ensure the first item has padding on the right
         }
       )}
@@ -54,7 +54,7 @@ export function ListPagesItem({
             }
           }}
         >
-          <EditIcon className="!h-3.5 text-neutral-400 cursor-pointer hover:text-neutral-300" />
+          <EditIcon className="!h-3.5 text-muted-foreground cursor-pointer hover:text-muted-foreground" />
         </Button>
       )} */}
       {page.path}
@@ -74,7 +74,7 @@ export function ListPagesItem({
             }
           }}
         >
-          <XIcon className="h-3 text-neutral-400 cursor-pointer hover:text-neutral-300" />
+          <XIcon className="h-3 text-muted-foreground cursor-pointer hover:text-muted-foreground" />
         </Button>
       )}
     </div>

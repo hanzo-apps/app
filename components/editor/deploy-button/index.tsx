@@ -57,7 +57,7 @@ export function DeployButton({
               </div>
             </PopoverTrigger>
             <PopoverContent
-              className="w-72 !rounded-xl !p-0 !bg-neutral-950 !border-white/10 overflow-hidden shadow-2xl"
+              className="w-72 !rounded-xl !p-0 !bg-card !border-border overflow-hidden shadow-2xl"
               align="end"
               sideOffset={8}
             >

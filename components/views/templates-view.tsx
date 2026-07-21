@@ -31,17 +31,17 @@ export function TemplatesView({ onProjectSelect }: TemplatesViewProps) {
   };
 
   return (
-    <div className="flex h-full flex-col bg-black text-white">
+    <div className="flex h-full flex-col bg-background text-foreground">
       {/* Mode toggle: the curated gallery vs. your imported/built-in templates. */}
       <div className="shrink-0 px-5 pt-5 sm:px-8 sm:pt-6">
         <div className="mx-auto flex max-w-7xl items-center">
-          <div className="flex rounded-full border border-white/10 p-0.5">
+          <div className="flex rounded-full border border-border p-0.5">
             <button
               onClick={() => setMode('gallery')}
               className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm transition-colors ${
                 mode === 'gallery'
-                  ? 'bg-white text-black'
-                  : 'text-white/55 hover:text-white'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               <Sparkles className="h-4 w-4" />
@@ -51,8 +51,8 @@ export function TemplatesView({ onProjectSelect }: TemplatesViewProps) {
               onClick={() => setMode('custom')}
               className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm transition-colors ${
                 mode === 'custom'
-                  ? 'bg-white text-black'
-                  : 'text-white/55 hover:text-white'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               <Package className="h-4 w-4" />
