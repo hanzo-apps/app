@@ -49,16 +49,16 @@ export const schemas = {
     .max(10000, 'Prompt is too long')
     .transform((val) => sanitizeInput(val)),
 
-  modelName: z.enum([
-    'gpt-4',
-    'gpt-4-turbo',
-    'gpt-3.5-turbo',
-    'claude-3-opus',
-    'claude-3-sonnet',
-    'claude-3-haiku',
-    'llama-3',
-    'mixtral',
-  ]),
+  // The model catalog is dynamic (100+ ids served by api.hanzo.ai/v1, refreshed
+  // continuously) — enumerating it here would reject every new model the day it
+  // ships. Validate the SHAPE of a model id instead: a bounded, safe-charset
+  // string. `enso`, `claude-opus-4.8`, `gpt-5.2`, `anthropic/claude-5-sonnet`
+  // all pass; nothing exotic gets through.
+  modelName: z
+    .string()
+    .min(1, 'Model is required')
+    .max(100, 'Model id is too long')
+    .regex(/^[a-zA-Z0-9._/:-]+$/, 'Invalid model id'),
 
   // URL validation
   url: z.string().url('Invalid URL format').refine((url) => {
