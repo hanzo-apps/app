@@ -74,3 +74,4 @@ jobs:
           echo "Pushed $IMG — bump the operator CR (universe: hanzo-app.yaml) to deploy."
 
 # native CI re-trigger (runner reconnected after hanzo-git WORKFLOW_DIRS restart)
+# retrigger c789d487c
