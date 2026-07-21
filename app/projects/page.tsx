@@ -46,7 +46,9 @@ export default function ProjectsPage() {
           <h1 className="mb-6 text-2xl font-medium tracking-tight text-white">
             Projects
           </h1>
-          <ProjectList />
+          {/* Sidebar already renders the org switcher — suppress the duplicate in
+              the list toolbar so there's one org control, not two. */}
+          <ProjectList showOrgSwitcher={false} />
         </div>
       </div>
     </AppShell>
