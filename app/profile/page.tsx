@@ -30,10 +30,10 @@ export default function ProfilePage() {
   // Show loading state while checking auth
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <HanzoLogo className="w-12 h-12 mx-auto mb-4 animate-pulse" />
-          <p className="text-neutral-500">Loading profile...</p>
+          <p className="text-muted-foreground">Loading profile...</p>
         </div>
       </div>
     );
@@ -42,10 +42,10 @@ export default function ProfilePage() {
   // Show loading state while redirecting
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <HanzoLogo className="w-12 h-12 mx-auto mb-4 animate-pulse" />
-          <p className="text-neutral-500">Redirecting to login...</p>
+          <p className="text-muted-foreground">Redirecting to login...</p>
         </div>
       </div>
     );
@@ -58,9 +58,9 @@ export default function ProfilePage() {
     .replace(/^-+|-+$/g, "");
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-neutral-800 px-6 py-4">
+      <header className="border-b border-border px-6 py-4">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button
@@ -72,7 +72,7 @@ export default function ProfilePage() {
               <ArrowLeft className="w-4 h-4" />
               Back
             </Button>
-            <h1 className="text-2xl font-medium text-white">Profile</h1>
+            <h1 className="text-2xl font-medium text-foreground">Profile</h1>
           </div>
           <div className="flex items-center gap-2">
             {isEditing ? (
@@ -108,7 +108,7 @@ export default function ProfilePage() {
                 </Avatar>
                 {isEditing && (
                   <button className="absolute bottom-0 right-0 p-1.5 bg-purple-500 rounded-full hover:bg-purple-600 transition-colors">
-                    <Camera className="w-4 h-4 text-white" />
+                    <Camera className="w-4 h-4 text-foreground" />
                   </button>
                 )}
               </div>
@@ -118,127 +118,127 @@ export default function ProfilePage() {
                   <input
                     type="text"
                     defaultValue={user?.fullname}
-                    className="text-3xl font-medium bg-transparent text-white border-b border-neutral-600 focus:border-purple-500 outline-none pb-2 mb-2"
+                    className="text-3xl font-medium bg-transparent text-foreground border-b border-border focus:border-purple-500 outline-none pb-2 mb-2"
                   />
                 ) : (
-                  <h2 className="text-3xl font-medium text-white mb-2">{user?.fullname}</h2>
+                  <h2 className="text-3xl font-medium text-foreground mb-2">{user?.fullname}</h2>
                 )}
-                <p className="text-neutral-400">@{handle}</p>
+                <p className="text-muted-foreground">@{handle}</p>
               </div>
             </div>
           </div>
 
           {/* Profile Content */}
-          <div className="bg-neutral-900 rounded-b-lg border border-neutral-800 p-6">
+          <div className="bg-card rounded-b-lg border border-border p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Basic Info */}
               <div className="space-y-4">
-                <h3 className="text-lg font-medium text-white mb-4">Basic Information</h3>
+                <h3 className="text-lg font-medium text-foreground mb-4">Basic Information</h3>
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-400 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Full Name
                   </label>
                   {isEditing ? (
                     <input
                       type="text"
                       defaultValue={user?.fullname}
-                      className="w-full bg-neutral-800 text-white border border-neutral-700 rounded-lg px-3 py-2"
+                      className="w-full bg-muted text-foreground border border-border rounded-lg px-3 py-2"
                     />
                   ) : (
-                    <p className="text-white">{user?.fullname}</p>
+                    <p className="text-foreground">{user?.fullname}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-400 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Email
                   </label>
                   {isEditing ? (
                     <input
                       type="email"
                       defaultValue={user?.email}
-                      className="w-full bg-neutral-800 text-white border border-neutral-700 rounded-lg px-3 py-2"
+                      className="w-full bg-muted text-foreground border border-border rounded-lg px-3 py-2"
                     />
                   ) : (
-                    <p className="text-white break-all">{user?.email}</p>
+                    <p className="text-foreground break-all">{user?.email}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-400 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Username
                   </label>
                   {isEditing ? (
                     <input
                       type="text"
                       defaultValue={handle}
-                      className="w-full bg-neutral-800 text-white border border-neutral-700 rounded-lg px-3 py-2"
+                      className="w-full bg-muted text-foreground border border-border rounded-lg px-3 py-2"
                     />
                   ) : (
-                    <p className="text-white">@{handle}</p>
+                    <p className="text-foreground">@{handle}</p>
                   )}
                 </div>
               </div>
 
               {/* Bio & Links */}
               <div className="space-y-4">
-                <h3 className="text-lg font-medium text-white mb-4">Bio & Links</h3>
+                <h3 className="text-lg font-medium text-foreground mb-4">Bio & Links</h3>
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-400 mb-1">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Bio
                   </label>
                   {isEditing ? (
                     <textarea
                       rows={4}
                       placeholder="Tell us about yourself..."
-                      className="w-full bg-neutral-800 text-white border border-neutral-700 rounded-lg px-3 py-2 resize-none"
+                      className="w-full bg-muted text-foreground border border-border rounded-lg px-3 py-2 resize-none"
                     />
                   ) : (
-                    <p className="text-neutral-400">No bio added yet</p>
+                    <p className="text-muted-foreground">No bio added yet</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-neutral-400 mb-2">
+                  <label className="block text-sm font-medium text-muted-foreground mb-2">
                     Social Links
                   </label>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <Globe className="w-4 h-4 text-neutral-400" />
+                      <Globe className="w-4 h-4 text-muted-foreground" />
                       {isEditing ? (
                         <input
                           type="url"
                           placeholder="Website"
-                          className="flex-1 bg-neutral-800 text-white border border-neutral-700 rounded-lg px-3 py-1.5"
+                          className="flex-1 bg-muted text-foreground border border-border rounded-lg px-3 py-1.5"
                         />
                       ) : (
-                        <span className="text-neutral-400">Not set</span>
+                        <span className="text-muted-foreground">Not set</span>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <Twitter className="w-4 h-4 text-neutral-400" />
+                      <Twitter className="w-4 h-4 text-muted-foreground" />
                       {isEditing ? (
                         <input
                           type="text"
                           placeholder="Twitter username"
-                          className="flex-1 bg-neutral-800 text-white border border-neutral-700 rounded-lg px-3 py-1.5"
+                          className="flex-1 bg-muted text-foreground border border-border rounded-lg px-3 py-1.5"
                         />
                       ) : (
-                        <span className="text-neutral-400">Not set</span>
+                        <span className="text-muted-foreground">Not set</span>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <Github className="w-4 h-4 text-neutral-400" />
+                      <Github className="w-4 h-4 text-muted-foreground" />
                       {isEditing ? (
                         <input
                           type="text"
                           placeholder="GitHub username"
-                          className="flex-1 bg-neutral-800 text-white border border-neutral-700 rounded-lg px-3 py-1.5"
+                          className="flex-1 bg-muted text-foreground border border-border rounded-lg px-3 py-1.5"
                         />
                       ) : (
-                        <span className="text-neutral-400">Not set</span>
+                        <span className="text-muted-foreground">Not set</span>
                       )}
                     </div>
                   </div>
@@ -247,24 +247,24 @@ export default function ProfilePage() {
             </div>
 
             {/* Stats */}
-            <div className="mt-8 pt-6 border-t border-neutral-800">
-              <h3 className="text-lg font-medium text-white mb-4">Statistics</h3>
+            <div className="mt-8 pt-6 border-t border-border">
+              <h3 className="text-lg font-medium text-foreground mb-4">Statistics</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-neutral-800/50 rounded-lg p-4 text-center">
-                  <p className="text-2xl font-medium text-white">12</p>
-                  <p className="text-sm text-neutral-400">Projects</p>
+                <div className="bg-muted/50 rounded-lg p-4 text-center">
+                  <p className="text-2xl font-medium text-foreground">12</p>
+                  <p className="text-sm text-muted-foreground">Projects</p>
                 </div>
-                <div className="bg-neutral-800/50 rounded-lg p-4 text-center">
-                  <p className="text-2xl font-medium text-white">342</p>
-                  <p className="text-sm text-neutral-400">AI Generations</p>
+                <div className="bg-muted/50 rounded-lg p-4 text-center">
+                  <p className="text-2xl font-medium text-foreground">342</p>
+                  <p className="text-sm text-muted-foreground">AI Generations</p>
                 </div>
-                <div className="bg-neutral-800/50 rounded-lg p-4 text-center">
-                  <p className="text-2xl font-medium text-white">89</p>
-                  <p className="text-sm text-neutral-400">Deployments</p>
+                <div className="bg-muted/50 rounded-lg p-4 text-center">
+                  <p className="text-2xl font-medium text-foreground">89</p>
+                  <p className="text-sm text-muted-foreground">Deployments</p>
                 </div>
-                <div className="bg-neutral-800/50 rounded-lg p-4 text-center">
-                  <p className="text-2xl font-medium text-white">2.3k</p>
-                  <p className="text-sm text-neutral-400">Views</p>
+                <div className="bg-muted/50 rounded-lg p-4 text-center">
+                  <p className="text-2xl font-medium text-foreground">2.3k</p>
+                  <p className="text-sm text-muted-foreground">Views</p>
                 </div>
               </div>
             </div>

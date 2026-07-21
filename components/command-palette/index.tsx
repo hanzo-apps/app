@@ -169,23 +169,23 @@ export function CommandPalette({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="max-w-2xl overflow-hidden border-white/10 bg-neutral-950 p-0 text-white gap-0"
+        className="max-w-2xl overflow-hidden border-border bg-card p-0 text-foreground gap-0"
       >
         <DialogTitle className="sr-only">Search projects and commands</DialogTitle>
         <Command
           value={activeValue}
           onValueChange={setActiveValue}
           onKeyDown={handleKeyDown}
-          className="bg-transparent [&_[cmdk-group-heading]]:text-white/40"
+          className="bg-transparent [&_[cmdk-group-heading]]:text-muted-foreground"
         >
           <CommandInput
             placeholder="Search projects and commands…"
-            className="text-white placeholder:text-white/30"
+            className="text-foreground placeholder:text-muted-foreground"
           />
           <div className="flex min-h-[320px]">
             {/* Left: results */}
-            <CommandList className="max-h-[320px] w-1/2 border-r border-white/10 py-1">
-              <CommandEmpty className="text-white/40">No results found.</CommandEmpty>
+            <CommandList className="max-h-[320px] w-1/2 border-r border-border py-1">
+              <CommandEmpty className="text-muted-foreground">No results found.</CommandEmpty>
 
               {projects.length > 0 && (
                 <CommandGroup heading="Recent projects">
@@ -194,9 +194,9 @@ export function CommandPalette({
                       key={p.slug}
                       value={`project:${p.slug}`}
                       onSelect={() => openProject(p)}
-                      className="gap-2 text-white/80 data-[selected=true]:bg-white/10 data-[selected=true]:text-white"
+                      className="gap-2 text-foreground data-[selected=true]:bg-accent data-[selected=true]:text-foreground"
                     >
-                      <FolderOpen className="h-4 w-4 text-white/50" />
+                      <FolderOpen className="h-4 w-4 text-muted-foreground" />
                       <span className="truncate">{p.name}</span>
                       <StatusDot status={p.status} className="ml-auto" />
                     </CommandItem>
@@ -213,9 +213,9 @@ export function CommandPalette({
                       onOpenChange(false);
                       router.push(c.route);
                     }}
-                    className="gap-2 text-white/80 data-[selected=true]:bg-white/10 data-[selected=true]:text-white"
+                    className="gap-2 text-foreground data-[selected=true]:bg-accent data-[selected=true]:text-foreground"
                   >
-                    <c.icon className="h-4 w-4 text-white/50" />
+                    <c.icon className="h-4 w-4 text-muted-foreground" />
                     <span>{c.label}</span>
                   </CommandItem>
                 ))}
@@ -229,17 +229,17 @@ export function CommandPalette({
           </div>
 
           {/* Footer hints */}
-          <div className="flex items-center gap-4 border-t border-white/10 px-3 py-2 text-[11px] text-white/40">
+          <div className="flex items-center gap-4 border-t border-border px-3 py-2 text-[11px] text-muted-foreground">
             <span className="flex items-center gap-1.5">
               Open published project
-              <kbd className="inline-flex items-center gap-0.5 rounded border border-white/15 bg-white/5 px-1 py-0.5">
+              <kbd className="inline-flex items-center gap-0.5 rounded border border-border bg-muted px-1 py-0.5">
                 <CommandIcon className="h-3 w-3" />
                 <CornerDownLeft className="h-3 w-3" />
               </kbd>
             </span>
             <span className="flex items-center gap-1.5">
               Open project
-              <kbd className="inline-flex items-center rounded border border-white/15 bg-white/5 px-1 py-0.5">
+              <kbd className="inline-flex items-center rounded border border-border bg-muted px-1 py-0.5">
                 <CornerDownLeft className="h-3 w-3" />
               </kbd>
             </span>
@@ -265,7 +265,7 @@ function StatusDot({ status, className }: { status: string; className?: string }
 function PreviewPanel({ project, authorName }: { project: PaletteProject | null; authorName: string }) {
   if (!project) {
     return (
-      <div className="flex h-full items-center justify-center p-6 text-center text-sm text-white/30">
+      <div className="flex h-full items-center justify-center p-6 text-center text-sm text-muted-foreground">
         Highlight a project to preview it.
       </div>
     );
@@ -282,18 +282,18 @@ function PreviewPanel({ project, authorName }: { project: PaletteProject | null;
     <div className="flex h-full flex-col p-4">
       {/* Thumbnail — the REAL live site (inert, sandboxed) for a published
           project; an honest monogram tile otherwise. */}
-      <div className="relative mb-3 overflow-hidden rounded-lg border border-white/10">
+      <div className="relative mb-3 overflow-hidden rounded-lg border border-border">
         <ProjectThumb name={project.name} liveUrl={project.liveUrl} />
         <span className="absolute bottom-2 left-2 truncate rounded bg-black/60 px-1.5 py-0.5 font-mono text-[10px] text-white/60 backdrop-blur-sm">
           {project.slug}
         </span>
       </div>
-      <h3 className="truncate text-sm font-medium text-white">{project.name}</h3>
+      <h3 className="truncate text-sm font-medium text-foreground">{project.name}</h3>
       <dl className="mt-3 space-y-1.5">
         {rows.map(([k, v]) => (
           <div key={k} className="flex items-center justify-between gap-2 text-xs">
-            <dt className="text-white/40">{k}</dt>
-            <dd className="truncate text-white/70">{v}</dd>
+            <dt className="text-muted-foreground">{k}</dt>
+            <dd className="truncate text-foreground">{v}</dd>
           </div>
         ))}
       </dl>
@@ -301,7 +301,7 @@ function PreviewPanel({ project, authorName }: { project: PaletteProject | null;
         href={publishedUrl(project.slug)}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-auto inline-flex items-center gap-1 pt-3 font-mono text-[11px] text-white/40 transition-colors hover:text-white"
+        className="mt-auto inline-flex items-center gap-1 pt-3 font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground"
       >
         {project.slug}.hanzo.app
         <ArrowUpRight className="h-3 w-3" />

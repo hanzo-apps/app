@@ -112,31 +112,31 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
   };
 
     return (
-      <div className="min-h-screen h-screen overflow-y-auto bg-black flex justify-center items-start px-6 py-16">
+      <div className="min-h-screen h-screen overflow-y-auto bg-background flex justify-center items-start px-6 py-16">
         <div className="max-w-6xl w-full">
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-medium text-white mb-4">
+            <h1 className="text-4xl font-medium text-foreground mb-4">
               Welcome to Hanzo AI ✨
             </h1>
-            <p className="text-xl text-neutral-400">
+            <p className="text-xl text-muted-foreground">
               Your AI-powered development platform is ready
             </p>
           </div>
 
           {/* Quick Start Options */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <Card className="bg-neutral-900 border-neutral-800 p-6">
-              <h3 className="text-lg font-medium text-white mb-4">
+            <Card className="bg-card border-border p-6">
+              <h3 className="text-lg font-medium text-foreground mb-4">
                 Start with a prompt
               </h3>
               <Textarea
                 placeholder="Describe what you want to build..."
-                className="bg-neutral-800 border-neutral-700 text-white mb-4 min-h-[100px]"
+                className="bg-muted border-border text-foreground mb-4 min-h-[100px]"
                 value={prompt}
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPrompt(e.target.value)}
               />
               <Button
-                className="w-full gap-2 bg-white text-black hover:bg-white/90"
+                className="w-full gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
                 onClick={() => prompt && onComplete(prompt)}
                 disabled={!prompt.trim()}
               >
@@ -145,8 +145,8 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
               </Button>
             </Card>
 
-            <Card className="bg-neutral-900 border-neutral-800 p-6">
-              <h3 className="text-lg font-medium text-white mb-4">
+            <Card className="bg-card border-border p-6">
+              <h3 className="text-lg font-medium text-foreground mb-4">
                 Import existing project
               </h3>
               <div className="space-y-3">
@@ -181,7 +181,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
           {/* Popular templates — real gallery templates with real previews */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-white">
+              <h3 className="text-lg font-medium text-foreground">
                 Start from a template
               </h3>
               <Link href="/gallery">
@@ -197,9 +197,9 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                 <button
                   key={template.slug}
                   onClick={() => handleTemplateSelect(template)}
-                  className="flex flex-col overflow-hidden rounded-lg border border-neutral-800 bg-neutral-900 hover:border-white/50 hover:-translate-y-0.5 transition-all text-left group"
+                  className="flex flex-col overflow-hidden rounded-lg border border-border bg-card hover:border-foreground/30 hover:-translate-y-0.5 transition-all text-left group"
                 >
-                  <div className="relative aspect-[16/10] bg-neutral-950 overflow-hidden">
+                  <div className="relative aspect-[16/10] bg-card overflow-hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={template.screenshotUrl}
@@ -215,8 +215,8 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                     </Badge>
                   </div>
                   <div className="p-3">
-                    <p className="text-white font-medium text-sm truncate">{template.displayName}</p>
-                    <p className="text-neutral-500 text-xs mt-0.5 line-clamp-1">
+                    <p className="text-foreground font-medium text-sm truncate">{template.displayName}</p>
+                    <p className="text-muted-foreground text-xs mt-0.5 line-clamp-1">
                       {template.description || template.framework}
                     </p>
                   </div>
@@ -229,11 +229,11 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {features.map((feature, i) => (
               <div key={i} className="text-center">
-                <div className="w-12 h-12 bg-neutral-900 rounded-lg flex items-center justify-center text-white mb-2 mx-auto">
+                <div className="w-12 h-12 bg-card rounded-lg flex items-center justify-center text-foreground mb-2 mx-auto">
                   {feature.icon}
                 </div>
-                <p className="text-white text-sm font-medium">{feature.title}</p>
-                <p className="text-neutral-500 text-xs">{feature.description}</p>
+                <p className="text-foreground text-sm font-medium">{feature.title}</p>
+                <p className="text-muted-foreground text-xs">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -241,12 +241,12 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
           {/* Proof — real only: Techstars '17 backing + the real model count. */}
           <div className="flex justify-center gap-8 mt-8 text-center">
             <div>
-              <p className="text-2xl font-medium text-white">Techstars &apos;17</p>
-              <p className="text-xs text-neutral-500">backed</p>
+              <p className="text-2xl font-medium text-foreground">Techstars &apos;17</p>
+              <p className="text-xs text-muted-foreground">backed</p>
             </div>
             <div>
-              <p className="text-2xl font-medium text-white">400+</p>
-              <p className="text-xs text-neutral-500">AI models</p>
+              <p className="text-2xl font-medium text-foreground">400+</p>
+              <p className="text-xs text-muted-foreground">AI models</p>
             </div>
           </div>
         </div>
