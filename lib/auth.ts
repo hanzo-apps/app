@@ -129,10 +129,16 @@ export const isAuthenticated = async (): Promise<UserResponse | undefined> => {
   // For production or non-localhost, check for API key or IAM token
   const cookieToken = cookieStore.get(MY_TOKEN_KEY())?.value;
   const headerToken = authHeaders.get("Authorization");
-  const localApiKey = authHeaders.get("X-Local-API-Key") || process.env.LOCAL_API_KEY;
+  // ONLY the request header counts. The previous `|| process.env.LOCAL_API_KEY`
+  // fallback was a latent full auth-bypass: with LOCAL_API_KEY set in prod, a
+  // request with NO header got `localApiKey === process.env.LOCAL_API_KEY` and
+  // authenticated as a pro api-user. Require a present header that matches a
+  // non-empty configured secret — a missing header can never equal it.
+  const localApiKey = authHeaders.get("X-Local-API-Key");
+  const configuredApiKey = process.env.LOCAL_API_KEY;
 
   // Allow access with local API key for hanzod
-  if (localApiKey && localApiKey === process.env.LOCAL_API_KEY) {
+  if (localApiKey && configuredApiKey && localApiKey === configuredApiKey) {
     return {
       id: "api-user",
       name: "API User",
