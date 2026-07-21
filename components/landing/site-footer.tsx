@@ -85,7 +85,7 @@ const company: Col = {
 const legal: { label: string; href: string }[] = [
   { label: "Privacy", href: "https://hanzo.ai/privacy" },
   { label: "Terms", href: "https://hanzo.ai/terms" },
-  { label: "Security", href: "https://hanzo.ai/security" },
+  { label: "Security", href: "/security" },
 ];
 
 const social = [

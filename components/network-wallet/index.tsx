@@ -17,6 +17,7 @@
  */
 import { Loader2, LogOut, Wallet } from "lucide-react";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { toast } from "sonner";
 
 import { WalletBoundary } from "@/components/providers/WalletBoundary";
 
@@ -33,6 +34,37 @@ function WalletInner() {
   // The canonical injected connector (LuxWallet via EIP-6963). `lib/web3/config`
   // registers exactly one, so `connectors[0]` is it — never a third-party SDK.
   const injectedConnector = connectors[0];
+
+  // Connect must NEVER silently no-op. If there is no injected EIP-1193 provider
+  // (the common case — no browser wallet installed), tell the user why instead of
+  // firing a connect that fails invisibly. If a provider exists, surface any
+  // connect failure (rejection, locked wallet) as a toast.
+  const handleConnect = () => {
+    const hasProvider =
+      typeof window !== "undefined" &&
+      !!(window as { ethereum?: unknown }).ethereum;
+    if (!hasProvider) {
+      toast.error("No wallet detected", {
+        description: "Install a browser wallet extension, then try again.",
+      });
+      return;
+    }
+    if (!injectedConnector) {
+      toast.error("Wallet connector unavailable.");
+      return;
+    }
+    connect(
+      { connector: injectedConnector },
+      {
+        onError: (e) =>
+          toast.error(
+            /reject|denied|cancel/i.test(e?.message ?? "")
+              ? "Connection cancelled."
+              : "Couldn't connect a wallet.",
+          ),
+      },
+    );
+  };
 
   if (isConnected && address) {
     return (
@@ -63,8 +95,8 @@ function WalletInner() {
   return (
     <button
       type="button"
-      onClick={() => injectedConnector && connect({ connector: injectedConnector })}
-      disabled={isPending || !injectedConnector}
+      onClick={handleConnect}
+      disabled={isPending}
       className="flex w-full items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-2 text-sm text-white/80 transition-colors duration-150 hover:border-white/15 hover:bg-white/[0.06] hover:text-white disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
     >
       {isPending ? (
