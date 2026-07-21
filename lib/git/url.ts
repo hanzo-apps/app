@@ -45,7 +45,7 @@ export interface ParsedGitUrl {
  * forge counts; a random `example.com` does not (it needs the `.git` suffix).
  */
 const GIT_HOST =
-  /(^git\.)|(\.git\.)|(^|\.)(github|gitlab|bitbucket|gitea|codeberg|gitee)\b|(^|\.)sr\.ht$/i;
+  /(^git\.)|(\.git\.)|(^|\.)(github|gitlab|bitbucket|codeberg|gitee)\b|(^|\.)sr\.ht$/i;
 
 function providerOf(host: string): ParsedGitUrl['provider'] {
   const h = host.toLowerCase();
