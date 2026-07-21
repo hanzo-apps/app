@@ -19,7 +19,7 @@ import { useOrg } from '@/lib/org/client';
  * (same records console.hanzo.ai shows). Every row belongs to the currently
  * selected org; switching org (top-right) re-scopes the list.
  */
-export function ProjectList() {
+export function ProjectList({ showOrgSwitcher = true }: { showOrgSwitcher?: boolean } = {}) {
   const { ctx } = useOrg();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -104,8 +104,9 @@ export function ProjectList() {
           />
         </div>
         <div className="flex items-center gap-2">
-          {/* Org selector — every project belongs to the selected org */}
-          <OrgSwitcher />
+          {/* Org selector — suppressed when a parent shell already renders one
+              (AppShell's sidebar) so the org control never appears twice. */}
+          {showOrgSwitcher && <OrgSwitcher />}
           <Button onClick={() => setCreateOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
             New Project
