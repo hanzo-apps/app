@@ -9,16 +9,26 @@
 // Shots are self-hosted (never gallery.hanzo.ai/screenshots — those included
 // watermarked UI-kit mockups + raw link-index pages, deliberately excluded).
 // De-duplicated by image content: every slug here maps to a DISTINCT picture, so
-// no two gallery cards ever show the same thumbnail (49 unique shots).
+// no two gallery cards ever show the same thumbnail (63 unique shots, sha256-verified
+// byte-distinct — no slug falls back to its generated tile for being a dupe).
 //
 export const TEMPLATE_SHOTS: ReadonlySet<string> = new Set([
+  "agenda-grid",
+  "artist-epk",
+  "band-setlist",
   "blocks",
+  "changelog-ship",
   "cipher-html",
   "cipher-react",
   "circle",
   "construct",
   "deploy",
+  "dispatch-newsletter",
   "drive",
+  "engineering-devlog",
+  "event-rally",
+  "feature-upvote",
+  "feedback-signal",
   "folio-about",
   "folio-contact",
   "folio-creative-agency-1",
@@ -43,16 +53,21 @@ export const TEMPLATE_SHOTS: ReadonlySet<string> = new Set([
   "folio-photography-2",
   "forge",
   "hygge-html",
+  "issue-press",
   "jobfinder",
   "kinetic",
   "launch",
+  "longform-essays",
   "loop",
   "matrix",
   "mint",
   "mosaic",
   "oasis",
+  "photo-essay",
   "pixel",
   "prism-react",
+  "product-trailmap",
+  "release-smartlink",
   "saas-landing",
   "savor",
   "soar",
