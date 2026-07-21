@@ -207,7 +207,7 @@ export function BuildComposer({
   return (
     <div className={cn('mx-auto w-full max-w-2xl', className)}>
       {greetingName && (
-        <h1 className="mb-2 text-center text-3xl font-medium tracking-tight text-white text-balance sm:text-4xl">
+        <h1 className="mb-2 text-center text-3xl font-medium tracking-tight text-foreground text-balance sm:text-4xl">
           Ready to build, {greetingName}?
         </h1>
       )}
@@ -218,9 +218,9 @@ export function BuildComposer({
             href="https://cloud.hanzo.ai"
             target="_blank"
             rel="noopener noreferrer"
-            className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-white/60 transition-colors hover:border-white/20 hover:text-white"
+            className="group inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-border hover:text-foreground"
           >
-            <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-white/80">
+            <span className="rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-foreground">
               New
             </span>
             Hanzo apps now run in Hanzo Cloud
@@ -231,7 +231,7 @@ export function BuildComposer({
 
       {/* The gradient bubble: padded gradient host + opaque inner panel. */}
       <div className="hz-composer rounded-2xl shadow-2xl">
-        <div className="rounded-[14px] bg-[#0b0b0c]">
+        <div className="rounded-[14px] bg-card">
           <textarea
             ref={textareaRef}
             value={idea}
@@ -247,7 +247,7 @@ export function BuildComposer({
             onBlur={() => setFocused(false)}
             placeholder={placeholder}
             aria-label="Ask Hanzo to build"
-            className="w-full resize-none bg-transparent px-4 pb-2 pt-4 text-[15px] leading-relaxed text-white placeholder:text-white/30 focus:outline-none"
+            className="w-full resize-none bg-transparent px-4 pb-2 pt-4 text-[15px] leading-relaxed text-foreground placeholder:text-muted-foreground focus:outline-none"
           />
           <div className="flex items-center justify-between gap-2 px-2.5 pb-2.5">
             <div className="flex items-center gap-1">
@@ -256,16 +256,16 @@ export function BuildComposer({
                 <DropdownMenuTrigger asChild>
                   <button
                     type="button"
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-2.5 py-1.5 text-xs text-white/70 transition-colors hover:border-white/20 hover:text-white"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1.5 text-xs text-foreground transition-colors hover:border-border hover:text-foreground"
                   >
                     <CurrentMode.icon className="h-3.5 w-3.5" />
                     {CurrentMode.label}
-                    <ChevronDown className="h-3 w-3 text-white/40" />
+                    <ChevronDown className="h-3 w-3 text-muted-foreground" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="start"
-                  className="w-56 rounded-xl border border-white/10 bg-[#0e0e12] text-white shadow-2xl"
+                  className="w-56 rounded-xl border border-border bg-popover text-foreground shadow-2xl"
                 >
                   {MODES.map((m) => (
                     <DropdownMenuItem
@@ -277,7 +277,7 @@ export function BuildComposer({
                         <m.icon className="h-4 w-4" />
                         {m.label}
                       </span>
-                      <span className="pl-6 text-xs text-white/45">{m.hint}</span>
+                      <span className="pl-6 text-xs text-muted-foreground">{m.hint}</span>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
@@ -292,8 +292,8 @@ export function BuildComposer({
                 className={cn(
                   'inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs transition-colors',
                   withBase
-                    ? 'border-white/25 bg-white/[0.07] text-white'
-                    : 'border-white/10 text-white/40 hover:border-white/20 hover:text-white/70',
+                    ? 'border-border bg-accent text-foreground'
+                    : 'border-border text-muted-foreground hover:border-border hover:text-foreground',
                 )}
               >
                 <Database className="h-3.5 w-3.5" />
@@ -303,7 +303,7 @@ export function BuildComposer({
               <button
                 type="button"
                 aria-label="Attach"
-                className="rounded-lg p-2 text-white/40 transition-colors hover:bg-white/5 hover:text-white/70"
+                className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               >
                 <Plus className="h-4 w-4" />
               </button>
@@ -319,8 +319,8 @@ export function BuildComposer({
                   className={cn(
                     'rounded-lg p-2 transition-colors',
                     listening
-                      ? 'bg-white/10 text-white'
-                      : 'text-white/40 hover:bg-white/5 hover:text-white/70',
+                      ? 'bg-accent text-foreground'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                   )}
                 >
                   <Mic className={cn('h-4 w-4', listening && 'animate-pulse')} />
@@ -331,7 +331,7 @@ export function BuildComposer({
                 onClick={submit}
                 disabled={!idea.trim()}
                 aria-label="Start building"
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black transition-all hover:bg-white/90 disabled:cursor-not-allowed disabled:bg-white/20 disabled:text-white/40"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground transition-all hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
               >
                 <ArrowUp className="h-4 w-4" strokeWidth={2.5} />
               </button>
@@ -351,7 +351,7 @@ export function BuildComposer({
                 setIdea(s);
                 textareaRef.current?.focus();
               }}
-              className="rounded-full border border-white/10 bg-white/[0.02] px-3.5 py-1.5 text-xs text-white/60 transition-all hover:border-white/20 hover:text-white"
+              className="rounded-full border border-border bg-muted px-3.5 py-1.5 text-xs text-muted-foreground transition-all hover:border-border hover:text-foreground"
             >
               {s}
             </button>
@@ -361,7 +361,7 @@ export function BuildComposer({
 
       {/* Subtle honest sub-line — no fabricated claims. */}
       {subline && (
-        <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-xs text-white/55">
+        <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
           <Sparkles className="h-3 w-3 hidden sm:inline-block" />
           UI, database, auth, and 400+ AI models — wired in and deployed to Hanzo Cloud.
         </p>
