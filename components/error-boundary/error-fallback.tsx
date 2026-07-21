@@ -61,19 +61,19 @@ export function ErrorFallback({
 
   // Page or App level error - full page error
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-black flex items-center justify-center p-4">
       <div className="max-w-md w-full">
-        <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl overflow-hidden">
-          <div className="bg-gradient-to-r from-red-500 to-red-600 p-6">
+        <div className="bg-neutral-900 border border-white/10 rounded-2xl shadow-xl overflow-hidden">
+          <div className="border-b border-red-500/20 bg-red-500/[0.07] p-6">
             <div className="flex items-center space-x-3">
-              <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
-                <AlertCircle className="w-8 h-8 text-white" />
+              <div className="bg-red-500/15 rounded-full p-3">
+                <AlertCircle className="w-8 h-8 text-red-400" />
               </div>
               <div>
                 <h1 className="text-2xl font-medium text-white">
                   {level === 'app' ? 'Application Error' : 'Page Error'}
                 </h1>
-                <p className="text-red-100 text-sm mt-1">
+                <p className="text-white/60 text-sm mt-1">
                   {isPermanent
                     ? 'Multiple errors detected. Please refresh the page.'
                     : 'An unexpected error occurred.'}
@@ -113,8 +113,8 @@ export function ErrorFallback({
                   We apologize for the inconvenience. The error has been logged and our team will
                   investigate the issue.
                 </p>
-                <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                  <p className="text-sm text-blue-800 dark:text-blue-200">
+                <div className="mt-4 p-3 bg-white/5 border border-white/10 rounded-lg">
+                  <p className="text-sm text-white/70">
                     <strong>Error ID:</strong> {generateErrorId()}
                   </p>
                 </div>
@@ -125,7 +125,7 @@ export function ErrorFallback({
               {!isPermanent && (
                 <button
                   onClick={resetErrorBoundary}
-                  className="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition-colors"
+                  className="w-full flex items-center justify-center space-x-2 bg-white hover:bg-white/90 text-black py-3 px-4 rounded-lg font-medium transition-colors"
                 >
                   <RefreshCw className="w-4 h-4" />
                   <span>Try Again</span>
@@ -135,7 +135,7 @@ export function ErrorFallback({
               {isPermanent && (
                 <button
                   onClick={() => window.location.reload()}
-                  className="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition-colors"
+                  className="w-full flex items-center justify-center space-x-2 bg-white hover:bg-white/90 text-black py-3 px-4 rounded-lg font-medium transition-colors"
                 >
                   <RefreshCw className="w-4 h-4" />
                   <span>Refresh Page</span>
