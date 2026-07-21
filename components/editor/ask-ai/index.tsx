@@ -481,11 +481,16 @@ export function AskAI({
         const n = Array.isArray(result.updatedLines)
           ? result.updatedLines.length
           : 0;
-        const edits = n || 1;
+        // Honest count: applyEdits records one entry per SEARCH block that actually
+        // matched, so n === 0 means the model's edit didn't match the current page
+        // and NOTHING changed. Say so (and prompt a retry) instead of the old phantom
+        // "1 edit applied", which lied exactly during the refine step.
         finishTurn(
           assistantId,
           "done",
-          `${edits} edit${edits === 1 ? "" : "s"} applied · ${elapsed()}s`
+          n === 0
+            ? `No changes applied — the edit didn't match this page. Try rephrasing. · ${elapsed()}s`
+            : `${n} edit${n === 1 ? "" : "s"} applied · ${elapsed()}s`
         );
       }
     } else if (useNewPage) {
