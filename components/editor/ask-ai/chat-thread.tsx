@@ -74,7 +74,7 @@ export function ChatThread({
 function UserBubble({ text }: { text: string }) {
   return (
     <div className="flex justify-end">
-      <div className="max-w-[85%] whitespace-pre-wrap break-words rounded-2xl rounded-br-md bg-white/10 px-3.5 py-2 text-sm text-white">
+      <div className="max-w-[85%] whitespace-pre-wrap break-words rounded-2xl rounded-br-md bg-muted px-3.5 py-2 text-sm text-foreground">
         {text}
       </div>
     </div>
@@ -83,7 +83,7 @@ function UserBubble({ text }: { text: string }) {
 
 function SystemLine({ text }: { text: string }) {
   return (
-    <div className="py-0.5 text-center text-[11.5px] text-neutral-500">{text}</div>
+    <div className="py-0.5 text-center text-[11.5px] text-muted-foreground">{text}</div>
   );
 }
 
@@ -106,12 +106,12 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
     }
     return (
       <div className="flex w-full justify-start">
-        <div className="max-w-[92%] whitespace-pre-wrap break-words rounded-2xl rounded-bl-md border border-neutral-700 bg-neutral-800/40 px-3.5 py-2 text-sm text-neutral-200">
+        <div className="max-w-[92%] whitespace-pre-wrap break-words rounded-2xl rounded-bl-md border border-border bg-muted/40 px-3.5 py-2 text-sm text-foreground">
           {text ? (
             <>
               {text}
               {building && (
-                <span className="ml-0.5 inline-block h-3.5 w-[2px] translate-y-0.5 animate-pulse bg-neutral-300 align-middle motion-reduce:animate-none" />
+                <span className="ml-0.5 inline-block h-3.5 w-[2px] translate-y-0.5 animate-pulse bg-foreground align-middle motion-reduce:animate-none" />
               )}
             </>
           ) : (
@@ -132,34 +132,34 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
   return (
     <div className="flex w-full flex-col items-start gap-2">
       {showPlanCard && (
-        <div className="w-full overflow-hidden rounded-xl border border-neutral-700 bg-neutral-800/40">
+        <div className="w-full overflow-hidden rounded-xl border border-border bg-muted/40">
           <button
             type="button"
             onClick={() => setUserOpen((o) => !o)}
-            className="flex w-full items-center justify-between px-3.5 py-2.5 text-left transition-colors hover:bg-white/[0.03]"
+            className="flex w-full items-center justify-between px-3.5 py-2.5 text-left transition-colors hover:bg-accent"
           >
             <span
               className={classNames(
                 "text-[13px] font-medium",
-                planning ? "thread-shimmer-text" : "text-neutral-300"
+                planning ? "thread-shimmer-text" : "text-muted-foreground"
               )}
             >
               {planning ? "Designing…" : "Plan"}
             </span>
             <ChevronDown
               className={classNames(
-                "size-3.5 text-neutral-500 transition-transform duration-200",
+                "size-3.5 text-muted-foreground transition-transform duration-200",
                 planOpen && "rotate-180"
               )}
             />
           </button>
           {planOpen &&
             (hasPlanBody ? (
-              <div className="max-h-[220px] overflow-y-auto border-t border-neutral-700/70 px-3.5 py-2.5 text-[12.5px] leading-relaxed text-neutral-400 whitespace-pre-line">
+              <div className="max-h-[220px] overflow-y-auto border-t border-border/70 px-3.5 py-2.5 text-[12.5px] leading-relaxed text-muted-foreground whitespace-pre-line">
                 {plan}
               </div>
             ) : planning ? (
-              <div className="border-t border-neutral-700/70 px-3.5 py-2.5 text-[12.5px] text-neutral-500">
+              <div className="border-t border-border/70 px-3.5 py-2.5 text-[12.5px] text-muted-foreground">
                 Analyzing your request…
               </div>
             ) : null)}
@@ -169,7 +169,7 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
       {building && <ActivityList labels={activity ?? []} />}
 
       {done && (
-        <div className="flex items-center gap-1.5 text-[12.5px] text-neutral-400">
+        <div className="flex items-center gap-1.5 text-[12.5px] text-muted-foreground">
           <Check className="size-3.5 text-emerald-400/80" />
           <span>{text || "Done"}</span>
         </div>
@@ -187,7 +187,7 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
 function ActivityList({ labels }: { labels: string[] }) {
   const shown = labels.length ? labels : ["Working…"];
   return (
-    <div className="w-full rounded-xl border border-neutral-700 bg-neutral-800/40 px-3.5 py-2.5">
+    <div className="w-full rounded-xl border border-border bg-muted/40 px-3.5 py-2.5">
       <ul className="flex flex-col gap-1.5">
         {shown.map((label, i) => {
           // The last line is the one currently in flight; earlier lines have
@@ -196,11 +196,11 @@ function ActivityList({ labels }: { labels: string[] }) {
           return (
             <li key={`${i}-${label}`} className="flex items-center gap-2 text-[12.5px]">
               {active ? (
-                <Loader2 className="size-3 shrink-0 animate-spin text-neutral-400" />
+                <Loader2 className="size-3 shrink-0 animate-spin text-muted-foreground" />
               ) : (
-                <Check className="size-3 shrink-0 text-neutral-500" />
+                <Check className="size-3 shrink-0 text-muted-foreground" />
               )}
-              <span className={active ? "thread-shimmer-text" : "text-neutral-500"}>
+              <span className={active ? "thread-shimmer-text" : "text-muted-foreground"}>
                 {label}
               </span>
             </li>

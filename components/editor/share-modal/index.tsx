@@ -101,10 +101,10 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl bg-neutral-900 text-white border-neutral-800">
+      <DialogContent className="max-w-2xl bg-card text-foreground border-border">
         <DialogHeader>
           <DialogTitle className="text-xl font-medium">Invite</DialogTitle>
-          <DialogDescription className="text-neutral-400">
+          <DialogDescription className="text-muted-foreground">
             Collaborators will use credits from the project owner's workspace ({user?.name || "Your Workspace"})
           </DialogDescription>
         </DialogHeader>
@@ -112,7 +112,7 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
         {/* Invite by Email */}
         <div className="space-y-4 mt-4">
           <div>
-            <Label className="text-sm text-neutral-400 mb-2">Invite by email</Label>
+            <Label className="text-sm text-muted-foreground mb-2">Invite by email</Label>
             <div className="flex gap-2">
               <div className="flex-1 relative">
                 <Input
@@ -121,11 +121,11 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
                   value={email}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                   onKeyDown={(e: React.KeyboardEvent) => e.key === "Enter" && handleInvite()}
-                  className="bg-neutral-800 border-neutral-700 text-white pl-10"
+                  className="bg-muted border-border text-foreground pl-10"
                 />
-                <UserPlus className="absolute left-3 top-3 w-4 h-4 text-neutral-500" />
+                <UserPlus className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
               </div>
-              <Button onClick={handleInvite} className="bg-white text-neutral-900 hover:bg-neutral-200">
+              <Button onClick={handleInvite} className="bg-primary text-primary-foreground hover:bg-primary/90">
                 Invite
               </Button>
             </div>
@@ -135,42 +135,42 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
           <div>
             <h3 className="text-sm font-medium mb-3">Edit access</h3>
             <div className="space-y-2">
-              <div className="flex items-center justify-between p-2 rounded-lg hover:bg-neutral-800">
+              <div className="flex items-center justify-between p-2 rounded-lg hover:bg-muted">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-medium text-sm">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-foreground font-medium text-sm">
                     {collaborators[0].name.charAt(0).toUpperCase()}
                   </div>
                   <div>
                     <p className="font-medium">{projectName}</p>
-                    <p className="text-xs text-neutral-400">{collaborators.length} member{collaborators.length !== 1 && "s"}</p>
+                    <p className="text-xs text-muted-foreground">{collaborators.length} member{collaborators.length !== 1 && "s"}</p>
                   </div>
                 </div>
-                <ChevronDown className="w-4 h-4 text-neutral-400" />
+                <ChevronDown className="w-4 h-4 text-muted-foreground" />
               </div>
 
               {collaborators.map((collaborator) => (
-                <div key={collaborator.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-neutral-800">
+                <div key={collaborator.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-medium text-sm">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-foreground font-medium text-sm">
                       {collaborator.name.charAt(0).toUpperCase()}
                     </div>
                     <div>
                       <p className="font-medium text-sm">{collaborator.name} {collaborator.role === "owner" && "(you)"}</p>
-                      <p className="text-xs text-neutral-400">{collaborator.email}</p>
+                      <p className="text-xs text-muted-foreground">{collaborator.email}</p>
                     </div>
                   </div>
                   {collaborator.role === "owner" ? (
-                    <span className="text-xs text-neutral-400">Owner</span>
+                    <span className="text-xs text-muted-foreground">Owner</span>
                   ) : (
                     <div className="flex items-center gap-2">
                       <Select
                         value={collaborator.role}
                         onValueChange={(value: string) => updateCollaboratorRole(collaborator.id, value as "editor" | "viewer")}
                       >
-                        <SelectTrigger className="w-24 h-8 text-xs bg-neutral-800 border-neutral-700">
+                        <SelectTrigger className="w-24 h-8 text-xs bg-muted border-border">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-neutral-800 border-neutral-700">
+                        <SelectContent className="bg-muted border-border">
                           <SelectItem value="editor">Editor</SelectItem>
                           <SelectItem value="viewer">Viewer</SelectItem>
                         </SelectContent>
@@ -179,7 +179,7 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
                         variant="ghost"
                         size="sm"
                         onClick={() => removeCollaborator(collaborator.id)}
-                        className="p-1 hover:bg-neutral-700"
+                        className="p-1 hover:bg-muted"
                       >
                         <X className="w-4 h-4" />
                       </Button>
@@ -193,19 +193,19 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
           {/* Project Access */}
           <div>
             <h3 className="text-sm font-medium mb-3">Project access</h3>
-            <div className="flex items-center justify-between p-3 bg-neutral-800 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
               <div className="flex items-center gap-3">
-                <Users className="w-4 h-4 text-neutral-400" />
+                <Users className="w-4 h-4 text-muted-foreground" />
                 <div>
                   <p className="text-sm">Visible to your workspace</p>
-                  <p className="text-xs text-neutral-400">Anyone in your workspace can view this project</p>
+                  <p className="text-xs text-muted-foreground">Anyone in your workspace can view this project</p>
                 </div>
               </div>
               <Select value={visibility} onValueChange={setVisibility}>
-                <SelectTrigger className="w-32 bg-neutral-700 border-neutral-600">
+                <SelectTrigger className="w-32 bg-muted border-border">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-neutral-800 border-neutral-700">
+                <SelectContent className="bg-muted border-border">
                   <SelectItem value="public">
                     <span className="flex items-center gap-2">
                       <Globe className="w-3 h-3" />
@@ -231,18 +231,18 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
 
           {/* Create Invite Link */}
           <div>
-            <div className="flex items-center justify-between p-3 bg-neutral-800 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
               <div className="flex items-center gap-3">
-                <Link2 className="w-4 h-4 text-neutral-400" />
+                <Link2 className="w-4 h-4 text-muted-foreground" />
                 <div>
                   <p className="text-sm">Create invite link</p>
-                  <p className="text-xs text-neutral-400">Anyone with this link can join</p>
+                  <p className="text-xs text-muted-foreground">Anyone with this link can join</p>
                 </div>
               </div>
               <Button
                 variant="outline"
                 onClick={handleCopyInviteLink}
-                className="bg-neutral-700 border-neutral-600 hover:bg-neutral-600"
+                className="bg-muted border-border hover:bg-muted"
               >
                 {inviteLinkCopied ? (
                   <>
@@ -260,17 +260,17 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
           </div>
 
           {/* Share Link */}
-          <div className="pt-4 border-t border-neutral-700">
+          <div className="pt-4 border-t border-border">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium">Share project</p>
-                <p className="text-xs text-neutral-400">
+                <p className="text-xs text-muted-foreground">
                   {visibility === "public" ? "Anyone with the link can view" : "Restricted to invited members"}
                 </p>
               </div>
               <Button
                 onClick={handleCopyLink}
-                className="bg-white text-neutral-900 hover:bg-neutral-200"
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 {linkCopied ? (
                   <>
@@ -288,13 +288,13 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
           </div>
 
           {/* Upgrade to Enterprise */}
-          <div className="pt-4 border-t border-neutral-700">
+          <div className="pt-4 border-t border-border">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium">Upgrade to Enterprise</p>
-                <p className="text-xs text-neutral-400">Advanced features & enterprise support</p>
+                <p className="text-xs text-muted-foreground">Advanced features & enterprise support</p>
               </div>
-              <Button variant="outline" className="border-neutral-600 hover:bg-neutral-800">
+              <Button variant="outline" className="border-border hover:bg-muted">
                 Contact Us
               </Button>
             </div>

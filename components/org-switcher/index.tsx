@@ -61,7 +61,7 @@ export function OrgAvatar({
         alt=""
         aria-hidden="true"
         onError={() => setImgError(true)}
-        className={`shrink-0 rounded-md border border-white/10 object-cover ${className}`}
+        className={`shrink-0 rounded-md border border-border object-cover ${className}`}
       />
     );
   }
@@ -82,7 +82,7 @@ export function OrgAvatar({
   const initial = (name || "").trim().charAt(0).toUpperCase() || "•";
   return (
     <span
-      className={`flex shrink-0 items-center justify-center rounded-md border border-white/10 bg-white/[0.08] font-semibold text-white/90 ${className}`}
+      className={`flex shrink-0 items-center justify-center rounded-md border border-border bg-muted font-semibold text-foreground ${className}`}
       aria-hidden="true"
     >
       {initial}
@@ -137,7 +137,7 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 rounded-lg border border-white/10 px-3 py-1.5 text-sm text-white/50">
+      <div className="flex items-center gap-2 rounded-lg border border-border px-3 py-1.5 text-sm text-muted-foreground">
         <Building2 className="h-4 w-4" />
         <span className="hidden sm:inline">…</span>
       </div>
@@ -149,31 +149,31 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
     <div className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 rounded-lg border border-white/10 px-3 py-1.5 text-sm text-white/80 hover:bg-white/5 transition-colors"
+        className="flex items-center gap-2 rounded-lg border border-border px-3 py-1.5 text-sm text-foreground hover:bg-muted transition-colors"
         title="Active organization"
       >
         <OrgAvatar name={currentName} logo={currentLogo} />
-        <span className="inline max-w-[7.5rem] truncate font-medium text-white">{currentName}</span>
-        {isScopedAway() && <span className="rounded border border-white/20 px-1 text-[10px] text-white/60">scoped</span>}
-        <ChevronsUpDown className="h-3.5 w-3.5 text-white/40" />
+        <span className="inline max-w-[7.5rem] truncate font-medium text-foreground">{currentName}</span>
+        {isScopedAway() && <span className="rounded border border-border px-1 text-[10px] text-muted-foreground">scoped</span>}
+        <ChevronsUpDown className="h-3.5 w-3.5 text-muted-foreground" />
       </button>
 
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div
-            className={`absolute left-0 z-50 w-72 rounded-xl border border-white/10 bg-[#141414] p-2 shadow-2xl ${
+            className={`absolute left-0 z-50 w-72 rounded-xl border border-border bg-popover p-2 shadow-2xl ${
               direction === "up" ? "bottom-full mb-2" : "mt-2"
             }`}
           >
             {creating ? (
               <div className="space-y-2">
-                <p className="text-sm font-medium text-white/90">Create organization</p>
+                <p className="text-sm font-medium text-foreground">Create organization</p>
                 <input
                   value={newName}
                   onChange={(e) => setNewName(e.target.value.slice(0, 60))}
                   placeholder="Organization name"
-                  className="w-full rounded-md border border-white/15 bg-transparent px-2 py-1.5 text-sm outline-none focus:border-white/40"
+                  className="w-full rounded-md border border-border bg-transparent px-2 py-1.5 text-sm outline-none focus:border-ring"
                   onKeyDown={(e) => e.key === 'Enter' && void create()}
                   disabled={busy}
                 />
@@ -189,21 +189,21 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
               </div>
             ) : (
               <div className="space-y-1">
-                <div className="flex items-center gap-2 rounded-md border border-white/10 px-2 py-1">
-                  <Search className="h-3.5 w-3.5 text-white/40" />
+                <div className="flex items-center gap-2 rounded-md border border-border px-2 py-1">
+                  <Search className="h-3.5 w-3.5 text-muted-foreground" />
                   <input
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Filter organizations…"
-                    className="flex-1 bg-transparent text-sm outline-none placeholder:text-white/30"
+                    className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
                   />
                 </div>
-                <p className="px-2 py-1 text-[10px] font-medium uppercase tracking-wide text-white/30">
+                <p className="px-2 py-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
                   Organizations · {allOrgs.length}
                 </p>
                 <div className="max-h-64 overflow-y-auto">
                   {filtered.length === 0 ? (
-                    <p className="px-2 py-2 text-sm text-white/40">No organizations match &quot;{query}&quot;.</p>
+                    <p className="px-2 py-2 text-sm text-muted-foreground">No organizations match &quot;{query}&quot;.</p>
                   ) : (
                     filtered.map((org) => {
                       const isCurrent = org.name === currentId;
@@ -212,17 +212,17 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
                           key={org.name}
                           onClick={() => select(org)}
                           className={`flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm ${
-                            isCurrent ? 'bg-white/10' : 'hover:bg-white/5'
+                            isCurrent ? 'bg-muted' : 'hover:bg-muted'
                           }`}
                         >
                           <OrgAvatar name={orgDisplayName(allOrgs, org.name)} logo={org.logo} />
-                          <span className="flex-1 truncate text-left text-white/85">
+                          <span className="flex-1 truncate text-left text-foreground">
                             {orgDisplayName(allOrgs, org.name)}
                           </span>
                           {org.isPersonal && (
-                            <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] text-white/50">personal</span>
+                            <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">personal</span>
                           )}
-                          {isCurrent && <Check className="h-4 w-4 text-white" />}
+                          {isCurrent && <Check className="h-4 w-4 text-foreground" />}
                         </button>
                       );
                     })
@@ -233,15 +233,15 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
                 <Link
                   href="/settings/organization"
                   onClick={() => setOpen(false)}
-                  className="mt-1 flex w-full items-center gap-2 rounded-md border-t border-white/10 px-2 py-2 text-sm text-white/70 hover:bg-white/5"
+                  className="mt-1 flex w-full items-center gap-2 rounded-md border-t border-border px-2 py-2 text-sm text-foreground hover:bg-muted"
                 >
                   <Settings className="h-4 w-4" />
                   Organization settings
-                  <span className="ml-auto text-white/40">→</span>
+                  <span className="ml-auto text-muted-foreground">→</span>
                 </Link>
                 <button
                   onClick={() => { setCreating(true); setErr(null); }}
-                  className="mt-1 flex w-full items-center gap-2 rounded-md border-t border-white/10 px-2 py-2 text-sm text-white/70 hover:bg-white/5"
+                  className="mt-1 flex w-full items-center gap-2 rounded-md border-t border-border px-2 py-2 text-sm text-foreground hover:bg-muted"
                 >
                   <Plus className="h-4 w-4" />
                   Create organization
@@ -278,7 +278,7 @@ export function OrgGate({ children }: { children: React.ReactNode }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <Loader2 className="h-8 w-8 animate-spin text-white/40" />
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -308,11 +308,11 @@ function OnboardingPanel() {
 
   return (
     <div className="mx-auto max-w-md px-4 py-16 text-center">
-      <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/15 bg-white/5">
-        <Sparkles className="h-7 w-7 text-white" />
+      <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-muted">
+        <Sparkles className="h-7 w-7 text-foreground" />
       </div>
       <h1 className="mb-2 text-2xl font-medium">Set up your workspace</h1>
-      <p className="mb-8 text-sm text-white/60">
+      <p className="mb-8 text-sm text-muted-foreground">
         Every project belongs to an organization — that&apos;s where it&apos;s billed and
         shared. Start with a personal workspace, or name a team organization.
       </p>
@@ -321,13 +321,13 @@ function OnboardingPanel() {
         {busy === 'personal' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Continue with a personal workspace'}
       </Button>
 
-      <div className="my-4 text-xs uppercase tracking-wide text-white/30">or</div>
+      <div className="my-4 text-xs uppercase tracking-wide text-muted-foreground">or</div>
 
       <input
         value={name}
         onChange={(e) => setName(e.target.value.slice(0, 60))}
         placeholder="Team organization name"
-        className="mb-2 w-full rounded-lg border border-white/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-white/40"
+        className="mb-2 w-full rounded-lg border border-border bg-transparent px-3 py-2 text-sm outline-none focus:border-ring"
         disabled={busy !== null}
       />
       <Button

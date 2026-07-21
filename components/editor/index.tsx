@@ -13,7 +13,7 @@ const CodeEditor = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-full w-full bg-neutral-900 flex items-center justify-center text-neutral-500 text-xs absolute left-0 top-0">
+      <div className="h-full w-full bg-card flex items-center justify-center text-muted-foreground text-xs absolute left-0 top-0">
         Loading editor…
       </div>
     ),
@@ -245,7 +245,7 @@ export const AppEditor = ({
   return (
     <OrgProvider>
     <TooltipProvider>
-    <section className="h-[100dvh] bg-neutral-950 flex flex-col">
+    <section className="h-[100dvh] bg-card flex flex-col">
       <Header
         tab={currentTab}
         onNewTab={setCurrentTab}
@@ -273,7 +273,7 @@ export const AppEditor = ({
           variant="outline"
           size="sm"
           onClick={() => setIsShareModalOpen(true)}
-          className="!h-7 gap-1.5 px-2.5 text-xs !border-white/15 !bg-white/[0.04] !text-white transition-colors duration-150 hover:!bg-white/10"
+          className="!h-7 gap-1.5 px-2.5 text-xs !border-border !bg-white/[0.04] !text-foreground transition-colors duration-150 hover:!bg-muted"
         >
           <Share2 className="size-3.5" />
           <span className="hidden md:inline">Share</span>
@@ -291,7 +291,7 @@ export const AppEditor = ({
           <DeployButton pages={pages} prompts={prompts} disabled={isAiWorking} />
         )}
       </Header>
-      <main className="bg-neutral-950 flex-1 max-lg:flex-col flex w-full max-lg:h-[calc(100%-82px)] relative">
+      <main className="bg-card flex-1 max-lg:flex-col flex w-full max-lg:h-[calc(100%-82px)] relative">
         {/* LEFT — the chat pane, ALWAYS chat (never code). The composer is pinned
             to the bottom of this flex-col (AskAI is `mt-auto`), so messages scroll
             above it. Desktop: docked left unless collapsed; mobile: shown only on
@@ -398,7 +398,7 @@ export const AppEditor = ({
             currentTab === "chat" ? "hidden lg:block" : "block"
           )}
         >
-          <div className="relative h-full w-full overflow-hidden rounded-xl border border-white/10 bg-black shadow-2xl shadow-black/40 ring-1 ring-white/5">
+          <div className="relative h-full w-full overflow-hidden rounded-xl border border-border bg-background shadow-2xl shadow-black/40 ring-1 ring-white/5">
             {/* Faint top highlight — a crisp edge that reads as raised glass. */}
             <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
             <Preview
@@ -440,7 +440,7 @@ export const AppEditor = ({
             {/* CODE view — the CodeMirror editor overlaid inside the card when the
                 header switches to Code. The left panel stays chat; code lives here. */}
             {currentTab === "code" && (
-              <div className="absolute inset-0 z-10 flex bg-neutral-950">
+              <div className="absolute inset-0 z-10 flex bg-card">
                 {/* File browser rail — see + navigate every project file. */}
                 <FileTree
                   pages={pages}
@@ -477,7 +477,7 @@ export const AppEditor = ({
                 />
                 <div className="relative min-w-0 flex-1 overflow-hidden">
                   <CopyIcon
-                    className="size-4 absolute top-3 right-5 text-neutral-500 hover:text-neutral-300 z-20 cursor-pointer"
+                    className="size-4 absolute top-3 right-5 text-muted-foreground hover:text-muted-foreground z-20 cursor-pointer"
                     onClick={() => {
                       copyToClipboard(currentPageData.html);
                       toast.success("HTML copied to clipboard!");
@@ -486,7 +486,7 @@ export const AppEditor = ({
                   <CodeEditor
                     language="html"
                     className={classNames(
-                      "h-full w-full bg-neutral-900 transition-all duration-200 absolute left-0 top-0",
+                      "h-full w-full bg-card transition-all duration-200 absolute left-0 top-0",
                       {
                         "pointer-events-none": isAiWorking,
                       }

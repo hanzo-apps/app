@@ -14,7 +14,7 @@ export function ListPages({
   onDeletePage: (path: string) => void;
 }) {
   return (
-    <div className="w-full flex items-center justify-start bg-neutral-950 overflow-auto flex-nowrap min-h-[44px]">
+    <div className="w-full flex items-center justify-start bg-card overflow-auto flex-nowrap min-h-[44px]">
       {pages.map((page, i) => (
         <ListPagesItem
           key={i}
