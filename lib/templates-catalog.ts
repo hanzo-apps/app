@@ -233,7 +233,18 @@ export interface TemplateEntry {
   perfectFor: string[];
   /** Exact framework string from the snapshot. */
   framework: string;
-  /** Fork source repo (github.com/hanzo-apps/<slug>). */
+  /**
+   * Fork behavior. 'page' (default) templates brief-seed the builder from the
+   * gallery slug; 'repo' starters are real hanzo-apps repos the builder
+   * clones-and-runs. Drives the `fork` wire below.
+   */
+  kind?: "page" | "repo";
+  /** Default builder starters float to the top of the gallery. */
+  featured?: boolean;
+  /**
+   * Fork source repo. For 'page' templates the GitHub source page
+   * (github.com/hanzo-apps/<slug>); for 'repo' starters the clone URL (….git).
+   */
   repo: string;
   /** Live preview page for the template. */
   previewUrl: string;
@@ -247,15 +258,27 @@ export interface TemplateEntry {
   seoDescription: string;
 }
 
-/** Authoring shape — mechanical fields (repo/preview/fork/hasShot) are derived. */
-type RawEntry = Omit<TemplateEntry, "repo" | "previewUrl" | "fork" | "hasShot">;
+/**
+ * Authoring shape — mechanical fields (previewUrl/fork/hasShot) are derived.
+ * `repo` is derived for 'page' templates but may be supplied as the clone URL
+ * for 'repo' starters.
+ */
+type RawEntry = Omit<TemplateEntry, "previewUrl" | "fork" | "hasShot" | "repo"> & {
+  repo?: string;
+};
 
 function entry(raw: RawEntry): TemplateEntry {
+  const kind = raw.kind ?? "page";
+  const repo = raw.repo ?? `https://github.com/hanzo-apps/${raw.slug}`;
   return {
     ...raw,
-    repo: `https://github.com/hanzo-apps/${raw.slug}`,
+    kind,
+    repo,
     previewUrl: `https://gallery.hanzo.ai/templates/${raw.slug}`,
-    fork: `/dev?template=hanzo-apps/${raw.slug}&action=edit`,
+    fork:
+      kind === "repo"
+        ? `/dev?repo=${repo}&action=edit`
+        : `/dev?template=hanzo-apps/${raw.slug}&action=edit`,
     hasShot: TEMPLATE_SHOTS.has(raw.slug),
   };
 }
@@ -2209,6 +2232,472 @@ const RAW: RawEntry[] = [
     seoTitle: "Serif — Portfolio & Agency Template | Hanzo",
     seoDescription:
       "Fork Serif, a typographic HTML/Sass portfolio and agency template. Remix with AI and publish a refined editorial site on Hanzo.",
+  },
+
+  // -------------------------------------------------------------------------
+  // Real Hanzo-stack starters (kind:"repo") — buildable hanzo-apps repos the
+  // builder CLONES-AND-RUNS via /dev?repo=<clone-url>. Featured default
+  // starters; they fill the Blog / Editorial / Music / Product Management /
+  // Events categories. React 19 + @hanzo/gui + Hanzo IAM (PKCE) + Hanzo Base.
+  // -------------------------------------------------------------------------
+  {
+    slug: "changelog-ship",
+    name: "Shipwright — Product Changelog & Blog",
+    tagline: "Ship it, then tell everyone.",
+    description:
+      "Shipwright is a public product changelog paired with a longer-form blog, built on the Hanzo stack. Team members post dated release entries tagged feature, fix, or breaking alongside narrative posts; visitors browse a reverse-chronological timeline and filter by type or tag. Its monospace terminal aesthetic — a connector-line timeline, JetBrains-style version chips, and a single lime highlight for the newest release — is dense and engineer-facing.",
+    category: "Blog",
+    tags: ["Developer Tools"],
+    keyHighlights: [
+      { title: "Reverse-chron changelog timeline", body: "Dated entries render newest-first down a connector line in the left gutter, with the latest published release highlighted in lime." },
+      { title: "Typed release entries", body: "Every entry is tagged feature, fix, breaking, or post — shown as color-coded pills and usable as a one-click filter." },
+      { title: "Changelog + blog in one feed", body: "Short release notes and longer-form posts share the same timeline; the detail view renders the full body plus related entries that share a tag or type." },
+      { title: "Compose, publish or draft", body: "A signed-in editor sets title, version, type, comma-separated tags, and body, then publishes with a datestamp or saves as a draft." },
+      { title: "Org-scoped Hanzo Base data", body: "entries, tags, and entry_tags are real Base collections provisioned from schema.sql, scoped per-org via the @request.auth.org_id = org rule." },
+      { title: "PKCE auth, zero passwords", body: "Sign-in is OAuth2 PKCE against hanzo.id via @hanzo/iam; the IAM token is carried to Base on every read and write." },
+    ],
+    about:
+      "Shipwright is a real, buildable Hanzo app forked from hanzo-starter. Its UI is 100% @hanzo/gui primitives (no Tailwind, no second kit) in a muted-graphite terminal aesthetic with a monospace type system and a single lime accent reserved for the newest release. The provider stack, Vite config, PKCE auth, and Hanzo Cloud deploy contract are inherited unchanged from the starter; the changelog feed, post detail, and compose views plus the entries/tags/entry_tags schema are the app. Sign-in is OAuth2 PKCE against hanzo.id, and every entry is stored per-org in Hanzo Base.",
+    perfectFor: [
+      "Product & engineering teams publishing a public changelog",
+      "Open-source projects announcing releases by type and version",
+      "Developer tools that want release notes and a blog in one feed",
+      "Startups keeping customers current without a heavy CMS",
+    ],
+    framework: "React + Hanzo GUI",
+    kind: "repo",
+    featured: true,
+    repo: "https://github.com/hanzo-apps/changelog-ship.git",
+    seoTitle: "Shipwright — Product Changelog & Blog Template | Hanzo",
+    seoDescription:
+      "Fork Shipwright, a React + Hanzo changelog and blog with typed release entries, a timeline feed and PKCE sign-in on org-scoped Base. Remix with AI and deploy on Hanzo.",
+  },
+  {
+    slug: "longform-essays",
+    name: "Longform — A Home for Your Writing",
+    tagline: "Words first. Everything else second.",
+    description:
+      "Longform is a minimalist personal essay blog built on the Hanzo stack: write long reads in a markdown editor and publish them to a distraction-free reading column set in a book serif, with a drop-cap opening and an honest reading-time estimate. The table of contents indexes every essay by year, keeping drafts private until you choose to publish. Auth is PKCE via Hanzo IAM and each essay is an org-scoped row in Hanzo Base, provisioned from schema.sql on deploy.",
+    category: "Blog",
+    tags: ["Editorial"],
+    keyHighlights: [
+      { title: "Distraction-free reading column", body: "Each essay opens in a single narrow measure (~66ch) set in a book serif with generous leading and a drop-cap on the opening paragraph — the body renders from markdown blocks (paragraphs, section headings, pull quotes) with nothing else on the page." },
+      { title: "Index by year", body: "The table of contents groups published essays under year markers, newest first, while drafts gather at the top while you write them. Every row shows the title, an optional subtitle, and a footnote-gray date and reading time." },
+      { title: "Markdown editor with a live reading estimate", body: "Write a title, subtitle, and a markdown body (## for section headings, > for pull quotes); word count and reading minutes update as you type and the estimate is stamped onto the essay when you save." },
+      { title: "Draft-to-Published toggle", body: "A two-state control keeps an essay private until it's ready — publishing stamps the date and moves it into the public year index; toggling back to draft removes it from the reader's view." },
+      { title: "Org-scoped data in Hanzo Base", body: "Essays are real Base rows; schema.sql provisions the essays / collections / essay_collections tables on deploy and scopes every row to your org (@request.auth.org_id = org), private to your org until published." },
+      { title: "PKCE sign-in with Hanzo IAM", body: "No local passwords — login() runs an OAuth2 PKCE S256 redirect to hanzo.id and the returned JWT authorizes every read and write against Base." },
+    ],
+    about:
+      "Longform is a real, buildable Hanzo app — a personal essay blog for writers who want the page to get out of the way. It ships three views (a year-grouped index, a distraction-free reading column, and a markdown editor with a publish toggle) composed entirely from @hanzo/gui primitives in a warm-paper editorial style: cream sheet, Georgia-style serif, footnote-gray metadata, hairline rules, and a true book-page drop-cap — no cards, no grids, no feed. Identity is Hanzo IAM (OAuth2 PKCE against hanzo.id) and data is Hanzo Base, so essays are org-scoped rows the deploy provisions from schema.sql and every read/write carries your IAM token. Fork it on hanzo.app and it deploys as a static SPA on Hanzo Cloud.",
+    perfectFor: [
+      "Writers who want a quiet, single-column home for long essays",
+      "Personal blogs and newsletters that value reading over engagement metrics",
+      "A clean starting point for any Hanzo IAM + Base content app",
+      "Readers who prefer a book-like page to cards and feeds",
+      "Teams wanting an org-scoped, publish-gated writing surface",
+    ],
+    framework: "React + Hanzo GUI",
+    kind: "repo",
+    featured: true,
+    repo: "https://github.com/hanzo-apps/longform-essays.git",
+    seoTitle: "Longform — Personal Essay Blog Template | Hanzo",
+    seoDescription:
+      "Fork Longform, a distraction-free React + Hanzo essay blog with a book-serif reading column, markdown editor and org-scoped Base storage. Remix with AI and deploy on Hanzo.",
+  },
+  {
+    slug: "engineering-devlog",
+    name: "Devlog — Team Engineering Blog",
+    tagline: "How we build, in the open.",
+    description:
+      "Devlog is a multi-author engineering blog for teams who ship in the open. Members publish technical posts with author attribution, topic tags, and monospace code blocks; readers browse a GitHub-dark card grid, filter by topic, and open per-author pages. Built on the Hanzo stack — React 19 + @hanzo/gui, PKCE sign-in via hanzo.id, and org-scoped Hanzo Base collections provisioned from schema.sql.",
+    category: "Blog",
+    tags: ["Developer Tools"],
+    keyHighlights: [
+      { title: "Multi-author posts", body: "Every post carries author attribution and a compact monospace avatar; open an author page to read everything one teammate has shipped." },
+      { title: "Topic tags & filtering", body: "A topics catalog colors each electric-cyan tag; the grid filters by topic, and a post can carry several tags through a real many-to-many join (post_topics)." },
+      { title: "Code-first formatting", body: "Post bodies render prose as paragraphs and fenced spans as labelled, near-black monospace code blocks — written for people who read diffs." },
+      { title: "Featured posts stand out", body: "Flagged posts sort to the top of the grid and wear a syntax-highlight accent bar, keeping the important write-ups visible." },
+      { title: "Org-scoped by default", body: "posts, topics, and post_topics live in Hanzo Base, provisioned from schema.sql and readable only within your org via the signed-in IAM token (@request.auth.org_id = org)." },
+      { title: "100% @hanzo/gui", body: "The entire GitHub-dark UI — card grid, tags, code blocks, compose panel, author pages — is built from @hanzo/gui primitives with Tamagui longhand props; no Tailwind, no second kit." },
+    ],
+    about:
+      "Devlog is a team engineering blog — a place to publish architecture decisions, war stories, and the code behind them. It ships as a real, buildable app on the canonical Hanzo stack: Vite + React 19 with @hanzo/gui for a 100%-primitive UI, @hanzo/iam for OAuth2 PKCE sign-in against hanzo.id, and @hanzo/base for org-scoped data. Signed in, the app reads and writes three Base collections (posts, topics, post_topics) provisioned from schema.sql; the public landing is a dark-mode hero that hands every credential interaction to Hanzo IAM. Forked from hanzo-apps/hanzo-starter, so the provider stack, vite.config, auth, and deploy contract stay identical to the proven reference.",
+    perfectFor: [
+      "Engineering teams publishing a public or internal devlog",
+      "Documenting architecture decisions and postmortems",
+      "Developer relations and technical content",
+      "Open-source projects sharing build notes",
+      "Startups building in public",
+    ],
+    framework: "React + Hanzo GUI",
+    kind: "repo",
+    featured: true,
+    repo: "https://github.com/hanzo-apps/engineering-devlog.git",
+    seoTitle: "Devlog — Team Engineering Blog Template | Hanzo",
+    seoDescription:
+      "Fork Devlog, a multi-author React + Hanzo engineering blog with topic tags, code blocks and author pages on org-scoped Base. Remix with AI and deploy on Hanzo.",
+  },
+  {
+    slug: "issue-press",
+    name: "Press — Digital Magazine Issues",
+    tagline: "A magazine that ships in issues.",
+    description:
+      "Press is an issue-based digital magazine template on the Hanzo stack — React 19, @hanzo/gui, IAM sign-in, and Base. Editors curate numbered issues with a cover story and department sections; readers open an issue and move between its pieces. Bold, print-derived design: a masthead bar, oversized display type, and a two-column feature layout with hanging pull-quotes.",
+    category: "Editorial",
+    tags: ["Blog"],
+    keyHighlights: [
+      { title: "Curated in numbered issues", body: "Editors compose numbered issues with a title and cover line, then place them on the newsstand as live or draft — real create/update/delete against Base." },
+      { title: "Cover story + departments", body: "Each issue leads with a cover story and files the rest into department sections: Features, Dispatch, Interview, Essay, Review, The Back Page." },
+      { title: "Editorial feature read", body: "The article view sets copy in two columns with an oversized headline, an italic standfirst, and a hanging pull-quote pulled deterministically from the piece." },
+      { title: "Magazine design language", body: "A print-derived black / white / one-hot-red palette, a masthead bar and condensed display type — 100% @hanzo/gui primitives with Tamagui longhand props, no Tailwind or second kit." },
+      { title: "Org-scoped data in Base", body: "issues and articles are Hanzo Base collections provisioned from schema.sql; every row is stamped owner+org and scoped to your org via @request.auth.org_id = org." },
+      { title: "Ambient IAM sign-in", body: "OAuth2 PKCE against hanzo.id via @hanzo/iam — no local passwords — with the IAM token carried to Base. Client id reads VITE_IAM_CLIENT_ID (fallback hanzo-app)." },
+    ],
+    about:
+      "Press turns the canonical Hanzo starter into a working editorial tool without changing its proven spine. The signed-out landing is a real magazine cover; sign in and you arrive at the newsstand, where every issue appears as a bold black-and-red cover, newest first. Open one to read its cover story and department sections, then open any piece for a two-column feature layout with a pulled quote. Editors compose issues and file pieces inline, so it is genuine org-scoped CRUD against Base collections rather than a static mock. The whole app is built from @hanzo/gui primitives, ships as a static SPA, and deploys to <slug>.hanzo.app via Hanzo Cloud from schema.sql.",
+    perfectFor: [
+      "Digital magazines and periodicals that publish in discrete, numbered issues",
+      "Editorial teams curating a cover story plus department sections",
+      "Zines and newsletters that want a print-inspired reading experience",
+      "Content studios needing org-scoped, IAM-native publishing on Hanzo",
+      "Founders who want a bold, non-generic Hanzo app to fork and extend",
+    ],
+    framework: "React + Hanzo GUI",
+    kind: "repo",
+    featured: true,
+    repo: "https://github.com/hanzo-apps/issue-press.git",
+    seoTitle: "Press — Digital Magazine Template | Hanzo",
+    seoDescription:
+      "Fork Press, an issue-based React + Hanzo magazine with a cover story, department sections and a print-inspired reader on org-scoped Base. Remix with AI and deploy on Hanzo.",
+  },
+  {
+    slug: "dispatch-newsletter",
+    name: "Dispatch — Newsletter Archive & Signup",
+    tagline: "Every issue, kept forever.",
+    description:
+      "Dispatch is a newsletter archive and signup built entirely on the Hanzo stack. Visitors land on a public newsprint masthead and join the list, while the author drafts, publishes, and reads subscribers from a signed-in Studio. Editorial minimalism in @hanzo/gui, PKCE auth via hanzo.id, and org-scoped issues + subscribers persisted in Hanzo Base.",
+    category: "Editorial",
+    tags: ["Blog"],
+    keyHighlights: [
+      { title: "Public masthead, honest by design", body: "A newsprint landing — wordmark, thin rule, tagline, and a boxed subscribe field — that every visitor sees before auth. Subscribing stashes the email, starts a Hanzo sign-in, and records the subscriber row on return." },
+      { title: "Chronological archive to single-column read", body: "Every published issue, newest first, opens into a quiet single-column reader with a dateline, standfirst, and the body split into paragraphs — no refetch, the archive hands the record straight in." },
+      { title: "Studio composer + subscriber list", body: "Draft or publish an issue (subject, preview, body, publish toggle) and read the full mailing list from one signed-in desk; drafts stay out of the reader archive until published." },
+      { title: "Org-scoped data in Hanzo Base", body: "issues and subscribers are real Base collections provisioned from schema.sql; every row is stamped with the caller's verified IAM owner and org and isolated per organization (rule effectively @request.auth.org_id = org)." },
+      { title: "PKCE auth via hanzo.id", body: "OAuth2 PKCE S256 against Hanzo IAM — no local passwords and no server token; the static SPA authenticates in the browser and carries the IAM JWT straight to Base." },
+      { title: "One design system, one palette", body: "100% @hanzo/gui primitives with the newsprint palette in a single theme.ts, mounted through the canonical GuiProvider to IamProvider to BaseProvider stack the whole Hanzo line ships." },
+    ],
+    about:
+      "Dispatch is a complete, buildable Hanzo starter for running a newsletter: a public archive with a subscribe capture and a signed-in Studio where the author writes, publishes, and watches the list. It forks the canonical hanzo-starter — keeping the proven provider stack (GuiProvider to IamProvider to BaseProvider), vite.config, PKCE auth, and static-SPA deploy contract intact — and varies it into a restrained, newsprint-minimal design: off-white paper, a single hairline ink rule under the wordmark, one narrow reading column, and a boxed subscribe field with a solid black button. UI is 100% @hanzo/gui primitives (Tamagui longhand props, no Tailwind, no second kit); identity is OAuth2 PKCE against hanzo.id; data is org-scoped Hanzo Base collections provisioned from schema.sql. Because Base is IAM-native, reading the archive and joining the list both run on a Hanzo identity, so the public masthead is the honest pre-auth surface.",
+    perfectFor: [
+      "Writers and creators publishing a newsletter with a permanent, browsable public archive",
+      "Teams that want subscriber capture tied to real Hanzo identities instead of anonymous emails",
+      "Editorial and publication sites that want a restrained, typographic newsprint aesthetic",
+      "Developers learning the Hanzo @hanzo/gui + IAM + Base stack from a real, deployable app",
+    ],
+    framework: "React + Hanzo GUI",
+    kind: "repo",
+    featured: true,
+    repo: "https://github.com/hanzo-apps/dispatch-newsletter.git",
+    seoTitle: "Dispatch — Newsletter Archive Template | Hanzo",
+    seoDescription:
+      "Fork Dispatch, a React + Hanzo newsletter archive with subscriber capture and a signed-in composer on org-scoped Base. Remix with AI and deploy on Hanzo.",
+  },
+  {
+    slug: "photo-essay",
+    name: "Frame Story — Visual Photo Essays",
+    tagline: "Scroll it like a story.",
+    description:
+      "Frame Story is a long-scroll photo essay builder: sequence full-bleed images and quiet text passages into a cinematic vertical scroll, then publish. Readers fall through published essays as immersive, edge-to-edge visual narratives with thin white type and near-zero chrome. Built on React 19 with @hanzo/gui, PKCE sign-in via @hanzo/iam, and org-scoped @hanzo/base collections.",
+    category: "Editorial",
+    tags: ["Portfolio"],
+    keyHighlights: [
+      { title: "Cinematic full-bleed reader", body: "Published essays play as a slow vertical scroll of edge-to-edge images and centered text passages, with darkened frames, thin white type, and captions in small tracked capitals — near-zero chrome." },
+      { title: "Beat-sequencing builder", body: "Compose an essay by adding image and text beats, reordering them up or down, editing cover and byline against a live preview, and flipping publish to push it onto the public index." },
+      { title: "Org-scoped data on Hanzo Base", body: "stories and blocks are Hanzo Base collections; every read and write carries the signed-in user's IAM token, so essays are visible only within your org (rule @request.auth.org_id = org)." },
+      { title: "PKCE sign-in, no passwords", body: "Auth is OAuth2 PKCE (S256) against hanzo.id via @hanzo/iam; the app never handles a credential and keeps tokens in localStorage for a durable, refresh-aware session." },
+      { title: "100% @hanzo/gui, renders offline", body: "The UI is built only from @hanzo/gui primitives using Tamagui longhand props, and the cinematic cover frames are self-contained SVG — nothing depends on the network to render." },
+      { title: "One-click sample essay", body: "Seed a complete, publishable piece from the bundled frames to see the reader immediately, then edit or replace its beats with your own photos." },
+    ],
+    about:
+      "Frame Story turns a set of photographs into a cinematic vertical story. Editors compose an essay as an ordered sequence of beats — full-bleed image blocks interleaved with short text passages — set a cover and byline, then publish. Published essays land on a poster-tile index; opening one drops the reader into a slow, immersive scroll where each image fills the frame under a soft dark wash and captions sit in small tracked capitals. The whole experience is composed entirely from @hanzo/gui primitives (no Tailwind, no second kit), authenticated with OAuth2 PKCE against hanzo.id, and backed by two org-scoped Hanzo Base collections (stories and blocks) so a team's essays stay private to their org. It ships as a real, buildable static SPA on the canonical Hanzo stack — fork it, run npm run build, and deploy on Hanzo Cloud.",
+    perfectFor: [
+      "Photographers publishing a series or portfolio story",
+      "Editorial, documentary, and reportage storytelling",
+      "Brand lookbooks and visual case studies",
+      "Travel and photojournalism narratives",
+      "Turning any photo set into a scrollable, cinematic story",
+    ],
+    framework: "React + Hanzo GUI",
+    kind: "repo",
+    featured: true,
+    repo: "https://github.com/hanzo-apps/photo-essay.git",
+    seoTitle: "Frame Story — Visual Photo Essay Template | Hanzo",
+    seoDescription:
+      "Fork Frame Story, a React + Hanzo long-scroll photo essay builder with full-bleed image beats and org-scoped Base storage. Remix with AI and deploy on Hanzo.",
+  },
+  {
+    slug: "artist-epk",
+    name: "Pressroom — Artist EPK & Releases",
+    tagline: "Your press kit, one link.",
+    description:
+      "Pressroom is an electronic press kit and release hub for musicians, built on the Hanzo stack. Fans and press get a dark, neon landing with the artist's latest release, biography, streaming presence and tour dates; signed in, the artist manages releases, shows and downloadable press assets. React 19 + @hanzo/gui, PKCE identity via hanzo.id, and org-scoped data in Hanzo Base — deployed as a static SPA to hanzo.app.",
+    category: "Music",
+    tags: ["Portfolio"],
+    keyHighlights: [
+      { title: "One link for press", body: "A single dark, neon pressroom collects the hero, latest release, biography, streaming presence and tour dates — the one link an artist sends to press and fans." },
+      { title: "Discography as a rhythmic grid", body: "Releases render as a wrapping grid of cover art, each single, EP or album carrying its own streaming link." },
+      { title: "Tour dates that self-prune", body: "The Tour view lists only upcoming shows with a date ticker and ticket link; past dates fall off automatically." },
+      { title: "Artist-managed catalogue", body: "Signed in, the artist adds or removes releases, shows and downloadable press assets from the Admin tab — no redeploy." },
+      { title: "PKCE auth, no passwords", body: "Sign-in is OAuth2 PKCE against hanzo.id via @hanzo/iam; the app never handles a credential and carries the IAM token to data." },
+      { title: "Org-scoped Hanzo Base", body: "releases, shows and press_assets are provisioned from schema.sql into Hanzo Base, each row stamped owner+org and scoped by the rule @request.auth.org_id = org." },
+    ],
+    about:
+      "Pressroom is a real, buildable Hanzo app — a musician's electronic press kit and release hub. The public landing is a spotlight-contrast, violet-to-magenta stage with the artist name oversized and cover art as the hero element; behind Hanzo sign-in, the artist runs the catalogue. It is 100% @hanzo/gui primitives (no Tailwind, no second kit) on Vite + React 19, with OAuth2 PKCE identity via hanzo.id and org-scoped storage in Hanzo Base provisioned from schema.sql.",
+    perfectFor: [
+      "Independent musicians and bands",
+      "Electronic / DJ artists and labels",
+      "Booking and press outreach",
+      "Release and tour announcements",
+      "Artist managers maintaining an EPK",
+    ],
+    framework: "React + Hanzo GUI",
+    kind: "repo",
+    featured: true,
+    repo: "https://github.com/hanzo-apps/artist-epk.git",
+    seoTitle: "Pressroom — Artist EPK Template | Hanzo",
+    seoDescription:
+      "Fork Pressroom, a React + Hanzo electronic press kit with releases, tour dates and press assets on org-scoped Base. Remix with AI and deploy on Hanzo.",
+  },
+  {
+    slug: "release-smartlink",
+    name: "Dropmark — Release Smart Link",
+    tagline: "One page, every platform.",
+    description:
+      "Dropmark is a single-release smart link for musicians: one clean, mobile-first page with a bold cover and a button to every streaming service. Artists sign in with Hanzo to edit the release and its platform links and watch real per-link click counts. Built on React 19 and @hanzo/gui with PKCE identity and an org-scoped Hanzo Base backend, it deploys as a static page at your-slug.hanzo.app.",
+    category: "Music",
+    tags: ["Landing Page"],
+    keyHighlights: [
+      { title: "Vinyl-centric hero", body: "A large centered square cover over a color-bled backdrop — real artwork when you add a cover URL, or a generated vinyl gradient with concentric grooves derived from the title so the page always looks designed." },
+      { title: "Every platform, one tap", body: "Full-width streaming buttons with per-service brand chips — Spotify, Apple Music, YouTube Music, Amazon Music, SoundCloud, Tidal and more — stacked in a single mobile-first fold; any other service you paste gets a neutral chip." },
+      { title: "Artist admin", body: "Sign in to edit the release (title, artist, cover, date) and add, edit, or remove platform links, with a live preview of the fan page rendered right beside the editor." },
+      { title: "Real click counts", body: "Each button tap increments that link's counter in Hanzo Base, so the admin shows genuine per-platform clicks — no fabricated numbers anywhere in the app." },
+      { title: "Hanzo-native auth and data", body: "OAuth2 PKCE sign-in via @hanzo/iam against hanzo.id; the release and links live in org-scoped @hanzo/base collections (rule @request.auth.org_id = org) provisioned from schema.sql on deploy." },
+      { title: "A real static SPA", body: "Vite + React 19 + @hanzo/gui with 100% longhand Tamagui props; tsc and vite build run green in CI and the app ships to your-slug.hanzo.app with no server process." },
+    ],
+    about:
+      "Dropmark turns a new single or album into a shareable landing page — the pre-save/stream link fans expect, but cleaner. The public page is a designed, mobile-first fold: a vinyl-centric cover over a color-bled backdrop, the title and release date, and a full-width button to each streaming service. Behind sign-in, the artist manages the release and its links and sees how many fans tapped through to each platform. It is a complete, buildable Hanzo app — @hanzo/gui for the UI, Hanzo IAM for identity (PKCE against hanzo.id), and Hanzo Base for org-scoped data provisioned from schema.sql.",
+    perfectFor: [
+      "Musicians launching a new single or album",
+      "Labels and managers collecting every streaming link in one place",
+      "Pre-save / smart-link pages shared from a bio link",
+      "Seeing which platforms fans actually click through to",
+      "Any artist who wants a clean release page without a website",
+    ],
+    framework: "React + Hanzo GUI",
+    kind: "repo",
+    featured: true,
+    repo: "https://github.com/hanzo-apps/release-smartlink.git",
+    seoTitle: "Dropmark — Release Smart Link Template | Hanzo",
+    seoDescription:
+      "Fork Dropmark, a mobile-first React + Hanzo release smart link with every streaming button and real per-link clicks on org-scoped Base. Remix with AI and deploy on Hanzo.",
+  },
+  {
+    slug: "band-setlist",
+    name: "Setlist — Show & Setlist Tracker",
+    tagline: "Every gig. Every song.",
+    description:
+      "Setlist is a band's public gig log with per-show setlists, built on the Hanzo stack. Fans browse upcoming and past shows and open any gig to read the exact set played — encore and all — while band members sign in to log shows and build ordered sets. React 19 + @hanzo/gui for the UI, Hanzo IAM (PKCE) for auth, and org-scoped Hanzo Base for data provisioned straight from schema.sql.",
+    category: "Music",
+    tags: ["Events"],
+    keyHighlights: [
+      { title: "Public gig board", body: "Every show is a torn-ticket-stub card, split into Upcoming and Played and sorted by date. Tap a card to open that show's set." },
+      { title: "Ordered stage sheet", body: "A show's setlist is numbered like a real stage sheet, with the encore torn off below a perforated ticket divider and a running total runtime summed from each song." },
+      { title: "Build a set by tap", body: "Log a show, keep a song book, then tap songs to add them to the set — move rows up or down to order them and flag the encore. No fake drag surface; the interaction is exactly what it says." },
+      { title: "Gig-poster brutalism", body: "High-contrast black-on-acid, oversized all-caps venue names, chunky monospaced dates, and faux ticket barcodes — 100% @hanzo/gui primitives, no Tailwind and no second kit." },
+      { title: "Hanzo IAM sign-in", body: "OAuth2 PKCE against hanzo.id with no local passwords; the signed-in band's IAM token flows straight into Base as the bearer." },
+      { title: "Org-scoped Base data", body: "shows, songs, and setlist collections are provisioned from schema.sql and scoped to your org, so each band reads and writes only its own log." },
+    ],
+    about:
+      "Setlist turns a band's show history into a living, public artifact. Every gig is logged with its venue, city, and date; every set is captured song by song, encore included, so fans can relive exactly what was played and where. Behind sign-in, band members log new shows, maintain a song book, and assemble ordered setlists that read like a stage sheet. It is a small but complete real app on the Hanzo stack — React 19 and @hanzo/gui for the interface, Hanzo IAM for identity, and Hanzo Base for org-scoped data provisioned directly from schema.sql. Forked from the canonical hanzo-starter, it keeps the exact provider stack, vite.config, PKCE auth, and deploy contract, and varies only the domain, data model, and design.",
+    perfectFor: [
+      "Touring and gigging bands keeping a public show history",
+      "Fans who want the exact setlist from a show they attended or missed",
+      "Band members logging gigs and building the set before a show",
+      "Venues or promoters archiving what played on their stage",
+      "Anyone wanting a stylish, deployable Hanzo-stack starter for an events or log app",
+    ],
+    framework: "React + Hanzo GUI",
+    kind: "repo",
+    featured: true,
+    repo: "https://github.com/hanzo-apps/band-setlist.git",
+    seoTitle: "Setlist — Show & Setlist Tracker Template | Hanzo",
+    seoDescription:
+      "Fork Setlist, a React + Hanzo band gig log with per-show setlists and a stage-sheet reader on org-scoped Base. Remix with AI and deploy on Hanzo.",
+  },
+  {
+    slug: "feature-upvote",
+    name: "Upvote — Feature Request Board",
+    tagline: "Let users vote on what's next.",
+    description:
+      "Upvote is a feature-request voting board where your users submit ideas and upvote the ones they want most. Requests flow through Open, Planned, and Shipped columns sorted by demand, each with threaded comments and one-vote-per-person tallying. Built on React 19 and the Hanzo GUI, with Hanzo IAM sign-in and org-scoped Hanzo Base storage.",
+    category: "Product Management",
+    tags: ["SaaS"],
+    keyHighlights: [
+      { title: "Vote-sorted board", body: "Three status columns — Open, Planned, Shipped — with muted color-dot headers. Within each column, requests sort by upvotes so the most-wanted rise to the top." },
+      { title: "One-tap upvote pill", body: "A caret-and-count pill on every card toggles your vote. A per-person votes record enforces one vote each and keeps the denormalized counter in lockstep." },
+      { title: "Roadmap in one move", body: "Open a request to read its description, move it between Open/Planned/Shipped with the status control, and discuss it in threaded comments." },
+      { title: "Submit in seconds", body: "A focused form files a new request with a title and details, stamped to the signed-in author and instantly visible to the team." },
+      { title: "Org-scoped by IAM", body: "Every request, vote, and comment is stamped with the verified IAM owner and org and shared only within it — schema.sql provisions the Base collections on deploy (rule @request.auth.org_id = org)." },
+      { title: "Real Hanzo stack", body: "100% @hanzo/gui primitives (no Tailwind, no second kit) with a calm indigo accent. PKCE sign-in via hanzo.id. Compiles green (tsc) and builds with Vite as a static SPA." },
+    ],
+    about:
+      "A feature-request voting board built on the canonical Hanzo stack. Upvote gives product teams a shared place to collect ideas, let people rank them by demand, and move each request from open to planned to shipped — all backed by org-scoped Hanzo Base collections and Hanzo IAM sign-in. It ships as a real, buildable static SPA (Vite + React 19 + @hanzo/gui + @hanzo/iam + @hanzo/base), not a mockup.",
+    perfectFor: [
+      "SaaS teams collecting and prioritizing customer feature requests",
+      "Product managers building a public or internal roadmap",
+      "Communities voting on what to build next",
+      "Internal tools teams triaging requests across a company",
+      "Founders validating demand before they build",
+    ],
+    framework: "React + Hanzo GUI",
+    kind: "repo",
+    featured: true,
+    repo: "https://github.com/hanzo-apps/feature-upvote.git",
+    seoTitle: "Upvote — Feature Request Board Template | Hanzo",
+    seoDescription:
+      "Fork Upvote, a React + Hanzo feature-request board with vote-sorted columns, comments and org-scoped Base storage. Remix with AI and deploy on Hanzo.",
+  },
+  {
+    slug: "product-trailmap",
+    name: "Trailmap — Public Product Roadmap",
+    tagline: "Show where you're headed.",
+    description:
+      "Trailmap is a public product roadmap organised as Now, Next, and Later — the team places initiatives into horizon lanes with a theme and a status, and anyone can follow what's in progress and what's coming. Built on the Hanzo stack (Vite + React 19, @hanzo/gui, Hanzo IAM PKCE, and Hanzo Base), every initiative is an org-scoped row provisioned from schema.sql. Fork it on hanzo.app and ship your own roadmap.",
+    category: "Product Management",
+    tags: ["SaaS"],
+    keyHighlights: [
+      { title: "Now / Next / Later lanes", body: "Three pastel horizon lanes (mint, sky, lilac) hold initiative cards, so visitors read at a glance what's shipping this cycle and what's on the horizon." },
+      { title: "Themed, status-aware cards", body: "Each card carries a theme colour-bar and a progress dot that climbs the Planned to Building to Shipped ladder, drawn from the themes collection." },
+      { title: "Create and move initiatives", body: "One editor both creates an initiative and moves it between horizons — pick a horizon, a status, and a theme, and the board refetches from Base." },
+      { title: "Public by design", body: "The signed-out landing shows a sample roadmap so anyone can follow along; the live board loads once you sign in with Hanzo." },
+      { title: "Org-scoped Hanzo Base data", body: "initiatives and themes are provisioned from schema.sql; Base stamps owner and org on every row and enforces org isolation (@request.auth.org_id = org)." },
+      { title: "Real Hanzo stack, green in CI", body: "Vite + React 19, @hanzo/gui only, Hanzo IAM PKCE, Hanzo Base — typechecks (tsc) and builds (vite) clean, verified by the repo's CI workflow." },
+    ],
+    about:
+      "A public product roadmap you can host on Hanzo. Initiatives live in three horizon lanes — Now, Next, Later — each tagged with a colour theme and a status that climbs from Planned to Building to Shipped. The signed-out landing is a public preview so anyone can follow along; sign in with Hanzo IAM (PKCE against hanzo.id) and the real board loads from org-scoped Hanzo Base collections. The UI is 100% @hanzo/gui primitives in an airy pastel swimlane design — no Tailwind, no second kit.",
+    perfectFor: [
+      "Startups sharing a public roadmap with customers",
+      "Product teams communicating Now / Next / Later priorities",
+      "Open-source projects publishing what's coming next",
+      "Internal teams aligning on horizons and themes",
+      "Founders turning a roadmap into a public promise",
+    ],
+    framework: "React + Hanzo GUI",
+    kind: "repo",
+    featured: true,
+    repo: "https://github.com/hanzo-apps/product-trailmap.git",
+    seoTitle: "Trailmap — Public Product Roadmap Template | Hanzo",
+    seoDescription:
+      "Fork Trailmap, a React + Hanzo public roadmap with Now/Next/Later lanes, themed cards and org-scoped Base storage. Remix with AI and deploy on Hanzo.",
+  },
+  {
+    slug: "feedback-signal",
+    name: "Signal — Product Feedback Inbox",
+    tagline: "Turn raw feedback into signal.",
+    description:
+      "Signal is a two-pane product-feedback triage inbox built on the Hanzo stack. Incoming feedback lands as items you read, tag by theme and sentiment, and mark triaged or archived — a fast, keyboard-inbox workflow for turning raw user input into signal. Sign-in is PKCE via Hanzo IAM and every item is stored org-scoped in Hanzo Base.",
+    category: "Product Management",
+    tags: ["Internal Tools"],
+    keyHighlights: [
+      { title: "Two-pane triage console", body: "A narrow, dense list of feedback rows on the left; the selected item's full detail on the right — a focused, keyboard-inbox layout with Superhuman-like density." },
+      { title: "Sentiment and theme tagging", body: "Tag each item positive, neutral, or negative and group it under a color-coded theme you create inline as you read, right from the detail pane." },
+      { title: "New / triaged / archived lifecycle", body: "Unread (new) items carry visual weight in the list; triaging or archiving clears that weight, so the queue always shows what still needs attention." },
+      { title: "Capture from any source", body: "Log a new piece of feedback with its source, body, sentiment, and theme; it lands in the inbox as new, ready to triage." },
+      { title: "Org-scoped Hanzo Base data", body: "feedback and themes are real Base collections provisioned from schema.sql, with owner and org stamped from the verified IAM principal and isolated per org." },
+      { title: "PKCE sign-in, no passwords", body: "Auth is OAuth2 PKCE S256 against hanzo.id; the SPA carries the IAM token to Base and never handles a credential itself." },
+    ],
+    about:
+      "Signal is a product-feedback triage inbox for product managers. It turns a stream of raw user input — from email, Intercom, sales calls, app-store reviews, and more — into an organized queue where each item is read, tagged by theme and sentiment, and marked triaged or archived. Built entirely on @hanzo/gui primitives with a neutral-slate, Superhuman-density aesthetic, it uses Hanzo IAM for PKCE auth and Hanzo Base for org-scoped storage of the feedback and themes collections.",
+    perfectFor: [
+      "Product managers triaging incoming user feedback",
+      "Founders making sense of early customer input",
+      "Support teams routing feedback by theme and sentiment",
+      "Teams consolidating multi-channel feedback into one inbox",
+    ],
+    framework: "React + Hanzo GUI",
+    kind: "repo",
+    featured: true,
+    repo: "https://github.com/hanzo-apps/feedback-signal.git",
+    seoTitle: "Signal — Product Feedback Inbox Template | Hanzo",
+    seoDescription:
+      "Fork Signal, a React + Hanzo two-pane feedback triage inbox with sentiment and theme tagging on org-scoped Base. Remix with AI and deploy on Hanzo.",
+  },
+  {
+    slug: "event-rally",
+    name: "Rally — Event RSVP Page",
+    tagline: "One event. One page. One tap to RSVP.",
+    description:
+      "Rally is a single-event RSVP page on the Hanzo stack — a color-flooded invite hero with a ticket-stub RSVP card. Guests reply going or can't-make-it with a guest headcount, while the host edits the event and watches the guest list fill in with live counts. Auth is PKCE through Hanzo IAM and every event and RSVP is an org-scoped row in Hanzo Base, provisioned from schema.sql at deploy.",
+    category: "Events",
+    tags: ["Landing Page"],
+    keyHighlights: [
+      { title: "Ticket-stub RSVP", body: "A cream ticket card with a perforated edge and punched notches floats over the flooded hero — one tap to reply going or can't-make-it, plus a guest headcount and a note to the host." },
+      { title: "Public invite, private management", body: "The event page is the public landing; signing in with Hanzo unlocks the live RSVP form and the host tools, so there is no separate marketing page to maintain." },
+      { title: "Live guest list", body: "The host's Attendees view tallies heads coming, replies received, and spots left in real time as RSVPs land, each shown with status, party size, and note." },
+      { title: "Edit once, publish live", body: "The host edits title, date and time, location, and capacity on one form; the first save creates the event row and every change updates it in Hanzo Base." },
+      { title: "Org-scoped by default", body: "schema.sql provisions the event and rsvps collections; Base stamps owner and org from the verified IAM principal and isolates every row to your org via the rule @request.auth.org_id = org." },
+      { title: "One design system", body: "Built entirely from @hanzo/gui primitives — no Tailwind, no second kit — with a single striking accent and a mobile-first, Partiful-style layout." },
+    ],
+    about:
+      "Rally turns a single event into one shareable page. The invite leads with a bold, color-flooded hero — date, title, and place — over which a cream ticket-stub card captures RSVPs in a tap. Guests reply yes or no with a party headcount and an optional note; the host manages the details and watches the guest list fill in with live counts. It is small but complete and real: identity is PKCE via Hanzo IAM against hanzo.id, the UI is 100% @hanzo/gui primitives, and the event plus every RSVP persist as org-scoped rows in Hanzo Base. The event page is public by design — the invite is the landing, and signing in is what unlocks RSVP and host management.",
+    perfectFor: [
+      "Parties and celebrations",
+      "Meetups and community nights",
+      "Launch parties and gallery openings",
+      "Workshops and classes with limited seats",
+      "Any one-off event that needs a headcount",
+    ],
+    framework: "React + Hanzo GUI",
+    kind: "repo",
+    featured: true,
+    repo: "https://github.com/hanzo-apps/event-rally.git",
+    seoTitle: "Rally — Event RSVP Page Template | Hanzo",
+    seoDescription:
+      "Fork Rally, a mobile-first React + Hanzo single-event RSVP page with a live guest list on org-scoped Base. Remix with AI and deploy on Hanzo.",
+  },
+  {
+    slug: "agenda-grid",
+    name: "Sched — Conference Agenda",
+    tagline: "Your whole conference at a glance.",
+    description:
+      "Sched is a multi-track conference agenda built on the Hanzo stack. Attendees browse every session in a color-coded timetable — hours down a sticky time gutter, tracks across the top, each block sized by its real duration — then open a session for its abstract and speakers. Organizers add tracks, sessions and speakers straight into org-scoped Hanzo Base collections, and the grid updates as they go.",
+    category: "Events",
+    tags: ["Apps"],
+    keyHighlights: [
+      { title: "Timetable at a glance", body: "A scrollable time-axis matrix — hours down a sticky gutter, color-coded track columns across, and every session an absolutely-positioned block sized by its real start-to-end duration." },
+      { title: "Color-coded tracks", body: "Each track gets its own hue so parallel programming is easy to scan; organizers pick the color when they create the track, and the grid, chips and detail view all follow it." },
+      { title: "Session detail with speakers", body: "Open any session for its abstract, room and time plus the speakers linked to it by session id — rendered from the speakers collection, not hard-coded." },
+      { title: "Organizer tools built in", body: "The Manage view adds tracks, sessions and speakers; each write lands as an org-scoped row in Hanzo Base via useMutation and the agenda refetches immediately." },
+      { title: "Ambient Hanzo auth", body: "OAuth2 PKCE sign-in against hanzo.id with no local passwords; the IAM token is carried into Base so every read and write is scoped to your organization." },
+      { title: "Real stack, ships as a repo", body: "React 19 + @hanzo/gui + @hanzo/iam + @hanzo/base under Vite, using Tamagui longhand props so it compiles green under tsc and vite in CI." },
+    ],
+    about:
+      "Sched turns a conference program into a single, dense, color-coded timetable. It is a complete example of the Hanzo app pattern — @hanzo/gui for the UI (Tamagui primitives, no Tailwind), Hanzo IAM for identity, and Hanzo Base for org-scoped data — with three collections (tracks, sessions, speakers) provisioned automatically from schema.sql on deploy. Three views cover the whole loop: the agenda grid, a session detail with speaker bios, and a Manage view for organizers. It ships as a real, buildable repo (tsc + vite green in CI), not a mockup.",
+    perfectFor: [
+      "Multi-track conferences and summits",
+      "Meetups and community events with parallel sessions",
+      "Internal all-hands, onboarding or training days",
+      "Workshop tracks and hackathon schedules",
+      "Any event that needs a shared, color-coded agenda",
+    ],
+    framework: "React + Hanzo GUI",
+    kind: "repo",
+    featured: true,
+    repo: "https://github.com/hanzo-apps/agenda-grid.git",
+    seoTitle: "Sched — Conference Agenda Template | Hanzo",
+    seoDescription:
+      "Fork Sched, a React + Hanzo multi-track conference agenda with a color-coded timetable and org-scoped Base storage. Remix with AI and deploy on Hanzo.",
   },
 ];
 
