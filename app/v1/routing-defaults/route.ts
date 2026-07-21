@@ -2,7 +2,7 @@
  * /v1/routing-defaults — server-driven smart-routing policy for the caller's
  * org.
  *
- * Proxies the single Hanzo AI gateway's `GET /v1/get-routing-defaults`
+ * Proxies the single Hanzo AI gateway's `GET /v1/router/defaults`
  * (authenticated, caller-org-scoped) so ops can enable routing per-default in
  * production from admin.hanzo.ai. Mirrors the fail-soft shape of `/v1/models`:
  * it ALWAYS returns HTTP 200. When the policy is unknown — no session, gateway
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
   try {
     // Per-user, authorized request — never share across users in Next's data
     // cache. Throttled by the response Cache-Control below.
-    const res = await fetch(`${HANZO_AI_BASE_URL}/get-routing-defaults`, {
+    const res = await fetch(`${HANZO_AI_BASE_URL}/router/defaults`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
     });

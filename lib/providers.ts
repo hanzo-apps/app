@@ -71,7 +71,7 @@ export const isSmartRouting = (model?: string | null): boolean =>
 export const ROUTING_DOCS_URL = "https://docs.hanzo.ai/docs/usage/routing";
 
 // Server-driven org routing policy, surfaced by the `/v1/routing-defaults`
-// proxy (which fetches cloud-api `GET /v1/get-routing-defaults`).
+// proxy (which fetches cloud-api `GET /v1/router/defaults`).
 // `autoRoutingActive` gates whether the org permits smart routing at all;
 // `defaultSessionRouting` is the org's default for a NEW session when the user
 // has expressed no explicit override.
