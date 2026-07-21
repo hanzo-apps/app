@@ -23,7 +23,10 @@ const securityHeaders = {
     // is a cross-origin fetch and MUST be allowed here or the SSO callback
     // silently fails and the session never persists.
     "connect-src 'self' https://*.hanzo.ai https://hanzo.id https://lux.id https://zoo.id https://pars.id https://api.openai.com https://api.anthropic.com wss://*.hanzo.ai",
-    "frame-src 'self' https://*.hanzo.ai https://hanzo.id https://lux.id https://zoo.id https://pars.id",
+    // *.hanzo.app = deployed project previews (<slug>.hanzo.app) embedded in the
+    // dashboard/project cards. frame-ancestors already trusts them; frame-src must
+    // too or every project preview iframe is CSP-blocked (silent broken thumbnails).
+    "frame-src 'self' https://*.hanzo.ai https://*.hanzo.app https://hanzo.id https://lux.id https://zoo.id https://pars.id",
     "frame-ancestors 'self' https://hanzo.ai https://*.hanzo.ai https://hanzo.app https://*.hanzo.app https://hanzo.bot https://*.hanzo.bot https://hanzo.team https://*.hanzo.team https://hanzo.chat https://*.hanzo.chat https://s3.hanzo.ai",
     "base-uri 'self'",
     "form-action 'self'",
