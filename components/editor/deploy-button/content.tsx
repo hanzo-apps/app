@@ -1,4 +1,4 @@
-import { Rocket } from "lucide-react";
+import { Rocket, Check, Copy, ExternalLink } from "lucide-react";
 import Image from "next/image";
 
 import Loading from "@/components/loading";
@@ -13,8 +13,8 @@ import { currentOrg } from "@/lib/org-scope";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { EVENTS } from "@hanzo/capture";
-import { useAnalytics } from "@hanzo/capture/react";
+import { EVENTS } from "@hanzo/event";
+import { useAnalytics } from "@hanzo/event/react";
 import { sendRewardSignal, getLastGenerationRequestId } from "@/lib/reward-signal";
 
 export const DeployButtonContent = ({
@@ -33,6 +33,10 @@ export const DeployButtonContent = ({
   const analytics = useAnalytics();
   const [loading, setLoading] = useState(false);
   const [config, setConfig] = useState({ title: "" });
+  // After a successful publish that returns a live URL, hold it so we can hand the
+  // user a real, shareable link (Open + Copy) instead of silently redirecting away.
+  const [published, setPublished] = useState<{ url: string; slug: string; org?: string } | null>(null);
+  const [copied, setCopied] = useState(false);
   // When the builder was opened on an existing project (`/dev?project=<slug>`),
   // reuse its slug + name so re-publishing updates the SAME shared record.
   const [existingSlug, setExistingSlug] = useState<string | undefined>(undefined);
@@ -133,6 +137,13 @@ export const DeployButtonContent = ({
 
       const liveUrl: string | undefined =
         data?.project?.liveUrl || data?.deployment?.liveUrl;
+      // Live URL in hand → show the shareable link (Open + Copy) instead of bouncing
+      // back into the editor. This is the moment that makes the builder shareable.
+      if (liveUrl && data?.slug) {
+        setPublished({ url: liveUrl, slug: data.slug, org: data?.org || data?.project?.org });
+        toast.success("Your project is live! 🎉");
+        return;
+      }
       if (data?.deployError && !liveUrl) {
         toast.success("Project saved to your organization.", {
           description: "The live deploy is finishing — open it from Projects.",
@@ -152,6 +163,62 @@ export const DeployButtonContent = ({
       setLoading(false);
     }
   };
+
+  // Published — hand the user their real, shareable live link.
+  if (published) {
+    const host = published.url.replace(/^https?:\/\//, "");
+    return (
+      <>
+        <header className="border-b border-white/10 bg-neutral-900 p-4">
+          <div className="mb-2 flex items-center justify-center">
+            <div className="flex size-9 items-center justify-center rounded-lg border border-green-500/30 bg-green-500/10">
+              <Rocket className="size-4 text-green-400" />
+            </div>
+          </div>
+          <p className="text-center text-base font-medium text-white">Your app is live</p>
+          <p className="mt-1 text-center text-xs leading-relaxed text-white/50">
+            Share this link — anyone can open it.
+          </p>
+        </header>
+        <main className="space-y-3 bg-neutral-950 p-4">
+          <div className="flex items-center gap-2 rounded-lg border border-white/15 bg-white/[0.04] px-3 py-2">
+            <span className="flex-1 truncate font-mono text-sm text-white/85">{host}</span>
+            <button
+              type="button"
+              aria-label="Copy link"
+              onClick={() => {
+                navigator.clipboard?.writeText(published.url).then(
+                  () => {
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 1400);
+                  },
+                  () => {},
+                );
+              }}
+              className="flex size-7 flex-shrink-0 items-center justify-center rounded-md text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+            >
+              {copied ? <Check className="size-4 text-green-400" /> : <Copy className="size-4" />}
+            </button>
+          </div>
+          <a
+            href={published.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded-md !bg-white px-3 py-2 text-sm font-medium !text-black transition-colors hover:!bg-white/90"
+          >
+            Open site <ExternalLink className="size-4" />
+          </a>
+          <button
+            type="button"
+            onClick={() => router.push(builderLink(published.slug, published.org))}
+            className="w-full rounded-md border border-white/15 px-3 py-2 text-sm font-medium text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+          >
+            Back to editor
+          </button>
+        </main>
+      </>
+    );
+  }
 
   return (
     <>
