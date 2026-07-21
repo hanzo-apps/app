@@ -1,4 +1,4 @@
-// POST /api/store/cart/[id]/items — set (add/replace) a line item's quantity.
+// POST /v1/store/cart/[id]/items — set (add/replace) a line item's quantity.
 // Body: { productId? , productSlug? , variantSku? , quantity }
 import { NextRequest, NextResponse } from "next/server";
 import { resolveBinding, notConfigured, commerceErrorResponse } from "@/lib/store-bff";

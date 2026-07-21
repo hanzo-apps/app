@@ -1,4 +1,4 @@
-// GET /api/store/products/[key] — one real product listing by key.
+// GET /v1/store/products/[key] — one real product listing by key.
 import { NextRequest, NextResponse } from "next/server";
 import { resolveBinding, notConfigured, commerceErrorResponse } from "@/lib/store-bff";
 import { getProduct } from "@/lib/store";

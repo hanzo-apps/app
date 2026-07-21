@@ -1,4 +1,4 @@
-// GET /api/store/cart/[id] — read a cart by id (per-org).
+// GET /v1/store/cart/[id] — read a cart by id (per-org).
 import { NextRequest, NextResponse } from "next/server";
 import { resolveBinding, notConfigured, commerceErrorResponse } from "@/lib/store-bff";
 import { getCart } from "@/lib/store";
