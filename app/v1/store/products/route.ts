@@ -1,4 +1,4 @@
-// GET /api/store/products — the org's REAL catalog, read from commerce.
+// GET /v1/store/products — the org's REAL catalog, read from commerce.
 // Honest-empty ([]) when the catalog is empty; never a fixture. 409 when the
 // project is not bound to a store; 401 when the storefront needs a Published
 // token or a signed-in merchant.
