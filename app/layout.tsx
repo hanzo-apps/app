@@ -93,9 +93,10 @@ export default async function RootLayout({
 }>) {
   const data = await getMe();
 
-  // Initialize error logger
+  // Error reporting is wired by AnalyticsRoot (the authed @hanzo/event client);
+  // errorLogger just queues until then. initialize() stays for API compatibility.
   if (typeof window !== 'undefined') {
-    errorLogger.initialize(process.env.NEXT_PUBLIC_SENTRY_DSN);
+    errorLogger.initialize();
   }
 
   return (

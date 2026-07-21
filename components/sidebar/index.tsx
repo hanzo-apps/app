@@ -32,6 +32,8 @@ import {
   Check,
   MoreHorizontal,
   Plus,
+  Copy,
+  Gift,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -45,6 +47,7 @@ import { OrgSwitcher } from '@/components/org-switcher';
 import { SidebarWallet } from '@/components/SidebarWallet';
 import { useRouter } from 'next/navigation';
 import { useProjects } from '@/hooks/useProjects';
+import { useUser } from '@/hooks/useUser';
 import { builderLink } from '@/lib/api/projects';
 import { useFolders } from '@/hooks/useFolders';
 import { markProjectOpened, orderByRecentlyOpened } from '@/lib/recent-projects';
@@ -261,9 +264,11 @@ function SidebarContent({
         className={cn(
           'w-full',
           collapsed ? 'justify-center px-2' : 'justify-start',
-          // Vercel-calm: inactive nav is muted, brightens on hover; only the
-          // active item is full-strength.
-          !isActive && 'text-muted-foreground hover:text-foreground',
+          // Vercel-calm: inactive nav is muted, brightens AND gets a visible
+          // surface on hover; only the active item is full-strength. The explicit
+          // bg-white/[0.06] doesn't depend on the ghost variant's own hover token.
+          !isActive &&
+            'text-muted-foreground hover:bg-white/[0.06] hover:text-foreground',
         )}
         onClick={() => handleItemAction(item)}
         title={collapsed ? item.label : undefined}
@@ -519,37 +524,154 @@ function SidebarContent({
   );
 }
 
-/** Share card — honest: copies this deployment's URL to share the app. */
+/**
+ * Share card → opens the referral widget. The reward is real: for every friend
+ * who signs up and subscribes to a PAID plan through your link, you get one free
+ * week — up to one year (52 weeks). Attribution rides the `?ref=` param, which
+ * the commerce referral program credits on a referred paid signup.
+ */
 function ShareCard() {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        title="Share Hanzo, earn free weeks"
+        className="flex w-full items-center gap-2 rounded-md border border-border bg-muted/30 px-2.5 py-1.5 text-left text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+      >
+        <Share2 className="h-3.5 w-3.5 shrink-0" />
+        <span className="truncate font-medium">Share app</span>
+      </button>
+      {open && <ReferralDialog onClose={() => setOpen(false)} />}
+    </>
+  );
+}
+
+/** The referral share widget — link + reward, in a solid, self-contained modal. */
+function ReferralDialog({ onClose }: { onClose: () => void }) {
+  const { user } = useUser();
   const [copied, setCopied] = useState(false);
-  const share = async () => {
-    if (typeof window === 'undefined') return;
-    const url = window.location.origin;
+
+  // Referral link: a stable `?ref=<code>` the commerce referral program credits.
+  // Code = the signed-in user's handle (never their email); anonymous → bare site.
+  const code = (user?.username || '')
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  const link = code ? `https://hanzo.app/?ref=${code}` : 'https://hanzo.app';
+
+  const copy = async () => {
     try {
-      if (navigator.share) {
-        await navigator.share({ title: 'Hanzo App', url });
-        return;
-      }
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(link);
       setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
+      setTimeout(() => setCopied(false), 1600);
     } catch {
-      // user dismissed the share sheet, or clipboard blocked — no-op
+      /* clipboard blocked — no-op */
     }
   };
+  const nativeShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: 'Build apps with Hanzo',
+          text: 'Describe an app — Hanzo builds and ships it. Join with my link:',
+          url: link,
+        });
+      } else {
+        copy();
+      }
+    } catch {
+      /* dismissed — no-op */
+    }
+  };
+  const shareText = encodeURIComponent(
+    'Describe an app — Hanzo builds and ships it. Join with my link:',
+  );
+  const enc = encodeURIComponent(link);
+
   return (
-    <button
-      onClick={share}
-      title="Invite a friend to build"
-      className="flex w-full items-center gap-2 rounded-md border border-border bg-muted/30 px-2.5 py-1.5 text-left text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+    <div
+      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 p-4"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Share Hanzo"
     >
-      {copied ? (
-        <Check className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
-      ) : (
-        <Share2 className="h-3.5 w-3.5 shrink-0" />
-      )}
-      <span className="truncate font-medium">{copied ? 'Link copied' : 'Share app'}</span>
-    </button>
+      <div
+        className="relative w-full max-w-md rounded-2xl border border-white/10 bg-[#0e0e12] p-6 text-white shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          aria-label="Close"
+          className="absolute right-4 top-4 rounded-md p-1 text-white/50 transition-colors hover:bg-white/10 hover:text-white"
+        >
+          <X className="h-4 w-4" />
+        </button>
+
+        <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
+          <Gift className="h-5 w-5" strokeWidth={1.5} />
+        </span>
+        <h2 className="mt-4 text-lg font-semibold tracking-tight">
+          Share Hanzo, earn free weeks
+        </h2>
+        <p className="mt-2 text-sm leading-relaxed text-white/60">
+          For every friend who signs up and subscribes to a paid plan through your
+          link, you get{' '}
+          <span className="font-medium text-white">1 week free</span> — up to{' '}
+          <span className="font-medium text-white">1 year</span> (52 weeks).
+        </p>
+
+        <div className="mt-5 flex items-center gap-2 rounded-lg border border-white/10 bg-black/40 p-1.5">
+          <input
+            readOnly
+            value={link}
+            onFocus={(e) => e.currentTarget.select()}
+            className="min-w-0 flex-1 bg-transparent px-2 text-sm text-white/80 outline-none"
+            aria-label="Your referral link"
+          />
+          <button
+            onClick={copy}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-white px-3 py-1.5 text-xs font-medium text-black transition-colors hover:bg-white/90"
+          >
+            {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+            {copied ? 'Copied' : 'Copy'}
+          </button>
+        </div>
+
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button
+            onClick={nativeShare}
+            className="inline-flex items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-xs text-white/70 transition-colors hover:border-white/25 hover:text-white"
+          >
+            <Share2 className="h-3.5 w-3.5" /> Share
+          </button>
+          <a
+            href={`https://x.com/intent/post?text=${shareText}&url=${enc}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-xs text-white/70 transition-colors hover:border-white/25 hover:text-white"
+          >
+            Post on X
+          </a>
+          <a
+            href={`https://www.linkedin.com/sharing/share-offsite/?url=${enc}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-xs text-white/70 transition-colors hover:border-white/25 hover:text-white"
+          >
+            Share on LinkedIn
+          </a>
+        </div>
+
+        <p className="mt-4 text-[11px] leading-relaxed text-white/35">
+          Free weeks are credited when a referred friend&apos;s paid subscription
+          starts. Rewards cap at 52 weeks.
+        </p>
+      </div>
+    </div>
   );
 }
 
