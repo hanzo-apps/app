@@ -426,7 +426,8 @@ export default function Comparison() {
                                 <Dot tone={r.hanzo ? "good" : cell.t} />
                               </span>
                               <div className="min-w-0">
-                                <div className={`text-[13px] leading-snug ${r.hanzo ? "text-white" : TEXT[cell.t]}`}>
+                                <div className={`flex items-center gap-1.5 text-[13px] leading-snug ${r.hanzo ? "text-white" : TEXT[cell.t]}`}>
+                                  <ColIcon i={ci} className="h-3.5 w-3.5 flex-none text-white/30" />
                                   {cell.v}
                                 </div>
                                 {cell.d && (
