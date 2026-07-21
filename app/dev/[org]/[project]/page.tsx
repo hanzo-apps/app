@@ -102,7 +102,7 @@ export default function ProjectDevPage() {
 
   if (phase === "loading") {
     return (
-      <div className="h-[100dvh] bg-neutral-950 flex items-center justify-center text-neutral-400 text-sm">
+      <div className="h-[100dvh] bg-background flex items-center justify-center text-muted-foreground text-sm">
         Opening {slug}…
       </div>
     );
@@ -111,21 +111,21 @@ export default function ProjectDevPage() {
   if (phase === "denied") {
     const wrongOrg = !!signedInOrg && !!org && signedInOrg !== org;
     return (
-      <div className="flex h-[100dvh] items-center justify-center bg-neutral-950 px-6 text-center">
+      <div className="flex h-[100dvh] items-center justify-center bg-background px-6 text-center">
         <div className="max-w-md">
-          <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-white/5">
-            <LockKeyhole className="h-6 w-6 text-white/50" />
+          <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-muted">
+            <LockKeyhole className="h-6 w-6 text-muted-foreground" />
           </div>
-          <h1 className="text-lg font-medium text-white">
+          <h1 className="text-lg font-medium text-foreground">
             Can’t open <span className="font-mono">{org}/{slug}</span>
           </h1>
-          <p className="mx-auto mt-2 text-sm leading-relaxed text-white/50">
+          <p className="mx-auto mt-2 text-sm leading-relaxed text-muted-foreground">
             {wrongOrg ? (
               <>
-                This project is in the <span className="text-white/80">{org}</span> organization,
-                but you’re signed in under <span className="text-white/80">{signedInOrg}</span>.
+                This project is in the <span className="text-foreground/80">{org}</span> organization,
+                but you’re signed in under <span className="text-foreground/80">{signedInOrg}</span>.
                 Its files and history are safe — sign in with an account in{" "}
-                <span className="text-white/80">{org}</span> to open it, with its full
+                <span className="text-foreground/80">{org}</span> to open it, with its full
                 version history.
               </>
             ) : (
@@ -139,13 +139,13 @@ export default function ProjectDevPage() {
           <div className="mt-6 flex items-center justify-center gap-3">
             <Link
               href="/dashboard"
-              className="rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition-colors hover:bg-white/90"
+              className="rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               Go to your dashboard
             </Link>
             <Link
               href="/login"
-              className="rounded-full border border-white/15 px-5 py-2.5 text-sm text-white/70 transition-colors hover:border-white/30 hover:text-white"
+              className="rounded-full border border-border px-5 py-2.5 text-sm text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground"
             >
               Switch account
             </Link>

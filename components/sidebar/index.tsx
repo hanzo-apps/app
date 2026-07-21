@@ -266,9 +266,9 @@ function SidebarContent({
           collapsed ? 'justify-center px-2' : 'justify-start',
           // Vercel-calm: inactive nav is muted, brightens AND gets a visible
           // surface on hover; only the active item is full-strength. The explicit
-          // bg-white/[0.06] doesn't depend on the ghost variant's own hover token.
+          // bg-sidebar-accent doesn't depend on the ghost variant's own hover token.
           !isActive &&
-            'text-muted-foreground hover:bg-white/[0.06] hover:text-foreground',
+            'text-muted-foreground hover:bg-sidebar-accent hover:text-foreground',
         )}
         onClick={() => handleItemAction(item)}
         title={collapsed ? item.label : undefined}
@@ -600,41 +600,41 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
       aria-label="Share Hanzo"
     >
       <div
-        className="relative w-full max-w-md rounded-2xl border border-white/10 bg-[#0e0e12] p-6 text-white shadow-2xl"
+        className="relative w-full max-w-md rounded-2xl border border-border bg-popover p-6 text-foreground shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
           aria-label="Close"
-          className="absolute right-4 top-4 rounded-md p-1 text-white/50 transition-colors hover:bg-white/10 hover:text-white"
+          className="absolute right-4 top-4 rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
           <X className="h-4 w-4" />
         </button>
 
-        <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
+        <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-muted">
           <Gift className="h-5 w-5" strokeWidth={1.5} />
         </span>
         <h2 className="mt-4 text-lg font-semibold tracking-tight">
           Share Hanzo, earn free weeks
         </h2>
-        <p className="mt-2 text-sm leading-relaxed text-white/60">
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           For every friend who signs up and subscribes to a paid plan through your
           link, you get{' '}
-          <span className="font-medium text-white">1 week free</span> — up to{' '}
-          <span className="font-medium text-white">1 year</span> (52 weeks).
+          <span className="font-medium text-foreground">1 week free</span> — up to{' '}
+          <span className="font-medium text-foreground">1 year</span> (52 weeks).
         </p>
 
-        <div className="mt-5 flex items-center gap-2 rounded-lg border border-white/10 bg-black/40 p-1.5">
+        <div className="mt-5 flex items-center gap-2 rounded-lg border border-border bg-muted p-1.5">
           <input
             readOnly
             value={link}
             onFocus={(e) => e.currentTarget.select()}
-            className="min-w-0 flex-1 bg-transparent px-2 text-sm text-white/80 outline-none"
+            className="min-w-0 flex-1 bg-transparent px-2 text-sm text-foreground outline-none"
             aria-label="Your referral link"
           />
           <button
             onClick={copy}
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-white px-3 py-1.5 text-xs font-medium text-black transition-colors hover:bg-white/90"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
             {copied ? 'Copied' : 'Copy'}
@@ -644,7 +644,7 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
         <div className="mt-3 flex flex-wrap gap-2">
           <button
             onClick={nativeShare}
-            className="inline-flex items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-xs text-white/70 transition-colors hover:border-white/25 hover:text-white"
+            className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-border hover:text-foreground"
           >
             <Share2 className="h-3.5 w-3.5" /> Share
           </button>
@@ -652,7 +652,7 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
             href={`https://x.com/intent/post?text=${shareText}&url=${enc}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-xs text-white/70 transition-colors hover:border-white/25 hover:text-white"
+            className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-border hover:text-foreground"
           >
             Post on X
           </a>
@@ -660,13 +660,13 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
             href={`https://www.linkedin.com/sharing/share-offsite/?url=${enc}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md border border-white/10 px-3 py-1.5 text-xs text-white/70 transition-colors hover:border-white/25 hover:text-white"
+            className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-border hover:text-foreground"
           >
             Share on LinkedIn
           </a>
         </div>
 
-        <p className="mt-4 text-[11px] leading-relaxed text-white/35">
+        <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
           Free weeks are credited when a referred friend&apos;s paid subscription
           starts. Rewards cap at 52 weeks.
         </p>

@@ -41,17 +41,17 @@ export function StartComposer({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.05] to-white/[0.01] p-6 sm:p-8",
+        "rounded-2xl border border-border bg-gradient-to-b from-white/[0.05] to-white/[0.01] p-6 sm:p-8",
         className
       )}
     >
-      <h2 className="text-xl font-medium tracking-tight text-white text-balance sm:text-2xl">
+      <h2 className="text-xl font-medium tracking-tight text-foreground text-balance sm:text-2xl">
         What do you want to build?
       </h2>
-      <p className="mt-1 text-sm text-white/50">
+      <p className="mt-1 text-sm text-muted-foreground">
         Describe an app and Hanzo starts building it live — UI, data, and AI wired in.
       </p>
-      <div className="mt-4 rounded-xl border border-white/15 bg-neutral-900/60 transition-colors focus-within:border-white/30">
+      <div className="mt-4 rounded-xl border border-border bg-card/60 transition-colors focus-within:border-ring">
         <textarea
           value={idea}
           onChange={(e) => setIdea(e.target.value)}
@@ -64,7 +64,7 @@ export function StartComposer({ className }: { className?: string }) {
           }}
           rows={3}
           placeholder="e.g. a landing page for my coffee subscription with pricing and a signup form"
-          className="w-full resize-none bg-transparent px-4 py-3.5 text-[15px] leading-relaxed text-white placeholder:text-white/30 focus:outline-none"
+          className="w-full resize-none bg-transparent px-4 py-3.5 text-[15px] leading-relaxed text-foreground placeholder:text-muted-foreground focus:outline-none"
           aria-label="Describe what you want to build"
         />
         <div className="flex items-center justify-between gap-3 px-3 pb-3">
@@ -74,7 +74,7 @@ export function StartComposer({ className }: { className?: string }) {
                 key={s.label}
                 type="button"
                 onClick={() => setIdea(s.prompt)}
-                className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-white/55 transition-colors hover:border-white/20 hover:text-white"
+                className="rounded-full border border-border bg-muted px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-border hover:text-foreground"
               >
                 {s.label}
               </button>
@@ -83,7 +83,7 @@ export function StartComposer({ className }: { className?: string }) {
           <Button
             onClick={start}
             disabled={!idea.trim()}
-            className="ml-auto bg-white font-medium text-black hover:bg-white/90 disabled:opacity-40"
+            className="ml-auto bg-primary font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
           >
             Start building
             <ArrowUpRight className="ml-1.5 h-4 w-4" />
@@ -97,7 +97,7 @@ export function StartComposer({ className }: { className?: string }) {
             key={s.label}
             type="button"
             onClick={() => setIdea(s.prompt)}
-            className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-white/55 transition-colors hover:border-white/20 hover:text-white"
+            className="rounded-full border border-border bg-muted px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-border hover:text-foreground"
           >
             {s.label}
           </button>

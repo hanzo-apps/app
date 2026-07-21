@@ -107,8 +107,8 @@ export function VoiceInput({
           aria-label={listening ? "Stop dictation" : "Dictate with your voice"}
           onClick={() => (listening ? stop() : start())}
           className={classNames(
-            "rounded-full text-neutral-400 hover:bg-white/10 hover:text-neutral-200",
-            listening && "!text-white"
+            "rounded-full text-muted-foreground hover:bg-accent hover:text-foreground",
+            listening && "!text-foreground"
           )}
         >
           <Mic
@@ -121,7 +121,7 @@ export function VoiceInput({
       </TooltipTrigger>
       <TooltipContent
         align="end"
-        className="-translate-y-0.5 rounded-md bg-neutral-950 px-2 py-1 text-xs text-neutral-200"
+        className="-translate-y-0.5 rounded-md bg-card px-2 py-1 text-xs text-foreground"
       >
         {listening ? "Listening… tap to stop" : "Dictate with your voice"}
       </TooltipContent>
