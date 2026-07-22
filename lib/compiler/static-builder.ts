@@ -13,6 +13,7 @@ import { VirtualFile, FileTreeNode, Deployment } from '@/lib/vfs/types';
 import { logger } from '@/lib/utils';
 import { processHtml } from '@/lib/publishing/html-processor';
 import { generateSitemap, generateRobotsTxt } from '@/lib/publishing/seo-generator';
+import { resolveWiredConfig } from '@/lib/publishing/wired-config';
 import { extractBackendFeatures } from './backend-feature-extractor';
 
 export interface BuildResult {
@@ -79,7 +80,10 @@ function createServerVfs(
  * Build a static deployment from a deployment entity
  * Uses VirtualServer to compile Handlebars templates (same as export)
  */
-export async function buildStaticDeployment(deploymentId: string): Promise<BuildResult> {
+export async function buildStaticDeployment(
+  deploymentId: string,
+  opts: { bearer?: string } = {},
+): Promise<BuildResult> {
   try {
     const adapter = await createServerAdapter();
     await adapter.init();
@@ -176,6 +180,11 @@ export async function buildStaticDeployment(deploymentId: string): Promise<Build
       ? `https://${deployment.customDomain}`
       : `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/deployments/${deploymentId}`;
 
+    // Resolve wired-by-default config from the cloud project (single source of
+    // truth): analytics ON unless the project opted out, plus its Base data space.
+    // Fail-open — a builder without the cloud link still ships analytics wired ON.
+    const wired = await resolveWiredConfig(deployment, { bearer: opts.bearer });
+
     // Post-process files to replace asset references with absolute paths
     // and apply deployment settings (scripts, CDN, SEO, etc.)
     const htmlFiles: string[] = [];
@@ -214,6 +223,8 @@ export async function buildStaticDeployment(deploymentId: string): Promise<Build
             baseUrl,
             deploymentId,
             hasEdgeFunctions,
+            wiredAnalytics: wired.analyticsEnabled,
+            space: wired.space,
           });
         }
       }
