@@ -1,6 +1,7 @@
 import { PublishSettings } from '../vfs/types';
 import { generateTrackingScript } from '../analytics/tracking-script';
 import { generateConsentBanner } from './consent-banner';
+import { buildWiredHead } from './wired-injection';
 
 export interface HtmlProcessingOptions {
   publishSettings: PublishSettings;
@@ -8,6 +9,14 @@ export interface HtmlProcessingOptions {
   baseUrl: string;
   deploymentId: string;
   hasEdgeFunctions?: boolean;
+  /**
+   * Wired-by-default analytics: emit the canonical pageview beacon (ON by
+   * default, inherited from the cloud project's `analytics` flag). Absent is
+   * treated as opted-out here — the builder passes the resolved value explicitly.
+   */
+  wiredAnalytics?: boolean;
+  /** The project's Base data space "<org>/<slug>"; gates the Base config. */
+  space?: string;
 }
 
 /**
@@ -17,7 +26,7 @@ export interface HtmlProcessingOptions {
  * not by overlaying content
  */
 export function processHtml(html: string, options: HtmlProcessingOptions): string {
-  const { publishSettings, projectId, baseUrl, deploymentId, hasEdgeFunctions } = options;
+  const { publishSettings, projectId, baseUrl, deploymentId, hasEdgeFunctions, wiredAnalytics, space } = options;
 
   let processed = html;
 
@@ -29,6 +38,11 @@ export function processHtml(html: string, options: HtmlProcessingOptions): strin
 
   // 3. Inject head scripts into <head>
   processed = injectHeadScripts(processed, publishSettings);
+
+  // 3.5. Inject wired-by-default capabilities into <head>: the analytics beacon
+  // (canonical /v1/analytics pageview) and the Base submissions config — both
+  // inline + same-origin, driven by the cloud project's fields.
+  processed = injectWired(processed, wiredAnalytics === true, space);
 
   // 4. Inject edge function interceptor into <head> (only if project has edge functions)
   if (hasEdgeFunctions) {
@@ -285,6 +299,16 @@ function injectBeforeBodyClose(html: string, content: string): string {
     content + '\n' +
     html.slice(bodyCloseIndex)
   );
+}
+
+/**
+ * Inject the wired-by-default capabilities (analytics beacon + Base submissions
+ * config) into <head>. No-op when analytics is opted out AND no space is set.
+ */
+function injectWired(html: string, analytics: boolean, space?: string): string {
+  const snippet = buildWiredHead({ analytics, space });
+  if (!snippet) return html;
+  return injectIntoHead(html, snippet);
 }
 
 /**
