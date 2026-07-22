@@ -59,6 +59,9 @@ export interface AppSettings {
   codexAuth?: CodexAuthData;
   hfAuth?: HFAuthData;
   telemetryOptIn?: boolean;
+  // Notification preferences (client-persisted; a future notifications service
+  // reads these). Keyed by preference label -> enabled.
+  notifications?: Record<string, boolean>;
 }
 
 class ConfigManager {
