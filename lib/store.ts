@@ -5,10 +5,10 @@
 // catalog/cart/checkout/orders. The builder never re-implements commerce — it
 // only relays the org's identity to the ONE commerce backend, per-org.
 //
-// Reads the real catalog from commerce (commerce.hanzo.ai) directly from the
-// server-side BFF (the gateway only proxies /v1/billing/* today — see §2.3 of
-// the doc). When the gateway learns to proxy /v1/{store,cart,checkout,order},
-// only HANZO_COMMERCE_STORE_URL changes; this contract is identical.
+// Reads the real catalog from the ONE API host (api.hanzo.ai): the gateway
+// fronts the storefront routes /v1/{store,cart,checkout,order} alongside
+// /v1/billing/*, all proxied to the same per-org commerce backend. Override
+// HANZO_COMMERCE_STORE_URL only to bind a different deployment.
 //
 // Auth (doc §5): the storefront read path needs a token with `Published`
 // permission. Two real ways, in preference order:
@@ -23,7 +23,7 @@
 // never leave commerce.
 
 const COMMERCE_STORE_URL = (
-  process.env.HANZO_COMMERCE_STORE_URL || "https://commerce.hanzo.ai"
+  process.env.HANZO_COMMERCE_STORE_URL || "https://api.hanzo.ai"
 ).replace(/\/+$/, "");
 
 /** Per-org storefront `Published` key (KMS-injected). Empty when unset. */
