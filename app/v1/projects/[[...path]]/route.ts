@@ -4,20 +4,12 @@
  * This is the ONE canonical, shared, org-scoped store of buildable/deployable
  * sites. The SAME records are read/written by hanzo.app (this builder) and
  * console.hanzo.ai (the Projects module) — there is no second copy. This route
-<<<<<<< HEAD
  * forwards to the cloud projects service as the signed-in user (their IAM bearer); the
-=======
- * forwards to the cloud projects store as the signed-in user (their IAM bearer); the
->>>>>>> chore/comment-cleanup-projects
  * cloud gateway derives the tenant from the bearer `owner` claim, so every
  * project/deploy is org-scoped + billed to the right org WITHOUT the browser ever
  * choosing its own tenant (least privilege).
  *
-<<<<<<< HEAD
  * Surface (proxied verbatim to cloud `/v1/projects`, see projects service CONTRACT.md):
-=======
- * Surface (proxied verbatim to cloud `/v1/projects`, see `clients/projects/CONTRACT.md`):
->>>>>>> chore/comment-cleanup-projects
  *   POST   /v1/projects                       create   { name, slug?, framework?, repo? }
  *   GET    /v1/projects                        list (org)
  *   GET    /v1/projects/:slug                  get
