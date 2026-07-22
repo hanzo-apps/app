@@ -99,3 +99,8 @@ public/esbuild.wasm
 tsconfig.tsbuildinfo
 *.tsbuildinfo
 test/test-results/
+tests/e2e/.auth/
+tests/e2e/test-results/
+tests/e2e/playwright-report/
+tests/e2e/junit.xml
+tests/e2e/test-results.json
