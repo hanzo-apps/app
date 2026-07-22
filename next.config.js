@@ -74,6 +74,10 @@ const nextConfig = {
         destination: 'https://docs.hanzo.ai',
         permanent: false,
       },
+      // The apps catalog moved to /install; keep old /apps links (bookmarks,
+      // external refs) alive instead of 404ing. Lost to multi-session churn when
+      // the page was moved — restored so the move is clean end-to-end.
+      { source: '/apps', destination: '/install', permanent: true },
     ];
   },
 
