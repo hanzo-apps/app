@@ -26,6 +26,8 @@ import {
 import { HanzoBrand } from "@/components/HanzoLogo";
 import MeetHanzoMenu from "@/components/layout/meet-hanzo-menu";
 import { useAuthContext } from "@/components/providers/AuthProvider";
+// Shared cross-app switcher — the same 9-dot Hanzo launcher on every Hanzo app.
+import { HanzoAppLauncher } from "@hanzogui/shell";
 
 export default function Header() {
   const { user, isAuthenticated, login, logout } = useAuthContext();
@@ -63,6 +65,9 @@ export default function Header() {
           <Link href="/" className="flex items-center">
             <HanzoBrand className="text-white" collapse />
           </Link>
+
+          {/* Cross-app switcher (Chat/World/Console/Cloud/Admin/… + Zach). */}
+          <HanzoAppLauncher currentApp="app" />
 
           {/* Desktop Navigation — Meet Hanzo mega-menu + the key conversion
               links, matching hanzo.ai's dropdown-plus-Pricing shape. Apps,
