@@ -22,10 +22,18 @@ export default function SettingsPage() {
   const { models } = useModels();
   const [mounted, setMounted] = useState(false);
   const [defaultModel, setDefaultModelState] = useState("");
+  const [notifs, setNotifs] = useState<Record<string, boolean>>({});
   useEffect(() => {
     setMounted(true);
     setDefaultModelState(configManager.getDefaultModel());
+    setNotifs(configManager.getSettings().notifications ?? {});
   }, []);
+  // Persist notification prefs client-side (a future notifications service reads them).
+  const toggleNotif = (key: string, value: boolean) => {
+    const next = { ...notifs, [key]: value };
+    setNotifs(next);
+    configManager.setSetting("notifications", next);
+  };
 
   const tabs = [
     { id: "general", label: "General", icon: <Palette className="w-4 h-4 shrink-0" /> },
@@ -180,9 +188,14 @@ export default function SettingsPage() {
 
                   <div className="space-y-4">
                     {["Email notifications", "Push notifications", "Project updates", "Marketing emails"].map((item) => (
-                      <label key={item} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border border-border">
+                      <label key={item} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border border-border cursor-pointer">
                         <span className="text-sm text-muted-foreground">{item}</span>
-                        <input type="checkbox" className="toggle" defaultChecked />
+                        <input
+                          type="checkbox"
+                          className="toggle"
+                          checked={notifs[item] ?? true}
+                          onChange={(e) => toggleNotif(item, e.target.checked)}
+                        />
                       </label>
                     ))}
                   </div>
