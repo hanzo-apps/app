@@ -152,17 +152,6 @@ export default function SignupPage() {
               </div>
             </CardContent>
           </Card>
-
-          {/* Social proof */}
-          <div className="mt-8 text-center">
-            <p className="text-sm text-muted-foreground mb-3">Trusted by developers at</p>
-            <div className="flex items-center justify-center gap-8 opacity-60">
-              <span className="text-muted-foreground font-medium">OpenAI</span>
-              <span className="text-muted-foreground font-medium">Google</span>
-              <span className="text-muted-foreground font-medium">Meta</span>
-              <span className="text-muted-foreground font-medium">Microsoft</span>
-            </div>
-          </div>
         </div>
       </div>
     </div>
