@@ -253,7 +253,7 @@ const PaaSCapabilities = () => {
                 <span className="text-green-400">$</span> hanzo deploy
               </div>
               <div className="text-neutral-400">
-                Deploying to production...
+                Patching Service — operator reconciling rollout...
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-green-500" />
