@@ -54,11 +54,17 @@ export function HeatmapViewer({ deploymentId, pages }: HeatmapViewerProps) {
   const [screenshotCache, setScreenshotCache] = useState<Record<string, string>>({});
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  // Monotonic id so only the LATEST in-flight fetch may apply its result. Page
+  // and device switch in place via dropdowns (and there's a manual refresh), so
+  // responses can resolve out of order — without this, a slow earlier response
+  // overwrites a newer one and the canvas shows the wrong page's heatmap.
+  const reqIdRef = useRef(0);
 
   // Fetch heatmap data
   const fetchHeatmapData = async () => {
     if (!selectedPage) return;
 
+    const myId = ++reqIdRef.current;
     setLoading(true);
     try {
       const params = new URLSearchParams({
@@ -74,12 +80,13 @@ export function HeatmapViewer({ deploymentId, pages }: HeatmapViewerProps) {
       if (!response.ok) throw new Error('Failed to fetch heatmap data');
 
       const heatmapData: HeatmapData = await response.json();
-      setData(heatmapData);
+      if (myId === reqIdRef.current) setData(heatmapData);
     } catch (error) {
+      if (myId !== reqIdRef.current) return;
       console.error('Failed to fetch heatmap data:', error);
       toast.error('Failed to load heatmap data');
     } finally {
-      setLoading(false);
+      if (myId === reqIdRef.current) setLoading(false);
     }
   };
 
