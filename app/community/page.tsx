@@ -13,7 +13,7 @@ import { TemplateGallery } from "@/components/template-gallery";
 
 export default function CommunityPage() {
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <Header />
       <TemplateGallery
         eyebrow="Community"

@@ -12,7 +12,7 @@ export const billingFaq: QA[] = [
       <>
         AI generation counts as usage — building and editing apps in the
         builder, messages in Hanzo Chat, and calls to the API at{" "}
-        <code className="font-mono text-white/75">api.hanzo.ai</code>. Hosting
+        <code className="font-mono text-foreground">api.hanzo.ai</code>. Hosting
         your published apps on Hanzo Cloud is included. Every plan draws from a
         single monthly shared-usage allowance, so you are never billed three
         times for the same AI.
@@ -35,10 +35,10 @@ export const billingFaq: QA[] = [
     a: (
       <>
         They are the same product with a larger monthly shared-usage allowance
-        as you go up: <span className="text-white/80">Pro ($20)</span> for
-        individuals, <span className="text-white/80">Team ($100)</span> adds an
+        as you go up: <span className="text-foreground">Pro ($20)</span> for
+        individuals, <span className="text-foreground">Team ($100)</span> adds an
         organization with multiple seats and shared billing, and{" "}
-        <span className="text-white/80">Max ($200)</span> gives your org the
+        <span className="text-foreground">Max ($200)</span> gives your org the
         largest allowance with priority support.
       </>
     ),
@@ -59,7 +59,7 @@ export const billingFaq: QA[] = [
       <>
         Yes. Plans are month-to-month — cancel or change tier whenever you like
         from your{" "}
-        <Link href="/billing" className="text-white underline underline-offset-4 hover:text-white/80">
+        <Link href="/billing" className="text-foreground underline underline-offset-4 hover:text-foreground/80">
           billing settings
         </Link>
         . There is no long-term contract.
@@ -85,10 +85,10 @@ export const productFaq: QA[] = [
     a: (
       <>
         hanzo.app builds with Hanzo&apos;s own{" "}
-        <span className="text-white/80">Zen</span> and{" "}
-        <span className="text-white/80">Enso</span> model families, served through
+        <span className="text-foreground">Zen</span> and{" "}
+        <span className="text-foreground">Enso</span> model families, served through
         the Hanzo LLM Gateway at{" "}
-        <code className="font-mono text-white/75">api.hanzo.ai</code>. The same
+        <code className="font-mono text-foreground">api.hanzo.ai</code>. The same
         gateway gives every app you publish one OpenAI-compatible endpoint to 400+
         frontier models — swap models with a single string.
       </>
@@ -99,7 +99,7 @@ export const productFaq: QA[] = [
     a: (
       <>
         Every project deploys to a live{" "}
-        <code className="font-mono text-white/75">*.hanzo.app</code> URL you can
+        <code className="font-mono text-foreground">*.hanzo.app</code> URL you can
         share immediately. Publishing is one click from the builder — the running
         app is the deliverable, not a zip file.
       </>
@@ -109,7 +109,7 @@ export const productFaq: QA[] = [
     q: "Can I use my own custom domain?",
     a: (
       <>
-        Yes. Published apps get a <code className="font-mono text-white/75">*.hanzo.app</code>{" "}
+        Yes. Published apps get a <code className="font-mono text-foreground">*.hanzo.app</code>{" "}
         address out of the box, and you can connect your own custom domain from
         the app&apos;s settings.
       </>
@@ -122,7 +122,7 @@ export const productFaq: QA[] = [
         Both. Connect GitHub to import a repository into the builder and keep
         building, or push your project out to your own repo at any time. You can
         also fork any open-source template from the{" "}
-        <Link href="/community" className="text-white underline underline-offset-4 hover:text-white/80">
+        <Link href="/community" className="text-foreground underline underline-offset-4 hover:text-foreground/80">
           community gallery
         </Link>
         .
@@ -135,7 +135,7 @@ export const productFaq: QA[] = [
       <>
         You do. Your code and data are yours to export to GitHub whenever you
         want, and your published apps run on Hanzo Cloud under your account.
-        Leaving is always a <code className="font-mono text-white/75">git push</code>{" "}
+        Leaving is always a <code className="font-mono text-foreground">git push</code>{" "}
         away.
       </>
     ),

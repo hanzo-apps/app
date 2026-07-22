@@ -28,10 +28,10 @@ export function GamePlayer({ gameId, title }: GamePlayerProps) {
   const src = webglBuildPath(gameId);
 
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-xl border border-neutral-800 bg-black">
+    <div className="relative h-full w-full overflow-hidden rounded-xl border border-border bg-background">
       {!loaded && (
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-black text-neutral-400">
-          <Loader2 className="h-8 w-8 animate-spin text-white" />
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-background text-muted-foreground">
+          <Loader2 className="h-8 w-8 animate-spin text-foreground" />
           <p className="text-sm">Loading {title}…</p>
         </div>
       )}

@@ -122,21 +122,21 @@ export default function PricingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <Header />
 
       <main>
         {/* ── Hero ─────────────────────────────────────────────── */}
         <section className="relative overflow-hidden px-4 py-12 text-center sm:py-16 md:px-8 md:py-24">
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
-            <div className="absolute left-1/2 top-[-30%] h-[420px] w-[720px] -translate-x-1/2 rounded-full bg-white/[0.05] blur-[130px]" />
+            <div className="absolute left-1/2 top-[-30%] h-[420px] w-[720px] -translate-x-1/2 rounded-full bg-foreground/[0.05] blur-[130px]" />
           </div>
 
           <div className="relative mx-auto max-w-3xl">
             <Reveal>
-              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
-                <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-white/55">
+              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3 py-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-foreground/70" />
+                <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
                   One plan · every Hanzo app
                 </span>
               </div>
@@ -151,10 +151,10 @@ export default function PricingPage() {
             </Reveal>
 
             <Reveal delay={120}>
-              <p className="mx-auto mt-5 max-w-xl text-pretty text-base text-white/55 md:text-lg">
+              <p className="mx-auto mt-5 max-w-xl text-pretty text-base text-muted-foreground md:text-lg">
                 One subscription powers AI across the app builder, Hanzo Chat, and
                 the API at{" "}
-                <code className="font-mono text-white/75">api.hanzo.ai</code> — from
+                <code className="font-mono text-foreground">api.hanzo.ai</code> — from
                 a single monthly allowance. Start for free; add a plan when you need
                 more.
               </p>
@@ -170,20 +170,20 @@ export default function PricingPage() {
                 <div
                   className={`relative flex h-full flex-col rounded-2xl border p-7 transition-colors ${
                     plan.highlighted
-                      ? "border-white/25 bg-white/[0.04]"
-                      : "border-white/10 bg-white/[0.02] hover:border-white/20"
+                      ? "border-foreground/25 bg-muted"
+                      : "border-border bg-muted hover:border-foreground/20"
                   }`}
                 >
                   {plan.badge && (
                     <div className="absolute -top-3 left-7">
-                      <span className="rounded-full bg-white px-3 py-1 text-[11px] font-medium text-black">
+                      <span className="rounded-full bg-primary px-3 py-1 text-[11px] font-medium text-primary-foreground">
                         {plan.badge}
                       </span>
                     </div>
                   )}
 
-                  <h3 className="text-lg font-medium text-white">{plan.name}</h3>
-                  <p className="mt-1.5 min-h-[2.5rem] text-sm text-white/50">
+                  <h3 className="text-lg font-medium text-foreground">{plan.name}</h3>
+                  <p className="mt-1.5 min-h-[2.5rem] text-sm text-muted-foreground">
                     {plan.tagline}
                   </p>
 
@@ -191,7 +191,7 @@ export default function PricingPage() {
                     <span className="font-mono text-4xl font-medium tracking-tight">
                       ${plan.price}
                     </span>
-                    <span className="text-sm text-white/45">/month</span>
+                    <span className="text-sm text-muted-foreground">/month</span>
                   </div>
 
                   <button
@@ -199,8 +199,8 @@ export default function PricingPage() {
                     disabled={checkingOut !== null}
                     className={`mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium transition-all disabled:opacity-60 ${
                       plan.highlighted
-                        ? "bg-white text-black hover:bg-white/90"
-                        : "border border-white/15 bg-white/[0.02] text-white hover:border-white/30 hover:bg-white/[0.05]"
+                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                        : "border border-border bg-muted text-foreground hover:border-foreground/30 hover:bg-accent"
                     }`}
                   >
                     {checkingOut === plan.id
@@ -211,11 +211,11 @@ export default function PricingPage() {
                     {checkingOut === plan.id ? null : <ArrowRight className="h-4 w-4" />}
                   </button>
 
-                  <ul className="mt-7 space-y-3.5 border-t border-white/[0.06] pt-6">
+                  <ul className="mt-7 space-y-3.5 border-t border-border pt-6">
                     {plan.features.map((f) => (
                       <li key={f} className="flex items-start gap-3">
-                        <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-white/70" />
-                        <span className="text-sm text-white/75">{f}</span>
+                        <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-foreground" />
+                        <span className="text-sm text-foreground">{f}</span>
                       </li>
                     ))}
                   </ul>
@@ -228,12 +228,12 @@ export default function PricingPage() {
         {/* ── Free-to-start note ───────────────────────────────── */}
         <section className="px-4 md:px-8">
           <Reveal className="mx-auto max-w-6xl">
-            <div className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.02] p-6 sm:flex-row sm:items-center md:p-7">
+            <div className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-border bg-muted p-6 sm:flex-row sm:items-center md:p-7">
               <div>
-                <h3 className="text-base font-medium text-white">
+                <h3 className="text-base font-medium text-foreground">
                   Start for free
                 </h3>
-                <p className="mt-1 text-sm text-white/50">
+                <p className="mt-1 text-sm text-muted-foreground">
                   No card required to sign up. Create an account, explore the
                   builder, and subscribe when you&apos;re ready to ship with more
                   shared AI usage.
@@ -241,7 +241,7 @@ export default function PricingPage() {
               </div>
               <Link
                 href="/dev"
-                className="inline-flex flex-shrink-0 items-center gap-2 rounded-full border border-white/15 bg-white/[0.02] px-5 py-2.5 text-sm font-medium text-white transition-all hover:border-white/30 hover:bg-white/[0.05]"
+                className="inline-flex flex-shrink-0 items-center gap-2 rounded-full border border-border bg-muted px-5 py-2.5 text-sm font-medium text-foreground transition-all hover:border-foreground/30 hover:bg-accent"
               >
                 Open the builder
                 <ArrowRight className="h-4 w-4" />
@@ -253,19 +253,19 @@ export default function PricingPage() {
         {/* ── Enterprise note ──────────────────────────────────── */}
         <section className="px-4 pt-8 md:px-8">
           <Reveal className="mx-auto max-w-6xl">
-            <div className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.02] p-6 sm:flex-row sm:items-center md:p-7">
+            <div className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-border bg-muted p-6 sm:flex-row sm:items-center md:p-7">
               <div>
-                <h3 className="text-base font-medium text-white">
+                <h3 className="text-base font-medium text-foreground">
                   Need more than Max?
                 </h3>
-                <p className="mt-1 text-sm text-white/50">
+                <p className="mt-1 text-sm text-muted-foreground">
                   Volume usage, SSO, dedicated support, and custom terms for your
                   organization.
                 </p>
               </div>
               <Link
                 href="/enterprise"
-                className="inline-flex flex-shrink-0 items-center gap-2 rounded-full border border-white/15 bg-white/[0.02] px-5 py-2.5 text-sm font-medium text-white transition-all hover:border-white/30 hover:bg-white/[0.05]"
+                className="inline-flex flex-shrink-0 items-center gap-2 rounded-full border border-border bg-muted px-5 py-2.5 text-sm font-medium text-foreground transition-all hover:border-foreground/30 hover:bg-accent"
               >
                 Talk to us
                 <ArrowRight className="h-4 w-4" />
@@ -282,19 +282,19 @@ export default function PricingPage() {
           items={billingFaq}
         />
 
-        <section className="border-t border-white/[0.06] px-4 pb-4 text-center md:px-8">
-          <p className="mt-8 text-sm text-white/45">
+        <section className="border-t border-border px-4 pb-4 text-center md:px-8">
+          <p className="mt-8 text-sm text-muted-foreground">
             More questions? Read the{" "}
             <Link
               href="/faq"
-              className="text-white underline underline-offset-4 hover:text-white/80"
+              className="text-foreground underline underline-offset-4 hover:text-foreground/80"
             >
               full FAQ
             </Link>{" "}
             or{" "}
             <Link
               href="/help"
-              className="text-white underline underline-offset-4 hover:text-white/80"
+              className="text-foreground underline underline-offset-4 hover:text-foreground/80"
             >
               get help
             </Link>

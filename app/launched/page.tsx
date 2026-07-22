@@ -114,21 +114,21 @@ export default function LaunchedPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Navigation */}
-      <nav className="border-b border-white/10 sticky top-0 bg-[#0a0a0a]/80 backdrop-blur-xl z-50">
+      <nav className="border-b border-border sticky top-0 bg-background/80 backdrop-blur-xl z-50">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-2.5">
-              <HanzoLogo className="w-8 h-8 text-white" />
+              <HanzoLogo className="w-8 h-8 text-foreground" />
               <span className="text-xl font-medium">Hanzo</span>
             </Link>
             <div className="hidden md:flex items-center gap-6">
-              <Link href="/community" className="text-white/70 hover:text-white">Community</Link>
-              <Link href="/pricing" className="text-white/70 hover:text-white">Pricing</Link>
-              <Link href="/enterprise" className="text-white/70 hover:text-white">Enterprise</Link>
-              <Link href="/learn" className="text-white/70 hover:text-white">Learn</Link>
-              <Link href="/launched" className="text-white font-medium">Launched</Link>
+              <Link href="/community" className="text-foreground/70 hover:text-foreground">Community</Link>
+              <Link href="/pricing" className="text-foreground/70 hover:text-foreground">Pricing</Link>
+              <Link href="/enterprise" className="text-foreground/70 hover:text-foreground">Enterprise</Link>
+              <Link href="/learn" className="text-foreground/70 hover:text-foreground">Learn</Link>
+              <Link href="/launched" className="text-foreground font-medium">Launched</Link>
             </div>
           </div>
           <Button className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-400 hover:to-purple-400">
@@ -151,7 +151,7 @@ export default function LaunchedPage() {
               AI innovations
             </span>
           </h1>
-          <p className="text-xl text-white/60 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             See what the community is building and launch your own AI products
           </p>
         </div>
@@ -167,8 +167,8 @@ export default function LaunchedPage() {
                 onClick={() => setSelectedPeriod(period)}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
                   selectedPeriod === period
-                    ? 'bg-white text-black'
-                    : 'bg-white/5 text-white/70 hover:text-white hover:bg-white/10 border border-white/10'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-foreground/70 hover:text-foreground hover:bg-accent border border-border'
                 }`}
               >
                 {period}
@@ -187,21 +187,21 @@ export default function LaunchedPage() {
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-medium">Top Launches</h2>
                 <div className="flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-white/40" />
-                  <span className="text-white/60">{selectedPeriod}</span>
+                  <Calendar className="w-5 h-5 text-muted-foreground" />
+                  <span className="text-muted-foreground">{selectedPeriod}</span>
                 </div>
               </div>
 
               <div className="space-y-4">
                 {launches.map(launch => (
-                  <div key={launch.id} className="bg-[#1a1a1a] rounded-2xl p-6 border border-white/10 hover:border-violet-500/50 transition-all">
+                  <div key={launch.id} className="bg-card rounded-2xl p-6 border border-border hover:border-violet-500/50 transition-all">
                     <div className="flex items-start gap-4">
                       <div className="text-center">
                         <div className="text-3xl font-medium text-violet-400">#{launch.rank}</div>
-                        <button className="mt-2 p-2 hover:bg-white/10 rounded-lg transition-colors">
-                          <TrendingUp className="w-5 h-5 text-white/60" />
+                        <button className="mt-2 p-2 hover:bg-accent rounded-lg transition-colors">
+                          <TrendingUp className="w-5 h-5 text-muted-foreground" />
                         </button>
-                        <div className="text-sm text-white/60 mt-1">{launch.votes}</div>
+                        <div className="text-sm text-muted-foreground mt-1">{launch.votes}</div>
                       </div>
 
                       <div className="flex-1">
@@ -219,8 +219,8 @@ export default function LaunchedPage() {
                           </a>
                         </h3>
 
-                        <p className="text-white/80 mb-2">{launch.tagline}</p>
-                        <p className="text-sm text-white/60 mb-4">{launch.description}</p>
+                        <p className="text-foreground mb-2">{launch.tagline}</p>
+                        <p className="text-sm text-muted-foreground mb-4">{launch.description}</p>
 
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4">
@@ -228,13 +228,13 @@ export default function LaunchedPage() {
                               <div className="w-6 h-6 rounded-full bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center">
                                 <span className="text-xs">{launch.makerAvatar}</span>
                               </div>
-                              <span className="text-sm text-white/50">{launch.maker}</span>
+                              <span className="text-sm text-muted-foreground">{launch.maker}</span>
                             </div>
-                            <Badge className="bg-white/10 text-white/70 border-white/20">
+                            <Badge className="bg-accent text-foreground border-border">
                               {launch.category}
                             </Badge>
                           </div>
-                          <div className="flex items-center gap-3 text-sm text-white/40">
+                          <div className="flex items-center gap-3 text-sm text-muted-foreground">
                             <span>{launch.comments} comments</span>
                             <span>{launch.launchedAt}</span>
                           </div>
@@ -245,7 +245,7 @@ export default function LaunchedPage() {
                 ))}
               </div>
 
-              <Button className="w-full mt-6 bg-white/10 hover:bg-white/20 text-white">
+              <Button className="w-full mt-6 bg-muted hover:bg-accent text-foreground">
                 Load More Launches
               </Button>
             </div>
@@ -253,7 +253,7 @@ export default function LaunchedPage() {
             {/* Sidebar */}
             <div className="space-y-6">
               {/* Top Makers */}
-              <div className="bg-[#1a1a1a] rounded-2xl p-6 border border-white/10">
+              <div className="bg-card rounded-2xl p-6 border border-border">
                 <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
                   <Star className="w-5 h-5 text-yellow-400" />
                   Top Makers
@@ -262,29 +262,29 @@ export default function LaunchedPage() {
                   {topMakers.map((maker, index) => (
                     <div key={maker.name} className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="text-lg font-medium text-white/40">#{index + 1}</div>
+                        <div className="text-lg font-medium text-muted-foreground">#{index + 1}</div>
                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center">
                           <span className="text-sm">{maker.avatar}</span>
                         </div>
                         <div>
                           <div className="font-medium">{maker.name}</div>
-                          <div className="text-xs text-white/40">{maker.launches} launches</div>
+                          <div className="text-xs text-muted-foreground">{maker.launches} launches</div>
                         </div>
                       </div>
-                      <div className="text-sm text-white/60">{maker.totalVotes.toLocaleString()}</div>
+                      <div className="text-sm text-muted-foreground">{maker.totalVotes.toLocaleString()}</div>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Categories */}
-              <div className="bg-[#1a1a1a] rounded-2xl p-6 border border-white/10">
+              <div className="bg-card rounded-2xl p-6 border border-border">
                 <h3 className="text-lg font-medium mb-4">Categories</h3>
                 <div className="flex flex-wrap gap-2">
                   {categories.map(category => (
                     <Badge
                       key={category}
-                      className="bg-white/10 text-white/70 border-white/20 hover:bg-white/20 cursor-pointer"
+                      className="bg-muted text-foreground border-border hover:bg-accent cursor-pointer"
                     >
                       {category}
                     </Badge>
@@ -295,33 +295,33 @@ export default function LaunchedPage() {
               {/* Launch CTA */}
               <div className="bg-gradient-to-br from-violet-950/50 to-purple-950/50 rounded-2xl p-6 border border-violet-500/30">
                 <h3 className="text-lg font-medium mb-2">Ready to launch?</h3>
-                <p className="text-sm text-white/60 mb-4">
+                <p className="text-sm text-muted-foreground mb-4">
                   Share your project with the community and get feedback
                 </p>
-                <Button className="w-full bg-white text-black hover:bg-white/90">
+                <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
                   <Rocket className="w-5 h-5 mr-2" />
                   Launch Project
                 </Button>
               </div>
 
               {/* Stats */}
-              <div className="bg-[#1a1a1a] rounded-2xl p-6 border border-white/10">
+              <div className="bg-card rounded-2xl p-6 border border-border">
                 <h3 className="text-lg font-medium mb-4">Platform Stats</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-white/60">Launches Today</span>
+                    <span className="text-muted-foreground">Launches Today</span>
                     <span className="font-medium">24</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-white/60">Active Makers</span>
+                    <span className="text-muted-foreground">Active Makers</span>
                     <span className="font-medium">1,234</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-white/60">Total Products</span>
+                    <span className="text-muted-foreground">Total Products</span>
                     <span className="font-medium">10,567</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-white/60">Community Votes</span>
+                    <span className="text-muted-foreground">Community Votes</span>
                     <span className="font-medium">489K</span>
                   </div>
                 </div>

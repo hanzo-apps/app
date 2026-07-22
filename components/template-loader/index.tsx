@@ -99,15 +99,15 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
   };
 
   return (
-    <div className="min-h-[100dvh] bg-black flex items-center justify-center p-4 lg:p-6">
-      <div className="w-full max-w-5xl overflow-hidden rounded-2xl border border-white/10 bg-[#0a0a0a] text-white shadow-2xl lg:grid lg:grid-cols-2 lg:max-h-[calc(100dvh-3rem)]">
+    <div className="min-h-[100dvh] bg-background flex items-center justify-center p-4 lg:p-6">
+      <div className="w-full max-w-5xl overflow-hidden rounded-2xl border border-border bg-card text-foreground shadow-2xl lg:grid lg:grid-cols-2 lg:max-h-[calc(100dvh-3rem)]">
         {/* LEFT — template identity + live preview thumbnail. */}
-        <div className="flex flex-col border-b border-white/10 p-6 lg:border-b-0 lg:border-r lg:p-8">
-          <div className="mb-4 inline-flex w-max items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-white/50">
+        <div className="flex flex-col border-b border-border p-6 lg:border-b-0 lg:border-r lg:p-8">
+          <div className="mb-4 inline-flex w-max items-center gap-2 rounded-full border border-border bg-muted px-3 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
             Start from this template
           </div>
           {meta?.screenshotUrl ? (
-            <div className="mb-5 aspect-[16/10] w-full overflow-hidden rounded-xl border border-white/10 bg-white/[0.02]">
+            <div className="mb-5 aspect-[16/10] w-full overflow-hidden rounded-xl border border-border bg-muted">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={meta.screenshotUrl}
@@ -119,13 +119,13 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
               />
             </div>
           ) : (
-            <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03]">
-              <Sparkles className="h-8 w-8 text-white/70" />
+            <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-xl border border-border bg-muted">
+              <Sparkles className="h-8 w-8 text-foreground" />
             </div>
           )}
           <h1 className="text-3xl font-medium tracking-tight text-balance">{templateTitle}</h1>
-          <p className="mt-2 text-[15px] leading-relaxed text-white/55">{templateDescription}</p>
-          <p className="mt-3 text-sm leading-relaxed text-white/40">
+          <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">{templateDescription}</p>
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
             A polished, production-quality starting point — edit it live in the
             preview panel, fork it to your account, or ship straight to Hanzo Cloud.
           </p>
@@ -134,7 +134,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
               href={templateRepo.fullUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm text-white/45 transition-colors hover:text-white"
+              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               <Github className="h-4 w-4" />
               View source
@@ -146,7 +146,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
             are pinned (shrink-0) so they stay visible without scrolling; only the
             option list scrolls if the viewport is short. */}
         <div className="flex min-h-0 flex-col p-6 lg:max-h-[calc(100dvh-3rem)] lg:p-8">
-          <h3 className="mb-2.5 shrink-0 text-xs font-medium uppercase tracking-[0.12em] text-white/40">
+          <h3 className="mb-2.5 shrink-0 text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
             Choose how to start
           </h3>
           <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
@@ -161,8 +161,8 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
                   className={cn(
                     "group flex w-full items-start gap-3.5 rounded-xl border p-3.5 text-left transition-colors",
                     active
-                      ? "border-white/25 bg-white/[0.05]"
-                      : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.03]"
+                      ? "border-foreground/25 bg-accent"
+                      : "border-border bg-muted hover:border-foreground/20 hover:bg-accent"
                   )}
                 >
                   <div
@@ -171,25 +171,25 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
                       opt.mode === "deploy"
                         ? "border-green-500/25 bg-green-500/10"
                         : active
-                          ? "border-white/20 bg-white/[0.08]"
-                          : "border-white/10 bg-white/[0.04]"
+                          ? "border-foreground/20 bg-accent"
+                          : "border-border bg-muted"
                     )}
                   >
-                    <opt.icon className={cn("h-4 w-4", opt.mode === "deploy" ? "text-green-400" : "text-white/80")} />
+                    <opt.icon className={cn("h-4 w-4", opt.mode === "deploy" ? "text-green-400" : "text-foreground")} />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <h4 className="text-sm font-medium text-white">{opt.title}</h4>
+                      <h4 className="text-sm font-medium text-foreground">{opt.title}</h4>
                       <span
                         className={cn(
                           "flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full border transition-colors",
-                          active ? "border-white bg-white" : "border-white/25"
+                          active ? "border-primary bg-primary" : "border-foreground/25"
                         )}
                       >
-                        {active && <Check className="h-3 w-3 text-black" strokeWidth={3} />}
+                        {active && <Check className="h-3 w-3 text-primary-foreground" strokeWidth={3} />}
                       </span>
                     </div>
-                    <p className="mt-0.5 text-[13px] leading-snug text-white/50">{opt.desc}</p>
+                    <p className="mt-0.5 text-[13px] leading-snug text-muted-foreground">{opt.desc}</p>
                   </div>
                 </button>
               );
@@ -201,12 +201,12 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
           <div className="mt-5 shrink-0">
             <label
               htmlFor="tpl-first-msg"
-              className="mb-2 block text-xs font-medium uppercase tracking-[0.12em] text-white/40"
+              className="mb-2 block text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground"
             >
               What do you want to change?{" "}
-              <span className="normal-case tracking-normal text-white/30">(optional)</span>
+              <span className="normal-case tracking-normal text-muted-foreground">(optional)</span>
             </label>
-            <div className="rounded-xl border border-white/10 bg-white/[0.02] transition-colors focus-within:border-white/25">
+            <div className="rounded-xl border border-border bg-muted transition-colors focus-within:border-foreground/25">
               <textarea
                 id="tpl-first-msg"
                 value={firstMessage}
@@ -220,10 +220,10 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
                 }}
                 rows={2}
                 placeholder="e.g. rename the brand to Bean & Bloom and rewrite the hero copy…"
-                className="w-full resize-none bg-transparent px-3.5 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none"
+                className="w-full resize-none bg-transparent px-3.5 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
               />
             </div>
-            <p className="mt-1.5 text-xs text-white/35">
+            <p className="mt-1.5 text-xs text-muted-foreground">
               Leave blank to open the template as-is — it loads and previews instantly. Add a note and Hanzo builds it on top.
             </p>
           </div>
@@ -233,14 +233,14 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
             <Button
               variant="outline"
               onClick={() => window.history.back()}
-              className="flex-1 border-white/15 bg-transparent text-white hover:bg-white/5 hover:text-white"
+              className="flex-1 border-border bg-transparent text-foreground hover:bg-accent hover:text-foreground"
               disabled={loading}
             >
               Back
             </Button>
             <Button
               onClick={handleProceed}
-              className="flex-[2] bg-white font-medium text-black hover:bg-white/90"
+              className="flex-[2] bg-primary font-medium text-primary-foreground hover:bg-primary/90"
               disabled={loading}
             >
               {loading ? (

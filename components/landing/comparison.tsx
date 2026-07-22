@@ -265,13 +265,13 @@ const DOT: Record<Tone, string> = {
   good: "bg-emerald-400",
   mid: "bg-amber-400",
   bad: "bg-red-500/70",
-  na: "bg-transparent ring-1 ring-inset ring-white/20",
+  na: "bg-transparent ring-1 ring-inset ring-foreground/20",
 };
 const TEXT: Record<Tone, string> = {
-  good: "text-white",
-  mid: "text-white/75",
-  bad: "text-white/55",
-  na: "text-white/30",
+  good: "text-foreground",
+  mid: "text-foreground",
+  bad: "text-muted-foreground",
+  na: "text-muted-foreground",
 };
 
 function Dot({ tone }: { tone: Tone }) {
@@ -298,16 +298,16 @@ export default function Comparison() {
     el.scrollBy({ left: dir * Math.max(340, el.clientWidth * 0.8), behavior: "smooth" });
   };
   return (
-    <section className="relative border-t border-white/[0.06] px-4 py-20 md:px-8 md:py-28">
+    <section className="relative border-t border-border px-4 py-20 md:px-8 md:py-28">
       <div className="mx-auto max-w-6xl">
         <Reveal className="mx-auto max-w-2xl text-center">
-          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">
+          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
             Why Hanzo
           </p>
           <h2 className="mt-4 text-3xl font-medium tracking-tight md:text-[2.75rem] md:leading-[1.1]">
             One platform beats the whole stack.
           </h2>
-          <p className="mt-4 text-base text-white/55 md:text-lg">
+          <p className="mt-4 text-base text-muted-foreground md:text-lg">
             Site builders lock you in. AI coding tools hand you bugs to clean up.
             Hanzo ships production apps you own — fast, secure, and built to
             scale.
@@ -317,7 +317,7 @@ export default function Comparison() {
         {/* Legend */}
         <Reveal
           delay={60}
-          className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 font-mono text-[11px] text-white/45"
+          className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 font-mono text-[11px] text-muted-foreground"
         >
           <span className="inline-flex items-center gap-1.5">
             <Dot tone="good" /> Advantage
@@ -337,7 +337,7 @@ export default function Comparison() {
         <div className="mt-10 hidden lg:block">
           <Reveal delay={80}>
             <div className="mb-3 flex items-center justify-between gap-4">
-              <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-white/40">
+              <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
                 Slide across all {COLS.length} criteria →
               </p>
               <div className="flex gap-2">
@@ -345,7 +345,7 @@ export default function Comparison() {
                   type="button"
                   onClick={() => slide(-1)}
                   aria-label="Previous criteria"
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/[0.03] text-white/70 transition-colors hover:border-white/30 hover:text-white"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
                 >
                   <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden>
                     <path d="M10 4L6 8l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -355,7 +355,7 @@ export default function Comparison() {
                   type="button"
                   onClick={() => slide(1)}
                   aria-label="Next criteria"
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/[0.03] text-white/70 transition-colors hover:border-white/30 hover:text-white"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
                 >
                   <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden>
                     <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -366,7 +366,7 @@ export default function Comparison() {
 
             <div className="relative">
               {/* right edge fade — signals there's more to slide to */}
-              <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-16 bg-gradient-to-l from-black to-transparent" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-16 bg-gradient-to-l from-background to-transparent" />
 
               <div
                 ref={scrollRef}
@@ -375,14 +375,14 @@ export default function Comparison() {
                 <table className="border-separate border-spacing-0 text-left">
                   <thead>
                     <tr>
-                      <th className="sticky left-0 z-10 w-[188px] min-w-[188px] bg-black pb-4 pr-4 align-bottom" />
+                      <th className="sticky left-0 z-10 w-[188px] min-w-[188px] bg-background pb-4 pr-4 align-bottom" />
                       {COLS.map((c) => (
                         <th
                           key={c.short}
-                          className="w-[208px] min-w-[208px] snap-start px-4 pb-4 align-bottom font-mono text-[10px] font-normal uppercase leading-tight tracking-[0.1em] text-white/45"
+                          className="w-[208px] min-w-[208px] snap-start px-4 pb-4 align-bottom font-mono text-[10px] font-normal uppercase leading-tight tracking-[0.1em] text-muted-foreground"
                         >
                           <c.icon
-                            className="mb-2 h-4 w-4 text-white/30"
+                            className="mb-2 h-4 w-4 text-muted-foreground"
                             strokeWidth={1.5}
                             aria-hidden
                           />
@@ -397,7 +397,7 @@ export default function Comparison() {
                         <th
                           scope="row"
                           className={`sticky left-0 z-10 w-[188px] min-w-[188px] whitespace-nowrap py-3 pl-1 pr-5 text-left align-top font-medium ${
-                            r.hanzo ? "bg-[#0e0f11] text-white" : "bg-black text-white/80"
+                            r.hanzo ? "bg-muted text-foreground" : "bg-background text-foreground"
                           }`}
                         >
                           <span className="flex items-center gap-2">
@@ -409,7 +409,7 @@ export default function Comparison() {
                             )}
                           </span>
                           {r.note && (
-                            <span className="mt-0.5 block font-mono text-[10px] font-normal text-white/30">
+                            <span className="mt-0.5 block font-mono text-[10px] font-normal text-muted-foreground">
                               {r.note}
                             </span>
                           )}
@@ -418,7 +418,7 @@ export default function Comparison() {
                           <td
                             key={ci}
                             className={`w-[208px] min-w-[208px] snap-start px-4 py-3 align-top ${
-                              r.hanzo ? "bg-white/[0.05]" : "group-hover:bg-white/[0.015]"
+                              r.hanzo ? "bg-muted" : "group-hover:bg-muted"
                             }`}
                           >
                             <div className="flex items-start gap-2">
@@ -426,12 +426,12 @@ export default function Comparison() {
                                 <Dot tone={r.hanzo ? "good" : cell.t} />
                               </span>
                               <div className="min-w-0">
-                                <div className={`flex items-center gap-1.5 text-[13px] leading-snug ${r.hanzo ? "text-white" : TEXT[cell.t]}`}>
-                                  <ColIcon i={ci} className="h-3.5 w-3.5 flex-none text-white/30" />
+                                <div className={`flex items-center gap-1.5 text-[13px] leading-snug ${r.hanzo ? "text-foreground" : TEXT[cell.t]}`}>
+                                  <ColIcon i={ci} className="h-3.5 w-3.5 flex-none text-muted-foreground" />
                                   {cell.v}
                                 </div>
                                 {cell.d && (
-                                  <div className="mt-0.5 text-[11px] leading-snug text-white/40">
+                                  <div className="mt-0.5 text-[11px] leading-snug text-muted-foreground">
                                     {cell.d}
                                   </div>
                                 )}
@@ -456,10 +456,10 @@ export default function Comparison() {
               return (
                 <Reveal
                   key={r.name}
-                  className="rounded-2xl border border-emerald-400/25 bg-white/[0.04] p-5"
+                  className="rounded-2xl border border-emerald-400/25 bg-muted p-5"
                 >
                   <div className="mb-4 flex items-center gap-2">
-                    <h3 className="text-lg font-medium text-white">{r.name}</h3>
+                    <h3 className="text-lg font-medium text-foreground">{r.name}</h3>
                     <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-emerald-300">
                       Best overall
                     </span>
@@ -471,14 +471,14 @@ export default function Comparison() {
                           <Dot tone="good" />
                         </span>
                         <div className="min-w-0">
-                          <dt className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-white/40">
-                            <ColIcon i={ci} className="h-3 w-3 text-white/30" />
+                          <dt className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                            <ColIcon i={ci} className="h-3 w-3 text-muted-foreground" />
                             {COLS[ci].short}
                           </dt>
-                          <dd className="text-sm text-white">
+                          <dd className="text-sm text-foreground">
                             {cell.v}
                             {cell.d && (
-                              <span className="text-white/50"> · {cell.d}</span>
+                              <span className="text-muted-foreground"> · {cell.d}</span>
                             )}
                           </dd>
                         </div>
@@ -491,28 +491,28 @@ export default function Comparison() {
             return (
               <details
                 key={r.name}
-                className="group overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02]"
+                className="group overflow-hidden rounded-2xl border border-border bg-muted"
               >
                 <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4">
                   <span className="min-w-0">
-                    <span className="text-base font-medium text-white/85">
+                    <span className="text-base font-medium text-foreground">
                       {r.name}
                     </span>
                     {r.note && (
-                      <span className="ml-2 font-mono text-[10px] uppercase tracking-[0.1em] text-white/30">
+                      <span className="ml-2 font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
                         {r.note}
                       </span>
                     )}
                   </span>
                   <span className="flex flex-none items-center gap-3">
                     {weak > 0 && (
-                      <span className="inline-flex items-center gap-1.5 font-mono text-[11px] text-white/40">
+                      <span className="inline-flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
                         <Dot tone="bad" />
                         {weak} weak {weak === 1 ? "area" : "areas"}
                       </span>
                     )}
                     <svg
-                      className="h-4 w-4 flex-none text-white/40 transition-transform duration-200 group-open:rotate-180"
+                      className="h-4 w-4 flex-none text-muted-foreground transition-transform duration-200 group-open:rotate-180"
                       viewBox="0 0 16 16"
                       fill="none"
                       aria-hidden
@@ -527,21 +527,21 @@ export default function Comparison() {
                     </svg>
                   </span>
                 </summary>
-                <dl className="grid grid-cols-1 gap-x-6 gap-y-3 border-t border-white/[0.06] px-5 py-4 sm:grid-cols-2">
+                <dl className="grid grid-cols-1 gap-x-6 gap-y-3 border-t border-border px-5 py-4 sm:grid-cols-2">
                   {r.cells.map((cell, ci) => (
                     <div key={ci} className="flex items-start gap-2.5">
                       <span className="mt-1.5">
                         <Dot tone={cell.t} />
                       </span>
                       <div className="min-w-0">
-                        <dt className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-white/40">
-                          <ColIcon i={ci} className="h-3 w-3 text-white/30" />
+                        <dt className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                          <ColIcon i={ci} className="h-3 w-3 text-muted-foreground" />
                           {COLS[ci].short}
                         </dt>
                         <dd className={`text-sm ${TEXT[cell.t]}`}>
                           {cell.v}
                           {cell.d && (
-                            <span className="text-white/40"> · {cell.d}</span>
+                            <span className="text-muted-foreground"> · {cell.d}</span>
                           )}
                         </dd>
                       </div>
@@ -556,7 +556,7 @@ export default function Comparison() {
         <Reveal
           as="p"
           delay={120}
-          className="mt-10 text-center font-mono text-xs text-white/35"
+          className="mt-10 text-center font-mono text-xs text-muted-foreground"
         >
           Every app ships on Hanzo Cloud — database, auth, AI, and storage wired
           in. No lock-in, ever.

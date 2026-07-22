@@ -33,7 +33,7 @@ export default function FaqSection({
         {(title || eyebrow) && (
           <Reveal className="mb-10 text-center">
             {eyebrow && (
-              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">
+              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
                 {eyebrow}
               </p>
             )}
@@ -45,7 +45,7 @@ export default function FaqSection({
           </Reveal>
         )}
 
-        <Reveal className="divide-y divide-white/[0.08] border-y border-white/[0.08]">
+        <Reveal className="divide-y divide-border border-y border-border">
           {items.map((it, i) => {
             const isOpen = open === i;
             return (
@@ -54,12 +54,12 @@ export default function FaqSection({
                   type="button"
                   aria-expanded={isOpen}
                   onClick={() => setOpen(isOpen ? null : i)}
-                  className="flex w-full items-center justify-between gap-4 py-5 text-left transition-colors hover:text-white"
+                  className="flex w-full items-center justify-between gap-4 py-5 text-left transition-colors hover:text-foreground"
                 >
-                  <span className="text-base font-medium text-white/90 md:text-lg">
+                  <span className="text-base font-medium text-foreground md:text-lg">
                     {it.q}
                   </span>
-                  <span className="flex-shrink-0 text-white/50">
+                  <span className="flex-shrink-0 text-muted-foreground">
                     {isOpen ? (
                       <Minus className="h-5 w-5" />
                     ) : (
@@ -68,7 +68,7 @@ export default function FaqSection({
                   </span>
                 </button>
                 {isOpen && (
-                  <div className="pb-6 pr-8 text-sm leading-relaxed text-white/55 md:text-base">
+                  <div className="pb-6 pr-8 text-sm leading-relaxed text-muted-foreground md:text-base">
                     {it.a}
                   </div>
                 )}

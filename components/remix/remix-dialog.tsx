@@ -45,15 +45,15 @@ export function RemixDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md border-white/10 bg-neutral-950 text-white">
+      <DialogContent className="max-w-md border-border bg-card text-foreground">
         <DialogTitle className="text-lg font-medium">Remix project</DialogTitle>
-        <DialogDescription className="text-white/50">
+        <DialogDescription className="text-muted-foreground">
           By remixing a project, you’ll create a copy that you own.
         </DialogDescription>
 
         <div className="mt-2 space-y-4">
           <div>
-            <label htmlFor="remix-name" className="mb-1.5 block text-sm text-white/70">
+            <label htmlFor="remix-name" className="mb-1.5 block text-sm text-foreground">
               Project name
             </label>
             <Input
@@ -63,7 +63,7 @@ export function RemixDialog({
               onKeyDown={(e: React.KeyboardEvent) => {
                 if (e.key === 'Enter') confirm();
               }}
-              className="border-white/15 bg-neutral-900 text-white"
+              className="border-border bg-muted text-foreground"
               autoFocus
             />
           </div>
@@ -72,20 +72,20 @@ export function RemixDialog({
             <Checkbox
               checked={ack}
               onCheckedChange={(v: boolean | 'indeterminate') => setAck(v === true)}
-              className="mt-0.5 border-white/25"
+              className="mt-0.5 border-border"
             />
-            <span className="text-xs leading-relaxed text-white/50">{ACK_TEXT}</span>
+            <span className="text-xs leading-relaxed text-muted-foreground">{ACK_TEXT}</span>
           </label>
         </div>
 
         <div className="mt-2 flex justify-end gap-2">
-          <Button variant="ghost" onClick={() => onOpenChange(false)} className="text-white/70">
+          <Button variant="ghost" onClick={() => onOpenChange(false)} className="text-foreground">
             Cancel
           </Button>
           <Button
             onClick={confirm}
             disabled={!ack || !name.trim()}
-            className="bg-white text-black hover:bg-white/90 disabled:opacity-40"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
           >
             Acknowledge and remix
           </Button>

@@ -11,7 +11,7 @@ import { TemplateGallery } from "@/components/template-gallery";
 export default function GalleryPage() {
   return (
     <AppShell currentView="templates">
-      <div className="flex-1 overflow-y-auto bg-black text-white">
+      <div className="flex-1 overflow-y-auto bg-background text-foreground">
         <TemplateGallery />
       </div>
     </AppShell>

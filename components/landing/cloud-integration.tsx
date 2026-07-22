@@ -72,16 +72,16 @@ const capabilities: Capability[] = [
 
 export default function CloudIntegration() {
   return (
-    <section className="relative border-t border-white/[0.06] px-4 py-20 md:px-8 md:py-28">
+    <section className="relative border-t border-border px-4 py-20 md:px-8 md:py-28">
       <div className="mx-auto max-w-6xl">
         <Reveal className="mx-auto max-w-2xl text-center">
-          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">
+          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
             The difference
           </p>
           <h2 className="mt-4 text-3xl font-medium tracking-tight md:text-[2.75rem] md:leading-[1.1]">
             More than a UI. A full app on Hanzo Cloud.
           </h2>
-          <p className="mt-4 text-base text-white/55 md:text-lg">
+          <p className="mt-4 text-base text-muted-foreground md:text-lg">
             Other builders hand you a screenshot. Hanzo ships a running app —
             database, auth, AI, secrets, and storage already connected.
           </p>
@@ -98,27 +98,27 @@ export default function CloudIntegration() {
                 rel="noopener noreferrer"
                 className={`group relative flex h-full flex-col rounded-2xl border p-6 transition-all duration-200 ${
                   c.primary
-                    ? "border-white/20 bg-white/[0.04] hover:border-white/30"
-                    : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.03]"
+                    ? "border-foreground/20 bg-muted hover:border-foreground/30"
+                    : "border-border bg-muted hover:border-foreground/20 hover:bg-accent"
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03]">
-                    <Icon className="h-5 w-5 text-white" strokeWidth={1.5} />
+                  <span className="flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-muted">
+                    <Icon className="h-5 w-5 text-foreground" strokeWidth={1.5} />
                   </span>
-                  <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-white/35">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
                     {c.product}
                   </span>
                 </div>
 
-                <h3 className="mt-5 text-lg font-medium tracking-tight text-white">
+                <h3 className="mt-5 text-lg font-medium tracking-tight text-foreground">
                   {c.name}
                 </h3>
-                <p className="mt-2 flex-1 text-sm leading-relaxed text-white/55">
+                <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
                   {c.desc}
                 </p>
 
-                <code className="mt-5 block truncate rounded-lg border border-white/[0.06] bg-black/50 px-3 py-2 font-mono text-[11px] text-white/45 transition-colors duration-200 group-hover:text-white/65">
+                <code className="mt-5 block truncate rounded-lg border border-border bg-background/50 px-3 py-2 font-mono text-[11px] text-muted-foreground transition-colors duration-200 group-hover:text-foreground">
                   {c.snippet}
                 </code>
               </a>
@@ -127,7 +127,7 @@ export default function CloudIntegration() {
           })}
         </div>
 
-        <Reveal as="p" delay={120} className="mt-10 text-center font-mono text-xs text-white/35">
+        <Reveal as="p" delay={120} className="mt-10 text-center font-mono text-xs text-muted-foreground">
           The same infrastructure that runs Hanzo, wired into every app you build.
         </Reveal>
       </div>
