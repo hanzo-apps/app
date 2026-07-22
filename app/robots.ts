@@ -20,7 +20,6 @@ export default function robots(): MetadataRoute.Robots {
         "/chat",
         "/dev",
         "/connectors",
-        "/gallery",
         "/admin",
         "/auth/",
         "/login",
