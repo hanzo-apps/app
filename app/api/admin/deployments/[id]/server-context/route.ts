@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth } from '@/lib/auth/session';
 import { getSQLiteAdapter } from '@/lib/vfs/adapters/server';
 import {
   generateEdgeFunctionFile,
@@ -28,6 +29,10 @@ export async function GET(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Same gate as the mutate sibling: this returns a deployment's DB schema,
+    // secret names, and edge/server function SOURCE — never anonymously.
+    await requireAuth();
+
     const { id: deploymentId } = await context.params;
 
     const adapter = getSQLiteAdapter();
@@ -108,6 +113,9 @@ export async function GET(
 
     return NextResponse.json({ files, metadata });
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.error('[API] Failed to get server context:', error);
     return NextResponse.json(
       { error: 'Failed to get server context' },
