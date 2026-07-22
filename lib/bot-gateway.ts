@@ -4,7 +4,9 @@
  * Connects to the Hanzo Bot gateway (ZAP protocol) and exposes methods for
  * listing agents, sending messages, and receiving streaming responses.
  *
- * The gateway runs at BOT_GATEWAY_URL (default ws://localhost:18789).
+ * The gateway URL comes from NEXT_PUBLIC_BOT_GATEWAY_URL. When it is unset (the
+ * default hosted build), the client fails closed WITHOUT dialing a socket and the
+ * chat falls back to the static team presets — never a dead ws://localhost dial.
  */
 
 // ---------------------------------------------------------------------------

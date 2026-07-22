@@ -111,7 +111,12 @@ export default function AgentsPage() {
   const load = useCallback(async () => {
     setState({ kind: "loading" });
     try {
-      const res = await fetch("/v1/agents", { cache: "no-store" });
+      // Bounded: a hung agents upstream lands in the error state below (with a
+      // retry) instead of leaving "Loading agents…" spinning forever.
+      const res = await fetch("/v1/agents", {
+        cache: "no-store",
+        signal: AbortSignal.timeout(12000),
+      });
       if (res.status === 401) {
         setState({ kind: "unauthenticated" });
         return;
