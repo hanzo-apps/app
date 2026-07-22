@@ -24,8 +24,10 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
+  ArrowLeft,
   Search,
   RefreshCw,
   Loader2,
@@ -43,9 +45,8 @@ import {
 import { Button, Input, Badge } from "@hanzo/ui";
 import { toast } from "sonner";
 
-import { AppShell } from "@/components/app-shell";
 import { useUser } from "@/hooks/useUser";
-import { useOrg } from "@/lib/org/client";
+import { OrgProvider, useOrg } from "@/lib/org/client";
 import { currentOrg, orgDisplayName } from "@/lib/org-scope";
 import { cn } from "@/lib/utils";
 import {
@@ -90,17 +91,17 @@ function sinceLabel(iso: string): string {
 }
 
 export default function ConnectorsPage() {
-  // ONE shell on every logged-in page: Connectors renders inside AppShell so the
-  // persistent sidebar/nav stays put. AppShell provides the OrgProvider scope
-  // that ConnectorsInner reads via useOrg.
+  // The page reads org scope via useOrg — provide it here (this route renders
+  // standalone, not under AppShell), so useOrg has a provider ancestor.
   return (
-    <AppShell currentView="connectors">
+    <OrgProvider>
       <ConnectorsInner />
-    </AppShell>
+    </OrgProvider>
   );
 }
 
 function ConnectorsInner() {
+  const router = useRouter();
   const { user, loading: userLoading } = useUser();
   const { ctx } = useOrg();
 
@@ -193,7 +194,7 @@ function ConnectorsInner() {
   // honest sign-in CTA rather than an empty list.
   if (!userLoading && !user) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-4 bg-background px-6 text-center text-foreground">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-6 text-center text-foreground">
         <Plug className="size-8 text-muted-foreground" />
         <div>
           <h1 className="text-lg font-medium">Sign in to manage connectors</h1>
@@ -209,11 +210,15 @@ function ConnectorsInner() {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
       <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-6 py-4">
           <div className="flex min-w-0 items-center gap-3">
+            <Button variant="ghost" size="sm" onClick={() => router.back()} className="gap-2">
+              <ArrowLeft className="size-4" />
+              Back
+            </Button>
             <div className="min-w-0">
               <h1 className="truncate text-xl font-medium">Connectors</h1>
               <p className="truncate text-xs text-muted-foreground">

@@ -138,12 +138,9 @@ async function readError(res: Response): Promise<string> {
  */
 export async function fetchConnectors(): Promise<Provider[]> {
   try {
-    // Bounded: a hung integrations upstream resolves to the empty state (via the
-    // catch below) rather than spinning the connectors skeleton forever.
     const res = await fetch(BASE, {
       credentials: 'include',
       headers: { Accept: 'application/json', ...orgHeader() },
-      signal: AbortSignal.timeout(12000),
     });
     if (!res.ok) return [];
     const body = await res.json();
