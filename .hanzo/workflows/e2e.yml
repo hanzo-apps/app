@@ -1,0 +1,50 @@
+# Authenticated end-to-end tests — real hanzo.id sign-in, real UI interactions
+# (Playwright), against the deployed hanzo.app. Runs on the hanzo arcd runners
+# (native git.hanzo.ai CI). Credentials come from repo secrets sourced from KMS —
+# never hardcoded. Public specs run without auth; the `authenticated` project
+# signs in once (auth.setup.ts) and reuses the session.
+name: E2E
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '0 6 * * *' # nightly smoke of the live app
+  push:
+    branches: [main]
+    paths:
+      - 'tests/e2e/**'
+      - 'playwright.config.ts'
+      - '.hanzo/workflows/e2e.yml'
+
+jobs:
+  e2e:
+    runs-on: [hanzo-build-linux-amd64]
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pnpm
+        run: npm i -g pnpm@9
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install Playwright (chromium)
+        run: pnpm exec playwright install chromium --with-deps
+      - name: Run E2E against hanzo.app (public + authenticated)
+        env:
+          CI: 'true'
+          PLAYWRIGHT_BASE_URL: https://hanzo.app
+          # Provisioned from KMS into git.hanzo.ai repo secrets (e.g. the seeded
+          # superuser z@hanzo.ai). The authenticated project is skipped with a clear
+          # error if these are absent, so the public project still runs.
+          E2E_EMAIL: ${{ secrets.E2E_EMAIL }}
+          E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+        run: pnpm exec playwright test
+      - name: Upload Playwright report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: tests/e2e/playwright-report
+          retention-days: 7
