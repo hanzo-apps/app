@@ -47,7 +47,6 @@ import { HistoryPanel } from "./history";
 import { RevisionDetails, type DetailsRev } from "./history/details";
 import { ShareModal } from "./share-modal";
 import { VisualEditor } from "./visual-editor";
-import { EditorThemePicker } from "@/components/code-editor/theme-picker";
 import { OrgProvider } from "@/lib/org/client";
 import { Button, TooltipProvider } from "@hanzo/ui";
 
@@ -380,25 +379,14 @@ export const AppEditor = ({
         <div
           ref={resizer}
           className={classNames(
-            // Wider hit target (w-2) so the boundary is easy to grab from either
-            // side; the visible grip lives dead-center between the panes.
-            "group/resizer relative z-20 w-2 cursor-col-resize h-full max-lg:hidden shrink-0",
+            "group/resizer relative w-1.5 cursor-col-resize h-full max-lg:hidden shrink-0",
             sidebarCollapsed && "lg:hidden"
           )}
         >
-          {/* Faint always-on hairline so the boundary is discoverable; it brightens
-              on hover/drag. */}
-          <div className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-white/[0.06] transition-colors duration-150 group-hover/resizer:bg-white/25 group-active/resizer:bg-white/40" />
-          {/* Drag handle — a gripped pill that appears on hover, centered on the
-              boundary so it reads as draggable whether you approach from the chat
-              (left) or the preview (right) side. */}
-          <div className="pointer-events-none absolute left-1/2 top-1/2 flex h-9 w-4 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-neutral-800/95 opacity-0 shadow-md shadow-black/40 transition-opacity duration-150 group-hover/resizer:opacity-100 group-active/resizer:opacity-100">
-            <div className="flex flex-col gap-[3px]">
-              <span className="size-[3px] rounded-full bg-white/70" />
-              <span className="size-[3px] rounded-full bg-white/70" />
-              <span className="size-[3px] rounded-full bg-white/70" />
-            </div>
-          </div>
+          {/* No static seam — the left pane and workspace share one flat field;
+              the hairline only appears on hover/drag so the resize target is
+              discoverable without drawing a permanent border on the sidebar. */}
+          <div className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-transparent transition-colors duration-150 group-hover/resizer:bg-white/20 group-active/resizer:bg-white/30" />
         </div>
         {/* RIGHT — Preview OR Code as a RAISED, rounded card that fills the whole
             remaining width to the viewport's right edge (flex-1, min-w-0). The
@@ -488,23 +476,13 @@ export const AppEditor = ({
                   }}
                 />
                 <div className="relative min-w-0 flex-1 overflow-hidden">
-                  {/* Code-view chrome: editor theme picker (Hanzo Dracula default)
-                      + copy, top-right. */}
-                  <div className="absolute right-4 top-2.5 z-20 flex items-center gap-1">
-                    <EditorThemePicker />
-                    <button
-                      type="button"
-                      title="Copy HTML"
-                      aria-label="Copy HTML"
-                      onClick={() => {
-                        copyToClipboard(currentPageData.html);
-                        toast.success("HTML copied to clipboard!");
-                      }}
-                      className="rounded-md p-1 text-neutral-500 transition-colors hover:bg-white/10 hover:text-neutral-300"
-                    >
-                      <CopyIcon className="size-4" />
-                    </button>
-                  </div>
+                  <CopyIcon
+                    className="size-4 absolute top-3 right-5 text-neutral-500 hover:text-neutral-300 z-20 cursor-pointer"
+                    onClick={() => {
+                      copyToClipboard(currentPageData.html);
+                      toast.success("HTML copied to clipboard!");
+                    }}
+                  />
                   <CodeEditor
                     language="html"
                     className={classNames(

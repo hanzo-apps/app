@@ -100,11 +100,7 @@ export default async function RootLayout({
   }
 
   return (
-    // The Geist font CSS variables are declared on <html> (not only <body>) so
-    // `--font-geist-sans` / `--font-geist-mono` exist at the document root —
-    // Tailwind's Preflight `--default-font-family` on <html> can then resolve to
-    // Geist instead of the OS stack.
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black dark min-h-screen`}
       >
