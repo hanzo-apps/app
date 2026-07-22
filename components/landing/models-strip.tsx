@@ -22,16 +22,16 @@ const providers = [
 
 export default function ModelsStrip() {
   return (
-    <section className="relative border-t border-white/[0.06] px-4 py-20 md:px-8 md:py-24">
+    <section className="relative border-t border-border px-4 py-20 md:px-8 md:py-24">
       <div className="mx-auto grid max-w-6xl items-center gap-12 [&>*]:min-w-0 lg:grid-cols-2 lg:gap-16">
         <Reveal>
-          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">
+          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
             Hanzo LLM Gateway
           </p>
           <h2 className="mt-4 text-3xl font-medium tracking-tight md:text-4xl">
             One API. 400+ models.
           </h2>
-          <p className="mt-4 max-w-md text-base text-white/55 md:text-lg">
+          <p className="mt-4 max-w-md text-base text-muted-foreground md:text-lg">
             Your app calls any frontier model — Hanzo&apos;s own Zen family plus
             Anthropic, OpenAI, Google, Mistral and more — through OpenAI-
             and Anthropic-compatible endpoints. Swap models with one string,
@@ -42,20 +42,20 @@ export default function ModelsStrip() {
             href="https://hanzo.ai/llm"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-white/60 transition-colors hover:text-white"
+            className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             Explore the gateway
             <span aria-hidden>→</span>
           </a>
         </Reveal>
 
-        <Reveal delay={100} className="rounded-2xl border border-white/10 bg-black/50 p-5">
+        <Reveal delay={100} className="rounded-2xl border border-border bg-card p-5">
           <div className="mb-4 flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
-            <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
-            <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
+            <span className="h-2.5 w-2.5 rounded-full bg-foreground/15" />
+            <span className="h-2.5 w-2.5 rounded-full bg-foreground/15" />
+            <span className="h-2.5 w-2.5 rounded-full bg-foreground/15" />
           </div>
-          <pre className="overflow-x-auto font-mono text-[12px] leading-relaxed text-white/70">
+          <pre className="overflow-x-auto font-mono text-[12px] leading-relaxed text-foreground">
 {`POST https://api.hanzo.ai/v1/chat/completions
 Authorization: Bearer $HANZO_KEY
 
@@ -66,7 +66,7 @@ Authorization: Bearer $HANZO_KEY
 }`}
           </pre>
 
-          <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-5 border-t border-white/[0.06] pt-6">
+          <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-5 border-t border-border pt-6">
             {providers.map((p) => (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -74,7 +74,7 @@ Authorization: Bearer $HANZO_KEY
                 src={p.src}
                 alt={p.alt}
                 style={{ width: p.w }}
-                className="h-4 w-auto object-contain opacity-40 transition-opacity duration-200 [filter:brightness(0)_invert(1)] hover:opacity-80 md:h-5"
+                className="h-4 w-auto object-contain opacity-40 transition-opacity duration-200 [filter:brightness(0)] dark:[filter:brightness(0)_invert(1)] hover:opacity-80 md:h-5"
               />
             ))}
           </div>

@@ -80,10 +80,10 @@ export default function AuthCallback() {
   }, [completeLogin, isAuthenticated, router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black text-white px-6">
+    <div className="min-h-screen flex items-center justify-center bg-background text-foreground px-6">
       <div className="w-full max-w-sm text-center">
         <div className="flex justify-center mb-10">
-          <HanzoLogo className="w-11 h-11 text-white" />
+          <HanzoLogo className="w-11 h-11 text-foreground" />
         </div>
 
         {error ? (
@@ -92,25 +92,25 @@ export default function AuthCallback() {
               <h1 className="text-xl font-medium tracking-tight">
                 Sign-in didn&apos;t complete
               </h1>
-              <p className="mt-2 text-sm text-white/50">
+              <p className="mt-2 text-sm text-muted-foreground">
                 Your session couldn&apos;t be established. Please try signing in
                 again.
               </p>
             </div>
             <Link
               href="/login"
-              className="inline-flex w-full items-center justify-center rounded-lg bg-white px-5 py-2.5 text-sm font-medium text-black transition-colors hover:bg-white/90"
+              className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               Back to sign in
             </Link>
           </div>
         ) : (
           <div className="space-y-3">
-            <div className="flex items-center justify-center gap-2.5 text-white/70">
+            <div className="flex items-center justify-center gap-2.5 text-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
               <span className="text-sm">Signing you in…</span>
             </div>
-            <p className="text-xs text-white/35">
+            <p className="text-xs text-muted-foreground">
               Completing secure sign-in with Hanzo
             </p>
           </div>

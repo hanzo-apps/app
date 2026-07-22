@@ -258,14 +258,14 @@ export default function VideoStreaming() {
                       <div className="flex items-center gap-2">
                         <p className="font-medium">{currentVideo.channel.name}</p>
                         {currentVideo.channel.verified && (
-                          <Badge variant="outline" className="h-5 px-1 border-[#171717] text-[#171717]">✓</Badge>
+                          <Badge variant="outline" className="h-5 px-1 border-border text-foreground">✓</Badge>
                         )}
                       </div>
                       <p className="text-sm text-muted-foreground">
                         {currentVideo.channel.subscribers} subscribers
                       </p>
                     </div>
-                    <Button className="bg-gradient-to-r from-[#171717] to-[#404040] hover:from-[#000000] hover:to-[#171717]">
+                    <Button className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary hover:to-primary/90">
                       <Bell className="w-4 h-4 mr-2" />
                       Subscribe
                     </Button>
@@ -306,7 +306,7 @@ export default function VideoStreaming() {
                     />
                     <div className="flex justify-end gap-2 mt-2">
                       <Button variant="ghost" onClick={() => setComment("")}>Cancel</Button>
-                      <Button disabled={!comment.trim()} className="bg-[#171717] hover:bg-[#000000]">Comment</Button>
+                      <Button disabled={!comment.trim()} className="bg-primary hover:bg-primary/90">Comment</Button>
                     </div>
                   </div>
                 </div>
@@ -339,7 +339,7 @@ export default function VideoStreaming() {
                           </Button>
                         </div>
                         {comment.replies > 0 && (
-                          <Button variant="ghost" size="sm" className="mt-2 p-0 text-[#171717]">
+                          <Button variant="ghost" size="sm" className="mt-2 p-0 text-foreground">
                             View {comment.replies} replies
                           </Button>
                         )}

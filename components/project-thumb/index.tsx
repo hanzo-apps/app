@@ -54,7 +54,7 @@ export function ProjectThumb({
   return (
     <div
       ref={hostRef}
-      className={`relative aspect-video w-full overflow-hidden bg-gradient-to-br from-white/[0.07] to-transparent ${className}`}
+      className={`relative aspect-video w-full overflow-hidden bg-gradient-to-br from-foreground/[0.07] to-transparent ${className}`}
     >
       {showLive ? (
         <iframe
@@ -78,7 +78,7 @@ export function ProjectThumb({
         />
       ) : (
         <div className="flex h-full items-center justify-center">
-          <span className="text-4xl font-medium text-white/60">
+          <span className="text-4xl font-medium text-muted-foreground">
             {(name || '?').charAt(0).toUpperCase()}
           </span>
         </div>

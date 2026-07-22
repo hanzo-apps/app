@@ -14,11 +14,11 @@ export default function GamePlay() {
   if (!game || !isPlayable(game)) {
     return (
       <AppShell currentView="games">
-        <div className="flex flex-1 flex-col items-center justify-center gap-4 bg-black text-white">
-          <p className="text-lg text-neutral-400">
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 bg-background text-foreground">
+          <p className="text-lg text-muted-foreground">
             {game ? `${game.name} has no in-browser build.` : 'Game not found.'}
           </p>
-          <Link href={game ? `/games/${game.id}` : '/games'} className="text-white underline">
+          <Link href={game ? `/games/${game.id}` : '/games'} className="text-foreground underline">
             Back
           </Link>
         </div>
@@ -28,17 +28,17 @@ export default function GamePlay() {
 
   return (
     <AppShell currentView="games">
-      <div className="flex flex-1 flex-col bg-black text-white">
-        <div className="flex items-center gap-4 border-b border-neutral-900 px-6 py-3">
+      <div className="flex flex-1 flex-col bg-background text-foreground">
+        <div className="flex items-center gap-4 border-b border-border px-6 py-3">
           <Link
             href={`/games/${game.id}`}
-            className="inline-flex items-center gap-1.5 text-sm text-neutral-400 hover:text-white"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" />
             {game.name}
           </Link>
           {isPlaceholderBuild(game) && (
-            <span className="rounded-full border border-neutral-700 px-2 py-0.5 text-[11px] text-neutral-400">
+            <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">
               placeholder build
             </span>
           )}

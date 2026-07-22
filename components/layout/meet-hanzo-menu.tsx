@@ -4,7 +4,7 @@
 // menus, folded into one wide panel. Structure mirrors hanzo.ai
 // (components/navigation/DesktopNav.tsx); aesthetic is hanzo.app's true-black.
 //
-// The panel is a SOLID surface (bg-[#0b0b0d] + border-white/10 + shadow-2xl) —
+// The panel is a SOLID surface (bg-popover + border-border + shadow-2xl) —
 // never the transparent @hanzo/ui dropdown. Opens on hover AND keyboard focus,
 // reflects state via aria-expanded, and closes on Esc / outside-click / blur-out.
 //
@@ -71,13 +71,13 @@ const installApps: AppEntry[] = INSTALL_PICKS.map((name) =>
 ).filter((a): a is AppEntry => Boolean(a));
 
 const rowClass =
-  "group flex items-start gap-2.5 rounded-lg px-2 py-1.5 text-sm text-white/70 transition-colors hover:bg-white/[0.06] hover:text-white";
+  "group flex items-start gap-2.5 rounded-lg px-2 py-1.5 text-sm text-foreground/70 transition-colors hover:bg-muted hover:text-foreground";
 const iconClass =
-  "mt-0.5 h-4 w-4 flex-shrink-0 text-white/40 transition-colors group-hover:text-white/80";
+  "mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground transition-colors group-hover:text-foreground";
 
 function ColumnHead({ children }: { children: string }) {
   return (
-    <h3 className="mb-2 font-mono text-[11px] uppercase tracking-[0.18em] text-white/35">
+    <h3 className="mb-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
       {children}
     </h3>
   );
@@ -91,7 +91,7 @@ function ItemRow({ item, onNavigate }: { item: Item; onNavigate: () => void }) {
       <span className="min-w-0">
         <span className="block leading-tight">{item.label}</span>
         {item.desc && (
-          <span className="block text-xs leading-tight text-white/35">{item.desc}</span>
+          <span className="block text-xs leading-tight text-muted-foreground">{item.desc}</span>
         )}
       </span>
     </>
@@ -174,7 +174,7 @@ export default function MeetHanzoMenu() {
         onFocus={openNow}
         className={cn(
           "inline-flex items-center gap-1 text-sm font-medium transition-colors",
-          open ? "text-white" : "text-white/70 hover:text-white",
+          open ? "text-foreground" : "text-foreground/70 hover:text-foreground",
         )}
       >
         Meet Hanzo
@@ -186,8 +186,8 @@ export default function MeetHanzoMenu() {
 
       {open && (
         <div className="absolute left-0 top-full z-50 pt-3">
-          {/* SOLID panel — bg-[#0b0b0d], never a transparent dropdown. */}
-          <div className="w-[min(88vw,780px)] rounded-2xl border border-white/10 bg-[#0b0b0d] p-6 shadow-2xl shadow-black/60">
+          {/* SOLID panel — bg-popover, never a transparent dropdown. */}
+          <div className="w-[min(88vw,780px)] rounded-2xl border border-border bg-popover p-6 shadow-2xl shadow-black/60">
             <div className="grid grid-cols-2 gap-x-8 gap-y-6 md:grid-cols-4">
               <div>
                 <ColumnHead>Products</ColumnHead>
@@ -217,7 +217,7 @@ export default function MeetHanzoMenu() {
                       </a>
                     );
                   })}
-                  <Link href="/install" onClick={closeNow} className={cn(rowClass, "text-white/90")}>
+                  <Link href="/install" onClick={closeNow} className={cn(rowClass, "text-foreground/90")}>
                     <LayoutGrid className={iconClass} strokeWidth={1.5} />
                     <span className="leading-tight">Browse all apps</span>
                   </Link>
