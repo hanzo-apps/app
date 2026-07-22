@@ -472,9 +472,12 @@ export function ImportGitPanel() {
 
       {/* Always-available fallback: paste a repository URL. */}
       <div className="mt-5 border-t border-border pt-4">
-        <label className="mb-2 block text-xs text-muted-foreground">
-          Or paste a repository URL
+        <label className="mb-1.5 block text-xs text-muted-foreground">
+          Paste any repository URL
         </label>
+        <p className="mb-2 text-xs text-muted-foreground/80">
+          Your <span className="font-medium text-foreground">git.hanzo.ai</span> repos, GitHub, GitLab, or any git remote — clone, edit, and Push to Git.
+        </p>
         <div className="flex items-center gap-2">
           <input
             type="url"
@@ -483,7 +486,7 @@ export function ImportGitPanel() {
             onKeyDown={(e) => {
               if (e.key === "Enter") submitPaste();
             }}
-            placeholder="github.com/org/repo  ·  https://…  ·  git@…"
+            placeholder="git.hanzo.ai/hanzoai/app  ·  github.com/org/repo  ·  git@…"
             className="h-9 flex-1 rounded-lg border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground/30 focus:outline-none"
           />
           <button
