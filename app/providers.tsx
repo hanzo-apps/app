@@ -24,14 +24,16 @@ export function Providers({ children }: ProvidersProps) {
   // (it does not restyle the DOM — @hanzo/ui Radix+Tailwind surfaces still paint
   // everything), so the class-based token layer is the whole lever.
   //
-  // Safe rollout: defaultTheme dark + enableSystem FALSE — existing users stay dark
-  // (zero visual change) and light is strictly opt-in via the toggle until the token
-  // pass is verified across every product surface. Flip enableSystem on afterwards.
+  // The token pass now covers every surface (product + marketing + landing), so the
+  // System option is live: enableSystem TRUE makes "System" follow the OS preference.
+  // defaultTheme stays "dark" — the brand default is unchanged, so existing users and
+  // anyone who hasn't chosen a theme still get dark (no surprise flip); Light and
+  // System are explicit choices via the toggle / settings.
   return (
     <ThemeProvider
       attribute="class"
       defaultTheme="dark"
-      enableSystem={false}
+      enableSystem={true}
       storageKey="hanzo-app-theme"
     >
       <GuiProvider config={guiConfig} defaultTheme="dark">
