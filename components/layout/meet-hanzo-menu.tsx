@@ -17,20 +17,23 @@ import {
   Boxes,
   Building2,
   BookOpen,
+  Bot,
   ChevronDown,
-  Cloud,
   Code2,
   Clapperboard,
+  CreditCard,
   GraduationCap,
   Hammer,
   Images,
   LayoutGrid,
   MessageSquare,
   Orbit,
+  Sparkles,
   Tag,
   Users,
 } from "lucide-react";
 import { appCatalog, appUrl, type AppEntry } from "@/data/app-catalog";
+import { otherSurfaces, type SurfaceId } from "@/data/surfaces.data";
 import { cn } from "@/lib/utils";
 
 type Item = {
@@ -41,12 +44,29 @@ type Item = {
   desc?: string;
 };
 
-// The Hanzo product surfaces — Build is this site; the rest are sibling sites.
+// One lucide glyph per surface, keyed by `Surface.id` (matches @hanzo/ui + team).
+const SURFACE_ICON: Record<SurfaceId, ElementType> = {
+  ai: Sparkles,
+  console: LayoutGrid,
+  app: Hammer,
+  chat: MessageSquare,
+  bot: Bot,
+  team: Users,
+  billing: CreditCard,
+};
+
+// The Hanzo product surfaces. Build is THIS site (the `app` surface); the rest come
+// from the ONE canonical cross-surface list (surfaces.data), so the switcher never
+// diverges. Code + Studio are appended — real products that aren't switcher surfaces.
 const products: Item[] = [
   { label: "Build", href: "/", icon: Hammer, desc: "Describe an app, ship it" },
-  { label: "Chat", href: "https://hanzo.ai/chat", icon: MessageSquare, external: true },
+  ...otherSurfaces("app").map((s) => ({
+    label: s.label,
+    href: s.href,
+    icon: SURFACE_ICON[s.id],
+    external: true,
+  })),
   { label: "Code", href: "https://hanzo.ai/code", icon: Code2, external: true },
-  { label: "Cloud", href: "https://cloud.hanzo.ai", icon: Cloud, external: true },
   { label: "Studio", href: "https://studio.hanzo.ai", icon: Clapperboard, external: true },
 ];
 
