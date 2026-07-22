@@ -15,7 +15,6 @@ import { Badge } from "@hanzo/ui";
 import { Input } from "@hanzo/ui";
 import { AspectRatio } from "@hanzo/ui";
 import { ShoppingCart, Search, Store as StoreIcon, Loader2 } from "lucide-react";
-import { toast } from "sonner";
 
 interface StoreProduct {
   key: string;
@@ -66,48 +65,9 @@ function itemRef(p: StoreProduct): CartLineRef {
       : { variantSku: p.variantSku || p.key, quantity: 1 };
 }
 
-// A stable per-product placeholder gradient (grayscale, no hue) so a product
-// with no image reads as an intentional tile, not a broken picture. Deterministic
-// from the key → SSR/hydration-safe, and distinct per product.
-function placeholderStyle(key: string): React.CSSProperties {
-  let h = 2166136261;
-  for (let i = 0; i < key.length; i++) {
-    h ^= key.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  const seed = h >>> 0;
-  const angle = 90 + (seed % 180);
-  const x = 12 + (seed % 50);
-  const y = 10 + ((seed >> 4) % 44);
-  return {
-    background:
-      `radial-gradient(120px 120px at ${x}% ${y}%, rgba(255,255,255,0.12), transparent 70%),` +
-      `linear-gradient(${angle}deg, rgba(255,255,255,0.06), rgba(255,255,255,0.015))`,
-  };
-}
-
-// Self-contained sample catalog for the TEMPLATE DEMO (/templates/ecommerce-
-// storefront). This is a showcase of the template — NOT real customer data — so
-// a browsing visitor sees a complete, polished storefront instead of the live
-// per-org store's "not bound to a store" empty state. The real /store route
-// still renders the org's actual cloud catalog and never uses this.
-const DEMO_CATALOG: ProductsResponse = {
-  org: "demo",
-  storeId: "demo",
-  currency: "USD",
-  products: [
-    { key: "aurora-tee", name: "Aurora Tee", headline: "Organic cotton, midnight wash", images: [], priceCents: 3200, currency: "USD", available: true },
-    { key: "nomad-backpack", name: "Nomad Backpack", headline: "22L, water-resistant, laptop sleeve", images: [], priceCents: 12800, listPriceCents: 15900, currency: "USD", available: true },
-    { key: "field-notes", name: "Field Notebook", headline: "Dot-grid, 90gsm, lays flat", images: [], priceCents: 1800, currency: "USD", available: true },
-    { key: "hanzo-cap", name: "Classic Cap", headline: "6-panel, adjustable, embroidered mark", images: [], priceCents: 2800, currency: "USD", available: true },
-    { key: "desk-mat", name: "Desk Mat", headline: "Large, stitched edge, natural rubber", images: [], priceCents: 3900, listPriceCents: 4900, currency: "USD", available: true },
-    { key: "enamel-mug", name: "Enamel Mug", headline: "12oz, camp-style, chip-resistant", images: [], priceCents: 2200, currency: "USD", available: false },
-  ],
-};
-
-export function Storefront({ demo = false }: { demo?: boolean } = {}) {
-  const [data, setData] = useState<ProductsResponse | null>(demo ? DEMO_CATALOG : null);
-  const [loading, setLoading] = useState(!demo);
+export function Storefront() {
+  const [data, setData] = useState<ProductsResponse | null>(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [cart, setCart] = useState<Record<string, number>>({});
@@ -115,16 +75,10 @@ export function Storefront({ demo = false }: { demo?: boolean } = {}) {
   const [checkingOut, setCheckingOut] = useState(false);
 
   useEffect(() => {
-    if (demo) return; // the demo renders its self-contained sample catalog
     let alive = true;
     (async () => {
       try {
-        // Bounded: a hung upstream resolves to the error state below (via the
-        // catch) instead of spinning "Loading catalog…" forever.
-        const res = await fetch("/api/store/products", {
-          cache: "no-store",
-          signal: AbortSignal.timeout(12000),
-        });
+        const res = await fetch("/api/store/products", { cache: "no-store" });
         const body = await res.json();
         if (!alive) return;
         if (!res.ok) {
@@ -147,7 +101,7 @@ export function Storefront({ demo = false }: { demo?: boolean } = {}) {
     return () => {
       alive = false;
     };
-  }, [demo]);
+  }, []);
 
   const ensureCart = useCallback(async (): Promise<string> => {
     if (cartId) return cartId;
@@ -163,7 +117,6 @@ export function Storefront({ demo = false }: { demo?: boolean } = {}) {
     async (p: StoreProduct) => {
       const nextQty = (cart[p.key] || 0) + 1;
       setCart((prev) => ({ ...prev, [p.key]: nextQty }));
-      if (demo) return; // demo cart is local-only — no backend
       try {
         const id = await ensureCart();
         const ref = itemRef(p);
@@ -177,7 +130,7 @@ export function Storefront({ demo = false }: { demo?: boolean } = {}) {
         setCart((prev) => ({ ...prev, [p.key]: Math.max(0, nextQty - 1) }));
       }
     },
-    [cart, ensureCart, demo],
+    [cart, ensureCart],
   );
 
   const checkout = useCallback(async () => {
@@ -186,12 +139,6 @@ export function Storefront({ demo = false }: { demo?: boolean } = {}) {
       .filter((p) => (cart[p.key] || 0) > 0)
       .map((p) => ({ ...itemRef(p), quantity: cart[p.key], name: p.name }));
     if (items.length === 0) return;
-    if (demo) {
-      toast("Template demo", {
-        description: "Publish this template and connect a store to sell for real.",
-      });
-      return;
-    }
     setCheckingOut(true);
     try {
       const res = await fetch("/api/store/checkout", {
@@ -210,7 +157,7 @@ export function Storefront({ demo = false }: { demo?: boolean } = {}) {
     } finally {
       setCheckingOut(false);
     }
-  }, [cart, data, demo]);
+  }, [cart, data]);
 
   const cartCount = Object.values(cart).reduce((s, q) => s + q, 0);
   const products = (data?.products || []).filter((p) =>
@@ -219,16 +166,11 @@ export function Storefront({ demo = false }: { demo?: boolean } = {}) {
   const currency = data?.currency || "USD";
 
   return (
-    <div className="flex-1 overflow-y-auto bg-background">
-      <header className="border-b sticky top-0 bg-background/95 backdrop-blur z-10">
+    <div className="min-h-screen bg-background">
+      <header className="border-b sticky top-0 bg-background/95 backdrop-blur z-50">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between gap-4">
           <h1 className="text-2xl font-medium flex items-center gap-2">
             <StoreIcon className="w-6 h-6" /> Store
-            {demo && (
-              <Badge variant="secondary" className="ml-1 bg-white/10">
-                Demo
-              </Badge>
-            )}
           </h1>
           <div className="flex items-center gap-4">
             <div className="relative hidden md:block">
@@ -300,11 +242,8 @@ export function Storefront({ demo = false }: { demo?: boolean } = {}) {
                             className="object-cover w-full h-full group-hover:scale-105 transition-transform"
                           />
                         ) : (
-                          <div
-                            className="w-full h-full flex items-center justify-center bg-muted"
-                            style={placeholderStyle(product.key)}
-                          >
-                            <StoreIcon className="w-8 h-8 text-muted-foreground/70" />
+                          <div className="w-full h-full flex items-center justify-center bg-muted">
+                            <StoreIcon className="w-8 h-8 text-muted-foreground" />
                           </div>
                         )}
                       </AspectRatio>
