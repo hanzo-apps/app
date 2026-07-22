@@ -6,6 +6,7 @@ import { Input } from '@hanzo/ui';
 import {
   Database, Plus, RefreshCw, Trash2, Pencil, X, Loader2, Search, TableProperties,
 } from 'lucide-react';
+import { selectAll, insertInto, updateRow, deleteRow } from './sql';
 
 /**
  * Data browser — the native "admin backend for all collections": list every
@@ -40,16 +41,6 @@ interface DataBrowserProps {
 }
 
 const PAGE = 200;
-
-/** Safely render a SQL literal for a value the admin typed. Numbers stay bare,
- *  empty → NULL, everything else is a single-quote-escaped string. */
-function sqlLiteral(v: string): string {
-  if (v === '' ) return 'NULL';
-  if (/^-?\d+(\.\d+)?$/.test(v.trim())) return v.trim();
-  if (/^(null)$/i.test(v.trim())) return 'NULL';
-  return `'${v.replace(/'/g, "''")}'`;
-}
-const ident = (s: string) => `"${s.replace(/"/g, '""')}"`;
 
 export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: DataBrowserProps) {
   const schemaUrl = schemaEndpoint || `/api/admin/deployments/${deploymentId}/database/schema`;
@@ -91,7 +82,7 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
   const loadRows = useCallback(async (table: string) => {
     setLoading(true); setError(null);
     try {
-      setResult(await runSql(`SELECT * FROM ${ident(table)} LIMIT ${PAGE}`));
+      setResult(await runSql(selectAll(PAGE)(table)));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load records');
       setResult(null);
@@ -127,19 +118,12 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
     if (!editing || !selected) return;
     setSaving(true); setError(null);
     try {
-      const entries = Object.entries(editing.values);
-      if (editing.mode === 'new') {
-        const usable = entries.filter(([, v]) => v !== ''); // let DB defaults/autoincrement fill blanks
-        const c = usable.map(([k]) => ident(k)).join(', ');
-        const v = usable.map(([, val]) => sqlLiteral(val)).join(', ');
-        await runSql(`INSERT INTO ${ident(selected)} (${c}) VALUES (${v})`);
-      } else {
-        const sets = entries
-          .filter(([k]) => k !== pkCol)
-          .map(([k, val]) => `${ident(k)} = ${sqlLiteral(val)}`)
-          .join(', ');
-        await runSql(`UPDATE ${ident(selected)} SET ${sets} WHERE ${ident(pkCol!)} = ${sqlLiteral(String(editing.id))}`);
-      }
+      // Pure SQL construction lives in ./sql — the component only decides which.
+      await runSql(
+        editing.mode === 'new'
+          ? insertInto(selected)(editing.values)
+          : updateRow(selected)(pkCol!)(String(editing.id))(editing.values),
+      );
       setEditing(null);
       await loadRows(selected);
     } catch (e) {
@@ -154,7 +138,7 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
     const id = row[cols.indexOf(pkCol)];
     if (!confirm(`Delete this record (${pkCol}=${String(id)})? This cannot be undone.`)) return;
     try {
-      await runSql(`DELETE FROM ${ident(selected)} WHERE ${ident(pkCol)} = ${sqlLiteral(String(id))}`);
+      await runSql(deleteRow(selected)(pkCol)(String(id)));
       await loadRows(selected);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Delete failed');
