@@ -40,7 +40,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator
+  DropdownMenuSeparator,
+  DropdownMenuLabel
 } from "@hanzo/ui";
 import {
   Select,
@@ -123,10 +124,9 @@ export default function ChatPage() {
   const [activeChat, setActiveChat] = useState<Chat | null>(chats[0]);
   const [inputMessage, setInputMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  // Deterministic initial value (matches the server HTML). Reading window during
-  // the first render mismatches SSR and throws a hydration error — the collapse
-  // for small screens is applied in an effect AFTER mount instead.
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(
+    () => typeof window !== "undefined" && !window.matchMedia("(min-width:1024px)").matches
+  );
   const [selectedModel, setSelectedModel] = useState("Claude 3.5 Sonnet");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -142,11 +142,15 @@ export default function ChatPage() {
   // Load agents from gateway
   useEffect(() => {
     const gw = getBotGateway();
-    // listAgents() falls back to the static presets on failure (always resolves),
-    // so it can't tell us whether we're really connected — probe health() for the
-    // honest status dot (false when no gateway is configured; no socket is dialed).
-    gw.listAgents().then((list) => { if (list.length > 0) setAgents(list); });
-    gw.health().then(setGatewayConnected).catch(() => setGatewayConnected(false));
+    gw.listAgents()
+      .then((list) => {
+        if (list.length > 0) setAgents(list);
+        setGatewayConnected(true);
+      })
+      .catch(() => {
+        // Gateway unavailable - use static presets
+        setGatewayConnected(false);
+      });
 
     // Listen for agent streaming events
     const unsub = gw.on("agent", (payload: unknown) => {
@@ -171,12 +175,6 @@ export default function ChatPage() {
     });
 
     return () => { unsub(); };
-  }, []);
-
-  // Collapse the chat sidebar on small screens — client-only and post-mount, so
-  // the first render still matches the server (expanded) and hydration is clean.
-  useEffect(() => {
-    if (!window.matchMedia("(min-width:1024px)").matches) setSidebarCollapsed(true);
   }, []);
 
   // Auto-scroll to bottom
@@ -408,22 +406,11 @@ export default function ChatPage() {
         <ScrollArea className="flex-1">
           <div className="p-2 space-y-1">
             {sortedChats.map(chat => (
-              <div
+              <button
                 key={chat.id}
-                role="button"
-                tabIndex={0}
                 onClick={() => selectChat(chat)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    selectChat(chat);
-                  }
-                }}
                 className={cn(
-                  // A <div role="button"> (not a real <button>) so the per-chat
-                  // actions dropdown trigger below is not a <button> nested in a
-                  // <button> — invalid HTML that broke hydration.
-                  "w-full cursor-pointer text-left p-3 rounded-lg transition-all group relative",
+                  "w-full text-left p-3 rounded-lg transition-all group relative",
                   activeChat?.id === chat.id
                     ? "bg-neutral-800 text-white"
                     : "hover:bg-neutral-900 text-neutral-400 hover:text-white"
@@ -471,7 +458,7 @@ export default function ChatPage() {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </ScrollArea>
@@ -503,12 +490,10 @@ export default function ChatPage() {
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent className="bg-neutral-900 border-neutral-700">
-                    {/* Plain label div — a DropdownMenuLabel here would nest a
-                        menu primitive inside a Select listbox. */}
-                    <div className="text-neutral-400 text-xs px-2 py-1">
+                    <DropdownMenuLabel className="text-neutral-400 text-xs px-2 py-1">
                       <Users className="w-3 h-3 inline mr-1" />
                       Team Agents
-                    </div>
+                    </DropdownMenuLabel>
                     {agents.map((agent) => (
                       <SelectItem key={agent.id} value={agent.id}>
                         <span className="flex items-center gap-2">

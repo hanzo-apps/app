@@ -4,9 +4,7 @@
  * Connects to the Hanzo Bot gateway (ZAP protocol) and exposes methods for
  * listing agents, sending messages, and receiving streaming responses.
  *
- * The gateway URL comes from NEXT_PUBLIC_BOT_GATEWAY_URL. When it is unset (the
- * default hosted build), the client fails closed WITHOUT dialing a socket and the
- * chat falls back to the static team presets — never a dead ws://localhost dial.
+ * The gateway runs at BOT_GATEWAY_URL (default ws://localhost:18789).
  */
 
 // ---------------------------------------------------------------------------
@@ -57,15 +55,9 @@ export const TEAM_PRESETS: BotAgent[] = [
 // Gateway client
 // ---------------------------------------------------------------------------
 
-// The gateway URL is configured per-deployment via NEXT_PUBLIC_BOT_GATEWAY_URL.
-// When it is NOT set (the default for a hosted build), we deliberately leave
-// this empty so connect() fails closed WITHOUT opening a socket — a hardcoded
-// `ws://localhost:18789` would try (and fail) to dial the developer's machine
-// from every real customer's browser. Unset ⇒ the chat falls back to the static
-// team presets, no console errors, no dead WebSocket.
 const BOT_GATEWAY_URL =
   typeof window !== "undefined"
-    ? (process.env.NEXT_PUBLIC_BOT_GATEWAY_URL ?? "")
+    ? (process.env.NEXT_PUBLIC_BOT_GATEWAY_URL ?? "ws://localhost:18789")
     : "";
 
 let _reqId = 0;
@@ -92,13 +84,6 @@ export class BotGatewayClient {
   async connect(): Promise<void> {
     if (this.connected && this.ws?.readyState === WebSocket.OPEN) return;
     if (this.connectPromise) return this.connectPromise;
-
-    // No configured gateway ⇒ fail closed WITHOUT dialing a socket. Callers
-    // (listAgents, sendMessage) already handle a rejected connect by falling
-    // back to static presets / a simulated reply, so this stays quiet.
-    if (!this.url) {
-      return Promise.reject(new Error("Bot gateway not configured"));
-    }
 
     this.connectPromise = new Promise<void>((resolve, reject) => {
       try {

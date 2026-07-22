@@ -13,7 +13,7 @@
 // Tailwind). Honest by construction: an unreachable ledger renders a typed error with
 // retry, an empty window its empty state — NEVER fabricated spend, tokens, or trend.
 import { useCallback, useEffect, useState } from 'react'
-import { Text, YStack } from '@hanzo/gui'
+import { GuiProvider, Text, YStack } from '@hanzo/gui'
 import { UsagePanel } from '@hanzo/usage/panel'
 import { ConnectedUsage } from '@hanzo/usage/connected'
 import {
@@ -26,6 +26,7 @@ import {
 } from '@hanzo/usage'
 import { useIamToken } from '@hanzo/iam/react'
 
+import guiConfig from '@/lib/gui.config'
 
 // get-cloud-usages + ai/connections live on the cloud API (api.hanzo.ai), not this origin.
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.hanzo.ai'
@@ -115,18 +116,19 @@ function Panels({ token }: { token: string }) {
   )
 }
 
-// <UsagePanel>/<ConnectedUsage> are @hanzo/gui components; they render under the
-// ONE root <GuiProvider> (app/providers.tsx). A second, scoped GuiProvider here
-// nested a second Tamagui PortalProvider — which warns and causes hydration
-// mismatches — so this surface just uses the root provider. The bearer is THIS
-// surface's IAM access token (the same one it already carries for /v1 calls).
+// <UsagePanel>/<ConnectedUsage> render inside a scoped <GuiProvider>; the bearer is
+// THIS surface's IAM access token (the same one it already carries for /v1 calls).
 export default function CloudUsagePanel() {
   const { token } = useIamToken()
-  return token ? (
-    <Panels token={token} />
-  ) : (
-    <Text fontSize="$3" color="$color10">
-      Loading usage…
-    </Text>
+  return (
+    <GuiProvider config={guiConfig} defaultTheme="dark">
+      {token ? (
+        <Panels token={token} />
+      ) : (
+        <Text fontSize="$3" color="$color10">
+          Loading usage…
+        </Text>
+      )}
+    </GuiProvider>
   )
 }

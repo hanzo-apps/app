@@ -17,7 +17,7 @@ import { html } from "@codemirror/lang-html";
 import { css } from "@codemirror/lang-css";
 import { javascript } from "@codemirror/lang-javascript";
 import { sql } from "@codemirror/lang-sql";
-import { editorThemeExtension, useEditorTheme } from "./themes";
+import { oneDark } from "@codemirror/theme-one-dark";
 
 // LiteralUnion: keep the common suggestions while accepting any language string
 // the file-type detectors produce (json / markdown / xml / yaml / plaintext …).
@@ -82,6 +82,40 @@ function languageExtension(language?: string): Extension[] {
   }
 }
 
+// True-black monochrome chrome. Layered AFTER oneDark so it overrides oneDark's
+// bluish background/selection while keeping oneDark's readable token colors.
+const blackChrome = EditorView.theme(
+  {
+    "&": { backgroundColor: "#0a0a0a", color: "#e5e5e5" },
+    ".cm-content": {
+      caretColor: "#fafafa",
+      fontFamily:
+        "var(--font-geist-mono), ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace",
+    },
+    ".cm-scroller": {
+      fontFamily:
+        "var(--font-geist-mono), ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace",
+    },
+    ".cm-gutters": {
+      backgroundColor: "#0a0a0a",
+      color: "#525252",
+      border: "none",
+    },
+    ".cm-activeLine": { backgroundColor: "rgba(255,255,255,0.04)" },
+    ".cm-activeLineGutter": {
+      backgroundColor: "rgba(255,255,255,0.04)",
+      color: "#a3a3a3",
+    },
+    ".cm-cursor, .cm-dropCursor": { borderLeftColor: "#fafafa" },
+    "&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection":
+      { backgroundColor: "rgba(255,255,255,0.15)" },
+    "&.cm-focused": { outline: "none" },
+  },
+  { dark: true }
+);
+
+const hanzoDark: Extension = [oneDark, blackChrome];
+
 function makeHandle(
   viewRef: { current: EditorView | null }
 ): CodeEditorHandle {
@@ -129,10 +163,6 @@ export function CodeEditor({
   const viewRef = useRef<EditorView | null>(null);
   const handleRef = useRef<CodeEditorHandle | null>(null);
 
-  // Default Hanzo Dracula; user-selectable via the editor theme picker (persists
-  // in localStorage, shared across every editor instance).
-  const { themeId } = useEditorTheme();
-
   const extensions = useMemo<Extension[]>(
     () => [...languageExtension(language), EditorView.lineWrapping],
     [language]
@@ -163,7 +193,7 @@ export function CodeEditor({
   return (
     <CodeMirror
       value={value}
-      theme={editorThemeExtension(themeId)}
+      theme={hanzoDark}
       height={height}
       style={{ height, width: "100%" }}
       className={className}
