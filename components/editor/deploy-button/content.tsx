@@ -42,7 +42,7 @@ export const DeployButtonContent = ({
 
   /**
    * Publish to the ONE org-scoped shared store (`/v1/publish` → cloud
-   * projectsvc). The org is resolved server-side from the user's bearer, so the
+   * projects store). The org is resolved server-side from the user's bearer, so the
    * project is created + billed under their organization with a real name + slug
    * (never `name: None`) and is visible in console.hanzo.ai from the SAME store.
    */

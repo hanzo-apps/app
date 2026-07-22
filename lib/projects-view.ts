@@ -13,7 +13,7 @@ export interface BaseProjectRow {
   id?: string;
   _id?: string;
   space_id?: string;
-  /** The project's own display name (the cloud projectsvc carries a real name);
+  /** The project's own display name (the cloud projects store carries a real name);
    *  preferred over the de-slugged space_id when present. */
   name?: string;
   prompts?: string[];
