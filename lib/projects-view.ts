@@ -13,11 +13,7 @@ export interface BaseProjectRow {
   id?: string;
   _id?: string;
   space_id?: string;
-<<<<<<< HEAD
   /** The project's own display name (the cloud projects service carries a real name);
-=======
-  /** The project's own display name (the cloud projects store carries a real name);
->>>>>>> chore/comment-cleanup-projects
    *  preferred over the de-slugged space_id when present. */
   name?: string;
   prompts?: string[];
