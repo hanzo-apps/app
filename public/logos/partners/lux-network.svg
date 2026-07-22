@@ -1,12 +1,9 @@
-<svg viewBox="0 0 180 36" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="LUX">
-  <rect x="0" y="0" width="10" height="36" fill="#000" />
-  <rect x="0" y="26" width="32" height="10" fill="#000" />
-
-  <rect x="58" y="0" width="10" height="26" fill="#000" />
-  <rect x="58" y="26" width="10" height="10" fill="#000" />
-  <rect x="90" y="0" width="10" height="26" fill="#000" />
-  <rect x="74" y="26" width="16" height="10" fill="#000" />
-
-  <polygon points="128,0 140,0 180,36 168,36" fill="#000" />
-  <polygon points="168,0 180,0 140,36 128,36" fill="#000" />
+<svg viewBox="0 0 138 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Lux Network" fill="#000">
+  <!-- Lux brand mark: the downward delta/triangle, extracted from the official
+       Lux assets (lux/kms/frontend/public/favicon.svg + the .github/hero.svg
+       lockups: path "M50 85 L15 25 L85 25 Z"), scaled into a horizontal wordmark
+       lockup. Single-color so the logo wall's brightness(0) invert(1) renders it
+       clean white. -->
+  <path d="M23 41 L6 11 L40 11 Z" />
+  <text x="52" y="36" font-family="Geist, Inter, system-ui, -apple-system, Helvetica, Arial, sans-serif" font-size="34" font-weight="700" letter-spacing="-1.5">Lux</text>
 </svg>
