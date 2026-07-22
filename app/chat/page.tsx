@@ -372,17 +372,17 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="relative h-screen flex bg-black">
+    <div className="relative h-screen flex bg-background">
       {/* Sidebar — overlay drawer below lg so it never steals width; in flow at lg+ */}
       <div className={cn(
-        "absolute inset-y-0 left-0 z-30 flex flex-col bg-neutral-950 border-r border-neutral-800 transition-all duration-200 lg:relative lg:z-auto",
+        "absolute inset-y-0 left-0 z-30 flex flex-col bg-card border-r border-border transition-all duration-200 lg:relative lg:z-auto",
         sidebarCollapsed ? "w-0 overflow-hidden" : "w-64"
       )}>
         {/* Sidebar Header */}
-        <div className="p-3 border-b border-neutral-800">
+        <div className="p-3 border-b border-border">
           <Button
             onClick={createNewChat}
-            className="w-full bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-700 justify-start gap-2"
+            className="w-full bg-card hover:bg-muted text-foreground border border-border justify-start gap-2"
           >
             <Plus className="w-4 h-4" />
             New chat
@@ -392,12 +392,12 @@ export default function ChatPage() {
         {/* Search */}
         <div className="p-3">
           <div className="relative">
-            <Search className="absolute left-3 top-2.5 w-4 h-4 text-neutral-500" />
+            <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder="Search"
               value={searchQuery}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-neutral-900 border-neutral-700 text-white placeholder-neutral-500"
+              className="pl-9 bg-card border-border text-foreground placeholder:text-muted-foreground"
             />
           </div>
         </div>
@@ -412,15 +412,15 @@ export default function ChatPage() {
                 className={cn(
                   "w-full text-left p-3 rounded-lg transition-all group relative",
                   activeChat?.id === chat.id
-                    ? "bg-neutral-800 text-white"
-                    : "hover:bg-neutral-900 text-neutral-400 hover:text-white"
+                    ? "bg-muted text-foreground"
+                    : "hover:bg-muted text-muted-foreground hover:text-foreground"
                 )}
               >
                 <div className="flex items-start gap-3">
                   <MessageCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{chat.title}</p>
-                    <p className="text-xs text-neutral-500 mt-0.5">
+                    <p className="text-xs text-muted-foreground mt-0.5">
                       {formatRelativeTime(chat.updatedAt)}
                     </p>
                   </div>
@@ -467,21 +467,21 @@ export default function ChatPage() {
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Chat Header */}
-        <div className="border-b border-neutral-800 p-3">
+        <div className="border-b border-border p-3">
           <div className="flex items-center justify-between flex-wrap gap-y-2">
             <div className="flex items-center gap-3">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                className="text-neutral-400 hover:text-white"
+                className="text-muted-foreground hover:text-foreground"
               >
                 {sidebarCollapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
               </Button>
               <div className="flex items-center gap-2">
                 {/* Agent Selector */}
                 <Select value={selectedAgentId} onValueChange={setSelectedAgentId}>
-                  <SelectTrigger className="min-w-0 flex-1 md:flex-none md:w-[160px] bg-neutral-900 border-neutral-700 text-white">
+                  <SelectTrigger className="min-w-0 flex-1 md:flex-none md:w-[160px] bg-card border-border text-foreground">
                     <SelectValue>
                       <span className="flex items-center gap-2">
                         <span>{selectedAgent?.emoji}</span>
@@ -489,8 +489,8 @@ export default function ChatPage() {
                       </span>
                     </SelectValue>
                   </SelectTrigger>
-                  <SelectContent className="bg-neutral-900 border-neutral-700">
-                    <DropdownMenuLabel className="text-neutral-400 text-xs px-2 py-1">
+                  <SelectContent className="bg-popover border-border">
+                    <DropdownMenuLabel className="text-muted-foreground text-xs px-2 py-1">
                       <Users className="w-3 h-3 inline mr-1" />
                       Team Agents
                     </DropdownMenuLabel>
@@ -500,7 +500,7 @@ export default function ChatPage() {
                           <span>{agent.emoji}</span>
                           <span>{agent.name}</span>
                           {agent.description && (
-                            <span className="text-xs text-neutral-500 ml-1">{agent.description}</span>
+                            <span className="text-xs text-muted-foreground ml-1">{agent.description}</span>
                           )}
                         </span>
                       </SelectItem>
@@ -510,10 +510,10 @@ export default function ChatPage() {
 
                 {/* Model Selector */}
                 <Select value={selectedModel} onValueChange={setSelectedModel}>
-                  <SelectTrigger className="min-w-0 flex-1 md:flex-none md:w-[180px] bg-neutral-900 border-neutral-700 text-white">
+                  <SelectTrigger className="min-w-0 flex-1 md:flex-none md:w-[180px] bg-card border-border text-foreground">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-neutral-900 border-neutral-700">
+                  <SelectContent className="bg-popover border-border">
                     <SelectItem value="enso">Enso (auto)</SelectItem>
                     <SelectItem value="claude-opus-4.8">Claude Opus 4.8</SelectItem>
                     <SelectItem value="claude-5-sonnet">Claude Sonnet 5</SelectItem>
@@ -526,25 +526,25 @@ export default function ChatPage() {
                 {/* Gateway status indicator */}
                 <div className={cn(
                   "w-2 h-2 rounded-full",
-                  gatewayConnected ? "bg-green-500" : "bg-neutral-600"
+                  gatewayConnected ? "bg-green-500" : "bg-muted-foreground"
                 )} title={gatewayConnected ? "Bot gateway connected" : "Bot gateway offline"} />
               </div>
             </div>
             <div className="flex items-center gap-2">
               <Link href="/playground">
-                <Button variant="ghost" size="sm" className="text-neutral-400 hover:text-white">
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                   <Code2 className="w-4 h-4 md:mr-2" />
                   <span className="hidden md:inline">Playground</span>
                 </Button>
               </Link>
               <Link href="/agents">
-                <Button variant="ghost" size="sm" className="text-neutral-400 hover:text-white">
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                   <Bot className="w-4 h-4 md:mr-2" />
                   <span className="hidden md:inline">Agents</span>
                 </Button>
               </Link>
               <Link href="/integrations">
-                <Button variant="ghost" size="sm" className="text-neutral-400 hover:text-white">
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                   <Settings className="w-4 h-4" />
                 </Button>
               </Link>
@@ -567,28 +567,28 @@ export default function ChatPage() {
                           </span>
                         </div>
                       ) : (
-                        <div className="w-8 h-8 rounded-full bg-neutral-700 flex items-center justify-center flex-shrink-0">
-                          <User className="w-4 h-4 text-neutral-300" />
+                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                          <User className="w-4 h-4 text-muted-foreground" />
                         </div>
                       )}
                       <div className="flex-1 space-y-2">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium text-white">
+                          <span className="font-medium text-foreground">
                             {message.role === "assistant"
                               ? (message.agentName ?? "Hanzo")
                               : "You"}
                           </span>
                           {message.model && (
-                            <span className="text-xs text-neutral-500">{message.model}</span>
+                            <span className="text-xs text-muted-foreground">{message.model}</span>
                           )}
-                          <span className="text-xs text-neutral-500">
+                          <span className="text-xs text-muted-foreground">
                             {formatRelativeTime(message.timestamp)}
                           </span>
                         </div>
-                        <div className="text-neutral-200 prose prose-invert max-w-none">
+                        <div className="text-foreground prose prose-invert max-w-none">
                           <p className="whitespace-pre-wrap">{message.content}</p>
                           {message.isStreaming && (
-                            <span className="inline-block w-2 h-4 ml-1 bg-white animate-pulse" />
+                            <span className="inline-block w-2 h-4 ml-1 bg-foreground animate-pulse" />
                           )}
                         </div>
                         {message.role === "assistant" && !message.isStreaming && (
@@ -596,17 +596,17 @@ export default function ChatPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-8 px-2 text-neutral-400 hover:text-white"
+                              className="h-8 px-2 text-muted-foreground hover:text-foreground"
                               onClick={() => copyMessage(message.content)}
                             >
                               <Copy className="w-3 h-3 mr-1" />
                               Copy
                             </Button>
-                            <Button variant="ghost" size="sm" className="h-8 px-2 text-neutral-400 hover:text-white">
+                            <Button variant="ghost" size="sm" className="h-8 px-2 text-muted-foreground hover:text-foreground">
                               <RefreshCw className="w-3 h-3 mr-1" />
                               Regenerate
                             </Button>
-                            <Button variant="ghost" size="sm" className="h-8 px-2 text-neutral-400 hover:text-white">
+                            <Button variant="ghost" size="sm" className="h-8 px-2 text-muted-foreground hover:text-foreground">
                               <Share2 className="w-3 h-3" />
                             </Button>
                           </div>
@@ -623,8 +623,8 @@ export default function ChatPage() {
                   <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl flex items-center justify-center mx-auto">
                     <span className="text-white font-medium text-4xl">{selectedAgent?.emoji ?? "H"}</span>
                   </div>
-                  <h2 className="text-2xl font-medium text-white">Chat with {selectedAgent?.name ?? "Hanzo"}</h2>
-                  <p className="text-neutral-400 max-w-md">
+                  <h2 className="text-2xl font-medium text-foreground">Chat with {selectedAgent?.name ?? "Hanzo"}</h2>
+                  <p className="text-muted-foreground max-w-md">
                     {selectedAgent?.description ?? "Start a new chat or select an existing one to continue your conversation"}
                   </p>
                   <Button onClick={createNewChat} className="gap-2">
@@ -639,17 +639,17 @@ export default function ChatPage() {
 
         {/* Input Area */}
         {activeChat && (
-          <div className="border-t border-neutral-800 p-4">
+          <div className="border-t border-border p-4">
             <div className="max-w-4xl mx-auto">
               <div className="flex items-end gap-3">
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="sm" className="text-neutral-400 hover:text-white">
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                     <Paperclip className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="text-neutral-400 hover:text-white">
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                     <ImageIcon className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="text-neutral-400 hover:text-white">
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                     <Mic className="w-4 h-4" />
                   </Button>
                 </div>
@@ -665,14 +665,14 @@ export default function ChatPage() {
                       }
                     }}
                     placeholder={`Message ${selectedAgent?.name ?? "Hanzo"}...`}
-                    className="min-h-[44px] max-h-[200px] bg-neutral-900 border-neutral-700 text-white placeholder-neutral-500 resize-none pr-12"
+                    className="min-h-[44px] max-h-[200px] bg-card border-border text-foreground placeholder:text-muted-foreground resize-none pr-12"
                     rows={1}
                   />
                   <Button
                     onClick={sendMessage}
                     disabled={!inputMessage.trim() || isStreaming}
                     size="sm"
-                    className="absolute right-2 bottom-2 h-8 w-8 p-0 bg-white text-black hover:bg-neutral-200 disabled:opacity-50"
+                    className="absolute right-2 bottom-2 h-8 w-8 p-0 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
                   >
                     {isStreaming ? (
                       <StopCircle className="w-4 h-4" />
@@ -683,11 +683,11 @@ export default function ChatPage() {
                 </div>
               </div>
               <div className="flex items-center justify-between mt-2">
-                <p className="text-xs text-neutral-500">
+                <p className="text-xs text-muted-foreground">
                   {isStreaming ? "Generating..." : "Press Enter to send, Shift+Enter for new line"}
                 </p>
                 <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="sm" className="h-6 text-xs text-neutral-500 hover:text-white">
+                  <Button variant="ghost" size="sm" className="h-6 text-xs text-muted-foreground hover:text-foreground">
                     <Sparkles className="w-3 h-3 mr-1" />
                     Enhance prompt
                   </Button>

@@ -9,29 +9,29 @@ import { HanzoBrand } from '@/components/HanzoLogo';
  */
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center px-6 py-20">
+    <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-6 py-20">
       <div className="w-full max-w-md text-center">
         <div className="flex justify-center mb-10">
           <HanzoBrand
-            className="text-white"
+            className="text-foreground"
             markClassName="w-11 h-11"
             wordmarkClassName="text-3xl"
           />
         </div>
 
         <h1 className="text-4xl font-medium mb-4 tracking-tight">404 — page not found</h1>
-        <p className="text-white/50 text-lg mb-10">This page does not exist or has moved.</p>
+        <p className="text-muted-foreground text-lg mb-10">This page does not exist or has moved.</p>
 
         <div className="flex items-center justify-center gap-4">
           <Link
             href="/"
-            className="px-5 py-2.5 bg-white text-black rounded-xl font-medium text-sm hover:bg-white/90 transition-colors"
+            className="px-5 py-2.5 bg-primary text-primary-foreground rounded-xl font-medium text-sm hover:bg-primary/90 transition-colors"
           >
             Back to Hanzo
           </Link>
           <Link
             href="/dashboard"
-            className="text-sm text-white/60 hover:text-white/80 transition-colors"
+            className="text-sm text-foreground/60 hover:text-foreground/80 transition-colors"
           >
             Go to dashboard
           </Link>

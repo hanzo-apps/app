@@ -100,28 +100,28 @@ export default function LearnPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <Header />
 
       {/* Hero Section */}
       <section className="px-4 md:px-8 py-16 md:py-24 text-center">
         <div className="max-w-4xl mx-auto">
-          <Badge className="mb-4 bg-white text-black border-0">
+          <Badge className="mb-4 bg-primary text-primary-foreground border-0">
             <BookOpen className="w-4 h-4 mr-2" />
             Hanzo Academy
           </Badge>
           <h1 className="text-4xl md:text-6xl font-medium mb-6">
             Learn to build with AI superpowers
           </h1>
-          <p className="text-xl text-white/60 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             Free courses, tutorials, and resources to help you master AI development
           </p>
           <div className="flex items-center gap-4 justify-center">
-            <Button size="lg" className="bg-white text-black hover:bg-white/90">
+            <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
               <PlayCircle className="mr-2 w-5 h-5" />
               Start Learning
             </Button>
-            <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10">
+            <Button size="lg" variant="outline" className="border-foreground/20 text-foreground hover:bg-accent">
               Browse Courses
             </Button>
           </div>
@@ -129,18 +129,18 @@ export default function LearnPage() {
       </section>
 
       {/* Learning Paths */}
-      <section className="px-4 md:px-8 py-12 border-y border-white/10">
+      <section className="px-4 md:px-8 py-12 border-y border-border">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-2xl font-medium mb-8">Popular Learning Paths</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {learningPaths.map(path => (
-              <div key={path.title} className="bg-white/[0.02] hover:bg-white/[0.03] rounded-2xl p-6 border border-white/10 hover:border-violet-500/50 transition-all cursor-pointer">
-                <div className="inline-flex rounded-lg border border-white/10 bg-white/[0.03] p-2 mb-4">
+              <div key={path.title} className="bg-muted hover:bg-accent rounded-2xl p-6 border border-border hover:border-violet-500/50 transition-all cursor-pointer">
+                <div className="inline-flex rounded-lg border border-border bg-muted p-2 mb-4">
                   <path.icon className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-medium mb-2">{path.title}</h3>
-                <p className="text-sm text-white/60 mb-4">{path.description}</p>
-                <div className="flex items-center gap-4 text-sm text-white/55">
+                <p className="text-sm text-muted-foreground mb-4">{path.description}</p>
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <FileCode className="w-4 h-4" />
                     {path.courses} courses
@@ -161,7 +161,7 @@ export default function LearnPage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl md:text-3xl font-medium">All Courses</h2>
-            <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
+            <Button variant="outline" className="border-foreground/20 text-foreground hover:bg-accent">
               <Video className="w-5 h-5 mr-2" />
               Watch Live Classes
             </Button>
@@ -175,8 +175,8 @@ export default function LearnPage() {
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
                   selectedCategory === cat
-                    ? 'bg-white text-black'
-                    : 'bg-white/5 text-white/70 hover:text-white hover:bg-white/10 border border-white/10'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-foreground/70 hover:text-foreground hover:bg-accent border border-border'
                 }`}
               >
                 {cat}
@@ -187,16 +187,16 @@ export default function LearnPage() {
           {/* Course Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCourses.map(course => (
-              <div key={course.id} className="bg-white/[0.02] hover:bg-white/[0.03] rounded-2xl border border-white/10 overflow-hidden">
+              <div key={course.id} className="bg-muted hover:bg-accent rounded-2xl border border-border overflow-hidden">
                 {course.featured && (
-                  <div className="bg-gradient-to-r from-violet-500 to-purple-500 text-white text-xs px-3 py-1.5 flex items-center gap-1">
+                  <div className="bg-gradient-to-r from-violet-500 to-purple-500 text-foreground text-xs px-3 py-1.5 flex items-center gap-1">
                     <Trophy className="w-3 h-3" />
                     Featured Course
                   </div>
                 )}
                 <div className="p-6">
                   <div className="mb-4">
-                    <Badge className="bg-white/5 text-white/70 border-white/10">
+                    <Badge className="bg-muted text-foreground border-border">
                       {course.level}
                     </Badge>
                   </div>
@@ -204,11 +204,11 @@ export default function LearnPage() {
                   <h3 className="font-medium text-lg mb-2">
                     {course.title}
                   </h3>
-                  <p className="text-sm text-white/60 mb-4">
+                  <p className="text-sm text-muted-foreground mb-4">
                     {course.description}
                   </p>
 
-                  <div className="flex items-center justify-between text-sm text-white/55 pt-4 border-t border-white/10">
+                  <div className="flex items-center justify-between text-sm text-muted-foreground pt-4 border-t border-border">
                     <span className="flex items-center gap-1">
                       <Video className="w-4 h-4" />
                       {course.lessons} lessons
@@ -232,31 +232,31 @@ export default function LearnPage() {
             <h2 className="text-3xl md:text-4xl font-medium mb-4">
               Additional Resources
             </h2>
-            <p className="text-lg text-white/60">
+            <p className="text-lg text-muted-foreground">
               Everything you need to succeed
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white/[0.02] hover:bg-white/[0.03] rounded-2xl p-6 border border-white/10">
+            <div className="bg-muted hover:bg-accent rounded-2xl p-6 border border-border">
               <BookOpen className="w-8 h-8 mb-4 text-violet-400" />
               <h3 className="text-xl font-medium mb-2">Documentation</h3>
-              <p className="text-white/60 mb-4">Comprehensive guides and API references</p>
+              <p className="text-muted-foreground mb-4">Comprehensive guides and API references</p>
               <Link href="/docs" className="text-violet-400 hover:text-violet-300 flex items-center gap-1">
                 Explore Docs <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
-            <div className="bg-white/[0.02] hover:bg-white/[0.03] rounded-2xl p-6 border border-white/10">
+            <div className="bg-muted hover:bg-accent rounded-2xl p-6 border border-border">
               <Users className="w-8 h-8 mb-4 text-violet-400" />
               <h3 className="text-xl font-medium mb-2">Community Forum</h3>
-              <p className="text-white/60 mb-4">Get help and share knowledge with others</p>
+              <p className="text-muted-foreground mb-4">Get help and share knowledge with others</p>
               <Link href="/community" className="text-violet-400 hover:text-violet-300 flex items-center gap-1">
                 Join Community <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
-            <div className="bg-white/[0.02] hover:bg-white/[0.03] rounded-2xl p-6 border border-white/10">
+            <div className="bg-muted hover:bg-accent rounded-2xl p-6 border border-border">
               <Video className="w-8 h-8 mb-4 text-violet-400" />
               <h3 className="text-xl font-medium mb-2">YouTube Channel</h3>
-              <p className="text-white/60 mb-4">Video tutorials and live coding sessions</p>
+              <p className="text-muted-foreground mb-4">Video tutorials and live coding sessions</p>
               <a href="https://youtube.com/@hanzoai" className="text-violet-400 hover:text-violet-300 flex items-center gap-1">
                 Watch Videos <ArrowRight className="w-4 h-4" />
               </a>
@@ -271,10 +271,10 @@ export default function LearnPage() {
           <h2 className="text-3xl md:text-4xl font-medium mb-6">
             Start your learning journey today
           </h2>
-          <p className="text-xl text-white/60 mb-8">
+          <p className="text-xl text-muted-foreground mb-8">
             Join thousands of developers mastering AI development
           </p>
-          <Button size="lg" className="bg-white text-black hover:bg-white/90">
+          <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
             Start Free Course
             <ArrowRight className="ml-2 w-5 h-5" />
           </Button>

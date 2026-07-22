@@ -170,35 +170,35 @@ export default function FeaturesPage() {
   ];
 
   return (
-    <div className="bg-[#0a0a0a] text-white min-h-screen">
+    <div className="bg-card text-foreground min-h-screen">
       {/* Gradient background */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0a] to-[#0a0a0a]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-card to-card" />
         <div className="absolute top-[20%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-gradient-radial from-violet-500/10 via-purple-500/5 to-transparent blur-3xl" />
       </div>
 
       {/* Navigation */}
-      <nav className="relative z-20 flex items-center justify-between px-4 md:px-8 py-4 md:py-5 border-b border-white/10">
+      <nav className="relative z-20 flex items-center justify-between px-4 md:px-8 py-4 md:py-5 border-b border-border">
         <div className="flex items-center gap-6 md:gap-10">
           <Link href="/" className="flex items-center gap-2.5">
-            <HanzoLogo className="w-8 md:w-9 h-8 md:h-9 text-white" />
+            <HanzoLogo className="w-8 md:w-9 h-8 md:h-9 text-foreground" />
             <span className="text-xl md:text-2xl font-medium">Hanzo</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
-            <Link href="/features" className="text-white font-medium text-sm transition-colors">
+            <Link href="/features" className="text-foreground font-medium text-sm transition-colors">
               Features
             </Link>
-            <Link href="/community" className="text-white/70 hover:text-white text-sm font-medium transition-colors">
+            <Link href="/community" className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors">
               Community
             </Link>
-            <Link href="/pricing" className="text-white/70 hover:text-white text-sm font-medium transition-colors">
+            <Link href="/pricing" className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors">
               Pricing
             </Link>
-            <Link href="/enterprise" className="text-white/70 hover:text-white text-sm font-medium transition-colors">
+            <Link href="/enterprise" className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors">
               Enterprise
             </Link>
-            <Link href="/docs" className="text-white/70 hover:text-white text-sm font-medium transition-colors">
+            <Link href="/docs" className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors">
               Docs
             </Link>
           </div>
@@ -211,13 +211,13 @@ export default function FeaturesPage() {
               <Button
                 onClick={() => router.push('/projects')}
                 variant="ghost"
-                className="text-white/70 hover:text-white text-sm font-medium"
+                className="text-muted-foreground hover:text-foreground text-sm font-medium"
               >
                 Dashboard
               </Button>
               <Button
                 onClick={() => router.push('/dev')}
-                className="bg-white text-black hover:bg-white/90 text-sm font-medium px-5 py-2.5 rounded-xl"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-medium px-5 py-2.5 rounded-xl"
               >
                 Get started
               </Button>
@@ -227,13 +227,13 @@ export default function FeaturesPage() {
               <Button
                 onClick={openLoginWindow}
                 variant="ghost"
-                className="text-white/70 hover:text-white text-sm font-medium"
+                className="text-muted-foreground hover:text-foreground text-sm font-medium"
               >
                 Log in
               </Button>
               <Button
                 onClick={openLoginWindow}
-                className="bg-white text-black hover:bg-white/90 text-sm font-medium px-5 py-2.5 rounded-xl"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-medium px-5 py-2.5 rounded-xl"
               >
                 Get started
               </Button>
@@ -244,7 +244,7 @@ export default function FeaturesPage() {
         {/* Mobile Menu Button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
+          className="md:hidden p-2 hover:bg-accent rounded-lg transition-colors"
         >
           {mobileMenuOpen ? (
             <X className="w-6 h-6" />
@@ -256,35 +256,35 @@ export default function FeaturesPage() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 bg-black/95 backdrop-blur-xl z-50 md:hidden">
+        <div className="fixed inset-0 bg-background/95 backdrop-blur-xl z-50 md:hidden">
           <div className="flex flex-col h-full">
-            <div className="flex items-center justify-between p-4 border-b border-white/10">
+            <div className="flex items-center justify-between p-4 border-b border-border">
               <Link href="/" className="flex items-center gap-2.5">
-                <HanzoLogo className="w-8 h-8 text-white" />
+                <HanzoLogo className="w-8 h-8 text-foreground" />
                 <span className="text-xl font-medium">Hanzo</span>
               </Link>
               <button
                 onClick={() => setMobileMenuOpen(false)}
-                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                className="p-2 hover:bg-accent rounded-lg transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
             <div className="flex-1 overflow-y-auto py-8 px-4">
               <div className="space-y-6">
-                <Link href="/features" className="block text-2xl font-medium text-white transition-colors">
+                <Link href="/features" className="block text-2xl font-medium text-foreground transition-colors">
                   Features
                 </Link>
-                <Link href="/community" className="block text-2xl font-medium text-white/90 hover:text-white transition-colors">
+                <Link href="/community" className="block text-2xl font-medium text-muted-foreground hover:text-foreground transition-colors">
                   Community
                 </Link>
-                <Link href="/pricing" className="block text-2xl font-medium text-white/90 hover:text-white transition-colors">
+                <Link href="/pricing" className="block text-2xl font-medium text-muted-foreground hover:text-foreground transition-colors">
                   Pricing
                 </Link>
-                <Link href="/enterprise" className="block text-2xl font-medium text-white/90 hover:text-white transition-colors">
+                <Link href="/enterprise" className="block text-2xl font-medium text-muted-foreground hover:text-foreground transition-colors">
                   Enterprise
                 </Link>
-                <Link href="/docs" className="block text-2xl font-medium text-white/90 hover:text-white transition-colors">
+                <Link href="/docs" className="block text-2xl font-medium text-muted-foreground hover:text-foreground transition-colors">
                   Docs
                 </Link>
               </div>
@@ -311,7 +311,7 @@ export default function FeaturesPage() {
                 <div className="absolute -inset-2 bg-gradient-to-r from-violet-400/20 via-purple-400/20 to-pink-400/20 blur-2xl -z-10" />
               </span>
             </h1>
-            <p className="text-lg md:text-xl text-white/60 mb-12 max-w-3xl mx-auto">
+            <p className="text-lg md:text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">
               From AI-powered code generation to instant deployment, Hanzo provides all the tools you need to turn ideas into production-ready applications
             </p>
 
@@ -326,7 +326,7 @@ export default function FeaturesPage() {
               <Button
                 onClick={() => router.push('/docs')}
                 variant="outline"
-                className="border-white/20 text-white hover:bg-white/10 px-8 py-3 rounded-xl font-medium text-lg"
+                className="border-border text-foreground hover:bg-accent px-8 py-3 rounded-xl font-medium text-lg"
               >
                 View Documentation
                 <ArrowRight className="ml-2 w-5 h-5" />
@@ -344,27 +344,27 @@ export default function FeaturesPage() {
                 Core Features
               </Badge>
               <h2 className="text-3xl md:text-4xl font-medium mb-4">Everything you need in one platform</h2>
-              <p className="text-lg text-white/60 max-w-2xl mx-auto">
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Comprehensive development tools designed to accelerate your workflow
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {coreFeatures.map((feature, index) => (
-                <Card key={index} className="bg-[#141414] border-white/10 hover:border-violet-500/30 transition-all">
+                <Card key={index} className="bg-card border-border hover:border-violet-500/30 transition-all">
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
                       {feature.icon}
-                      <CardTitle className="text-xl text-white">{feature.title}</CardTitle>
+                      <CardTitle className="text-xl text-foreground">{feature.title}</CardTitle>
                     </div>
-                    <CardDescription className="text-white/60">
+                    <CardDescription className="text-muted-foreground">
                       {feature.description}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2">
                       {feature.features.map((item, idx) => (
-                        <li key={idx} className="flex items-center gap-2 text-sm text-white/70">
+                        <li key={idx} className="flex items-center gap-2 text-sm text-foreground">
                           <Check className="w-4 h-4 text-green-400" />
                           {item}
                         </li>
@@ -386,7 +386,7 @@ export default function FeaturesPage() {
                 AI Capabilities
               </Badge>
               <h2 className="text-3xl md:text-4xl font-medium mb-4">Next-generation AI development</h2>
-              <p className="text-lg text-white/60 max-w-2xl mx-auto">
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Advanced AI models that understand your intent and generate production-ready code
               </p>
             </div>
@@ -400,8 +400,8 @@ export default function FeaturesPage() {
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-xl font-medium mb-3 text-white">{capability.title}</h3>
-                    <p className="text-white/70 leading-relaxed">{capability.description}</p>
+                    <h3 className="text-xl font-medium mb-3 text-foreground">{capability.title}</h3>
+                    <p className="text-foreground leading-relaxed">{capability.description}</p>
                   </div>
                 </div>
               ))}
@@ -418,7 +418,7 @@ export default function FeaturesPage() {
                 Technology Stack
               </Badge>
               <h2 className="text-3xl md:text-4xl font-medium mb-4">Built on modern infrastructure</h2>
-              <p className="text-lg text-white/60 max-w-2xl mx-auto">
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Enterprise-grade technology stack designed for scale and performance
               </p>
             </div>
@@ -428,22 +428,22 @@ export default function FeaturesPage() {
                 <div className="inline-flex p-4 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-2xl border border-blue-500/20 mb-4">
                   <Cloud className="w-8 h-8 text-blue-400" />
                 </div>
-                <h3 className="text-xl font-medium mb-2 text-white">Cloud Infrastructure</h3>
-                <p className="text-white/60">Global CDN, edge computing, and auto-scaling infrastructure</p>
+                <h3 className="text-xl font-medium mb-2 text-foreground">Cloud Infrastructure</h3>
+                <p className="text-muted-foreground">Global CDN, edge computing, and auto-scaling infrastructure</p>
               </div>
               <div className="text-center">
                 <div className="inline-flex p-4 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-2xl border border-green-500/20 mb-4">
                   <Server className="w-8 h-8 text-green-400" />
                 </div>
-                <h3 className="text-xl font-medium mb-2 text-white">Database Solutions</h3>
-                <p className="text-white/60">Managed PostgreSQL, SQLite, and Redis with auto-backups</p>
+                <h3 className="text-xl font-medium mb-2 text-foreground">Database Solutions</h3>
+                <p className="text-muted-foreground">Managed PostgreSQL, SQLite, and Redis with auto-backups</p>
               </div>
               <div className="text-center">
                 <div className="inline-flex p-4 bg-gradient-to-br from-purple-500/10 to-violet-500/10 rounded-2xl border border-purple-500/20 mb-4">
                   <Cpu className="w-8 h-8 text-purple-400" />
                 </div>
-                <h3 className="text-xl font-medium mb-2 text-white">AI Processing</h3>
-                <p className="text-white/60">GPT-4, Claude, and custom models for code generation</p>
+                <h3 className="text-xl font-medium mb-2 text-foreground">AI Processing</h3>
+                <p className="text-muted-foreground">GPT-4, Claude, and custom models for code generation</p>
               </div>
             </div>
           </div>
@@ -458,7 +458,7 @@ export default function FeaturesPage() {
                 Simple Pricing
               </Badge>
               <h2 className="text-3xl md:text-4xl font-medium mb-4">Choose your plan</h2>
-              <p className="text-lg text-white/60 max-w-2xl mx-auto">
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Start free, scale as you grow. No hidden fees or surprises.
               </p>
             </div>
@@ -467,8 +467,8 @@ export default function FeaturesPage() {
               {pricingPlans.map((plan, index) => (
                 <Card
                   key={index}
-                  className={`relative bg-[#141414] border-white/10 transition-all ${
-                    plan.popular ? 'border-violet-500/50 scale-105' : 'hover:border-white/20'
+                  className={`relative bg-card border-border transition-all ${
+                    plan.popular ? 'border-violet-500/50 scale-105' : 'hover:border-foreground/30'
                   }`}
                 >
                   {plan.popular && (
@@ -479,12 +479,12 @@ export default function FeaturesPage() {
                     </div>
                   )}
                   <CardHeader className="text-center pb-6">
-                    <CardTitle className="text-2xl text-white">{plan.name}</CardTitle>
+                    <CardTitle className="text-2xl text-foreground">{plan.name}</CardTitle>
                     <div className="mt-4">
-                      <span className="text-4xl font-medium text-white">{plan.price}</span>
-                      {plan.period && <span className="text-white/60 ml-1">{plan.period}</span>}
+                      <span className="text-4xl font-medium text-foreground">{plan.price}</span>
+                      {plan.period && <span className="text-muted-foreground ml-1">{plan.period}</span>}
                     </div>
-                    <CardDescription className="text-white/60 mt-2">
+                    <CardDescription className="text-muted-foreground mt-2">
                       {plan.description}
                     </CardDescription>
                   </CardHeader>
@@ -493,7 +493,7 @@ export default function FeaturesPage() {
                       className={`w-full ${
                         plan.popular
                           ? 'bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-400 hover:to-purple-400 text-white'
-                          : 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
+                          : 'bg-accent text-foreground border border-border hover:border-foreground/30'
                       }`}
                       onClick={() => plan.name === 'Enterprise' ? router.push('/enterprise') : (user ? router.push('/dev') : openLoginWindow())}
                     >
@@ -503,13 +503,13 @@ export default function FeaturesPage() {
                       {plan.features.map((feature, idx) => (
                         <div key={idx} className="flex items-center gap-3">
                           <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
-                          <span className="text-sm text-white/80">{feature}</span>
+                          <span className="text-sm text-foreground">{feature}</span>
                         </div>
                       ))}
                       {plan.notIncluded.map((feature, idx) => (
                         <div key={idx} className="flex items-center gap-3">
                           <X className="w-4 h-4 text-red-400 flex-shrink-0" />
-                          <span className="text-sm text-white/50">{feature}</span>
+                          <span className="text-sm text-muted-foreground">{feature}</span>
                         </div>
                       ))}
                     </div>
@@ -519,7 +519,7 @@ export default function FeaturesPage() {
             </div>
 
             <div className="text-center mt-12">
-              <p className="text-white/60 mb-4">All plans include free SSL certificates and 99.9% uptime SLA</p>
+              <p className="text-muted-foreground mb-4">All plans include free SSL certificates and 99.9% uptime SLA</p>
               <Link href="/pricing" className="text-violet-400 hover:text-violet-300 text-sm font-medium">
                 View detailed pricing comparison →
               </Link>
@@ -533,7 +533,7 @@ export default function FeaturesPage() {
             <h2 className="text-3xl md:text-4xl font-medium mb-4">
               Ready to build your next project?
             </h2>
-            <p className="text-lg text-white/60 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
               Join thousands of developers who are already building amazing applications with Hanzo AI
             </p>
 
@@ -548,7 +548,7 @@ export default function FeaturesPage() {
               <Button
                 onClick={() => router.push('/community')}
                 variant="outline"
-                className="border-white/20 text-white hover:bg-white/10 px-8 py-3 rounded-xl font-medium text-lg"
+                className="border-border text-foreground hover:bg-accent px-8 py-3 rounded-xl font-medium text-lg"
               >
                 <Users className="w-5 h-5 mr-2" />
                 Explore Community
@@ -559,46 +559,46 @@ export default function FeaturesPage() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 bg-[#0a0a0a] border-t border-white/10 mt-16 md:mt-32">
+      <footer className="relative z-10 bg-card border-t border-border mt-16 md:mt-32">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-16">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-8 mb-8 md:mb-12">
             <div>
-              <h3 className="text-white font-medium text-sm mb-3 md:mb-4">Product</h3>
+              <h3 className="text-foreground font-medium text-sm mb-3 md:mb-4">Product</h3>
               <ul className="space-y-2 md:space-y-3">
-                <li><Link href="/features" className="text-white hover:text-white text-xs md:text-sm transition-colors">Features</Link></li>
-                <li><Link href="/integrations" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Integrations</Link></li>
-                <li><Link href="/pricing" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Pricing</Link></li>
-                <li><Link href="/changelog" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Changelog</Link></li>
+                <li><Link href="/features" className="text-foreground hover:text-foreground text-xs md:text-sm transition-colors">Features</Link></li>
+                <li><Link href="/integrations" className="text-muted-foreground hover:text-foreground text-xs md:text-sm transition-colors">Integrations</Link></li>
+                <li><Link href="/pricing" className="text-muted-foreground hover:text-foreground text-xs md:text-sm transition-colors">Pricing</Link></li>
+                <li><Link href="/changelog" className="text-muted-foreground hover:text-foreground text-xs md:text-sm transition-colors">Changelog</Link></li>
               </ul>
             </div>
             <div>
-              <h3 className="text-white font-medium text-sm mb-3 md:mb-4">Resources</h3>
+              <h3 className="text-foreground font-medium text-sm mb-3 md:mb-4">Resources</h3>
               <ul className="space-y-2 md:space-y-3">
-                <li><Link href="/docs" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Documentation</Link></li>
-                <li><Link href="/tutorials" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Tutorials</Link></li>
-                <li><Link href="/blog" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Blog</Link></li>
-                <li><Link href="/community" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Community</Link></li>
+                <li><Link href="/docs" className="text-muted-foreground hover:text-foreground text-xs md:text-sm transition-colors">Documentation</Link></li>
+                <li><Link href="/tutorials" className="text-muted-foreground hover:text-foreground text-xs md:text-sm transition-colors">Tutorials</Link></li>
+                <li><Link href="/blog" className="text-muted-foreground hover:text-foreground text-xs md:text-sm transition-colors">Blog</Link></li>
+                <li><Link href="/community" className="text-muted-foreground hover:text-foreground text-xs md:text-sm transition-colors">Community</Link></li>
               </ul>
             </div>
             <div>
-              <h3 className="text-white font-medium text-sm mb-3 md:mb-4">Company</h3>
+              <h3 className="text-foreground font-medium text-sm mb-3 md:mb-4">Company</h3>
               <ul className="space-y-2 md:space-y-3">
-                <li><Link href="/about" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">About</Link></li>
-                <li><Link href="/careers" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Careers</Link></li>
-                <li><Link href="/press" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Press</Link></li>
-                <li><Link href="/contact" className="text-white/60 hover:text-white text-xs md:text-sm transition-colors">Contact</Link></li>
+                <li><Link href="/about" className="text-muted-foreground hover:text-foreground text-xs md:text-sm transition-colors">About</Link></li>
+                <li><Link href="/careers" className="text-muted-foreground hover:text-foreground text-xs md:text-sm transition-colors">Careers</Link></li>
+                <li><Link href="/press" className="text-muted-foreground hover:text-foreground text-xs md:text-sm transition-colors">Press</Link></li>
+                <li><Link href="/contact" className="text-muted-foreground hover:text-foreground text-xs md:text-sm transition-colors">Contact</Link></li>
               </ul>
             </div>
           </div>
 
-          <div className="pt-6 md:pt-8 border-t border-white/10">
+          <div className="pt-6 md:pt-8 border-t border-border">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4 md:gap-6">
               <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 text-center md:text-left">
                 <div className="flex items-center gap-3">
-                  <HanzoLogo className="w-6 md:w-7 h-6 md:h-7 text-white" />
+                  <HanzoLogo className="w-6 md:w-7 h-6 md:h-7 text-foreground" />
                   <span className="text-base md:text-lg font-medium">Hanzo</span>
                 </div>
-                <span className="text-xs md:text-sm text-white/40">
+                <span className="text-xs md:text-sm text-muted-foreground">
                   © 2025 Hanzo AI, Inc. All rights reserved.
                 </span>
               </div>
