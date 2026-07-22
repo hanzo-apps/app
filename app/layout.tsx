@@ -7,6 +7,7 @@ import TanstackProvider from "@/components/providers/tanstack-query-provider";
 import "@/assets/globals.css";
 import MY_TOKEN_KEY from "@/lib/get-cookie-name";
 import { apiServer } from "@/lib/api";
+import { SITE_URL } from "@/lib/site";
 import AppContext from "@/components/contexts/app-context";
 import IframeDetector from "@/components/iframe-detector";
 import { ChunkReloader } from "@/components/chunk-reloader";
@@ -33,15 +34,20 @@ export const metadata: Metadata = {
   title: "Hanzo AI | Build with AI",
   description:
     "Hanzo AI is a cutting-edge web development platform that helps you build websites with AI, no code required. Create, deploy, and scale your projects with the power of AI.",
+  // Absolute base for OG/Twitter/canonical URL resolution; white-label overridable
+  // via NEXT_PUBLIC_APP_URL (see lib/site.ts). Without it, relative OG images and
+  // the canonical don't resolve and Next warns at build.
+  metadataBase: new URL(SITE_URL),
+  alternates: { canonical: "/" },
   openGraph: {
     title: "Hanzo AI | Build with AI",
     description:
       "Hanzo AI is a cutting-edge web development platform that helps you build websites with AI, no code required. Create, deploy, and scale your projects with the power of AI.",
-    url: "https://hanzo.build",
+    url: SITE_URL,
     siteName: "Hanzo AI",
     images: [
       {
-        url: "https://hanzo.build/banner.png",
+        url: "/banner.png",
         width: 1200,
         height: 630,
         alt: "Hanzo AI Open Graph Image",
@@ -53,7 +59,7 @@ export const metadata: Metadata = {
     title: "Hanzo AI | Build with AI",
     description:
       "Hanzo AI is a cutting-edge web development platform that helps you build websites with AI, no code required. Create, deploy, and scale your projects with the power of AI.",
-    images: ["https://hanzo.build/banner.png"],
+    images: ["/banner.png"],
   },
   appleWebApp: {
     capable: true,
