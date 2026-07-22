@@ -61,19 +61,19 @@ export function ErrorFallback({
 
   // Page or App level error - full page error
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="max-w-md w-full">
-        <div className="bg-neutral-900 border border-white/10 rounded-2xl shadow-xl overflow-hidden">
+        <div className="bg-card border border-border rounded-2xl shadow-xl overflow-hidden">
           <div className="border-b border-red-500/20 bg-red-500/[0.07] p-6">
             <div className="flex items-center space-x-3">
               <div className="bg-red-500/15 rounded-full p-3">
                 <AlertCircle className="w-8 h-8 text-red-400" />
               </div>
               <div>
-                <h1 className="text-2xl font-medium text-white">
+                <h1 className="text-2xl font-medium text-foreground">
                   {level === 'app' ? 'Application Error' : 'Page Error'}
                 </h1>
-                <p className="text-white/60 text-sm mt-1">
+                <p className="text-muted-foreground text-sm mt-1">
                   {isPermanent
                     ? 'Multiple errors detected. Please refresh the page.'
                     : 'An unexpected error occurred.'}
@@ -85,21 +85,21 @@ export function ErrorFallback({
           <div className="p-6">
             {isDevelopment && (
               <div className="mb-6">
-                <div className="bg-neutral-100 dark:bg-neutral-900 rounded-lg p-4 mb-4">
-                  <h2 className="text-sm font-medium text-neutral-600 dark:text-neutral-400 mb-2">
+                <div className="bg-muted rounded-lg p-4 mb-4">
+                  <h2 className="text-sm font-medium text-muted-foreground mb-2">
                     Error Details (Development Only)
                   </h2>
-                  <p className="text-sm text-neutral-800 dark:text-neutral-200 font-mono break-all">
+                  <p className="text-sm text-foreground font-mono break-all">
                     {error.message}
                   </p>
                 </div>
 
                 {error.stack && (
                   <details className="text-xs">
-                    <summary className="cursor-pointer text-neutral-600 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200">
+                    <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
                       View Stack Trace
                     </summary>
-                    <pre className="mt-2 bg-neutral-100 dark:bg-neutral-900 rounded p-3 overflow-x-auto text-neutral-700 dark:text-neutral-300">
+                    <pre className="mt-2 bg-muted rounded p-3 overflow-x-auto text-muted-foreground">
                       {error.stack}
                     </pre>
                   </details>
@@ -109,12 +109,12 @@ export function ErrorFallback({
 
             {!isDevelopment && (
               <div className="mb-6">
-                <p className="text-neutral-600 dark:text-neutral-300">
+                <p className="text-muted-foreground">
                   We apologize for the inconvenience. The error has been logged and our team will
                   investigate the issue.
                 </p>
-                <div className="mt-4 p-3 bg-white/5 border border-white/10 rounded-lg">
-                  <p className="text-sm text-white/70">
+                <div className="mt-4 p-3 bg-muted border border-border rounded-lg">
+                  <p className="text-sm text-foreground">
                     <strong>Error ID:</strong> {generateErrorId()}
                   </p>
                 </div>
@@ -125,7 +125,7 @@ export function ErrorFallback({
               {!isPermanent && (
                 <button
                   onClick={resetErrorBoundary}
-                  className="w-full flex items-center justify-center space-x-2 bg-white hover:bg-white/90 text-black py-3 px-4 rounded-lg font-medium transition-colors"
+                  className="w-full flex items-center justify-center space-x-2 bg-primary hover:bg-primary/90 text-primary-foreground py-3 px-4 rounded-lg font-medium transition-colors"
                 >
                   <RefreshCw className="w-4 h-4" />
                   <span>Try Again</span>
@@ -135,7 +135,7 @@ export function ErrorFallback({
               {isPermanent && (
                 <button
                   onClick={() => window.location.reload()}
-                  className="w-full flex items-center justify-center space-x-2 bg-white hover:bg-white/90 text-black py-3 px-4 rounded-lg font-medium transition-colors"
+                  className="w-full flex items-center justify-center space-x-2 bg-primary hover:bg-primary/90 text-primary-foreground py-3 px-4 rounded-lg font-medium transition-colors"
                 >
                   <RefreshCw className="w-4 h-4" />
                   <span>Refresh Page</span>
@@ -144,7 +144,7 @@ export function ErrorFallback({
 
               <button
                 onClick={handleGoHome}
-                className="w-full flex items-center justify-center space-x-2 bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 text-neutral-800 dark:text-neutral-200 py-3 px-4 rounded-lg transition-colors"
+                className="w-full flex items-center justify-center space-x-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground py-3 px-4 rounded-lg transition-colors"
               >
                 <Home className="w-4 h-4" />
                 <span>Go to Homepage</span>
@@ -153,7 +153,7 @@ export function ErrorFallback({
               {!isDevelopment && (
                 <button
                   onClick={handleReportBug}
-                  className="w-full flex items-center justify-center space-x-2 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 py-3 px-4 rounded-lg transition-colors"
+                  className="w-full flex items-center justify-center space-x-2 border border-border hover:bg-accent text-foreground py-3 px-4 rounded-lg transition-colors"
                 >
                   <Bug className="w-4 h-4" />
                   <span>Report This Issue</span>
@@ -164,7 +164,7 @@ export function ErrorFallback({
         </div>
 
         {isDevelopment && (
-          <div className="mt-4 text-center text-xs text-neutral-500 dark:text-neutral-400">
+          <div className="mt-4 text-center text-xs text-muted-foreground">
             This detailed error view is only shown in development mode.
           </div>
         )}

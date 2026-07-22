@@ -14,21 +14,21 @@ import { productFaq, billingFaq } from "@/components/marketing/faq-data";
 
 export default function FaqPage() {
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <Header />
 
       <main>
         {/* ── Hero ─────────────────────────────────────────────── */}
         <section className="relative overflow-hidden px-4 py-20 text-center md:px-8 md:py-28">
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
-            <div className="absolute left-1/2 top-[-30%] h-[420px] w-[720px] -translate-x-1/2 rounded-full bg-white/[0.05] blur-[130px]" />
+            <div className="absolute left-1/2 top-[-30%] h-[420px] w-[720px] -translate-x-1/2 rounded-full bg-foreground/[0.05] blur-[130px]" />
           </div>
 
           <div className="relative mx-auto max-w-3xl">
             <Reveal>
-              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
-                <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-white/55">
+              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3 py-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-foreground/70" />
+                <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
                   FAQ
                 </span>
               </div>
@@ -41,12 +41,12 @@ export default function FaqPage() {
             </Reveal>
 
             <Reveal delay={120}>
-              <p className="mx-auto mt-5 max-w-xl text-pretty text-base text-white/55 md:text-lg">
+              <p className="mx-auto mt-5 max-w-xl text-pretty text-base text-muted-foreground md:text-lg">
                 How hanzo.app works, what powers it, and how billing runs. If your
                 question isn&apos;t here,{" "}
                 <Link
                   href="/help"
-                  className="text-white underline underline-offset-4 hover:text-white/80"
+                  className="text-foreground underline underline-offset-4 hover:text-foreground/80"
                 >
                   reach the team
                 </Link>
@@ -65,7 +65,7 @@ export default function FaqPage() {
         />
 
         {/* ── Billing ──────────────────────────────────────────── */}
-        <div className="border-t border-white/[0.06]">
+        <div className="border-t border-border">
           <FaqSection
             id="billing"
             eyebrow="Billing"
@@ -75,26 +75,26 @@ export default function FaqPage() {
         </div>
 
         {/* ── CTA ──────────────────────────────────────────────── */}
-        <section className="border-t border-white/[0.06] px-4 py-20 text-center md:px-8 md:py-24">
+        <section className="border-t border-border px-4 py-20 text-center md:px-8 md:py-24">
           <Reveal className="mx-auto max-w-2xl">
             <h2 className="text-3xl font-medium tracking-tight md:text-4xl">
               Ready to build?
             </h2>
-            <p className="mx-auto mt-4 max-w-md text-base text-white/55">
+            <p className="mx-auto mt-4 max-w-md text-base text-muted-foreground">
               Describe an app and ship it live on Hanzo Cloud — database, auth,
               and AI already wired in.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
                 href="/dev"
-                className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition-all hover:bg-white/90"
+                className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90"
               >
                 Start building
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/pricing"
-                className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.02] px-6 py-3 text-sm font-medium text-white transition-all hover:border-white/30 hover:bg-white/[0.05]"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-6 py-3 text-sm font-medium text-foreground transition-all hover:border-foreground/30 hover:bg-accent"
               >
                 See pricing
               </Link>

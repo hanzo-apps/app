@@ -9,10 +9,10 @@ import { Button } from "@hanzo/ui";
 export const AskAi = () => {
   return (
     <>
-      <div className="bg-neutral-800 border border-neutral-700 rounded-2xl ring-[4px] focus-within:ring-neutral-500/30 focus-within:border-neutral-600 ring-transparent group">
+      <div className="bg-muted border border-border rounded-2xl ring-[4px] focus-within:ring-ring/30 focus-within:border-border ring-transparent group">
         <textarea
           rows={3}
-          className="w-full bg-transparent text-sm outline-none text-white placeholder:text-neutral-400 p-4 resize-none mb-1"
+          className="w-full bg-transparent text-sm outline-none text-foreground placeholder:text-muted-foreground p-4 resize-none mb-1"
           placeholder="Ask Hanzo anything..."
           onChange={() => {}}
           onKeyDown={() => {}}
@@ -22,7 +22,7 @@ export const AskAi = () => {
             <Button
               size="iconXs"
               variant="outline"
-              className="!border-neutral-600 !text-neutral-400 !hover:!border-neutral-500 hover:!text-neutral-300"
+              className="!border-border !text-muted-foreground !hover:!border-foreground/30 hover:!text-foreground"
             >
               <TiUserAdd className="size-4" />
             </Button>

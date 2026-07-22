@@ -40,12 +40,12 @@ export default function SmartRoutingCard() {
   const { enabled: on, toggleDisabled } = resolveSmartRouting(localPref, defaults);
 
   return (
-    <Card className="bg-[#1a1a1a] border-white/10 mb-6">
+    <Card className="bg-card border-border mb-6">
       <CardHeader>
         <div className="flex items-start justify-between gap-4">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-white/60" />
+              <Zap className="w-4 h-4 text-muted-foreground" />
               Smart routing
             </CardTitle>
             <CardDescription>
@@ -62,26 +62,26 @@ export default function SmartRoutingCard() {
             className={classNames(
               "mt-1 shrink-0 rounded-full min-w-10 w-10 h-6 flex items-center p-1 transition-all duration-200",
               toggleDisabled ? "cursor-not-allowed opacity-40" : "cursor-pointer",
-              on ? "bg-white" : "bg-neutral-700"
+              on ? "bg-primary" : "bg-muted"
             )}
           >
             <span
               className={classNames(
                 "w-4 h-4 rounded-full shadow-md transition-all duration-200",
-                on ? "translate-x-4 bg-black" : "bg-neutral-200"
+                on ? "translate-x-4 bg-primary-foreground" : "bg-foreground"
               )}
             />
           </button>
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
-        <p className="text-sm text-white/70">
+        <p className="text-sm text-foreground">
           Each request goes to the best, cheapest model capable of your workload.
           You&apos;re billed as what actually served you — up to 90% lower spend,
           workload-dependent. Pick a specific model in the builder to override
           routing for that request.
         </p>
-        <p className="text-sm text-white/50">
+        <p className="text-sm text-muted-foreground">
           {toggleDisabled
             ? "Disabled for your organization."
             : on
@@ -92,7 +92,7 @@ export default function SmartRoutingCard() {
           href={ROUTING_DOCS_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-sm text-white/80 hover:text-white underline underline-offset-4"
+          className="inline-flex items-center gap-1.5 text-sm text-foreground/80 hover:text-foreground underline underline-offset-4"
         >
           How routing works
           <ExternalLink className="w-3.5 h-3.5" />

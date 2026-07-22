@@ -23,9 +23,9 @@ const partners = [
 
 export default function LogoWall() {
   return (
-    <section className="relative border-t border-white/[0.06] px-4 py-16 md:px-8 md:py-20">
+    <section className="relative border-t border-border px-4 py-16 md:px-8 md:py-20">
       <div className="mx-auto max-w-6xl">
-        <Reveal as="p" className="text-center font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">
+        <Reveal as="p" className="text-center font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
           Backed by Techstars · Built on world-class infrastructure
         </Reveal>
 
@@ -36,7 +36,7 @@ export default function LogoWall() {
               <img
                 src={p.src}
                 alt={p.alt}
-                className="h-6 w-auto max-w-full object-contain opacity-45 transition-opacity duration-200 [filter:brightness(0)_invert(1)] hover:opacity-90 md:h-7"
+                className="h-6 w-auto max-w-full object-contain opacity-45 transition-opacity duration-200 [filter:brightness(0)] dark:[filter:brightness(0)_invert(1)] hover:opacity-90 md:h-7"
               />
             </Reveal>
           ))}

@@ -36,14 +36,14 @@ function WalletInner() {
 
   if (isConnected && address) {
     return (
-      <div className="flex items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-2">
+      <div className="flex items-center gap-2 rounded-lg border border-border bg-muted px-3 py-2">
         <span
           className="size-1.5 shrink-0 rounded-full bg-green-500 shadow-[0_0_6px_0] shadow-green-500/60"
           aria-hidden
         />
         <span className="flex min-w-0 flex-1 flex-col leading-tight">
-          <span className="text-[11px] font-medium text-white/40">Wallet</span>
-          <span className="truncate font-mono text-xs text-white/85">
+          <span className="text-[11px] font-medium text-muted-foreground">Wallet</span>
+          <span className="truncate font-mono text-xs text-foreground">
             {shortAddress(address)}
           </span>
         </span>
@@ -52,7 +52,7 @@ function WalletInner() {
           onClick={() => disconnect()}
           title="Disconnect wallet"
           aria-label="Disconnect wallet"
-          className="grid size-7 shrink-0 place-items-center rounded-md text-white/40 transition-colors duration-150 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+          className="grid size-7 shrink-0 place-items-center rounded-md text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
         >
           <LogOut className="size-3.5" />
         </button>
@@ -65,12 +65,12 @@ function WalletInner() {
       type="button"
       onClick={() => injectedConnector && connect({ connector: injectedConnector })}
       disabled={isPending || !injectedConnector}
-      className="flex w-full items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-2 text-sm text-white/80 transition-colors duration-150 hover:border-white/15 hover:bg-white/[0.06] hover:text-white disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+      className="flex w-full items-center gap-2 rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground transition-colors duration-150 hover:border-foreground/20 hover:bg-accent hover:text-foreground disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
     >
       {isPending ? (
-        <Loader2 className="size-4 shrink-0 animate-spin text-white/40 motion-reduce:animate-none" />
+        <Loader2 className="size-4 shrink-0 animate-spin text-muted-foreground motion-reduce:animate-none" />
       ) : (
-        <Wallet className="size-4 shrink-0 text-white/40" />
+        <Wallet className="size-4 shrink-0 text-muted-foreground" />
       )}
       <span className="flex-1 text-left">
         {isPending ? "Connecting…" : "Connect wallet"}

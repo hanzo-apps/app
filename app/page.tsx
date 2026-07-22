@@ -148,10 +148,10 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="landing-root relative min-h-screen overflow-x-hidden bg-black text-white">
+    <div className="landing-root relative min-h-screen overflow-x-hidden bg-background text-foreground">
       {/* Monochrome hero glow — single soft white radial, zero hue. */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute left-1/2 top-[-12%] h-[560px] w-[900px] -translate-x-1/2 rounded-full bg-white/[0.06] blur-[130px]" />
+        <div className="absolute left-1/2 top-[-12%] h-[560px] w-[900px] -translate-x-1/2 rounded-full bg-foreground/[0.06] blur-[130px]" />
       </div>
 
       <Header />
@@ -161,9 +161,9 @@ export default function LandingPage() {
         <section className="px-4 pb-14 pt-16 md:px-8 md:pb-20 md:pt-24">
           <div className="mx-auto max-w-3xl text-center">
             <Reveal>
-              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-white/70" />
-                <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-white/55">
+              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-foreground/[0.03] px-3 py-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-foreground/70" />
+                <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-foreground/55">
                   Sites, wired to real data &amp; AI
                 </span>
               </div>
@@ -178,7 +178,7 @@ export default function LandingPage() {
             </Reveal>
 
             <Reveal delay={120}>
-              <p className="mx-auto mt-5 max-w-xl text-pretty text-base text-white/55 md:text-lg">
+              <p className="mx-auto mt-5 max-w-xl text-pretty text-base text-foreground/55 md:text-lg">
                 One prompt becomes a live app on Hanzo Cloud — UI, database,
                 auth, and 400+ AI models, wired in and deployed.
               </p>
@@ -199,10 +199,10 @@ export default function LandingPage() {
                     into the builder, seeded from that template. */}
                 {starterTemplates.length > 0 && (
                   <div className="mt-6">
-                    <div className="mb-3 flex items-center justify-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.12em] text-white/50">
-                      <span className="h-px w-6 bg-white/10" />
+                    <div className="mb-3 flex items-center justify-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/50">
+                      <span className="h-px w-6 bg-border" />
                       or start from a template
-                      <span className="h-px w-6 bg-white/10" />
+                      <span className="h-px w-6 bg-border" />
                     </div>
                     <div className="mx-auto lg:max-w-4xl">
                       <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
@@ -211,9 +211,9 @@ export default function LandingPage() {
                             key={t.slug}
                             type="button"
                             onClick={() => startFromTemplate(t)}
-                            className="group overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] text-left transition-all hover:border-white/25 hover:bg-white/[0.04]"
+                            className="group overflow-hidden rounded-xl border border-border bg-foreground/[0.02] text-left transition-all hover:border-foreground/25 hover:bg-foreground/[0.04]"
                           >
-                            <div className="relative aspect-[16/10] overflow-hidden bg-white/[0.02]">
+                            <div className="relative aspect-[16/10] overflow-hidden bg-foreground/[0.02]">
                               <TemplateThumb
                                 name={t.displayName}
                                 category={t.category}
@@ -222,10 +222,10 @@ export default function LandingPage() {
                               />
                             </div>
                             <div className="px-2.5 py-2">
-                              <p className="truncate text-xs font-medium text-white/80">
+                              <p className="truncate text-xs font-medium text-foreground/80">
                                 {t.displayName}
                               </p>
-                              <p className="truncate text-[11px] text-white/55">
+                              <p className="truncate text-[11px] text-foreground/55">
                                 {t.category}
                               </p>
                             </div>
@@ -236,7 +236,7 @@ export default function LandingPage() {
                     <div className="mt-3 text-center">
                       <Link
                         href="/gallery"
-                        className="text-xs text-white/40 transition-colors hover:text-white"
+                        className="text-xs text-foreground/40 transition-colors hover:text-foreground"
                       >
                         Browse all templates →
                       </Link>
@@ -244,14 +244,14 @@ export default function LandingPage() {
                   </div>
                 )}
 
-                <div className="mt-6 flex flex-col items-center gap-2 text-xs text-white/35">
+                <div className="mt-6 flex flex-col items-center gap-2 text-xs text-foreground/35">
                   <p>
                     Every app ships on Hanzo Cloud with database, auth, and AI
                     built in.
                   </p>
                   <Link
                     href="/new"
-                    className="inline-flex items-center gap-1.5 text-white/45 transition-colors hover:text-white"
+                    className="inline-flex items-center gap-1.5 text-foreground/45 transition-colors hover:text-foreground"
                   >
                     <Github className="h-3.5 w-3.5" />
                     or import an existing GitHub repo
@@ -276,20 +276,20 @@ export default function LandingPage() {
 
         {/* ── Continue building (logged-in) ── */}
         {user && projects.length > 0 && (
-          <section className="border-t border-white/[0.06] px-4 py-20 md:px-8 md:py-24">
+          <section className="border-t border-border px-4 py-20 md:px-8 md:py-24">
             <div className="mx-auto max-w-6xl">
               <div className="mb-10 flex items-end justify-between">
                 <div>
                   <h2 className="text-2xl font-medium tracking-tight md:text-3xl">
                     Continue building
                   </h2>
-                  <p className="mt-1.5 text-sm text-white/50">
+                  <p className="mt-1.5 text-sm text-foreground/50">
                     Jump back into your recent projects.
                   </p>
                 </div>
                 <Link
                   href="/projects"
-                  className="text-sm text-white/50 transition-colors hover:text-white"
+                  className="text-sm text-foreground/50 transition-colors hover:text-foreground"
                 >
                   View all →
                 </Link>
@@ -300,18 +300,18 @@ export default function LandingPage() {
                   <button
                     key={project.slug}
                     onClick={() => router.push(builderLink(project.slug, project.org))}
-                    className="group overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] text-left transition-all duration-200 hover:border-white/20 hover:bg-white/[0.03]"
+                    className="group overflow-hidden rounded-2xl border border-border bg-foreground/[0.02] text-left transition-all duration-200 hover:border-foreground/20 hover:bg-foreground/[0.03]"
                   >
                     <ProjectThumb name={project.name} liveUrl={project.liveUrl} />
                     <div className="p-5">
-                      <h3 className="text-sm font-medium text-white md:text-base">
+                      <h3 className="text-sm font-medium text-foreground md:text-base">
                         {project.name}
                       </h3>
-                      <p className="mt-1 line-clamp-2 text-xs text-white/50 md:text-sm">
+                      <p className="mt-1 line-clamp-2 text-xs text-foreground/50 md:text-sm">
                         {project.status === "live" ? "Live" : "Draft"}
                       </p>
                       {project.updatedAtIso && (
-                        <div className="mt-3 font-mono text-[11px] text-white/30">
+                        <div className="mt-3 font-mono text-[11px] text-foreground/30">
                           {new Date(project.updatedAtIso).toLocaleDateString()}
                         </div>
                       )}
@@ -324,13 +324,13 @@ export default function LandingPage() {
         )}
 
         {/* ── Final CTA — the SAME composer as the hero, ready to type ── */}
-        <section className="border-t border-white/[0.06] px-4 py-24 md:px-8 md:py-32">
+        <section className="border-t border-border px-4 py-24 md:px-8 md:py-32">
           <Reveal className="mx-auto max-w-2xl">
             <div className="text-center">
               <h2 className="text-3xl font-medium tracking-tight md:text-5xl">
                 Ship your first app today.
               </h2>
-              <p className="mx-auto mt-4 max-w-md text-base text-white/55 md:text-lg">
+              <p className="mx-auto mt-4 max-w-md text-base text-foreground/55 md:text-lg">
                 Start with a sentence. Deploy to Hanzo Cloud in one click.
               </p>
             </div>

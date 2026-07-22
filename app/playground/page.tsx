@@ -212,7 +212,7 @@ export default function PlaygroundPage() {
       <div className="space-y-2">
         <Label>Model</Label>
         <Select value={config.model} onValueChange={(value: string) => setConfig({ ...config, model: value })}>
-          <SelectTrigger className="bg-neutral-900 border-neutral-700">
+          <SelectTrigger className="bg-card border-border">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -231,7 +231,7 @@ export default function PlaygroundPage() {
       <div className="space-y-2">
         <div className="flex justify-between">
           <Label>Temperature</Label>
-          <span className="text-xs text-neutral-500">{config.temperature}</span>
+          <span className="text-xs text-muted-foreground">{config.temperature}</span>
         </div>
         <Slider
           value={[config.temperature]}
@@ -246,7 +246,7 @@ export default function PlaygroundPage() {
       <div className="space-y-2">
         <div className="flex justify-between">
           <Label>Max Tokens</Label>
-          <span className="text-xs text-neutral-500">{config.maxTokens}</span>
+          <span className="text-xs text-muted-foreground">{config.maxTokens}</span>
         </div>
         <Slider
           value={[config.maxTokens]}
@@ -261,7 +261,7 @@ export default function PlaygroundPage() {
       <div className="space-y-2">
         <div className="flex justify-between">
           <Label>Top P</Label>
-          <span className="text-xs text-neutral-500">{config.topP}</span>
+          <span className="text-xs text-muted-foreground">{config.topP}</span>
         </div>
         <Slider
           value={[config.topP]}
@@ -278,7 +278,7 @@ export default function PlaygroundPage() {
         <Textarea
           value={config.systemPrompt}
           onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setConfig({ ...config, systemPrompt: e.target.value })}
-          className="bg-neutral-900 border-neutral-700 text-white min-h-[80px]"
+          className="bg-card border-border text-foreground min-h-[80px]"
           placeholder="Enter system prompt..."
         />
       </div>
@@ -286,9 +286,9 @@ export default function PlaygroundPage() {
   );
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-neutral-800 px-6 py-4">
+      <header className="border-b border-border px-6 py-4">
         <div className="container mx-auto">
           <div className="flex flex-wrap items-center justify-between gap-y-3">
             <div className="flex items-center gap-4">
@@ -301,13 +301,13 @@ export default function PlaygroundPage() {
                 <ArrowLeft className="w-4 h-4" />
                 Back
               </Button>
-              <h1 className="text-2xl font-medium text-white">Playground</h1>
+              <h1 className="text-2xl font-medium text-foreground">Playground</h1>
               <Badge variant="outline">Compare Models</Badge>
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
               <Select value={selectedPreset} onValueChange={applyPreset}>
-                <SelectTrigger className="w-full sm:w-[180px] bg-neutral-900 border-neutral-700">
+                <SelectTrigger className="w-full sm:w-[180px] bg-card border-border">
                   <SelectValue placeholder="Select preset" />
                 </SelectTrigger>
                 <SelectContent>
@@ -315,7 +315,7 @@ export default function PlaygroundPage() {
                     <SelectItem key={preset.value} value={preset.value}>
                       <div>
                         <p className="font-medium">{preset.label}</p>
-                        <p className="text-xs text-neutral-500">{preset.description}</p>
+                        <p className="text-xs text-muted-foreground">{preset.description}</p>
                       </div>
                     </SelectItem>
                   ))}
@@ -350,7 +350,7 @@ export default function PlaygroundPage() {
         <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-6">
           {/* Left Panel - Prompt Input */}
           <div className="col-span-full md:col-span-5 lg:col-span-3">
-            <Card className="bg-neutral-900 border-neutral-800">
+            <Card className="bg-card border-border">
               <CardHeader>
                 <CardTitle>Prompt</CardTitle>
                 <CardDescription>Enter your prompt and configure models</CardDescription>
@@ -384,9 +384,9 @@ export default function PlaygroundPage() {
                     value={prompt}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPrompt(e.target.value)}
                     placeholder="Enter your prompt here..."
-                    className="bg-neutral-800 border-neutral-700 text-white min-h-[150px]"
+                    className="bg-muted border-border text-foreground min-h-[150px]"
                   />
-                  <div className="flex justify-between text-xs text-neutral-500">
+                  <div className="flex justify-between text-xs text-muted-foreground">
                     <span>{prompt.length} characters</span>
                     <span>~{Math.ceil(prompt.length / 4)} tokens</span>
                   </div>
@@ -412,7 +412,7 @@ export default function PlaygroundPage() {
 
                 {/* Recent Results */}
                 {results.length > 0 && (
-                  <div className="space-y-2 pt-4 border-t border-neutral-800">
+                  <div className="space-y-2 pt-4 border-t border-border">
                     <Label>Recent Comparisons</Label>
                     <ScrollArea className="h-[200px]">
                       <div className="space-y-2">
@@ -424,13 +424,13 @@ export default function PlaygroundPage() {
                               "w-full text-left p-2 rounded-lg transition-colors",
                               activeResult?.id === result.id
                                 ? "bg-purple-500/20 border border-purple-500/30"
-                                : "bg-neutral-800 hover:bg-neutral-700"
+                                : "bg-muted hover:bg-accent"
                             )}
                           >
-                            <p className="text-xs text-neutral-400 mb-1">
+                            <p className="text-xs text-muted-foreground mb-1">
                               {result.timestamp.toLocaleTimeString()}
                             </p>
-                            <p className="text-sm text-white truncate">
+                            <p className="text-sm text-foreground truncate">
                               {result.prompt}
                             </p>
                             <div className="flex gap-2 mt-1">
@@ -454,11 +454,11 @@ export default function PlaygroundPage() {
           <div className="col-span-full md:col-span-7 lg:col-span-9">
             <div className={cn("grid gap-4", splitView ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1")}>
               {/* Left Model */}
-              <Card className="bg-neutral-900 border-neutral-800">
+              <Card className="bg-card border-border">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-neutral-500 rounded-full" />
+                      <div className="w-2 h-2 bg-muted-foreground rounded-full" />
                       <CardTitle className="text-lg">{leftConfig.model}</CardTitle>
                     </div>
                     <DropdownMenu>
@@ -467,7 +467,7 @@ export default function PlaygroundPage() {
                           <Settings className="w-4 h-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-80 bg-neutral-900 border-neutral-800">
+                      <DropdownMenuContent align="end" className="w-80 bg-card border-border">
                         <div className="p-4">
                           <ModelConfigPanel config={leftConfig} setConfig={setLeftConfig} side="left" />
                         </div>
@@ -480,29 +480,29 @@ export default function PlaygroundPage() {
                     <div className="space-y-4">
                       <ScrollArea className="h-[400px]">
                         <div className="prose prose-invert max-w-none">
-                          <p className="whitespace-pre-wrap text-sm text-neutral-300">
+                          <p className="whitespace-pre-wrap text-sm text-muted-foreground">
                             {activeResult.models[0]?.response || "No response"}
                           </p>
                         </div>
                       </ScrollArea>
 
                       {/* Metrics */}
-                      <div className="flex items-center gap-4 pt-4 border-t border-neutral-800">
+                      <div className="flex items-center gap-4 pt-4 border-t border-border">
                         <div className="flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-neutral-500" />
-                          <span className="text-xs text-neutral-400">
+                          <Clock className="w-3 h-3 text-muted-foreground" />
+                          <span className="text-xs text-muted-foreground">
                             {activeResult.models[0]?.latency.toFixed(0)}ms
                           </span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <Hash className="w-3 h-3 text-neutral-500" />
-                          <span className="text-xs text-neutral-400">
+                          <Hash className="w-3 h-3 text-muted-foreground" />
+                          <span className="text-xs text-muted-foreground">
                             {activeResult.models[0]?.tokens} tokens
                           </span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <DollarSign className="w-3 h-3 text-neutral-500" />
-                          <span className="text-xs text-neutral-400">
+                          <DollarSign className="w-3 h-3 text-muted-foreground" />
+                          <span className="text-xs text-muted-foreground">
                             ${activeResult.models[0]?.cost.toFixed(4)}
                           </span>
                         </div>
@@ -527,8 +527,8 @@ export default function PlaygroundPage() {
                   ) : (
                     <div className="h-[400px] flex items-center justify-center">
                       <div className="text-center">
-                        <Sparkles className="w-12 h-12 text-neutral-700 mx-auto mb-4" />
-                        <p className="text-neutral-500">Generate a response to see output</p>
+                        <Sparkles className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                        <p className="text-muted-foreground">Generate a response to see output</p>
                       </div>
                     </div>
                   )}
@@ -537,11 +537,11 @@ export default function PlaygroundPage() {
 
               {/* Right Model (if split view) */}
               {splitView && (
-                <Card className="bg-neutral-900 border-neutral-800">
+                <Card className="bg-card border-border">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-neutral-500 rounded-full" />
+                        <div className="w-2 h-2 bg-muted-foreground rounded-full" />
                         <CardTitle className="text-lg">{rightConfig.model}</CardTitle>
                       </div>
                       <DropdownMenu>
@@ -550,7 +550,7 @@ export default function PlaygroundPage() {
                             <Settings className="w-4 h-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-80 bg-neutral-900 border-neutral-800">
+                        <DropdownMenuContent align="end" className="w-80 bg-card border-border">
                           <div className="p-4">
                             <ModelConfigPanel config={rightConfig} setConfig={setRightConfig} side="right" />
                           </div>
@@ -563,29 +563,29 @@ export default function PlaygroundPage() {
                       <div className="space-y-4">
                         <ScrollArea className="h-[400px]">
                           <div className="prose prose-invert max-w-none">
-                            <p className="whitespace-pre-wrap text-sm text-neutral-300">
+                            <p className="whitespace-pre-wrap text-sm text-muted-foreground">
                               {activeResult.models[1].response}
                             </p>
                           </div>
                         </ScrollArea>
 
                         {/* Metrics */}
-                        <div className="flex items-center gap-4 pt-4 border-t border-neutral-800">
+                        <div className="flex items-center gap-4 pt-4 border-t border-border">
                           <div className="flex items-center gap-1">
-                            <Clock className="w-3 h-3 text-neutral-500" />
-                            <span className="text-xs text-neutral-400">
+                            <Clock className="w-3 h-3 text-muted-foreground" />
+                            <span className="text-xs text-muted-foreground">
                               {activeResult.models[1].latency.toFixed(0)}ms
                             </span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <Hash className="w-3 h-3 text-neutral-500" />
-                            <span className="text-xs text-neutral-400">
+                            <Hash className="w-3 h-3 text-muted-foreground" />
+                            <span className="text-xs text-muted-foreground">
                               {activeResult.models[1].tokens} tokens
                             </span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <DollarSign className="w-3 h-3 text-neutral-500" />
-                            <span className="text-xs text-neutral-400">
+                            <DollarSign className="w-3 h-3 text-muted-foreground" />
+                            <span className="text-xs text-muted-foreground">
                               ${activeResult.models[1].cost.toFixed(4)}
                             </span>
                           </div>
@@ -610,8 +610,8 @@ export default function PlaygroundPage() {
                     ) : (
                       <div className="h-[400px] flex items-center justify-center">
                         <div className="text-center">
-                          <Sparkles className="w-12 h-12 text-neutral-700 mx-auto mb-4" />
-                          <p className="text-neutral-500">Generate a response to see output</p>
+                          <Sparkles className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                          <p className="text-muted-foreground">Generate a response to see output</p>
                         </div>
                       </div>
                     )}
@@ -622,19 +622,19 @@ export default function PlaygroundPage() {
 
             {/* Comparison Stats */}
             {activeResult && splitView && activeResult.models.length > 1 && (
-              <Card className="mt-4 bg-neutral-900 border-neutral-800">
+              <Card className="mt-4 bg-card border-border">
                 <CardHeader>
                   <CardTitle>Comparison Analysis</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-3 gap-4">
                     <div>
-                      <p className="text-sm text-neutral-400 mb-2">Speed Comparison</p>
+                      <p className="text-sm text-muted-foreground mb-2">Speed Comparison</p>
                       <div className="space-y-2">
                         {activeResult.models.map(model => (
                           <div key={model.model} className="flex items-center justify-between">
-                            <span className="text-xs text-neutral-500">{model.model}</span>
-                            <span className="text-sm font-medium text-white">
+                            <span className="text-xs text-muted-foreground">{model.model}</span>
+                            <span className="text-sm font-medium text-foreground">
                               {model.latency.toFixed(0)}ms
                             </span>
                           </div>
@@ -652,12 +652,12 @@ export default function PlaygroundPage() {
                     </div>
 
                     <div>
-                      <p className="text-sm text-neutral-400 mb-2">Token Usage</p>
+                      <p className="text-sm text-muted-foreground mb-2">Token Usage</p>
                       <div className="space-y-2">
                         {activeResult.models.map(model => (
                           <div key={model.model} className="flex items-center justify-between">
-                            <span className="text-xs text-neutral-500">{model.model}</span>
-                            <span className="text-sm font-medium text-white">
+                            <span className="text-xs text-muted-foreground">{model.model}</span>
+                            <span className="text-sm font-medium text-foreground">
                               {model.tokens}
                             </span>
                           </div>
@@ -666,12 +666,12 @@ export default function PlaygroundPage() {
                     </div>
 
                     <div>
-                      <p className="text-sm text-neutral-400 mb-2">Cost Analysis</p>
+                      <p className="text-sm text-muted-foreground mb-2">Cost Analysis</p>
                       <div className="space-y-2">
                         {activeResult.models.map(model => (
                           <div key={model.model} className="flex items-center justify-between">
-                            <span className="text-xs text-neutral-500">{model.model}</span>
-                            <span className="text-sm font-medium text-white">
+                            <span className="text-xs text-muted-foreground">{model.model}</span>
+                            <span className="text-sm font-medium text-foreground">
                               ${model.cost.toFixed(4)}
                             </span>
                           </div>
