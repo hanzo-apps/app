@@ -10,6 +10,7 @@ import {
 } from "@hanzo/ui";
 import { Button } from "@hanzo/ui";
 import { ExternalLink, AlertTriangle } from "lucide-react";
+import { SITE_URL } from "@/lib/site";
 
 interface IframeWarningModalProps {
   isOpen: boolean;
@@ -21,7 +22,7 @@ export default function IframeWarningModal({
 }: // onOpenChange,
 IframeWarningModalProps) {
   const handleVisitSite = () => {
-    window.open("https://hanzo.build", "_blank");
+    window.open(SITE_URL, "_blank");
   };
 
   return (
