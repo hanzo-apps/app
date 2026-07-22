@@ -214,7 +214,6 @@ export default function DevPage() {
     }
   }, [repoUrl, action, seedPrompt]);
 
-<<<<<<< HEAD
   // Edit-mode template: BUILD the template's ONE landing page. Gallery templates
   // are full running apps (Next.js, multi-page), NOT fetchable single-page HTML —
   // the old path loaded a dead SCREENSHOT (and non-gallery slugs fell back to a
@@ -226,29 +225,9 @@ export default function DevPage() {
   // template edit; falls back to a slug-derived brief when the catalog is silent.
   useEffect(() => {
     if (seedPrompt.trim()) return; // a seeded fork already auto-generates
-=======
-  // Edit-mode template: LOAD the template's real starting app into the preview
-  // and GREET — never generate. This is the fix for the doomed no-op generation
-  // (the seed told the model to change nothing → "didn't return a usable page"
-  // + empty preview). The template's HTML populates the preview immediately; an
-  // assistant greeting invites the first change; generation fires only when the
-  // user actually asks. Applies to ANY template edit (gallery/hanzo-apps/git),
-  // not just gallery. Falls back to the default page when there's no fetchable
-  // preview (never dead-ends).
-  useEffect(() => {
-    if (seedPrompt.trim()) return; // a seeded fork auto-generates instead
->>>>>>> chore/comment-cleanup-projects
     if (action !== "edit" || !repoData?.name || templateEditDone) return;
     let alive = true;
-    // Drop any stale build seed so AppEditor's mount can't auto-generate — a
-    // template edit greets, it does not build.
-    try {
-      localStorage.removeItem("initialPrompt");
-    } catch {
-      /* storage unavailable */
-    }
     (async () => {
-<<<<<<< HEAD
       const slug = repoData.name as string;
       let title = slug.replace(/[-/]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
       let brief = "";
@@ -287,27 +266,6 @@ export default function DevPage() {
         /* window.__initialPrompt is sufficient */
       }
       setTemplateEditDone(true); // lift the "Loading template…" splash → generate
-=======
-      const html = await fetchTemplateHtml(repoData.name);
-      if (!alive) return;
-      if (html) setTemplatePages([{ path: "index.html", html }]);
-      // Resolve the display name (workspace menu) and stage a user-facing
-      // greeting as the FIRST assistant bubble. Set on window BEFORE AppEditor
-      // mounts — the splash below holds the mount until templateEditDone, so
-      // AskAI's greeting effect reliably picks it up (mirrors the seed contract).
-      let title = repoData.name as string;
-      try {
-        const meta = await resolveTemplateSeedMeta(repoData.name);
-        if (alive && meta?.displayName) {
-          title = meta.displayName;
-          (window as any).__projectName = meta.displayName;
-        }
-      } catch {}
-      (window as any).__assistantGreeting =
-        `You're editing the ${title} template — it's loaded and running in the preview. ` +
-        `Tell me what you'd like to change and I'll build it.`;
-      if (alive) setTemplateEditDone(true);
->>>>>>> chore/comment-cleanup-projects
     })();
     return () => {
       alive = false;
