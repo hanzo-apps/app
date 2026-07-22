@@ -74,6 +74,15 @@ jobs:
           fi
           echo "version_v=v${version}" >> "$GITHUB_OUTPUT"
           echo "Next release: v${version} (git_max='${git_max:-none}' container_max='${cont_max:-none}')"
+      - name: Stamp package.json with the release version
+        # The sidebar / about-modal / dashboard read `pkg.version`; without this the
+        # image ships whatever version was last hand-committed (was frozen at 1.42.21
+        # while deploys ran ahead). Write the computed release version into the build
+        # context so the shown version always matches the deployed tag.
+        run: |
+          v="${{ steps.ver.outputs.version_v }}"; v="${v#v}"
+          sed -i.bak -E "s/(\"version\"[[:space:]]*:[[:space:]]*\")[^\"]+(\")/\1${v}\2/" package.json && rm -f package.json.bak
+          echo "package.json -> $(grep -m1 '\"version\"' package.json)"
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
