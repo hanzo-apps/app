@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { DataBrowser } from './data-browser';
 import { SchemaViewer } from './schema-viewer';
 import { SqlEditor } from './sql-editor';
 import { FunctionsManager } from './functions-manager';
@@ -9,19 +10,23 @@ import { ServerFunctionsManager } from './server-functions-manager';
 import { SecretsManager } from './secrets-manager';
 import { ScheduledFunctionsManager } from './scheduled-functions-manager';
 import { LogsViewer } from './logs-viewer';
-import { Database, Code2, Terminal, ScrollText, Wrench, Key, Clock } from 'lucide-react';
+import { Database, Code2, Terminal, ScrollText, Wrench, Key, Clock, Table2 } from 'lucide-react';
 
 interface DatabaseManagerProps {
   deploymentId: string;
 }
 
 export function DatabaseManager({ deploymentId }: DatabaseManagerProps) {
-  const [activeTab, setActiveTab] = useState('schema');
+  const [activeTab, setActiveTab] = useState('data');
 
   return (
     <div className="h-full flex flex-col">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-8">
+          <TabsTrigger value="data" className="flex items-center gap-1.5">
+            <Table2 className="h-3.5 w-3.5" />
+            Data
+          </TabsTrigger>
           <TabsTrigger value="schema" className="flex items-center gap-1.5">
             <Database className="h-3.5 w-3.5" />
             Schema
@@ -53,6 +58,10 @@ export function DatabaseManager({ deploymentId }: DatabaseManagerProps) {
         </TabsList>
 
         <div className="flex-1 overflow-hidden mt-4">
+          <TabsContent value="data" className="h-full m-0">
+            <DataBrowser deploymentId={deploymentId} />
+          </TabsContent>
+
           <TabsContent value="schema" className="h-full m-0">
             <SchemaViewer deploymentId={deploymentId} />
           </TabsContent>
@@ -86,6 +95,7 @@ export function DatabaseManager({ deploymentId }: DatabaseManagerProps) {
   );
 }
 
+export { DataBrowser } from './data-browser';
 export { SchemaViewer } from './schema-viewer';
 export { SqlEditor } from './sql-editor';
 export { FunctionsManager } from './functions-manager';
