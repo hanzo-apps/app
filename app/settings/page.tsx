@@ -2,17 +2,30 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import { Key, Bell, Palette, Shield, CreditCard } from "lucide-react";
 import { Button } from "@hanzo/ui";
 import { useUser } from "@/hooks/useUser";
 import { AppShell } from "@/components/app-shell";
 import { HanzoLogo } from "@/components/HanzoLogo";
+import { configManager } from "@/lib/config/storage";
+import { useModels } from "@/lib/hooks/use-models";
 
 export default function SettingsPage() {
   // All hooks must be called unconditionally before any conditional returns
   const { user, loading } = useUser();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("general");
+  // Theme is owned by the ONE controller (next-themes); this select drives it
+  // directly — same source the in-app settings panel + sonner read.
+  const { theme, setTheme } = useTheme();
+  const { models } = useModels();
+  const [mounted, setMounted] = useState(false);
+  const [defaultModel, setDefaultModelState] = useState("");
+  useEffect(() => {
+    setMounted(true);
+    setDefaultModelState(configManager.getDefaultModel());
+  }, []);
 
   const tabs = [
     { id: "general", label: "General", icon: <Palette className="w-4 h-4 shrink-0" /> },
@@ -87,36 +100,43 @@ export default function SettingsPage() {
 
                   <div className="space-y-4 max-w-md">
                     <div>
-                      <label className="block text-sm font-medium text-muted-foreground mb-2">
+                      <label htmlFor="theme-select" className="block text-sm font-medium text-muted-foreground mb-2">
                         Theme
                       </label>
-                      <select disabled className="w-full bg-muted text-foreground border border-border rounded-lg px-4 py-2 opacity-70 cursor-not-allowed">
-                        <option value="dark">Dark</option>
+                      <select
+                        id="theme-select"
+                        value={mounted ? (theme ?? "system") : "system"}
+                        onChange={(e) => setTheme(e.target.value)}
+                        className="w-full bg-muted text-foreground border border-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-ring"
+                      >
                         <option value="light">Light</option>
+                        <option value="dark">Dark</option>
                         <option value="system">System</option>
                       </select>
+                      <p className="mt-1.5 text-xs text-muted-foreground">Applies instantly across the app.</p>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-muted-foreground mb-2">
-                        Language
-                      </label>
-                      <select disabled className="w-full bg-muted text-foreground border border-border rounded-lg px-4 py-2 opacity-70 cursor-not-allowed">
-                        <option value="en">English</option>
-                        <option value="es">Spanish</option>
-                        <option value="fr">French</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-muted-foreground mb-2">
+                      <label htmlFor="model-select" className="block text-sm font-medium text-muted-foreground mb-2">
                         Default AI Model
                       </label>
-                      <select disabled className="w-full bg-muted text-foreground border border-border rounded-lg px-4 py-2 opacity-70 cursor-not-allowed">
-                        <option value="zen5-coder">Zen 5 Coder</option>
-                        <option value="zen5-pro">Zen 5 Pro</option>
-                        <option value="zen3-omni">Zen 3 Omni</option>
+                      <select
+                        id="model-select"
+                        value={defaultModel}
+                        onChange={(e) => {
+                          setDefaultModelState(e.target.value);
+                          configManager.setDefaultModel(e.target.value);
+                        }}
+                        className="w-full bg-muted text-foreground border border-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-ring"
+                      >
+                        {models.map((m) => (
+                          <option key={m.value} value={m.value}>{m.label}</option>
+                        ))}
                       </select>
+                      <p className="mt-1.5 text-xs text-muted-foreground">
+                        Used when you don&apos;t pick a model in the composer.{" "}
+                        <span className="font-medium text-foreground">Enso</span> auto-routes to the best model per request.
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -130,7 +150,7 @@ export default function SettingsPage() {
                     <div className="bg-muted/50 rounded-lg p-4 border border-border">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-sm font-medium text-muted-foreground">OpenAI API Key</span>
-                        <Button size="sm" variant="outline">Configure</Button>
+                        <a href="https://console.hanzo.ai/ai-accounts" target="_blank" rel="noopener noreferrer"><Button size="sm" variant="outline">Configure</Button></a>
                       </div>
                       <p className="text-xs text-muted-foreground">Connect your OpenAI API key for GPT models</p>
                     </div>
@@ -138,7 +158,7 @@ export default function SettingsPage() {
                     <div className="bg-muted/50 rounded-lg p-4 border border-border">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-sm font-medium text-muted-foreground">Anthropic API Key</span>
-                        <Button size="sm" variant="outline">Configure</Button>
+                        <a href="https://console.hanzo.ai/ai-accounts" target="_blank" rel="noopener noreferrer"><Button size="sm" variant="outline">Configure</Button></a>
                       </div>
                       <p className="text-xs text-muted-foreground">Connect your Anthropic API key for Claude models</p>
                     </div>
@@ -146,7 +166,7 @@ export default function SettingsPage() {
                     <div className="bg-muted/50 rounded-lg p-4 border border-border">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-sm font-medium text-muted-foreground">Google AI API Key</span>
-                        <Button size="sm" variant="outline">Configure</Button>
+                        <a href="https://console.hanzo.ai/ai-accounts" target="_blank" rel="noopener noreferrer"><Button size="sm" variant="outline">Configure</Button></a>
                       </div>
                       <p className="text-xs text-muted-foreground">Connect your Google AI API key for Gemini models</p>
                     </div>
@@ -173,19 +193,30 @@ export default function SettingsPage() {
                 <div className="space-y-6">
                   <h2 className="text-xl font-medium text-foreground mb-4">Security Settings</h2>
 
+                  {/* Password, MFA, sessions and account deletion are owned by
+                      IAM (hanzo.id / Casdoor account page) — the ONE identity
+                      source. Link out rather than re-implement auth here. */}
                   <div className="space-y-4">
-                    <Button variant="outline" className="w-full justify-start">
-                      Change Password
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      Enable Two-Factor Authentication
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      Manage Sessions
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start text-red-500 hover:text-red-400">
-                      Delete Account
-                    </Button>
+                    <a href="https://hanzo.id/account" target="_blank" rel="noopener noreferrer" className="block">
+                      <Button variant="outline" className="w-full justify-start">
+                        Change Password
+                      </Button>
+                    </a>
+                    <a href="https://hanzo.id/account" target="_blank" rel="noopener noreferrer" className="block">
+                      <Button variant="outline" className="w-full justify-start">
+                        Enable Two-Factor Authentication
+                      </Button>
+                    </a>
+                    <a href="https://hanzo.id/account" target="_blank" rel="noopener noreferrer" className="block">
+                      <Button variant="outline" className="w-full justify-start">
+                        Manage Sessions
+                      </Button>
+                    </a>
+                    <a href="https://hanzo.id/account" target="_blank" rel="noopener noreferrer" className="block">
+                      <Button variant="outline" className="w-full justify-start text-red-500 hover:text-red-400">
+                        Delete Account
+                      </Button>
+                    </a>
                   </div>
                 </div>
               )}
