@@ -1,7 +1,7 @@
 /**
- * Pure-Node tar.gz builder (no external deps) for the projectsvc deploy artifact.
+ * Pure-Node tar.gz builder (no external deps) for the projects deploy artifact.
  *
- * The cloud projectsvc `/deploy` endpoint accepts a tar or tar.gz of the BUILT
+ * The cloud projects `/deploy` endpoint accepts a tar or tar.gz of the BUILT
  * site (index.html at the root). We build a minimal, spec-correct ustar archive
  * in memory and gzip it with Node's built-in zlib — so publishing needs no npm
  * `tar` dependency (which isn't a top-level dep in this app).

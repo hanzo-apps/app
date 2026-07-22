@@ -2,17 +2,17 @@
  * Cloud projects client — the ONE client for the org-scoped shared store.
  *
  * Talks to the SAME-ORIGIN `/v1/projects` BFF (app/v1/projects/[[...path]]),
- * which forwards to the cloud projectsvc as the signed-in user. The org is
+ * which forwards to the cloud projects store as the signed-in user. The org is
  * derived server-side from the bearer owner claim, so every record is org-scoped
  * and billed to the right org — and the httpOnly `hanzo_token` is NEVER read by
  * browser JS (the cookie rides the same-origin request; least privilege).
  *
- * Shape mirrors the projectsvc CONTRACT.md exactly (name + slug + framework +
+ * Shape mirrors `clients/projects/CONTRACT.md` exactly (name + slug + framework +
  * status + liveUrl) so hanzo.app and console.hanzo.ai render the SAME records
  * from the SAME store. No fabricated fields (no cpu/memory/region mock).
  */
 
-// --- Types (projectsvc CONTRACT.md) ---
+// --- Types (clients/projects/CONTRACT.md) ---
 
 export type ProjectStatus = 'draft' | 'building' | 'live' | 'error';
 
