@@ -12,7 +12,6 @@ const PROTECTED_PREFIXES = [
   "/billing",
   "/chat",
   "/dev",
-  "/gallery",
   "/connectors",
 ];
 
