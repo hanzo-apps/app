@@ -24,11 +24,16 @@ export type ModelOption = {
 };
 
 // The model the builder opens on when neither storage nor the gateway pick one.
-// zen5-coder (→ glm-5.2 upstream) is the verified-working coding default. Enso is
-// NOT the default: its upstream is anthropic-claude-opus-4.8, which surfaced as an
-// "opus-4.8" error in the builder — off-brand and failing. Keep zen for builds
-// until Enso's upstream is healthy + brand-masked.
-export const DEFAULT_MODEL = "zen5-coder";
+// enso (Enso Pro) is the balanced default: the gateway routes each request to the
+// best-fit model, so an easy edit bills cheap and only a hard one escalates. `enso`
+// is already a build-ladder family and a FALLBACK_MODELS entry, so the picker lists
+// it and resolveModelId keeps it (not a dead id).
+// GATED — do not deploy until cleared: an earlier attempt to default the builder to
+// Enso surfaced a raw "opus-4.8" upstream error, so go-live depends on Enso being
+// served + brand-masked on api.hanzo.ai (ENSO_URL in ai) and on the enso-ultra
+// preservation validation. A code builder may still prefer a coding-tuned default
+// (zen5-coder → glm-5.2) — that is the product call to make at go-live.
+export const DEFAULT_MODEL = "enso";
 
 // The Hanzo gateway (api.hanzo.ai) serves the Zen/Enso ladder + connected
 // providers AND — since DO GenAI funded the proprietary catalog — a CURATED set
