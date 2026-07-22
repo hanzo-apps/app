@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { buildStaticDeployment } from '@/lib/compiler/static-builder';
 import { getSQLiteAdapter } from '@/lib/vfs/adapters/server';
+import MY_TOKEN_KEY from '@/lib/get-cookie-name';
 
 export async function POST(
   request: NextRequest,
@@ -14,8 +15,12 @@ export async function POST(
   try {
     const { id } = await params;
 
+    // Forward the signed-in user's IAM bearer so the builder can read the
+    // org-scoped cloud project (its wired-by-default analytics flag + Base space).
+    const bearer = request.cookies.get(MY_TOKEN_KEY())?.value;
+
     // Build the deployment
-    const result = await buildStaticDeployment(id);
+    const result = await buildStaticDeployment(id, { bearer });
 
     if (!result.success) {
       return NextResponse.json(
