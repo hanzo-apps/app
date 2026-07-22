@@ -116,7 +116,7 @@ export function TemplateThumb({
 
   return (
     <div
-      className={`relative h-full w-full overflow-hidden bg-neutral-950 ${className}`}
+      className={`relative h-full w-full overflow-hidden bg-card ${className}`}
     >
       {/* directional base gradient (grayscale) */}
       <div
@@ -127,7 +127,7 @@ export function TemplateThumb({
       />
       {/* soft light bloom */}
       <div
-        className="absolute h-40 w-40 rounded-full bg-white/[0.07] blur-3xl"
+        className="absolute h-40 w-40 rounded-full bg-foreground/[0.07] blur-3xl"
         style={{ left: `${hx}%`, top: `${hy}%`, transform: "translate(-40%,-40%)" }}
       />
       {/* fine texture */}
@@ -151,18 +151,18 @@ export function TemplateThumb({
       {/* category icon */}
       <div className="absolute inset-0 flex items-center justify-center">
         <Icon
-          className="h-14 w-14 text-white/20"
+          className="h-14 w-14 text-foreground/20"
           strokeWidth={1.1}
           style={{ transform: `rotate(${rot}deg)` }}
         />
       </div>
       {showLabel && category ? (
-        <div className="absolute bottom-2.5 left-3 font-mono text-[10px] uppercase tracking-[0.14em] text-white/45">
+        <div className="absolute bottom-2.5 left-3 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
           {category}
         </div>
       ) : null}
       {/* crisp inner hairline */}
-      <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/[0.05]" />
+      <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-foreground/[0.05]" />
     </div>
   );
 }

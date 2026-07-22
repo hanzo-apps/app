@@ -59,7 +59,7 @@ export default function SaaSLandingPage() {
             <Badge className="mb-4" variant="outline">
               Built with @hanzo/ui
             </Badge>
-            <h1 className="text-5xl md:text-6xl font-medium mb-6 bg-gradient-to-r from-[#171717] to-[#404040] bg-clip-text text-transparent">
+            <h1 className="text-5xl md:text-6xl font-medium mb-6 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
               Build Better Products Faster
             </h1>
             <p className="text-xl text-muted-foreground mb-8">
@@ -100,9 +100,9 @@ export default function SaaSLandingPage() {
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             {features.map((feature, i) => (
-              <Card key={i} className="border-2 hover:border-[#171717] transition-colors">
+              <Card key={i} className="border-2 hover:border-primary transition-colors">
                 <CardHeader>
-                  <div className="w-12 h-12 rounded-lg bg-[#171717]/10 flex items-center justify-center text-[#171717] mb-4">
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-4">
                     {feature.icon}
                   </div>
                   <CardTitle>{feature.title}</CardTitle>
@@ -127,7 +127,7 @@ export default function SaaSLandingPage() {
             {pricing.map((plan) => (
               <Card
                 key={plan.name}
-                className={plan.popular ? "border-[#171717] shadow-lg scale-105" : ""}
+                className={plan.popular ? "border-primary shadow-lg scale-105" : ""}
               >
                 <CardHeader>
                   {plan.popular && (
@@ -144,7 +144,7 @@ export default function SaaSLandingPage() {
                   <ul className="space-y-2">
                     {plan.features.map((feature) => (
                       <li key={feature} className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-[#171717] flex-shrink-0" />
+                        <CheckCircle className="w-4 h-4 text-primary flex-shrink-0" />
                         <span className="text-sm">{feature}</span>
                       </li>
                     ))}
@@ -162,7 +162,7 @@ export default function SaaSLandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-r from-[#171717] to-[#404040] text-white">
+      <section className="py-24 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl font-medium mb-4">Ready to Get Started?</h2>
           <p className="mb-8 opacity-90">

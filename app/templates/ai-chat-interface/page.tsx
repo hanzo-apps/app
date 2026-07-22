@@ -150,8 +150,8 @@ The UI is built entirely with @hanzo/ui primitives like Card, Button, ScrollArea
                 >
                   {message.role === "assistant" && (
                     <Avatar>
-                      <AvatarFallback className="bg-[#171717]/10">
-                        <Bot className="w-5 h-5 text-[#171717]" />
+                      <AvatarFallback className="bg-muted">
+                        <Bot className="w-5 h-5 text-foreground" />
                       </AvatarFallback>
                     </Avatar>
                   )}
@@ -166,7 +166,7 @@ The UI is built entirely with @hanzo/ui primitives like Card, Button, ScrollArea
                       <p className="whitespace-pre-wrap">
                         {message.content}
                         {message.isStreaming && (
-                          <span className="inline-block w-2 h-4 ml-1 bg-[#171717] animate-pulse" />
+                          <span className="inline-block w-2 h-4 ml-1 bg-foreground animate-pulse" />
                         )}
                       </p>
                       <div className="flex items-center gap-2 mt-2">

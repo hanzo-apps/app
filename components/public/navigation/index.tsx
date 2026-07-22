@@ -84,14 +84,14 @@ export default function Navigation() {
       className={classNames(
         "sticky top-0 z-10 transition-all duration-200 backdrop-blur-md",
         {
-          "bg-black/30": isScrolled,
+          "bg-background/30": isScrolled,
         }
       )}
     >
       <nav className="grid grid-cols-2 p-4 max-w-7xl mx-auto px-4 sm:px-6">
         <Link href="/" className="flex items-center gap-2">
-          <HanzoLogo className="w-9 h-9 text-white" />
-          <p className="font-sans text-white text-xl font-medium">Hanzo</p>
+          <HanzoLogo className="w-9 h-9 text-foreground" />
+          <p className="font-sans text-foreground text-xl font-medium">Hanzo</p>
         </Link>
         <ul className="items-center justify-center gap-6 hidden">
           {navigationLinks.map((link) => (
@@ -112,7 +112,7 @@ export default function Navigation() {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-neutral-500 hover:text-primary transition-colors"
+                  className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   {link.name}
                 </a>
@@ -120,7 +120,7 @@ export default function Navigation() {
                 <Link
                   href={link.href}
                   className={classNames(
-                    "text-neutral-500 hover:text-primary transition-colors",
+                    "text-muted-foreground hover:text-primary transition-colors",
                     {
                       "text-primary": hash === link.href,
                     }
@@ -143,7 +143,7 @@ export default function Navigation() {
               }
             )}
           >
-            <div className="size-1 bg-white rounded-full" />
+            <div className="size-1 bg-foreground rounded-full" />
           </div>
         </ul>
         <div className="flex items-center justify-end gap-2">
