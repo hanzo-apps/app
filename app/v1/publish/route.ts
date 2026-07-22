@@ -5,11 +5,7 @@
  *   1. Ensure the org-scoped `/v1/projects` record exists (real name + slug —
  *      never `name: None`). This is the AUTHORITATIVE shared record that
  *      console.hanzo.ai reads from the SAME store.
-<<<<<<< HEAD
  *   2. Deploy the built pages to the cloud projects service (a tar.gz artifact →
-=======
- *   2. Deploy the built pages to the cloud projects store (a tar.gz artifact →
->>>>>>> chore/comment-cleanup-projects
  *      s3.hanzo.ai, org-billed), returning a real liveUrl. Best-effort: if the
  *      cloud deploy backend isn't available in this env, the record still exists
  *      and the caller gets an honest deploy status (never a fabricated success).
@@ -85,11 +81,7 @@ export async function POST(req: NextRequest) {
   const name = (body.name || '').trim();
   const description = (body.description || '').trim().slice(0, 280);
   // Source-repo provenance: the git remote the project was built from. Persisted on
-<<<<<<< HEAD
   // the project record (projects service `repo`) and used to attribute the deploy to the
-=======
-  // the project record (projects `repo` field) and used to attribute the deploy to the
->>>>>>> chore/comment-cleanup-projects
   // OSS author who owns the repo (Hanzo OSS Author program). Bounded; never trusted
   // for control flow.
   const sourceRepo = (body.sourceRepo || '').trim().slice(0, 512);
@@ -149,11 +141,7 @@ export async function POST(req: NextRequest) {
           slug,
           description,
           framework: body.framework || 'static',
-<<<<<<< HEAD
           // projects service expects `repo` as an OBJECT { url, branch } — sending the
-=======
-          // projects expects `repo` as an OBJECT { url, branch } — sending the
->>>>>>> chore/comment-cleanup-projects
           // bare source URL string 400s ("cannot unmarshal string into repo"),
           // which broke Publish for every template-derived project (the template
           // flow stashes sourceRepo). Shape it as the expected object.
@@ -195,11 +183,7 @@ export async function POST(req: NextRequest) {
       if (rel === 'index.html') hasIndex = true;
       entries.push({ name: rel, data: Buffer.from(typeof pg.html === 'string' ? pg.html : '', 'utf8') });
     }
-<<<<<<< HEAD
     // projects service requires index.html at the artifact root.
-=======
-    // projects requires index.html at the artifact root.
->>>>>>> chore/comment-cleanup-projects
     if (!hasIndex) {
       const first = pages.find((p) => safeRel(p.path));
       if (first) entries.push({ name: 'index.html', data: Buffer.from(first.html || '', 'utf8') });
