@@ -58,10 +58,10 @@ export default function Header() {
 
   return (
     <>
-      <nav className="relative z-20 flex items-center justify-between px-4 md:px-8 py-4 md:py-5 bg-black/80 backdrop-blur-sm border-b border-white/10">
+      <nav className="relative z-20 flex items-center justify-between px-4 md:px-8 py-4 md:py-5 bg-background/80 backdrop-blur-sm border-b border-border">
         <div className="flex items-center gap-6 md:gap-10">
           <Link href="/" className="flex items-center">
-            <HanzoBrand className="text-white" collapse />
+            <HanzoBrand className="text-foreground" collapse />
           </Link>
 
           {/* Desktop Navigation — Meet Hanzo mega-menu + the key conversion
@@ -71,13 +71,13 @@ export default function Header() {
             <MeetHanzoMenu />
             <Link
               href="/pricing"
-              className="text-white/70 hover:text-white text-sm font-medium transition-colors"
+              className="text-foreground/70 hover:text-foreground text-sm font-medium transition-colors"
             >
               Pricing
             </Link>
             <Link
               href="/enterprise"
-              className="text-white/70 hover:text-white text-sm font-medium transition-colors"
+              className="text-foreground/70 hover:text-foreground text-sm font-medium transition-colors"
             >
               Enterprise
             </Link>
@@ -103,11 +103,11 @@ export default function Header() {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="gap-2 text-white/80 hover:text-white"
+                      className="gap-2 text-foreground/80 hover:text-foreground"
                     >
                       <Avatar className="w-7 h-7">
                         <AvatarImage src={user.avatarUrl} alt={displayName} />
-                        <AvatarFallback className="text-xs bg-white/10 text-white">
+                        <AvatarFallback className="text-xs bg-foreground/10 text-foreground">
                           {userInitial}
                         </AvatarFallback>
                       </Avatar>
@@ -145,7 +145,7 @@ export default function Header() {
 
                     <DropdownMenuSeparator />
 
-                    <DropdownMenuItem onClick={handleLogout} className="text-white/70">
+                    <DropdownMenuItem onClick={handleLogout} className="text-foreground/70">
                       <LogOut className="mr-2 h-4 w-4" />
                       Log out
                     </DropdownMenuItem>
@@ -157,13 +157,13 @@ export default function Header() {
                 <Button
                   onClick={() => login()}
                   variant="ghost"
-                  className="text-white/70 hover:text-white text-sm font-medium"
+                  className="text-foreground/70 hover:text-foreground text-sm font-medium"
                 >
                   Sign In
                 </Button>
                 <Button
                   onClick={getStarted}
-                  className="bg-white text-black hover:bg-white/90 text-sm font-medium px-5 py-2.5 rounded-xl"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-medium px-5 py-2.5 rounded-xl"
                 >
                   Get started
                 </Button>
@@ -174,7 +174,7 @@ export default function Header() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
+            className="lg:hidden p-2 hover:bg-foreground/10 rounded-lg transition-colors"
           >
             {mobileMenuOpen ? (
               <X className="w-6 h-6" />
@@ -187,16 +187,16 @@ export default function Header() {
 
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 bg-black/95 backdrop-blur-xl z-50 md:hidden">
+        <div className="fixed inset-0 bg-background/95 backdrop-blur-xl z-50 md:hidden">
           <div className="flex flex-col h-full">
             {/* Mobile Menu Header */}
-            <div className="flex items-center justify-between p-4 border-b border-white/10">
+            <div className="flex items-center justify-between p-4 border-b border-border">
               <Link href="/" className="flex items-center">
-                <HanzoBrand className="text-white" markClassName="w-8 h-8" />
+                <HanzoBrand className="text-foreground" markClassName="w-8 h-8" />
               </Link>
               <button
                 onClick={() => setMobileMenuOpen(false)}
-                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                className="p-2 hover:bg-foreground/10 rounded-lg transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -206,17 +206,17 @@ export default function Header() {
             <div className="flex-1 overflow-y-auto p-4 space-y-2">
               {isAuthenticated && user ? (
                 <>
-                  <div className="p-3 mb-4 bg-white/5 rounded-lg">
+                  <div className="p-3 mb-4 bg-foreground/5 rounded-lg">
                     <div className="flex items-center gap-3">
                       <Avatar className="w-10 h-10">
                         <AvatarImage src={user.avatarUrl} alt={displayName} />
-                        <AvatarFallback className="bg-white/10 text-white">
+                        <AvatarFallback className="bg-foreground/10 text-foreground">
                           {userInitial}
                         </AvatarFallback>
                       </Avatar>
                       <div className="min-w-0">
                         <p className="font-medium truncate">{displayName}</p>
-                        <p className="text-sm text-white/60 truncate">
+                        <p className="text-sm text-foreground/60 truncate">
                           {user.email || user.username}
                         </p>
                       </div>
@@ -225,7 +225,7 @@ export default function Header() {
 
                   <button
                     onClick={() => navigateTo("/new")}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-foreground/10 rounded-lg transition-colors"
                   >
                     <Plus className="w-5 h-5" />
                     <span>New Project</span>
@@ -233,7 +233,7 @@ export default function Header() {
 
                   <button
                     onClick={() => navigateTo("/dashboard")}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-foreground/10 rounded-lg transition-colors"
                   >
                     <Home className="w-5 h-5" />
                     <span>Dashboard</span>
@@ -241,7 +241,7 @@ export default function Header() {
 
                   <button
                     onClick={() => navigateTo("/settings")}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-foreground/10 rounded-lg transition-colors"
                   >
                     <Settings className="w-5 h-5" />
                     <span>Settings</span>
@@ -249,40 +249,40 @@ export default function Header() {
 
                   <button
                     onClick={() => navigateTo("/billing")}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-foreground/10 rounded-lg transition-colors"
                   >
                     <DollarSign className="w-5 h-5" />
                     <span>Billing</span>
                   </button>
 
-                  <div className="h-px bg-white/10 my-4" />
+                  <div className="h-px bg-border my-4" />
 
                   <button
                     onClick={() => navigateTo("/install")}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-foreground/10 rounded-lg transition-colors"
                   >
                     <span>Apps</span>
                   </button>
 
                   <button
                     onClick={() => navigateTo("/community")}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-foreground/10 rounded-lg transition-colors"
                   >
                     <span>Community</span>
                   </button>
 
                   <button
                     onClick={() => navigateTo("/pricing")}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-foreground/10 rounded-lg transition-colors"
                   >
                     <span>Pricing</span>
                   </button>
 
-                  <div className="h-px bg-white/10 my-4" />
+                  <div className="h-px bg-border my-4" />
 
                   <button
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors text-white/70"
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-foreground/10 rounded-lg transition-colors text-foreground/70"
                   >
                     <LogOut className="w-5 h-5" />
                     <span>Log out</span>
@@ -292,46 +292,46 @@ export default function Header() {
                 <>
                   <button
                     onClick={() => navigateTo("/install")}
-                    className="w-full px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
+                    className="w-full px-4 py-3 text-left hover:bg-foreground/10 rounded-lg transition-colors"
                   >
                     Apps
                   </button>
                   <button
                     onClick={() => navigateTo("/community")}
-                    className="w-full px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
+                    className="w-full px-4 py-3 text-left hover:bg-foreground/10 rounded-lg transition-colors"
                   >
                     Community
                   </button>
                   <button
                     onClick={() => navigateTo("/pricing")}
-                    className="w-full px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
+                    className="w-full px-4 py-3 text-left hover:bg-foreground/10 rounded-lg transition-colors"
                   >
                     Pricing
                   </button>
                   <button
                     onClick={() => navigateTo("/enterprise")}
-                    className="w-full px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
+                    className="w-full px-4 py-3 text-left hover:bg-foreground/10 rounded-lg transition-colors"
                   >
                     Enterprise
                   </button>
                   <button
                     onClick={() => navigateTo("/learn")}
-                    className="w-full px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
+                    className="w-full px-4 py-3 text-left hover:bg-foreground/10 rounded-lg transition-colors"
                   >
                     Learn
                   </button>
 
-                  <div className="h-px bg-white/10 my-4" />
+                  <div className="h-px bg-border my-4" />
 
                   <button
                     onClick={() => login()}
-                    className="w-full px-4 py-3 text-left hover:bg-white/10 rounded-lg transition-colors"
+                    className="w-full px-4 py-3 text-left hover:bg-foreground/10 rounded-lg transition-colors"
                   >
                     Sign In
                   </button>
                   <button
                     onClick={getStarted}
-                    className="w-full px-4 py-3 bg-white text-black hover:bg-white/90 rounded-lg font-medium"
+                    className="w-full px-4 py-3 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg font-medium"
                   >
                     Get started
                   </button>

@@ -43,18 +43,18 @@ function AppCell({ app }: { app: AppEntry }) {
     >
       <div className="flex items-center gap-2.5">
         <Icon
-          className="h-6 w-6 flex-shrink-0 text-white"
+          className="h-6 w-6 flex-shrink-0 text-foreground"
           strokeWidth={1.5}
           aria-hidden
         />
-        <span className="text-lg font-semibold tracking-tight text-white group-hover:underline md:text-xl">
+        <span className="text-lg font-semibold tracking-tight text-foreground group-hover:underline md:text-xl">
           {app.name}
         </span>
       </div>
-      <p className="mt-4 max-w-[30ch] text-[15px] leading-relaxed text-white/55">
+      <p className="mt-4 max-w-[30ch] text-[15px] leading-relaxed text-muted-foreground">
         {app.blurb}
       </p>
-      <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-white/40 transition-colors group-hover:text-white">
+      <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors group-hover:text-foreground">
         {ACTION_LABEL[app.action]}
         <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
       </span>
@@ -110,7 +110,7 @@ export default function AppsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black font-sans text-white">
+    <div className="min-h-screen bg-background font-sans text-foreground">
       {/* Shared site header — same menu as the rest of hanzo.app. */}
       <Header />
 
@@ -120,10 +120,10 @@ export default function AppsPage() {
           <h1 className="text-5xl font-medium leading-[1.02] tracking-tight md:text-[64px]">
             Runs
           </h1>
-          <p className="mt-1 text-5xl font-medium leading-[1.02] tracking-tight text-white/30 md:text-[64px]">
+          <p className="mt-1 text-5xl font-medium leading-[1.02] tracking-tight text-muted-foreground md:text-[64px]">
             Everywhere.
           </p>
-          <p className="mt-6 max-w-xl text-base text-white/55 md:text-lg">
+          <p className="mt-6 max-w-xl text-base text-muted-foreground md:text-lg">
             One key, every surface. Install Hanzo in your browser, editor,
             desktop, and office — or connect the tools your team already runs.
           </p>
@@ -144,8 +144,8 @@ export default function AppsPage() {
                   className={[
                     "rounded-full px-5 py-2 text-lg transition-colors",
                     on
-                      ? "border border-white text-white"
-                      : "border border-transparent text-white/40 hover:text-white/70",
+                      ? "border border-foreground text-foreground"
+                      : "border border-transparent text-muted-foreground hover:text-foreground",
                   ].join(" ")}
                 >
                   {c.label}
@@ -178,10 +178,10 @@ export default function AppsPage() {
                 >
                   <div className="mx-auto w-full max-w-6xl">
                     <div className="mb-2 flex items-baseline gap-3">
-                      <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-white/40">
+                      <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
                         {c.label}
                       </span>
-                      <span className="font-mono text-[11px] text-white/25">
+                      <span className="font-mono text-[11px] text-muted-foreground">
                         {String(i + 1).padStart(2, "0")} / {String(N).padStart(2, "0")}
                       </span>
                     </div>
@@ -198,13 +198,13 @@ export default function AppsPage() {
 
           {/* progress rail — fills as you pan through the surfaces */}
           <div className="pointer-events-none absolute inset-x-0 bottom-6 mx-auto flex max-w-6xl items-center gap-3 px-4 md:px-8">
-            <div className="h-px flex-1 bg-white/10">
+            <div className="h-px flex-1 bg-border">
               <div
-                className="h-px bg-white/60 transition-[width] duration-300"
+                className="h-px bg-foreground/60 transition-[width] duration-300"
                 style={{ width: `${(active / Math.max(N - 1, 1)) * 100}%` }}
               />
             </div>
-            <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-white/40">
+            <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
               Scroll →
             </span>
           </div>
@@ -212,21 +212,21 @@ export default function AppsPage() {
       </div>
 
       {/* ── CTA — the page's real conversion ────────────────────────────────── */}
-      <section className="border-t border-white/[0.06] px-4 py-24 md:px-8">
+      <section className="border-t border-border px-4 py-24 md:px-8">
         <div className="mx-auto max-w-6xl">
           <h2 className="text-3xl font-medium tracking-tight md:text-4xl">
             Start with one key.
           </h2>
-          <p className="mt-3 max-w-md text-[15px] leading-relaxed text-white/55">
+          <p className="mt-3 max-w-md text-[15px] leading-relaxed text-muted-foreground">
             Sign in with Hanzo, mint one{" "}
-            <code className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-sm text-white/80">
+            <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-sm text-foreground">
               hk-
             </code>{" "}
             key, and every app above is authenticated — no per-app credentials.
           </p>
           <Link
             href="/dashboard"
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition-colors hover:bg-white/90"
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Get your key
             <ArrowRight className="h-4 w-4" aria-hidden />

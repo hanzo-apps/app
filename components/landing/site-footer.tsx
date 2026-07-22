@@ -109,7 +109,7 @@ const social = [
 function FooterCol({ title, links }: Col) {
   return (
     <div>
-      <h3 className="text-sm font-medium text-white">{title}</h3>
+      <h3 className="text-sm font-medium text-foreground">{title}</h3>
       <ul className="mt-4 space-y-3">
         {links.map((l) => (
           <li key={l.label}>
@@ -118,14 +118,14 @@ function FooterCol({ title, links }: Col) {
                 href={l.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-white/45 transition-colors hover:text-white"
+                className="text-sm text-foreground/45 transition-colors hover:text-foreground"
               >
                 {l.label}
               </a>
             ) : (
               <Link
                 href={l.href}
-                className="text-sm text-white/45 transition-colors hover:text-white"
+                className="text-sm text-foreground/45 transition-colors hover:text-foreground"
               >
                 {l.label}
               </Link>
@@ -139,16 +139,16 @@ function FooterCol({ title, links }: Col) {
 
 export default function SiteFooter() {
   return (
-    <footer className="relative z-10 border-t border-white/[0.06] px-4 pb-10 pt-16 md:px-8 md:pt-20">
+    <footer className="relative z-10 border-t border-border px-4 pb-10 pt-16 md:px-8 md:pt-20">
       <div className="mx-auto max-w-6xl">
         <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-6">
           <div className="col-span-2 sm:col-span-3 lg:col-span-1">
             <HanzoBrand
-              className="text-white"
+              className="text-foreground"
               markClassName="h-7 w-7"
               wordmarkClassName="text-lg font-medium"
             />
-            <p className="mt-4 max-w-[15rem] text-sm leading-relaxed text-white/45">
+            <p className="mt-4 max-w-[15rem] text-sm leading-relaxed text-muted-foreground">
               Describe an app. Hanzo builds it and ships it on Hanzo Cloud.
             </p>
           </div>
@@ -164,9 +164,9 @@ export default function SiteFooter() {
           <FooterCol {...company} />
         </div>
 
-        <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-white/[0.06] pt-8 md:flex-row">
+        <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 md:flex-row">
           <div className="flex flex-col items-center gap-3 md:flex-row md:gap-5">
-            <p className="text-xs text-white/35">
+            <p className="text-xs text-muted-foreground">
               © {new Date().getFullYear()} Hanzo AI, Inc. · Techstars &apos;17
             </p>
             <div className="flex items-center gap-4">
@@ -176,7 +176,7 @@ export default function SiteFooter() {
                   href={l.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-white/35 transition-colors hover:text-white"
+                  className="text-xs text-foreground/35 transition-colors hover:text-foreground"
                 >
                   {l.label}
                 </a>
@@ -191,7 +191,7 @@ export default function SiteFooter() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={s.label}
-                className="text-white/35 transition-colors hover:text-white"
+                className="text-foreground/35 transition-colors hover:text-foreground"
               >
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
                   <path d={s.path} />
