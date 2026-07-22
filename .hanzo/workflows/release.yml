@@ -106,6 +106,21 @@ jobs:
           push: true
           tags: ghcr.io/hanzoai/hanzo-app:${{ steps.ver.outputs.version_v }}
           provenance: false
+      - name: Verify the pushed image is pullable (guard the image ⇔ tag invariant)
+        # build-push-action can exit 0 while the manifest isn't yet resolvable at the
+        # registry (or a partial push). If we tag git anyway, the CR bump lands on a
+        # phantom tag → ImagePullBackOff (exactly what bit v1.42.122). Prove the image
+        # resolves BEFORE creating the git tag, so a bad push fails the run instead.
+        run: |
+          set -euo pipefail
+          v="${{ steps.ver.outputs.version_v }}"
+          for i in 1 2 3 4 5 6; do
+            if docker manifest inspect "ghcr.io/hanzoai/hanzo-app:${v}" >/dev/null 2>&1; then
+              echo "image ${v} is resolvable — safe to tag"; exit 0
+            fi
+            echo "ghcr manifest ${v} not visible yet (attempt ${i}/6) — retrying"; sleep 5
+          done
+          echo "::error::image ${v} not pullable after push — refusing to tag git (prevents ImagePullBackOff)"; exit 1
       - name: Tag the release (image ⇔ tag invariant)
         run: |
           set -euo pipefail
