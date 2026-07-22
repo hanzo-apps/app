@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { ServerFunction } from '@/lib/vfs/types';
 import {
   Plus, Loader2, AlertCircle, Wrench, MoreVertical, Pencil, Trash2,
@@ -72,6 +73,7 @@ export function ServerFunctionsManager({ deploymentId, dataProvider }: ServerFun
       await loadFunctions();
     } catch (err) {
       console.error('Failed to toggle server function:', err);
+      toast.error('Failed to update server function');
     }
   };
 
@@ -92,6 +94,7 @@ export function ServerFunctionsManager({ deploymentId, dataProvider }: ServerFun
       await loadFunctions();
     } catch (err) {
       console.error('Failed to delete server function:', err);
+      toast.error('Failed to delete server function');
     }
   };
 

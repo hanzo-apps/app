@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { Secret } from '@/lib/vfs/types';
 import {
   Plus, Loader2, AlertCircle, Key, MoreVertical, Pencil, Trash2, AlertTriangle
@@ -76,6 +77,7 @@ export function SecretsManager({ deploymentId, dataProvider }: SecretsManagerPro
       await loadSecrets();
     } catch (err) {
       console.error('Failed to delete secret:', err);
+      toast.error('Failed to delete secret');
     }
   };
 

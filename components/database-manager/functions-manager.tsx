@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { EdgeFunction } from '@/lib/vfs/types';
 import {
   Plus, Loader2, AlertCircle, Code2, MoreVertical, Pencil, Trash2,
@@ -74,6 +75,7 @@ export function FunctionsManager({ deploymentId, dataProvider, hideRuntimeFeatur
       await loadFunctions();
     } catch (err) {
       console.error('Failed to toggle function:', err);
+      toast.error('Failed to update function');
     }
   };
 
@@ -94,6 +96,7 @@ export function FunctionsManager({ deploymentId, dataProvider, hideRuntimeFeatur
       await loadFunctions();
     } catch (err) {
       console.error('Failed to delete function:', err);
+      toast.error('Failed to delete function');
     }
   };
 
