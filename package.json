@@ -10,7 +10,10 @@
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "postinstall": "cp node_modules/esbuild-wasm/esbuild.wasm public/esbuild.wasm 2>/dev/null || true"
+    "postinstall": "cp node_modules/esbuild-wasm/esbuild.wasm public/esbuild.wasm 2>/dev/null || true",
+    "test:e2e": "playwright test",
+    "test:e2e:auth": "playwright test --project=authenticated",
+    "test:e2e:public": "playwright test --project=public"
   },
   "dependencies": {
     "@base-org/account": "^2.5.6",
@@ -101,6 +104,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
+    "@playwright/test": "^1.61.1",
     "@testing-library/jest-dom": "6.4.8",
     "@testing-library/react": "16.0.1",
     "@types/better-sqlite3": "^7.6.13",
