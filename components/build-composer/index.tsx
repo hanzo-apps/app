@@ -17,6 +17,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { EVENTS } from '@hanzo/event';
+import { useAnalytics } from '@hanzo/event/react';
 import {
   ArrowUp,
   Mic,
@@ -86,6 +88,7 @@ export function BuildComposer({
   subline?: boolean;
 }) {
   const router = useRouter();
+  const analytics = useAnalytics();
   const [idea, setIdea] = useState('');
   const [mode, setMode] = useState<ComposerMode>('build');
   // Base backend: ON by default — every new app ships with a real data plane
@@ -164,6 +167,9 @@ export function BuildComposer({
   const submit = () => {
     const text = idea.trim();
     if (!text) return;
+    // Top-of-funnel build intent — the landing composer fires this for logged-out
+    // visitors too. Enumerated props only; never the prompt text.
+    analytics.capture(EVENTS.APP_CREATED, { mode, withBase });
     setBaseEnabled(withBase);
     if (onSubmit) {
       onSubmit(text, mode);
