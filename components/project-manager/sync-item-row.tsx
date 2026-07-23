@@ -2,8 +2,8 @@
 
 import { SyncableItem } from '@/lib/vfs/sync-types';
 import { SyncStatusBadge } from './sync-status-badge';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@hanzo/ui';
+import { Checkbox } from '@hanzo/ui';
 import { ArrowUp, ArrowDown, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

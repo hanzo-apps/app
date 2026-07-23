@@ -6,7 +6,7 @@ import { SummaryBar } from './summary-bar';
 import { SyncItemRow } from '../sync-item-row';
 import { vfs, Project } from '@/lib/vfs';
 import { getSyncManager } from '@/lib/vfs/sync-manager';
-import { toast } from 'sonner';
+import { toast } from '@hanzo/ui';
 import { logger } from '@/lib/utils';
 
 interface ProjectsTabProps {

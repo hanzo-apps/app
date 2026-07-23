@@ -8,7 +8,7 @@ import {
   type ComponentType,
 } from "react";
 import { useIam } from "@hanzo/iam/react";
-import { toast } from "sonner";
+import { toast } from "@hanzo/ui";
 import {
   AlertCircle,
   Check,

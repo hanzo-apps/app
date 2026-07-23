@@ -1,6 +1,6 @@
 "use client";
 import { useMemo, useRef, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@hanzo/ui";
 import type { CodeEditorHandle } from "@/components/code-editor";
 import dynamic from "next/dynamic";
 import { CopyIcon, Share2 } from "lucide-react";

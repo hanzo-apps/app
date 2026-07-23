@@ -8,8 +8,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+} from '@hanzo/ui';
+import { Button } from '@hanzo/ui';
 import { Cloud, CloudOff, RefreshCw, AlertTriangle, CheckSquare, ArrowUp, ArrowDown } from 'lucide-react';
 import { SyncTabs, BulkActionState } from './sync-tabs';
 import { useSyncStatus } from './hooks/use-sync-status';

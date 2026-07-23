@@ -4,10 +4,10 @@ import { useState, useEffect, useRef, useMemo, useCallback, DragEvent, Clipboard
 import { MessageSquare, Loader2, CheckCircle, XCircle, ChevronRight, FileCode, ClipboardList, Bot, RotateCcw, RefreshCw, Send, ChevronUp, ChevronDown, Code, Trash2, X, Brain, Image as ImageIcon } from 'lucide-react';
 import { DebugEvent } from '@/components/debug-panel';
 import { MarkdownRenderer } from '@/components/markdown-renderer';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Button } from '@hanzo/ui';
+import { Textarea } from '@hanzo/ui';
+import { Popover, PopoverContent, PopoverTrigger } from '@hanzo/ui';
+import { ToggleGroup, ToggleGroupItem } from '@hanzo/ui';
 import { ModelSettingsPanel } from '@/components/settings/model-settings';
 import { FocusContextPayload } from '@/lib/preview/types';
 import { PendingImage } from '@/lib/llm/multi-agent-orchestrator';

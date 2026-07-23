@@ -5,7 +5,7 @@ import { CodeEditor } from '@/components/code-editor';
 import { VirtualFile, ProjectRuntime } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';
 import { X, Code2, Save, FileCode, Image as ImageIcon, AlertCircle, Search, Folder } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@hanzo/ui';
 import { cn, logger } from '@/lib/utils';
 
 // index.html floats to the top of its folder; everything else alphabetical.

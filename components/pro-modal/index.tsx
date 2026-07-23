@@ -70,9 +70,8 @@ export const ProModal = ({
             </li>
           </ul>
           <Button
-            variant="black"
             size="lg"
-            className="w-full !text-base !h-11 mt-8"
+            className="w-full !text-base !h-11 mt-8 bg-neutral-950 text-neutral-300 hover:brightness-110"
             onClick={handleProClick}
           >
             Subscribe to PRO ($9/month)

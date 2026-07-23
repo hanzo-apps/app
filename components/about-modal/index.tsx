@@ -11,10 +11,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+} from '@hanzo/ui';
+import { Button } from '@hanzo/ui';
 import { Logo } from '@/components/ui/logo';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@hanzo/ui';
 import { Github, ExternalLink } from 'lucide-react';
 import { DiscordIcon } from '@/components/ui/discord-icon';
 

@@ -48,9 +48,8 @@ export const LoginModal = ({
             {description}
           </p>
           <Button
-            variant="black"
             size="lg"
-            className="w-full !text-base !h-11 mt-8"
+            className="w-full !text-base !h-11 mt-8 bg-neutral-950 text-neutral-300 hover:brightness-110"
             onClick={handleClick}
           >
             Log In to Continue

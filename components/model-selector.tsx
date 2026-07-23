@@ -1,17 +1,17 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+import { Label } from '@hanzo/ui';
+import { Badge } from '@hanzo/ui';
 import { logger, cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
+import { Button } from '@hanzo/ui';
+import { Input } from '@hanzo/ui';
+import { Switch } from '@hanzo/ui';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from '@hanzo/ui';
 import {
   Loader2,
   Sparkles,
@@ -34,7 +34,7 @@ import {
   formatModelPrice
 } from '@/lib/llm/models-api';
 import { registerOpenRouterPricingFromApi, registerPricingFromProviderModels } from '@/lib/llm/pricing-cache';
-import { toast } from 'sonner';
+import { toast } from '@hanzo/ui';
 import { track } from '@/lib/telemetry';
 
 interface ModelSelectorProps {

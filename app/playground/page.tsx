@@ -55,7 +55,7 @@ import { ScrollArea } from "@hanzo/ui";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { toast } from "sonner";
+import { toast } from "@hanzo/ui";
 
 interface ModelConfig {
   model: string;
