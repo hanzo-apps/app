@@ -1,8 +1,9 @@
 /**
  * Hanzo BYOK (Bring Your Own Key) Provider System
  *
- * Supports 8 LLM providers with localStorage API key management,
- * rate limiting, retry logic, and dynamic model discovery.
+ * 13 LLM providers with localStorage API key management, rate limiting,
+ * retry logic, and dynamic model discovery. Discovery-first: providers with a
+ * live /models endpoint stay dynamic; static catalogs are offline fallbacks.
  */
 
 // Export types
@@ -24,7 +25,8 @@ export {
   getAllProviders,
   getCloudProviders,
   getLocalProviders,
-  requiresApiKey
+  getDefaultModel,
+  modelSupportsVision
 } from './registry';
 
 // Export client utilities
