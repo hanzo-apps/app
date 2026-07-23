@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useIam } from '@hanzo/iam/react';
 import { createAnalytics } from '@hanzo/event';
 import { AnalyticsProvider, ErrorBoundary, useAnalytics, usePageview } from '@hanzo/event/react';
+import { ObserveProvider } from '@hanzo/observe/react';
 import { setErrorReporter, type ErrorContext } from '@/lib/error-handling/error-logger';
 
 /** The ONE Hanzo Cloud telemetry front door — POST api.hanzo.ai/v1/event. Cloud
@@ -88,11 +89,17 @@ export function AnalyticsRoot({ children }: { children: ReactNode }) {
 
   return (
     <AnalyticsProvider client={client}>
-      <ErrorBoundary>
-        <Pageview />
-        <Identity />
-        {children}
-      </ErrorBoundary>
+      {/* Autocapture rides the SAME client: default-on $click/$input/$change/$submit
+          with a semantic DOM hierarchy. nav={false} keeps the event layer the single
+          pageview counter (no double-count); enabled mirrors the DNT consent gate;
+          input values are redacted by default (PII-free). */}
+      <ObserveProvider client={client} nav={false} enabled={!doNotTrack()}>
+        <ErrorBoundary>
+          <Pageview />
+          <Identity />
+          {children}
+        </ErrorBoundary>
+      </ObserveProvider>
     </AnalyticsProvider>
   );
 }
