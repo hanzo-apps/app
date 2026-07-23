@@ -294,13 +294,17 @@ describe('Security Tests', () => {
       process.env.DATABASE_URL = 'postgresql://localhost/db';
       process.env.REDIS_URL = 'redis://localhost:6379';
 
-      const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {
-        throw new Error('Process exited');
-      });
+      // Fail-SOFT by design: an http:// NEXTAUTH_URL in production warns loudly
+      // instead of hard-exiting — a boot crash on a URL-scheme misconfig would
+      // take the whole app down (and in-cluster hops legitimately use http).
+      const mockWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      expect(() => validateEnv()).toThrow('Process exited');
+      expect(() => validateEnv()).not.toThrow();
+      expect(
+        mockWarn.mock.calls.some((c) => String(c[0]).includes('HTTPS')),
+      ).toBe(true);
 
-      mockExit.mockRestore();
+      mockWarn.mockRestore();
     });
   });
 

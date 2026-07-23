@@ -1,6 +1,5 @@
-import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildUsage } from "../lib/usage.ts";
+import { buildUsage } from "../../lib/usage.ts";
 
 test("usage is honest: not metered, real project count, no fabricated caps", () => {
   const u = buildUsage(3);
