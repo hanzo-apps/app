@@ -21,6 +21,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 
 import { cloudBase } from '@/lib/org/server';
 import { getCatalog } from '@/lib/gallery-catalog';
+import { getLocalTemplatePreview } from '@/lib/template-previews';
 
 export const runtime = 'nodejs';
 
@@ -48,6 +49,21 @@ function esc(s: string): string {
 async function templateHtmlResponse(slug: string): Promise<Response> {
   const clean = slug.trim();
   if (!clean) return NextResponse.json({ error: 'invalid slug' }, { status: 400 });
+
+  // A slug whose upstream screenshot is NOT a faithful "existing app" view (some
+  // kits screenshot their own link-index table-of-contents) ships a real,
+  // self-contained document here — served verbatim so the builder previews an
+  // actual app and the user starts editing real HTML, not an <img>.
+  const local = getLocalTemplatePreview(clean);
+  if (local) {
+    return new Response(local, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/html; charset=utf-8',
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=86400',
+      },
+    });
+  }
 
   try {
     const catalog = await getCatalog();
