@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useMemo, useRef, useEffect } from "react";
 import classNames from "classnames";
-import { toast } from "sonner";
+import { toast } from "@hanzo/ui";
 import { useLocalStorage } from "react-use";
 import { ArrowUp, Crosshair, ImagePlus, X } from "lucide-react";
 import { FaStopCircle } from "react-icons/fa";

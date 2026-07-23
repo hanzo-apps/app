@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { Button } from '@/components/ui/button';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Button } from '@hanzo/ui';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@hanzo/ui';
 import { ChevronDown, ChevronUp, Bug, X, Trash2, Terminal } from 'lucide-react';
 import { vfsShell } from '@/lib/vfs/cli-shell';
 import { MemoryMonitor } from './memory-monitor';

@@ -27,7 +27,7 @@ import {
   Bot,
   Plus,
 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@hanzo/ui";
 import { Button } from "@hanzo/ui";
 import { Input } from "@hanzo/ui";
 import { Badge } from "@hanzo/ui";

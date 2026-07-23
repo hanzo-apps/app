@@ -2,7 +2,7 @@
 import { useUpdateEffect } from "react-use";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import classNames from "classnames";
-import { toast } from "sonner";
+import { toast } from "@hanzo/ui";
 import { Maximize2, Minimize2 } from "lucide-react";
 import { useThrottleFn } from "react-use";
 

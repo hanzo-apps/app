@@ -7,7 +7,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from '@hanzo/ui';
 import {
   CheckCircle,
   ArrowUp,

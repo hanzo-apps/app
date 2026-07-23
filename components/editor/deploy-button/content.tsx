@@ -10,7 +10,7 @@ import { builderLink } from "@/lib/api/projects";
 import { baseEnabled } from "@/lib/base/flag";
 import { syncToGit } from "@/lib/api/git";
 import { currentOrg } from "@/lib/org-scope";
-import { toast } from "sonner";
+import { toast } from "@hanzo/ui";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { EVENTS } from "@hanzo/event";

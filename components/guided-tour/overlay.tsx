@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { useGuidedTour } from './context';
-import { Button } from '@/components/ui/button';
+import { Button } from '@hanzo/ui';
 import { Loader2 } from 'lucide-react';
 import { GUIDED_TOUR_STEPS } from './steps';
 

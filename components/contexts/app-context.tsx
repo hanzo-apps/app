@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useMount } from "react-use";
 import { UserContext } from "@/components/contexts/user-context";
 import { User } from "@/types";
-import { toast } from "sonner";
+import { toast } from "@hanzo/ui";
 import { useBroadcastChannel } from "@/lib/useBroadcastChannel";
 
 export default function AppContext({

@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { toast } from "sonner";
+import { toast } from "@hanzo/ui";
 import { Page } from "@/types";
 import { parsePages, parseSinglePage, stripThinkBlocks } from "@/lib/format-pages";
 import { setLastGenerationRequestId } from "@/lib/reward-signal";

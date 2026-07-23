@@ -4,17 +4,17 @@ import React, { useState } from 'react';
 import { Project, LICENSE_OPTIONS } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';
 import { templateService, TemplateMetadata } from '@/lib/vfs/template-service';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@hanzo/ui';
+import { Input } from '@hanzo/ui';
+import { Label } from '@hanzo/ui';
+import { Textarea } from '@hanzo/ui';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@hanzo/ui';
 import {
   Dialog,
   DialogContent,
@@ -22,8 +22,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { toast } from 'sonner';
+} from '@hanzo/ui';
+import { toast } from '@hanzo/ui';
 import { logger } from '@/lib/utils';
 import { Info, FileBox } from 'lucide-react';
 
