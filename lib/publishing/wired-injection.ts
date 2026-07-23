@@ -65,9 +65,11 @@ export function buildAnalyticsBeacon(space?: string): string {
     var SPACE=${SPACE};
     function rid(){try{if(window.crypto&&crypto.randomUUID)return crypto.randomUUID();}catch(e){}return 'm-'+Date.now().toString(36)+Math.random().toString(36).slice(2,10);}
     function keep(store,key){try{var v=store.getItem(key);if(!v){v=rid();store.setItem(key,v);}return v;}catch(e){return rid();}}
+    function utm(){try{var q=new URLSearchParams(location.search),u={},k=['source','medium','campaign','term','content'],h=false;for(var i=0;i<k.length;i++){var v=q.get('utm_'+k[i]);if(v){u[k[i]]=v;h=true;}}return h?u:undefined;}catch(e){return undefined;}}
+    function refc(){try{var q=new URLSearchParams(location.search);return q.get('ref')||q.get('ref_code')||q.get('refCode')||undefined;}catch(e){return undefined;}}
     function send(){
       var id=keep(window.localStorage,'hz_anon'),sid=keep(window.sessionStorage,'hz_sid');
-      var ev={messageId:rid(),type:'pageview',event:'$pageview',timestamp:new Date().toISOString(),distinctId:id,anonymousId:id,sessionId:sid,url:location.href,path:location.pathname,referrer:document.referrer||undefined,properties:{space:SPACE||undefined,title:document.title},library:${LIB},libraryVersion:'0.1.1'};
+      var ev={messageId:rid(),type:'pageview',event:'$pageview',timestamp:new Date().toISOString(),distinctId:id,anonymousId:id,sessionId:sid,url:location.href,path:location.pathname,referrer:document.referrer||undefined,utm:utm(),refCode:refc(),properties:{space:SPACE||undefined,title:document.title},library:${LIB},libraryVersion:'0.1.1'};
       var body=JSON.stringify({batch:[ev]});
       try{if(navigator.sendBeacon&&navigator.sendBeacon(${ENDPOINT},new Blob([body],{type:'application/json'})))return;}catch(e){}
       try{fetch(${ENDPOINT},{method:'POST',headers:{'Content-Type':'application/json'},body:body,keepalive:true}).catch(function(){});}catch(e){}
