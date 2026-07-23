@@ -12,6 +12,8 @@ import { ModelSettingsPanel } from '@/components/settings/model-settings';
 import { FocusContextPayload } from '@/lib/preview/types';
 import { PendingImage } from '@/lib/llm/multi-agent-orchestrator';
 import { ContentBlock } from '@/lib/llm/types';
+import { EVENTS } from '@hanzo/event';
+import { useAnalytics } from '@hanzo/event/react';
 
 type FocusTarget = FocusContextPayload & { timestamp: number };
 
@@ -145,6 +147,7 @@ export function ChatPanel({
   supportsVision = false,
   providerReady = true,
 }: ChatPanelProps) {
+  const analytics = useAnalytics();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
   const [showMobileSettings, setShowMobileSettings] = useState(false);
@@ -235,13 +238,15 @@ export function ChatPanel({
 
   // Handle send with images
   const handleSend = useCallback(() => {
+    // Core builder engagement loop — enumerated props only, never the message text.
+    analytics.capture(EVENTS.CHAT_MESSAGE_SENT, { hasImages: pendingImages.length > 0 });
     if (pendingImages.length > 0) {
       onGenerate(pendingImages);
       setPendingImages([]);
     } else {
       onGenerate();
     }
-  }, [onGenerate, pendingImages]);
+  }, [onGenerate, pendingImages, analytics]);
 
   // Listen for tour event to open provider settings
   useEffect(() => {
