@@ -45,7 +45,9 @@ describe('Provider Client', () => {
 
   describe('fetchModels', () => {
     it('should return static models for providers without discovery', async () => {
-      const models = await fetchModels('anthropic');
+      // openai-codex has no /models endpoint — static catalog, no key needed.
+      // (anthropic/openai/openrouter/hanzo are discovery-first: live /models.)
+      const models = await fetchModels('openai-codex');
       expect(models.length).toBeGreaterThan(0);
       expect(models[0]).toHaveProperty('id');
       expect(models[0]).toHaveProperty('name');
