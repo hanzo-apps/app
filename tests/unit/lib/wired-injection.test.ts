@@ -87,7 +87,7 @@ describe('analytics beacon (runtime)', () => {
     global.fetch = realFetch;
   });
 
-  it('POSTs a canonical $pageview batch to /v1/analytics tagged with the space', async () => {
+  it('POSTs a canonical $pageview batch to /v1/event tagged with the space', async () => {
     runScripts(buildAnalyticsBeacon('acme/site'));
     const calls = (global.fetch as jest.Mock).mock.calls;
     expect(calls.length).toBe(1);
