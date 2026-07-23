@@ -53,7 +53,10 @@ describe("BFF: GET /v1/git/accounts", () => {
   it("no token cookie → connected:false, accounts:[] (honest CTA state)", async () => {
     const res = await getAccounts(req("http://localhost/v1/git/accounts"));
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ connected: false, accounts: [] });
+    const body = await res.json();
+    expect(body).toMatchObject({ connected: false, accounts: [] });
+    // The route also advertises which providers CAN be connected (the CTA list).
+    expect(body.providers.map((p: { provider: string }) => p.provider)).toContain("github");
   });
 
   it("token but no GitHub linked in IAM → connected:false", async () => {
@@ -64,7 +67,7 @@ describe("BFF: GET /v1/git/accounts", () => {
     );
     const res = await getAccounts(req("http://localhost/v1/git/accounts", "iam-bearer"));
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ connected: false, accounts: [] });
+    expect(await res.json()).toMatchObject({ connected: false, accounts: [] });
   });
 
   it("masked token ('***') is treated as not connected", async () => {

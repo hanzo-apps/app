@@ -320,6 +320,16 @@ export function getAllProviders(): ProviderConfig[] {
   return Object.values(providers);
 }
 
+/** Hosted APIs (key-scoped catalogs). Complement of getLocalProviders. */
+export function getCloudProviders(): ProviderConfig[] {
+  return getAllProviders().filter((p) => !p.isLocal);
+}
+
+/** Self-hosted runtimes (ollama, lmstudio, llamacpp) — no key, local URL. */
+export function getLocalProviders(): ProviderConfig[] {
+  return getAllProviders().filter((p) => p.isLocal);
+}
+
 export function getDefaultModel(provider: ProviderId): string {
   switch (provider) {
     case 'openrouter':
