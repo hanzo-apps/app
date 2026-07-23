@@ -13,7 +13,7 @@ import { getProvider } from '@/lib/llm/providers/registry';
 import { CostCalculator } from './cost-calculator';
 import { ToolCall, UsageInfo, ContentBlock } from './types';
 import { logger } from '@/lib/utils';
-import { toast } from 'sonner';
+import { toast } from '@hanzo/ui';
 import { registerOpenRouterPricingFromApi, registerPricingFromProviderModels } from './pricing-cache';
 import { fetchAvailableModels } from './models-api';
 import { parseStreamingResponse, buildFileTree, ReasoningDetail } from './streaming-parser';

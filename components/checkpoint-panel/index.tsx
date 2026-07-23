@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '@hanzo/ui';
+import { Badge } from '@hanzo/ui';
 import { History, RotateCcw, ArrowRight, X, Inbox } from 'lucide-react';
 import { checkpointManager, CheckpointMetadata } from '@/lib/vfs/checkpoint';
 import { formatDistanceToNow } from 'date-fns';
@@ -11,7 +11,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from '@hanzo/ui';
 
 interface CheckpointPanelProps {
   projectId: string;

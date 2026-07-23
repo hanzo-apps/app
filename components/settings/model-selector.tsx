@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@hanzo/ui";
 import { Loader2, RefreshCw, Info } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@hanzo/ui';
 
 import {
   ProviderId,

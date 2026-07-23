@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@hanzo/ui';
 import { Loader2, LogOut } from 'lucide-react';
 
 interface ConnectionBadgeProps {

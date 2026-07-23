@@ -8,10 +8,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
+} from '@hanzo/ui';
+import { Button } from '@hanzo/ui';
+import { Switch } from '@hanzo/ui';
+import { Label } from '@hanzo/ui';
 import {
   Loader2, AlertTriangle, Plus, Minus, RefreshCw, Key,
   Code2, Wrench, Clock,

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@hanzo/ui';
 import { DetailedSyncStatus, SyncableItem } from '@/lib/vfs/sync-types';
 import { ProjectsTab } from './projects-tab';
 import { SkillsTab } from './skills-tab';

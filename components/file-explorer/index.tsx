@@ -22,15 +22,15 @@ import {
   Home,
   ScrollText
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@hanzo/ui';
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-} from '@/components/ui/context-menu';
-import { Input } from '@/components/ui/input';
-import { toast } from 'sonner';
+} from '@hanzo/ui';
+import { Input } from '@hanzo/ui';
+import { toast } from '@hanzo/ui';
 
 interface FileExplorerProps {
   projectId: string;

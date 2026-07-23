@@ -2,7 +2,7 @@ import { TiUserAdd } from "react-icons/ti";
 import { Link } from "lucide-react";
 import { FaXTwitter } from "react-icons/fa6";
 import { useCopyToClipboard } from "react-use";
-import { toast } from "sonner";
+import { toast } from "@hanzo/ui";
 
 import { Button } from "@hanzo/ui";
 import {

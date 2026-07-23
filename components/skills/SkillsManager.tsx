@@ -4,16 +4,16 @@ import React, { useState, useEffect } from 'react';
 import { Skill } from '@/lib/vfs/skills/types';
 import { skillsService } from '@/lib/vfs/skills';
 import { logger } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
+import { Button } from '@hanzo/ui';
+import { Input } from '@hanzo/ui';
+import { Badge } from '@hanzo/ui';
+import { Switch } from '@hanzo/ui';
+import { Label } from '@hanzo/ui';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+} from '@hanzo/ui';
 import {
   Plus,
   Search,
@@ -34,8 +34,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { toast } from 'sonner';
+} from '@hanzo/ui';
+import { toast } from '@hanzo/ui';
 import { SkillEditor } from './SkillEditor';
 
 export function SkillsManager() {

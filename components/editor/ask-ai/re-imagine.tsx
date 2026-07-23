@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Paintbrush } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@hanzo/ui";
 
 import { Button } from "@hanzo/ui";
 import {
@@ -123,9 +123,8 @@ export function ReImagine({
                 Then, let&apos;s redesign it!
               </p>
               <Button
-                variant="black"
+                className="relative w-full bg-neutral-950 text-neutral-300 hover:brightness-110"
                 onClick={handleClick}
-                className="relative w-full"
               >
                 {isLoading ? (
                   <>

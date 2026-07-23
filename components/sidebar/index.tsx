@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { Project } from '@/lib/vfs/types';
 import { getSyncOverviewStatus, SyncOverviewStatus } from '@/lib/vfs/auto-sync';
-import { Button } from '@/components/ui/button';
+import { Button } from '@hanzo/ui';
 import { HanzoLogo } from '@/components/HanzoLogo';
 import {
   Activity,

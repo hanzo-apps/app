@@ -12,7 +12,7 @@ import {
 } from "@hanzo/ui";
 import { Input } from "@hanzo/ui";
 import Loading from "@/components/loading";
-import { toast } from "sonner";
+import { toast } from "@hanzo/ui";
 import { api } from "@/lib/api";
 import { useUser } from "@/hooks/useUser";
 import { LoginModal } from "../login-modal";
@@ -180,9 +180,8 @@ export const LoadProject = ({
                   Then, let&apos;s import it!
                 </p>
                 <Button
-                  variant="black"
+                  className="relative w-full bg-neutral-950 text-neutral-300 hover:brightness-110"
                   onClick={handleClick}
-                  className="relative w-full"
                 >
                   {isLoading ? (
                     <>

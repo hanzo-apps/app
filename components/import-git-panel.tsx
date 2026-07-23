@@ -28,7 +28,7 @@ import {
 } from "@/lib/api/git";
 import { linkProvider } from "@/lib/hanzo/iam";
 import { isGitUrl, gitUrlGateMessage } from "@/lib/git/url";
-import { toast } from "sonner";
+import { toast } from "@hanzo/ui";
 
 /**
  * Provider display metadata — the ONE place icon/label per provider lives.

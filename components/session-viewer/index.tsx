@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
+import { Button } from '@hanzo/ui';
+import { toast } from '@hanzo/ui';
 
 interface SessionPage {
   path: string;

@@ -6,7 +6,7 @@ import { ArrowLeft, Save, Camera, Link as LinkIcon, Twitter, Github, Globe } fro
 import { Button } from "@hanzo/ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
 import { useUser } from "@/hooks/useUser";
-import { toast } from "sonner";
+import { toast } from "@hanzo/ui";
 import { HanzoLogo } from "@/components/HanzoLogo";
 
 export default function ProfilePage() {
