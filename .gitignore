@@ -104,3 +104,6 @@ tests/e2e/test-results/
 tests/e2e/playwright-report/
 tests/e2e/junit.xml
 tests/e2e/test-results.json
+
+# Claude Code session state (worktrees, transcripts) — never commit
+.claude/
