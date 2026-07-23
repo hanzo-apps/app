@@ -75,8 +75,8 @@ importers:
         specifier: ^0.2.1
         version: 0.2.1(react@19.2.4)
       '@hanzo/event':
-        specifier: ^0.2.0
-        version: 0.2.0(react@19.2.4)
+        specifier: ^0.3.1
+        version: 0.3.1(react@19.2.4)
       '@hanzo/gui':
         specifier: 7.3.0
         version: 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native-web@0.21.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
@@ -88,7 +88,7 @@ importers:
         version: 1.0.13(react@19.2.4)
       '@hanzo/ui':
         specifier: npm:@hanzo/ui-shadcn@^5.9.0
-        version: '@hanzo/ui-shadcn@5.9.0(5882c7e6e8383341dee8f73d1fa4e697)'
+        version: '@hanzo/ui-shadcn@5.9.0(oeal7xtil5hvhuohen3jkcjxra)'
       '@hanzo/usage':
         specifier: ^0.1.6
         version: 0.1.6(@hanzo/gui@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native-web@0.21.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0))(@hanzogui/lucide-icons-2@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0))(react@19.2.4)
@@ -292,7 +292,7 @@ importers:
         version: 2.47.6(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.3.6)
       wagmi:
         specifier: ^3.5.0
-        version: 3.5.0(ca4507514a6f0f1245ce39eff3d7d607)
+        version: 3.5.0(wlf36bt6krpwrwm2fbpavi5si4)
       web-vitals:
         specifier: ^5.1.0
         version: 5.1.0
@@ -1246,8 +1246,8 @@ packages:
       react:
         optional: true
 
-  '@hanzo/event@0.2.0':
-    resolution: {integrity: sha512-jx+xlT5no88PYg/k465/pQ7a+oQcfImB5X0dJ4/ZSSF5bwqPCItvN/9Znt4SQpq18EQeMuR5GiLmxo1wSP5uqw==}
+  '@hanzo/event@0.3.1':
+    resolution: {integrity: sha512-FAA6C/+hP8woUdle9VxRZXreCpCa+K1zlZAVOT8HTYHu6QH37LJIG2KS5NXutx80haSwNPGooJJlZRvx9x07ug==}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
     peerDependenciesMeta:
@@ -10994,7 +10994,7 @@ snapshots:
     optionalDependencies:
       react: 19.2.4
 
-  '@hanzo/event@0.2.0(react@19.2.4)':
+  '@hanzo/event@0.3.1(react@19.2.4)':
     optionalDependencies:
       react: 19.2.4
 
@@ -11093,7 +11093,7 @@ snapshots:
     optionalDependencies:
       react: 19.2.4
 
-  '@hanzo/ui-shadcn@5.9.0(5882c7e6e8383341dee8f73d1fa4e697)':
+  '@hanzo/ui-shadcn@5.9.0(oeal7xtil5hvhuohen3jkcjxra)':
     dependencies:
       '@hookform/resolvers': 3.10.0(react-hook-form@7.71.2(react@19.2.4))
       '@next/third-parties': 16.2.10(next@16.2.11(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.61.1)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
@@ -11167,7 +11167,7 @@ snapshots:
       react-day-picker: 9.14.0(react@19.2.4)
       react-hook-form: 7.71.2(react@19.2.4)
       react-resizable-panels: 4.7.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      wagmi: 3.5.0(ca4507514a6f0f1245ce39eff3d7d607)
+      wagmi: 3.5.0(wlf36bt6krpwrwm2fbpavi5si4)
     transitivePeerDependencies:
       - '@types/react'
       - '@types/react-dom'
@@ -16213,7 +16213,7 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
 
-  '@wagmi/connectors@7.2.1(9f7cd6eb00fc96645d58b91eb48d335d)':
+  '@wagmi/connectors@7.2.1(mqklwk4kasbhk2czsaggvhwlgy)':
     dependencies:
       '@wagmi/core': 3.4.0(@tanstack/query-core@5.94.5)(@types/react@19.2.14)(ox@0.14.31(typescript@5.9.3)(zod@4.3.6))(react@19.2.4)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.2.4))(viem@2.47.6(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.3.6))
       viem: 2.47.6(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.3.6)
@@ -21343,7 +21343,7 @@ snapshots:
       react: 19.2.4
       react-native: 0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6)
       typescript: 5.9.3
-      wagmi: 3.5.0(ca4507514a6f0f1245ce39eff3d7d607)
+      wagmi: 3.5.0(wlf36bt6krpwrwm2fbpavi5si4)
     transitivePeerDependencies:
       - '@types/react'
       - immer
@@ -23027,10 +23027,10 @@ snapshots:
     dependencies:
       xml-name-validator: 4.0.0
 
-  wagmi@3.5.0(ca4507514a6f0f1245ce39eff3d7d607):
+  wagmi@3.5.0(wlf36bt6krpwrwm2fbpavi5si4):
     dependencies:
       '@tanstack/react-query': 5.94.5(react@19.2.4)
-      '@wagmi/connectors': 7.2.1(9f7cd6eb00fc96645d58b91eb48d335d)
+      '@wagmi/connectors': 7.2.1(mqklwk4kasbhk2czsaggvhwlgy)
       '@wagmi/core': 3.4.0(@tanstack/query-core@5.94.5)(@types/react@19.2.14)(ox@0.14.31(typescript@5.9.3)(zod@4.3.6))(react@19.2.4)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.2.4))(viem@2.47.6(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.3.6))
       react: 19.2.4
       use-sync-external-store: 1.4.0(react@19.2.4)

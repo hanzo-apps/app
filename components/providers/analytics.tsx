@@ -7,8 +7,29 @@ import { createAnalytics } from '@hanzo/event';
 import { AnalyticsProvider, ErrorBoundary, useAnalytics, usePageview } from '@hanzo/event/react';
 import { setErrorReporter, type ErrorContext } from '@/lib/error-handling/error-logger';
 
-/** Cloud analytics ingest — api.hanzo.ai fronts /v1/analytics (+ /v1/tracker). */
+/** The ONE Hanzo Cloud telemetry front door — POST api.hanzo.ai/v1/event. Cloud
+ *  fans the one batched stream out to the web (analytics), product (insights), and
+ *  error (sentry) lenses; the client never sends the org — Cloud resolves the
+ *  tenant server-side from the validated bearer (or the publishable key). */
 const HOST = 'https://api.hanzo.ai';
+
+/** Optional publishable ingest key (pk_…) that lets LOGGED-OUT marketing/public
+ *  views emit accepted telemetry (pageviews + errors + unload beacons) — the key
+ *  HMAC-verifies to the org server-side, so anonymous events light up all three
+ *  lenses. Provision one per org via POST /v1/ingest/keys and set the env var.
+ *  When unset the authed-bearer path is used and anonymous events are best-effort. */
+const INGEST_KEY = process.env.NEXT_PUBLIC_HANZO_INGEST_KEY || undefined;
+
+/** doNotTrack reads the browser Do-Not-Track consent signal (SSR-safe). A visitor
+ *  who opts out gets no telemetry at all — pageviews, events, and errors are all
+ *  suppressed by the client's `enabled` gate. */
+function doNotTrack(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  const n = navigator as Navigator & { msDoNotTrack?: string | null };
+  const w = typeof window !== 'undefined' ? (window as Window & { doNotTrack?: string | null }) : undefined;
+  const dnt = n.doNotTrack ?? n.msDoNotTrack ?? w?.doNotTrack;
+  return dnt === '1' || dnt === 'yes';
+}
 
 function Pageview() {
   usePageview(usePathname());
@@ -47,6 +68,9 @@ export function AnalyticsRoot({ children }: { children: ReactNode }) {
         product: 'app',
         host: HOST,
         getToken: () => tokenRef.current ?? undefined,
+        ingestKey: INGEST_KEY,
+        // Consent gate: honor the browser Do-Not-Track signal.
+        enabled: !doNotTrack(),
       }),
     [],
   );
