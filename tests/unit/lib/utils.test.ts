@@ -1,4 +1,4 @@
-import { cn, COLORS, getPTag } from '@/lib/utils';
+import { cn, COLORS } from '@/lib/utils';
 
 describe('Utils', () => {
   describe('cn', () => {
@@ -33,65 +33,28 @@ describe('Utils', () => {
     });
   });
 
-  describe('COLORS', () => {
-    it('contains expected color values', () => {
-      expect(COLORS).toEqual([
-        'red',
-        'blue',
-        'green',
-        'yellow',
-        'purple',
-        'pink',
-        'gray',
-      ]);
+  // COLORS is the true-black monochrome ramp — the design law is ZERO hue by
+  // construction (hanzo.ai brand). Pin the invariants, not a snapshot: every
+  // entry is a zero-chroma hex gray (rr gg bb all equal) and the ramp ascends
+  // dark → light so index order is meaningful for depth.
+  describe('COLORS — monochrome ramp', () => {
+    it('contains only zero-chroma grays (r == g == b)', () => {
+      for (const color of COLORS) {
+        expect(color).toMatch(/^#([0-9a-f]{2})\1{2}$/i);
+      }
     });
 
-    it('has correct length', () => {
-      expect(COLORS).toHaveLength(7);
+    it('ascends strictly dark → light', () => {
+      const luma = COLORS.map((c) => parseInt(c.slice(1, 3), 16));
+      for (let i = 1; i < luma.length; i++) {
+        expect(luma[i]).toBeGreaterThan(luma[i - 1]);
+      }
     });
 
-    it('contains only string values', () => {
-      COLORS.forEach(color => {
-        expect(typeof color).toBe('string');
-      });
-    });
-  });
-
-  describe('getPTag', () => {
-    it('generates correct HTML with repo ID', () => {
-      const repoId = 'test-repo-123';
-      const result = getPTag(repoId);
-
-      expect(result).toContain('Made with');
-      expect(result).toContain('Hanzo');
-      expect(result).toContain(`remix=${repoId}`);
-      expect(result).toContain('https://hanzo.ai/logo.svg');
-    });
-
-    it('returns valid HTML structure', () => {
-      const result = getPTag('test');
-      expect(result).toMatch(/^<p.*<\/p>$/);
-      expect(result).toContain('<img');
-      expect(result).toContain('<a');
-    });
-
-    it('includes correct styles', () => {
-      const result = getPTag('test');
-      expect(result).toContain('position: fixed');
-      expect(result).toContain('z-index: 10');
-      expect(result).toContain('background: rgba(0, 0, 0, 0.8)');
-    });
-
-    it('handles empty repo ID', () => {
-      const result = getPTag('');
-      expect(result).toContain('remix=');
-      expect(result).not.toContain('remix=undefined');
-    });
-
-    it('escapes special characters in repo ID', () => {
-      const repoId = 'test&repo<>123';
-      const result = getPTag(repoId);
-      expect(result).toContain(`remix=${repoId}`);
+    it('spans a usable ramp (near-black start, light end)', () => {
+      expect(COLORS.length).toBeGreaterThanOrEqual(8);
+      expect(parseInt(COLORS[0].slice(1, 3), 16)).toBeLessThan(0x30);
+      expect(parseInt(COLORS[COLORS.length - 1].slice(1, 3), 16)).toBeGreaterThan(0xc0);
     });
   });
 });
