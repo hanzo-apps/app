@@ -6,7 +6,9 @@
  *
  *   1. Analytics beacon — a minimal, cookieless pageview reporter that speaks the
  *      SAME wire protocol as the canonical Hanzo analytics client (@hanzo/capture):
- *      a `{ batch: [event] }` POST to the same-origin `/v1/analytics` endpoint.
+ *      a `{ batch: [event] }` POST to the same-origin `/v1/event` endpoint (the
+ *      ONE canonical ingest door; on a published site host the org is resolved
+ *      server-side from the host, so the beacon is anonymous + key-free).
  *      Wired ON by default; emitted only when the project's `analytics` is true.
  *
  *   2. Base submissions — the project's Base data space exposed as a well-known
@@ -24,8 +26,8 @@
  * Every builder is pure (input → string) so the emitted markup is unit-testable.
  */
 
-/** Same-origin canonical Hanzo analytics endpoint (@hanzo/capture ANALYTICS_PATH). */
-export const ANALYTICS_ENDPOINT = '/v1/analytics';
+/** Same-origin canonical Hanzo ingest door — one way for every event (@hanzo/capture). */
+export const ANALYTICS_ENDPOINT = '/v1/event';
 
 /**
  * Same-origin canonical public Base records path for the `submissions` collection.
