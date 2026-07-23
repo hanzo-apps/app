@@ -86,9 +86,12 @@ importers:
       '@hanzo/logo':
         specifier: ^1.0.13
         version: 1.0.13(react@19.2.4)
+      '@hanzo/observe':
+        specifier: ^0.1.0
+        version: 0.1.0(react@19.2.4)
       '@hanzo/ui':
         specifier: npm:@hanzo/ui-shadcn@^5.9.0
-        version: '@hanzo/ui-shadcn@5.9.0(oeal7xtil5hvhuohen3jkcjxra)'
+        version: '@hanzo/ui-shadcn@5.9.0(5882c7e6e8383341dee8f73d1fa4e697)'
       '@hanzo/usage':
         specifier: ^0.1.6
         version: 0.1.6(@hanzo/gui@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native-web@0.21.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0))(@hanzogui/lucide-icons-2@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0))(react@19.2.4)
@@ -292,7 +295,7 @@ importers:
         version: 2.47.6(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.3.6)
       wagmi:
         specifier: ^3.5.0
-        version: 3.5.0(wlf36bt6krpwrwm2fbpavi5si4)
+        version: 3.5.0(ca4507514a6f0f1245ce39eff3d7d607)
       web-vitals:
         specifier: ^5.1.0
         version: 5.1.0
@@ -1273,6 +1276,14 @@ packages:
     resolution: {integrity: sha512-94VA6S7oVY5UZ816295Ez12p8a76ZGEct14JQwE6r5UCutD3K9TBgx5V01gjwxwVL9tWnXn/yut4PHRAY/9RNQ==}
     peerDependencies:
       react: '>=16.8.0'
+    peerDependenciesMeta:
+      react:
+        optional: true
+
+  '@hanzo/observe@0.1.0':
+    resolution: {integrity: sha512-VWfMz4F6gexchEaEjK9btxcTOVhWk8km64TN69hWLa1jWB4uTL9VdTj3cWZRDl/OP1lS8YcjpLdSI1q+C7fymg==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
     peerDependenciesMeta:
       react:
         optional: true
@@ -11093,7 +11104,13 @@ snapshots:
     optionalDependencies:
       react: 19.2.4
 
-  '@hanzo/ui-shadcn@5.9.0(oeal7xtil5hvhuohen3jkcjxra)':
+  '@hanzo/observe@0.1.0(react@19.2.4)':
+    dependencies:
+      '@hanzo/event': 0.3.1(react@19.2.4)
+    optionalDependencies:
+      react: 19.2.4
+
+  '@hanzo/ui-shadcn@5.9.0(5882c7e6e8383341dee8f73d1fa4e697)':
     dependencies:
       '@hookform/resolvers': 3.10.0(react-hook-form@7.71.2(react@19.2.4))
       '@next/third-parties': 16.2.10(next@16.2.11(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.61.1)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
@@ -11167,7 +11184,7 @@ snapshots:
       react-day-picker: 9.14.0(react@19.2.4)
       react-hook-form: 7.71.2(react@19.2.4)
       react-resizable-panels: 4.7.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      wagmi: 3.5.0(wlf36bt6krpwrwm2fbpavi5si4)
+      wagmi: 3.5.0(ca4507514a6f0f1245ce39eff3d7d607)
     transitivePeerDependencies:
       - '@types/react'
       - '@types/react-dom'
@@ -16213,7 +16230,7 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
 
-  '@wagmi/connectors@7.2.1(mqklwk4kasbhk2czsaggvhwlgy)':
+  '@wagmi/connectors@7.2.1(9f7cd6eb00fc96645d58b91eb48d335d)':
     dependencies:
       '@wagmi/core': 3.4.0(@tanstack/query-core@5.94.5)(@types/react@19.2.14)(ox@0.14.31(typescript@5.9.3)(zod@4.3.6))(react@19.2.4)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.2.4))(viem@2.47.6(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.3.6))
       viem: 2.47.6(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.3.6)
@@ -21343,7 +21360,7 @@ snapshots:
       react: 19.2.4
       react-native: 0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6)
       typescript: 5.9.3
-      wagmi: 3.5.0(wlf36bt6krpwrwm2fbpavi5si4)
+      wagmi: 3.5.0(ca4507514a6f0f1245ce39eff3d7d607)
     transitivePeerDependencies:
       - '@types/react'
       - immer
@@ -23027,10 +23044,10 @@ snapshots:
     dependencies:
       xml-name-validator: 4.0.0
 
-  wagmi@3.5.0(wlf36bt6krpwrwm2fbpavi5si4):
+  wagmi@3.5.0(ca4507514a6f0f1245ce39eff3d7d607):
     dependencies:
       '@tanstack/react-query': 5.94.5(react@19.2.4)
-      '@wagmi/connectors': 7.2.1(mqklwk4kasbhk2czsaggvhwlgy)
+      '@wagmi/connectors': 7.2.1(9f7cd6eb00fc96645d58b91eb48d335d)
       '@wagmi/core': 3.4.0(@tanstack/query-core@5.94.5)(@types/react@19.2.14)(ox@0.14.31(typescript@5.9.3)(zod@4.3.6))(react@19.2.4)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.2.4))(viem@2.47.6(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.3.6))
       react: 19.2.4
       use-sync-external-store: 1.4.0(react@19.2.4)
