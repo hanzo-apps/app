@@ -1,22 +1,28 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Github } from "lucide-react";
 import Header from "@/components/layout/header";
 import Reveal from "@/components/landing/reveal";
-import HeroPreview from "@/components/landing/hero-preview";
-import LogoWall from "@/components/landing/logo-wall";
-import CloudIntegration from "@/components/landing/cloud-integration";
-import ModelsStrip from "@/components/landing/models-strip";
-import HanzoModels from "@/components/landing/hanzo-models";
-import HowItWorks from "@/components/landing/how-it-works";
-import Comparison from "@/components/landing/comparison";
-import SiteFooter from "@/components/landing/site-footer";
+import LazySection from "@/components/landing/lazy-section";
 import { TemplateThumb } from "@/components/template-thumb";
 import { BuildComposer, type ComposerMode } from "@/components/build-composer";
 import { ProjectThumb } from "@/components/project-thumb";
+
+// Below-the-fold sections: code-split out of the initial bundle and mounted on
+// scroll via <LazySection>. The hero (Header + composer) stays eager so it paints
+// instantly; these chunks load as the viewport approaches each one.
+const HeroPreview = dynamic(() => import("@/components/landing/hero-preview"), { ssr: false });
+const LogoWall = dynamic(() => import("@/components/landing/logo-wall"), { ssr: false });
+const CloudIntegration = dynamic(() => import("@/components/landing/cloud-integration"), { ssr: false });
+const ModelsStrip = dynamic(() => import("@/components/landing/models-strip"), { ssr: false });
+const HanzoModels = dynamic(() => import("@/components/landing/hanzo-models"), { ssr: false });
+const HowItWorks = dynamic(() => import("@/components/landing/how-it-works"), { ssr: false });
+const Comparison = dynamic(() => import("@/components/landing/comparison"), { ssr: false });
+const SiteFooter = dynamic(() => import("@/components/landing/site-footer"), { ssr: false });
 import { builderLink } from "@/lib/api/projects";
 import { useUser } from "@/hooks/useUser";
 import {
@@ -261,18 +267,23 @@ export default function LandingPage() {
             </Reveal>
           </div>
 
-          {/* Hero focal visual — the builder building an app, live. */}
-          <Reveal delay={240} className="mt-16 md:mt-20">
-            <HeroPreview />
-          </Reveal>
+          {/* Hero focal visual — the builder building an app, live. Lazy: it sits
+              just below the composer, so it mounts the moment it nears view. */}
+          <div className="mt-16 md:mt-20">
+            <LazySection minHeight={520} rootMargin="900px 0px">
+              <Reveal delay={240}>
+                <HeroPreview />
+              </Reveal>
+            </LazySection>
+          </div>
         </section>
 
-        <LogoWall />
-        <CloudIntegration />
-        <ModelsStrip />
-        <HanzoModels />
-        <HowItWorks />
-        <Comparison />
+        <LazySection minHeight={180}><LogoWall /></LazySection>
+        <LazySection minHeight={420}><CloudIntegration /></LazySection>
+        <LazySection minHeight={320}><ModelsStrip /></LazySection>
+        <LazySection minHeight={360}><HanzoModels /></LazySection>
+        <LazySection minHeight={320}><HowItWorks /></LazySection>
+        <LazySection minHeight={640}><Comparison /></LazySection>
 
         {/* ── Continue building (logged-in) ── */}
         {user && projects.length > 0 && (
@@ -345,7 +356,7 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <SiteFooter />
+      <LazySection minHeight={240}><SiteFooter /></LazySection>
     </div>
   );
 }
