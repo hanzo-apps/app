@@ -12,11 +12,11 @@ import { AnalyticsDashboard } from '../analytics-dashboard';
 import { TemplateExportDialog } from '../templates/template-export-dialog';
 import { ProjectSwapDialog } from '../project-swap-dialog';
 import { Globe, Plus, Search, ArrowUpDown } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { Button } from '@hanzo/ui';
+import { Input } from '@hanzo/ui';
+import { Popover, PopoverContent, PopoverTrigger } from '@hanzo/ui';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
+import { toast } from '@hanzo/ui';
 import { logger } from '@/lib/utils';
 
 type SortOption = 'updated' | 'created' | 'name' | 'published';

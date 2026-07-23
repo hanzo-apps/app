@@ -43,7 +43,7 @@ import {
   Mail,
 } from "lucide-react";
 import { Button, Input, Badge } from "@hanzo/ui";
-import { toast } from "sonner";
+import { toast } from "@hanzo/ui";
 
 import { useUser } from "@/hooks/useUser";
 import { OrgProvider, useOrg } from "@/lib/org/client";

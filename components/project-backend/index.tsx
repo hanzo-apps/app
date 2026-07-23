@@ -2,34 +2,34 @@
 
 import React, { useState, useMemo } from 'react';
 import { vfs } from '@/lib/vfs';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@hanzo/ui';
 import { FunctionsManager } from '@/components/database-manager/functions-manager';
 import { ServerFunctionsManager } from '@/components/database-manager/server-functions-manager';
 import { SecretsManager } from '@/components/database-manager/secrets-manager';
 import { ScheduledFunctionsManager } from '@/components/database-manager/scheduled-functions-manager';
 import { Code2, Wrench, Key, Clock, Lock, Settings2, PowerOff, Database } from 'lucide-react';
-import { Switch } from '@/components/ui/switch';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Switch } from '@hanzo/ui';
+import { Input } from '@hanzo/ui';
+import { Label } from '@hanzo/ui';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-} from '@/components/ui/select';
+} from '@hanzo/ui';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from '@hanzo/ui';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
   TooltipProvider,
-} from '@/components/ui/tooltip';
-import { toast } from 'sonner';
+} from '@hanzo/ui';
+import { toast } from '@hanzo/ui';
 import { logger } from '@/lib/utils';
 import type { Project, ProjectRuntime } from '@/lib/vfs/types';
 import { getProjectRuntimes } from '@/lib/runtimes/registry';

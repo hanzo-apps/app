@@ -5,10 +5,10 @@ import { Project } from '@/lib/vfs/types';
 import { getRuntimeBadge } from '@/lib/runtimes/registry';
 import { vfs } from '@/lib/vfs';
 import { logger } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@hanzo/ui';
+import { Badge } from '@hanzo/ui';
+import { Input } from '@hanzo/ui';
+import { Textarea } from '@hanzo/ui';
 import {
   Trash2,
   Download,
@@ -37,8 +37,8 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { toast } from 'sonner';
+} from '@hanzo/ui';
+import { toast } from '@hanzo/ui';
 
 interface ProjectCardProps {
   project: Project;

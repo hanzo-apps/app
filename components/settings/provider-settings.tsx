@@ -15,7 +15,7 @@ import {
 } from "@hanzo/ui";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
 import { Loader2, CheckCircle, XCircle, ExternalLink, Key, Trash2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@hanzo/ui';
 
 import {
   ProviderId,

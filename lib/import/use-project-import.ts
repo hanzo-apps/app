@@ -11,7 +11,7 @@
 
 import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
+import { toast } from '@hanzo/ui';
 
 import { readDrop, readFileList, type DropReadResult } from './read-drop';
 import { stageProject } from './staging';

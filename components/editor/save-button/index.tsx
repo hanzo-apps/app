@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@hanzo/ui";
 import { MdSave } from "react-icons/md";
 import { useParams } from "next/navigation";
 

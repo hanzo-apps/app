@@ -9,13 +9,13 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@hanzo/ui';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { Button } from '@/components/ui/button';
+} from '@hanzo/ui';
+import { Button } from '@hanzo/ui';
 import { cn } from '@/lib/utils';
 
 interface DeploymentSelectorProps {

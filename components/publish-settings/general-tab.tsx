@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 import { PublishSettings, Project } from '@/lib/vfs/types';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@hanzo/ui';
+import { Input } from '@hanzo/ui';
+import { Switch } from '@hanzo/ui';
+import { Badge } from '@hanzo/ui';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import { Globe, AlertTriangle } from 'lucide-react';
 
 interface GeneralTabProps {

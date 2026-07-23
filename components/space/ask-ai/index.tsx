@@ -28,7 +28,7 @@ export const AskAi = () => {
             </Button>
           </div>
           <div className="flex items-center justify-end gap-2">
-            <Button variant="black" size="sm">
+            <Button className="bg-neutral-950 text-neutral-300 hover:brightness-110" size="sm">
               <PiGearSixFill className="size-4" />
               Settings
             </Button>

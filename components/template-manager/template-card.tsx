@@ -4,8 +4,8 @@ import React from 'react';
 import { CustomTemplate, LICENSE_OPTIONS } from '@/lib/vfs/types';
 import type { BuiltInTemplateMetadata } from '@/lib/vfs/templates/registry';
 import { getRuntimeBadge } from '@/lib/runtimes/registry';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '@hanzo/ui';
+import { Badge } from '@hanzo/ui';
 import { Trash2, Plus, FileBox, Download, Link2, ExternalLink, MoreVertical, Server } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import {
@@ -14,13 +14,13 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@hanzo/ui';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from '@hanzo/ui';
 
 interface TemplateCardProps {
   template: CustomTemplate | BuiltInTemplateMetadata;
