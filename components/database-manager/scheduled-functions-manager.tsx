@@ -1,19 +1,19 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { toast } from 'sonner';
+import { toast } from '@hanzo/ui';
 import { ScheduledFunction, EdgeFunction } from '@/lib/vfs/types';
 import {
   Plus, Loader2, AlertCircle, Clock, MoreVertical, Pencil, Trash2,
   ToggleLeft, ToggleRight
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@hanzo/ui';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@hanzo/ui';
 import { ScheduledFunctionEditor } from './scheduled-function-editor';
 import { cn } from '@/lib/utils';
 import type { ScheduledFunctionsDataProvider } from './data-providers';

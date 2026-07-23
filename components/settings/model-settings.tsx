@@ -3,12 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import { configManager } from '@/lib/config/storage';
 import { validateApiKey as checkApiKey } from '@/lib/llm/llm-client';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
+import { Button } from '@hanzo/ui';
+import { Input } from '@hanzo/ui';
+import { Label } from '@hanzo/ui';
+import { Switch } from '@hanzo/ui';
 import { Eye, EyeOff, Check, X, ExternalLink, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@hanzo/ui';
 import { ModelSelector } from '@/components/model-selector';
 import {
   Select,
@@ -16,7 +16,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@hanzo/ui';
 import { ProviderId } from '@/lib/llm/providers/types';
 import { getAllProviders, getProvider } from '@/lib/llm/providers/registry';
 import { CodexAuthPanel } from '@/components/settings/codex-auth-panel';

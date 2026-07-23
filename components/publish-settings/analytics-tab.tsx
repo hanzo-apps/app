@@ -2,17 +2,17 @@
 
 import React from 'react';
 import { PublishSettings, AnalyticsConfig } from '@/lib/vfs/types';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
+import { Label } from '@hanzo/ui';
+import { Input } from '@hanzo/ui';
+import { Textarea } from '@hanzo/ui';
+import { Switch } from '@hanzo/ui';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@hanzo/ui';
 import { BarChart3, Shield, Info } from 'lucide-react';
 
 interface AnalyticsTabProps {

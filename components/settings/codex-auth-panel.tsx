@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
+import { Button } from '@hanzo/ui';
+import { Label } from '@hanzo/ui';
 import { ExternalLink, Loader2, Terminal, TriangleAlert } from 'lucide-react';
 import { ConnectionBadge } from '@/components/settings/connection-badge';
-import { toast } from 'sonner';
+import { toast } from '@hanzo/ui';
 import { configManager } from '@/lib/config/storage';
 import { parseCodexAuthJson, connectCodex, disconnectCodex, checkCodexStatus } from '@/lib/auth/codex-auth';
 

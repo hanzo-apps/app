@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Button } from '@hanzo/ui';
+import { Input } from '@hanzo/ui';
+import { Label } from '@hanzo/ui';
 import { ExternalLink, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { ConnectionBadge } from '@/components/settings/connection-badge';
-import { toast } from 'sonner';
+import { toast } from '@hanzo/ui';
 import { configManager } from '@/lib/config/storage';
 import { validateApiKey } from '@/lib/llm/llm-client';
 import { checkHFCapabilities, loginHF } from '@/lib/auth/hf-auth';

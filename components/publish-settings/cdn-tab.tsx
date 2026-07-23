@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 import { PublishSettings, CdnConfig } from '@/lib/vfs/types';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '@hanzo/ui';
+import { Input } from '@hanzo/ui';
+import { Label } from '@hanzo/ui';
+import { Switch } from '@hanzo/ui';
+import { Badge } from '@hanzo/ui';
 import {
   Dialog,
   DialogContent,
@@ -14,14 +14,14 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/components/ui/dialog';
+} from '@hanzo/ui';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@hanzo/ui';
 import { Plus, Edit, Trash2, Link2 } from 'lucide-react';
 
 interface CdnTabProps {

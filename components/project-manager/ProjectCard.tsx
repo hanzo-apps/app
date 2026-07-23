@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@hanzo/ui';
 import { Pencil, Trash2, MoreVertical, ExternalLink, Globe, Settings } from 'lucide-react';
-import { buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@hanzo/ui';
 import { cn } from '@/lib/utils';
 import { builderLink, configLink, liveUrlOf, type Project } from '@/lib/api/projects';
 import { statusOf } from '@/lib/project-status';

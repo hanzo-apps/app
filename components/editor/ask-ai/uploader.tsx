@@ -182,10 +182,9 @@ export const Uploader = ({
                       className="flex-1 min-w-0 rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-400"
                     />
                     <Button
-                      variant="black"
+                      className="shrink-0 bg-neutral-950 text-neutral-300 hover:brightness-110"
                       onClick={() => void generateImage()}
                       disabled={generating || !prompt.trim()}
-                      className="shrink-0"
                     >
                       {generating ? (
                         <Loading
@@ -209,9 +208,8 @@ export const Uploader = ({
                     Or import images from your computer
                   </p>
                   <Button
-                    variant="black"
+                    className="relative w-full bg-neutral-950 text-neutral-300 hover:brightness-110"
                     onClick={() => fileInputRef.current?.click()}
-                    className="relative w-full"
                   >
                     {isLoading ? (
                       <>
