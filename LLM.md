@@ -388,14 +388,15 @@ const Preview = React.memo(({ html, device }) => {
 import { FixedSizeList } from 'react-window';
 ```
 
-3. **Monitoring Setup**:
+3. **Monitoring** (already wired — `components/providers/analytics.tsx`):
 ```typescript
-// Add application monitoring
-import * as Sentry from "@sentry/nextjs";
-Sentry.init({
-  dsn: process.env.SENTRY_DSN,
-  tracesSampleRate: 0.1,
-});
+// @hanzo/event is the ONE telemetry client: pageviews, product events, AND
+// errors go to the ONE front door (POST api.hanzo.ai/v1/event), fanned
+// server-side to the web (analytics), product (insights), and error (sentry)
+// lenses. It subsumes @sentry — no separate DSN. Auto error capture +
+// ErrorBoundary are on; a Do-Not-Track visitor is opted out. Set a publishable
+// NEXT_PUBLIC_HANZO_INGEST_KEY to also accept telemetry from logged-out views.
+import { createAnalytics, EVENTS } from "@hanzo/event";
 ```
 
 ### Short-term Improvements (Month 1-3)
