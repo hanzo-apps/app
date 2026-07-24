@@ -20,15 +20,16 @@ Add the tag (served by hanzo.app) and the declaration metas:
 <script async src="https://hanzo.app/edit.js"></script>
 
 <meta name="hanzo:repo"     content="owner/repo">      <!-- required -->
-<meta name="hanzo:path"     content="path/to/file.mdx"><!-- optional default file -->
+<meta name="hanzo:path"     content="path/to/file.mdx"><!-- optional override; auto-resolved otherwise -->
 <meta name="hanzo:branch"   content="main">            <!-- optional, default main -->
 <meta name="hanzo:provider" content="github">          <!-- optional: github|gitlab|gitea, default github -->
 <meta name="hanzo:key"      content="pk_...">           <!-- optional publishable project key -->
 ```
 
-With **no `hanzo:repo`** the widget renders nothing. `hanzo:path` is the default
-file the edit targets (the widget lets the user confirm/override it); a page that
-maps 1:1 to a source file should declare it so PRs are one click.
+With **no `hanzo:repo`** the widget renders nothing. **You no longer need
+`hanzo:path`** — the widget auto-resolves the source file(s) for the current
+view and pre-fills the field (see below). `hanzo:path` remains an optional
+explicit override that wins when a page maps 1:1 to a known file.
 
 In Next.js, declare the repo-wide metas once in `app/layout.tsx`:
 
@@ -48,6 +49,68 @@ A route that maps to a specific source file adds `"hanzo:path"` in its own
 
 Apps that already have a chat widget don't need `edit.js` — they call the same
 backend (`POST /v1/suggest`, `POST /v1/edit`, `GET /v1/me`) directly.
+
+---
+
+## Zero manual path — auto-resolving the source file
+
+The widget resolves a **ranked list of candidate source files** for the current
+view and pre-fills the path field (the user may override, or pick another
+candidate chip). It uses the best available signal, in priority order:
+
+1. **`hanzo:path`** — an explicit 1:1 declaration, when present.
+2. **React `_debugSource`** on the element in view — the exact `file:line`, but
+   only in **dev** builds (the production JSX runtime strips it), so it's a bonus
+   when present and never a dependency.
+3. **The route manifest** (`/edit-manifest.json`) — the reliable signal. A
+   build step (`scripts/gen-edit-manifest.mjs`, wired as `prebuild`/`predev`)
+   scans `app/` and emits the App-Router pathname → `app/…/page.tsx` (+ its
+   layout chain) map. It's exact by construction — derived from the same
+   filesystem convention Next routes on (route groups `(x)` are URL-transparent;
+   `[seg]`/`[...seg]`/`[[...seg]]` are dynamic). The widget fetches it
+   **same-origin** (each app serves its own; a mismatched `repo` is ignored) and
+   picks the most **specific** match (static ≫ dynamic).
+4. **Convention guess** — `app/<segments>/page.tsx` + root layout, when no
+   manifest is served (most apps today) or no route matched.
+
+The manifest is generated at build and **git-ignored** (never committed stale);
+absent, step 4 keeps the widget useful. Run it manually with
+`npm run gen:edit-manifest`.
+
+---
+
+## The context trace
+
+Every `suggest`/`edit` submission carries a trace so an agent or dev can review
+and finish the fix — the payload is:
+
+```jsonc
+{
+  // base
+  "repo": "hanzoai/app", "provider": "github", "branch": "main",
+  "url": "https://…", "key": "pk_…?", "context": "selected text?",
+  "path": "auto-filled top candidate (optional — server falls back to it)",
+  // auto-context
+  "route": "/dev",
+  "candidateFiles": [{ "path": "app/dev/page.tsx", "score": 0.9, "why": "route → page" }],
+  "domBreadcrumb": "main > section[hero] > h1",
+  "appVersion": "1.42.121",
+  "sessionId": "…",              // @hanzo/event `hz_session` id (analytics/insights session)
+  "replayRef": { "sessionId": "…", "deepLink": "https://insights.hanzo.ai/replay/…" },
+  "usageTrace": [{ "route": "/", "kind": "load" }, { "route": "/dev", "kind": "nav" }]
+}
+```
+
+`lib/edit/context.ts` shapes this **once** (parse+sanitize → render) for both the
+issue body (`/v1/suggest`) and the PR body (`/v1/edit`), and resolves the
+effective path from `candidateFiles` when `path` is omitted. The trace is
+untrusted input: file paths run through `safePath`, and the replay deep-link is
+**reconstructed** from the session id server-side (never echoed from the client).
+
+**Session replay is present-when-available.** Replay INGEST is a separate,
+not-yet-live workstream, so the `deepLink` is well-formed now and simply *lights
+up* once ingest lands — it never blocks a fix, and when no session id is
+resolvable the reference is omitted entirely.
 
 ---
 
@@ -79,7 +142,9 @@ balance the gateway debits (`/v1/billing/balance`).
   user "Top up" · anon "Suggest a fix / Log in").
 - **`POST /v1/suggest`** → files an issue on the declared repo (via the caller's
   linked forge token, else a configured Hanzo bot). `{ ok, filed, issueUrl? }`.
+  Records the auto-context trace in the issue body.
 - **`POST /v1/edit`** → runs the vertical, returns `{ ok, prUrl, branch, forked }`.
+  `path` is optional (resolved from `candidateFiles`); the trace lands in the PR body.
 
 All three are **cross-origin by design** (the widget runs on other Hanzo
 origins): they accept the IAM bearer via same-origin cookie **or** an
