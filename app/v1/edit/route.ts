@@ -23,6 +23,7 @@ import { readWidgetBearer, resolveOrgIdentity } from '@/lib/org/server';
 import { spendableCents } from '@/lib/billing/server';
 import { providerFor } from '@/lib/edit/provider';
 import { parseTarget, runEdit } from '@/lib/edit/flow';
+import { MAX_FILE_BYTES } from '@/lib/edit/agent';
 import { resolveEditToken } from '@/lib/edit/token';
 import { preflight, withCors } from '@/lib/edit/cors';
 import { parseContext, pickPath, renderContext } from '@/lib/edit/context';
@@ -71,12 +72,24 @@ export async function POST(req: NextRequest) {
     key?: string;
     model?: string;
     mode?: string;
+    reviewed?: string;
+    baseSha?: string;
   };
 
   // Direct-commit ("goes live" straight to the default branch) is admin-ONLY.
   // A non-admin passing mode:'direct' is silently downgraded to the PR flow —
   // privilege is decided here (server), never in the browser.
   const direct = body.mode === 'direct' && id.isGlobalAdmin;
+
+  // Direct is two-phase: PROPOSE (no `reviewed`) computes + returns the rewrite
+  // for review; CONFIRM commits the exact bytes the admin approved. The confirm
+  // bytes are admin-authored, but still bounded by the single-file ceiling and
+  // committed against the reviewed sha (non-destructive).
+  const reviewed = direct && typeof body.reviewed === 'string' ? body.reviewed : undefined;
+  const baseSha = direct && typeof body.baseSha === 'string' ? body.baseSha : null;
+  if (reviewed !== undefined && Buffer.byteLength(reviewed, 'utf8') > MAX_FILE_BYTES) {
+    return withCors(origin, { ok: false, error: 'The reviewed file is too large to commit.' }, 413);
+  }
 
   // The widget auto-resolves the source file for the current view, so `path` is
   // optional: fall back to the top-ranked candidate when it's absent.
@@ -127,7 +140,23 @@ export async function POST(req: NextRequest) {
       actorLabel,
       projectKey: (body.key || '').trim() || undefined,
       direct,
+      reviewed,
+      baseSha,
     });
+    // PROPOSE phase (admin direct): return the computed rewrite for review — the
+    // widget renders the diff and the admin must confirm before it goes live.
+    if (out.preview) {
+      return withCors(origin, {
+        ok: true,
+        preview: true,
+        proposed: out.proposed,
+        diff: out.diff,
+        baseSha: out.baseSha,
+        path: target.path,
+        branch: out.branch,
+        provider: target.provider,
+      });
+    }
     return withCors(origin, {
       ok: true,
       prUrl: out.prUrl,

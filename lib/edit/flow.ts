@@ -94,8 +94,18 @@ export interface RunEditInput {
    * Commit STRAIGHT to the declared (default) branch — the "change all, goes
    * live" path — instead of fork→branch→PR. The route sets this ONLY for a
    * validated global admin; a non-admin can never reach it (server-enforced).
+   *
+   * Direct is ALWAYS two-phase (there is no un-reviewed live commit):
+   *   - `direct` with no `reviewed` → PROPOSE: compute the rewrite and return it
+   *     for the admin to review; NOTHING is committed.
+   *   - `direct` with `reviewed` → CONFIRM: commit the exact admin-reviewed bytes
+   *     (no regeneration → no drift), optimistic-locked to `baseSha`.
    */
   direct?: boolean;
+  /** Confirm phase: the exact bytes the admin reviewed and approved to commit. */
+  reviewed?: string;
+  /** The blob sha the reviewed bytes were computed against (non-destructive lock). */
+  baseSha?: string | null;
 }
 
 export interface EditOutcome {
@@ -105,11 +115,62 @@ export interface EditOutcome {
   branch: string;
   /** True when the edit went to a fork (the acting identity lacked write access). */
   forked: boolean;
-  commitSha: string;
+  /** The commit sha — absent on the propose (preview) phase, which commits nothing. */
+  commitSha?: string;
   /** True when the edit committed directly to the default branch (admin direct mode). */
   direct?: boolean;
   /** The commit's web URL, when the forge exposes one. */
   commitUrl?: string;
+  /**
+   * Propose phase of the admin direct commit: the computed rewrite awaiting an
+   * explicit admin confirmation. NOTHING has been committed yet.
+   */
+  preview?: boolean;
+  /** The full proposed file contents (propose phase) — the admin confirms these exact bytes. */
+  proposed?: string;
+  /** A line-based diff for review (propose phase); omitted for very large files. */
+  diff?: string;
+  /** The blob sha the proposal was computed against — echoed back on confirm for the lock. */
+  baseSha?: string | null;
+}
+
+/**
+ * A compact line-based unified-ish diff (LCS) for admin review of a proposed
+ * direct edit. Memory is O(before·after) lines, so we bound it: for very large
+ * files the widget shows the proposed contents in full instead of a diff.
+ */
+const MAX_DIFF_LINES = 1200;
+export function lineDiff(before: string, after: string): string | undefined {
+  const a = before.split('\n');
+  const b = after.split('\n');
+  if (a.length > MAX_DIFF_LINES || b.length > MAX_DIFF_LINES) return undefined;
+  const n = a.length;
+  const m = b.length;
+  const dp: number[][] = Array.from({ length: n + 1 }, () => new Array<number>(m + 1).fill(0));
+  for (let i = n - 1; i >= 0; i--) {
+    for (let j = m - 1; j >= 0; j--) {
+      dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    }
+  }
+  const out: string[] = [];
+  let i = 0;
+  let j = 0;
+  while (i < n && j < m) {
+    if (a[i] === b[j]) {
+      out.push('  ' + a[i]);
+      i++;
+      j++;
+    } else if (dp[i + 1][j] >= dp[i][j + 1]) {
+      out.push('- ' + a[i]);
+      i++;
+    } else {
+      out.push('+ ' + b[j]);
+      j++;
+    }
+  }
+  while (i < n) out.push('- ' + a[i++]);
+  while (j < m) out.push('+ ' + b[j++]);
+  return out.join('\n');
 }
 
 /**
@@ -119,6 +180,32 @@ export interface EditOutcome {
  */
 export async function runEdit(provider: GitProvider, input: RunEditInput): Promise<EditOutcome> {
   const { repo, path, branch } = input.target;
+
+  const title = `Hanzo Edit: ${cleanLine(input.instruction) || 'update ' + path}`;
+
+  // CONFIRM phase of the admin direct commit: the admin has reviewed a proposal
+  // and approved these exact bytes. Commit them verbatim (no regeneration → no
+  // drift, no TOCTOU between review and commit), optimistic-locked to the sha the
+  // proposal was computed against — a file that moved since review fails the
+  // commit rather than clobbering the newer content. The route gates this on
+  // isGlobalAdmin; `path`/`repo` are already validated + scoped.
+  if (input.direct && input.reviewed !== undefined) {
+    const { commitSha } = await provider.commitFile(
+      repo,
+      branch,
+      path,
+      input.reviewed,
+      title,
+      input.baseSha ?? null,
+    );
+    return {
+      branch,
+      forked: false,
+      commitSha,
+      direct: true,
+      commitUrl: provider.commitUrl ? provider.commitUrl(repo, commitSha) : undefined,
+    };
+  }
 
   // 1) Read the current file at the declared branch.
   const file = await provider.getFile(repo, path, branch);
@@ -136,19 +223,21 @@ export async function runEdit(provider: GitProvider, input: RunEditInput): Promi
     throw new GitSyncError('The edit produced no change to the file.', 422, 'no_change');
   }
 
-  const title = `Hanzo Edit: ${cleanLine(input.instruction) || 'update ' + path}`;
-
-  // 2.5) Direct-commit (admin "goes live" path): one atomic, non-destructive
-  //      commit straight onto the default branch — no branch, no PR. The route
-  //      is the gate (isGlobalAdmin only); this stays a thin mechanism.
+  // 2.5) PROPOSE phase of the admin "goes live" path: the direct commit is ALWAYS
+  //      review-gated. Return the computed rewrite + a diff for the admin to see;
+  //      commit NOTHING. The browser echoes the approved bytes + baseSha back to
+  //      the CONFIRM phase above. This breaks the "auto-live-commit of raw model
+  //      output" chain: no page-derived prompt injection can reach the default
+  //      branch without an explicit human confirmation of the exact result.
   if (input.direct) {
-    const { commitSha } = await provider.commitFile(repo, branch, path, next, title, file.sha);
     return {
       branch,
       forked: false,
-      commitSha,
       direct: true,
-      commitUrl: provider.commitUrl ? provider.commitUrl(repo, commitSha) : undefined,
+      preview: true,
+      proposed: next,
+      diff: lineDiff(file.content, next),
+      baseSha: file.sha,
     };
   }
 
