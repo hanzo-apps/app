@@ -14,7 +14,18 @@ function guiPackages() {
   } catch {
     scoped = [];
   }
-  return ['@hanzo/gui', '@hanzo/usage', 'react-native-web', ...scoped];
+  // @hanzogui/shell ships compiled dist, but transpile it (+ @hanzo/brand) so
+  // Next handles any raw pieces uniformly — harmless with dist, required if the
+  // shell ever ships source. @hanzogui/shell is also picked up by the scoped
+  // scan above; listing it here keeps the intent explicit and fs-independent.
+  return [
+    '@hanzo/gui',
+    '@hanzo/usage',
+    '@hanzogui/shell',
+    '@hanzo/brand',
+    'react-native-web',
+    ...scoped,
+  ];
 }
 
 /** @type {import('next').NextConfig} */
