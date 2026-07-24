@@ -43,6 +43,17 @@ jobs:
           if git merge-base --is-ancestor "$LOCAL" "$REMOTE"; then
             echo "fast-forwarding $LOCAL -> $REMOTE"
             git push origin "$REMOTE:refs/heads/main"
+            # A push made with the workflow token does NOT trigger other
+            # workflows (loop prevention) — so synced commits would never cut
+            # an image. Dispatch the release explicitly; its own paths-ignore
+            # judgement is bypassed by dispatch, which is fine: a real ff
+            # means real commits arrived.
+            curl -fsS --max-time 20 -X POST \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              "${{ github.server_url }}/api/v1/repos/${{ github.repository }}/actions/workflows/release.yml/dispatches" \
+              -d '{"ref":"main"}' \
+              && echo "release dispatched" || echo "release dispatch failed (non-fatal — next direct push will build)"
           elif git merge-base --is-ancestor "$REMOTE" "$LOCAL"; then
             echo "Gitea is AHEAD of GitHub ($REMOTE ancestor of $LOCAL) — nothing to pull."
             echo "(GitHub catch-up is a separate concern; never force from here.)"
