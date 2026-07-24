@@ -35,6 +35,7 @@ function mockProvider(opts: { canWrite: boolean; file?: FileContent }): {
     async commitFile(r, br, p, c, m, sha) { rec('commitFile', r, br, p, c, m, sha); return { commitSha: 'c1' }; },
     async openPR(r, base, head, t, body) { rec('openPR', r, base, head, t, body); return { prUrl: 'https://github.com/up/site/pull/1', number: 1 }; },
     async openIssue(r, t, b) { rec('openIssue', r, t, b); return { issueUrl: 'https://github.com/up/site/issues/1', number: 1 }; },
+    commitUrl(r, sha) { return `https://github.com/${r.owner}/${r.repo}/commit/${sha}`; },
   };
   return { gp, calls };
 }
@@ -86,6 +87,45 @@ describe('runEdit — direct write access', () => {
     expect(prBase).toBe('main');
     expect(String(prHead)).not.toContain(':');
     expect(out).toMatchObject({ prUrl: expect.stringContaining('/pull/1'), forked: false });
+  });
+});
+
+describe('runEdit — direct commit (admin "goes live")', () => {
+  it('commits straight to the default branch — no fork, no branch, no PR', async () => {
+    const gw = mockGateway('NEW CONTENT');
+    const { gp, calls } = mockProvider({ canWrite: true });
+
+    const out = await runEdit(gp, { ...baseInput, direct: true });
+
+    expect(gw).toHaveBeenCalled(); // the agent run still happened
+    // committed the rewrite ONTO the declared default branch, against the read sha
+    const [wRepo, wBranch, wPath, wContent, , wSha] = calls.commitFile[0];
+    expect(wRepo).toEqual(REPO);
+    expect(wBranch).toBe('main'); // default branch, not a hanzo-edit/* branch
+    expect(wPath).toBe('docs/intro.md');
+    expect(wContent).toBe('NEW CONTENT');
+    expect(wSha).toBe('blobsha');
+
+    // the "goes live" path never branches, forks, or opens a PR
+    expect(calls.createBranch.length).toBe(0);
+    expect(calls.fork.length).toBe(0);
+    expect(calls.openPR.length).toBe(0);
+
+    expect(out).toMatchObject({
+      direct: true,
+      forked: false,
+      branch: 'main',
+      commitSha: 'c1',
+      commitUrl: 'https://github.com/up/site/commit/c1',
+    });
+    expect(out.prUrl).toBeUndefined();
+  });
+
+  it('still refuses a no-op rewrite before committing', async () => {
+    mockGateway('OLD');
+    const { gp, calls } = mockProvider({ canWrite: true, file: { content: 'OLD', sha: 's', exists: true } });
+    await expect(runEdit(gp, { ...baseInput, direct: true })).rejects.toMatchObject({ status: 422, code: 'no_change' });
+    expect(calls.commitFile.length).toBe(0);
   });
 });
 
