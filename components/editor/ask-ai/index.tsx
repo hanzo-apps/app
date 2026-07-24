@@ -139,6 +139,20 @@ export function AskAI({
   const [mode, setMode] = useLocalStorage<"build" | "plan">("composer-mode", "build");
   const isPlan = mode === "plan";
 
+  // Honor the Build/Plan choice handed off from the landing / dashboard composer
+  // (localStorage.initialMode). Applied ONCE on mount then cleared, so it seeds the
+  // builder without overriding later manual toggles — mirrors the initialPrompt
+  // handoff. Before this, choosing "Plan" on the landing was silently dropped.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handoff = localStorage.getItem("initialMode");
+    if (handoff === "build" || handoff === "plan") {
+      setMode(handoff);
+      localStorage.removeItem("initialMode");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Suggestion chips: dismissible per project (persisted). Clicking a chip sends
   // it straight as a message (respecting the mode), without touching the box.
   const [suggestionsDismissed, setSuggestionsDismissed] = useLocalStorage<boolean>(
