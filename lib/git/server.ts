@@ -150,8 +150,12 @@ function connectionFromAccount(
 export async function resolveConnection(
   req: NextRequest,
   provider: GitProvider,
+  bearerOverride?: string,
 ): Promise<GitConnection | null> {
-  const bearer = readBearer(req);
+  // `bearerOverride` is the cross-origin Edit-widget opt-in (the route already
+  // read the bearer via `readWidgetBearer`); every other caller passes nothing
+  // and keeps the cookie-only `readBearer` behavior unchanged.
+  const bearer = bearerOverride || readBearer(req);
   if (!bearer) return null;
   if (provider === 'hanzo') {
     // The push client sends this bearer as Authorization; the gateway derives
