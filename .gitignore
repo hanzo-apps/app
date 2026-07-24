@@ -94,6 +94,8 @@ docs/public/assets/images/changelog/
 docs/public/assets/videos/
 *.jsbundle
 public/esbuild.wasm
+# Generated at build (prebuild) by scripts/gen-edit-manifest.mjs
+public/edit-manifest.json
 
 # TS incremental build cache (regenerated)
 tsconfig.tsbuildinfo

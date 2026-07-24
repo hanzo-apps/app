@@ -19,6 +19,7 @@ import { readWidgetBearer, resolveOrgIdentity } from '@/lib/org/server';
 import { providerFor, providerName } from '@/lib/edit/provider';
 import { resolveEditToken } from '@/lib/edit/token';
 import { preflight, withCors } from '@/lib/edit/cors';
+import { parseContext, pickPath, renderContext } from '@/lib/edit/context';
 
 export const runtime = 'nodejs';
 
@@ -70,14 +71,21 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const title = `Suggestion: ${cleanLine(suggestion) || 'improve ' + parsed.path}`;
+  // Auto-resolved context: the file the widget detected for this view + the
+  // route/DOM/session trace, so a reviewer can find and finish the fix.
+  const ctx = parseContext(body);
+  const filePath = pickPath(body.path, ctx.candidateFiles);
+  const contextBlock = renderContext(ctx);
+
+  const title = `Suggestion: ${cleanLine(suggestion) || 'improve ' + (filePath || parsed.path)}`;
   const bodyLines = [
     suggestion,
     '',
     '---',
     body.url ? `Page: ${(body.url || '').slice(0, MAX_URL)}` : '',
-    body.path ? `File: \`${body.path}\`` : '',
-    body.context ? `\nContext:\n${(body.context || '').slice(0, MAX_TEXT)}` : '',
+    filePath ? `File: \`${filePath}\`` : '',
+    body.context ? `\nSelected text:\n${(body.context || '').slice(0, MAX_TEXT)}` : '',
+    contextBlock ? `\n${contextBlock}` : '',
     `\nSubmitted via Hanzo Edit by ${actor}.`,
     body.key ? `Project: \`${body.key}\`` : '',
   ].filter(Boolean);

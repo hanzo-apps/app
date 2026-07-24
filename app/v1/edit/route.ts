@@ -25,6 +25,7 @@ import { providerFor } from '@/lib/edit/provider';
 import { parseTarget, runEdit } from '@/lib/edit/flow';
 import { resolveEditToken } from '@/lib/edit/token';
 import { preflight, withCors } from '@/lib/edit/cors';
+import { parseContext, pickPath, renderContext } from '@/lib/edit/context';
 
 export const runtime = 'nodejs';
 
@@ -71,7 +72,11 @@ export async function POST(req: NextRequest) {
     model?: string;
   };
 
-  const target = parseTarget(body);
+  // The widget auto-resolves the source file for the current view, so `path` is
+  // optional: fall back to the top-ranked candidate when it's absent.
+  const trace = parseContext(body);
+  const effectivePath = pickPath(body.path, trace.candidateFiles) ?? undefined;
+  const target = parseTarget({ ...body, path: effectivePath });
   if ('error' in target) {
     return withCors(origin, { ok: false, error: target.error }, 400);
   }
@@ -96,7 +101,11 @@ export async function POST(req: NextRequest) {
   }
 
   // 5) Run the vertical: read → agentic rewrite (debits) → fork? → branch → commit → PR.
-  const context = [body.url ? `URL: ${body.url}` : '', (body.context || '').slice(0, MAX_CONTEXT)]
+  const context = [
+    body.url ? `URL: ${body.url}` : '',
+    renderContext(trace),
+    (body.context || '').slice(0, MAX_CONTEXT),
+  ]
     .filter(Boolean)
     .join('\n');
   const actorLabel = `${free ? 'admin ' : ''}@${id.name}${editToken.source === 'bot' ? ' via hanzo-bot' : ''}`;
