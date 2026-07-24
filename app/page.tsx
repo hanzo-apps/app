@@ -23,6 +23,7 @@ const HanzoModels = dynamic(() => import("@/components/landing/hanzo-models"), {
 const HowItWorks = dynamic(() => import("@/components/landing/how-it-works"), { ssr: false });
 const Comparison = dynamic(() => import("@/components/landing/comparison"), { ssr: false });
 const SiteFooter = dynamic(() => import("@/components/landing/site-footer"), { ssr: false });
+const PreFooterCTA = dynamic(() => import("@/components/landing/site-footer").then((m) => m.PreFooterCTA), { ssr: false });
 import { builderLink } from "@/lib/api/projects";
 import { useUser } from "@/hooks/useUser";
 import {
@@ -356,6 +357,7 @@ export default function LandingPage() {
         </section>
       </main>
 
+      <LazySection minHeight={200}><PreFooterCTA /></LazySection>
       <LazySection minHeight={240}><SiteFooter /></LazySection>
     </div>
   );
