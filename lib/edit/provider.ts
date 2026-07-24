@@ -93,6 +93,9 @@ export interface GitProvider {
 
   /** Open a lightweight issue on `repo` (the anonymous suggest path). */
   openIssue(repo: RepoRef, title: string, body: string): Promise<IssueResult>;
+
+  /** The forge web URL for a commit sha (pure). Used to link a direct commit. */
+  commitUrl?(repo: RepoRef, sha: string): string;
 }
 
 /**

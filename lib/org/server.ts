@@ -24,6 +24,7 @@ import { decodeJwt } from 'jose';
 import type { NextRequest } from 'next/server';
 
 import { fetchIamUser } from '@/lib/auth';
+import { parseOwnerRepo } from '@/lib/git/sync';
 import { ADMIN_ORG } from '@/lib/org/policy';
 import type { Org, OrgContext } from '@/lib/org/types';
 
@@ -368,4 +369,68 @@ function jsonError(error: string, status: number): Response {
     status,
     headers: { 'Content-Type': 'application/json' },
   });
+}
+
+/**
+ * Ensure a source property (`owner/repo`) is registered as a project in the
+ * org-scoped shared store — so every editable Hanzo property "ties back" and
+ * shows in hanzo.app's projects list. IDEMPOTENT: lists the caller's projects
+ * and only creates when no project already links the same repo.
+ *
+ * Called from the CROSS-ORIGIN `/v1/register` widget route, so it takes the
+ * already-resolved widget bearer explicitly (not `req`): the cloud gateway
+ * derives the tenant from that bearer's owner claim, so the project lands in the
+ * caller's home org WITHOUT the browser choosing a tenant. Fail-open (never
+ * throws): registration is a convenience, not a gate — a failure just means the
+ * property isn't auto-listed yet.
+ */
+export async function ensureProjectForRepo(
+  bearer: string,
+  input: { repo: string; name: string; slug: string },
+): Promise<{ registered: boolean; existed: boolean; slug: string }> {
+  const parsed = parseOwnerRepo(input.repo);
+  if (!parsed) return { registered: false, existed: false, slug: input.slug };
+
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${bearer}`,
+    Accept: 'application/json',
+  };
+  const base = `${cloudBase()}/v1/projects`;
+
+  try {
+    // 1) Already linked? Match on the stored repo URL's owner/repo (host-agnostic).
+    const listRes = await fetch(base, { headers, cache: 'no-store' });
+    if (listRes.ok) {
+      const list = (await listRes.json().catch(() => [])) as Array<{
+        slug?: string;
+        repo?: { url?: string };
+      }>;
+      if (Array.isArray(list)) {
+        const match = list.find((p) => {
+          const u = p?.repo?.url;
+          if (!u) return false;
+          const pr = parseOwnerRepo(u);
+          return !!pr && pr.owner.toLowerCase() === parsed.owner.toLowerCase() && pr.repo.toLowerCase() === parsed.repo.toLowerCase();
+        });
+        if (match) return { registered: false, existed: true, slug: match.slug || input.slug };
+      }
+    }
+
+    // 2) Not present → create it (org derived from the bearer, server-side).
+    const createRes = await fetch(base, {
+      method: 'POST',
+      headers: { ...headers, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: input.name, slug: input.slug, repo: { url: input.repo } }),
+      cache: 'no-store',
+    });
+    if (createRes.ok) {
+      const created = (await createRes.json().catch(() => null)) as { slug?: string } | null;
+      return { registered: true, existed: false, slug: created?.slug || input.slug };
+    }
+    // A slug collision (409) means the property is effectively already tracked.
+    if (createRes.status === 409) return { registered: false, existed: true, slug: input.slug };
+    return { registered: false, existed: false, slug: input.slug };
+  } catch {
+    return { registered: false, existed: false, slug: input.slug };
+  }
 }
