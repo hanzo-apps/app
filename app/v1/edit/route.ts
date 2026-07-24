@@ -142,6 +142,9 @@ export async function POST(req: NextRequest) {
       direct,
       reviewed,
       baseSha,
+      // Attribute a direct "goes live" commit to the VALIDATED admin identity —
+      // not the shared bot token — in the commit message trailer (flow.ts).
+      identity: { sub: id.sub, name: id.name },
     });
     // PROPOSE phase (admin direct): return the computed rewrite for review — the
     // widget renders the diff and the admin must confirm before it goes live.
@@ -156,6 +159,26 @@ export async function POST(req: NextRequest) {
         branch: out.branch,
         provider: target.provider,
       });
+    }
+    // Server-side security audit for a direct "goes live" commit: WHO (validated
+    // admin sub), WHAT (repo/path/sha/branch), WHERE FROM (origin). One structured
+    // line → server logs → o11y. Only a confirmed commit (has a sha) is audited;
+    // the propose phase committed nothing and returned above.
+    if (out.direct && out.commitSha) {
+      console.warn(
+        '[hanzo-edit][audit] direct-commit',
+        JSON.stringify({
+          admin: id.sub,
+          name: id.name,
+          repo: `${target.repo.owner}/${target.repo.repo}`,
+          path: target.path,
+          branch: out.branch,
+          sha: out.commitSha,
+          origin: origin || '',
+          provider: target.provider,
+          at: new Date().toISOString(),
+        }),
+      );
     }
     return withCors(origin, {
       ok: true,

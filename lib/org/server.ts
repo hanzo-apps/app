@@ -23,7 +23,7 @@ import 'server-only';
 import { decodeJwt } from 'jose';
 import type { NextRequest } from 'next/server';
 
-import { fetchIamUser } from '@/lib/auth';
+import { fetchIamUser, tokenMintedForApp } from '@/lib/auth';
 import { parseOwnerRepo } from '@/lib/git/sync';
 import { ADMIN_ORG } from '@/lib/org/policy';
 import type { Org, OrgContext } from '@/lib/org/types';
@@ -215,8 +215,15 @@ export async function resolveOrgIdentity(
 
   const homeOrg = (claims?.owner || '').trim();
   // Privilege is granted ONLY from a validated bearer — never from an
-  // unverified decodeJwt (a forged unsigned JWT decodes fine but fails userinfo).
-  const isGlobalAdmin = validated && (homeOrg === ADMIN_ORG || claims?.isGlobalAdmin === true);
+  // unverified decodeJwt (a forged unsigned JWT decodes fine but fails userinfo)
+  // — AND only when that bearer was minted for hanzo.app's OWN IAM client. A
+  // validated token from a lower-trust Hanzo app can act as a normal user but
+  // can NEVER elevate to a global-admin direct-commit. Fail-closed: a
+  // non-matching / opaque token yields tokenMintedForApp=false ⇒ not admin.
+  const isGlobalAdmin =
+    validated &&
+    tokenMintedForApp(token) &&
+    (homeOrg === ADMIN_ORG || claims?.isGlobalAdmin === true);
 
   return {
     token,

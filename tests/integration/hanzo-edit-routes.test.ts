@@ -67,12 +67,17 @@ function req(
   });
 }
 
-const ADMIN = () => jwt({ owner: 'admin', name: 'z' });
-const USER = () => jwt({ owner: 'acme', name: 'bob' });
+// An admin token elevates ONLY when it was minted for hanzo.app's OWN IAM client
+// (aud === IAM_CLIENT_ID) — FIX #2 (confused-deputy guard). ADMIN carries our
+// audience; ADMIN_FOREIGN is an admin-owner token from a DIFFERENT app's client.
+const ADMIN = () => jwt({ owner: 'admin', name: 'z', aud: 'hanzo-app' });
+const ADMIN_FOREIGN = () => jwt({ owner: 'admin', name: 'z', aud: 'hanzo-chat' });
+const USER = () => jwt({ owner: 'acme', name: 'bob', aud: 'hanzo-app' });
 const EDIT_BODY = { repo: 'hanzoai/app', path: 'README.md', instruction: 'fix a typo' };
 
 beforeEach(() => {
   delete process.env.HANZO_EDIT_BOT_TOKEN;
+  process.env.IAM_CLIENT_ID = 'hanzo-app';
 });
 afterEach(() => jest.restoreAllMocks());
 
@@ -137,6 +142,18 @@ describe('POST /v1/edit — the gate', () => {
     const res = await editPOST(req('https://hanzo.app/v1/edit', { method: 'POST', token: ADMIN(), body: EDIT_BODY }));
     expect(res.status).toBe(409);
     expect(await res.json()).toMatchObject({ ok: false, connect: true });
+  });
+
+  // FIX #2: an `owner:admin` token minted for a DIFFERENT (lower-trust) app's IAM
+  // client must NOT elevate — it is treated as a normal user, so with no credits
+  // it is stopped at the 402 billing gate, never granted the free admin path.
+  it('admin-owner token from a FOREIGN app client does NOT elevate → 402', async () => {
+    installFetch({ balance: 0, githubToken: null });
+    const res = await editPOST(
+      req('https://hanzo.app/v1/edit', { method: 'POST', token: ADMIN_FOREIGN(), body: EDIT_BODY }),
+    );
+    expect(res.status).toBe(402);
+    expect(await res.json()).toMatchObject({ ok: false, needsCredits: true });
   });
 
   it('rejects a body with no path', async () => {

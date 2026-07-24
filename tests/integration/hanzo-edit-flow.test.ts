@@ -90,23 +90,70 @@ describe('runEdit — direct write access', () => {
   });
 });
 
-describe('runEdit — direct commit (admin "goes live")', () => {
-  it('commits straight to the default branch — no fork, no branch, no PR', async () => {
+describe('runEdit — admin direct "goes live" is diff-review-then-confirm', () => {
+  // The ship-blocker fix: direct mode NEVER auto-commits raw model output. Phase
+  // 1 (no `reviewed`) PROPOSES — computes the rewrite and returns it for review,
+  // committing NOTHING. Phase 2 (with `reviewed`) COMMITS the exact admin-approved
+  // bytes. No page-derived prompt injection can reach the default branch without
+  // an explicit human confirmation of the exact result.
+
+  it('PROPOSE: mode:direct (no reviewed) returns a diff and commits NOTHING', async () => {
     const gw = mockGateway('NEW CONTENT');
     const { gp, calls } = mockProvider({ canWrite: true });
 
     const out = await runEdit(gp, { ...baseInput, direct: true });
 
-    expect(gw).toHaveBeenCalled(); // the agent run still happened
-    // committed the rewrite ONTO the declared default branch, against the read sha
-    const [wRepo, wBranch, wPath, wContent, , wSha] = calls.commitFile[0];
+    expect(gw).toHaveBeenCalled(); // the rewrite was computed (to show the admin)
+    // NOTHING was committed / branched / forked / PR'd — it is a preview only.
+    expect(calls.commitFile.length).toBe(0);
+    expect(calls.createBranch.length).toBe(0);
+    expect(calls.fork.length).toBe(0);
+    expect(calls.openPR.length).toBe(0);
+
+    // The proposal carries the full new bytes, a diff, and the base sha the
+    // browser must echo back on confirm (the optimistic lock).
+    expect(out).toMatchObject({
+      direct: true,
+      preview: true,
+      proposed: 'NEW CONTENT',
+      baseSha: 'blobsha',
+      forked: false,
+    });
+    expect(typeof out.diff).toBe('string');
+    expect(out.diff).toContain('+ NEW CONTENT');
+    expect(out.diff).toContain('- OLD');
+    expect(out.commitSha).toBeUndefined();
+  });
+
+  it('CONFIRM: reviewed bytes commit VERBATIM to the default branch — no regeneration', async () => {
+    const gw = mockGateway('MODEL WOULD SAY SOMETHING ELSE');
+    const { gp, calls } = mockProvider({ canWrite: true });
+
+    const out = await runEdit(gp, {
+      ...baseInput,
+      direct: true,
+      reviewed: 'EXACT APPROVED BYTES',
+      baseSha: 'blobsha',
+      identity: { sub: 'z-admin', name: 'Zed Admin' },
+    });
+
+    // Confirm does NOT re-run the model (no drift / no TOCTOU between review and
+    // commit) — it commits the exact reviewed bytes.
+    expect(gw).not.toHaveBeenCalled();
+    expect(calls.getFile.length).toBe(0);
+
+    const [wRepo, wBranch, wPath, wContent, wMsg, wSha] = calls.commitFile[0];
     expect(wRepo).toEqual(REPO);
     expect(wBranch).toBe('main'); // default branch, not a hanzo-edit/* branch
     expect(wPath).toBe('docs/intro.md');
-    expect(wContent).toBe('NEW CONTENT');
-    expect(wSha).toBe('blobsha');
+    expect(wContent).toBe('EXACT APPROVED BYTES'); // the admin's bytes, NOT the model's
+    expect(wSha).toBe('blobsha'); // optimistic-locked to the reviewed sha
 
-    // the "goes live" path never branches, forks, or opens a PR
+    // FIX #3: the commit is attributed to the validated IAM admin, not the bot.
+    expect(String(wMsg)).toContain('Hanzo-Edit-Admin: z-admin');
+    expect(String(wMsg)).toContain('Co-authored-by: Zed Admin <z-admin@users.hanzo.id>');
+
+    // never branches / forks / opens a PR
     expect(calls.createBranch.length).toBe(0);
     expect(calls.fork.length).toBe(0);
     expect(calls.openPR.length).toBe(0);
@@ -119,9 +166,10 @@ describe('runEdit — direct commit (admin "goes live")', () => {
       commitUrl: 'https://github.com/up/site/commit/c1',
     });
     expect(out.prUrl).toBeUndefined();
+    expect(out.preview).toBeUndefined();
   });
 
-  it('still refuses a no-op rewrite before committing', async () => {
+  it('PROPOSE still refuses a no-op rewrite before previewing', async () => {
     mockGateway('OLD');
     const { gp, calls } = mockProvider({ canWrite: true, file: { content: 'OLD', sha: 's', exists: true } });
     await expect(runEdit(gp, { ...baseInput, direct: true })).rejects.toMatchObject({ status: 422, code: 'no_change' });
