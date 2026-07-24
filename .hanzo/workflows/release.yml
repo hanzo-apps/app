@@ -10,8 +10,11 @@ on:
     branches: [main]
     # Workflow/doc-only edits must NOT cut a release (a scan tweak is not a new app
     # image). Real code changes on main still trigger; use workflow_dispatch to force.
+    # (.hanzo/workflows was missing here since the .gitea→.hanzo move — workflow
+    # edits were cutting no-op images.)
     paths-ignore:
       - '.github/**'
+      - '.hanzo/workflows/**'
       - '**.md'
   workflow_dispatch:
 permissions:
@@ -22,7 +25,25 @@ concurrency:
   group: release-app
   cancel-in-progress: false
 jobs:
+  # Tests GATE the release: no image cut from a red suite. This is what let the
+  # suite rot to 9 failing suites (incl. a real settings-page crash) unnoticed —
+  # images kept shipping while `pnpm test` was never run anywhere.
+  test:
+    runs-on: [hanzo-build-linux-amd64]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pnpm
+        run: npm i -g pnpm@9
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Unit + integration + security suites (jest)
+        run: pnpm test
+
   build-amd64:
+    needs: test
     runs-on: [hanzo-build-linux-amd64]
     steps:
       - name: Checkout (full history + tags — version floor read from tags)
