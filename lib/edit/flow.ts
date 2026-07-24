@@ -106,6 +106,15 @@ export interface RunEditInput {
   reviewed?: string;
   /** The blob sha the reviewed bytes were computed against (non-destructive lock). */
   baseSha?: string | null;
+  /**
+   * The VALIDATED IAM identity of the admin performing a direct "goes live"
+   * commit. Recorded in the commit message (trailer) so the commit attributes to
+   * the human admin — not the shared bot token every admin would otherwise
+   * collapse to. Absent on the fork→PR path (that PR body already names the
+   * actor). Values are single-lined via `cleanLine` before use (no trailer
+   * injection from a crafted display name).
+   */
+  identity?: { sub: string; name: string };
 }
 
 export interface EditOutcome {
@@ -195,7 +204,7 @@ export async function runEdit(provider: GitProvider, input: RunEditInput): Promi
       branch,
       path,
       input.reviewed,
-      title,
+      directCommitMessage(title, input.identity),
       input.baseSha ?? null,
     );
     return {
@@ -275,6 +284,25 @@ export async function runEdit(provider: GitProvider, input: RunEditInput): Promi
   const pr = await provider.openPR(repo, branch, head, title, body);
 
   return { prUrl: pr.prUrl, number: pr.number, branch: editBranch, forked, commitSha };
+}
+
+/**
+ * The direct "goes live" commit message: the edit title plus a trailer that
+ * attributes the commit to the VALIDATED admin identity (not the shared bot
+ * token every admin authors as). A stable, greppable attribution lives in git
+ * history itself, so a direct commit is never anonymous. `cleanLine` single-lines
+ * every field, so a crafted display name can't forge extra trailers or a body.
+ */
+function directCommitMessage(title: string, identity?: { sub: string; name: string }): string {
+  const sub = cleanLine(identity?.sub || '');
+  if (!sub) return title;
+  const name = cleanLine(identity?.name || '') || sub;
+  return [
+    title,
+    '',
+    `Hanzo-Edit-Admin: ${sub}`,
+    `Co-authored-by: ${name} <${sub}@users.hanzo.id>`,
+  ].join('\n');
 }
 
 /** The PR description — the instruction, page context, and honest provenance. */
