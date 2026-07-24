@@ -338,7 +338,7 @@ Habits:
           }
           
           if (msg.role === 'assistant' && msg.tool_calls) {
-            const content = [];
+            const content: Array<Record<string, unknown>> = [];
             if (msg.content) {
               content.push({ type: 'text', text: msg.content });
             }
@@ -544,9 +544,6 @@ Habits:
     // Handle client-requested reasoning (for models that support toggleable reasoning)
     if (reasoning && selectedProvider === 'openrouter') {
       requestBody.reasoning = reasoning;
-    }
-    if (reasoning && selectedProvider === 'zhipu') {
-      requestBody.thinking = { type: 'enabled' };
     }
 
     // DeepSeek V3.2+ models - some providers (e.g., AtlasCloud) may have issues with tool calling

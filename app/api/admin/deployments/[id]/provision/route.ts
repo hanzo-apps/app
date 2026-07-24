@@ -130,7 +130,7 @@ export async function POST(
 
         let nextRunAt: Date | undefined;
         try {
-          const interval = cronParser.parseExpression(sf.cronExpression, { tz: sf.timezone || 'UTC', currentDate: new Date() });
+          const interval = cronParser.parse(sf.cronExpression, { tz: sf.timezone || 'UTC', currentDate: new Date() });
           nextRunAt = interval.next().toDate();
         } catch {
           // Leave undefined

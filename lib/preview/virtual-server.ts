@@ -790,7 +790,7 @@ export class VirtualServer {
   }
 
   private detectInvalidHandlebarsPatterns(content: string): Array<{error: string, suggestion: string}> {
-    const patterns = [];
+    const patterns: Array<{ error: string; suggestion: string }> = [];
     
     // Pattern 1: Invalid (> partial) syntax in parameters
     const invalidPartialInParam = /\w+\s*=\s*\(\s*>\s*[\w-]+\s*\)/g;

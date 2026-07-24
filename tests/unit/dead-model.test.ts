@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 
-import { isDeadModelId, resolveModelId, DEFAULT_MODEL } from "../../lib/providers.ts";
+import { isDeadModelId, resolveModelId, DEFAULT_MODEL } from "../../lib/providers";
 
 /**
  * isDeadModelId / resolveModelId — the ONE guard that keeps a stale model

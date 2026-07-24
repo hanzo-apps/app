@@ -358,7 +358,7 @@ function handleScheduledFunctionUpdate(path: string, content: string, deployment
 
   // Validate minimum cron interval (5 minutes)
   try {
-    const checkInterval = cronParser.parseExpression(fnData.cronExpression);
+    const checkInterval = cronParser.parse(fnData.cronExpression);
     const first = checkInterval.next().toDate().getTime();
     const second = checkInterval.next().toDate().getTime();
     if (second - first < 5 * 60 * 1000 - 1000) {
@@ -389,7 +389,7 @@ function handleScheduledFunctionUpdate(path: string, content: string, deployment
   // Calculate nextRunAt
   let nextRunAt: Date | undefined;
   try {
-    const interval = cronParser.parseExpression(fnData.cronExpression, { tz: fnData.timezone || 'UTC', currentDate: new Date() });
+    const interval = cronParser.parse(fnData.cronExpression, { tz: fnData.timezone || 'UTC', currentDate: new Date() });
     nextRunAt = interval.next().toDate();
   } catch {
     // Leave undefined

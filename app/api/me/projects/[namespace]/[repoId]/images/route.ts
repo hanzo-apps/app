@@ -36,7 +36,7 @@ export async function POST(
 
     // Parse the FormData to get the images
     const formData = await req.formData();
-    const imageFiles = formData.getAll("images") as File[];
+    const imageFiles = formData.getAll("images") as unknown as File[];
 
     if (!imageFiles || imageFiles.length === 0) {
       return NextResponse.json(

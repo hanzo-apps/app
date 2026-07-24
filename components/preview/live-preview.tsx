@@ -130,7 +130,7 @@ export function LivePreview({
         serverRef.current.cleanupBlobUrls();
       }
 
-      const server = new VirtualServer(projectId);
+      const server = new VirtualServer(vfs, projectId);
       serverRef.current = server;
 
       const compiled = await server.compileProject();

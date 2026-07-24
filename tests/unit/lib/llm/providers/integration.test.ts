@@ -9,7 +9,6 @@
  * snapshot of somebody's model zoo — those go stale by design.
  */
 
-import { describe, it, expect } from '@jest/globals';
 import { getAllProviders, getProvider, getDefaultModel } from '@/lib/llm/providers';
 import type { ProviderId } from '@/lib/llm/providers/types';
 

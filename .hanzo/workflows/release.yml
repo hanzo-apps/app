@@ -36,9 +36,11 @@ jobs:
         with:
           node-version: '22'
       - name: Install pnpm
-        run: npm i -g pnpm@9
+        run: npm i -g pnpm@10
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Typecheck (tsc --noEmit — kept at ZERO errors since 2026-07-24)
+        run: pnpm exec tsc --noEmit
       - name: Unit + integration + security suites (jest)
         run: pnpm test
 

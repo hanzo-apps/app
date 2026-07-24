@@ -23,7 +23,7 @@ interface State {
 }
 
 export class ErrorBoundary extends Component<Props, State> {
-  private resetTimeoutId: NodeJS.Timeout | null = null;
+  private resetTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private readonly ERROR_RESET_TIME = 5000; // Reset error count after 5 seconds
   private readonly MAX_ERROR_COUNT = 3; // Max errors before showing permanent error
 

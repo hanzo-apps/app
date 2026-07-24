@@ -137,7 +137,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
   // Debug events state
   const [debugEvents, setDebugEvents] = useState<DebugEvent[]>([]);
   const debugIdCounter = useRef(0);
-  const saveDebounceTimer = useRef<NodeJS.Timeout | null>(null);
+  const saveDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Maximum debug events to keep in memory to prevent unbounded growth
   const MAX_DEBUG_EVENTS = 500;

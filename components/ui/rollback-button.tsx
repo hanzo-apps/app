@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { RotateCcw } from 'lucide-react';
-import { checkpointManager, Checkpoint } from '@/lib/vfs/checkpoint';
+import { checkpointManager, CheckpointMetadata } from '@/lib/vfs/checkpoint';
 
 interface RollbackButtonProps {
   checkpointId: string;
@@ -67,7 +67,8 @@ export function CheckpointList({
   onRestore,
   className = ''
 }: CheckpointListProps) {
-  const [checkpoints, setCheckpoints] = React.useState<Checkpoint[]>([]);
+  // getCheckpoints returns the lightweight listing metadata (no file payloads).
+  const [checkpoints, setCheckpoints] = React.useState<CheckpointMetadata[]>([]);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {

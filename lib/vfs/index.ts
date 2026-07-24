@@ -36,7 +36,7 @@ export class VirtualFileSystem {
   private initialized = false;
   private initPromise: Promise<void> | null = null;
   private transientFiles: Map<string, VirtualFile> = new Map();
-  private syncTimeouts: Map<string, NodeJS.Timeout> = new Map(); // Debounce sync calls
+  private syncTimeouts: Map<string, ReturnType<typeof setTimeout>> = new Map(); // Debounce sync calls
 
   constructor() {
     this.adapter = createClientAdapter();

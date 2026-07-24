@@ -320,7 +320,7 @@ export function validateScheduledFunctionData(data: unknown): ValidationResult {
     errors.push('Missing or invalid "cronExpression" field');
   } else {
     try {
-      cronParser.parseExpression(fn.cronExpression);
+      cronParser.parse(fn.cronExpression);
     } catch {
       errors.push('Invalid cron expression');
     }
