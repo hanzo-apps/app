@@ -4,6 +4,11 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { cookies } from "next/headers";
 
 import TanstackProvider from "@/components/providers/tanstack-query-provider";
+// @hanzo/brand monochrome design tokens (--hanzo-*, --font-size-*, --z-*) load
+// FIRST so they're the baseline layer; the app's own :root tokens in globals.css
+// come after and win on any overlap — preserving the tuned palette AND the
+// Tamagui `--background !important` fix. One import, at the root, once.
+import "@hanzo/brand/styles/variables.css";
 import "@/assets/globals.css";
 import MY_TOKEN_KEY from "@/lib/get-cookie-name";
 import { apiServer } from "@/lib/api";
