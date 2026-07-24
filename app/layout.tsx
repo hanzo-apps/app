@@ -73,6 +73,16 @@ export const metadata: Metadata = {
   },
   // Icons come from the Next file-convention: app/favicon.ico, app/icon.svg
   // (adaptive monochrome Hanzo H, transparent bg), app/apple-icon.png.
+  //
+  // Hanzo Edit convention — every Hanzo page self-declares its source repo so the
+  // ever-present "contribute to this page" widget (public/edit.js) knows where to
+  // open a PR. Repo-wide default here; a route that maps to a specific source
+  // file adds `hanzo:path` in its own `metadata.other`. See HANZO_EDIT.md.
+  other: {
+    "hanzo:repo": "hanzoai/app",
+    "hanzo:branch": "main",
+    "hanzo:provider": "github",
+  },
 };
 
 export const viewport: Viewport = {
@@ -135,6 +145,12 @@ export default async function RootLayout({
           src="https://analytics.hanzo.ai/hz.js"
           data-site="hanzo.app"
         />
+        {/* Hanzo Edit — the ever-present "contribute to this page" widget. Reads
+            the hanzo:repo/path/branch/provider metas above, then offers Suggest
+            (anyone) or a real fork→edit→PR (admin free, credit-holders debited).
+            Served by hanzo.app at /edit.js; any Hanzo app drops in the same tag:
+            <script async src="https://hanzo.app/edit.js"></script>. */}
+        <script async src="/edit.js" />
       </body>
     </html>
   );
