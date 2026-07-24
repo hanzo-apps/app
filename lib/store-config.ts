@@ -26,7 +26,10 @@ export interface StoreSubsystems {
   analytics: boolean;
 }
 
-export interface StoreConfig {
+// `type` (not `interface`) so these satisfy the BaseClient generic's
+// `BaseRecord` constraint — only type-alias object literals get the implicit
+// string index signature (same pattern as lib/db/history.ts).
+export type StoreConfig = {
   /** The project this configures ("namespace/repoId"). Optional for env store. */
   space_id?: string;
   /** The binding — IAM owner claim; authoritative. */
@@ -38,11 +41,11 @@ export interface StoreConfig {
     currency: string;
     domain?: string;
   };
-}
+};
 
-interface StoreConfigRow extends StoreConfig {
+type StoreConfigRow = StoreConfig & {
   id: string;
-}
+};
 
 const COLLECTION = "store_configs";
 
@@ -133,9 +136,9 @@ export async function upsertStoreConfig(
     storefront: config.storefront,
   };
   if (existing && (existing as StoreConfigRow).id) {
-    return coll.update<StoreConfig>((existing as StoreConfigRow).id, payload);
+    return coll.update<StoreConfigRow>((existing as StoreConfigRow).id, payload);
   }
-  return coll.create<StoreConfig>(payload);
+  return coll.create<StoreConfigRow>(payload);
 }
 
 export { DEFAULT_SUBSYSTEMS };

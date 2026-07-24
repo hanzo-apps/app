@@ -63,3 +63,49 @@ export interface HFAuthData {
   expires_at?: number;  // OAuth tokens expire, API keys don't
 }
 
+
+/** A chat message in the OpenAI-compatible wire shape every provider speaks. */
+export interface ChatMessage {
+  role: 'system' | 'user' | 'assistant' | 'tool';
+  content: string;
+  name?: string;
+}
+
+/** OpenAI-compatible /chat/completions request body (passed through verbatim). */
+export interface ChatCompletionRequest {
+  model: string;
+  messages: ChatMessage[];
+  temperature?: number;
+  max_tokens?: number;
+  stream?: boolean;
+  [key: string]: unknown;
+}
+
+/** OpenAI-compatible /chat/completions response (as returned by the provider). */
+export interface ChatCompletionResponse {
+  id?: string;
+  model?: string;
+  choices: Array<{
+    index?: number;
+    message?: ChatMessage;
+    delta?: Partial<ChatMessage>;
+    finish_reason?: string | null;
+  }>;
+  usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number };
+  [key: string]: unknown;
+}
+
+/** Normalized provider error (see client.createProviderError). */
+export interface ProviderError {
+  provider: ProviderId;
+  message: string;
+  code: string;
+  status?: number;
+}
+
+/** Persisted BYOK settings (localStorage) — see storage.ts. */
+export interface ProviderSettings {
+  selectedProvider: ProviderId;
+  providerKeys: Partial<Record<ProviderId, string>>;
+  providerModels: Partial<Record<ProviderId, string>>;
+}

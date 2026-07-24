@@ -34,7 +34,11 @@
     "paths": {
       "@/*": [
         "./*"
-      ]
+      ],
+      // Shadow @hanzo/usage's src-pointing subpath types (no dist .d.ts shipped)
+      // with local shims — see types/hanzo-usage.d.ts. Runtime untouched.
+      "@hanzo/usage/panel": ["./types/hanzo-usage.d.ts"],
+      "@hanzo/usage/connected": ["./types/hanzo-usage.d.ts"]
     }
   },
   "include": [
@@ -45,6 +49,10 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    // Local-machine symlinks to external reference clones (gitignored) —
+    // tsc follows symlinks and drowns in their ~3k foreign errors.
+    "jan",
+    "sol"
   ]
 }

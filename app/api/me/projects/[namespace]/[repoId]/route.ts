@@ -250,7 +250,7 @@ export async function POST(
     {
       ok: true,
       project: {
-        id: newProject._id,
+        id: newProject.id,
         space_id: newProject.space_id,
         prompts: newProject.prompts,
       },

@@ -8,14 +8,18 @@ import { baseAs } from "@/lib/base";
  * scopes by `user_id` (their IAM `sub`) for per-user isolation. Thin wrapper
  * over the @hanzo/base core client — no bespoke HTTP, no local DB.
  */
-export interface Project {
+// `type` (not `interface`) so it satisfies the BaseClient generic's
+// `BaseRecord` constraint — only type-alias object literals get the implicit
+// string index signature `[key: string]: unknown` requires (same pattern as
+// lib/db/history.ts).
+export type Project = {
   id: string;
   user_id: string;
   space_id: string; // canonical key, "namespace/repoId"
   prompts: string[];
   created: string;
   updated: string;
-}
+};
 
 /** Canonical project key from a namespace + repo id. */
 export function spaceId(namespace: string, repoId: string): string {

@@ -2,7 +2,6 @@
  * Tests for provider client utilities
  */
 
-import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import {
   fetchModels,
   chatCompletion,
@@ -15,7 +14,7 @@ import { ProviderId, ChatCompletionRequest } from '@/lib/llm/providers/types';
 // Mock fetch
 global.fetch = jest.fn(() =>
   Promise.resolve({} as Response)
-) as jest.MockedFunction<typeof fetch>;
+) as unknown as jest.MockedFunction<typeof fetch>;
 
 describe('Provider Client', () => {
   beforeEach(() => {

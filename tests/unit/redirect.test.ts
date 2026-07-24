@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import {
   loginRedirectDestination,
   DEFAULT_DESTINATION,
-} from "../../lib/auth/redirect.ts";
+} from "../../lib/auth/redirect";
 
 test("defaults to dashboard when no stored path", () => {
   assert.equal(loginRedirectDestination(null), DEFAULT_DESTINATION);

@@ -156,7 +156,7 @@ describe("runAgent", () => {
     const events: AgentEvent[] = [];
     await runAgent(
       { token: "t", baseUrl: "https://api.test/v1", model: "zen", prompt: "loop", maxTurns: 3 },
-      (e) => events.push(e)
+      (e) => { events.push(e); }
     );
     const turnEvents = events.filter((e) => e.type === "turn");
     expect(turnEvents.length).toBe(3);

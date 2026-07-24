@@ -13,10 +13,8 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  swcMinify: true,
+  // (Next 16 removed the `eslint` config key — linting is no longer part of
+  // `next build`, so the old ignoreDuringBuilds block is gone.)
   modularizeImports: {
     '@hanzo/ui': {
       transform: '@hanzo/ui/primitives/{{member}}',
@@ -32,11 +30,6 @@ const nextConfig: NextConfig = {
       "@radix-ui",
       "framer-motion"
     ],
-    // Turbopack features (beta)
-    turbo: {
-      // Turbopack configuration
-      // Note: persistentCaching was removed, using default settings
-    },
   },
   webpack(config, options) {
     const { isServer, dev } = options;
