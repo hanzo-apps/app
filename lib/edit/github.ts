@@ -196,6 +196,10 @@ export class GitHubProvider implements GitProvider {
     return { prUrl: json.html_url, number: json.number };
   }
 
+  commitUrl(repo: RepoRef, sha: string): string {
+    return `https://github.com/${repo.owner}/${repo.repo}/commit/${sha}`;
+  }
+
   async openIssue(repo: RepoRef, title: string, body: string): Promise<IssueResult> {
     const res = await this.req('POST', `/repos/${enc(repo.owner)}/${enc(repo.repo)}/issues`, {
       title,

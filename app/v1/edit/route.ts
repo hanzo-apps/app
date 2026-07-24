@@ -70,7 +70,13 @@ export async function POST(req: NextRequest) {
     url?: string;
     key?: string;
     model?: string;
+    mode?: string;
   };
+
+  // Direct-commit ("goes live" straight to the default branch) is admin-ONLY.
+  // A non-admin passing mode:'direct' is silently downgraded to the PR flow —
+  // privilege is decided here (server), never in the browser.
+  const direct = body.mode === 'direct' && id.isGlobalAdmin;
 
   // The widget auto-resolves the source file for the current view, so `path` is
   // optional: fall back to the top-ranked candidate when it's absent.
@@ -120,6 +126,7 @@ export async function POST(req: NextRequest) {
       model: body.model,
       actorLabel,
       projectKey: (body.key || '').trim() || undefined,
+      direct,
     });
     return withCors(origin, {
       ok: true,
@@ -128,6 +135,11 @@ export async function POST(req: NextRequest) {
       branch: out.branch,
       forked: out.forked,
       commitSha: out.commitSha,
+      // Direct-commit outcome (admin "goes live"): the widget shows a live link
+      // instead of a PR. `liveUrl` is the page the edit was made from.
+      committed: out.direct === true,
+      commitUrl: out.commitUrl,
+      liveUrl: out.direct ? (body.url || undefined) : undefined,
       provider: target.provider,
       free,
     });

@@ -400,9 +400,30 @@
     '.link:hover{text-decoration:underline}' +
     '.msg{font-size:13px;line-height:1.5;word-break:break-word}' +
     '.msg.err{color:#ff9d9d}' +
+    'code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;background:#1c1c1c;' +
+    'border:1px solid rgba(255,255,255,.12);border-radius:5px;padding:1px 5px}' +
+    // Admin affordances: the "admin" chip + the ghost inline-edit button.
+    '.adm{color:#8ab4ff;font-weight:600;text-transform:uppercase;letter-spacing:.04em;font-size:10px}' +
+    '.btn.ghost{width:100%;margin-top:8px;background:transparent;color:#cfcfcf;border:1px dashed rgba(255,255,255,.22);' +
+    'font-weight:500;padding:9px 12px;border-radius:8px;cursor:pointer}' +
+    '.btn.ghost:hover{border-color:#8ab4ff;color:#fff}' +
     '.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;' +
     'border-radius:50%;animation:hz 0.7s linear infinite;vertical-align:-2px;margin-right:6px}' +
-    '@keyframes hz{to{transform:rotate(360deg)}}';
+    '@keyframes hz{to{transform:rotate(360deg)}}' +
+    // Mobile: the panel becomes a bottom-sheet (full-width, rounded top, safe-area
+    // inset) with larger touch targets; the FAB tucks above the home indicator.
+    '@media (max-width:560px){' +
+    '.fab{right:12px;bottom:calc(12px + env(safe-area-inset-bottom))}' +
+    '.panel{left:0;right:0;bottom:0;top:auto;width:100%;max-width:100%;border-radius:16px 16px 0 0;' +
+    'border-left:none;border-right:none;border-bottom:none;max-height:88vh;overflow-y:auto;' +
+    'padding-bottom:env(safe-area-inset-bottom)}' +
+    '.hd{padding:14px 16px}.bd{padding:16px}' +
+    'textarea{min-height:96px;font-size:16px}' + // 16px ⇒ iOS never zooms on focus
+    'input.path{font-size:14px;padding:11px 12px}' +
+    '.btn{padding:14px 14px;font-size:15px}.btn.sec{padding:14px 16px}.btn.ghost{padding:13px 14px}' +
+    '.cand{padding:6px 10px;font-size:12px}' +
+    '.x{font-size:24px;padding:6px 10px}' +
+    '}';
 
   var style = document.createElement('style');
   style.textContent = css;
@@ -433,9 +454,18 @@
     });
   }
 
-  // Decide the primary CTA from identity + credits.
+  // Decide the primary CTA from identity + credits. Admin's primary is the
+  // "goes live" direct commit; the server re-checks isGlobalAdmin for that mode,
+  // so this only shapes the UI.
   function cta() {
-    if (ME.isGlobalAdmin) return { label: 'Open PR — free', action: 'edit' };
+    if (ME.isGlobalAdmin)
+      return {
+        label: 'Apply live',
+        action: 'edit',
+        mode: 'direct',
+        admin: true,
+        note: 'Commits directly to ' + BRANCH + ' — goes live.',
+      };
     if (ME.authenticated && ME.hasCredits) return { label: 'Submit fix', action: 'edit', note: 'Uses your credits.' };
     if (ME.authenticated) return { label: 'Suggest a fix', action: 'suggest', top: true };
     return { label: 'Suggest a fix', action: 'suggest', login: true };
@@ -465,20 +495,34 @@
         '</div>'
       : '';
     panel.innerHTML =
-      '<div class="hd"><div><b>Improve this page</b><div class="sub">' +
+      '<div class="hd"><div><b>' +
+      (c.admin ? 'Command this page' : 'Improve this page') +
+      '</b><div class="sub">' +
       esc(REPO) +
       (BRANCH ? ' · ' + esc(BRANCH) : '') +
+      (c.admin ? ' · <span class="adm">admin</span>' : '') +
       '</div></div><button class="x" aria-label="Close">×</button></div>' +
       '<div class="bd">' +
-      '<textarea placeholder="Describe the change or fix…"></textarea>' +
+      '<textarea placeholder="' +
+      (c.admin
+        ? 'Command — e.g. “change the hero headline to Ship faster”'
+        : 'Describe the change or fix…') +
+      '"></textarea>' +
       (showPath
         ? '<input class="path" placeholder="auto-detected file — edit to override" value="' + esc(chosen) + '"/>' + candChips
+        : '') +
+      (c.admin
+        ? '<button type="button" class="btn ghost" data-inline>✎ Edit text directly on the page</button>'
         : '') +
       '<div class="row">' +
       '<button class="btn primary">' +
       esc(c.label) +
       '</button>' +
-      (c.action === 'edit' ? '<button class="btn sec" data-suggest>Suggest</button>' : '') +
+      (c.admin
+        ? '<button class="btn sec" data-pr>Open PR</button>'
+        : c.action === 'edit'
+          ? '<button class="btn sec" data-suggest>Suggest</button>'
+          : '') +
       '</div>' +
       (c.note ? '<div class="note">' + esc(c.note) + '</div>' : '') +
       (c.top
@@ -515,13 +559,28 @@
         CTX.chosen = pathInput.value;
       };
 
+    var pathOf = function () {
+      return pathInput ? pathInput.value : chosen;
+    };
     panel.querySelector('.btn.primary').onclick = function () {
-      submit(c.action, ta.value, pathInput ? pathInput.value : chosen);
+      submit(c.action, ta.value, pathOf(), c.mode);
     };
     var sug = panel.querySelector('[data-suggest]');
     if (sug)
       sug.onclick = function () {
-        submit('suggest', ta.value, pathInput ? pathInput.value : chosen);
+        submit('suggest', ta.value, pathOf());
+      };
+    // Admin: "Open PR" runs the same agent edit but as a PR (mode omitted).
+    var pr = panel.querySelector('[data-pr]');
+    if (pr)
+      pr.onclick = function () {
+        submit('edit', ta.value, pathOf(), 'pr');
+      };
+    // Admin: inline click-to-edit the tracked element → a precise instruction.
+    var inl = panel.querySelector('[data-inline]');
+    if (inl)
+      inl.onclick = function () {
+        inlineEdit(pathOf());
       };
   }
 
@@ -563,21 +622,17 @@
     };
   }
 
-  function submit(action, text, path) {
-    text = (text || '').trim();
-    if (!text) return;
-    // Path is optional now: default to the top-ranked candidate.
-    var effectivePath = (path || '').trim() || (CTX.candidates[0] && CTX.candidates[0].path) || PATH || '';
-    var ctx = selection();
+  // The shared payload skeleton every submission carries.
+  function editPayload(effectivePath) {
     var trace = contextTrace();
-    var payload = {
+    return {
       repo: REPO,
       provider: PROVIDER,
       path: effectivePath || undefined,
       branch: BRANCH,
       url: location.href,
       key: KEY || undefined,
-      context: ctx || undefined,
+      context: selection() || undefined,
       route: trace.route,
       candidateFiles: trace.candidateFiles && trace.candidateFiles.length ? trace.candidateFiles : undefined,
       domBreadcrumb: trace.domBreadcrumb,
@@ -586,10 +641,17 @@
       replayRef: trace.replayRef,
       usageTrace: trace.usageTrace,
     };
+  }
+
+  function submit(action, text, path, mode) {
+    text = (text || '').trim();
+    if (!text) return;
+    var effectivePath = (path || '').trim() || (CTX.candidates[0] && CTX.candidates[0].path) || PATH || '';
 
     if (action === 'suggest') {
-      busy('Sending…');
+      var payload = editPayload(effectivePath);
       payload.suggestion = text;
+      busy('Sending…');
       api('/v1/suggest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -615,54 +677,172 @@
       return;
     }
 
-    // action === 'edit'
+    postEdit(text, effectivePath, mode);
+  }
+
+  // Timestamp of the in-flight edit, so a direct commit can report ~elapsed
+  // seconds ("live in ~Ns").
+  var editT0 = 0;
+
+  // Run the agent edit: mode 'direct' asks the server to commit straight to the
+  // default branch (honored ONLY for an admin — the server re-checks); anything
+  // else is the fork→PR flow. All privilege lives server-side; mode is a hint.
+  function postEdit(instruction, path, mode) {
+    instruction = (instruction || '').trim();
+    if (!instruction) return;
+    var effectivePath = (path || '').trim() || (CTX.candidates[0] && CTX.candidates[0].path) || PATH || '';
     if (!effectivePath) {
-      // We couldn't resolve any file — fall back to a suggestion rather than fail.
       showMessage('Couldn’t detect a source file for this view — use <b>Suggest</b> instead.', true);
       return;
     }
-    busy('Opening PR…');
-    payload.instruction = text;
+    var payload = editPayload(effectivePath);
+    payload.instruction = instruction;
+    if (mode) payload.mode = mode;
+    busy(mode === 'direct' ? 'Applying…' : 'Opening PR…');
+    editT0 = Date.now();
     api('/v1/edit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     })
       .then(readJson)
-      .then(function (r) {
-        var d = r.data || {};
-        if (d.ok && d.prUrl) {
-          showMessage(
-            (d.forked ? 'Forked and opened' : 'Opened') +
-              ' a pull request: <a class="link" href="' +
-              esc(d.prUrl) +
-              '" target="_blank" rel="noopener">' +
-              esc(d.prUrl.replace(/^https?:\/\//, '')) +
-              ' ↗</a>',
-          );
-        } else if (r.status === 401 || d.openLogin) {
-          showMessage('<a class="link" href="' + BASE + '/login" target="_blank" rel="noopener">Log in</a> to open a PR.', true);
-        } else if (r.status === 402 || d.needsCredits) {
-          showMessage(
-            'You’re out of credits. <a class="link" href="' + BASE + '/billing" target="_blank" rel="noopener">Top up</a> to open a PR.',
-            true,
-          );
-        } else if (d.connect) {
-          showMessage(
-            'Connect ' +
-              esc(PROVIDER) +
-              ' in your <a class="link" href="' +
-              BASE +
-              '/connectors" target="_blank" rel="noopener">Hanzo account</a> to open a PR.',
-            true,
-          );
-        } else {
-          showMessage(esc(d.error || 'The edit failed.'), true);
-        }
-      })
+      .then(renderEditResult)
       .catch(function () {
         showMessage('Network error — please try again.', true);
       });
+  }
+
+  function renderEditResult(r) {
+    var d = r.data || {};
+    if (d.ok && d.committed) {
+      var secs = Math.max(1, Math.round((Date.now() - editT0) / 1000));
+      var commit = d.commitUrl
+        ? ' <a class="link" href="' + esc(d.commitUrl) + '" target="_blank" rel="noopener">view commit ↗</a>'
+        : d.commitSha
+          ? ' <code>' + esc(String(d.commitSha).slice(0, 7)) + '</code>'
+          : '';
+      var live = d.liveUrl
+        ? '<div class="note">Live at <a class="link" href="' +
+          esc(d.liveUrl) +
+          '" target="_blank" rel="noopener">' +
+          esc(d.liveUrl.replace(/^https?:\/\//, '')) +
+          '</a> — refresh to see the change.</div>'
+        : '';
+      showMessage('Committed to <b>' + esc(d.branch || BRANCH) + '</b> — live in ~' + secs + 's.' + commit + live);
+    } else if (d.ok && d.prUrl) {
+      showMessage(
+        (d.forked ? 'Forked and opened' : 'Opened') +
+          ' a pull request: <a class="link" href="' +
+          esc(d.prUrl) +
+          '" target="_blank" rel="noopener">' +
+          esc(d.prUrl.replace(/^https?:\/\//, '')) +
+          ' ↗</a>',
+      );
+    } else if (r.status === 401 || d.openLogin) {
+      showMessage('<a class="link" href="' + BASE + '/login" target="_blank" rel="noopener">Log in</a> to open a PR.', true);
+    } else if (r.status === 402 || d.needsCredits) {
+      showMessage(
+        'You’re out of credits. <a class="link" href="' + BASE + '/billing" target="_blank" rel="noopener">Top up</a> to open a PR.',
+        true,
+      );
+    } else if (d.connect) {
+      showMessage(
+        'Connect ' +
+          esc(PROVIDER) +
+          ' in your <a class="link" href="' +
+          BASE +
+          '/connectors" target="_blank" rel="noopener">Hanzo account</a> to open a PR.',
+        true,
+      );
+    } else {
+      showMessage(esc(d.error || 'The edit failed.'), true);
+    }
+  }
+
+  // Inline click-to-edit (admin): make the tracked element's text editable in
+  // place; on commit (Enter / blur) turn the before→after diff into a precise
+  // instruction and apply it live. Escape cancels + restores. Text-only — never
+  // touches structure or attributes.
+  var inlineActive = false;
+  function inlineEdit(path) {
+    if (inlineActive) return;
+    var el = lastEl && lastEl.isConnected ? lastEl : null;
+    // Climb to the nearest element that actually carries text (skip empty wrappers).
+    while (el && el !== document.body && !(el.innerText || el.textContent || '').trim()) el = el.parentElement;
+    if (!el || el === document.body) {
+      showMessage('Click the text you want to change first, then reopen and choose “Edit text directly”.', true);
+      return;
+    }
+    inlineActive = true;
+    var before = (el.innerText || el.textContent || '').trim();
+    var label = nodeToken(el);
+    var prevCE = el.getAttribute('contenteditable');
+    var prevOutline = el.style.outline;
+    close(); // reveal the element so the admin can type over it
+    el.setAttribute('contenteditable', 'true');
+    el.style.outline = '2px solid #8ab4ff';
+    el.focus();
+    // Select all the text so typing replaces it.
+    try {
+      var range = document.createRange();
+      range.selectNodeContents(el);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    } catch (e) {
+      /* selection is a nicety */
+    }
+
+    function restore() {
+      el.style.outline = prevOutline;
+      if (prevCE === null) el.removeAttribute('contenteditable');
+      else el.setAttribute('contenteditable', prevCE);
+      el.removeEventListener('keydown', onKey, true);
+      el.removeEventListener('blur', onBlur, true);
+      inlineActive = false;
+    }
+    function commit() {
+      var after = (el.innerText || el.textContent || '').trim();
+      var changed = after && after !== before;
+      if (!changed) {
+        el.textContent = before;
+        restore();
+        return;
+      }
+      restore();
+      var instruction =
+        'Change the visible text of the ' + label + ' element from "' + before + '" to "' + after + '". Change only that text.';
+      fab.style.display = 'none';
+      panel.classList.add('open');
+      showMessageBusy('Applying…');
+      postEdit(instruction, path, 'direct');
+    }
+    function onKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        commit();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        el.textContent = before;
+        restore();
+      }
+    }
+    function onBlur() {
+      commit();
+    }
+    el.addEventListener('keydown', onKey, true);
+    el.addEventListener('blur', onBlur, true);
+  }
+
+  // A minimal "working" panel used when a flow starts without a form on screen
+  // (inline edit). The subsequent renderEditResult replaces it.
+  function showMessageBusy(label) {
+    panel.innerHTML =
+      '<div class="hd"><div><b>Hanzo Edit</b></div><button class="x" aria-label="Close">×</button></div>' +
+      '<div class="bd"><div class="msg"><span class="spin"></span>' +
+      esc(label) +
+      '</div></div>';
+    panel.querySelector('.x').onclick = close;
   }
 
   function readJson(res) {
@@ -697,6 +877,23 @@
   }
   fab.onclick = open;
 
+  // Register this property as a project so it "ties back" and shows in
+  // hanzo.app's projects list. Fire-and-forget, idempotent (the server only
+  // creates when no project already links this repo), and SIGNED-IN ONLY. The
+  // org is derived server-side from the bearer — the browser never picks it.
+  var REGISTERED = false;
+  function registerProperty() {
+    if (REGISTERED) return;
+    REGISTERED = true;
+    api('/v1/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ repo: REPO }),
+    }).catch(function () {
+      /* registration is a convenience — never blocks editing */
+    });
+  }
+
   // Probe identity to shape the CTA (fail-open to the anonymous suggest state).
   api('/v1/me', { headers: { Accept: 'application/json' } })
     .then(function (r) {
@@ -709,6 +906,7 @@
         ME.hasCredits = !!d.hasCredits;
         ME.balance = typeof d.balance === 'number' ? d.balance : null;
       }
+      if (ME.authenticated) registerProperty();
     })
     .catch(function () {
       /* anonymous suggest still works */
