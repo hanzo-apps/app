@@ -1,4 +1,4 @@
-import { isAuthenticated } from '@/lib/auth';
+import { isAuthenticated, tokenMintedForApp } from '@/lib/auth';
 import { cookies, headers } from 'next/headers';
 import MY_TOKEN_KEY from '@/lib/get-cookie-name';
 
@@ -155,6 +155,51 @@ describe('Auth', () => {
 
       const result = await isAuthenticated();
       expect(result).toBeUndefined();
+    });
+  });
+
+  // FIX #2: only a token minted for hanzo.app's OWN IAM client may elevate to a
+  // global-admin direct-commit. tokenMintedForApp is the aud/azp/token_use guard.
+  describe('tokenMintedForApp', () => {
+    // An UNSIGNED JWT (`header.payload.sig`) — tokenMintedForApp/decodeJwt only
+    // reads the claims (audience binding is an authorization decision layered on
+    // top of the userinfo liveness check, not a signature verification here).
+    const jwt = (payload: Record<string, unknown>): string => {
+      const b64 = (o: unknown) => Buffer.from(JSON.stringify(o)).toString('base64url');
+      return `${b64({ alg: 'none', typ: 'JWT' })}.${b64(payload)}.sig`;
+    };
+
+    beforeEach(() => {
+      process.env.IAM_CLIENT_ID = 'hanzo-app';
+    });
+
+    it('accepts a token whose aud (string) is our client', () => {
+      expect(tokenMintedForApp(jwt({ aud: 'hanzo-app', owner: 'admin' }))).toBe(true);
+    });
+
+    it('accepts a token whose aud (array) includes our client', () => {
+      expect(tokenMintedForApp(jwt({ aud: ['other', 'hanzo-app'] }))).toBe(true);
+    });
+
+    it('accepts a token whose azp is our client', () => {
+      expect(tokenMintedForApp(jwt({ aud: 'someone-else', azp: 'hanzo-app' }))).toBe(true);
+    });
+
+    it('REJECTS a token minted for a different (lower-trust) app', () => {
+      expect(tokenMintedForApp(jwt({ aud: 'hanzo-chat', owner: 'admin' }))).toBe(false);
+    });
+
+    it('REJECTS when token_use is present and not an access token', () => {
+      expect(tokenMintedForApp(jwt({ aud: 'hanzo-app', token_use: 'id' }))).toBe(false);
+    });
+
+    it('fails closed for an opaque / non-JWT token', () => {
+      expect(tokenMintedForApp('not-a-jwt')).toBe(false);
+    });
+
+    it('fails closed when no IAM_CLIENT_ID is configured', () => {
+      delete process.env.IAM_CLIENT_ID;
+      expect(tokenMintedForApp(jwt({ aud: 'hanzo-app' }))).toBe(false);
     });
   });
 });

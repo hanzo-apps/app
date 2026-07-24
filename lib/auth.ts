@@ -58,6 +58,61 @@ async function fetchIamUser(accessToken: string): Promise<IamUserInfo | undefine
 }
 
 /**
+ * Read the (UNVERIFIED) claim set from a JWT's payload segment. Signature
+ * verification is NOT this function's job — audience binding is layered on top of
+ * the userinfo liveness check (which already proves the token is IAM-signed and
+ * not revoked). Decoding is a base64url of the middle segment; no crypto lib, so
+ * it runs identically under Node, the edge runtime, and jest's jsdom env. Returns
+ * null for anything that is not a well-formed 3-segment JWT.
+ */
+function decodeJwtClaims(token: string): Record<string, unknown> | null {
+  const parts = (token || "").split(".");
+  if (parts.length !== 3) return null;
+  try {
+    const json = Buffer.from(parts[1], "base64url").toString("utf8");
+    const claims = JSON.parse(json);
+    return claims && typeof claims === "object" ? claims : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * True when a bearer JWT was minted for hanzo.app's OWN IAM client — its
+ * audience (`aud`, string or array) or authorized party (`azp`) is our
+ * configured IAM_CLIENT_ID, and (when present) `token_use` is an access token.
+ *
+ * `fetchIamUser`/userinfo proves a token is genuinely IAM-signed and live, but
+ * NOT which OAuth client minted it: every Hanzo app authenticates against the
+ * SAME hanzo.id with its OWN per-app client. A token minted for a LOWER-TRUST
+ * app can authenticate a normal user (the cross-app fork→PR widget path acts as
+ * that user and is fine), but it must NEVER elevate to a global-admin
+ * direct-commit that "goes live" on the default branch. This binds the elevation
+ * to a token our own client issued — the confused-deputy guard for isGlobalAdmin.
+ *
+ * Fail CLOSED: no IAM_CLIENT_ID configured (prod requires it — see
+ * lib/security/env-validation.ts), an opaque/non-JWT token, or an audience that
+ * does not match ⇒ false. Read the env fresh (not the module-load const) so the
+ * check is deterministically testable and never captures a stale value.
+ */
+export function tokenMintedForApp(token: string): boolean {
+  const clientId = process.env.IAM_CLIENT_ID || "";
+  if (!clientId) return false;
+  const claims = decodeJwtClaims(token);
+  if (!claims) return false;
+  // token_use, when present (AWS-style), must be an access token — a refresh/id
+  // token must never drive an admin action.
+  if (typeof claims.token_use === "string" && claims.token_use !== "access") {
+    return false;
+  }
+  const aud = claims.aud;
+  const audMatch = Array.isArray(aud)
+    ? aud.includes(clientId)
+    : aud === clientId;
+  return audMatch || claims.azp === clientId;
+}
+
+/**
  * Optionally introspect a token for active/inactive status.
  * Useful when you need to check token validity without fetching full profile.
  */
