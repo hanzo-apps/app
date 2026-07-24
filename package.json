@@ -4,7 +4,10 @@
   "private": true,
   "license": "MIT",
   "scripts": {
+    "predev": "node scripts/gen-edit-manifest.mjs",
     "dev": "next dev --webpack",
+    "gen:edit-manifest": "node scripts/gen-edit-manifest.mjs",
+    "prebuild": "node scripts/gen-edit-manifest.mjs",
     "build": "next build --webpack",
     "start": "next start",
     "lint": "next lint",
