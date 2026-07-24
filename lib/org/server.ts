@@ -89,6 +89,28 @@ export function readBearer(req: NextRequest): string | null {
   return null;
 }
 
+/**
+ * Read the IAM bearer for the CROSS-ORIGIN Edit-widget routes (`/v1/me`,
+ * `/v1/suggest`, `/v1/edit`). Unlike `readBearer` (cookie-only in production, to
+ * keep the same-origin BFFs from being a confused deputy), these routes are
+ * cross-origin BY DESIGN: the widget is installed on OTHER Hanzo origins where a
+ * SameSite=Lax `hanzo_token` cookie does NOT ride a cross-site fetch, so the
+ * widget forwards the host app's IAM token as `Authorization: Bearer`. Cookie
+ * first (same-origin hanzo.app), else the header.
+ *
+ * This is SAFE only where identity is ALWAYS IAM-validated (userinfo — a forged
+ * token yields null, never admin) and NO cross-org `X-Org-Id` is stamped from it.
+ * The three widget routes satisfy both: they validate the bearer and act solely
+ * as the validated caller, on the caller's OWN repo token + home org.
+ */
+export function readWidgetBearer(req: NextRequest): string | null {
+  const cookie = req.cookies.get(TOKEN_COOKIE)?.value;
+  if (cookie) return cookie;
+  const header = req.headers.get('authorization');
+  if (header) return header.startsWith('Bearer ') ? header.slice(7) : header;
+  return null;
+}
+
 /** Claims we read off a Casdoor access-token JWT (best-effort, unverified). */
 interface OwnerClaims {
   owner?: string;
@@ -131,9 +153,12 @@ function isLocalDev(req: NextRequest): boolean {
  */
 export async function resolveOrgIdentity(
   req: NextRequest,
-  opts: { validate?: boolean } = {},
+  opts: { validate?: boolean; bearer?: string } = {},
 ): Promise<OrgIdentity | null> {
-  const token = readBearer(req);
+  // `opts.bearer` is the widget-route opt-in (a caller that already read the
+  // cross-origin bearer via `readWidgetBearer`); every other caller falls through
+  // to the cookie-only `readBearer`, so their behavior is byte-identical.
+  const token = opts.bearer ?? readBearer(req);
   if (!token) {
     // Dev affordance: localhost with no token acts in a local workspace org so
     // the builder is usable without an IAM round-trip in development.
