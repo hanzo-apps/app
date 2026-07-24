@@ -99,6 +99,9 @@ test.describe('/new — deploy hub', () => {
 
   test('prompt → Build submits toward the builder (never a dead click)', async ({ page }) => {
     await page.goto('/new');
+    // Cold-start tolerance: on the in-cluster runner the first /new hit can
+    // take >15s to hydrate the composer — wait for it before filling.
+    await expect(composer(page)).toBeVisible({ timeout: 30000 });
     await composer(page).fill('a simple counter button');
     await page.getByRole('button', { name: 'Build' }).click();
     // /dev is edge-protected: an authed session lands on /dev?prompt=…, an anon
