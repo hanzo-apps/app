@@ -26,6 +26,11 @@ import {
 import { HanzoBrand } from "@/components/HanzoLogo";
 import MeetHanzoMenu from "@/components/layout/meet-hanzo-menu";
 import { useAuthContext } from "@/components/providers/AuthProvider";
+import { HEADERS, CURRENT_SITE } from "@/lib/hanzo-ecosystem";
+
+// This property's header config (brand, local nav, secondary/primary CTA) from the
+// ONE canonical ecosystem source — identical shape on every Hanzo property.
+const HDR = HEADERS[CURRENT_SITE];
 
 export default function Header() {
   const { user, isAuthenticated, login, logout } = useAuthContext();
@@ -69,18 +74,17 @@ export default function Header() {
               Community, Learn, Docs and Models all live inside the menu. */}
           <div className="hidden lg:flex items-center gap-8">
             <MeetHanzoMenu />
-            <Link
-              href="/pricing"
-              className="text-foreground/70 hover:text-foreground text-sm font-medium transition-colors"
-            >
-              Pricing
-            </Link>
-            <Link
-              href="/enterprise"
-              className="text-foreground/70 hover:text-foreground text-sm font-medium transition-colors"
-            >
-              Enterprise
-            </Link>
+            {/* Local product navigation — from the ONE canonical per-domain config
+                (hanzo.app: Product · Templates · Showcase · Pricing · Enterprise). */}
+            {HDR.localNav.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="text-foreground/70 hover:text-foreground text-sm font-medium transition-colors"
+              >
+                {item.label}
+              </Link>
+            ))}
           </div>
         </div>
 
