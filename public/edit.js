@@ -400,6 +400,14 @@
     '.link:hover{text-decoration:underline}' +
     '.msg{font-size:13px;line-height:1.5;word-break:break-word}' +
     '.msg.err{color:#ff9d9d}' +
+    // Admin review: the proposed-change diff before a live commit.
+    '.diff{margin-top:10px;max-height:38vh;overflow:auto;background:#0e0e0e;border:1px solid rgba(255,255,255,.12);' +
+    'border-radius:8px;padding:8px 10px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;' +
+    'line-height:1.45;white-space:pre;tab-size:2}' +
+    '.diff .a{color:#7ee787;background:rgba(46,160,67,.12);display:block}' +
+    '.diff .d{color:#ff9d9d;background:rgba(248,81,73,.12);display:block}' +
+    '.diff .c{color:#8a8a8a;display:block}' +
+    '.warn{font-size:11px;color:#e3b341;margin-top:9px}' +
     'code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;background:#1c1c1c;' +
     'border:1px solid rgba(255,255,255,.12);border-radius:5px;padding:1px 5px}' +
     // Admin affordances: the "admin" chip + the ghost inline-edit button.
@@ -687,6 +695,10 @@
   // Run the agent edit: mode 'direct' asks the server to commit straight to the
   // default branch (honored ONLY for an admin — the server re-checks); anything
   // else is the fork→PR flow. All privilege lives server-side; mode is a hint.
+  // The in-flight direct edit, remembered so the CONFIRM phase can resend the
+  // same instruction + path alongside the admin-approved bytes.
+  var lastEdit = null;
+
   function postEdit(instruction, path, mode) {
     instruction = (instruction || '').trim();
     if (!instruction) return;
@@ -695,10 +707,13 @@
       showMessage('Couldn’t detect a source file for this view — use <b>Suggest</b> instead.', true);
       return;
     }
+    lastEdit = { instruction: instruction, path: effectivePath };
     var payload = editPayload(effectivePath);
     payload.instruction = instruction;
     if (mode) payload.mode = mode;
-    busy(mode === 'direct' ? 'Applying…' : 'Opening PR…');
+    // Direct mode returns a PROPOSAL first (nothing commits until the admin
+    // confirms), so the button reads "Reviewing…" not "Applying…".
+    busy(mode === 'direct' ? 'Reviewing…' : 'Opening PR…');
     editT0 = Date.now();
     api('/v1/edit', {
       method: 'POST',
@@ -712,9 +727,77 @@
       });
   }
 
+  // CONFIRM phase: the admin has reviewed the proposal; commit the EXACT approved
+  // bytes straight to the default branch, optimistic-locked to the reviewed sha.
+  function confirmEdit(proposed, baseSha) {
+    if (!lastEdit) return;
+    var payload = editPayload(lastEdit.path);
+    payload.instruction = lastEdit.instruction;
+    payload.mode = 'direct';
+    payload.reviewed = proposed;
+    payload.baseSha = baseSha;
+    showMessageBusy('Applying…');
+    editT0 = Date.now();
+    api('/v1/edit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+      .then(readJson)
+      .then(renderEditResult)
+      .catch(function () {
+        showMessage('Network error — please try again.', true);
+      });
+  }
+
+  // Render a diff string ("+ "/"- "/"  " line prefixes) as colored lines.
+  function renderDiff(diff) {
+    return diff
+      .split('\n')
+      .map(function (ln) {
+        var k = ln.charAt(0) === '+' ? 'a' : ln.charAt(0) === '-' ? 'd' : 'c';
+        return '<span class="' + k + '">' + esc(ln) + '</span>';
+      })
+      .join('');
+  }
+
+  // The admin review gate: show the proposed change (diff, or full contents when
+  // the file is too large to diff) and require an explicit "Apply live" before
+  // anything reaches the default branch.
+  function renderPreview(d) {
+    var body = d.diff
+      ? '<div class="diff">' + renderDiff(d.diff) + '</div>'
+      : '<div class="warn">Large file — review the full proposed contents below.</div>' +
+        '<div class="diff">' + esc(String(d.proposed || '')) + '</div>';
+    panel.innerHTML =
+      '<div class="hd"><div><b>Review before it goes live</b><div class="sub">' +
+      esc(d.path || (lastEdit && lastEdit.path) || '') +
+      ' · ' + esc(d.branch || BRANCH) +
+      ' · <span class="adm">admin</span></div></div><button class="x" aria-label="Close">×</button></div>' +
+      '<div class="bd">' +
+      body +
+      '<div class="warn">This commits directly to ' + esc(d.branch || BRANCH) + ' and goes live to all visitors.</div>' +
+      '<div class="row">' +
+      '<button class="btn primary" data-apply>Apply live</button>' +
+      '<button class="btn sec" data-cancel>Cancel</button>' +
+      '</div></div>';
+    panel.querySelector('.x').onclick = close;
+    panel.querySelector('[data-cancel]').onclick = renderForm;
+    panel.querySelector('[data-apply]').onclick = function () {
+      var b = panel.querySelector('[data-apply]');
+      if (b) {
+        b.disabled = true;
+        b.innerHTML = '<span class="spin"></span>Applying…';
+      }
+      confirmEdit(d.proposed, d.baseSha);
+    };
+  }
+
   function renderEditResult(r) {
     var d = r.data || {};
-    if (d.ok && d.committed) {
+    if (d.ok && d.preview) {
+      renderPreview(d);
+    } else if (d.ok && d.committed) {
       var secs = Math.max(1, Math.round((Date.now() - editT0) / 1000));
       var commit = d.commitUrl
         ? ' <a class="link" href="' + esc(d.commitUrl) + '" target="_blank" rel="noopener">view commit ↗</a>'
