@@ -90,7 +90,8 @@ test.describe('/new — deploy hub', () => {
     // The paste-URL fallback is always present; Import stays disabled until a valid URL.
     const paste = page.getByPlaceholder(/github\.com\/org\/repo/i);
     await expect(paste).toBeVisible();
-    const importBtn = page.getByRole('button', { name: 'Import' });
+    // exact: the panel also has an icon button titled "Import a project — …".
+    const importBtn = page.getByRole('button', { name: 'Import', exact: true });
     await expect(importBtn).toBeDisabled();
     await paste.fill('https://github.com/hanzoai/app');
     await expect(importBtn).toBeEnabled();
@@ -116,15 +117,19 @@ test.describe('/new — deploy hub', () => {
 });
 
 test.describe('/ — landing', () => {
+  // Structural pins, not marketing copy — the hero headline is a typewriter
+  // that changes wording freely; the CONTRACT is: an h1 renders and the
+  // build composer is usable above the fold.
   test('hero renders', async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByRole('heading', { name: /Hanzo builds and ships it/i })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible();
+    await expect(page.getByPlaceholder(/./).first()).toBeVisible();
   });
 
   test('mobile 390px: no horizontal body scroll', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/');
-    await expect(page.getByRole('heading', { name: /Hanzo builds and ships it/i })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible();
     const { scrollW, clientW } = await noBodyOverflow(page);
     expect(scrollW).toBeLessThanOrEqual(clientW + 1);
   });
