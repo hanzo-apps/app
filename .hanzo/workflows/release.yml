@@ -145,8 +145,19 @@ jobs:
           done
           echo "::error::image ${v} not pullable after push — refusing to tag git (prevents ImagePullBackOff)"; exit 1
       - name: Tag the release (image ⇔ tag invariant)
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           set -euo pipefail
           git tag "${{ steps.ver.outputs.version_v }}"
           git push origin "${{ steps.ver.outputs.version_v }}"
+          # Mirror the tag to GitHub so both remotes agree on the release
+          # lineage (was a manual step after every native release). Fail-soft:
+          # a mirror hiccup must not invalidate the already-pushed image+tag.
+          if [ -n "${GH_PAT:-}" ]; then
+            git push "https://x-access-token:${GH_PAT}@github.com/hanzoai/app.git" \
+              "refs/tags/${{ steps.ver.outputs.version_v }}" \
+              && echo "tag mirrored to GitHub" \
+              || echo "GitHub tag mirror failed (non-fatal — mirror by hand: git push origin ${{ steps.ver.outputs.version_v }})"
+          fi
           echo "Pushed image + tag ${{ steps.ver.outputs.version_v }} — bump the operator CR (universe: hanzo-app.yaml) to deploy."
