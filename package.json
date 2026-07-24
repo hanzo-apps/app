@@ -34,7 +34,7 @@
     "@hanzo/usage": "^0.1.6",
     "@hanzogui/config": "7.3.0",
     "@hanzogui/lucide-icons-2": "7.3.0",
-    "@hanzogui/shell": "^7.4.1",
+    "@hanzogui/shell": "^7.4.2",
     "@huggingface/hub": "^2.11.0",
     "@huggingface/inference": "^4.13.15",
     "@jitl/quickjs-wasmfile-release-sync": "^0.32.0",
