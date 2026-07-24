@@ -90,21 +90,32 @@ export interface RunEditInput {
   actorLabel: string;
   /** Optional publishable project key (pk_…) for PR-body provenance. */
   projectKey?: string;
+  /**
+   * Commit STRAIGHT to the declared (default) branch — the "change all, goes
+   * live" path — instead of fork→branch→PR. The route sets this ONLY for a
+   * validated global admin; a non-admin can never reach it (server-enforced).
+   */
+  direct?: boolean;
 }
 
 export interface EditOutcome {
-  prUrl: string;
-  number: number;
+  /** Present on the PR flow (the default); absent on a direct commit. */
+  prUrl?: string;
+  number?: number;
   branch: string;
   /** True when the edit went to a fork (the acting identity lacked write access). */
   forked: boolean;
   commitSha: string;
+  /** True when the edit committed directly to the default branch (admin direct mode). */
+  direct?: boolean;
+  /** The commit's web URL, when the forge exposes one. */
+  commitUrl?: string;
 }
 
 /**
  * Run the whole vertical for ONE file. Throws `GitSyncError` (with an HTTP
  * status) on any failure — including `422 no_change` when the model produced no
- * diff (we never open an empty PR).
+ * diff (we never open an empty PR / empty commit).
  */
 export async function runEdit(provider: GitProvider, input: RunEditInput): Promise<EditOutcome> {
   const { repo, path, branch } = input.target;
@@ -125,6 +136,22 @@ export async function runEdit(provider: GitProvider, input: RunEditInput): Promi
     throw new GitSyncError('The edit produced no change to the file.', 422, 'no_change');
   }
 
+  const title = `Hanzo Edit: ${cleanLine(input.instruction) || 'update ' + path}`;
+
+  // 2.5) Direct-commit (admin "goes live" path): one atomic, non-destructive
+  //      commit straight onto the default branch — no branch, no PR. The route
+  //      is the gate (isGlobalAdmin only); this stays a thin mechanism.
+  if (input.direct) {
+    const { commitSha } = await provider.commitFile(repo, branch, path, next, title, file.sha);
+    return {
+      branch,
+      forked: false,
+      commitSha,
+      direct: true,
+      commitUrl: provider.commitUrl ? provider.commitUrl(repo, commitSha) : undefined,
+    };
+  }
+
   // 3) Direct branch (write access) vs fork (no write access).
   const canWrite = await provider.hasWriteAccess(repo);
   const editBranch = editBranchName(input.instruction);
@@ -143,7 +170,6 @@ export async function runEdit(provider: GitProvider, input: RunEditInput): Promi
 
   // 4) Branch from the base, commit the one file.
   await provider.createBranch(workRepo, branch, editBranch);
-  const title = `Hanzo Edit: ${cleanLine(input.instruction) || 'update ' + path}`;
   const { commitSha } = await provider.commitFile(
     workRepo,
     editBranch,
