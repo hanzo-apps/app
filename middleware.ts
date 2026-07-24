@@ -88,6 +88,12 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Match all routes except static assets, images, and favicon.
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  // Match all routes except static assets: _next internals AND public/ files
+  // (template .webp thumbnails, logos, fonts, esbuild.wasm, edit.js …). Without
+  // the extension guard every public/ asset burned the per-IP rate-limit budget —
+  // one gallery page view ≈ dozens of "requests", so browsing (or the nightly
+  // e2e) tripped 429s on pages that had loaded fine moments before.
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:png|jpe?g|gif|webp|avif|svg|ico|css|js|mjs|map|woff2?|ttf|otf|eot|wasm|txt|xml|webmanifest|mp[34]|webm)$).*)",
+  ],
 };
