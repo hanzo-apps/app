@@ -158,6 +158,15 @@ export default function Header() {
               </>
             ) : (
               <>
+                {/* Secondary + primary action from the ONE canonical per-domain
+                    config (hanzo.app: Download · New project). Sign In stays as the
+                    returning-user account entry. */}
+                <a
+                  href={HDR.secondary.href}
+                  className="text-foreground/70 hover:text-foreground text-sm font-medium transition-colors"
+                >
+                  {HDR.secondary.label}
+                </a>
                 <Button
                   onClick={() => login()}
                   variant="ghost"
@@ -167,9 +176,10 @@ export default function Header() {
                 </Button>
                 <Button
                   onClick={getStarted}
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-medium px-5 py-2.5 rounded-xl"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-medium px-5 py-2.5 rounded-xl gap-2"
                 >
-                  Get started
+                  <Plus className="w-4 h-4" />
+                  {HDR.primary.label}
                 </Button>
               </>
             )}
