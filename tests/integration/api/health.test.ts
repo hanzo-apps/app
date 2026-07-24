@@ -20,8 +20,12 @@ describe('API: /api/health', () => {
       expect(data).toMatchObject({
         status: 'healthy',
         environment: 'test',
-        version: '0.1.0',
       });
+      // The reported version depends on HOW jest is invoked: under `pnpm test`
+      // npm injects npm_package_version (the real 1.42.x); under a bare
+      // `pnpm jest` the route falls back to its default. Pin the SHAPE, not a
+      // hardcoded number that flips with the invocation.
+      expect(data.version).toMatch(/^\d+\.\d+\.\d+$/);
       expect(data.timestamp).toBeDefined();
       expect(data.uptime).toBeGreaterThanOrEqual(0);
     });

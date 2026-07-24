@@ -296,14 +296,31 @@ describe('Security Tests', () => {
       // Fail-SOFT by design: an http:// NEXTAUTH_URL in production warns loudly
       // instead of hard-exiting — a boot crash on a URL-scheme misconfig would
       // take the whole app down (and in-cluster hops legitimately use http).
+      //
+      // env-validation captures `isCI` at MODULE LOAD and skips every prod
+      // check when CI=true (build machines validate at runtime, not build).
+      // The CI runner sets CI=true, so the statically-imported module has the
+      // checks disabled there — isolate a fresh module instance with CI unset
+      // so the test asserts the same behavior everywhere.
+      const prevCI = process.env.CI;
+      const prevBuildOnly = process.env.NEXT_BUILD_ONLY;
+      delete process.env.CI;
+      delete process.env.NEXT_BUILD_ONLY;
       const mockWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-      expect(() => validateEnv()).not.toThrow();
-      expect(
-        mockWarn.mock.calls.some((c) => String(c[0]).includes('HTTPS')),
-      ).toBe(true);
-
-      mockWarn.mockRestore();
+      try {
+        jest.isolateModules(() => {
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          const fresh = require('@/lib/security/env-validation');
+          expect(() => fresh.validateEnv()).not.toThrow();
+        });
+        expect(
+          mockWarn.mock.calls.some((c) => String(c[0]).includes('HTTPS')),
+        ).toBe(true);
+      } finally {
+        mockWarn.mockRestore();
+        if (prevCI !== undefined) process.env.CI = prevCI;
+        if (prevBuildOnly !== undefined) process.env.NEXT_BUILD_ONLY = prevBuildOnly;
+      }
     });
   });
 
