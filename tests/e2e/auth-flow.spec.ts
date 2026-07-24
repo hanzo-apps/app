@@ -1,169 +1,37 @@
 import { test, expect } from '@playwright/test';
 
+/**
+ * Auth contract (HIP-0111): hanzo.app has NO local login. A protected route
+ * 302s through the app to the hanzo.id IAM authorize endpoint with
+ * client_id=hanzo-app (PKCE). These tests pin THAT redirect contract — the
+ * one thing the app owns. IAM's own login DOM belongs to hanzo.id and is not
+ * asserted here; real sign-in is covered by the authenticated project
+ * (auth.setup.ts + storageState) when E2E_EMAIL/E2E_PASSWORD are provisioned.
+ */
 test.describe('Authentication Flow', () => {
-  test('redirects unauthenticated users to login', async ({ page }) => {
-    // Try to access a protected route
+  test('protected route redirects to hanzo.id authorize with the app client_id', async ({ page }) => {
     await page.goto('/dashboard');
 
-    // Should be redirected to auth page
-    await expect(page).toHaveURL(/auth|login|signin/i);
+    // Lands on the IAM host (authorize may forward to its /login UI).
+    await expect(page).toHaveURL(/hanzo\.id/);
+    expect(page.url()).toContain('client_id=hanzo-app');
   });
 
-  test('login page has required elements', async ({ page }) => {
-    await page.goto('/auth');
-
-    // Check for essential auth elements
-    const authContainer = page.locator('[class*="auth"], [id*="auth"]').first();
-    await expect(authContainer).toBeVisible();
-
-    // Check for sign in button or link
-    const signInButton = page.locator('button:has-text("Sign"), a:has-text("Sign")').first();
-    await expect(signInButton).toBeVisible();
-  });
-
-  test('handles authentication errors gracefully', async ({ page }) => {
-    await page.goto('/auth');
-
-    // Mock API response for failed auth
-    await page.route('**/api/auth/**', route => {
-      route.fulfill({
-        status: 401,
-        contentType: 'application/json',
-        body: JSON.stringify({ error: 'Invalid credentials' }),
-      });
-    });
-
-    // Try to authenticate (click sign in if available)
-    const signInButton = page.locator('button:has-text("Sign in"), button:has-text("Login")');
-    if (await signInButton.count() > 0) {
-      await signInButton.first().click();
-
-      // Should show error message or stay on auth page
-      await expect(page).toHaveURL(/auth|login|signin/i);
-    }
-  });
-
-  test('authenticated users can access protected routes', async ({ page, context }) => {
-    // Set a mock auth cookie
-    await context.addCookies([
-      {
-        name: 'hanzo-token',
-        value: 'mock-auth-token',
-        domain: 'localhost',
-        path: '/',
-      },
-    ]);
-
-    // Mock successful auth check
-    await page.route('**/api/auth/check', route => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          authenticated: true,
-          user: {
-            id: 'test-user',
-            name: 'Test User',
-            email: 'test@example.com',
-          },
-        }),
-      });
-    });
-
-    // Navigate to a protected route
+  test('the IAM hand-off carries the PKCE authorize parameters', async ({ page }) => {
     await page.goto('/dashboard');
+    await expect(page).toHaveURL(/hanzo\.id/);
 
-    // Should not be redirected to auth
-    await expect(page).not.toHaveURL(/auth|login|signin/i);
+    const url = new URL(page.url());
+    const params = new URLSearchParams(url.search);
+    expect(params.get('client_id')).toBe('hanzo-app');
+    expect(params.get('response_type')).toBe('code');
+    expect(params.get('redirect_uri')).toContain('hanzo.app');
+    expect(params.get('scope') || '').toContain('openid');
   });
 
-  test('logout clears authentication', async ({ page, context }) => {
-    // Set initial auth cookie
-    await context.addCookies([
-      {
-        name: 'hanzo-token',
-        value: 'mock-auth-token',
-        domain: 'localhost',
-        path: '/',
-      },
-    ]);
-
+  test('public routes stay public — no login wall on the landing page', async ({ page }) => {
     await page.goto('/');
-
-    // Look for logout button
-    const logoutButton = page.locator('button:has-text("Logout"), button:has-text("Sign out"), a:has-text("Logout"), a:has-text("Sign out")');
-
-    if (await logoutButton.count() > 0) {
-      // Mock logout API
-      await page.route('**/v1/auth/logout', route => {
-        route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ success: true }),
-        });
-      });
-
-      await logoutButton.first().click();
-
-      // Check that cookie is cleared
-      const cookies = await context.cookies();
-      const authCookie = cookies.find(c => c.name === 'hanzo-token');
-      expect(authCookie).toBeUndefined();
-    }
-  });
-
-  test('auth state persists across page refreshes', async ({ page, context }) => {
-    // Set auth cookie
-    await context.addCookies([
-      {
-        name: 'hanzo-token',
-        value: 'persistent-token',
-        domain: 'localhost',
-        path: '/',
-      },
-    ]);
-
-    // Mock auth check
-    await page.route('**/api/auth/check', route => {
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          authenticated: true,
-          user: { id: 'persistent-user', name: 'Persistent User' },
-        }),
-      });
-    });
-
-    await page.goto('/dashboard');
-    await expect(page).not.toHaveURL(/auth|login|signin/i);
-
-    // Refresh page
-    await page.reload();
-
-    // Should still be authenticated
-    await expect(page).not.toHaveURL(/auth|login|signin/i);
-  });
-
-  test('handles session expiry', async ({ page }) => {
-    await page.goto('/dashboard');
-
-    // Mock expired session response
-    await page.route('**/api/auth/check', route => {
-      route.fulfill({
-        status: 401,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          authenticated: false,
-          message: 'Session expired',
-        }),
-      });
-    });
-
-    // Trigger auth check (reload or navigation)
-    await page.reload();
-
-    // Should redirect to auth
-    await expect(page).toHaveURL(/auth|login|signin/i);
+    await expect(page).not.toHaveURL(/hanzo\.id/);
+    await expect(page.locator('h1').first()).toBeVisible();
   });
 });
