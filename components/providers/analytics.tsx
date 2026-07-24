@@ -3,6 +3,7 @@
 import { ReactNode, useEffect, useMemo, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { useIam } from '@hanzo/iam/react';
+import { useUser } from '@/hooks/useUser';
 import { createAnalytics } from '@hanzo/event';
 import { AnalyticsProvider, ErrorBoundary, useAnalytics, usePageview } from '@hanzo/event/react';
 import { setErrorReporter, type ErrorContext } from '@/lib/error-handling/error-logger';
@@ -37,12 +38,13 @@ function Pageview() {
 }
 
 function Identity() {
-  const { user } = useIam();
+  // Through the ONE user facade (useUser) — its `id` IS the OIDC subject.
+  const { user } = useUser();
   const analytics = useAnalytics();
   // Stable OIDC subject, never email/PII.
   useEffect(() => {
-    if (user?.sub) analytics.identify(user.sub);
-  }, [user?.sub, analytics]);
+    if (user?.id) analytics.identify(user.id);
+  }, [user?.id, analytics]);
   return null;
 }
 

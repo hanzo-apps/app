@@ -1,4 +1,3 @@
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
 import { NextRequest } from 'next/server';
 import { RateLimiter } from '@/lib/security/rate-limiter';
 import { DDoSProtection } from '@/lib/security/ddos-protection';

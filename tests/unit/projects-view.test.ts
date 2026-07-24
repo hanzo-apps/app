@@ -3,7 +3,7 @@ import {
   projectName,
   toDashboardProject,
   relativeTime,
-} from "../../lib/projects-view.ts";
+} from "../../lib/projects-view";
 
 test("projectName derives a title from the space_id repo segment", () => {
   assert.equal(projectName("zooqueen/landing-page-builder"), "Landing Page Builder");

@@ -38,7 +38,7 @@ async function getOrgContext(): Promise<OrgContext | null> {
   // name (`logo`/`icon`/`avatar` — IAM hasn't settled it), so OrgAvatar renders
   // real identity when present. Absent → undefined (avatar falls back to an
   // override / known-default / initial). Never fabricated.
-  const orgs: Org[] = (raw.orgs ?? []).map((o) => ({
+  const orgs: Org[] = (raw.orgs ?? []).map((o: RawOrg) => ({
     name: o.name ?? '',
     displayName: o.displayName ?? o.name ?? '',
     isPersonal: Boolean(o.isPersonal),

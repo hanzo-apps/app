@@ -6,7 +6,7 @@ import {
   addReferenceImages,
   mergeReferenceImages,
   removeReferenceImage,
-} from "../../../lib/reference-images.ts";
+} from "../../../lib/reference-images";
 
 /**
  * reference-images — the ONE dedupe / order / cap rule behind the ask-ai bar's

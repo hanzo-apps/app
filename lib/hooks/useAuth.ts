@@ -20,8 +20,14 @@ interface AuthState {
   error: string | null;
 }
 
-/** Map the SDK IAM user (OIDC claims) onto the app `User` shape. */
-function toAppUser(iamUser: ReturnType<typeof useIam>["user"]): User | null {
+/** Map the SDK IAM user (OIDC claims) onto the app `User` shape.
+ *  The SDK's runtime `user` is the OIDC userinfo response (sub/email/name/
+ *  picture); its .d.ts mislabels it as the Casdoor admin User shape — type
+ *  the claims here until the SDK fixes it (same cast as hooks/useUser.ts). */
+function toAppUser(rawIamUser: ReturnType<typeof useIam>["user"]): User | null {
+  const iamUser = rawIamUser as
+    | { sub: string; email?: string; name?: string; picture?: string }
+    | null;
   if (!iamUser) return null;
   const name = iamUser.name || iamUser.email || iamUser.sub;
   return {

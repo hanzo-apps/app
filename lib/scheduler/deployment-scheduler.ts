@@ -15,7 +15,7 @@ export function createDeploymentSchedulerTask(): SchedulerTask {
 }
 
 export function calculateNextRun(cronExpression: string, timezone: string): Date {
-  const interval = cronParser.parseExpression(cronExpression, {
+  const interval = cronParser.parse(cronExpression, {
     tz: timezone,
     currentDate: new Date(),
   });

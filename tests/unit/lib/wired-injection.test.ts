@@ -3,7 +3,6 @@
  * published static site ships out of the box, driven by the cloud project's
  * `analytics` flag and `space`.
  */
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
 
 import {
   buildWiredHead,

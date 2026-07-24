@@ -84,7 +84,7 @@ export async function POST(
 
     // Validate cronExpression
     try {
-      const interval = cronParser.parseExpression(body.cronExpression);
+      const interval = cronParser.parse(body.cronExpression);
       const first = interval.next().toDate().getTime();
       const second = interval.next().toDate().getTime();
       if (second - first < 5 * 60 * 1000 - 1000) {
@@ -154,7 +154,7 @@ export async function POST(
     // Calculate nextRunAt
     let nextRunAt: Date | undefined;
     try {
-      const interval = cronParser.parseExpression(body.cronExpression, { tz: timezone, currentDate: new Date() });
+      const interval = cronParser.parse(body.cronExpression, { tz: timezone, currentDate: new Date() });
       nextRunAt = interval.next().toDate();
     } catch {
       // If we can't calculate, leave undefined

@@ -25,13 +25,20 @@ export const useUser = (initialData?: {
 }) => {
   const router = useRouter();
   const {
-    user: iamUser,
+    user: rawIamUser,
     isAuthenticated,
     isLoading,
     login,
     logout: iamLogout,
     handleCallback,
   } = useIam();
+
+  // The SDK's runtime `user` is the OIDC userinfo response (sub/email/name/
+  // picture — see react.js setUser(getUserInfo())); its .d.ts mislabels it as
+  // the Casdoor admin User shape. Type the claims here until the SDK fixes it.
+  const iamUser = rawIamUser as
+    | { sub: string; email?: string; name?: string; picture?: string }
+    | null;
 
   const user = useMemo<User | null>(() => {
     if (!iamUser) return initialData?.user ?? null;

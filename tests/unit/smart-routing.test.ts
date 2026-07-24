@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 
-import { resolveSmartRouting } from "../../lib/providers.ts";
+import { resolveSmartRouting } from "../../lib/providers";
 
 /**
  * resolveSmartRouting — the ONE precedence rule for a NEW session's smart

@@ -119,7 +119,7 @@ export async function PUT(
     // Validate cronExpression if provided
     if (body.cronExpression !== undefined) {
       try {
-        const interval = cronParser.parseExpression(body.cronExpression);
+        const interval = cronParser.parse(body.cronExpression);
         const first = interval.next().toDate().getTime();
         const second = interval.next().toDate().getTime();
         if (second - first < 5 * 60 * 1000 - 1000) {
@@ -167,7 +167,7 @@ export async function PUT(
       const cron = updates.cronExpression || existing.cronExpression;
       const tz = updates.timezone || existing.timezone;
       try {
-        const interval = cronParser.parseExpression(cron, { tz, currentDate: new Date() });
+        const interval = cronParser.parse(cron, { tz, currentDate: new Date() });
         updates.nextRunAt = interval.next().toDate();
       } catch {
         // Leave unchanged

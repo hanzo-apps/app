@@ -20,7 +20,7 @@ function DocsViewContent() {
   const [visibleIds, setVisibleIds] = useState<string[]>([]);
 
   const isManualScrolling = useRef(false);
-  const scrollDebounceTimer = useRef<NodeJS.Timeout | null>(null);
+  const scrollDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const tocItems = useTableOfContents(content);
 
