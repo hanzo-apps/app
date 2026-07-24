@@ -42,8 +42,12 @@ jobs:
           E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
         run: pnpm exec playwright test
       - name: Upload Playwright report
+        # v3, not v4 — the v4 artifact protocol is not supported on Gitea
+        # (GHES-class), so v4 ERRORS the job even when every test passed.
+        # continue-on-error: a report-upload hiccup must never fail e2e itself.
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        uses: actions/upload-artifact@v3
         with:
           name: playwright-report
           path: tests/e2e/playwright-report
