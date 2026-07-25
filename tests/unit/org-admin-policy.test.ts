@@ -1,4 +1,4 @@
-import { isPlatformSudo, isStaffAdmin, STAFF_ORGS } from '@/lib/org/policy';
+import { BRAND_ORGS, isSuperAdmin, isStaffAdmin } from '@/lib/org/policy';
 
 /**
  * The admin predicate — the ONE statement of "who may edit live" and "who may
@@ -7,21 +7,21 @@ import { isPlatformSudo, isStaffAdmin, STAFF_ORGS } from '@/lib/org/policy';
  * caller in lib/org/server.ts and is not re-litigated here.
  *
  * Regression pinned: the previous predicate ANDed `owner === 'admin'` with a
- * phantom `isGlobalAdmin` claim IAM never emits, while hanzo.app's IAM app
- * lives in the `hanzo` org — so it was FALSE for everyone and live edit could
- * never open for anybody.
+ * phantom super-admin claim IAM never emits, while hanzo.app's IAM app lives in
+ * the `hanzo` org — so it was FALSE for everyone and live edit could never open
+ * for anybody.
  */
 describe('isStaffAdmin — who may edit live', () => {
   it('the real owner identity is staff (the regression that was false for everyone)', () => {
     expect(isStaffAdmin({ owner: 'hanzo', email: 'z@hanzo.ai' })).toBe(true);
   });
 
-  it('platform sudo is staff by construction', () => {
+  it('ANY person in the admin org is staff — membership alone, no claim', () => {
     expect(isStaffAdmin({ owner: 'admin' })).toBe(true);
   });
 
-  it('an IAM org-admin of any brand/staff org is staff', () => {
-    for (const org of STAFF_ORGS) {
+  it('an IAM org-admin of any brand org is staff', () => {
+    for (const org of BRAND_ORGS) {
       expect(isStaffAdmin({ owner: org, isAdmin: true })).toBe(true);
     }
   });
@@ -42,15 +42,22 @@ describe('isStaffAdmin — who may edit live', () => {
   });
 });
 
-describe('isPlatformSudo — who may cross tenants', () => {
-  it('only the admin org', () => {
-    expect(isPlatformSudo({ owner: 'admin' })).toBe(true);
-    expect(isPlatformSudo({ owner: 'hanzo', isAdmin: true, email: 'z@hanzo.ai' })).toBe(false);
+describe('isSuperAdmin — who may cross tenants', () => {
+  it('ANY person in the admin org, with no further claim', () => {
+    expect(isSuperAdmin({ owner: 'admin' })).toBe(true);
+  });
+
+  it('ONLY the admin org — no brand org, org-admin flag, or staff email grants it', () => {
+    expect(isSuperAdmin({ owner: 'hanzo', isAdmin: true, email: 'z@hanzo.ai' })).toBe(false);
+    for (const org of BRAND_ORGS) {
+      expect(isSuperAdmin({ owner: org, isAdmin: true, email: `x@${'hanzo.ai'}` })).toBe(false);
+    }
+    expect(isSuperAdmin({})).toBe(false);
   });
 
   it('is strictly narrower than staff — widening edit never widens scope', () => {
     const staffNotSudo = { owner: 'hanzo', email: 'z@hanzo.ai' };
     expect(isStaffAdmin(staffNotSudo)).toBe(true);
-    expect(isPlatformSudo(staffNotSudo)).toBe(false);
+    expect(isSuperAdmin(staffNotSudo)).toBe(false);
   });
 });

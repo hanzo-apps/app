@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
   const origin = req.headers.get('origin');
   const bearer = readWidgetBearer(req);
 
-  // 1) Identity — IAM-validated, so isAdmin/isPlatformSudo are authoritative.
+  // 1) Identity — IAM-validated, so isAdmin/isSuperAdmin are authoritative.
   const id = await resolveOrgIdentity(req, { validate: true, bearer: bearer ?? undefined });
   if (!id) {
     return withCors(origin, { ok: false, error: 'Sign in to open a PR.', openLogin: true }, 401);
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
   // A non-admin passing mode:'direct' is silently downgraded to the PR flow —
   // privilege is decided here (server), never in the browser.
   // direct-commit bypasses review on the default branch — SUDO, not merely staff.
-  const direct = body.mode === 'direct' && id.isPlatformSudo;
+  const direct = body.mode === 'direct' && id.isSuperAdmin;
 
   // Direct is two-phase: PROPOSE (no `reviewed`) computes + returns the rewrite
   // for review; CONFIRM commits the exact bytes the admin approved. The confirm

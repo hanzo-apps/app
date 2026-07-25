@@ -25,7 +25,7 @@ import type { NextRequest } from 'next/server';
 
 import { fetchIamUser, tokenMintedForApp } from '@/lib/auth';
 import { parseOwnerRepo } from '@/lib/git/sync';
-import { isPlatformSudo, isStaffAdmin } from '@/lib/org/policy';
+import { isSuperAdmin, isStaffAdmin } from '@/lib/org/policy';
 import type { Org, OrgContext } from '@/lib/org/types';
 
 const TOKEN_COOKIE = 'hanzo_token';
@@ -71,7 +71,7 @@ export interface OrgIdentity {
    * strictly narrower fact than {@link isAdmin}; kept separate so widening who
    * may EDIT never widens who may cross tenant boundaries.
    */
-  isPlatformSudo: boolean;
+  isSuperAdmin: boolean;
   /** True once the bearer was validated against IAM (userinfo). */
   validated: boolean;
 }
@@ -177,7 +177,7 @@ export async function resolveOrgIdentity(
         homeOrg: 'local',
         homeOrgDisplay: 'Local Workspace',
         isAdmin: false,
-        isPlatformSudo: false,
+        isSuperAdmin: false,
         validated: false,
       };
     }
@@ -206,7 +206,7 @@ export async function resolveOrgIdentity(
           homeOrg: 'local',
           homeOrgDisplay: 'Local Workspace',
           isAdmin: false,
-          isPlatformSudo: false,
+          isSuperAdmin: false,
           validated: false,
         };
       }
@@ -231,15 +231,15 @@ export async function resolveOrgIdentity(
   // (the confused-deputy guard): a validated token from a lower-trust Hanzo app
   // can act as a normal user but can never elevate here. Fail-closed.
   //
-  // Past defect: this ANDed `homeOrg === ADMIN_ORG` with a phantom
-  // `isGlobalAdmin` claim IAM never emits — and hanzo.app's IAM app lives in the
-  // `hanzo` org, so `admin` is unmintable for it. Both disjuncts were
-  // permanently false, i.e. NOBODY was ever admin and live edit could not open.
-  // The predicates now live in ONE pure place (lib/org/policy).
+  // Past defect: this ANDed `owner === ADMIN_ORG` with a phantom super-admin
+  // claim IAM never emits — and hanzo.app's IAM app lives in the `hanzo` org, so
+  // `admin` is unmintable for it. Both disjuncts were permanently false, i.e.
+  // NOBODY was ever admin and live edit could not open. The predicates now live
+  // in ONE pure place (lib/org/policy), named as IAM names them.
   const privileged = validated && tokenMintedForApp(token);
   const adminClaims = { owner: homeOrg, isAdmin: claims?.isAdmin, email };
   const isAdmin = privileged && isStaffAdmin(adminClaims);
-  const sudo = privileged && isPlatformSudo(adminClaims);
+  const sudo = privileged && isSuperAdmin(adminClaims);
 
   return {
     token,
@@ -249,7 +249,7 @@ export async function resolveOrgIdentity(
     homeOrg,
     homeOrgDisplay: claims?.displayName || homeOrg,
     isAdmin,
-    isPlatformSudo: sudo,
+    isSuperAdmin: sudo,
     validated,
   };
 }
@@ -284,7 +284,7 @@ export async function resolveScope(req: NextRequest): Promise<Scope | null> {
   }
   // A cross-org request MUST be a validated global admin.
   const v = await resolveOrgIdentity(req, { validate: true });
-  if (v?.isPlatformSudo) {
+  if (v?.isSuperAdmin) {
     return { token: v.token, homeOrg: v.homeOrg, org: requested, crossOrg: true };
   }
   // Forged / unauthorized cross-org header — ignore it, pin to owner.
@@ -299,7 +299,7 @@ export async function resolveScope(req: NextRequest): Promise<Scope | null> {
  * there, so it fail-closes to the home org anyway). Hot paths use `resolveScope`.
  */
 export function effectiveOrg(req: NextRequest, id: OrgIdentity): string {
-  if (id.validated && id.isPlatformSudo) {
+  if (id.validated && id.isSuperAdmin) {
     const override = req.headers.get('x-org-id')?.trim();
     if (override) return override;
   }
@@ -328,7 +328,7 @@ export async function resolveOrgContext(req: NextRequest): Promise<OrgContext | 
   // A global admin scoped to a non-home org: surface that org too so the switch
   // is visible. (The full tenant list is an admin-only console concern; we do
   // NOT fabricate a membership list a normal user does not have.)
-  if (id.isPlatformSudo && current && current !== id.homeOrg) {
+  if (id.isSuperAdmin && current && current !== id.homeOrg) {
     orgs.push({ name: current, displayName: current, isPersonal: false });
   }
 
@@ -337,7 +337,7 @@ export async function resolveOrgContext(req: NextRequest): Promise<OrgContext | 
     currentOrg: current,
     homeOrg: id.homeOrg,
     isAdmin: id.isAdmin,
-    isPlatformSudo: id.isPlatformSudo,
+    isSuperAdmin: id.isSuperAdmin,
     needsOnboarding: !id.homeOrg,
   };
 }
