@@ -395,7 +395,7 @@ import { FixedSizeList } from 'react-window';
 // server-side to the web (analytics), product (insights), and error (sentry)
 // lenses. It subsumes @sentry — no separate DSN. Auto error capture +
 // ErrorBoundary are on; a Do-Not-Track visitor is opted out. Set a publishable
-// NEXT_PUBLIC_HANZO_INGEST_KEY to also accept telemetry from logged-out views.
+// NEXT_PUBLIC_EVENT_INGEST_KEY to also accept telemetry from logged-out views.
 import { createAnalytics, EVENTS } from "@hanzo/event";
 ```
 

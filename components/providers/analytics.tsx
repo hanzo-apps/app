@@ -19,7 +19,7 @@ const HOST = 'https://api.hanzo.ai';
  *  HMAC-verifies to the org server-side, so anonymous events light up all three
  *  lenses. Provision one per org via POST /v1/ingest/keys and set the env var.
  *  When unset the authed-bearer path is used and anonymous events are best-effort. */
-const INGEST_KEY = process.env.NEXT_PUBLIC_HANZO_INGEST_KEY || undefined;
+const INGEST_KEY = process.env.NEXT_PUBLIC_EVENT_INGEST_KEY || undefined;
 
 /** doNotTrack reads the browser Do-Not-Track consent signal (SSR-safe). A visitor
  *  who opts out gets no telemetry at all — pageviews, events, and errors are all
