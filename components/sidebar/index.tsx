@@ -260,15 +260,17 @@ function SidebarContent({
     return (
       <Button
         key={item.id}
-        variant={isActive ? 'default' : 'ghost'}
+        variant="ghost"
         className={cn(
           'w-full',
           collapsed ? 'justify-center px-2' : 'justify-start',
-          // Vercel-calm: inactive nav is muted, brightens AND gets a visible
-          // surface on hover; only the active item is full-strength. The explicit
-          // bg-sidebar-accent doesn't depend on the ghost variant's own hover token.
-          !isActive &&
-            'text-muted-foreground hover:bg-sidebar-accent hover:text-foreground',
+          // v2 converged nav (matches chat + desktop): inactive is muted and
+          // brightens on a hairline hover surface; the ACTIVE item is the ONE
+          // purple accent — soft purple fill + purple-muted label (primary stays
+          // white elsewhere; purple = active/selection).
+          isActive
+            ? 'bg-[var(--brand-accent-soft)] text-[var(--brand-accent-muted)] hover:bg-[var(--brand-accent-soft)] hover:text-[var(--brand-accent-muted)]'
+            : 'text-muted-foreground hover:bg-sidebar-accent hover:text-foreground',
         )}
         onClick={() => handleItemAction(item)}
         title={collapsed ? item.label : undefined}
@@ -500,7 +502,7 @@ function SidebarContent({
                     <Icon className={cn('h-4 w-4', !collapsed && 'mr-2')} />
                     {!collapsed && item.label}
                     {showSyncIndicator && (
-                      <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-orange-500" />
+                      <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-[var(--brand-accent)]" />
                     )}
                   </Button>
                 );
