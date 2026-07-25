@@ -126,9 +126,10 @@ export const AppEditor = ({
     // lg breakpoint is 1024px (Tailwind default). Collapsed/mobile → clear the
     // width so the pane is hidden or the flex-col fills naturally.
     if (window.innerWidth >= 1024 && !sidebarCollapsedRef.current) {
-      const resizerWidth = resizer.current?.offsetWidth ?? 6; // w-1.5 = 6px
+      const resizerWidth = resizer.current?.offsetWidth ?? 8; // w-2 = 8px
       const availableWidth = window.innerWidth - resizerWidth;
-      editor.current.style.width = `${availableWidth / 3}px`; // chat takes ~1/3
+      // Chat ~27% (v2: 24–28%); the preview gets the room.
+      editor.current.style.width = `${Math.round(availableWidth * 0.27)}px`;
     } else {
       editor.current.style.width = "";
     }
@@ -403,7 +404,7 @@ export const AppEditor = ({
             currentTab === "chat" ? "hidden lg:block" : "block"
           )}
         >
-          <div className="relative h-full w-full overflow-hidden rounded-xl border border-border bg-background shadow-2xl shadow-black/40 ring-1 ring-white/5">
+          <div className="preview-stage relative h-full w-full overflow-hidden rounded-xl border border-border bg-background shadow-xl shadow-black/30 ring-1 ring-white/5">
             {/* Faint top highlight — a crisp edge that reads as raised glass. */}
             <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
             <Preview
