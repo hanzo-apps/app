@@ -28,10 +28,10 @@ import {
 } from "@hanzo/ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
 import { Button } from "@hanzo/ui";
-import { useAuthContext } from "@/components/providers/AuthProvider";
+import { useUser } from "@/hooks/useUser";
 
 export const UserMenu = ({ className }: { className?: string }) => {
-  const { logout, user } = useAuthContext();
+  const { logout, user } = useUser();
   // Theme via the ONE controller (next-themes) — same source as settings + sonner.
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
