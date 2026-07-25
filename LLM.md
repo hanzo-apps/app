@@ -556,3 +556,59 @@ import; no try/catch possible). `NetworkWallet` now renders `null` (API stable,
 re-enable recipe in its file) and is NOT composed into `BuilderIdentityBar` —
 the canonical bottom-left pattern is org + account anyway. Re-enable when
 `@hanzo/ui` exports the wallet entry points again.
+
+---
+
+## Tamagui/@hanzo/ui v8 convergence + v2 IDE token system (2026-07-25)
+
+hanzo.app is converging onto the ONE Hanzo stack (identical target as hanzo.chat
++ hanzo.desktop): `@hanzo/ui@8` product layer on `@hanzo/gui` (Tamagui) +
+`@hanzogui/shell`, styled by the `@hanzo/brand@1.4.4` v2 token system. Tailwind
+is being retired incrementally — the app still ships Tailwind v4 (shadcn
+primitives via the `@hanzo/ui`→`@hanzo/ui-shadcn@5.9.0` alias + ~214 utility-class
+files), so the register + tokens are staged in the app's ONE CSS token layer
+(`assets/globals.css`) rather than ripped out. Full de-Tailwind is multi-pass.
+
+**Token source of truth**: `@hanzo/brand@1.4.4` `styles/variables.css` (imported
+first in `app/layout.tsx`). Canonical v2 tokens:
+- Accent (the ONE — purple): `--hanzo-accent #8b5cf6` / hover `#7c3aed` / muted
+  `#a78bfa` / soft `rgba(139,92,246,.12)`. Purple = links/active/focus/selection
+  ONLY. **Primary action stays WHITE** (monochrome) — never purple.
+- Layered blacks (no gray panels): `--surface-0 #080808` (bg) / `-1 #0d0d0d`
+  (panels) / `-2 #111` (raised) / `-3 #171717` (controls/hover).
+- Hairline border `--border-hairline rgba(255,255,255,.06)`.
+- Radius: `--radius-card 8` / `--radius-control 10` / `--radius-panel 12`.
+- Type: heading 20@600 / body 14@400 / secondary 12.
+
+**How the app consumes it** (`assets/globals.css`):
+- Retuned Tailwind v4 `--text-*` to the 14px base register (body 14, dense 13,
+  secondary/labels 12, display tightened) + `body { font-size: 14px }`. ONE place
+  drives every `text-*` utility.
+- Dark theme maps `--background/card/popover/muted` → the layered blacks;
+  `--border`/`--input` → hairline; `--ring` → the accent. Accent consumed via
+  `var(--hanzo-accent, #8b5cf6)`. **Note**: next-themes toggles `.dark` ONLY (never
+  `.light`), so brand's `.light` block doesn't apply in app light mode — the app's
+  own `:root`(light)/`.dark` definitions (mirroring brand's values) are authoritative.
+- ONE compact control spec: `@hanzo/ui`'s shadcn Input/SelectTrigger/Textarea all
+  share the `h-input` class + reference undefined `@hanzo/ui` tokens and a
+  floating-label giant (pt-8/pt-6). Fixed globally by (a) resolving those token
+  namespaces onto the palette in `@theme inline`, and (b) pinning ONE
+  height(30)/radius(10)/size(13) on `[class~="h-input"]` + `[data-slot="button"]`.
+  No per-file edits — every control is compact + consistent. Verified: builder
+  color audit = 267 grayscale / 1 purple / 0 blue-green-orange; body 14px.
+
+**Builder v2 (native-IDE) so far**: dense near-borderless chat rows (8px radius);
+assistant replies render markdown → HTML via the density-aware `MarkdownRenderer`
+(`compact` prop — ONE renderer, two densities); build activity uses a pulsing
+accent dot (never a spinner); composer Build/Plan active = purple, send stays
+white; chat pane 27%; invisible-until-hover splitter; subtle `.preview-stage` grid;
+killed the multi-color composer gradient → single purple.
+
+**Remaining (next passes, coordinate with the parallel chat/desktop migration)**:
+consume the `@hanzogui/shell` v2 Tamagui theme when its version ships (replace the
+interim CSS vars); per-file swap of shadcn primitives → `@hanzo/ui` v8 / `@hanzo/gui`
+controls (repoint the 155 `@hanzo/ui`→`@hanzo/ui-shadcn` primitive imports; add real
+`@hanzo/ui@8`); toolbar + thin VS-Code status bar + collapsible message sections
+(Plan/Files/Diff ▼) + skeleton→wireframe preview animation + icon-only device
+toggle; asset convergence (`@hanzo/logo`/`@hanzo/design`, brand-by-host); then the
+Tailwind rip once shadcn usage is gone. NEVER hard-fork brand token values.
