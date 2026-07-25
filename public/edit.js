@@ -356,7 +356,20 @@
   // ---- UI -------------------------------------------------------------------
 
   var root = host.attachShadow ? host.attachShadow({ mode: 'open' }) : host;
-  document.body.appendChild(host);
+
+  // This script is loaded `async` and is often placed in <head>, so it can run
+  // before <body> is parsed — in which case `document.body` is null and the
+  // append throws, aborting the IIFE and leaving the widget absent. The shadow
+  // root is already attached and usable while detached, so build into it now
+  // and mount once the body exists.
+  function mount() {
+    document.body.appendChild(host);
+  }
+  if (document.body) {
+    mount();
+  } else {
+    document.addEventListener('DOMContentLoaded', mount, { once: true });
+  }
 
   var css =
     ':host{all:initial}' +
