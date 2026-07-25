@@ -658,3 +658,51 @@ Verified: LoginModal + re-imagine popover render correct in dark AND light.
 Still open next pass: preview toolbar reorg ([Preview Code Split] | [Live]) + a
 tablet device width; Diff ▼ / Explanation ▼ need the generate stream to emit that
 data (not just UI); continue shadcn→`@hanzo/ui` v8 swap toward the Tailwind rip.
+
+### Iteration 4 (2026-07-25) — buttons, shell/sidebar, connectors, + the honest gui state
+
+Done (all green): (1) BUTTON RADIUS — every button now the 10px control radius.
+Root cause was the `[data-slot="button"]` pin only covering default/sm/lg sizes, so
+icon/iconXs/xs shadcn buttons kept shadcn's base rounded-md (6px) and raw `<button>`s
+kept hardcoded 2–6px radii. Fix (globals.css, no per-file edits): `[data-slot="button"]`
+→ `border-radius: var(--control-radius) !important` for ALL sizes, with a more-specific
+`.rounded-full` override preserving deliberate pills/circles (composer send/stop); raw
+`<button>:not([data-slot=button])` normalized to control radius UNLESS it opts into a
+large radius (rounded-xl/2xl/3xl) or a pill. Playwright audit: 23/23 buttons = 10px,
+0 sharp (was 15×10 + 8 sharp). (2) SIDEBAR — active nav item is the ONE purple accent
+(soft fill + purple-muted label), not the white shadcn `default` variant; orange dot →
+purple. (3) `/connectors` renders UNDER `AppShell` (same sidebar as the dashboard, with
+Connectors active) — was standalone. (4) CONNECTORS endpoint reconciled to ONE canonical
+`/v1/connectors`: renamed BFF `app/v1/integrations`→`app/v1/connectors`, client `BASE`,
+forward to cloud `/v1/connectors` with a `/v1/integrations` fallback (404) so live
+connectors survive cloud's parallel rename. Page loads live via `fetchConnectors` (not
+stubbed). Verified shell dark+light.
+
+**HONEST shadcn-vs-@hanzo/gui state.** The app is NOT on @hanzo/gui for chrome. It ships
+`@hanzo/ui-shadcn@5.9.0` (aliased as `@hanzo/ui`) + Tailwind v4 — ALL chrome (buttons,
+menus, sidebar, dialogs, header, composer) is shadcn primitives + Tailwind classes +
+the globals.css token overrides. `@hanzo/gui@7.3.0` is installed and `GuiProvider` is
+mounted app-wide but renders EXACTLY ONE surface: `components/usage/cloud-usage-panel`
+(the @hanzo/usage panel). Conflict: not a hard runtime crash (the two layers are mostly
+disjoint — shadcn paints everything, gui paints one panel), but a real THEME-MODEL
+conflict — GuiProvider pins Tamagui's `t_dark` on `<html>` permanently while next-themes
+independently toggles `.dark`/`.light`, forcing the `--background !important` workaround
+and causing the `--surface-0`-stale-in-light landmine. It worsens as more gui surfaces land.
+
+**Phased path to make buttons/menus/chrome truly @hanzo/gui (each phase green):**
+- Phase 0 (DONE): CSS-token convergence — shadcn+Tailwind styled to the v2 @hanzo/brand
+  tokens (layered blacks, purple accent, radii, register, one control spec). The button
+  radius fix lives here (CSS, not gui).
+- Phase 1 (~1–2d, medium risk): bring real `@hanzo/ui@8` into the tree ALONGSIDE shadcn —
+  package.json `@hanzo/ui-shadcn: ^5.9.0` (real name) + `@hanzo/ui: ^8.0.7`; codemod the
+  ~155 files importing primitives from `@hanzo/ui` → `@hanzo/ui-shadcn`; retarget
+  `modularizeImports`. Now `@hanzo/ui` = the v8 product layer (on gui).
+- Phase 2 (~1–2wk, per-surface): replace shadcn Button/Input/Select/Dialog/DropdownMenu/
+  ContextMenu with `@hanzo/gui` primitives + the v8.0.7 menu primitive (portal-theme-safe,
+  purple hover) the parallel agent is building. Surface order: composer → header → sidebar
+  → dialogs → tables. THIS is where chrome becomes truly gui (Tailwind className → gui style
+  props, file by file).
+- Phase 3 (~0.5d): sync GuiProvider's Tamagui theme to next-themes so there's ONE theme
+  controller — removes the `--background !important` + `--surface-0` workarounds.
+- Phase 4 (~2–3d): rip Tailwind once shadcn + utility classes are gone from chrome.
+Total ~3–4 weeks phased. NEVER hard-fork brand token values.
