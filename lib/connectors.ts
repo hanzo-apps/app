@@ -1,10 +1,10 @@
 /**
  * Connectors client — the ONE browser client for the org-scoped connector surface.
  *
- * "Connectors" is the product name; the cloud API is `/v1/integrations` (the
- * generic OAuth/apikey connector framework in cloud `clients/integrations`). This
- * talks to the SAME-ORIGIN `/v1/integrations` BFF (app/v1/integrations/[[...path]]),
- * which forwards to that cloud surface as the signed-in user. Cloud derives the
+ * "Connectors" is the canonical product AND endpoint name. This talks to the
+ * SAME-ORIGIN `/v1/connectors` BFF (app/v1/connectors/[[...path]]), which forwards
+ * to the cloud connectors surface as the signed-in user (falling back to the legacy
+ * `/v1/integrations` cloud prefix during the cloud rename). Cloud derives the
  * org from the bearer `owner` claim (gateway-minted `X-Org-Id`), so every
  * connection is org-scoped — and the httpOnly `hanzo_token` is NEVER read by
  * browser JS (the cookie rides the same-origin request; least privilege).
@@ -59,7 +59,7 @@ export interface DisconnectResult {
 
 // --- Transport (same-origin BFF; the httpOnly cookie carries auth) ---
 
-const BASE = '/v1/integrations';
+const BASE = '/v1/connectors';
 
 /** Stamp the selected org as X-Org-Id (mirrors the projects client). Honored
  *  server-side ONLY for a global admin; ignored for a normal user (owner-pinned),
@@ -130,7 +130,7 @@ async function readError(res: Response): Promise<string> {
 // --- API (matches console's IntegrationsApi: list / connect / disconnect) ---
 
 /**
- * The org's connector catalog + connection status (`GET /v1/integrations`).
+ * The org's connector catalog + connection status (`GET /v1/connectors`).
  * Returns BOTH available connectors and the org's live connections in one list.
  * Empty on any failure (unauthenticated, cloud unreachable, surface not yet
  * deployed) so the page degrades to an honest empty state — never a crash,
@@ -153,7 +153,7 @@ export async function fetchConnectors(): Promise<Provider[]> {
 }
 
 /**
- * Begin connecting a provider (`POST /v1/integrations/:id/connect`).
+ * Begin connecting a provider (`POST /v1/connectors/:id/connect`).
  *
  * OAuth providers return `{ authorizeUrl }` — the caller TOP-LEVEL-navigates there
  * (leaving hanzo.app for the provider's consent screen). The provider then
@@ -179,7 +179,7 @@ export async function connectProvider(id: string): Promise<ConnectResult> {
 }
 
 /**
- * Disconnect a provider for this org (`POST /v1/integrations/:id/disconnect`).
+ * Disconnect a provider for this org (`POST /v1/connectors/:id/disconnect`).
  * Cloud revokes the token, deletes the KMS secrets, and removes the row
  * (idempotent). Never throws: a failure resolves to `{ ok: false, error }`.
  */
