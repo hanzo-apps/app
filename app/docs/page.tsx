@@ -35,14 +35,14 @@ const destinations: Dest[] = [
     icon: <BookOpen className="h-5 w-5" />,
     title: "Full documentation",
     description:
-      "The complete Hanzo docs — Cloud, Base, IAM, KMS, and the LLM Gateway, with guides and references.",
+      "The complete Hanzo docs — Cloud, Base, IAM, KMS, and the AI API, with guides and references.",
     href: "https://docs.hanzo.ai",
     external: true,
     cta: "Read the docs",
   },
   {
     icon: <Terminal className="h-5 w-5" />,
-    title: "LLM Gateway & API",
+    title: "AI API",
     description:
       "One OpenAI-compatible endpoint to Hanzo's Zen and Enso models plus 400+ frontier models at api.hanzo.ai.",
     href: "https://hanzo.ai/llm",
