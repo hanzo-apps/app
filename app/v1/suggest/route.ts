@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
   // Best-effort actor label for the issue body (validated only when a bearer is
   // present; anonymous suggestions are labeled honestly).
   const id = bearer ? await resolveOrgIdentity(req, { validate: true, bearer }) : null;
-  const actor = id ? `@${id.name}${id.isGlobalAdmin ? ' (admin)' : ''}` : 'an anonymous visitor';
+  const actor = id ? `@${id.name}${id.isAdmin ? ' (admin)' : ''}` : 'an anonymous visitor';
 
   const editToken = await resolveEditToken(req, provider, bearer);
   if (!editToken) {

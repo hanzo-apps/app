@@ -26,7 +26,10 @@ export function StatusBar({
   project?: Project | null;
   pageCount: number;
 }) {
-  const branch = project?.branch || "main";
+  // Builder projects are single-branch by construction: git-on-publish commits
+  // to `main`. The editor's Project carries no branch field, so state it rather
+  // than invent one from a type that cannot hold it.
+  const branch = "main";
   return (
     <footer className="z-20 flex h-6 shrink-0 select-none items-center gap-2.5 border-t border-border bg-card px-3 text-[11px] text-muted-foreground">
       <span className="inline-flex items-center gap-1.5">

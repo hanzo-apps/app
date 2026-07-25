@@ -269,7 +269,7 @@ export function OrgGate({ children }: { children: React.ReactNode }) {
   // guarded on `currentOrg() !== owner`, so it never loops.
   useEffect(() => {
     if (!ctx || !ctx.homeOrg) return;
-    if (!ctx.isGlobalAdmin && isScopedAway()) {
+    if (!ctx.isPlatformSudo && isScopedAway()) {
       setCurrentOrg(ctx.homeOrg);
       if (typeof window !== 'undefined' && currentOrg() !== getHomeOrg()) window.location.reload();
     }

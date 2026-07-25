@@ -6,7 +6,7 @@
  *   - signed in, no credits, not admin    → 402 { needsCredits:true }
  *   - global admin                        → allowed, FREE
  *   - signed in WITH credits              → allowed, the agent run debits them
- * i.e. `isGlobalAdmin || (authenticated && hasCredits)`. The widget hiding the
+ * i.e. `isAdmin || (authenticated && hasCredits)`. The widget hiding the
  * button is only cosmetic; THIS is what actually protects the flow.
  *
  * On pass, it runs the whole vertical for ONE file (fork→edit→PR) via the
@@ -41,14 +41,14 @@ export async function POST(req: NextRequest) {
   const origin = req.headers.get('origin');
   const bearer = readWidgetBearer(req);
 
-  // 1) Identity — IAM-validated, so isGlobalAdmin is authoritative.
+  // 1) Identity — IAM-validated, so isAdmin/isPlatformSudo are authoritative.
   const id = await resolveOrgIdentity(req, { validate: true, bearer: bearer ?? undefined });
   if (!id) {
     return withCors(origin, { ok: false, error: 'Sign in to open a PR.', openLogin: true }, 401);
   }
 
   // 2) Entitlement gate: admin is free; everyone else needs spendable credits.
-  const free = id.isGlobalAdmin;
+  const free = id.isAdmin;
   if (!free) {
     const cents = await spendableCents(id.token);
     if (!(typeof cents === 'number' && cents > 0)) {
@@ -79,7 +79,8 @@ export async function POST(req: NextRequest) {
   // Direct-commit ("goes live" straight to the default branch) is admin-ONLY.
   // A non-admin passing mode:'direct' is silently downgraded to the PR flow —
   // privilege is decided here (server), never in the browser.
-  const direct = body.mode === 'direct' && id.isGlobalAdmin;
+  // direct-commit bypasses review on the default branch — SUDO, not merely staff.
+  const direct = body.mode === 'direct' && id.isPlatformSudo;
 
   // Direct is two-phase: PROPOSE (no `reviewed`) computes + returns the rewrite
   // for review; CONFIRM commits the exact bytes the admin approved. The confirm

@@ -3,7 +3,7 @@
  * handlers with a mocked IAM/billing/forge (global.fetch). Proves the security
  * boundary that the widget only cosmetically mirrors:
  *   /v1/edit  → 401 anon · 402 no-credit non-admin · admin+credit pass the gate
- *   /v1/me    → the { authenticated, isGlobalAdmin, balance, hasCredits } shape
+ *   /v1/me    → the { authenticated, isAdmin, balance, hasCredits } shape
  *   /v1/suggest → anonymous works (honest filed:false with no channel; files an
  *                 issue when a forge token is available)
  * Node env (NextRequest extends the global Request).
@@ -91,25 +91,25 @@ describe('GET /v1/me', () => {
     // CORS reflects the Hanzo-family origin with credentials.
     expect(res.headers.get('access-control-allow-origin')).toBe('https://docs.hanzo.ai');
     expect(res.headers.get('access-control-allow-credentials')).toBe('true');
-    expect(await res.json()).toMatchObject({ authenticated: false, isGlobalAdmin: false, hasCredits: false });
+    expect(await res.json()).toMatchObject({ authenticated: false, isAdmin: false, hasCredits: false });
   });
 
   it('user with credits → hasCredits true, real balance', async () => {
     installFetch({ balance: 500 });
     const res = await meGET(req('https://hanzo.app/v1/me', { token: USER() }));
-    expect(await res.json()).toMatchObject({ authenticated: true, isGlobalAdmin: false, hasCredits: true, balance: 500 });
+    expect(await res.json()).toMatchObject({ authenticated: true, isAdmin: false, hasCredits: true, balance: 500 });
   });
 
   it('user without credits → hasCredits false', async () => {
     installFetch({ balance: 0 });
     const res = await meGET(req('https://hanzo.app/v1/me', { token: USER() }));
-    expect(await res.json()).toMatchObject({ authenticated: true, isGlobalAdmin: false, hasCredits: false, balance: 0 });
+    expect(await res.json()).toMatchObject({ authenticated: true, isAdmin: false, hasCredits: false, balance: 0 });
   });
 
   it('admin → free (hasCredits true, balance skipped)', async () => {
     installFetch();
     const res = await meGET(req('https://hanzo.app/v1/me', { token: ADMIN() }));
-    expect(await res.json()).toMatchObject({ authenticated: true, isGlobalAdmin: true, hasCredits: true, balance: null });
+    expect(await res.json()).toMatchObject({ authenticated: true, isAdmin: true, hasCredits: true, balance: null });
   });
 });
 

@@ -42,7 +42,10 @@ export interface OrgContext {
   /** The user's IAM home org (bearer `owner` claim); '' when unassigned. */
   homeOrg: string;
   /** True when the caller is an `admin`-org member (may cross orgs). */
-  isGlobalAdmin: boolean;
+  /** STAFF — may edit any surface live, unmetered. */
+  isAdmin: boolean;
+  /** SUDO — may act across tenants (org switcher, direct commit). */
+  isPlatformSudo: boolean;
   /** True when the user has NO home org yet → must onboard before building. */
   needsOnboarding: boolean;
 }
