@@ -83,19 +83,20 @@ export const LoadProject = ({
         <>
           <Button
             variant="outline"
-            className="max-lg:hidden"
+            size="sm"
+            className="!h-7 gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-accent max-lg:hidden"
             onClick={() => setOpenLoginModal(true)}
           >
-            <Import className="size-4 mr-1.5" />
+            <Import className="size-3.5" />
             Load existing Project
           </Button>
           <Button
             variant="outline"
             size="sm"
-            className="lg:hidden"
+            className="!h-7 gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-accent lg:hidden"
             onClick={() => setOpenLoginModal(true)}
           >
-            {fullXsBtn && <Import className="size-3.5 mr-1" />}
+            {fullXsBtn && <Import className="size-3.5" />}
             Load
             {fullXsBtn && " existing Project"}
           </Button>
