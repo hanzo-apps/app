@@ -706,3 +706,35 @@ and causing the `--surface-0`-stale-in-light landmine. It worsens as more gui su
   controller — removes the `--background !important` + `--surface-0` workarounds.
 - Phase 4 (~2–3d): rip Tailwind once shadcn + utility classes are gone from chrome.
 Total ~3–4 weeks phased. NEVER hard-fork brand token values.
+
+### Iteration 5 (2026-07-25) — Phase 3 DONE (theme controller) + v8 menu blocker
+
+**Phase 3 landed + verified.** `app/providers.tsx` now has a `GuiThemeBridge`: it reads
+next-themes' `resolvedTheme` and drives `GuiProvider`'s `defaultTheme` dynamically (the
+Tamagui `useRootTheme` pattern), replacing the permanently-pinned `t_dark`. The
+`cloud-usage-panel` probe follows it too. **Verified live:** in light mode `<html>` now
+carries `t_light` (was `t_dark`), body bg white — the Tamagui root theme FOLLOWS the app
+theme, so every @hanzo/gui surface renders light-in-light / dark-in-dark. This is the gate
+for adopting gui components.
+
+The `--background !important` assertion STAYS (reframed, not removed): Phase 3 killed the
+t_dark PIN, but Tamagui's theme still sets its own `--background` (light #f7f7f7 / dark
+#141414) and its runtime-injected CSS wins source-order (empirically verified: removing the
+assertion → bg becomes #f7f7f7/#141414). The v2 spec wants #080808 layered blacks + pure
+white, so re-asserting `--background` per theme is now a deliberate token-value precedence,
+not the old pinning hack. (Same reasoning would apply if we consumed more Tamagui surface
+tokens — bind theme-critical bg to `--background`.)
+
+**v8 menu (@hanzo/ui@8.0.7) — BLOCKED on a real package-integration issue, reverted.**
+Attempted to adopt the portal-theme-safe `DropdownMenu` from `@hanzo/ui/product` (added a
+temp `@hanzo/ui8` alias + `@hanzo/data` peer + Next transpile config). Build fails:
+`Module parse failed: Unexpected token` at `export { Donut as DonutRing, type DonutSegment }`
+in `@hanzo/ui@8.0.7/src/product/index.ts`. Root cause: **v8 ships RAW `.ts` `'use client'`
+modules using `export { X, type Y }` inline-type syntax; Next 16's flight-client loader
+chain (`next-flight-client-module-loader` → `next-swc-loader`) processes them WITHOUT TS
+transpilation and webpack's JS parser rejects the inline `type`.** The flight loader
+preempts the app's custom swc-loader rule, and `transpilePackages: ['@hanzo/ui8']` did not
+fix it. Blocker fix is Phase-1 / package-owner scope: **v8 must ship a COMPILED dist**
+(tsup/tsc — no raw-`.ts` `'use client'` at the consumer), OR a Next transpile path that
+handles v8's client modules. Until then the gui menu cannot be adopted here. Phase 3 (the
+theme controller) is done and independent — the menu unblocks the moment v8 ships dist.
