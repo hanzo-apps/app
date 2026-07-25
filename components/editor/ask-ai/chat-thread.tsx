@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import classNames from "classnames";
 import { Check, ChevronDown, Loader2 } from "lucide-react";
+import { MarkdownRenderer } from "@/components/markdown-renderer";
 
 // ONE conversation turn as rendered in the builder chat thread. The thread is a
 // pure VIEW concern (kept separate from `prompts`, which is AI context, and
@@ -106,14 +107,17 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
     }
     return (
       <div className="flex w-full justify-start">
-        <div className="max-w-[92%] whitespace-pre-wrap break-words rounded-2xl rounded-bl-md border border-border bg-muted/40 px-3.5 py-2 text-sm text-foreground">
+        <div className="max-w-[92%] break-words rounded-2xl rounded-bl-md border border-border bg-muted/40 px-3.5 py-2 text-[13px] text-foreground">
           {text ? (
-            <>
-              {text}
+            <div className="flex flex-wrap items-end">
+              {/* Render the assistant reply as formatted markdown (headings, lists,
+                  bold/italic, hr, links, fenced code) in the tight monochrome
+                  register — never raw "## …" / "**…**" text. */}
+              <MarkdownRenderer content={text} compact />
               {building && (
                 <span className="ml-0.5 inline-block h-3.5 w-[2px] translate-y-0.5 animate-pulse bg-foreground align-middle motion-reduce:animate-none" />
               )}
-            </>
+            </div>
           ) : (
             <span className="thread-shimmer-text text-[13px]">Thinking…</span>
           )}
