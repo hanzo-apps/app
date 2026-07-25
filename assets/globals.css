@@ -207,6 +207,59 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   TIGHT TYPE REGISTER — the linear.app / Codex-desktop dense scale.
+   ONE source of truth for text sizing: retune Tailwind v4's `--text-*` scale to a
+   14px base register (dense body/nav 13px, labels 11px) and tighten the display
+   sizes. Every `text-*` utility across the app inherits this in ONE place — no
+   per-file edits. Body base is pinned to 14px in @layer base below. This is the
+   same register the canonical @hanzo/gui / @hanzo/data tokens carry, so Tailwind-
+   styled and gui-styled (Tamagui) surfaces share one scale — convergence, not a
+   fork. */
+@theme {
+  --text-xs: 0.6875rem;   /* 11px — labels, meta, badges */
+  --text-xs--line-height: 1.45;
+  --text-sm: 0.8125rem;   /* 13px — dense body / nav (the app's workhorse size) */
+  --text-sm--line-height: 1.45;
+  --text-base: 0.875rem;  /* 14px — base register */
+  --text-base--line-height: 1.5;
+  --text-lg: 1rem;        /* 16px */
+  --text-lg--line-height: 1.5;
+  --text-xl: 1.125rem;    /* 18px */
+  --text-xl--line-height: 1.4;
+  --text-2xl: 1.375rem;   /* 22px */
+  --text-2xl--line-height: 1.3;
+  --text-3xl: 1.75rem;    /* 28px */
+  --text-3xl--line-height: 1.22;
+  --text-4xl: 2.125rem;   /* 34px — display, tightened from 36 */
+  --text-4xl--line-height: 1.15;
+  --text-5xl: 2.75rem;    /* 44px — tightened from 48 */
+  --text-5xl--line-height: 1.08;
+  --text-6xl: 3.25rem;    /* 52px — tightened from 60 */
+  --text-6xl--line-height: 1.05;
+  --text-7xl: 4rem;       /* 64px — tightened from 72 */
+  --text-7xl--line-height: 1.03;
+}
+
+/* ONE compact control spec — resolve @hanzo/ui's control tokens onto the app palette.
+   The shadcn form controls (Input, SelectTrigger, Textarea) reference @hanzo/ui's OWN
+   control tokens (bg-secondary/divider/border-input/text-default/…) which THIS app
+   never defined — so they rendered transparent with default borders, next to a
+   floating-label giant (pt-8/pt-7/pt-6). Map those namespaces onto the monochrome
+   palette here (fills/borders/text now resolve); the height/radius/padding are pinned
+   in @layer base below. */
+@theme inline {
+  --color-bg-secondary: var(--input);
+  --color-bg-dark: var(--popover);
+  --color-bg-input-disabled: var(--muted);
+  --color-divider: var(--border);
+  --color-border-input: var(--border);
+  --color-border-input-focus: var(--ring);
+  --color-text-default: var(--foreground);
+  --color-text-secondary: var(--muted-foreground);
+  --color-text-placeholder: var(--muted-foreground);
+}
+
 /* Tasteful monochrome — the brand CHROME (header/sidebar/footer, primary CTAs,
    links, focus rings, logo) is neutral by construction: those surfaces use
    black/white/neutral utilities directly (see components/layout, page chrome).
@@ -346,6 +399,14 @@
 
 :root {
   --radius: 0.5rem;
+  /* ONE control spec — the single height / radius / text-size every form control
+     (input, select, button) shares. ~30px tall, one soft radius, 13px text — the
+     compact, consistent, softly-rounded register (NOT blocky). Applied in @layer
+     base below to both the @hanzo/ui shadcn controls (interim) and, unchanged, to
+     the @hanzo/gui v8 controls as surfaces migrate. */
+  --control-h: 1.875rem;      /* 30px */
+  --control-radius: 0.5rem;   /* 8px — one soft radius for every control */
+  --control-fs: 0.8125rem;    /* 13px */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -443,6 +504,11 @@ html:not(.dark) {
        stack — @theme inline defines the `font-sans` utility but never applies it
        to <body>, so body text fell back to system-ui. */
     font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    /* 14px base register (the tight linear/Codex scale). Un-classed text inherits
+       this; text-* utilities (retuned above) set their own dense sizes. */
+    font-size: var(--text-base);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
     /* Geist is a variable font with real weights — headings/bold render truly
        bold. */
   }
@@ -537,4 +603,59 @@ code, pre, kbd, samp, .font-mono, [class~="font-mono"] {
    compilation required, fixes every horizontal Tabs in one place. */
 [data-slot="tabs"][data-orientation="horizontal"] {
   flex-direction: column;
+}
+
+/* ── ONE compact control spec, applied ───────────────────────────────────────
+   Compact, consistent, softly-rounded — NOT blocky. The @hanzo/ui shadcn Input +
+   SelectTrigger share the `h-input` signature class and ship a floating-label
+   giant (undefined height + pt-8/pt-6). Pin the ONE control spec on every control
+   so an input and its adjacent button/select match exactly in height, radius, and
+   type size — no per-file edits, no oversized inputs. (The @hanzo/data control
+   tokens carry these same numbers, so migrating a surface to @hanzo/ui v8
+   primitives keeps the identical register.) */
+[class~="h-input"] {
+  height: var(--control-h) !important;
+  min-height: var(--control-h) !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  padding-inline: 0.625rem !important;
+  border-radius: var(--control-radius) !important;
+  font-size: var(--control-fs) !important;
+  line-height: 1.1 !important;
+}
+[class~="h-input"]::placeholder {
+  color: var(--muted-foreground);
+  opacity: 1;
+}
+/* SelectTrigger's chevron is absolutely positioned for the tall floating-label
+   box (top-[23px]); re-center it for the compact 30px control. */
+[class~="h-input"] svg[class~="absolute"] {
+  top: 50% !important;
+  bottom: auto !important;
+  transform: translateY(-50%);
+}
+/* Textarea keeps its multi-line height but drops the floating-label top-padding and
+   adopts the one radius + 13px size. */
+textarea[class*="pt-7"],
+textarea[class*="pt-8"] {
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+  border-radius: var(--control-radius) !important;
+  font-size: var(--control-fs) !important;
+}
+textarea[class*="pt-7"]::placeholder,
+textarea[class*="pt-8"]::placeholder {
+  color: var(--muted-foreground);
+  opacity: 1;
+}
+/* Buttons match the control height + radius so a button sitting next to an input or
+   select lines up exactly. Icon-only buttons keep their square footprint. */
+[data-slot="button"][data-size="default"],
+[data-slot="button"][data-size="sm"],
+[data-slot="button"][data-size="lg"] {
+  height: var(--control-h);
+  min-height: var(--control-h);
+  border-radius: var(--control-radius);
+  font-size: var(--control-fs);
+  padding-inline: 0.75rem;
 }

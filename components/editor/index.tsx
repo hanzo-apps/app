@@ -378,15 +378,20 @@ export const AppEditor = ({
             is no hard border seam between the panel and the preview card. */}
         <div
           ref={resizer}
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize chat and preview panes"
           className={classNames(
-            "group/resizer relative w-1.5 cursor-col-resize h-full max-lg:hidden shrink-0",
+            "group/resizer relative flex w-2 h-full max-lg:hidden shrink-0 cursor-col-resize items-center justify-center",
             sidebarCollapsed && "lg:hidden"
           )}
         >
-          {/* No static seam — the left pane and workspace share one flat field;
-              the hairline only appears on hover/drag so the resize target is
-              discoverable without drawing a permanent border on the sidebar. */}
-          <div className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-transparent transition-colors duration-150 group-hover/resizer:bg-white/20 group-active/resizer:bg-white/30" />
+          {/* No static bar — the two panes share one flat field. A hairline seam
+              plus a small centered grip pill fade in ONLY on hover/drag, so the
+              resize target is discoverable and grabbable without ever drawing a
+              permanent divider or a middle scrollbar. */}
+          <div className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-transparent transition-colors duration-150 group-hover/resizer:bg-white/15 group-active/resizer:bg-white/25" />
+          <div className="pointer-events-none relative h-8 w-1 rounded-full bg-transparent transition-colors duration-150 group-hover/resizer:bg-white/25 group-active/resizer:bg-white/40" />
         </div>
         {/* RIGHT — Preview OR Code as a RAISED, rounded card that fills the whole
             remaining width to the viewport's right edge (flex-1, min-w-0). The
