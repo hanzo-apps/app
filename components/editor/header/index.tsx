@@ -125,7 +125,7 @@ export function Header({
           title={sidebarCollapsed ? "Show chat panel" : "Hide chat panel"}
           aria-label={sidebarCollapsed ? "Show chat panel" : "Hide chat panel"}
           aria-pressed={!sidebarCollapsed}
-          className="hidden size-8 items-center justify-center rounded-lg text-muted-foreground ring-1 ring-white/10 transition-colors duration-150 hover:bg-white/[0.06] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 lg:flex"
+          className="hidden size-8 items-center justify-center rounded-lg text-muted-foreground ring-1 ring-border transition-colors duration-150 hover:bg-foreground/[0.08] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:flex"
         >
           {sidebarCollapsed ? (
             <PanelLeft className="size-4" />
@@ -143,10 +143,10 @@ export function Header({
             aria-label={historyOpen ? "Back to chat" : "Version history"}
             aria-pressed={Boolean(historyOpen)}
             className={classNames(
-              "hidden size-8 items-center justify-center rounded-lg ring-1 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 lg:flex",
+              "hidden size-8 items-center justify-center rounded-lg ring-1 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:flex",
               historyOpen
-                ? "bg-muted text-foreground ring-white/20"
-                : "text-muted-foreground ring-white/10 hover:bg-white/[0.06] hover:text-foreground",
+                ? "bg-muted text-foreground ring-foreground/25"
+                : "text-muted-foreground ring-border hover:bg-foreground/[0.08] hover:text-foreground",
             )}
           >
             <History className="size-4" />
@@ -160,7 +160,7 @@ export function Header({
         <div
           role="tablist"
           aria-label="Editor view"
-          className="flex shrink-0 items-center gap-0.5 rounded-lg bg-white/[0.03] p-0.5 ring-1 ring-white/10"
+          className="flex shrink-0 items-center gap-0.5 rounded-lg bg-foreground/[0.04] p-0.5 ring-1 ring-border"
         >
           {TABS.map((item) => {
             const active = tab === item.value;
@@ -173,11 +173,11 @@ export function Header({
                 title={item.label}
                 onClick={() => onNewTab(item.value)}
                 className={classNames(
-                  "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
+                  "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   "mobileOnly" in item && item.mobileOnly ? "lg:hidden" : "",
                   active
                     ? "bg-muted text-foreground shadow-sm"
-                    : "text-muted-foreground hover:bg-white/[0.06] hover:text-foreground"
+                    : "text-muted-foreground hover:bg-foreground/[0.08] hover:text-foreground"
                 )}
               >
                 <item.icon className="size-4 shrink-0" />
@@ -193,7 +193,7 @@ export function Header({
           <div
             role="tablist"
             aria-label="Preview device"
-            className="flex items-center gap-0.5 rounded-lg bg-white/[0.03] p-0.5 ring-1 ring-white/10"
+            className="flex items-center gap-0.5 rounded-lg bg-foreground/[0.04] p-0.5 ring-1 ring-border"
           >
             {DEVICES.map((d) => {
               const active = device === d.name;
@@ -206,10 +206,10 @@ export function Header({
                   title={`${d.name[0].toUpperCase()}${d.name.slice(1)} preview`}
                   onClick={() => setDevice(d.name as "desktop" | "mobile")}
                   className={classNames(
-                    "flex size-7 items-center justify-center rounded-md text-sm transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
+                    "flex size-7 items-center justify-center rounded-md text-sm transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     active
                       ? "bg-muted text-foreground shadow-sm"
-                      : "text-muted-foreground hover:bg-white/[0.06] hover:text-foreground"
+                      : "text-muted-foreground hover:bg-foreground/[0.08] hover:text-foreground"
                   )}
                 >
                   <d.icon />
@@ -221,7 +221,7 @@ export function Header({
             type="button"
             onClick={handleRefreshIframe}
             title="Refresh preview"
-            className="flex size-8 items-center justify-center rounded-lg text-muted-foreground ring-1 ring-white/10 transition-colors duration-150 hover:bg-white/[0.06] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+            className="flex size-8 items-center justify-center rounded-lg text-muted-foreground ring-1 ring-border transition-colors duration-150 hover:bg-foreground/[0.08] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <RefreshCcw className="size-3.5" />
           </button>
@@ -235,7 +235,7 @@ export function Header({
                   type="button"
                   title="Browse pages"
                   aria-label="Browse pages"
-                  className="flex max-w-[12rem] items-center gap-1.5 rounded-lg bg-white/[0.03] px-2.5 py-1.5 text-sm text-foreground ring-1 ring-white/10 transition-colors duration-150 hover:bg-white/[0.06] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+                  className="flex max-w-[12rem] items-center gap-1.5 rounded-lg bg-foreground/[0.04] px-2.5 py-1.5 text-sm text-foreground ring-1 ring-border transition-colors duration-150 hover:bg-foreground/[0.08] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <span className="truncate font-mono text-xs">
                     {currentPage}
@@ -264,7 +264,7 @@ export function Header({
             onClick={onOpenExternal}
             title="Open preview in a new tab"
             aria-label="Open preview in a new tab"
-            className="flex size-8 items-center justify-center rounded-lg text-muted-foreground ring-1 ring-white/10 transition-colors duration-150 hover:bg-white/[0.06] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+            className="flex size-8 items-center justify-center rounded-lg text-muted-foreground ring-1 ring-border transition-colors duration-150 hover:bg-foreground/[0.08] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <ExternalLink className="size-3.5" />
           </button>

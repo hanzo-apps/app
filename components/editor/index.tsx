@@ -274,7 +274,7 @@ export const AppEditor = ({
           variant="outline"
           size="sm"
           onClick={() => setIsShareModalOpen(true)}
-          className="!h-7 gap-1.5 px-2.5 text-xs !border-border !bg-white/[0.04] !text-foreground transition-colors duration-150 hover:!bg-muted"
+          className="!h-7 gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-muted"
         >
           <Share2 className="size-3.5" />
           <span className="hidden md:inline">Share</span>
@@ -391,8 +391,8 @@ export const AppEditor = ({
               plus a small centered grip pill fade in ONLY on hover/drag, so the
               resize target is discoverable and grabbable without ever drawing a
               permanent divider or a middle scrollbar. */}
-          <div className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-transparent transition-colors duration-150 group-hover/resizer:bg-white/15 group-active/resizer:bg-white/25" />
-          <div className="pointer-events-none relative h-8 w-1 rounded-full bg-transparent transition-colors duration-150 group-hover/resizer:bg-white/25 group-active/resizer:bg-white/40" />
+          <div className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-transparent transition-colors duration-150 group-hover/resizer:bg-foreground/20 group-active/resizer:bg-foreground/30" />
+          <div className="pointer-events-none relative h-8 w-1 rounded-full bg-transparent transition-colors duration-150 group-hover/resizer:bg-foreground/30 group-active/resizer:bg-foreground/45" />
         </div>
         {/* RIGHT — Preview OR Code as a RAISED, rounded card that fills the whole
             remaining width to the viewport's right edge (flex-1, min-w-0). The
@@ -404,9 +404,9 @@ export const AppEditor = ({
             currentTab === "chat" ? "hidden lg:block" : "block"
           )}
         >
-          <div className="preview-stage relative h-full w-full overflow-hidden rounded-xl border border-border bg-background shadow-xl shadow-black/30 ring-1 ring-white/5">
+          <div className="preview-stage relative h-full w-full overflow-hidden rounded-xl border border-border bg-background shadow-xl shadow-black/30 ring-1 ring-border">
             {/* Faint top highlight — a crisp edge that reads as raised glass. */}
-            <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+            <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-px bg-gradient-to-r from-transparent via-foreground/10 to-transparent" />
             <Preview
               html={currentPageData?.html}
               isResizing={isResizing}
