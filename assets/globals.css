@@ -71,10 +71,9 @@
 }
 
 /* ── Build-composer living gradient ──────────────────────────────────────────
-   The ONE deliberate colorful flourish on an otherwise monochrome surface: a
-   slow-drifting conic gradient border + soft glow on the "Ask Hanzo to build…"
-   bubble. Blue → violet → pink → warm, ~10s loop. Raw color literals (NOT
-   Tailwind violet/purple/rose, which globals.css remaps to zero-chroma gray).
+   A restrained accent flourish on the "Ask Hanzo to build…" bubble: a
+   slow-drifting conic ring + soft glow in the ONE brand accent (purple),
+   ~10s loop. Single-hue (v2 palette = white + gray + purple) — no rainbow.
    Reduced-motion → the gradient holds a static frame (still colorful, no drift).
 
    Structure (see components/build-composer): a padded `.hz-composer` hosts the
@@ -117,11 +116,10 @@
   border-radius: inherit;
   background: conic-gradient(
     from var(--hz-angle),
-    #2f6bff,
-    #7c5cff,
-    #ff5db1,
-    #ff9d5c,
-    #2f6bff
+    #6e56cf,
+    #8b74e8,
+    #4a3a8f,
+    #6e56cf
   );
   animation: hzComposerSpin 10s linear infinite;
   z-index: 0;
@@ -135,11 +133,10 @@
   border-radius: inherit;
   background: conic-gradient(
     from var(--hz-angle),
-    #2f6bff,
-    #7c5cff,
-    #ff5db1,
-    #ff9d5c,
-    #2f6bff
+    #6e56cf,
+    #8b74e8,
+    #4a3a8f,
+    #6e56cf
   );
   filter: blur(28px);
   opacity: 0.5;
@@ -217,7 +214,7 @@
    styled and gui-styled (Tamagui) surfaces share one scale — convergence, not a
    fork. */
 @theme {
-  --text-xs: 0.6875rem;   /* 11px — labels, meta, badges */
+  --text-xs: 0.75rem;     /* 12px — secondary / meta / labels */
   --text-xs--line-height: 1.45;
   --text-sm: 0.8125rem;   /* 13px — dense body / nav (the app's workhorse size) */
   --text-sm--line-height: 1.45;
@@ -227,7 +224,7 @@
   --text-lg--line-height: 1.5;
   --text-xl: 1.125rem;    /* 18px */
   --text-xl--line-height: 1.4;
-  --text-2xl: 1.375rem;   /* 22px */
+  --text-2xl: 1.25rem;    /* 20px — section headings */
   --text-2xl--line-height: 1.3;
   --text-3xl: 1.75rem;    /* 28px */
   --text-3xl--line-height: 1.22;
@@ -404,15 +401,40 @@
      compact, consistent, softly-rounded register (NOT blocky). Applied in @layer
      base below to both the @hanzo/ui shadcn controls (interim) and, unchanged, to
      the @hanzo/gui v8 controls as surfaces migrate. */
-  --control-h: 1.875rem;      /* 30px */
-  --control-radius: 0.5rem;   /* 8px — one soft radius for every control */
-  --control-fs: 0.8125rem;    /* 13px */
+  --control-h: 1.875rem;          /* 30px */
+  --control-radius: var(--radius-control);  /* 10px — one soft radius for every control */
+  --control-fs: 0.8125rem;        /* 13px */
+  /* ── Builder v2 IDE tokens ───────────────────────────────────────────────
+     INTERIM — the layered-black surfaces, the ONE purple accent, and the
+     radius scale below are the app-local staging of what @hanzogui/shell is
+     encoding as its theme in parallel. When that version ships, these point at
+     the shell theme (do NOT keep two forks of the numbers). ONE accent: purple.
+     Palette = white + gray + purple only. */
+  /* The ONE accent — purple. Mirrors @hanzo/brand@1.4.4 (--hanzo-accent);
+     consumed via var() with the canonical value as fallback. Purple is
+     links / active / focus / selection ONLY — the primary action stays WHITE
+     (monochrome), see --primary below. */
+  --brand-accent: var(--hanzo-accent, #8b5cf6);
+  --brand-accent-hover: var(--hanzo-accent-hover, #7c3aed);
+  --brand-accent-muted: var(--hanzo-accent-muted, #a78bfa);
+  --brand-accent-soft: var(--hanzo-accent-soft, rgba(139, 92, 246, 0.12));
+  --brand-accent-fg: #ffffff;
+  /* Radius scale (v2): card 8 / control 10 / panel·preview 12. */
+  --radius-card: 0.5rem;      /* 8px */
+  --radius-control: 0.625rem; /* 10px */
+  --radius-panel: 0.75rem;    /* 12px */
+  /* Layered surfaces — light theme (subtle, panels differ without gray). */
+  --surface-0: #ffffff;
+  --surface-1: #fbfbfc;
+  --surface-2: #f6f6f7;
+  --surface-3: #f1f1f3;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
+  /* Primary action stays monochrome (near-black on white); purple is accent-only. */
   --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
@@ -426,7 +448,7 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --ring: var(--brand-accent);
   /* Charts carry real, distinguishable hue — data series must be told apart. */
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -444,37 +466,45 @@
 }
 
 .dark {
-  --background: oklch(0 0 0);
+  /* Layered blacks (v2) — every panel a subtly different near-black, no gray
+     panels: bg #080808 · card #0d0d0d · popover #111 · muted #171717. */
+  --surface-0: #080808;
+  --surface-1: #0d0d0d;
+  --surface-2: #111111;
+  --surface-3: #171717;
+  --background: #080808;
   --foreground: #ededed;
-  --card: #0a0a0a;
+  --card: #0d0d0d;
   --card-foreground: oklch(0.985 0 0);
-  --popover: #0a0a0a;
+  --popover: #111111;
   --popover-foreground: oklch(0.985 0 0);
-  --primary: #fff;
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.205 0 0);
+  /* Primary action stays monochrome (white); purple is accent-only. */
+  --primary: #ffffff;
+  --primary-foreground: #0a0a0a;
+  --secondary: #171717;
   --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.205 0 0);
-  --muted-foreground: #888;
-  --accent: oklch(0.205 0 0);
+  --muted: #171717;
+  --muted-foreground: #8a8a8f;
+  --accent: #1c1c1f;
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: #1f1f1f;
-  --input: oklch(0.269 0 0);
-  --ring: #333;
+  /* Hairline borders — 1px rgba(255,255,255,.06), no thick outlines. */
+  --border: rgba(255, 255, 255, 0.06);
+  --input: rgba(255, 255, 255, 0.08);
+  --ring: var(--brand-accent);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0 0 0);
+  --sidebar: #0a0a0a;
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.922 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-primary-foreground: oklch(0.205 0 0);
+  --sidebar-accent: #1c1c1f;
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-border: rgba(255, 255, 255, 0.06);
+  --sidebar-ring: var(--brand-accent);
 }
 
 /* @hanzo/gui's Tamagui theme keeps `t_dark` on <html> permanently: GuiProvider is
@@ -487,7 +517,7 @@
    guarantees the win over Tamagui regardless of its selector specificity; --background
    is a root palette token never overridden per-element, so !important is safe. */
 html.dark {
-  --background: oklch(0 0 0) !important;
+  --background: #080808 !important;
 }
 html:not(.dark) {
   --background: oklch(1 0 0) !important;
@@ -514,6 +544,11 @@ html:not(.dark) {
   }
   html {
     @apply scroll-smooth;
+  }
+  /* Selection = the one purple accent (soft). */
+  ::selection {
+    background-color: var(--brand-accent-soft);
+    color: var(--foreground);
   }
 }
 
@@ -603,6 +638,22 @@ code, pre, kbd, samp, .font-mono, [class~="font-mono"] {
    compilation required, fixes every horizontal Tabs in one place. */
 [data-slot="tabs"][data-orientation="horizontal"] {
   flex-direction: column;
+}
+
+/* Preview stage — a subtle grid so the canvas feels alive (v2), never an empty
+   black rect. The generated app's iframe paints opaquely on top, so this shows
+   around a device-framed (mobile) preview and while the stage is still empty. */
+.preview-stage {
+  background-color: var(--surface-0);
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+:root:not(.dark) .preview-stage {
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
 }
 
 /* ── ONE compact control spec, applied ───────────────────────────────────────
