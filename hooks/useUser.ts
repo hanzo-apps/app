@@ -62,6 +62,22 @@ export const useUser = (initialData?: {
     await login();
   }, [login]);
 
+  // Marketing-surface login (header/pricing): optional post-login destination +
+  // a `signup` hint so IAM opens its REGISTRATION screen for the "Get started"
+  // funnel. IAM falls back to sign-in if it doesn't honor the hint — never a
+  // dead end. (Absorbed from the retired useAuth/AuthProvider stack; ONE facade.)
+  const loginTo = useCallback(
+    (redirectPath?: string, opts?: { signup?: boolean }) => {
+      if (redirectPath && typeof window !== "undefined") {
+        localStorage.setItem("redirectAfterLogin", redirectPath);
+      }
+      void login(
+        opts?.signup ? { additionalParams: { signup: "true" } } : undefined,
+      );
+    },
+    [login],
+  );
+
   // Complete the OAuth2 PKCE callback: the SDK reads the full redirect URL
   // (`?code=&state=`), validates state, exchanges the code, and persists the
   // tokens. Returns whether a session was established so the /auth/callback
@@ -103,6 +119,7 @@ export const useUser = (initialData?: {
     errCode: null as number | null,
     loading: isLoading,
     openLoginWindow,
+    login: loginTo,
     completeLogin,
     loginFromCode,
     loginFromToken,

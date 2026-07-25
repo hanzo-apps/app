@@ -17,7 +17,7 @@ import SiteFooter from "@/components/landing/site-footer";
 import Reveal from "@/components/landing/reveal";
 import FaqSection from "@/components/marketing/faq-section";
 import { billingFaq } from "@/components/marketing/faq-data";
-import { useAuthContext } from "@/components/providers/AuthProvider";
+import { useUser } from "@/hooks/useUser";
 
 interface Plan {
   id: string;
@@ -81,7 +81,7 @@ const plans: Plan[] = [
 export default function PricingPage() {
   const router = useRouter();
   const analytics = useAnalytics();
-  const { isAuthenticated, login } = useAuthContext();
+  const { isAuthenticated, login } = useUser();
 
   useEffect(() => {
     analytics.capture(EVENTS.PRICING_VIEWED);

@@ -97,7 +97,7 @@ function IamTokenKeepAlive() {
 
 /**
  * Root Hanzo IAM provider. Mounts the @hanzo/iam context so every client
- * component can `useIam()` / `useAuthContext()` / `useUser()`. HIP-0111
+ * component can `useIam()` / `useUser()`. HIP-0111
  * canonical — the config supplies an explicit SSR-safe storage shim.
  */
 export default function IamClientProvider({ children }: { children: React.ReactNode }) {
