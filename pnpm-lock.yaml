@@ -102,8 +102,8 @@ importers:
         specifier: 7.3.0
         version: 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/shell':
-        specifier: ^7.6.0
-        version: 7.6.0(@hanzo/iam@0.13.8(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: ^7.6.3
+        version: 7.6.3(@hanzo/iam@0.13.8(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@huggingface/hub':
         specifier: ^2.11.0
         version: 2.11.0
@@ -1818,8 +1818,8 @@ packages:
       react-native-gesture-handler:
         optional: true
 
-  '@hanzogui/shell@7.6.0':
-    resolution: {integrity: sha512-tzH3FqdbieBYW4dFuwo9XbivJw8IzL/XxBuI/7c/6cqxor0yOgMgKdTHV1QTi+rUyxXlb5qwJ1bpFvjlfnTOxQ==}
+  '@hanzogui/shell@7.6.3':
+    resolution: {integrity: sha512-fcMO119cWRz2fnAzMFU1tCdT552brKDVmOJjcdz1bEZWcqGMHrxoob+1d23YnMeB2EEgZZcq/EqUCaL1hfYn2g==}
     peerDependencies:
       '@hanzo/iam': ^0.13.1
       react: '*'
@@ -12814,7 +12814,7 @@ snapshots:
       - sf-symbols-typescript
       - zeego
 
-  '@hanzogui/shell@7.6.0(@hanzo/iam@0.13.8(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@hanzogui/shell@7.6.3(@hanzo/iam@0.13.8(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       '@hanzo/iam': 0.13.8(react@19.2.4)
       react: 19.2.4
