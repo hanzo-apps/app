@@ -123,7 +123,7 @@ export default function SignupPage() {
               <div className="flex items-center justify-center gap-6 pt-2">
                 <div className="flex items-center gap-2">
                   <Shield className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">SOC 2 Compliant</span>
+                  <span className="text-xs text-muted-foreground">Encrypted &amp; Audited</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Shield className="w-4 h-4 text-muted-foreground" />
