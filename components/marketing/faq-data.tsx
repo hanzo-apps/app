@@ -87,7 +87,7 @@ export const productFaq: QA[] = [
         hanzo.app builds with Hanzo&apos;s own{" "}
         <span className="text-foreground">Zen</span> and{" "}
         <span className="text-foreground">Enso</span> model families, served through
-        the Hanzo LLM Gateway at{" "}
+        the Hanzo AI API at{" "}
         <code className="font-mono text-foreground">api.hanzo.ai</code>. The same
         gateway gives every app you publish one OpenAI-compatible endpoint to 400+
         frontier models — swap models with a single string.

@@ -47,7 +47,7 @@ const capabilities: Capability[] = [
   {
     icon: Sparkles,
     name: "AI, built in",
-    product: "LLM Gateway",
+    product: "AI",
     href: "https://hanzo.ai/llm",
     desc: "Call 400+ models — Zen plus Anthropic, OpenAI, Google, Mistral — from your app through one gateway.",
     snippet: "POST api.hanzo.ai/v1/chat/completions",

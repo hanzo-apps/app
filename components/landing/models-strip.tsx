@@ -1,5 +1,5 @@
-// "One API, 400+ models" — the real Hanzo LLM Gateway. Provider logos are the
-// actual model providers the gateway routes to (Zen models are Hanzo's own).
+// "One API, 400+ models" — the real Hanzo AI. Provider logos are the
+// actual model providers Hanzo AI routes to (Zen models are Hanzo's own).
 // Rendered monochrome-white on true-black via CSS filter. The endpoint shown
 // is real (api.hanzo.ai/v1, OpenAI-compatible); the model value is illustrative.
 
@@ -26,7 +26,7 @@ export default function ModelsStrip() {
       <div className="mx-auto grid max-w-6xl items-center gap-12 [&>*]:min-w-0 lg:grid-cols-2 lg:gap-16">
         <Reveal>
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-            Hanzo LLM Gateway
+            Hanzo AI
           </p>
           <h2 className="mt-4 text-3xl font-medium tracking-tight md:text-4xl">
             One API. 400+ models.

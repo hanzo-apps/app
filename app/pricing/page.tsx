@@ -40,7 +40,7 @@ const plans: Plan[] = [
     tagline: "For individual builders shipping real apps.",
     features: [
       "Shared AI usage across every Hanzo app — builder, Chat, and API",
-      "Zen and Enso models via the Hanzo LLM Gateway",
+      "Zen and Enso models via the Hanzo AI API",
       "Unlimited projects, private by default",
       "Custom domains on published apps",
       "GitHub import and export",
