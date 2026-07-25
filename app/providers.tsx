@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/components/providers/theme-provider';
 import { ErrorBoundary } from '@/components/error-boundary';
 import IamClientProvider from '@/components/providers/IamClientProvider';
 import { AnalyticsRoot } from '@/components/providers/analytics';
+import { UsageLimitProvider } from '@/components/usage/usage-limit';
 import { Toaster } from '@hanzo/ui';
 import { ReactNode } from 'react';
 
@@ -46,7 +47,7 @@ export function Providers({ children }: ProvidersProps) {
                 }
               }}
             >
-              {children}
+              <UsageLimitProvider>{children}</UsageLimitProvider>
             </ErrorBoundary>
         </AnalyticsRoot>
       </IamClientProvider>

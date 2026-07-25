@@ -247,6 +247,12 @@ export const useCallAi = ({
 
       // Upstream infra failure (gateway 502/503/500): stop now with an honest
       // message instead of streaming an empty body into a stuck "Building…".
+      // Out of credit (402): raise the "Need more usage?" modal via the caller's
+      // handleError, never a silent failure.
+      if (request.status === 402) {
+        setisAiWorking(false);
+        return { error: "need_credits", message: "You're out of credits." };
+      }
       if (!request.ok && request.status >= 500) {
         setisAiWorking(false);
         return { error: "api_error", message: AI_UNAVAILABLE };
@@ -379,6 +385,12 @@ export const useCallAi = ({
         signal: abortController.signal,
       });
 
+      // Out of credit (402): raise the "Need more usage?" modal via the caller's
+      // handleError, never a silent failure.
+      if (request.status === 402) {
+        setisAiWorking(false);
+        return { error: "need_credits", message: "You're out of credits." };
+      }
       if (!request.ok && request.status >= 500) {
         setisAiWorking(false);
         return { error: "api_error", message: AI_UNAVAILABLE };
@@ -502,6 +514,12 @@ export const useCallAi = ({
 
       // Upstream infra failure — stop honestly rather than JSON-parsing an HTML
       // 502 page (which would throw into the generic catch as a stuck spinner).
+      // Out of credit (402): raise the "Need more usage?" modal via the caller's
+      // handleError, never a silent failure.
+      if (request.status === 402) {
+        setisAiWorking(false);
+        return { error: "need_credits", message: "You're out of credits." };
+      }
       if (!request.ok && request.status >= 500) {
         setisAiWorking(false);
         return { error: "api_error", message: AI_UNAVAILABLE };
@@ -587,6 +605,12 @@ export const useCallAi = ({
         signal: abortController.signal,
       });
 
+      // Out of credit (402): raise the "Need more usage?" modal via the caller's
+      // handleError, never a silent failure.
+      if (request.status === 402) {
+        setisAiWorking(false);
+        return { error: "need_credits", message: "You're out of credits." };
+      }
       if (!request.ok && request.status >= 500) {
         setisAiWorking(false);
         return { error: "api_error", message: AI_UNAVAILABLE };

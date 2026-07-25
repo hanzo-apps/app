@@ -71,6 +71,15 @@ const unauthorized = () =>
     { status: 401 }
   );
 
+// The gateway reports the org is out of credit (402 Payment Required). Surface
+// it as a STRUCTURED signal (status 402 + needCredits) so the client raises the
+// "Need more usage?" modal instead of masking it as a generic 502 failure.
+const insufficientCredits = (detail?: string) =>
+  NextResponse.json(
+    { ok: false, needCredits: true, message: detail || "You're out of credits." },
+    { status: 402 }
+  );
+
 type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
 
 async function callGateway(
@@ -154,6 +163,7 @@ export async function POST(request: NextRequest) {
   if (!gateway.ok || !gateway.body) {
     const detail = await gateway.text().catch(() => "");
     if (gateway.status === 401 || gateway.status === 403) return unauthorized();
+    if (gateway.status === 402) return insufficientCredits(detail);
     return NextResponse.json(
       {
         ok: false,
@@ -284,6 +294,7 @@ export async function PATCH(request: NextRequest) {
   if (!gateway.ok || !gateway.body) {
     const detail = await gateway.text().catch(() => "");
     if (gateway.status === 401 || gateway.status === 403) return unauthorized();
+    if (gateway.status === 402) return insufficientCredits(detail);
     return NextResponse.json(
       {
         ok: false,
@@ -412,6 +423,7 @@ export async function PUT(request: NextRequest) {
   if (!gateway.ok) {
     const detail = await gateway.text().catch(() => "");
     if (gateway.status === 401 || gateway.status === 403) return unauthorized();
+    if (gateway.status === 402) return insufficientCredits(detail);
     return NextResponse.json(
       {
         ok: false,
