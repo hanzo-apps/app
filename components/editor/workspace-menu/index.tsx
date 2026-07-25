@@ -73,7 +73,7 @@ const fmtUsd = (cents: number): string => `$${(cents / 100).toFixed(2)}`;
 // Shared item styling — Hanzo darker chrome: white-on-black, hairline focus,
 // a crisp 150ms hover.
 const ITEM =
-  "cursor-pointer gap-2.5 rounded-md px-2 py-2 text-sm text-foreground transition-colors duration-150 focus:bg-white/[0.06] focus:text-foreground";
+  "cursor-pointer gap-2.5 rounded-md px-2 py-2 text-sm text-foreground transition-colors duration-150 focus:bg-foreground/[0.06] focus:text-foreground";
 const ICON = "size-4 shrink-0 text-muted-foreground";
 
 export function WorkspaceMenu({
@@ -177,7 +177,7 @@ export function WorkspaceMenu({
           <button
             type="button"
             title="Workspace"
-            className="flex min-w-0 items-center gap-2 rounded-lg border border-border bg-white/[0.02] px-2.5 py-1.5 text-sm text-foreground transition-all duration-150 hover:border-border hover:bg-white/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 data-[state=open]:border-border data-[state=open]:bg-white/[0.06]"
+            className="flex min-w-0 items-center gap-2 rounded-lg border border-border bg-foreground/[0.02] px-2.5 py-1.5 text-sm text-foreground transition-all duration-150 hover:border-border hover:bg-foreground/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring data-[state=open]:border-border data-[state=open]:bg-foreground/[0.06]"
           >
             <OrgAvatar name={orgName} logo={activeOrg?.logo} />
             <span className="max-w-[9rem] truncate font-medium text-foreground">
@@ -226,13 +226,13 @@ export function WorkspaceMenu({
           {/* Active workspace + plan badge — a switcher when there's more than one. */}
           {canSwitch ? (
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-foreground transition-colors duration-150 focus:bg-white/[0.06] focus:text-foreground data-[state=open]:bg-white/[0.06]">
+              <DropdownMenuSubTrigger className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-foreground transition-colors duration-150 focus:bg-foreground/[0.06] focus:text-foreground data-[state=open]:bg-foreground/[0.06]">
                 <OrgAvatar name={orgName} logo={activeOrg?.logo} className="size-7 text-[11px]" />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-medium text-foreground">{orgName}</span>
                   <span className="block text-[11px] text-muted-foreground">Switch workspace</span>
                 </span>
-                <span className="shrink-0 rounded-md border border-border bg-white/[0.03] px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                <span className="shrink-0 rounded-md border border-border bg-foreground/[0.03] px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
                   {orgKind}
                 </span>
               </DropdownMenuSubTrigger>
@@ -243,7 +243,7 @@ export function WorkspaceMenu({
                     <DropdownMenuItem
                       key={o.name}
                       onSelect={() => !isCurrent && switchOrg(o.name)}
-                      className="cursor-pointer gap-2 rounded-md px-2 py-2 text-sm text-foreground transition-colors duration-150 focus:bg-white/[0.06] focus:text-foreground"
+                      className="cursor-pointer gap-2 rounded-md px-2 py-2 text-sm text-foreground transition-colors duration-150 focus:bg-foreground/[0.06] focus:text-foreground"
                     >
                       <OrgAvatar name={orgDisplayName(orgs, o.name)} logo={o.logo} />
                       <span className="min-w-0 flex-1 truncate">{orgDisplayName(orgs, o.name)}</span>
@@ -260,7 +260,7 @@ export function WorkspaceMenu({
                 <span className="block truncate text-sm font-medium text-foreground">{orgName}</span>
                 <span className="block text-[11px] text-muted-foreground">Workspace</span>
               </span>
-              <span className="shrink-0 rounded-md border border-border bg-white/[0.03] px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+              <span className="shrink-0 rounded-md border border-border bg-foreground/[0.03] px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
                 {orgKind}
               </span>
             </div>
@@ -271,7 +271,7 @@ export function WorkspaceMenu({
           <DropdownMenuItem asChild className="mx-0.5 mt-1 rounded-lg p-0 focus:bg-transparent">
             <Link
               href="/billing"
-              className="flex w-full flex-col gap-2 rounded-lg border border-border bg-white/[0.03] px-3 py-2.5 transition-colors hover:border-border hover:bg-white/[0.05] focus-visible:border-border"
+              className="flex w-full flex-col gap-2 rounded-lg border border-border bg-foreground/[0.03] px-3 py-2.5 transition-colors hover:border-border hover:bg-foreground/[0.05] focus-visible:border-border"
             >
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5 text-xs font-medium text-foreground">
@@ -289,7 +289,7 @@ export function WorkspaceMenu({
                 className="h-1.5 w-full overflow-hidden rounded-full bg-muted"
               >
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-white/70 to-white transition-[width] duration-700 ease-out motion-reduce:transition-none"
+                  className="h-full rounded-full bg-gradient-to-r from-[var(--brand-accent-muted)] to-[var(--brand-accent)] transition-[width] duration-700 ease-out motion-reduce:transition-none"
                   style={{ width: `${pct}%` }}
                 />
               </div>
@@ -365,7 +365,7 @@ export function WorkspaceMenu({
                 if (!renaming) void submitRename();
               }
             }}
-            className="!border-border !bg-white/[0.04] !text-foreground selection:!bg-white/20"
+            className="!border-border !bg-foreground/[0.04] !text-foreground selection:bg-[var(--brand-accent-soft)]"
           />
           <div className="flex justify-end gap-2">
             <Button

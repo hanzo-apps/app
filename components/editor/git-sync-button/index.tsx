@@ -318,7 +318,7 @@ export function GitSyncButton({
           variant="outline"
           size="sm"
           disabled={disabled}
-          className="!h-7 gap-1.5 px-2.5 text-xs !border-border !bg-white/[0.04] !text-foreground transition-colors duration-150 hover:!bg-muted"
+          className="!h-7 gap-1.5 px-2.5 text-xs !border-border !bg-foreground/[0.04] !text-foreground transition-colors duration-150 hover:!bg-muted"
           title="Push your project to Hanzo git, GitHub, or GitLab"
         >
           <UploadCloud className="size-3.5" />
@@ -345,7 +345,7 @@ export function GitSyncButton({
 
         {needsConnect ? (
           <div className="flex flex-col items-center px-6 py-8 text-center">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-border bg-white/[0.04]">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-border bg-foreground/[0.04]">
               <ProviderIcon className="h-6 w-6 text-foreground" />
             </div>
             <p className="text-sm font-medium">Connect {providerName}</p>
@@ -377,7 +377,7 @@ export function GitSyncButton({
               {result.created ? "Repository created" : "Commit pushed"}
             </p>
 
-            <div className="mt-3 rounded-xl border border-border bg-white/[0.02] p-3 text-left">
+            <div className="mt-3 rounded-xl border border-border bg-foreground/[0.02] p-3 text-left">
               <div className="flex items-center gap-2">
                 {(() => {
                   const I = providerMeta(result.provider || provider).Icon;
@@ -451,7 +451,7 @@ export function GitSyncButton({
           </div>
         ) : linked && !showForm ? (
           <div className="p-5">
-            <div className="rounded-xl border border-border bg-white/[0.02] p-3.5">
+            <div className="rounded-xl border border-border bg-foreground/[0.02] p-3.5">
               <div className="mb-1.5 flex items-center gap-1.5 text-[11px] uppercase tracking-wide text-muted-foreground">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                 Linked repository
@@ -577,7 +577,7 @@ export function GitSyncButton({
               }}
             />
 
-            <label className="flex cursor-pointer items-center justify-between rounded-lg border border-border bg-white/[0.02] px-3 py-2.5">
+            <label className="flex cursor-pointer items-center justify-between rounded-lg border border-border bg-foreground/[0.02] px-3 py-2.5">
               <span className="flex items-center gap-2 text-sm text-foreground">
                 <Lock className="h-3.5 w-3.5 text-muted-foreground" />
                 Private repository
