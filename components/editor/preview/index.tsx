@@ -9,7 +9,47 @@ import { useThrottleFn } from "react-use";
 import { cn } from "@/lib/utils";
 import { GridPattern } from "@/components/magic-ui/grid-pattern";
 import { htmlTagToText } from "@/lib/html-tag-to-text";
+import { isTheSameHtml } from "@/lib/compare-html-diff";
 import { Page } from "@/types";
+
+/**
+ * The idle/building overlay — the preview is NEVER a flat black rect. It covers
+ * the (theme-agnostic) idle iframe with a THEME-AWARE canvas: while building, a
+ * skeleton → wireframe pulse; when idle, the empty-state invite + a blinking
+ * cursor. Both sit on the subtle `.preview-stage` grid, correct in light + dark.
+ */
+function PreviewOverlay({ building }: { building: boolean }) {
+  return (
+    <div className="preview-stage pointer-events-none absolute inset-0 z-[5] flex items-center justify-center bg-background">
+      {building ? (
+        <div className="w-full max-w-2xl px-8">
+          <div className="mx-auto flex flex-col gap-3">
+            <div className="h-8 w-1/3 rounded-md bg-foreground/[0.06] animate-pulse" />
+            <div className="h-28 w-full rounded-lg bg-foreground/[0.05] animate-pulse [animation-delay:120ms]" />
+            <div className="grid grid-cols-3 gap-3">
+              <div className="h-20 rounded-lg bg-foreground/[0.05] animate-pulse [animation-delay:200ms]" />
+              <div className="h-20 rounded-lg bg-foreground/[0.05] animate-pulse [animation-delay:280ms]" />
+              <div className="h-20 rounded-lg bg-foreground/[0.05] animate-pulse [animation-delay:360ms]" />
+            </div>
+            <div className="h-4 w-2/3 rounded bg-foreground/[0.06] animate-pulse [animation-delay:440ms]" />
+            <div className="h-4 w-1/2 rounded bg-foreground/[0.06] animate-pulse [animation-delay:520ms]" />
+          </div>
+          <p className="mt-6 text-center text-[13px]">
+            <span className="thread-shimmer-text">Building your app…</span>
+          </p>
+        </div>
+      ) : (
+        <div className="max-w-sm px-8 text-center">
+          <p className="text-[15px] font-semibold text-foreground">Describe your idea.</p>
+          <p className="mt-1.5 text-[13px] text-muted-foreground">
+            <span aria-hidden className="mr-1">↓</span>Watch Hanzo build it live
+            <span className="ml-0.5 inline-block h-4 w-[2px] translate-y-[3px] animate-pulse bg-foreground align-middle motion-reduce:animate-none" />
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export const Preview = ({
   html,
@@ -243,9 +283,13 @@ export const Preview = ({
     }
   };
 
+  // Idle default vs real generated content — drives the themed overlay so the
+  // preview is never a flat black rect (the default iframe is dark by design).
+  const isEmpty = useMemo(() => isTheSameHtml(html), [html]);
+
   const frameClass = (visible: boolean) =>
     classNames(
-      "absolute inset-0 w-full select-none bg-black h-full transition-opacity ease-out",
+      "absolute inset-0 w-full select-none bg-background h-full transition-opacity ease-out",
       {
         "opacity-100": visible,
         "opacity-0": !visible,
@@ -263,7 +307,7 @@ export const Preview = ({
       className={classNames(
         // No border/padding seam here — the raised preview CARD (in the editor
         // shell) owns the frame; this just fills it edge-to-edge.
-        "group/preview w-full h-full relative z-0 flex items-center justify-center bg-black",
+        "group/preview w-full h-full relative z-0 flex items-center justify-center bg-background",
         {
           "max-lg:h-0": currentTab === "chat" && !isFullscreen,
           "max-lg:h-full": currentTab === "preview",
@@ -290,7 +334,7 @@ export const Preview = ({
         aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
         aria-pressed={isFullscreen}
         className={classNames(
-          "absolute right-3 z-20 inline-flex size-9 items-center justify-center rounded-lg bg-card/80 text-muted-foreground ring-1 ring-white/10 backdrop-blur transition-all hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50",
+          "absolute right-3 z-20 inline-flex size-9 items-center justify-center rounded-lg bg-card/80 text-muted-foreground ring-1 ring-border backdrop-blur transition-all hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           // Fade in on hover of the surface (always visible while fullscreen).
           isFullscreen
             ? "top-3 opacity-100"
@@ -354,6 +398,10 @@ export const Preview = ({
           onLoad={() => handleFrameLoad("b")}
         />
       </div>
+      {/* Themed idle/building canvas over the (dark-by-design) default iframe —
+          only while nothing real has been generated yet. Real streamed/settled
+          HTML clears `isEmpty`, revealing the iframe underneath. */}
+      {isEmpty && <PreviewOverlay building={isAiWorking} />}
     </div>
   );
 };
