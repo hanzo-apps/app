@@ -17,7 +17,20 @@
  *
  * PURE. Extend the allowlist for a new brand via `EDIT_ALLOWED_ORIGIN_SUFFIXES`
  * (comma-separated host suffixes) — no code change.
+ *
+ * ⚠ TENANT NAMESPACES ARE NOT US. `<slug>.hanzo.app` is the ONE serve for
+ * user-published sites, so a subdomain there is ATTACKER-AUTHORED content, not a
+ * Hanzo origin. Suffix-matching `hanzo.app` handed every published tenant site a
+ * credentialed, readable channel to `/v1/edit` on the visitor's first-party
+ * cookie — i.e. any site a superadmin visited could act as them. The apex is us;
+ * its subdomains are not. That distinction is enforced FIRST, below.
  */
+
+/**
+ * Namespaces that serve USER-PUBLISHED content. A subdomain of one of these is
+ * never a Hanzo origin, no matter what else matches. Checked before everything.
+ */
+const TENANT_SUFFIXES = ['hanzo.app'];
 
 /** Host suffixes trusted to send the first-party cookie credentialed. */
 const DEFAULT_SUFFIXES = [
@@ -31,15 +44,24 @@ const DEFAULT_SUFFIXES = [
   'zoo.ngo',
   'zoo.network',
   'pars.network',
-  'localhost',
 ];
+
+/** Dev-only origins — never credentialed in production. */
+const DEV_SUFFIXES = ['localhost'];
 
 function allowedSuffixes(): string[] {
   const extra = (process.env.EDIT_ALLOWED_ORIGIN_SUFFIXES || '')
     .split(',')
     .map((s) => s.trim().toLowerCase())
     .filter(Boolean);
-  return [...DEFAULT_SUFFIXES, ...extra];
+  const dev = process.env.NODE_ENV === 'production' ? [] : DEV_SUFFIXES;
+  return [...DEFAULT_SUFFIXES, ...dev, ...extra];
+}
+
+/** True when the host is a SUBDOMAIN of a tenant-serving namespace (the apex
+ *  itself is ours; `<slug>.hanzo.app` is somebody's published site). */
+export function isTenantOrigin(host: string): boolean {
+  return TENANT_SUFFIXES.some((s) => host !== s && host.endsWith('.' + s));
 }
 
 /** Is `origin` a Hanzo-family origin (exact apex or a subdomain)? */
@@ -51,6 +73,9 @@ export function isAllowedOrigin(origin: string | null): boolean {
   } catch {
     return false;
   }
+  // Tenant content first, and it is absolute: a published site can never be
+  // credentialed, even if a brand suffix would otherwise match it.
+  if (isTenantOrigin(host)) return false;
   return allowedSuffixes().some((s) => host === s || host.endsWith('.' + s));
 }
 
