@@ -374,11 +374,19 @@
   var css =
     ':host{all:initial}' +
     '*{box-sizing:border-box;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}' +
-    '.fab{position:fixed;right:16px;bottom:16px;z-index:2147483000;display:inline-flex;align-items:center;gap:8px;' +
-    'padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:#111;color:#fff;' +
-    'font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.28);line-height:1}' +
-    '.fab:hover{background:#1c1c1c}' +
-    '.fab svg{width:15px;height:15px}' +
+    // The trigger is the ensō mark alone — one affordance for every AI action
+    // on the page (ask, edit, suggest). It glows rather than grows, so it never
+    // reflows content or competes with the page's own controls.
+    '.fab{position:fixed;right:16px;bottom:16px;z-index:2147483000;display:inline-flex;' +
+    'align-items:center;justify-content:center;width:44px;height:44px;padding:0;' +
+    'border-radius:999px;border:1px solid rgba(255,255,255,.16);background:#111;color:#fff;' +
+    'cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.28);line-height:0;' +
+    'transition:box-shadow .2s ease,border-color .2s ease,transform .2s ease}' +
+    '.fab:hover,.fab:focus-visible{border-color:rgba(255,255,255,.42);' +
+    'box-shadow:0 0 0 1px rgba(255,255,255,.14),0 0 18px 2px rgba(255,255,255,.22),0 6px 24px rgba(0,0,0,.34)}' +
+    '.fab:active{transform:scale(.96)}' +
+    '.fab svg{width:20px;height:20px;display:block}' +
+    '@media (prefers-reduced-motion:reduce){.fab{transition:none}}' +
     '.panel{position:fixed;right:16px;bottom:16px;z-index:2147483001;width:360px;max-width:92vw;background:#0e0e0e;' +
     'color:#f4f4f5;border:1px solid rgba(255,255,255,.14);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.5);' +
     'overflow:hidden;display:none}' +
@@ -454,10 +462,16 @@
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
     '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
 
+  // The ensō — Hanzo's AI mark, identical geometry to the one on /enso.
+  var ENSO =
+    '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">' +
+    '<circle cx="50" cy="50" r="35" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round"/></svg>';
+
   var fab = document.createElement('button');
   fab.className = 'fab';
-  fab.setAttribute('aria-label', 'Edit or improve this page');
-  fab.innerHTML = PENCIL + '<span>Edit this page</span>';
+  fab.setAttribute('aria-label', 'Ask or edit this page');
+  fab.setAttribute('title', 'Ask or edit this page');
+  fab.innerHTML = ENSO;
   root.appendChild(fab);
 
   var panel = document.createElement('div');
