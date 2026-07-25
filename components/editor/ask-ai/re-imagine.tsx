@@ -72,30 +72,30 @@ export function ReImagine({
           side="top"
           align="start"
           sideOffset={8}
-          className="!rounded-2xl !p-0 !bg-white !border-neutral-100 min-w-xs text-center overflow-hidden"
+          className="!rounded-2xl !p-0 bg-card text-foreground border-border min-w-xs text-center overflow-hidden"
         >
-          <header className="bg-neutral-50 p-6 border-b border-neutral-200/60">
+          <header className="bg-muted/40 p-6 border-b border-border">
             <div className="flex items-center justify-center -space-x-4 mb-3">
-              <div className="size-9 rounded-full bg-pink-200 shadow-2xs flex items-center justify-center text-xl opacity-50">
+              <div className="size-9 rounded-full bg-muted border border-border shadow-2xs flex items-center justify-center text-xl">
                 🎨
               </div>
-              <div className="size-11 rounded-full bg-neutral-200 shadow-2xl flex items-center justify-center text-2xl z-2">
+              <div className="size-11 rounded-full bg-secondary border border-border shadow-lg flex items-center justify-center text-2xl z-2">
                 🥳
               </div>
-              <div className="size-9 rounded-full bg-neutral-300 shadow-2xs flex items-center justify-center text-xl opacity-50">
+              <div className="size-9 rounded-full bg-muted border border-border shadow-2xs flex items-center justify-center text-xl">
                 💎
               </div>
             </div>
-            <p className="text-xl font-medium text-neutral-950">
+            <p className="text-xl font-medium text-foreground">
               Redesign your Site!
             </p>
-            <p className="text-sm text-neutral-500 mt-1.5">
+            <p className="text-sm text-muted-foreground mt-1.5">
               Try our new Redesign feature to give your site a fresh look.
             </p>
           </header>
           <main className="space-y-4 p-6">
             <div>
-              <p className="text-sm text-neutral-700 mb-2">
+              <p className="text-sm text-muted-foreground mb-2">
                 Enter your website URL to get started:
               </p>
               <Input
@@ -115,15 +115,15 @@ export function ReImagine({
                   }
                   setUrl(inputUrl);
                 }}
-                className="!bg-white !border-neutral-300 !text-neutral-800 !placeholder:text-neutral-400 selection:!bg-neutral-200"
+                className="text-left"
               />
             </div>
             <div>
-              <p className="text-sm text-neutral-700 mb-2">
+              <p className="text-sm text-muted-foreground mb-2">
                 Then, let&apos;s redesign it!
               </p>
               <Button
-                className="relative w-full bg-neutral-950 text-neutral-300 hover:brightness-110"
+                className="relative w-full"
                 onClick={handleClick}
               >
                 {isLoading ? (

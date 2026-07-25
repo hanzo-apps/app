@@ -29,27 +29,27 @@ export const LoginModal = ({
   };
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg lg:!p-8 !rounded-3xl !bg-white !border-neutral-100">
+      <DialogContent className="sm:max-w-lg lg:!p-8 !rounded-xl bg-card text-foreground border-border">
         <DialogTitle className="hidden" />
         <main className="flex flex-col items-start text-left relative pt-2">
           <div className="flex items-center justify-start -space-x-4 mb-5">
-            <div className="size-14 rounded-full bg-pink-200 shadow-2xs flex items-center justify-center text-3xl opacity-50">
+            <div className="size-14 rounded-full bg-muted border border-border shadow-2xs flex items-center justify-center text-3xl">
               💪
             </div>
-            <div className="size-16 rounded-full bg-amber-200 shadow-2xl flex items-center justify-center text-4xl z-2">
+            <div className="size-16 rounded-full bg-secondary border border-border shadow-lg flex items-center justify-center text-4xl z-2">
               😎
             </div>
-            <div className="size-14 rounded-full bg-sky-200 shadow-2xs flex items-center justify-center text-3xl opacity-50">
+            <div className="size-14 rounded-full bg-muted border border-border shadow-2xs flex items-center justify-center text-3xl">
               🙌
             </div>
           </div>
-          <p className="text-2xl font-medium text-neutral-950">{title}</p>
-          <p className="text-neutral-500 text-base mt-2 max-w-sm">
+          <p className="text-2xl font-medium text-foreground">{title}</p>
+          <p className="text-muted-foreground text-base mt-2 max-w-sm">
             {description}
           </p>
           <Button
             size="lg"
-            className="w-full !text-base !h-11 mt-8 bg-neutral-950 text-neutral-300 hover:brightness-110"
+            className="w-full !text-base !h-11 mt-8"
             onClick={handleClick}
           >
             Log In to Continue

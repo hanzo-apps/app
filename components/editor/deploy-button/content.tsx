@@ -181,7 +181,7 @@ export const DeployButtonContent = ({
           </p>
         </header>
         <main className="space-y-3 bg-card p-4">
-          <div className="flex items-center gap-2 rounded-lg border border-border bg-white/[0.04] px-3 py-2">
+          <div className="flex items-center gap-2 rounded-lg border border-border bg-foreground/[0.04] px-3 py-2">
             <span className="flex-1 truncate font-mono text-sm text-foreground">{host}</span>
             <button
               type="button"
@@ -225,7 +225,7 @@ export const DeployButtonContent = ({
       {/* Black chrome to match the builder — compact header. */}
       <header className="border-b border-border bg-card p-4">
         <div className="mb-2 flex items-center justify-center">
-          <div className="flex size-9 items-center justify-center rounded-lg border border-border bg-white/[0.06]">
+          <div className="flex size-9 items-center justify-center rounded-lg border border-border bg-foreground/[0.06]">
             <Image src={SpaceIcon} alt="" className="size-5" />
           </div>
         </div>
@@ -245,7 +245,7 @@ export const DeployButtonContent = ({
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setConfig({ ...config, title: e.target.value })
             }
-            className="!border-border !bg-white/[0.04] !text-foreground !placeholder:text-muted-foreground selection:!bg-white/20"
+            className="!border-border !bg-foreground/[0.04] !text-foreground !placeholder:text-muted-foreground selection:bg-[var(--brand-accent-soft)]"
           />
         </div>
         <Button

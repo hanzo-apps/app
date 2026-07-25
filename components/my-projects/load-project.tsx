@@ -129,31 +129,31 @@ export const LoadProject = ({
               </Button>
             </div>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-md !p-0 !rounded-3xl !bg-white !border-neutral-100 overflow-hidden text-center">
+          <DialogContent className="sm:max-w-md !p-0 !rounded-xl bg-card text-foreground border-border overflow-hidden text-center">
             <DialogTitle className="hidden" />
-            <header className="bg-neutral-50 p-6 border-b border-neutral-200/60">
+            <header className="bg-muted/40 p-6 border-b border-border">
               <div className="flex items-center justify-center -space-x-4 mb-3">
-                <div className="size-11 rounded-full bg-pink-200 shadow-2xs flex items-center justify-center text-2xl opacity-50">
+                <div className="size-11 rounded-full bg-muted border border-border shadow-2xs flex items-center justify-center text-2xl">
                   🎨
                 </div>
-                <div className="size-13 rounded-full bg-amber-200 shadow-2xl flex items-center justify-center text-3xl z-2">
+                <div className="size-13 rounded-full bg-secondary border border-border shadow-lg flex items-center justify-center text-3xl z-2">
                   🥳
                 </div>
-                <div className="size-11 rounded-full bg-sky-200 shadow-2xs flex items-center justify-center text-2xl opacity-50">
+                <div className="size-11 rounded-full bg-muted border border-border shadow-2xs flex items-center justify-center text-2xl">
                   💎
                 </div>
               </div>
-              <p className="text-2xl font-medium text-neutral-950">
+              <p className="text-2xl font-medium text-foreground">
                 Import a Project
               </p>
-              <p className="text-base text-neutral-500 mt-1.5">
+              <p className="text-base text-muted-foreground mt-1.5">
                 Enter the URL of your Hanzo project to import an existing
                 project.
               </p>
             </header>
             <main className="space-y-4 px-9 pb-9 pt-2">
               <div>
-                <p className="text-sm text-neutral-700 mb-2">
+                <p className="text-sm text-muted-foreground mb-2">
                   Enter your Hanzo project URL
                 </p>
                 <Input
@@ -173,15 +173,15 @@ export const LoadProject = ({
                     }
                     setUrl(inputUrl);
                   }}
-                  className="!bg-white !border-neutral-300 !text-neutral-800 !placeholder:text-neutral-400 selection:!bg-blue-100"
+                  className="text-left"
                 />
               </div>
               <div>
-                <p className="text-sm text-neutral-700 mb-2">
+                <p className="text-sm text-muted-foreground mb-2">
                   Then, let&apos;s import it!
                 </p>
                 <Button
-                  className="relative w-full bg-neutral-950 text-neutral-300 hover:brightness-110"
+                  className="relative w-full"
                   onClick={handleClick}
                 >
                   {isLoading ? (
