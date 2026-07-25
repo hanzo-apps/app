@@ -35,12 +35,10 @@ import {
   Copy,
   Gift,
 } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@hanzo/ui';
+// v8 product menu — the ONE portal-theme-safe menu (rides @hanzo/gui's Portal, so
+// it themes with next-themes via the Phase-3 GuiThemeBridge). Declarative `items`
+// through the shared MenuItemSpec — pixel-identical to ContextMenu/SelectMenu.
+import { DropdownMenu } from '@hanzo/ui8/product';
 import { cn } from '@/lib/utils';
 import { OrgProvider } from '@/lib/org/client';
 import { OrgSwitcher } from '@/components/org-switcher';
@@ -383,26 +381,30 @@ function SidebarContent({
                 <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
                   Projects
                 </span>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
+                <DropdownMenu
+                  trigger={
                     <button
                       aria-label="Project actions"
                       className="rounded p-0.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                     >
                       <MoreHorizontal className="h-3.5 w-3.5" />
                     </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => router.push('/dev')}>
-                      <Plus className="mr-2 h-4 w-4" />
-                      Create project
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setCreatingFolder(true)}>
-                      <FolderPlus className="mr-2 h-4 w-4" />
-                      Create folder
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                  }
+                  items={[
+                    {
+                      key: 'create-project',
+                      label: 'Create project',
+                      icon: <Plus size={16} />,
+                      onSelect: () => router.push('/dev'),
+                    },
+                    {
+                      key: 'create-folder',
+                      label: 'Create folder',
+                      icon: <FolderPlus size={16} />,
+                      onSelect: () => setCreatingFolder(true),
+                    },
+                  ]}
+                />
               </div>
             )}
             {PROJECT_ITEMS.map(renderNavButton)}
