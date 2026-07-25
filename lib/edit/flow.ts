@@ -197,7 +197,7 @@ export async function runEdit(provider: GitProvider, input: RunEditInput): Promi
   // drift, no TOCTOU between review and commit), optimistic-locked to the sha the
   // proposal was computed against — a file that moved since review fails the
   // commit rather than clobbering the newer content. The route gates this on
-  // isGlobalAdmin; `path`/`repo` are already validated + scoped.
+  // isAdmin; `path`/`repo` are already validated + scoped.
   if (input.direct && input.reviewed !== undefined) {
     const { commitSha } = await provider.commitFile(
       repo,
