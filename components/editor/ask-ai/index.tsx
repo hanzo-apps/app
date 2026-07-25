@@ -944,7 +944,7 @@ export function AskAI({
       )}
 
       <div
-        className="relative bg-card border border-border rounded-2xl ring-2 focus-within:ring-ring/25 focus-within:border-ring ring-transparent z-10 w-full group"
+        className="relative bg-card border border-border rounded-xl ring-2 focus-within:ring-ring/25 focus-within:border-ring ring-transparent z-10 w-full group"
         onDragOver={handleDragOver}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
@@ -1190,9 +1190,9 @@ export function AskAI({
                   }
                   onClick={() => setMode(m)}
                   className={classNames(
-                    "rounded-full px-2.5 py-1 font-medium capitalize transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    "rounded-full px-2.5 py-1 font-medium capitalize transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     mode === m
-                      ? "bg-primary text-primary-foreground"
+                      ? "bg-[var(--brand-accent)] text-white"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
