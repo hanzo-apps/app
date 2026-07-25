@@ -1,4 +1,5 @@
 import { Children, ReactNode, useState } from "react";
+import Link from "next/link";
 import {
   ChevronDown,
   Code2,
@@ -6,18 +7,19 @@ import {
   ExternalLink,
   History,
   MessageCircleCode,
+  Monitor,
   PanelLeft,
   PanelLeftClose,
   RefreshCcw,
+  Smartphone,
 } from "lucide-react";
-import { FaLaptopCode } from "react-icons/fa6";
-import { FaMobileAlt } from "react-icons/fa";
 
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@hanzo/ui";
+import { HanzoLogo } from "@/components/HanzoLogo";
 import { PagePanel } from "@/components/editor/page-navigator";
 import { WorkspaceMenu } from "@/components/editor/workspace-menu";
 import type { Page, Project } from "@/types";
@@ -34,8 +36,8 @@ const TABS = [
 ] as const;
 
 const DEVICES = [
-  { name: "desktop", icon: FaLaptopCode },
-  { name: "mobile", icon: FaMobileAlt },
+  { name: "desktop", icon: Monitor },
+  { name: "mobile", icon: Smartphone },
 ] as const;
 
 /**
@@ -116,6 +118,15 @@ export function Header({
       {/* LEFT — the workspace menu (identity/home anchor) + the desktop sidebar
           toggle. Everything about who/where you are lives in the menu. */}
       <div className="flex shrink-0 items-center gap-1.5">
+        {/* The ONE Hanzo block-H (mark from @hanzo/logo MARK_PATHS, via the
+            shared HanzoLogo). Home anchor, top-left — the IDE's brand corner. */}
+        <Link
+          href="/"
+          aria-label="Hanzo home"
+          className="mr-0.5 flex size-8 items-center justify-center rounded-lg text-foreground transition-colors duration-150 hover:bg-foreground/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <HanzoLogo className="size-5" />
+        </Link>
         <div className="min-w-0">
           <WorkspaceMenu project={project} onRenamed={onRenamed} />
         </div>
@@ -212,7 +223,7 @@ export function Header({
                       : "text-muted-foreground hover:bg-foreground/[0.08] hover:text-foreground"
                   )}
                 >
-                  <d.icon />
+                  <d.icon className="size-4" />
                 </button>
               );
             })}

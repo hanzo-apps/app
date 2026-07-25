@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import classNames from "classnames";
 import { Check, ChevronDown } from "lucide-react";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
@@ -126,57 +126,49 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
     );
   }
 
-  // The plan card is expanded live while designing, then settles collapsed with
-  // a click-to-expand affordance once the build takes over.
-  const [userOpen, setUserOpen] = useState(false);
-  const planOpen = planning || userOpen;
+  // Assistant build turn — collapsible sections (Plan ▼ / Generated files ▼), the
+  // settled summary, or an error line. Reasoning collapses so the thread reads like
+  // an IDE activity log, not a wall of text.
   const hasPlanBody = (plan?.trim().length ?? 0) > 0;
   const showPlanCard = plan !== undefined && (planning || hasPlanBody);
+  const files = activity ?? [];
 
   return (
     <div className="flex w-full flex-col items-start gap-2">
       {showPlanCard && (
-        <div className="w-full overflow-hidden rounded-lg border border-border bg-muted/20">
-          <button
-            type="button"
-            onClick={() => setUserOpen((o) => !o)}
-            className="flex w-full items-center justify-between px-3 py-1.5 text-left transition-colors duration-150 hover:bg-accent"
-          >
-            <span
-              className={classNames(
-                "text-[13px] font-medium",
-                planning ? "thread-shimmer-text" : "text-muted-foreground"
-              )}
-            >
-              {planning ? "Designing…" : "Plan"}
-            </span>
-            <ChevronDown
-              className={classNames(
-                "size-3.5 text-muted-foreground transition-transform duration-200",
-                planOpen && "rotate-180"
-              )}
-            />
-          </button>
-          {planOpen &&
-            (hasPlanBody ? (
-              <div className="max-h-[220px] overflow-y-auto border-t border-border/70 px-3.5 py-2.5 text-[12.5px] leading-relaxed text-muted-foreground whitespace-pre-line">
-                {plan}
-              </div>
-            ) : planning ? (
-              <div className="border-t border-border/70 px-3.5 py-2.5 text-[12.5px] text-muted-foreground">
-                Analyzing your request…
-              </div>
-            ) : null)}
-        </div>
+        <CollapsibleSection
+          title={planning ? "Designing…" : "Plan"}
+          defaultOpen={planning}
+          live={planning}
+        >
+          {hasPlanBody ? (
+            <div className="max-h-[220px] overflow-y-auto whitespace-pre-line text-[12.5px] leading-relaxed text-muted-foreground">
+              {plan}
+            </div>
+          ) : (
+            <div className="text-[12.5px] text-muted-foreground">Analyzing your request…</div>
+          )}
+        </CollapsibleSection>
       )}
 
-      {building && <ActivityList labels={activity ?? []} />}
+      {building && (
+        <CollapsibleSection title="Generating" defaultOpen live>
+          <ActivityItems labels={files} />
+        </CollapsibleSection>
+      )}
 
       {done && (
-        <div className="flex items-center gap-1.5 text-[12px] text-muted-foreground">
-          <Check className="size-3.5 text-[var(--brand-accent-muted)]" />
-          <span>{text || "Done"}</span>
-        </div>
+        <>
+          {files.length > 0 && (
+            <CollapsibleSection title="Generated files" count={files.length}>
+              <ActivityItems labels={files} settled />
+            </CollapsibleSection>
+          )}
+          <div className="flex items-center gap-1.5 text-[12px] text-muted-foreground">
+            <Check className="size-3.5 text-[var(--brand-accent-muted)]" />
+            <span>{text || "Done"}</span>
+          </div>
+        </>
       )}
 
       {error && (
@@ -188,33 +180,80 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
   );
 }
 
-function ActivityList({ labels }: { labels: string[] }) {
+/**
+ * ONE collapsible section — the reusable Plan ▼ / Generated files ▼ / … disclosure.
+ * `live` shimmers the title and hides the count while a phase streams; otherwise it
+ * settles to a static header with an optional count. Reasoning + file lists collapse
+ * so the thread stays scannable.
+ */
+function CollapsibleSection({
+  title,
+  count,
+  defaultOpen = false,
+  live = false,
+  children,
+}: {
+  title: string;
+  count?: number;
+  defaultOpen?: boolean;
+  live?: boolean;
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="w-full overflow-hidden rounded-lg border border-border bg-muted/20">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="flex w-full items-center justify-between px-3 py-1.5 text-left transition-colors duration-150 hover:bg-accent"
+      >
+        <span
+          className={classNames(
+            "text-[13px] font-medium",
+            live ? "thread-shimmer-text" : "text-muted-foreground"
+          )}
+        >
+          {title}
+          {typeof count === "number" && !live ? (
+            <span className="text-muted-foreground/60"> · {count}</span>
+          ) : null}
+        </span>
+        <ChevronDown
+          className={classNames(
+            "size-3.5 text-muted-foreground transition-transform duration-200",
+            open && "rotate-180"
+          )}
+        />
+      </button>
+      {open && <div className="border-t border-border/70 px-3 py-2">{children}</div>}
+    </div>
+  );
+}
+
+function ActivityItems({ labels, settled = false }: { labels: string[]; settled?: boolean }) {
   const shown = labels.length ? labels : ["Working…"];
   return (
-    <div className="w-full rounded-lg border border-border bg-muted/20 px-3 py-2">
-      <ul className="flex flex-col gap-1">
-        {shown.map((label, i) => {
-          // The last line is the one currently in flight; earlier lines have
-          // already streamed in and are marked settled. Concise task states —
-          // ✓ settled, ● in-flight (a pulsing accent dot, never a spinner).
-          const active = i === shown.length - 1;
-          return (
-            <li key={`${i}-${label}`} className="flex items-center gap-2 text-[12px]">
-              {active ? (
-                <span className="relative flex size-2 shrink-0 items-center justify-center">
-                  <span className="absolute inline-flex size-2 animate-ping rounded-full bg-[var(--brand-accent)] opacity-60 motion-reduce:animate-none" />
-                  <span className="relative inline-flex size-1.5 rounded-full bg-[var(--brand-accent)]" />
-                </span>
-              ) : (
-                <Check className="size-3 shrink-0 text-muted-foreground" />
-              )}
-              <span className={active ? "thread-shimmer-text" : "text-muted-foreground"}>
-                {label}
+    <ul className="flex flex-col gap-1">
+      {shown.map((label, i) => {
+        // While live, the LAST line is in flight (a pulsing accent dot); once
+        // settled every line is a ✓. Concise task states — never a spinner.
+        const active = !settled && i === shown.length - 1;
+        return (
+          <li key={`${i}-${label}`} className="flex items-center gap-2 text-[12px]">
+            {active ? (
+              <span className="relative flex size-2 shrink-0 items-center justify-center">
+                <span className="absolute inline-flex size-2 animate-ping rounded-full bg-[var(--brand-accent)] opacity-60 motion-reduce:animate-none" />
+                <span className="relative inline-flex size-1.5 rounded-full bg-[var(--brand-accent)]" />
               </span>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
+            ) : (
+              <Check className="size-3 shrink-0 text-muted-foreground" />
+            )}
+            <span className={active ? "thread-shimmer-text" : "text-muted-foreground"}>
+              {label}
+            </span>
+          </li>
+        );
+      })}
+    </ul>
   );
 }

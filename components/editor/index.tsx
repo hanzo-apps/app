@@ -46,6 +46,7 @@ import { FileTree } from "./file-tree";
 import { HistoryPanel } from "./history";
 import { RevisionDetails, type DetailsRev } from "./history/details";
 import { ShareModal } from "./share-modal";
+import { StatusBar } from "./status-bar";
 import { VisualEditor } from "./visual-editor";
 import { OrgProvider } from "@/lib/org/client";
 import { Button, TooltipProvider } from "@hanzo/ui";
@@ -522,6 +523,13 @@ export const AppEditor = ({
           </div>
         </div>
       </main>
+
+      {/* Thin VS-Code-style status bar — real state on the one hairline surface. */}
+      <StatusBar
+        isAiWorking={isAiWorking}
+        project={project}
+        pageCount={pages.length}
+      />
 
       <ShareModal
         isOpen={isShareModalOpen}
