@@ -2,12 +2,13 @@
 
 // The ONE public/marketing header for hanzo.app — native, minimal, monochrome.
 //
-// One clear nav and nothing else: the brand goes home, a few real marketing
-// routes, and the Community showcase (/community). No cross-app switcher and no
-// "Meet Hanzo" product mega-menu — a logged-out visitor gets a single
-// unambiguous path in, matching hanzo.ai's true-black / Geist register. Auth
-// lives at the right: Sign In / Get started when signed out, the account menu
-// when signed in — both wired to the ONE IAM PKCE flow via useUser (the single auth facade).
+// One clear nav and nothing else: a few real marketing routes plus the Community
+// showcase (/community). The LOGO (top-left) is the cross-app switcher trigger
+// (AppSwitcher) — the ONE way to reach the Hanzo app grid; there is no separate
+// 9-dot button. A "Search ⌘K" pill (HeaderSearch) opens the existing command
+// palette (⌘K / `/`). Auth lives at the right: Sign In / Get started when signed
+// out, the account menu when signed in — all on the ONE IAM PKCE flow via
+// useUser (the single auth facade). Matches hanzo.ai's true-black / Geist register.
 
 import { useState } from "react";
 import Link from "next/link";
@@ -25,7 +26,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@hanzo/ui";
-import { HanzoLogo } from "@/components/HanzoLogo";
+import { AppSwitcher } from "@/components/layout/app-switcher";
+import { HeaderSearch } from "@/components/layout/header-search";
 import { useUser } from "@/hooks/useUser";
 import { cn } from "@/lib/utils";
 
@@ -119,12 +121,9 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4 sm:px-6">
-        {/* Brand → home */}
-        <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Hanzo home">
-          <HanzoLogo className="h-7 w-7 text-foreground" />
-          <span className="text-lg font-medium tracking-tight text-foreground">Hanzo</span>
-        </Link>
+      <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:gap-4 sm:px-6">
+        {/* Brand mark = the cross-app switcher trigger (the ONE way in) */}
+        <AppSwitcher currentApp="app" />
 
         {/* One nav */}
         <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
@@ -145,6 +144,9 @@ export default function Header() {
         </nav>
 
         <div className="flex-1" />
+
+        {/* Search — opens the command palette (⌘K / `/`). Always visible. */}
+        <HeaderSearch />
 
         {/* Auth (desktop) */}
         <div className="hidden items-center gap-2 md:flex">

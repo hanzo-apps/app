@@ -21,7 +21,7 @@
  * nav. The Sidebar's own nav items self-route (absolute canonical routes);
  * selecting a recent project opens it in the builder.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Menu, Search } from 'lucide-react';
 
@@ -29,6 +29,7 @@ import { Sidebar } from '@/components/sidebar';
 import { OrgProvider } from '@/lib/org/client';
 import { HanzoLogo } from '@/components/HanzoLogo';
 import { CommandPalette } from '@/components/command-palette';
+import { useCommandK } from '@/hooks/useCommandK';
 import type { Project } from '@/lib/vfs/types';
 import { builderLink } from '@/lib/api/projects';
 
@@ -43,17 +44,8 @@ export function AppShell({ children, currentView = 'templates' }: AppShellProps)
   const [mobileOpen, setMobileOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
 
-  // Global ⌘K / Ctrl+K opens the command palette (toggles).
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setPaletteOpen((o) => !o);
-      }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, []);
+  // ⌘K / `/` opens the command palette — the ONE shared keybinding.
+  useCommandK(useCallback(() => setPaletteOpen((o) => !o), []));
 
   return (
     // ONE org scope for the whole shell — the Sidebar's org switcher AND every
