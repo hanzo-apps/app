@@ -45,7 +45,7 @@ export interface OrgContext {
   /** STAFF — may edit any surface live, unmetered. */
   isAdmin: boolean;
   /** SUDO — may act across tenants (org switcher, direct commit). */
-  isPlatformSudo: boolean;
+  isSuperAdmin: boolean;
   /** True when the user has NO home org yet → must onboard before building. */
   needsOnboarding: boolean;
 }

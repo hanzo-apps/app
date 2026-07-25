@@ -12,12 +12,11 @@
 export const ADMIN_ORG = 'admin';
 
 /**
- * Brand/staff orgs. A member of one of these is Hanzo staff, not a customer.
- * (Subset of RESERVED_ORGS: reserved also covers IAM's system owners, which
- * are not people.)
+ * The BRAND orgs. Disjoint from {@link ADMIN_ORG} on purpose: `admin` is the
+ * sudo org (membership alone is the grant), these are the brands whose ORG
+ * ADMINS are staff. Two names, two memberships, no overlap.
  */
-export const STAFF_ORGS: ReadonlySet<string> = new Set([
-  'admin',
+export const BRAND_ORGS: ReadonlySet<string> = new Set([
   'hanzo',
   'lux',
   'zoo',
@@ -28,7 +27,7 @@ export const STAFF_ORGS: ReadonlySet<string> = new Set([
 export const STAFF_EMAIL_DOMAIN = 'hanzo.ai';
 
 /**
- * The claims an admin decision is made from. Callers MUST pass values that came
+ * The claims an authority decision is made from. Callers MUST pass values that came
  * from a VALIDATED IAM response — these predicates are pure and make no trust
  * decision of their own.
  */
@@ -42,28 +41,31 @@ export interface AdminClaims {
 }
 
 /**
- * STAFF — may edit any Hanzo surface live, without credit metering.
+ * SUPER ADMIN — a person in the `admin` org. That is the WHOLE definition:
+ * membership alone is the grant, no second claim and no role check, and nothing
+ * else is ever super admin. It is a SCOPE: may act across tenants (X-Org-Id
+ * override, direct-commit to a default branch).
  *
- * Three ways to be staff, in narrowing order of authority:
- *   1. a member of the `admin` org (platform sudo is staff by construction),
- *   2. an IAM org-admin of a brand/staff org,
- *   3. a verified @hanzo.ai address (IAM asserted it on the validated bearer).
- *
- * Deliberately NOT the same fact as {@link isPlatformSudo}: staff is a
- * CAPABILITY (edit), sudo is a SCOPE (act across tenants). Conflating them is
- * how a widened edit permission silently becomes cross-tenant access.
+ * The name and the rule are IAM's, verbatim: `object.User.IsSuperAdmin()` is
+ * `user.Owner == conf.AdminOrg`. Authority is DERIVED from org membership —
+ * there is no stored flag anywhere in the estate, so it cannot drift.
  */
-export function isStaffAdmin(c: AdminClaims): boolean {
-  const owner = (c.owner ?? '').trim();
-  if (owner === ADMIN_ORG) return true;
-  if (c.isAdmin === true && STAFF_ORGS.has(owner)) return true;
-  const email = (c.email ?? '').trim().toLowerCase();
-  return email.endsWith(`@${STAFF_EMAIL_DOMAIN}`);
+export function isSuperAdmin(c: AdminClaims): boolean {
+  return (c.owner ?? '').trim() === ADMIN_ORG;
 }
 
-/** SUDO — may act ACROSS tenants. Strictly narrower than {@link isStaffAdmin}. */
-export function isPlatformSudo(c: AdminClaims): boolean {
-  return (c.owner ?? '').trim() === ADMIN_ORG;
+/**
+ * STAFF — may edit any Hanzo surface live, unmetered. A CAPABILITY, not a
+ * scope, and deliberately a different fact from {@link isSuperAdmin}: conflating
+ * them is how widening who may EDIT silently widens who may cross tenants.
+ *
+ * Composed from three total predicates, widest grant last:
+ *   staff = super admin ∨ brand-org admin ∨ staff email
+ */
+export function isStaffAdmin(c: AdminClaims): boolean {
+  if (isSuperAdmin(c)) return true;
+  if (c.isAdmin === true && BRAND_ORGS.has((c.owner ?? '').trim())) return true;
+  return (c.email ?? '').trim().toLowerCase().endsWith(`@${STAFF_EMAIL_DOMAIN}`);
 }
 
 /** Brand/staff orgs + IAM system owners — never a customer org. */
