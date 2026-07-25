@@ -25,7 +25,7 @@ import type { NextRequest } from 'next/server';
 
 import { fetchIamUser, tokenMintedForApp } from '@/lib/auth';
 import { parseOwnerRepo } from '@/lib/git/sync';
-import { ADMIN_ORG } from '@/lib/org/policy';
+import { isPlatformSudo, isStaffAdmin } from '@/lib/org/policy';
 import type { Org, OrgContext } from '@/lib/org/types';
 
 const TOKEN_COOKIE = 'hanzo_token';
@@ -60,13 +60,18 @@ export interface OrgIdentity {
   /** Human display name for the home org, when the token carries it. */
   homeOrgDisplay: string;
   /**
-   * True for an `admin`-org member (may act across tenants). ONLY ever true on
-   * the VALIDATED path (IAM userinfo proved the bearer genuinely IAM-signed) —
-   * NEVER set from an unverified `decodeJwt`, so a forged unsigned JWT
-   * `{"owner":"admin","isGlobalAdmin":true}` can never drive a privileged
-   * decision here.
+   * STAFF — may edit any Hanzo surface live, unmetered. ONLY ever true on the
+   * VALIDATED path (IAM userinfo proved the bearer genuinely IAM-signed) —
+   * never from an unverified `decodeJwt`, so a forged unsigned JWT can never
+   * drive a privileged decision here.
    */
-  isGlobalAdmin: boolean;
+  isAdmin: boolean;
+  /**
+   * SUDO — may act ACROSS tenants (X-Org-Id override, direct-commit). A
+   * strictly narrower fact than {@link isAdmin}; kept separate so widening who
+   * may EDIT never widens who may cross tenant boundaries.
+   */
+  isPlatformSudo: boolean;
   /** True once the bearer was validated against IAM (userinfo). */
   validated: boolean;
 }
@@ -118,7 +123,7 @@ interface OwnerClaims {
   name?: string;
   email?: string;
   displayName?: string;
-  isGlobalAdmin?: boolean;
+  isAdmin?: boolean;
   exp?: number;
 }
 
@@ -171,7 +176,8 @@ export async function resolveOrgIdentity(
         email: '',
         homeOrg: 'local',
         homeOrgDisplay: 'Local Workspace',
-        isGlobalAdmin: false,
+        isAdmin: false,
+        isPlatformSudo: false,
         validated: false,
       };
     }
@@ -182,7 +188,7 @@ export async function resolveOrgIdentity(
 
   // Authoritative liveness check (revocation-aware). On the hot path (validate
   // off) we do NOT round-trip IAM — but then we also do NOT trust any privileged
-  // claim: isGlobalAdmin stays FALSE unless the bearer was validated here.
+  // claim: privilege stays FALSE unless the bearer was validated here.
   let sub = claims?.name || '';
   let email = claims?.email || '';
   let name = claims?.name || '';
@@ -199,7 +205,8 @@ export async function resolveOrgIdentity(
           email: '',
           homeOrg: 'local',
           homeOrgDisplay: 'Local Workspace',
-          isGlobalAdmin: false,
+          isAdmin: false,
+          isPlatformSudo: false,
           validated: false,
         };
       }
@@ -220,10 +227,19 @@ export async function resolveOrgIdentity(
   // validated token from a lower-trust Hanzo app can act as a normal user but
   // can NEVER elevate to a global-admin direct-commit. Fail-closed: a
   // non-matching / opaque token yields tokenMintedForApp=false ⇒ not admin.
-  const isGlobalAdmin =
-    validated &&
-    tokenMintedForApp(token) &&
-    (homeOrg === ADMIN_ORG || claims?.isGlobalAdmin === true);
+  // Privilege requires a VALIDATED bearer minted for hanzo.app's OWN IAM client
+  // (the confused-deputy guard): a validated token from a lower-trust Hanzo app
+  // can act as a normal user but can never elevate here. Fail-closed.
+  //
+  // Past defect: this ANDed `homeOrg === ADMIN_ORG` with a phantom
+  // `isGlobalAdmin` claim IAM never emits — and hanzo.app's IAM app lives in the
+  // `hanzo` org, so `admin` is unmintable for it. Both disjuncts were
+  // permanently false, i.e. NOBODY was ever admin and live edit could not open.
+  // The predicates now live in ONE pure place (lib/org/policy).
+  const privileged = validated && tokenMintedForApp(token);
+  const adminClaims = { owner: homeOrg, isAdmin: claims?.isAdmin, email };
+  const isAdmin = privileged && isStaffAdmin(adminClaims);
+  const sudo = privileged && isPlatformSudo(adminClaims);
 
   return {
     token,
@@ -232,7 +248,8 @@ export async function resolveOrgIdentity(
     email,
     homeOrg,
     homeOrgDisplay: claims?.displayName || homeOrg,
-    isGlobalAdmin,
+    isAdmin,
+    isPlatformSudo: sudo,
     validated,
   };
 }
@@ -259,7 +276,7 @@ export interface Scope {
 }
 
 export async function resolveScope(req: NextRequest): Promise<Scope | null> {
-  const base = await resolveOrgIdentity(req); // hot path: isGlobalAdmin=false
+  const base = await resolveOrgIdentity(req); // hot path: privilege=false
   if (!base) return null;
   const requested = req.headers.get('x-org-id')?.trim();
   if (!requested || requested === base.homeOrg) {
@@ -267,7 +284,7 @@ export async function resolveScope(req: NextRequest): Promise<Scope | null> {
   }
   // A cross-org request MUST be a validated global admin.
   const v = await resolveOrgIdentity(req, { validate: true });
-  if (v?.isGlobalAdmin) {
+  if (v?.isPlatformSudo) {
     return { token: v.token, homeOrg: v.homeOrg, org: requested, crossOrg: true };
   }
   // Forged / unauthorized cross-org header — ignore it, pin to owner.
@@ -278,11 +295,11 @@ export async function resolveScope(req: NextRequest): Promise<Scope | null> {
  * The effective org for an ALREADY-VALIDATED identity (used by routes that call
  * `resolveOrgIdentity({validate:true})` — /v1/orgs, /onboard, /v1/publish). A
  * cross-org `X-Org-Id` is honored only when the VALIDATED identity is a global
- * admin. NEVER call this with a non-validated identity (isGlobalAdmin is false
+ * sudo. NEVER call this with a non-validated identity (privilege is false
  * there, so it fail-closes to the home org anyway). Hot paths use `resolveScope`.
  */
 export function effectiveOrg(req: NextRequest, id: OrgIdentity): string {
-  if (id.validated && id.isGlobalAdmin) {
+  if (id.validated && id.isPlatformSudo) {
     const override = req.headers.get('x-org-id')?.trim();
     if (override) return override;
   }
@@ -311,7 +328,7 @@ export async function resolveOrgContext(req: NextRequest): Promise<OrgContext | 
   // A global admin scoped to a non-home org: surface that org too so the switch
   // is visible. (The full tenant list is an admin-only console concern; we do
   // NOT fabricate a membership list a normal user does not have.)
-  if (id.isGlobalAdmin && current && current !== id.homeOrg) {
+  if (id.isPlatformSudo && current && current !== id.homeOrg) {
     orgs.push({ name: current, displayName: current, isPersonal: false });
   }
 
@@ -319,7 +336,8 @@ export async function resolveOrgContext(req: NextRequest): Promise<OrgContext | 
     orgs,
     currentOrg: current,
     homeOrg: id.homeOrg,
-    isGlobalAdmin: id.isGlobalAdmin,
+    isAdmin: id.isAdmin,
+    isPlatformSudo: id.isPlatformSudo,
     needsOnboarding: !id.homeOrg,
   };
 }

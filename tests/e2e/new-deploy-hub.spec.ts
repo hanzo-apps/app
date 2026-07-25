@@ -19,7 +19,7 @@ const ORG_CTX = {
   orgs: [{ name: 'e2e', displayName: 'E2E', isPersonal: true }],
   currentOrg: 'e2e',
   homeOrg: 'e2e',
-  isGlobalAdmin: false,
+  isAdmin: false,
   needsOnboarding: false,
 };
 

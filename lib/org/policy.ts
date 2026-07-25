@@ -11,6 +11,61 @@
 /** The single global-admin org — an `admin` member may act across any tenant. */
 export const ADMIN_ORG = 'admin';
 
+/**
+ * Brand/staff orgs. A member of one of these is Hanzo staff, not a customer.
+ * (Subset of RESERVED_ORGS: reserved also covers IAM's system owners, which
+ * are not people.)
+ */
+export const STAFF_ORGS: ReadonlySet<string> = new Set([
+  'admin',
+  'hanzo',
+  'lux',
+  'zoo',
+  'pars',
+]);
+
+/** The staff email domain. */
+export const STAFF_EMAIL_DOMAIN = 'hanzo.ai';
+
+/**
+ * The claims an admin decision is made from. Callers MUST pass values that came
+ * from a VALIDATED IAM response — these predicates are pure and make no trust
+ * decision of their own.
+ */
+export interface AdminClaims {
+  /** IAM `owner` claim — the user's home org. */
+  owner?: string;
+  /** IAM `isAdmin` claim — org-admin within `owner`. */
+  isAdmin?: boolean;
+  /** Email as asserted by IAM userinfo (never a client-supplied value). */
+  email?: string;
+}
+
+/**
+ * STAFF — may edit any Hanzo surface live, without credit metering.
+ *
+ * Three ways to be staff, in narrowing order of authority:
+ *   1. a member of the `admin` org (platform sudo is staff by construction),
+ *   2. an IAM org-admin of a brand/staff org,
+ *   3. a verified @hanzo.ai address (IAM asserted it on the validated bearer).
+ *
+ * Deliberately NOT the same fact as {@link isPlatformSudo}: staff is a
+ * CAPABILITY (edit), sudo is a SCOPE (act across tenants). Conflating them is
+ * how a widened edit permission silently becomes cross-tenant access.
+ */
+export function isStaffAdmin(c: AdminClaims): boolean {
+  const owner = (c.owner ?? '').trim();
+  if (owner === ADMIN_ORG) return true;
+  if (c.isAdmin === true && STAFF_ORGS.has(owner)) return true;
+  const email = (c.email ?? '').trim().toLowerCase();
+  return email.endsWith(`@${STAFF_EMAIL_DOMAIN}`);
+}
+
+/** SUDO — may act ACROSS tenants. Strictly narrower than {@link isStaffAdmin}. */
+export function isPlatformSudo(c: AdminClaims): boolean {
+  return (c.owner ?? '').trim() === ADMIN_ORG;
+}
+
 /** Brand/staff orgs + IAM system owners — never a customer org. */
 export const RESERVED_ORGS: ReadonlySet<string> = new Set([
   // IAM system owners
