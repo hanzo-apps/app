@@ -8,6 +8,7 @@ import { ArrowUp, Crosshair, ImagePlus, X } from "lucide-react";
 import { FaStopCircle } from "react-icons/fa";
 
 import ProModal from "@/components/pro-modal";
+import { useUsageLimit } from "@/components/usage/usage-limit";
 import { Button } from "@hanzo/ui";
 import { useModels } from "@/lib/hooks/use-models";
 import { useRoutingDefaults } from "@/lib/hooks/use-routing-defaults";
@@ -123,6 +124,9 @@ export function AskAI({
   const [openProvider, setOpenProvider] = useState(false);
   const [providerError, setProviderError] = useState("");
   const [openProModal, setOpenProModal] = useState(false);
+  // The ONE "Need more usage?" modal — raised on an out-of-credit (402) signal
+  // from a metered generation instead of failing silently.
+  const { raise: raiseUsageLimit } = useUsageLimit();
   // Diff-patch (follow-up) updates are now simply the default — the toggle chip
   // + explainer popover were removed (no one toggled it). Always on.
   const [isFollowUp] = useState(true);
@@ -341,6 +345,8 @@ export function AskAI({
         return "Sign in to continue.";
       case "pro_required":
         return "Upgrade to continue.";
+      case "need_credits":
+        return "You're out of credits.";
       case "provider_required":
         return r.message || "Choose a provider to continue.";
       default:
@@ -634,6 +640,9 @@ export function AskAI({
         break;
       case "pro_required":
         setOpenProModal(true);
+        break;
+      case "need_credits":
+        raiseUsageLimit();
         break;
       case "api_error":
         toast.error(message || "An error occurred");
