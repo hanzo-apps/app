@@ -3,8 +3,8 @@
 /**
  * /connectors — the ONE org-scoped connectors surface for hanzo.app.
  *
- * "Connectors" is the product name; the data is the cloud `/v1/integrations`
- * org-connector store (via the same-origin `/v1/integrations` BFF), the SAME
+ * "Connectors" is the product name; the data is the cloud `/v1/connectors`
+ * org-connector store (via the same-origin `/v1/connectors` BFF), the SAME
  * store console.hanzo.ai renders — one contract, two surfaces. Connections are
  * scoped to the signed-in user's org (derived server-side from the bearer owner),
  * so this page manages the connectors for whichever workspace you're in.
@@ -46,7 +46,8 @@ import { Button, Input, Badge } from "@hanzo/ui";
 import { toast } from "@hanzo/ui";
 
 import { useUser } from "@/hooks/useUser";
-import { OrgProvider, useOrg } from "@/lib/org/client";
+import { useOrg } from "@/lib/org/client";
+import { AppShell } from "@/components/app-shell";
 import { currentOrg, orgDisplayName } from "@/lib/org-scope";
 import { cn } from "@/lib/utils";
 import {
@@ -91,12 +92,14 @@ function sinceLabel(iso: string): string {
 }
 
 export default function ConnectorsPage() {
-  // The page reads org scope via useOrg — provide it here (this route renders
-  // standalone, not under AppShell), so useOrg has a provider ancestor.
+  // Connectors live UNDER the consistent chrome shell (the same sidebar the
+  // dashboard uses), with the "Connectors" nav item active — matching chat +
+  // desktop. AppShell provides the ONE OrgProvider scope for the shell + page,
+  // so useOrg has a provider ancestor without a second, nested one here.
   return (
-    <OrgProvider>
+    <AppShell currentView="connectors">
       <ConnectorsInner />
-    </OrgProvider>
+    </AppShell>
   );
 }
 
