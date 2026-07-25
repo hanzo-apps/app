@@ -702,14 +702,35 @@ textarea[class*="pt-8"]::placeholder {
   color: var(--muted-foreground);
   opacity: 1;
 }
-/* Buttons match the control height + radius so a button sitting next to an input or
-   select lines up exactly. Icon-only buttons keep their square footprint. */
+/* ONE radius for EVERY shadcn button — the control radius (10px) — on ALL sizes
+   (default/sm/lg/xs/icon/iconXs/icon-sm/…), beating any stray rounded-md/sm/none a
+   call site hardcoded. This is the fix for "buttons aren't getting the 10px radius":
+   the size-specific rule below only covered default/sm/lg, so every icon/xs button
+   kept shadcn's base rounded-md (6px). Deliberate pills/circles (a button explicitly
+   marked `rounded-full`, e.g. the composer send/stop) keep their full round via the
+   more-specific rule. */
+[data-slot="button"] {
+  border-radius: var(--control-radius) !important;
+}
+[data-slot="button"].rounded-full {
+  border-radius: 9999px !important;
+}
+/* Rectangular text buttons also share the control height so a button lines up with
+   an adjacent input/select. Icon-only buttons keep their square footprint; a call
+   site's own !important height (e.g. !h-7 / !h-11) still wins. */
 [data-slot="button"][data-size="default"],
 [data-slot="button"][data-size="sm"],
-[data-slot="button"][data-size="lg"] {
+[data-slot="button"][data-size="lg"],
+[data-slot="button"][data-size="xs"] {
   height: var(--control-h);
   min-height: var(--control-h);
-  border-radius: var(--control-radius);
   font-size: var(--control-fs);
   padding-inline: 0.75rem;
+}
+/* Raw <button> elements (not the shadcn Button) that carry NO explicit rounded-*
+   utility default to the control radius — so a bare custom button is never a sharp
+   rectangle. Any explicit rounded-* class (full/lg/…) has higher specificity and
+   wins, so deliberate pills/circles are untouched. */
+button:not([class*="rounded"]) {
+  border-radius: var(--control-radius);
 }
