@@ -451,7 +451,7 @@
   panel.className = 'panel';
   root.appendChild(panel);
 
-  var ME = { authenticated: false, isGlobalAdmin: false, hasCredits: false, balance: null };
+  var ME = { authenticated: false, isAdmin: false, hasCredits: false, balance: null };
 
   // Resolved-once-per-open view context.
   var CTX = { candidates: [], version: undefined, chosen: '' };
@@ -463,10 +463,10 @@
   }
 
   // Decide the primary CTA from identity + credits. Admin's primary is the
-  // "goes live" direct commit; the server re-checks isGlobalAdmin for that mode,
+  // "goes live" direct commit; the server re-checks sudo for that mode,
   // so this only shapes the UI.
   function cta() {
-    if (ME.isGlobalAdmin)
+    if (ME.isAdmin)
       return {
         label: 'Apply live',
         action: 'edit',
@@ -985,7 +985,7 @@
     .then(function (d) {
       if (d && typeof d === 'object') {
         ME.authenticated = !!d.authenticated;
-        ME.isGlobalAdmin = !!d.isGlobalAdmin;
+        ME.isAdmin = !!d.isAdmin;
         ME.hasCredits = !!d.hasCredits;
         ME.balance = typeof d.balance === 'number' ? d.balance : null;
       }

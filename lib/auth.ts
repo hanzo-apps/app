@@ -88,7 +88,7 @@ function decodeJwtClaims(token: string): Record<string, unknown> | null {
  * app can authenticate a normal user (the cross-app fork→PR widget path acts as
  * that user and is fine), but it must NEVER elevate to a global-admin
  * direct-commit that "goes live" on the default branch. This binds the elevation
- * to a token our own client issued — the confused-deputy guard for isGlobalAdmin.
+ * to a token our own client issued — the confused-deputy guard for admin privilege.
  *
  * Fail CLOSED: no IAM_CLIENT_ID configured (prod requires it — see
  * lib/security/env-validation.ts), an opaque/non-JWT token, or an audience that

@@ -5,10 +5,10 @@
  * IAM bearer via cookie (same-origin hanzo.app) OR `Authorization` header
  * (different-site Hanzo apps, where a SameSite=Lax cookie can't ride) — see
  * `readWidgetBearer`. Identity is ALWAYS IAM-validated (validate:true), so
- * `isGlobalAdmin` is authoritative.
+ * `isAdmin` is authoritative.
  *
  * Returns the shape the widget uses to pick a CTA:
- *   { authenticated, isGlobalAdmin, org, balance, hasCredits }
+ *   { authenticated, isAdmin, org, balance, hasCredits }
  *     - admin           → "Open PR — free"
  *     - user + credits  → "Submit fix (uses credits)"
  *     - user, no credit → "Top up to submit a PR"
@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
   if (!id) {
     return withCors(origin, {
       authenticated: false,
-      isGlobalAdmin: false,
+      isAdmin: false,
       org: '',
       balance: null,
       hasCredits: false,
@@ -45,12 +45,12 @@ export async function GET(req: NextRequest) {
 
   // Admins never need credits (the /v1/edit run is free for them); skip the
   // balance round-trip. Everyone else: real spendable cents decides the CTA.
-  const cents = id.isGlobalAdmin ? null : await spendableCents(id.token);
-  const hasCredits = id.isGlobalAdmin || (typeof cents === 'number' && cents > 0);
+  const cents = id.isAdmin ? null : await spendableCents(id.token);
+  const hasCredits = id.isAdmin || (typeof cents === 'number' && cents > 0);
 
   return withCors(origin, {
     authenticated: true,
-    isGlobalAdmin: id.isGlobalAdmin,
+    isAdmin: id.isAdmin,
     org: id.homeOrg,
     balance: cents,
     hasCredits,
