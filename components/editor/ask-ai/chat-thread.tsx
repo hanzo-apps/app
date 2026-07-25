@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import classNames from "classnames";
-import { Check, ChevronDown, Loader2 } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 
 // ONE conversation turn as rendered in the builder chat thread. The thread is a
@@ -52,9 +52,9 @@ export function ChatThread({
   if (messages.length === 0) return null;
 
   return (
-    <div ref={scrollRef} className={classNames("overflow-y-auto px-3 pt-3", className)}>
+    <div ref={scrollRef} className={classNames("overflow-y-auto px-3 pt-2", className)}>
       <div
-        className={classNames("flex flex-col gap-3 pb-2", {
+        className={classNames("flex flex-col gap-2 pb-2", {
           "min-h-full justify-center": messages.length <= 1,
         })}
       >
@@ -75,7 +75,7 @@ export function ChatThread({
 function UserBubble({ text }: { text: string }) {
   return (
     <div className="flex justify-end">
-      <div className="max-w-[85%] whitespace-pre-wrap break-words rounded-2xl rounded-br-md bg-muted px-3.5 py-2 text-sm text-foreground">
+      <div className="max-w-[85%] whitespace-pre-wrap break-words rounded-lg rounded-br-sm bg-secondary px-3 py-1.5 text-[13px] text-foreground">
         {text}
       </div>
     </div>
@@ -107,7 +107,7 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
     }
     return (
       <div className="flex w-full justify-start">
-        <div className="max-w-[92%] break-words rounded-2xl rounded-bl-md border border-border bg-muted/40 px-3.5 py-2 text-[13px] text-foreground">
+        <div className="max-w-[95%] break-words rounded-lg bg-muted/20 px-3 py-1.5 text-[13px] text-foreground">
           {text ? (
             <div className="flex flex-wrap items-end">
               {/* Render the assistant reply as formatted markdown (headings, lists,
@@ -136,11 +136,11 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
   return (
     <div className="flex w-full flex-col items-start gap-2">
       {showPlanCard && (
-        <div className="w-full overflow-hidden rounded-xl border border-border bg-muted/40">
+        <div className="w-full overflow-hidden rounded-lg border border-border bg-muted/20">
           <button
             type="button"
             onClick={() => setUserOpen((o) => !o)}
-            className="flex w-full items-center justify-between px-3.5 py-2.5 text-left transition-colors hover:bg-accent"
+            className="flex w-full items-center justify-between px-3 py-1.5 text-left transition-colors duration-150 hover:bg-accent"
           >
             <span
               className={classNames(
@@ -173,8 +173,8 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
       {building && <ActivityList labels={activity ?? []} />}
 
       {done && (
-        <div className="flex items-center gap-1.5 text-[12.5px] text-muted-foreground">
-          <Check className="size-3.5 text-emerald-400/80" />
+        <div className="flex items-center gap-1.5 text-[12px] text-muted-foreground">
+          <Check className="size-3.5 text-[var(--brand-accent-muted)]" />
           <span>{text || "Done"}</span>
         </div>
       )}
@@ -191,16 +191,20 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
 function ActivityList({ labels }: { labels: string[] }) {
   const shown = labels.length ? labels : ["Working…"];
   return (
-    <div className="w-full rounded-xl border border-border bg-muted/40 px-3.5 py-2.5">
-      <ul className="flex flex-col gap-1.5">
+    <div className="w-full rounded-lg border border-border bg-muted/20 px-3 py-2">
+      <ul className="flex flex-col gap-1">
         {shown.map((label, i) => {
           // The last line is the one currently in flight; earlier lines have
-          // already streamed in and are marked settled.
+          // already streamed in and are marked settled. Concise task states —
+          // ✓ settled, ● in-flight (a pulsing accent dot, never a spinner).
           const active = i === shown.length - 1;
           return (
-            <li key={`${i}-${label}`} className="flex items-center gap-2 text-[12.5px]">
+            <li key={`${i}-${label}`} className="flex items-center gap-2 text-[12px]">
               {active ? (
-                <Loader2 className="size-3 shrink-0 animate-spin text-muted-foreground" />
+                <span className="relative flex size-2 shrink-0 items-center justify-center">
+                  <span className="absolute inline-flex size-2 animate-ping rounded-full bg-[var(--brand-accent)] opacity-60 motion-reduce:animate-none" />
+                  <span className="relative inline-flex size-1.5 rounded-full bg-[var(--brand-accent)]" />
+                </span>
               ) : (
                 <Check className="size-3 shrink-0 text-muted-foreground" />
               )}
