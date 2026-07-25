@@ -7,7 +7,7 @@
 // "Meet Hanzo" product mega-menu — a logged-out visitor gets a single
 // unambiguous path in, matching hanzo.ai's true-black / Geist register. Auth
 // lives at the right: Sign In / Get started when signed out, the account menu
-// when signed in — both wired to the ONE IAM PKCE flow via AuthProvider.
+// when signed in — both wired to the ONE IAM PKCE flow via useUser (the single auth facade).
 
 import { useState } from "react";
 import Link from "next/link";
@@ -26,7 +26,7 @@ import {
   DropdownMenuTrigger,
 } from "@hanzo/ui";
 import { HanzoLogo } from "@/components/HanzoLogo";
-import { useAuthContext } from "@/components/providers/AuthProvider";
+import { useUser } from "@/hooks/useUser";
 import { cn } from "@/lib/utils";
 
 // The marketing nav — real routes only (no /product 404, no per-app grid).
@@ -38,7 +38,7 @@ const NAV = [
 ];
 
 export default function Header() {
-  const { user, isAuthenticated, login, logout } = useAuthContext();
+  const { user, isAuthenticated, login, logout } = useUser();
   const router = useRouter();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
