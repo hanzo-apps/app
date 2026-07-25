@@ -75,7 +75,11 @@ describe('API: /api/health', () => {
       delete process.env.HEALTH_CHECK_SECRET;
     });
 
-    it('includes memory info when no secret is configured', async () => {
+    // FAIL CLOSED. This previously asserted the opposite — that an unset secret
+    // published heap figures to anonymous callers — which encoded the hole as a
+    // requirement. HEALTH_CHECK_SECRET is set in no manifest, so that was the
+    // live behavior. No secret ⇒ no detail, for everyone.
+    it('withholds memory info when NO secret is configured', async () => {
       delete process.env.HEALTH_CHECK_SECRET;
 
       const request = new Request('http://localhost:3000/api/health');
@@ -83,7 +87,27 @@ describe('API: /api/health', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.memory).toBeDefined();
+      expect(data.memory).toBeUndefined();
+    });
+
+    it('serves memory info ONLY to the configured secret', async () => {
+      process.env.HEALTH_CHECK_SECRET = 'shh';
+
+      const authed = await GET(
+        new Request('http://localhost:3000/api/health', {
+          headers: { authorization: 'Bearer shh' },
+        }),
+      );
+      expect((await authed.json()).memory).toBeDefined();
+
+      const wrong = await GET(
+        new Request('http://localhost:3000/api/health', {
+          headers: { authorization: 'Bearer nope' },
+        }),
+      );
+      expect((await wrong.json()).memory).toBeUndefined();
+
+      delete process.env.HEALTH_CHECK_SECRET;
     });
 
     it('includes environment from NODE_ENV', async () => {

@@ -18,7 +18,11 @@ const startTime = Date.now();
 export async function GET(request: Request) {
   const authHeader = request.headers.get('authorization');
   const healthCheckSecret = process.env.HEALTH_CHECK_SECRET;
-  const isAuthenticated = !healthCheckSecret || authHeader === `Bearer ${healthCheckSecret}`;
+  // FAIL CLOSED. This gates a heap/memory detail block; an unset secret used to
+  // mean "authenticated", and HEALTH_CHECK_SECRET is set in no manifest — so the
+  // figures were public. No secret ⇒ no detail, for everyone.
+  const isAuthenticated =
+    Boolean(healthCheckSecret) && authHeader === `Bearer ${healthCheckSecret}`;
 
   try {
     const healthCheckResult: HealthCheckResult = {
