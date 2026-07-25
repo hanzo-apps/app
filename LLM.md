@@ -483,7 +483,7 @@ logic in `page.tsx`; elevate design only.
   `[filter:brightness(0)_invert(1)]`. Labeled "Backed by Techstars · Built on
   world-class infrastructure" — never "trusted by <fake customers>".
 - **`cloud-integration.tsx`** — the differentiator: 6 capabilities each mapping
-  to a LIVE Hanzo product (Cloud/Base/IAM/LLM Gateway/KMS·S3/Functions), linked
+  to a LIVE Hanzo product (Cloud/Base/IAM/AI/KMS·S3/Functions), linked
   to `hanzo.ai/<product>`. No invented features/metrics.
 - **`models-strip.tsx`** — real `api.hanzo.ai/v1` endpoint + real provider logos.
 - **`how-it-works.tsx`** / **`site-footer.tsx`** — 3-step + multi-column footer.

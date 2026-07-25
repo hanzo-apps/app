@@ -69,7 +69,7 @@ const channels: Channel[] = [
     icon: <BookOpen className="h-5 w-5" />,
     title: "Documentation",
     description:
-      "Guides and references for the builder, Hanzo Cloud, and the LLM Gateway.",
+      "Guides and references for the builder, Hanzo Cloud, and the AI API.",
     href: "/docs",
     cta: "Browse docs",
   },
