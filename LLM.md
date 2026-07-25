@@ -612,3 +612,35 @@ controls (repoint the 155 `@hanzo/ui`→`@hanzo/ui-shadcn` primitive imports; ad
 (Plan/Files/Diff ▼) + skeleton→wireframe preview animation + icon-only device
 toggle; asset convergence (`@hanzo/logo`/`@hanzo/design`, brand-by-host); then the
 Tailwind rip once shadcn usage is gone. NEVER hard-fork brand token values.
+
+### Iteration 2 (2026-07-25) — light-mode fixes + IDE chrome
+
+Done: (1) the preview is never a flat black rect — themed `.preview-stage` canvas
++ subtle checker in BOTH themes + a themed idle/building overlay in
+`components/editor/preview` (`PreviewOverlay`: "Describe your idea. ↓ Watch Hanzo
+build it live" + cursor when idle; a skeleton→wireframe pulse while building,
+shown only until real HTML streams in). (2) The builder chrome's dark-only
+`white/…` alphas were swept to theme-adaptive `foreground/…` (header, editor
+shell, resizer, preview-card ring) so the toolbar is visible in light; the
+"Load existing Project" button + Share button are themed. (3) New thin VS-Code
+`StatusBar` (`components/editor/status-bar`) pinned bottom. (4) Chat reasoning now
+collapses into a reusable `CollapsibleSection` (Plan ▼ / Generated files ▼) in
+`chat-thread.tsx`. (5) The Hanzo block-H (shared `components/HanzoLogo` →
+`@hanzo/logo` `MARK_PATHS`) is a home anchor top-left of the header; device toggle
+is Lucide `Monitor`/`Smartphone` (16px).
+
+**LANDMINE — `--surface-0` is stale in the app's class-only light mode.**
+next-themes toggles `.dark`/`.light` classes; brand's `variables.css` sets the
+DARK surface values in `:root` (the default) and only flips them under `.light`.
+When the app is in a transient no-class state (`.dark` removed but `.light` not
+yet applied) OR the CSS optimizer reorders `:root` blocks, `var(--surface-0)`
+resolves to the dark `#080808` in light → a black element. Only `--background`
+is forced per-theme with `!important` (`html.dark` / `html:not(.dark)`), so it is
+the ONLY reliable themed surface token in this app. Bind theme-critical
+backgrounds to `var(--background)`, not `var(--surface-*)`. (Same class of fix
+will be needed if more surface tokens get used.)
+
+Still open next pass: dark-mode dialogs are hardcoded white (`LoginModal`,
+`load-project` import dialog, `invite-friends`) — theme them; preview toolbar
+reorg ([Preview Code Split] | [Live]) + a tablet device width; Diff ▼ /
+Explanation ▼ need the generate stream to emit that data (not just UI).
