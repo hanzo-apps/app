@@ -507,15 +507,15 @@
   --sidebar-ring: var(--brand-accent);
 }
 
-/* @hanzo/gui's Tamagui theme keeps `t_dark` on <html> permanently: GuiProvider is
-   context-only and is NOT synced to next-themes, so it never switches to a light
-   theme. Tamagui pins --background to its own dark value (hsla(0,0%,8%)), which beats
-   this palette in source order and would freeze the app background dark in BOTH
-   themes — the sidebar/cards (bg-sidebar/bg-card, tokens Tamagui doesn't set) flip to
-   light while the main bg-background surface stays dark. Re-assert --background so it
-   follows the app theme (next-themes toggles `.dark` on <html>). !important
-   guarantees the win over Tamagui regardless of its selector specificity; --background
-   is a root palette token never overridden per-element, so !important is safe. */
+/* Post-Phase-3 (GuiThemeBridge): Tamagui's root theme now FOLLOWS next-themes
+   (t_light in light, t_dark in dark) — no longer pinned. So this is NOT the old
+   "unfreeze the pinned-dark background" workaround; it is a TOKEN-VALUE precedence.
+   Tamagui's theme sets its own `--background` (light hsla(0,0%,97%) ≈ #f7f7f7, dark
+   hsla(0,0%,8%) ≈ #141414) and its runtime-injected CSS wins source-order over this
+   palette (verified: removing this → bg becomes #f7f7f7 / #141414). We want the v2
+   layered-black spec (#080808) and pure white, so re-assert --background per theme.
+   !important is the clean win over Tamagui's runtime CSS; --background is a root
+   palette token never overridden per-element, so it is safe. */
 html.dark {
   --background: #080808 !important;
 }
