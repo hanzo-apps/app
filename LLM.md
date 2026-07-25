@@ -640,7 +640,21 @@ the ONLY reliable themed surface token in this app. Bind theme-critical
 backgrounds to `var(--background)`, not `var(--surface-*)`. (Same class of fix
 will be needed if more surface tokens get used.)
 
-Still open next pass: dark-mode dialogs are hardcoded white (`LoginModal`,
-`load-project` import dialog, `invite-friends`) — theme them; preview toolbar
-reorg ([Preview Code Split] | [Live]) + a tablet device width; Diff ▼ /
-Explanation ▼ need the generate stream to emit that data (not just UI).
+### Iteration 3 (2026-07-25) — dialog theming
+
+Every overlay was hardcoded white (`!bg-white !border-neutral-100`, colored emoji-
+avatar circles, `text-neutral-*`, dark-on-white buttons, emerald checks, rainbow
+PRO tag) → jarring white-in-dark. All themed onto the ONE system (like the Invite
+modal): `bg-card` + `border-border` hairline, neutral avatar chips (`bg-muted`/
+`bg-secondary` + hairline), `text-muted-foreground` body, **default WHITE primary**
+buttons, purple (`--brand-accent-muted`) feature checks, `--brand-accent-soft` PRO
+tag. Files: `login-modal`, `pro-modal`, `my-projects/load-project` (import dialog),
+`invite-friends`, `editor/ask-ai/re-imagine` (URL popover), `editor/ask-ai/uploader`
+(image picker). Chrome alphas that were dark-only (`workspace-menu`, `git-sync-button`,
+`deploy-button` inputs/triggers) swept `white/[0.0x]` → `foreground/[0.0x]`,
+`ring-white/40` → `ring-ring`, white selection → accent-soft, credit-bar fill → purple.
+Verified: LoginModal + re-imagine popover render correct in dark AND light.
+
+Still open next pass: preview toolbar reorg ([Preview Code Split] | [Live]) + a
+tablet device width; Diff ▼ / Explanation ▼ need the generate stream to emit that
+data (not just UI); continue shadcn→`@hanzo/ui` v8 swap toward the Tailwind rip.
