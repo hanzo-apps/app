@@ -727,10 +727,13 @@ textarea[class*="pt-8"]::placeholder {
   font-size: var(--control-fs);
   padding-inline: 0.75rem;
 }
-/* Raw <button> elements (not the shadcn Button) that carry NO explicit rounded-*
-   utility default to the control radius — so a bare custom button is never a sharp
-   rectangle. Any explicit rounded-* class (full/lg/…) has higher specificity and
-   wins, so deliberate pills/circles are untouched. */
-button:not([class*="rounded"]) {
+/* Raw <button> elements (not the shadcn Button) normalize to the control radius so
+   no custom button is a sharp rectangle. This covers bare buttons AND ones that
+   hardcoded a small/sharp radius (rounded / -sm / -md / -lg / -none — the source of
+   the 2–6px chrome buttons). Only deliberately-LARGE radii (rounded-xl / -2xl /
+   -3xl) and pills (rounded-full) opt out, so segmented inners stay inset and
+   circles/pills are untouched. The :not() chain out-specifies the rounded-*
+   utilities, so it wins without !important. */
+button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded-2xl"]):not([class*="rounded-3xl"]):not([class*="rounded-full"]) {
   border-radius: var(--control-radius);
 }
