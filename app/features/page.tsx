@@ -64,7 +64,7 @@ export default function FeaturesPage() {
       icon: <Shield className="w-6 h-6 text-purple-400" />,
       title: "Enterprise Security",
       description: "Bank-grade security with encryption, compliance, and access controls",
-      features: ["End-to-end encryption", "SOC 2 compliance", "Role-based access", "Audit logging"]
+      features: ["End-to-end encryption", "SOC 2 Type II audit in progress", "Role-based access", "Audit logging"]
     },
     {
       icon: <Database className="w-6 h-6 text-orange-400" />,

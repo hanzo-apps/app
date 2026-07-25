@@ -12,7 +12,7 @@ export default function EnterprisePage() {
     {
       icon: <Shield className="w-6 h-6" />,
       title: "Enterprise Security",
-      description: "SOC 2 Type II certified with end-to-end encryption, SAML SSO, and advanced access controls"
+      description: "End-to-end encryption, SAML SSO, and advanced access controls. SOC 2 Type II audit in progress."
     },
     {
       icon: <Users className="w-6 h-6" />,
@@ -120,8 +120,8 @@ export default function EnterprisePage() {
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <div className="font-medium mb-1">SOC 2 Type II Certified</div>
-                    <div className="text-sm text-muted-foreground">Annual audits ensure the highest security standards</div>
+                    <div className="font-medium mb-1">SOC 2 Type II — Audit in Progress</div>
+                    <div className="text-sm text-muted-foreground">Independent Type II audit underway; report available under NDA on completion</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -134,8 +134,8 @@ export default function EnterprisePage() {
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <div className="font-medium mb-1">ISO 27001 Certified</div>
-                    <div className="text-sm text-muted-foreground">International standard for information security</div>
+                    <div className="font-medium mb-1">SSO, RBAC & Audit Logs</div>
+                    <div className="text-sm text-muted-foreground">SAML single sign-on, role-based access control, and a full audit trail</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
