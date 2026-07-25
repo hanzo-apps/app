@@ -644,16 +644,19 @@ code, pre, kbd, samp, .font-mono, [class~="font-mono"] {
    black rect. The generated app's iframe paints opaquely on top, so this shows
    around a device-framed (mobile) preview and while the stage is still empty. */
 .preview-stage {
-  background-color: var(--surface-0);
+  /* --background is the ONE token forced per-theme (html.dark / html:not(.dark)),
+     so the stage is reliably layered-black in dark and white in light — never a
+     stale surface token. */
+  background-color: var(--background);
   background-image:
     linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
   background-size: 24px 24px;
 }
-:root:not(.dark) .preview-stage {
+html:not(.dark) .preview-stage {
   background-image:
-    linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+    linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
 }
 
 /* ── ONE compact control spec, applied ───────────────────────────────────────
