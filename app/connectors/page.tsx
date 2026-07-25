@@ -41,9 +41,13 @@ import {
   Send,
   Cloud,
   Mail,
+  Copy,
 } from "lucide-react";
 import { Button, Input, Badge } from "@hanzo/ui";
 import { toast } from "@hanzo/ui";
+// v8 product menu — right-click ContextMenu (the ONE portal-theme-safe menu on
+// @hanzo/gui's Portal; themes with next-themes via the Phase-3 GuiThemeBridge).
+import { ContextMenu, type MenuItemSpec } from "@hanzo/ui8/product";
 
 import { useUser } from "@/hooks/useUser";
 import { useOrg } from "@/lib/org/client";
@@ -369,7 +373,42 @@ function ConnectorRow({
 }) {
   const Icon = iconFor(p.id);
   const since = p.connection ? sinceLabel(p.connection.connectedAt) : "";
+
+  // Right-click actions for the row — the REAL row actions (Connect/Disconnect)
+  // plus a copy-id utility, through the shared MenuItemSpec (label + item +
+  // separator + destructive states — one menu system across the fleet).
+  const menuItems: MenuItemSpec[] = [
+    { type: "label", label: p.name },
+    p.connected
+      ? {
+          key: "disconnect",
+          label: "Disconnect",
+          icon: <X size={16} />,
+          destructive: true,
+          disabled: busy || disabled,
+          onSelect: () => onDisconnect(p),
+        }
+      : {
+          key: "connect",
+          label: `Connect ${p.name}`,
+          icon: <LinkIcon size={16} />,
+          disabled: busy || disabled || !p.available,
+          onSelect: () => onConnect(p),
+        },
+    { type: "separator" },
+    {
+      key: "copy-id",
+      label: "Copy provider ID",
+      icon: <Copy size={16} />,
+      onSelect: () => {
+        void navigator.clipboard?.writeText(p.id);
+        toast.success(`Copied “${p.id}”`);
+      },
+    },
+  ];
+
   return (
+    <ContextMenu items={menuItems}>
     <div
       className={cn(
         "flex items-center gap-4 rounded-xl border border-border bg-card px-4 py-3.5 transition-colors",
@@ -429,5 +468,6 @@ function ConnectorRow({
         )}
       </div>
     </div>
+    </ContextMenu>
   );
 }
