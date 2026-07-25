@@ -111,39 +111,39 @@ export const Uploader = ({
           side="top"
           align="start"
           sideOffset={8}
-          className="!rounded-2xl !p-0 !bg-white !border-neutral-100 min-w-xs text-center overflow-hidden"
+          className="!rounded-2xl !p-0 bg-card text-foreground border-border min-w-xs text-center overflow-hidden"
         >
           {project?.space_id ? (
             <>
-              <header className="bg-neutral-50 p-6 border-b border-neutral-200/60">
+              <header className="bg-muted/40 p-6 border-b border-border">
                 <div className="flex items-center justify-center -space-x-4 mb-3">
-                  <div className="size-9 rounded-full bg-pink-200 shadow-2xs flex items-center justify-center text-xl opacity-50">
+                  <div className="size-9 rounded-full bg-muted border border-border shadow-2xs flex items-center justify-center text-xl">
                     🎨
                   </div>
-                  <div className="size-11 rounded-full bg-neutral-200 shadow-2xl flex items-center justify-center text-2xl z-2">
+                  <div className="size-11 rounded-full bg-secondary border border-border shadow-lg flex items-center justify-center text-2xl z-2">
                     🖼️
                   </div>
-                  <div className="size-9 rounded-full bg-neutral-300 shadow-2xs flex items-center justify-center text-xl opacity-50">
+                  <div className="size-9 rounded-full bg-muted border border-border shadow-2xs flex items-center justify-center text-xl">
                     💻
                   </div>
                 </div>
-                <p className="text-xl font-medium text-neutral-950">
+                <p className="text-xl font-medium text-foreground">
                   Add Custom Images
                 </p>
-                <p className="text-sm text-neutral-500 mt-1.5">
+                <p className="text-sm text-muted-foreground mt-1.5">
                   Upload images to your project and use them with Hanzo AI!
                 </p>
               </header>
               <main className="space-y-4 p-5">
                 <div>
-                  <p className="text-xs text-left text-neutral-700 mb-2">
+                  <p className="text-xs text-left text-muted-foreground mb-2">
                     Uploaded Images
                   </p>
                   <div className="grid grid-cols-4 gap-1 flex-wrap max-h-40 overflow-y-auto">
                     {files.map((file) => (
                       <div
                         key={file}
-                        className="select-none relative cursor-pointer bg-white rounded-md border-[2px] border-white hover:shadow-2xl transition-all duration-300"
+                        className="select-none relative cursor-pointer bg-muted rounded-md border-[2px] border-border hover:shadow-2xl transition-all duration-300"
                         onClick={() => onSelectFile(file)}
                       >
                         <Image
@@ -155,7 +155,7 @@ export const Uploader = ({
                         />
                         {selectedFiles.includes(file) && (
                           <div className="absolute top-0 right-0 h-full w-full flex items-center justify-center bg-black/50 rounded-md">
-                            <RiCheckboxCircleFill className="size-6 text-neutral-100" />
+                            <RiCheckboxCircleFill className="size-6 text-[var(--brand-accent-muted)]" />
                           </div>
                         )}
                       </div>
@@ -163,7 +163,7 @@ export const Uploader = ({
                   </div>
                 </div>
                 <div>
-                  <p className="text-xs text-left text-neutral-700 mb-2">
+                  <p className="text-xs text-left text-muted-foreground mb-2">
                     Generate an image with AI
                   </p>
                   <div className="flex items-center gap-2">
@@ -179,10 +179,10 @@ export const Uploader = ({
                       }}
                       placeholder="Describe an image…"
                       disabled={generating}
-                      className="flex-1 min-w-0 rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-400"
+                      className="flex-1 min-w-0 rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-ring"
                     />
                     <Button
-                      className="shrink-0 bg-neutral-950 text-neutral-300 hover:brightness-110"
+                      className="shrink-0"
                       onClick={() => void generateImage()}
                       disabled={generating || !prompt.trim()}
                     >
@@ -204,11 +204,11 @@ export const Uploader = ({
                   )}
                 </div>
                 <div>
-                  <p className="text-xs text-left text-neutral-700 mb-2">
+                  <p className="text-xs text-left text-muted-foreground mb-2">
                     Or import images from your computer
                   </p>
                   <Button
-                    className="relative w-full bg-neutral-950 text-neutral-300 hover:brightness-110"
+                    className="relative w-full"
                     onClick={() => fileInputRef.current?.click()}
                   >
                     {isLoading ? (
