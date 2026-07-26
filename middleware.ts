@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { applySecurityHeaders, applyRateLimiting, getClientIP } from "@/lib/security/middleware";
+import { applySecurityHeaders, applyRateLimiting } from "@/lib/security/middleware";
 
 const TOKEN_COOKIE = "hanzo_token";
 
@@ -39,10 +39,6 @@ function isPublicRoute(pathname: string): boolean {
 }
 
 export async function middleware(request: NextRequest) {
-  const headers = new Headers(request.headers);
-  headers.set("x-current-host", request.nextUrl.host);
-  headers.set("x-client-ip", getClientIP(request));
-
   const path = request.nextUrl.pathname;
 
   // --- Rate limiting (unchanged) ---
@@ -83,7 +79,15 @@ export async function middleware(request: NextRequest) {
     // Token exists – allow through. Server-side validation happens in lib/auth.ts.
   }
 
-  const response = NextResponse.next({ headers });
+  // `NextResponse.next({ headers })` sets RESPONSE headers — it does NOT forward
+  // request headers to the route handler (that needs `{ request: { headers } }`).
+  // So a cloned request-header set was echoed back on every response in the app:
+  // `origin`, `host`, `user-agent`, `accept`, `x-forwarded-for`, `x-real-ip` and
+  // — on a widget preflight — `access-control-request-method`, which reads like a
+  // seventh CORS header while meaning nothing. The two headers it existed to add
+  // (x-current-host, x-client-ip) never reached a handler and have no reader
+  // anywhere in the repo, so the clone is deleted rather than corrected.
+  const response = NextResponse.next();
   return applySecurityHeaders(response);
 }
 
