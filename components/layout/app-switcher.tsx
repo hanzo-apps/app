@@ -20,11 +20,7 @@
  * marked `aria-current="page"`.
  */
 import Link from 'next/link';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@hanzo/ui';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/overlay';
 import {
   MessageSquare,
   LayoutGrid,
@@ -109,7 +105,7 @@ export function AppSwitcher({ currentApp = 'app' }: { currentApp?: string }) {
       <PopoverContent
         align="start"
         sideOffset={8}
-        className="w-[340px] max-w-[calc(100vw-24px)] overflow-hidden border-border bg-popover p-0 text-popover-foreground"
+        className="w-[340px] overflow-hidden p-0"
       >
         <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
           <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">

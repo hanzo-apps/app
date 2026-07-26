@@ -5,7 +5,7 @@ import { Button } from "@hanzo/ui";
 import { Badge } from "@hanzo/ui";
 import { Progress } from "@hanzo/ui";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@hanzo/ui";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";
 import {
   TrendingUp,
   TrendingDown,

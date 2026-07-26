@@ -35,21 +35,8 @@ import { Button } from "@hanzo/ui";
 import { Input } from "@hanzo/ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
 import { ScrollArea } from "@hanzo/ui";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-  DropdownMenuLabel
-} from "@hanzo/ui";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@hanzo/ui";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/overlay";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";
 import { Textarea } from "@hanzo/ui";
 import { cn } from "@/lib/utils";
 import { type BotAgent, TEAM_PRESETS, getBotGateway } from "@/lib/bot-gateway";
@@ -489,7 +476,7 @@ export default function ChatPage() {
                       </span>
                     </SelectValue>
                   </SelectTrigger>
-                  <SelectContent className="bg-popover border-border">
+                  <SelectContent>
                     <DropdownMenuLabel className="text-muted-foreground text-xs px-2 py-1">
                       <Users className="w-3 h-3 inline mr-1" />
                       Team Agents
@@ -513,7 +500,7 @@ export default function ChatPage() {
                   <SelectTrigger className="min-w-0 flex-1 md:flex-none md:w-[180px] bg-card border-border text-foreground">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-popover border-border">
+                  <SelectContent>
                     <SelectItem value="enso">Enso (auto)</SelectItem>
                     <SelectItem value="claude-opus-4.8">Claude Opus 4.8</SelectItem>
                     <SelectItem value="claude-5-sonnet">Claude Sonnet 5</SelectItem>

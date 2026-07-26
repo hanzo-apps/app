@@ -54,20 +54,8 @@ import {
   getBuiltInTemplatesForRuntime,
   type BuiltInTemplateMetadata
 } from '@/lib/vfs/project-templates';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@hanzo/ui';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@hanzo/ui';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/overlay';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/overlay';
 import { useGuidedTour } from '@/components/guided-tour/context';
 import { GuidedTourOverlay } from '@/components/guided-tour/overlay';
 import { configManager, migrateBackendKey } from '@/lib/config/storage';

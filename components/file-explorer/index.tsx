@@ -23,12 +23,7 @@ import {
   ScrollText
 } from 'lucide-react';
 import { Button } from '@hanzo/ui';
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-} from '@hanzo/ui';
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/overlay';
 import { Input } from '@hanzo/ui';
 import { toast } from '@hanzo/ui';
 

@@ -29,12 +29,7 @@ import {
   Plus,
   Sparkles,
 } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@hanzo/ui';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/overlay';
 import { cn } from '@/lib/utils';
 import { baseEnabled, setBaseEnabled } from '@/lib/base/flag';
 
@@ -272,7 +267,7 @@ export function BuildComposer({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="start"
-                  className="w-56 rounded-xl border border-border bg-popover text-foreground shadow-2xl"
+                  className="w-56"
                 >
                   {MODES.map((m) => (
                     <DropdownMenuItem

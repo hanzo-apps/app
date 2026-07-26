@@ -3,7 +3,7 @@ import { Mic } from "lucide-react";
 import classNames from "classnames";
 
 import { Button } from "@hanzo/ui";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@hanzo/ui";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/overlay";
 
 /**
  * Borderless dictation mic for the composer — a REAL feature, not a placeholder.
@@ -119,10 +119,7 @@ export function VoiceInput({
           />
         </Button>
       </TooltipTrigger>
-      <TooltipContent
-        align="end"
-        className="-translate-y-0.5 rounded-md bg-card px-2 py-1 text-xs text-foreground"
-      >
+      <TooltipContent align="end">
         {listening ? "Listening… tap to stop" : "Dictate with your voice"}
       </TooltipContent>
     </Tooltip>

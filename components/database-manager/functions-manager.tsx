@@ -8,12 +8,7 @@ import {
   ToggleLeft, ToggleRight, Copy, ExternalLink, CheckCircle2
 } from 'lucide-react';
 import { Button } from '@hanzo/ui';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@hanzo/ui';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/overlay';
 import { FunctionEditor } from './function-editor';
 import { cn } from '@/lib/utils';
 import type { FunctionsDataProvider } from './data-providers';

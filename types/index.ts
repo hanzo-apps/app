@@ -2,6 +2,8 @@ export interface User {
   fullname: string;
   avatarUrl: string;
   name: string;
+  /** Two-letter monogram for the avatar placeholder — never derived per surface. */
+  initials: string;
   email?: string;
   username?: string;
   isLocalUse?: boolean;

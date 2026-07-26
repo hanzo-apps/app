@@ -8,12 +8,7 @@ import {
 } from 'lucide-react';
 import { Badge } from '@hanzo/ui';
 import { Button } from '@hanzo/ui';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@hanzo/ui';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/overlay';
 import { SecretEditor } from './secret-editor';
 import { cn } from '@/lib/utils';
 import type { SecretsDataProvider } from './data-providers';

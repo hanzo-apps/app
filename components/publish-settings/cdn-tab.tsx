@@ -15,13 +15,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@hanzo/ui';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@hanzo/ui';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
 import { Plus, Edit, Trash2, Link2 } from 'lucide-react';
 
 interface CdnTabProps {

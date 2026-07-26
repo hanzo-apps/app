@@ -26,12 +26,7 @@ import {
 } from "lucide-react";
 import classNames from "classnames";
 import { toast } from "@hanzo/ui";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@hanzo/ui";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/overlay";
 
 import { HtmlHistory, Page } from "@/types";
 import { HanzoLogo } from "@/components/HanzoLogo";
@@ -729,7 +724,7 @@ function RevCard({
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="min-w-[190px] !rounded-xl !border-border !bg-card !p-1 text-foreground shadow-2xl shadow-black/60"
+              className="min-w-[190px]"
             >
               <MenuItem onSelect={onRestore}>
                 <Undo2 className="size-3.5" />

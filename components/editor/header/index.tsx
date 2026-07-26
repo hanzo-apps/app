@@ -14,11 +14,7 @@ import {
   Smartphone,
 } from "lucide-react";
 
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@hanzo/ui";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/overlay";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { PagePanel } from "@/components/editor/page-navigator";
 import { WorkspaceMenu } from "@/components/editor/workspace-menu";
@@ -257,7 +253,7 @@ export function Header({
               <PopoverContent
                 align="center"
                 sideOffset={6}
-                className="w-64 overflow-hidden rounded-xl border border-border bg-card p-0 text-foreground shadow-2xl"
+                className="w-64 overflow-hidden p-0"
               >
                 <PagePanel
                   pages={pages}

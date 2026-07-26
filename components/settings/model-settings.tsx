@@ -10,13 +10,7 @@ import { Switch } from '@hanzo/ui';
 import { Eye, EyeOff, Check, X, ExternalLink, Loader2 } from 'lucide-react';
 import { toast } from '@hanzo/ui';
 import { ModelSelector } from '@/components/model-selector';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@hanzo/ui';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
 import { ProviderId } from '@/lib/llm/providers/types';
 import { getAllProviders, getProvider } from '@/lib/llm/providers/registry';
 import { CodexAuthPanel } from '@/components/settings/codex-auth-panel';

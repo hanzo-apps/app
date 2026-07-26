@@ -12,11 +12,7 @@ import { AlertCircle } from 'lucide-react';
 import { ModelSettingsPanel } from '@/components/settings/model-settings';
 import { configManager } from '@/lib/config/storage';
 import { AppHeader, HeaderAction } from '@/components/ui/app-header';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@hanzo/ui';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/overlay';
 
 interface ToolCallDetail {
   name: string;

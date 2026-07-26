@@ -26,7 +26,7 @@ import {
   referenceImagesKey,
 } from "@/lib/reference-images";
 import Loading from "@/components/loading";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@hanzo/ui";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/overlay";
 import { SelectedHtmlElement } from "./selected-html-element";
 import { isTheSameHtml } from "@/lib/compare-html-diff";
 import { useCallAi } from "@/hooks/useCallAi";
@@ -1168,10 +1168,7 @@ export function AskAI({
                     <Crosshair className="size-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent
-                  align="start"
-                  className="bg-card text-xs text-foreground py-1 px-2 rounded-md -translate-y-0.5"
-                >
+                <TooltipContent align="start">
                   Select an element on the page to ask Hanzo edit it
                   directly.
                 </TooltipContent>
@@ -1216,10 +1213,7 @@ export function AskAI({
                     Routed: {routedModel}
                   </span>
                 </TooltipTrigger>
-                <TooltipContent
-                  align="end"
-                  className="bg-card text-xs text-foreground py-1 px-2 rounded-md -translate-y-0.5"
-                >
+                <TooltipContent align="end">
                   Smart routing sent this request to {routedModel}. You&apos;re
                   billed as what served you.
                 </TooltipContent>

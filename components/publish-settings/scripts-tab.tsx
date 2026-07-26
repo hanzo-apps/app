@@ -16,13 +16,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@hanzo/ui';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@hanzo/ui';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
 import { Plus, Edit, Trash2, Code } from 'lucide-react';
 
 interface ScriptsTabProps {

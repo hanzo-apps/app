@@ -11,24 +11,14 @@ import { Code2, Wrench, Key, Clock, Lock, Settings2, PowerOff, Database } from '
 import { Switch } from '@hanzo/ui';
 import { Input } from '@hanzo/ui';
 import { Label } from '@hanzo/ui';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from '@hanzo/ui';
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/overlay';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@hanzo/ui';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-  TooltipProvider,
-} from '@hanzo/ui';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/overlay';
 import { toast } from '@hanzo/ui';
 import { logger } from '@/lib/utils';
 import type { Project, ProjectRuntime } from '@/lib/vfs/types';
@@ -317,7 +307,6 @@ export function ProjectSettingsPanel({ project, onProjectUpdate, enabled }: Proj
   };
 
   return (
-    <TooltipProvider>
     <div className="h-full flex flex-col">
       <div className="flex-1 overflow-hidden p-3">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
@@ -413,7 +402,6 @@ export function ProjectSettingsPanel({ project, onProjectUpdate, enabled }: Proj
         </Tabs>
       </div>
     </div>
-    </TooltipProvider>
   );
 }
 

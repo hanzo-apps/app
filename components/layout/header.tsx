@@ -14,18 +14,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Menu, X, LogOut, Settings, Home, DollarSign, ChevronDown } from "lucide-react";
-import {
-  Button,
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@hanzo/ui";
+import { Button, Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/overlay";
 import { AppSwitcher } from "@/components/layout/app-switcher";
 import { HeaderSearch } from "@/components/layout/header-search";
 import { useUser } from "@/hooks/useUser";
@@ -50,8 +40,9 @@ export default function Header() {
   // users. Both ride the one canonical IAM PKCE flow.
   const getStarted = () => login("/dev", { signup: true });
 
-  const userInitial = (user?.fullname || user?.name || "U").charAt(0).toUpperCase();
-  const displayName = user?.fullname || user?.name || "User";
+  // Identity is resolved ONCE, in useUser — never re-derived per surface.
+  const displayName = user?.name || "User";
+  const userInitial = user?.initials || "U";
 
   const isActive = (href: string) =>
     pathname === href || (pathname?.startsWith(href + "/") ?? false);
