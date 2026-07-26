@@ -8,12 +8,7 @@ import {
   ToggleLeft, ToggleRight
 } from 'lucide-react';
 import { Button } from '@hanzo/ui';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@hanzo/ui';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/overlay';
 import { ScheduledFunctionEditor } from './scheduled-function-editor';
 import { cn } from '@/lib/utils';
 import type { ScheduledFunctionsDataProvider } from './data-providers';

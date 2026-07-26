@@ -3,11 +3,7 @@ import { Paintbrush } from "lucide-react";
 import { toast } from "@hanzo/ui";
 
 import { Button } from "@hanzo/ui";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@hanzo/ui";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/overlay";
 import { Input } from "@hanzo/ui";
 import Loading from "@/components/loading";
 import { api } from "@/lib/api";
@@ -72,7 +68,7 @@ export function ReImagine({
           side="top"
           align="start"
           sideOffset={8}
-          className="!rounded-2xl !p-0 bg-card text-foreground border-border min-w-xs text-center overflow-hidden"
+          className="min-w-xs overflow-hidden p-0 text-center"
         >
           <header className="bg-muted/40 p-6 border-b border-border">
             <div className="flex items-center justify-center -space-x-4 mb-3">

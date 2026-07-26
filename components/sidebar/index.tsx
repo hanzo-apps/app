@@ -35,12 +35,7 @@ import {
   Copy,
   Gift,
 } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@hanzo/ui';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/overlay';
 import { cn } from '@/lib/utils';
 import { OrgProvider } from '@/lib/org/client';
 import { OrgSwitcher } from '@/components/org-switcher';
@@ -147,6 +142,7 @@ function SidebarContent({
 
   // REAL projects: the org-scoped cloud list (client-side; persists across
   // reloads/devices). Local VFS is only an offline fallback inside the hook.
+  const { logout } = useUser();
   const { projects: cloudProjects } = useProjects();
   const { folders, createFolder } = useFolders();
 
@@ -245,12 +241,10 @@ function SidebarContent({
     } else if (item.action === 'server-sync') {
       onServerSync?.();
     } else if (item.action === 'logout') {
-      try {
-        const response = await fetch('/v1/auth/logout', { method: 'POST' });
-        if (response.ok) router.push('/admin/login');
-      } catch (error) {
-        console.error('Logout failed:', error);
-      }
+      // ONE logout: the @hanzo/iam SDK. Clearing the SDK token store is what
+      // makes the session end — a route that only cleared a cookie left the SDK
+      // holding the token, and the next mount wrote the cookie straight back.
+      await logout();
     }
   };
 

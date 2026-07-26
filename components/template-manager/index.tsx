@@ -21,18 +21,8 @@ import {
   Package,
   Filter
 } from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@hanzo/ui';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@hanzo/ui';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/overlay';
 
 interface TemplateManagerProps {
   onProjectCreated?: (projectId: string, hasBackendFeatures: boolean) => void;

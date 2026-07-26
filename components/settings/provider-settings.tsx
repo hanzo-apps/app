@@ -6,13 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@hanz
 import { Input } from "@hanzo/ui";
 import { Label } from "@hanzo/ui";
 import { Badge } from "@hanzo/ui";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@hanzo/ui";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
 import { Loader2, CheckCircle, XCircle, ExternalLink, Key, Trash2 } from 'lucide-react';
 import { toast } from '@hanzo/ui';

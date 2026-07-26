@@ -24,7 +24,7 @@ import {
   Loader2,
   X
 } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
 import { cn, logger } from '@/lib/utils';
 import { captureIframeScreenshot } from '@/lib/utils/screenshot';
 import type { ProjectRuntime } from '@/lib/vfs/types';

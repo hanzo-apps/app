@@ -35,21 +35,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@hanz
 import { Slider } from "@hanzo/ui";
 import { Switch } from "@hanzo/ui";
 import { Label } from "@hanzo/ui";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@hanzo/ui";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-  DropdownMenuLabel
-} from "@hanzo/ui";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/overlay";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
 import { ScrollArea } from "@hanzo/ui";
 import { HanzoLogo } from "@/components/HanzoLogo";
@@ -467,7 +454,7 @@ export default function PlaygroundPage() {
                           <Settings className="w-4 h-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-80 bg-card border-border">
+                      <DropdownMenuContent align="end" className="w-80">
                         <div className="p-4">
                           <ModelConfigPanel config={leftConfig} setConfig={setLeftConfig} side="left" />
                         </div>
@@ -550,7 +537,7 @@ export default function PlaygroundPage() {
                             <Settings className="w-4 h-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-80 bg-card border-border">
+                        <DropdownMenuContent align="end" className="w-80">
                           <div className="p-4">
                             <ModelConfigPanel config={rightConfig} setConfig={setRightConfig} side="right" />
                           </div>

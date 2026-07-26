@@ -3,18 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { Deployment } from '@/lib/vfs/types';
 import { Server, Database, ChevronDown, Loader2, X } from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@hanzo/ui';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@hanzo/ui';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/overlay';
 import { Button } from '@hanzo/ui';
 import { cn } from '@/lib/utils';
 
@@ -132,7 +122,7 @@ export function DeploymentSelector({
           }
         }}
       >
-        <SelectTrigger size="sm" className="w-[180px] h-8">
+        <SelectTrigger className="h-8 w-[180px]">
           <SelectValue placeholder="No deployment connected" />
         </SelectTrigger>
         <SelectContent>

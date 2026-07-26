@@ -1,6 +1,11 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Tests are not markup. A class name quoted in an assertion is evidence ABOUT the
+   UI, not a request to style anything — and emitting it would silently repair the
+   very defect the assertion pins down. Scan what renders, nothing else. */
+@source not "../tests";
+
 @custom-variant dark (&:is(.dark *));
 
 /* Custom animations */
@@ -592,27 +597,6 @@ html:not(.dark) {
 
 .matched-line {
   @apply bg-white/15;
-}
-
-/* ── Portaled menus must always be opaque ────────────────────────────────────
-   @hanzo/ui menus reference its own design tokens (--bg, --divider, --gray)
-   which THIS app does not define — so those menus render with no background and
-   bleed the page/sidebar through (the sidebar "…" menu, workspace menus, etc.).
-   Force every portaled menu/select surface onto the app's popover tokens. Radix
-   sets role="menu" on DropdownMenu/ContextMenu content and role="listbox" on
-   Select content; items keep role="menuitem"/"option", so only the container is
-   targeted. Tooltips/dialogs are untouched. This is the ONE fix for the whole
-   class of transparent-menu bug. */
-[role="menu"],
-[role="listbox"] {
-  background-color: var(--popover, #0a0a0a);
-  color: var(--popover-foreground, #ededed);
-  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
-  border-radius: 0.625rem;
-  box-shadow:
-    0 16px 40px -16px rgba(0, 0, 0, 0.9),
-    0 0 0 0.5px rgba(255, 255, 255, 0.04);
-  backdrop-filter: none;
 }
 
 /* ── Geist everywhere — no OS/UA fonts leak in ───────────────────────────────

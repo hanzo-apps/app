@@ -14,8 +14,8 @@ import { ProjectSwapDialog } from '../project-swap-dialog';
 import { Globe, Plus, Search, ArrowUpDown } from 'lucide-react';
 import { Button } from '@hanzo/ui';
 import { Input } from '@hanzo/ui';
-import { Popover, PopoverContent, PopoverTrigger } from '@hanzo/ui';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/overlay';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
 import { toast } from '@hanzo/ui';
 import { logger } from '@/lib/utils';
 

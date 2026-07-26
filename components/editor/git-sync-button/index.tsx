@@ -26,7 +26,7 @@ import {
 import { Button } from "@hanzo/ui";
 import { Input } from "@hanzo/ui";
 import { Switch } from "@hanzo/ui";
-import { Popover, PopoverContent, PopoverTrigger } from "@hanzo/ui";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/overlay";
 
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { useUser } from "@/hooks/useUser";
@@ -330,7 +330,7 @@ export function GitSyncButton({
       </PopoverTrigger>
       <PopoverContent
         align="end"
-        className="w-[360px] !rounded-2xl !border-border !bg-card !p-0 text-foreground shadow-2xl shadow-black/60"
+        className="w-[360px] p-0"
       >
         <div className="border-b border-border p-5">
           <div className="mb-1 flex items-center gap-2">

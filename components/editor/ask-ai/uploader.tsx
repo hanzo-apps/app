@@ -2,11 +2,7 @@ import { useRef, useState } from "react";
 import { Plus, Upload, Sparkles } from "lucide-react";
 import Image from "next/image";
 
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@hanzo/ui";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/overlay";
 import { Button } from "@hanzo/ui";
 import { Page, Project } from "@/types";
 import Loading from "@/components/loading";
@@ -111,7 +107,7 @@ export const Uploader = ({
           side="top"
           align="start"
           sideOffset={8}
-          className="!rounded-2xl !p-0 bg-card text-foreground border-border min-w-xs text-center overflow-hidden"
+          className="min-w-xs overflow-hidden p-0 text-center"
         >
           {project?.space_id ? (
             <>

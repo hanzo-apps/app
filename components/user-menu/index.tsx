@@ -17,15 +17,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@hanzo/ui";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/overlay";
 import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
 import { Button } from "@hanzo/ui";
 import { useUser } from "@/hooks/useUser";
@@ -38,8 +30,9 @@ export const UserMenu = ({ className }: { className?: string }) => {
   useEffect(() => setMounted(true), []);
   const activeTheme = mounted ? theme ?? "system" : "system";
 
-  const displayName = user?.fullname || user?.name || "User";
-  const userInitial = displayName.charAt(0).toUpperCase();
+  // Identity is resolved ONCE, in useUser — never re-derived per surface.
+  const displayName = user?.name || "User";
+  const userInitial = user?.initials || "U";
 
   return (
     <DropdownMenu>

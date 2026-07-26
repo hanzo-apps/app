@@ -7,11 +7,7 @@ import { logger, cn } from '@/lib/utils';
 import { Button } from '@hanzo/ui';
 import { Input } from '@hanzo/ui';
 import { Switch } from '@hanzo/ui';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@hanzo/ui';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/overlay';
 import {
   Loader2,
   Sparkles,

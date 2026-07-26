@@ -49,7 +49,7 @@ import { ShareModal } from "./share-modal";
 import { StatusBar } from "./status-bar";
 import { VisualEditor } from "./visual-editor";
 import { OrgProvider } from "@/lib/org/client";
-import { Button, TooltipProvider } from "@hanzo/ui";
+import { Button } from "@hanzo/ui";
 
 export const AppEditor = ({
   project,
@@ -246,7 +246,6 @@ export const AppEditor = ({
 
   return (
     <OrgProvider>
-    <TooltipProvider>
     <section className="h-[100dvh] bg-card flex flex-col">
       <Header
         tab={currentTab}
@@ -538,7 +537,6 @@ export const AppEditor = ({
         projectName={project?.title || "Untitled Project"}
       />
     </section>
-    </TooltipProvider>
     </OrgProvider>
   );
 };

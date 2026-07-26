@@ -2,11 +2,7 @@ import classNames from "classnames";
 import { PiGearSixFill } from "react-icons/pi";
 import { Check } from "lucide-react";
 
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@hanzo/ui";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/overlay";
 import { ModelSelector, type ModelCatalogEntry } from "@hanzo/ui/models";
 import {
   AUTO_MODEL,
@@ -129,7 +125,7 @@ export function Settings({
         side="top"
         align="end"
         sideOffset={8}
-        className="z-50 w-96 overflow-hidden !rounded-2xl !border !border-border !bg-card p-0 text-foreground shadow-2xl shadow-black/60"
+        className="w-96 overflow-hidden p-0"
       >
         <header className="border-b border-border bg-card px-4 py-3 text-center text-sm font-medium text-foreground">
           Model

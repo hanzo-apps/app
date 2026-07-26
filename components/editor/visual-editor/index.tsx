@@ -25,27 +25,8 @@ import {
   X,
   Check
 } from "lucide-react";
-import {
-  Button,
-  Input,
-  Label,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  Switch,
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuCheckboxItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent
-} from "@hanzo/ui";
+import { Button, Input, Label, Tabs, TabsContent, TabsList, TabsTrigger, Switch } from "@hanzo/ui";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuCheckboxItem, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent } from "@/components/overlay";
 import { cn } from "@/lib/utils";
 import type { CodeEditorHandle } from "@/components/code-editor";
 
@@ -538,14 +519,14 @@ export function VisualEditor({
         side={menuSide}
         align="end"
         sideOffset={8}
-        className="min-w-56 border-border bg-card/95 text-foreground shadow-xl shadow-black/40 backdrop-blur"
+        className="min-w-56"
       >
         <DropdownMenuSub>
           <DropdownMenuSubTrigger className={menuItemClass}>
             <PanelBottom className="size-4" />
             <span>Dock</span>
           </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent className="min-w-40 border-border bg-card/95 text-foreground backdrop-blur">
+          <DropdownMenuSubContent className="min-w-40">
             <DropdownMenuRadioGroup
               value={dockPosition}
               onValueChange={(v) => setDockPosition(v as DockPosition)}

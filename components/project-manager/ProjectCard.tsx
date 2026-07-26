@@ -3,13 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@hanzo/ui';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@hanzo/ui';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/overlay';
 import { Pencil, Trash2, MoreVertical, ExternalLink, Globe, Settings } from 'lucide-react';
 import { buttonVariants } from '@hanzo/ui';
 import { cn } from '@/lib/utils';

@@ -3,11 +3,7 @@ import { useState } from "react";
 import { MdSave } from "react-icons/md";
 
 import { Button } from "@hanzo/ui";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@hanzo/ui";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/overlay";
 import { LoginModal } from "@/components/login-modal";
 import { useUser } from "@/hooks/useUser";
 import { Page } from "@/types";
@@ -57,7 +53,7 @@ export function DeployButton({
               </div>
             </PopoverTrigger>
             <PopoverContent
-              className="w-72 !rounded-xl !p-0 !bg-card !border-border overflow-hidden shadow-2xl"
+              className="w-72 overflow-hidden p-0"
               align="end"
               sideOffset={8}
             >

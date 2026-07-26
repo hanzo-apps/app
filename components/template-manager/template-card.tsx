@@ -8,19 +8,8 @@ import { Button } from '@hanzo/ui';
 import { Badge } from '@hanzo/ui';
 import { Trash2, Plus, FileBox, Download, Link2, ExternalLink, MoreVertical, Server } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@hanzo/ui';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@hanzo/ui';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/overlay';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/overlay';
 
 interface TemplateCardProps {
   template: CustomTemplate | BuiltInTemplateMetadata;
@@ -93,16 +82,14 @@ export function TemplateCard({
               </div>
             )}
             {isBuiltIn && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="absolute top-1 right-1 bg-background/90 rounded-full p-1">
-                      <Link2 className="h-3 w-3 text-muted-foreground" />
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>Built-in template</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="absolute top-1 right-1 bg-background/90 rounded-full p-1">
+                    <Link2 className="h-3 w-3 text-muted-foreground" />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>Built-in template</TooltipContent>
+              </Tooltip>
             )}
           </div>
 
@@ -200,25 +187,23 @@ export function TemplateCard({
                 {onDelete && (
                   <>
                     <DropdownMenuSeparator />
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div>
-                            <DropdownMenuItem
-                              className="text-destructive"
-                              onClick={handleDelete}
-                              disabled={isBuiltIn}
-                            >
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Delete
-                            </DropdownMenuItem>
-                          </div>
-                        </TooltipTrigger>
-                        {isBuiltIn && (
-                          <TooltipContent>Built-in templates cannot be deleted</TooltipContent>
-                        )}
-                      </Tooltip>
-                    </TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div>
+                          <DropdownMenuItem
+                            className="text-destructive"
+                            onClick={handleDelete}
+                            disabled={isBuiltIn}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete
+                          </DropdownMenuItem>
+                        </div>
+                      </TooltipTrigger>
+                      {isBuiltIn && (
+                        <TooltipContent>Built-in templates cannot be deleted</TooltipContent>
+                      )}
+                    </Tooltip>
                   </>
                 )}
               </DropdownMenuContent>
@@ -289,34 +274,30 @@ export function TemplateCard({
           </div>
         )}
         {isBuiltIn && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="absolute top-2 right-2 bg-background/90 rounded-full p-1.5 shadow-sm">
-                  <Link2 className="h-4 w-4 text-muted-foreground" />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>Built-in template</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="absolute top-2 right-2 bg-background/90 rounded-full p-1.5 shadow-sm">
+                <Link2 className="h-4 w-4 text-muted-foreground" />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>Built-in template</TooltipContent>
+          </Tooltip>
         )}
         {customTemplate?.metadata.downloadUrl && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <a
-                  href={customTemplate.metadata.downloadUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="absolute top-2 left-2 bg-background/90 hover:bg-background rounded-full p-1.5 shadow-sm transition-colors"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                </a>
-              </TooltipTrigger>
-              <TooltipContent>View on marketplace</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <a
+                href={customTemplate.metadata.downloadUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="absolute top-2 left-2 bg-background/90 hover:bg-background rounded-full p-1.5 shadow-sm transition-colors"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <ExternalLink className="h-4 w-4 text-muted-foreground" />
+              </a>
+            </TooltipTrigger>
+            <TooltipContent>View on marketplace</TooltipContent>
+          </Tooltip>
         )}
       </div>
 
@@ -430,25 +411,23 @@ export function TemplateCard({
               {onDelete && (
                 <>
                   <DropdownMenuSeparator />
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div>
-                          <DropdownMenuItem
-                            className="text-destructive"
-                            onClick={handleDelete}
-                            disabled={isBuiltIn}
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
-                          </DropdownMenuItem>
-                        </div>
-                      </TooltipTrigger>
-                      {isBuiltIn && (
-                        <TooltipContent>Built-in templates cannot be deleted</TooltipContent>
-                      )}
-                    </Tooltip>
-                  </TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <DropdownMenuItem
+                          className="text-destructive"
+                          onClick={handleDelete}
+                          disabled={isBuiltIn}
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </div>
+                    </TooltipTrigger>
+                    {isBuiltIn && (
+                      <TooltipContent>Built-in templates cannot be deleted</TooltipContent>
+                    )}
+                  </Tooltip>
                 </>
               )}
             </DropdownMenuContent>

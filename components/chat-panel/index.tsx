@@ -6,7 +6,7 @@ import { DebugEvent } from '@/components/debug-panel';
 import { MarkdownRenderer } from '@/components/markdown-renderer';
 import { Button } from '@hanzo/ui';
 import { Textarea } from '@hanzo/ui';
-import { Popover, PopoverContent, PopoverTrigger } from '@hanzo/ui';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/overlay';
 import { ToggleGroup, ToggleGroupItem } from '@hanzo/ui';
 import { ModelSettingsPanel } from '@/components/settings/model-settings';
 import { FocusContextPayload } from '@/lib/preview/types';

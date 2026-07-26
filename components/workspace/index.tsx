@@ -21,19 +21,10 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@hanzo/ui';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@hanzo/ui';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/overlay';
 import { checkpointManager } from '@/lib/vfs/checkpoint';
 import { saveManager } from '@/lib/vfs/save-manager';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@hanzo/ui';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/overlay';
 import { SettingsPanel } from '@/components/settings';
 import { GuidedTourOverlay } from '@/components/guided-tour/overlay';
 import { useGuidedTour } from '@/components/guided-tour/context';
@@ -1252,7 +1243,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
   );
 
   return (
-    <TooltipProvider>
+    <>
       <div className="h-screen flex flex-col">
         {/* Header */}
         <AppHeader
@@ -1285,18 +1276,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   <MessageSquare className="h-3.5 w-3.5" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent
-                side="right"
-                className="border-0"
-                style={{
-                  backgroundColor: 'var(--button-assistant-active)',
-                  color: 'white'
-                }}
-                arrowStyle={{
-                  backgroundColor: 'var(--button-assistant-active)',
-                  fill: 'var(--button-assistant-active)'
-                }}
-              >
+              <TooltipContent side="right">
                 <p>Chat</p>
               </TooltipContent>
             </Tooltip>
@@ -1318,22 +1298,11 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   <FolderTree className="h-3.5 w-3.5" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent
-                side="right"
-                className="border-0"
-                style={{
-                  backgroundColor: 'var(--button-files-active)',
-                  color: 'white'
-                }}
-                arrowStyle={{
-                  backgroundColor: 'var(--button-files-active)',
-                  fill: 'var(--button-files-active)'
-                }}
-              >
+              <TooltipContent side="right">
                 <p>File Explorer</p>
               </TooltipContent>
             </Tooltip>
-            
+          
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
@@ -1351,22 +1320,11 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   <Code2 className="h-3.5 w-3.5" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent 
-                side="right" 
-                className="border-0"
-                style={{ 
-                  backgroundColor: 'var(--button-editor-active)', 
-                  color: 'white'
-                }}
-                arrowStyle={{
-                  backgroundColor: 'var(--button-editor-active)',
-                  fill: 'var(--button-editor-active)'
-                }}
-              >
+              <TooltipContent side="right">
                 <p>Code Editor</p>
               </TooltipContent>
             </Tooltip>
-            
+          
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
@@ -1384,18 +1342,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   <Eye className="h-3.5 w-3.5" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent
-                side="right"
-                className="border-0"
-                style={{
-                  backgroundColor: 'var(--button-preview-active)',
-                  color: 'white'
-                }}
-                arrowStyle={{
-                  backgroundColor: 'var(--button-preview-active)',
-                  fill: 'var(--button-preview-active)'
-                }}
-              >
+              <TooltipContent side="right">
                 <p>Preview</p>
               </TooltipContent>
             </Tooltip>
@@ -1417,18 +1364,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   <History className="h-3.5 w-3.5" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent
-                side="right"
-                className="border-0"
-                style={{
-                  backgroundColor: 'var(--button-checkpoint-active)',
-                  color: 'white'
-                }}
-                arrowStyle={{
-                  backgroundColor: 'var(--button-checkpoint-active)',
-                  fill: 'var(--button-checkpoint-active)'
-                }}
-              >
+              <TooltipContent side="right">
                 <p>Checkpoints</p>
               </TooltipContent>
             </Tooltip>
@@ -1449,20 +1385,13 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   <Bug className="h-3.5 w-3.5" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent
-                side="right"
-                className="border-0 bg-foreground text-background"
-                arrowStyle={{
-                  backgroundColor: 'var(--foreground)',
-                  fill: 'var(--foreground)'
-                }}
-              >
+              <TooltipContent side="right">
                 <p>Debug Events</p>
               </TooltipContent>
             </Tooltip>
 
           </div>
-          
+        
           {/* Main content area */}
           <div className="flex-1 p-2 overflow-hidden" data-tour-id="workspace-panels">
           <ResizablePanelGroup direction="horizontal" autoSaveId="workspace-layout">
@@ -1701,7 +1630,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
               >
                 <MessageSquare className="h-4 w-4" />
               </button>
-              
+            
               <button
                 className={`flex items-center justify-center py-2 px-2 rounded-lg transition-all shadow-sm ${
                   activeMobilePanel === 'files'
@@ -1715,7 +1644,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
               >
                 <FolderTree className="h-4 w-4" />
               </button>
-              
+            
               <button
                 className={`flex items-center justify-center py-2 px-2 rounded-lg transition-all shadow-sm ${
                   activeMobilePanel === 'editor'
@@ -1729,7 +1658,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
               >
                 <Code2 className="h-4 w-4" />
               </button>
-              
+            
               <button
                 className={`flex items-center justify-center py-2 px-2 rounded-lg transition-all shadow-sm ${
                   activeMobilePanel === 'preview'
@@ -1759,6 +1688,6 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
         enabled={backendEnabled}
         onToggleEnabled={handleBackendToggle}
       />
-    </TooltipProvider>
+    </>
   );
 }

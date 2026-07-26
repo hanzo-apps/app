@@ -8,6 +8,7 @@ import IamClientProvider from '@/components/providers/IamClientProvider';
 import { AnalyticsRoot } from '@/components/providers/analytics';
 import { UsageLimitProvider } from '@/components/usage/usage-limit';
 import { Toaster } from '@hanzo/ui';
+import { TooltipProvider } from '@/components/overlay';
 import { ReactNode } from 'react';
 
 import guiConfig from '@/lib/gui.config';
@@ -59,7 +60,15 @@ export function Providers({ children }: ProvidersProps) {
                 }
               }}
             >
-              <UsageLimitProvider>{children}</UsageLimitProvider>
+              <UsageLimitProvider>
+                {/* ONE tooltip clock for the whole app: hover delay and the grouped
+                    skip-delay are a property of the SESSION, not of each button, so
+                    adjacent controls in a toolbar share it instead of each mounting
+                    a provider with its own timing. */}
+                <TooltipProvider delayDuration={200} skipDelayDuration={300}>
+                  {children}
+                </TooltipProvider>
+              </UsageLimitProvider>
             </ErrorBoundary>
           </AnalyticsRoot>
         </IamClientProvider>

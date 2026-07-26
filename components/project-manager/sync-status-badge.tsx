@@ -2,12 +2,7 @@
 
 import { cn } from '@/lib/utils';
 import { ItemSyncStatus } from '@/lib/vfs/sync-types';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@hanzo/ui';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/overlay';
 import {
   CheckCircle,
   ArrowUp,
@@ -126,14 +121,12 @@ export function SyncStatusBadge({
   );
 
   return (
-    <TooltipProvider delayDuration={300}>
-      <Tooltip>
-        <TooltipTrigger asChild>{badge}</TooltipTrigger>
-        <TooltipContent side="top" className="max-w-xs">
-          <p className="text-sm">{config.description}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>{badge}</TooltipTrigger>
+      <TooltipContent side="top" className="max-w-xs">
+        <p className="text-sm">{config.description}</p>
+      </TooltipContent>
+    </Tooltip>
   );
 }
 

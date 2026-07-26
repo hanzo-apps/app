@@ -31,13 +31,7 @@ import {
 import { ThumbnailArea } from '@/components/ui/thumbnail-area';
 import { captureProjectScreenshot } from '@/lib/utils/project-thumbnail';
 import { formatDistanceToNow } from 'date-fns';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@hanzo/ui';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/overlay';
 import { toast } from '@hanzo/ui';
 
 interface ProjectCardProps {

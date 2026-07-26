@@ -37,26 +37,8 @@ import {
   Wallet,
 } from "lucide-react";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-  Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-  Input,
-} from "@hanzo/ui";
+import { Avatar, AvatarFallback, AvatarImage, Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Input } from "@hanzo/ui";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "@/components/overlay";
 
 import { useUser } from "@/hooks/useUser";
 import { useOrg } from "@/lib/org/client";
@@ -191,7 +173,7 @@ export function WorkspaceMenu({
           side="bottom"
           align="start"
           sideOffset={8}
-          className="w-[19rem] rounded-xl border border-border bg-card/95 p-1.5 text-foreground shadow-2xl shadow-black/60 backdrop-blur-xl"
+          className="w-[19rem] p-1.5"
         >
           {/* Back to the dashboard. */}
           <DropdownMenuItem asChild className={ITEM}>
@@ -236,7 +218,7 @@ export function WorkspaceMenu({
                   {orgKind}
                 </span>
               </DropdownMenuSubTrigger>
-              <DropdownMenuSubContent className="max-h-72 w-64 overflow-y-auto rounded-lg border border-border bg-card/95 p-1 text-foreground shadow-2xl backdrop-blur-xl">
+              <DropdownMenuSubContent className="max-h-72 w-64">
                 {orgs.map((o) => {
                   const isCurrent = o.name === orgId;
                   return (

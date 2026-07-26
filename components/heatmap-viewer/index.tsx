@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@hanzo/ui';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
 import { Label } from '@hanzo/ui';
 import { toast } from '@hanzo/ui';
 
