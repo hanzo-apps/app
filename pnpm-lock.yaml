@@ -69,8 +69,8 @@ importers:
         specifier: ^6.1.3
         version: 6.1.3
       '@hanzo/ai':
-        specifier: ^0.2.1
-        version: 0.2.1
+        specifier: ^0.3.0
+        version: 0.3.0
       '@hanzo/base':
         specifier: ^0.2.1
         version: 0.2.1(react@19.2.4)
@@ -84,8 +84,8 @@ importers:
         specifier: 7.3.0
         version: 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native-web@0.21.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzo/iam':
-        specifier: ^0.13.8
-        version: 0.13.8(react@19.2.4)
+        specifier: ^0.21.0
+        version: 0.21.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@hanzo/logo':
         specifier: ^1.0.13
         version: 1.0.13(react@19.2.4)
@@ -106,7 +106,7 @@ importers:
         version: 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/shell':
         specifier: ^7.6.3
-        version: 7.6.3(@hanzo/iam@0.13.8(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 7.6.3(@hanzo/iam@0.21.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@huggingface/hub':
         specifier: ^2.11.0
         version: 2.11.0
@@ -1244,8 +1244,8 @@ packages:
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
 
-  '@hanzo/ai@0.2.1':
-    resolution: {integrity: sha512-m0k6V6Im8m5RXWHUy/E7DvpZ9tFBYUw21NTYFxNxUiPI1l+yEvHEVytqEbEtHZOCa9Ytb8nfuNzJIsfCeF/zZw==}
+  '@hanzo/ai@0.3.0':
+    resolution: {integrity: sha512-nHj5rgSu5WD1fttfWv65HQ3WG65iztLFrwjb5B5BKSVwLVt7ZSLbioOZ6Of7GnFRG4PxtD0Sy961NnEA2FkaYA==}
     engines: {node: '>=18'}
 
   '@hanzo/base@0.2.1':
@@ -1279,13 +1279,16 @@ packages:
       react: '>=19'
       react-native: '*'
 
-  '@hanzo/iam@0.13.8':
-    resolution: {integrity: sha512-6D4lZSSuTBWV/bof5u5l6VEE0VZhNnpF99svirmHTRko5MsZ5sEd3+7xZ28KH0UL0oquvHwRJ6tkvn+E+f5YuQ==}
+  '@hanzo/iam@0.21.0':
+    resolution: {integrity: sha512-VvnPXQqvyQQ0rwraaMUIRrc8N2eXMtUsXsT3hltstYmghv7F/03sfmus/lWvkShiVYHWzHkh8B/vno8VphgnTg==}
     engines: {node: '>=18'}
     peerDependencies:
       react: '>=17'
+      react-dom: '>=17'
     peerDependenciesMeta:
       react:
+        optional: true
+      react-dom:
         optional: true
 
   '@hanzo/logo@1.0.13':
@@ -11038,7 +11041,7 @@ snapshots:
 
   '@floating-ui/utils@0.2.12': {}
 
-  '@hanzo/ai@0.2.1': {}
+  '@hanzo/ai@0.3.0': {}
 
   '@hanzo/base@0.2.1(react@19.2.4)':
     optionalDependencies:
@@ -11137,13 +11140,14 @@ snapshots:
       - sf-symbols-typescript
       - zeego
 
-  '@hanzo/iam@0.13.8(react@19.2.4)':
+  '@hanzo/iam@0.21.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       jose: 6.2.4
       libphonenumber-js: 1.13.7
       passport-oauth2: 1.8.0
     optionalDependencies:
       react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
 
   '@hanzo/logo@1.0.13(react@19.2.4)':
     optionalDependencies:
@@ -12781,9 +12785,9 @@ snapshots:
       - sf-symbols-typescript
       - zeego
 
-  '@hanzogui/shell@7.6.3(@hanzo/iam@0.13.8(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@hanzogui/shell@7.6.3(@hanzo/iam@0.21.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
-      '@hanzo/iam': 0.13.8(react@19.2.4)
+      '@hanzo/iam': 0.21.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
 
