@@ -39,6 +39,8 @@ import { GuidedTourOverlay } from '@/components/guided-tour/overlay';
 import { useGuidedTour } from '@/components/guided-tour/context';
 import { GuidedTourTranscriptEvent } from '@/components/guided-tour/types';
 import { track } from '@/lib/telemetry';
+import { EVENTS } from '@hanzo/event';
+import { useAnalytics } from '@hanzo/event/react';
 import { FocusContextPayload } from '@/lib/preview/types';
 import { DebugPanel, DebugEvent } from '@/components/debug-panel';
 import { ChatPanel } from '@/components/chat-panel';
@@ -54,6 +56,11 @@ interface WorkspaceProps {
 type FocusTarget = FocusContextPayload & { timestamp: number };
 
 export function Workspace({ project, onBack }: WorkspaceProps) {
+  // The ONE telemetry client (@hanzo/event → api.hanzo.ai/v1/event). `track()`
+  // above is the LEGACY second pipe (lib/telemetry → an OTel traces endpoint on
+  // a frontend host); the build funnel is only computable on the canonical one,
+  // so generation outcomes are captured here.
+  const analytics = useAnalytics();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [prompt, setPrompt] = useState('');
   const [generating, setGenerating] = useState(false);
@@ -1039,6 +1046,14 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
           model: modelToUse,
           duration_ms: Date.now() - taskStartTime,
         });
+        // FUNNELS.appShip step 3 — "got a working build". Identifiers + duration
+        // only; never the prompt or the generated code.
+        analytics.capture(EVENTS.GENERATION_COMPLETED, {
+          provider: currentProvider,
+          model: modelToUse,
+          mode: chatMode ? 'chat' : 'code',
+          durationMs: Date.now() - taskStartTime,
+        });
         toast.success('Task completed');
       } else {
         track('task_fail', {
@@ -1046,6 +1061,13 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
           model: modelToUse,
           reason: 'error',
           duration_ms: Date.now() - taskStartTime,
+        });
+        analytics.capture(EVENTS.GENERATION_FAILED, {
+          provider: currentProvider,
+          model: modelToUse,
+          mode: chatMode ? 'chat' : 'code',
+          reason: 'result_error',
+          durationMs: Date.now() - taskStartTime,
         });
         toast.error(result.summary || 'Generation failed', {
           duration: 5000,
@@ -1067,6 +1089,15 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
         reason: 'error',
         duration_ms: Date.now() - taskStartTime,
       });
+      analytics.capture(EVENTS.GENERATION_FAILED, {
+        provider: currentProvider,
+        model: modelToUse,
+        mode: chatMode ? 'chat' : 'code',
+        reason: 'exception',
+        durationMs: Date.now() - taskStartTime,
+      });
+      // The thrown error itself belongs in the error lens, joined to the drop.
+      analytics.captureError(error, { properties: { where: 'workspace_generate' } });
 
       // Emit error event to clear thinking indicator in chat panel
       addDebugEvent('error', { message: errorMessage });

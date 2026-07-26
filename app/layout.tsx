@@ -135,16 +135,6 @@ export default async function RootLayout({
             </TanstackProvider>
           </Providers>
         </ErrorBoundary>
-        {/* Hanzo Analytics — the ONE canonical hz.js tag → analytics.hanzo.ai,
-            the dashboard hanzo.ai / hanzo.app / hanzo.chat all feed. Raw
-            <script async> so it ships in the served HTML <head> (React hoists
-            it) and captures anonymous landing pageviews the authed @hanzo/event
-            client does not. GA4 / Meta Pixel opt in via data-ga / data-fb. */}
-        <script
-          async
-          src="https://analytics.hanzo.ai/hz.js"
-          data-site="hanzo.app"
-        />
         {/* Hanzo Edit — the ever-present "contribute to this page" widget. Reads
             the hanzo:repo/path/branch/provider metas above, then offers Suggest
             (anyone) or a real fork→edit→PR (admin free, credit-holders debited).
