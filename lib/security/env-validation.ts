@@ -18,7 +18,6 @@ const envSchema = z.object({
 
   // Database
   DATABASE_URL: z.string().url().optional(),
-  REDIS_URL: z.string().url().optional(),
 
   // Hanzo Commerce — IAM-native, per-user. No admin API key: each request is
   // authorized by the caller's own IAM token. Webhook secret verifies inbound
@@ -46,9 +45,6 @@ export function validateEnv(): EnvConfig {
     if (parsed.NODE_ENV === 'production' && !isCI) {
       if (!parsed.DATABASE_URL) {
         console.warn('⚠ DATABASE_URL not set — database features disabled');
-      }
-      if (!parsed.REDIS_URL) {
-        console.warn('⚠ REDIS_URL not set — cache features disabled');
       }
       if (!parsed.NEXTAUTH_SECRET || parsed.NEXTAUTH_SECRET.length < 32) {
         console.warn('⚠ NEXTAUTH_SECRET not set or too short — auth may not work');
