@@ -377,16 +377,23 @@
     // The trigger is the ensō mark alone — one affordance for every AI action
     // on the page (ask, edit, suggest). It glows rather than grows, so it never
     // reflows content or competes with the page's own controls.
+    // The mark IS the button. No disc, no border, no shadow behind it — a black
+    // circle framing a white ring read as two rings stacked. What is left is the
+    // ensō itself, larger and heavier so it holds its own without a plate, and a
+    // ring of light that blooms from the stroke on hover.
     '.fab{position:fixed;right:16px;bottom:16px;z-index:2147483000;display:inline-flex;' +
-    'align-items:center;justify-content:center;width:44px;height:44px;padding:0;' +
-    'border-radius:999px;border:1px solid rgba(255,255,255,.16);background:#111;color:#fff;' +
-    'cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.28);line-height:0;' +
-    'transition:box-shadow .2s ease,border-color .2s ease,transform .2s ease}' +
-    '.fab:hover,.fab:focus-visible{border-color:rgba(255,255,255,.42);' +
-    'box-shadow:0 0 0 1px rgba(255,255,255,.14),0 0 18px 2px rgba(255,255,255,.22),0 6px 24px rgba(0,0,0,.34)}' +
+    'align-items:center;justify-content:center;width:56px;height:56px;padding:0;' +
+    'border-radius:999px;border:0;background:transparent;color:#fff;' +
+    'cursor:pointer;line-height:0;-webkit-tap-highlight-color:transparent;' +
+    'transition:transform .2s ease,filter .25s ease}' +
+    '.fab svg{width:34px;height:34px;display:block;overflow:visible;' +
+    'filter:drop-shadow(0 2px 6px rgba(0,0,0,.55));transition:filter .25s ease}' +
+    '.fab:hover svg,.fab:focus-visible svg{' +
+    'filter:drop-shadow(0 0 3px rgba(255,255,255,.95)) drop-shadow(0 0 10px rgba(255,255,255,.55)) drop-shadow(0 0 22px rgba(255,255,255,.28))}' +
+    '.fab:hover{transform:scale(1.06)}' +
+    '.fab:focus-visible{outline:none}' +
     '.fab:active{transform:scale(.96)}' +
-    '.fab svg{width:20px;height:20px;display:block}' +
-    '@media (prefers-reduced-motion:reduce){.fab{transition:none}}' +
+    '@media (prefers-reduced-motion:reduce){.fab{transition:none}.fab:hover{transform:none}}' +
     '.panel{position:fixed;right:16px;bottom:16px;z-index:2147483001;width:360px;max-width:92vw;background:#0e0e0e;' +
     'color:#f4f4f5;border:1px solid rgba(255,255,255,.14);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.5);' +
     'overflow:hidden;display:none}' +
@@ -465,7 +472,7 @@
   // The ensō — Hanzo's AI mark, identical geometry to the one on /enso.
   var ENSO =
     '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">' +
-    '<circle cx="50" cy="50" r="35" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round"/></svg>';
+    '<circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="round"/></svg>';
 
   var fab = document.createElement('button');
   fab.className = 'fab';
