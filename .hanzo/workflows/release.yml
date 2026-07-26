@@ -1,7 +1,7 @@
 name: Release
-# Cuts a release of ghcr.io/hanzoai/hanzo-app — the WEB app image the operator CR
+# Cuts a release of ghcr.io/hanzoai/app — the WEB app image the operator CR
 # (universe: hanzo-app.yaml) pins. Mirrors hanzoai/cloud/release.yml exactly:
-#     a git tag v<X.Y.Z>  ⇔  an image ghcr.io/hanzoai/hanzo-app:v<X.Y.Z>
+#     a git tag v<X.Y.Z>  ⇔  an image ghcr.io/hanzoai/app:v<X.Y.Z>
 # Builds on the git.hanzo.ai native runner (git-runner; arcd retired) (NOT the GHCR-gated PaaS platform-build, and NOT
 # the Rust CLI Release-Matrix). ghcr auth via GH_PAT / user hanzo-dev, same as cloud —
 # this is the piece platform-build lacked (the `denied` failure).
@@ -61,7 +61,7 @@ jobs:
           set -euo pipefail
           git fetch --tags --force --quiet
           # The deployed lineage is 1.42.x: the operator CR (universe: hanzo-app.yaml)
-          # and every ghcr.io/hanzoai/hanzo-app image are on it, and the newest-by-date
+          # and every ghcr.io/hanzoai/app image are on it, and the newest-by-date
           # commits on main are tagged v1.42.x. Stray older tags exist off that line
           # (v2.2.0 = a 2025 "stack integration" relic, v2.2.1 = a one-off CSP fix,
           # v1.75.0 = a June relic). `sort -V` is purely numeric, so an UNCONSTRAINED
@@ -120,14 +120,14 @@ jobs:
           registry: ghcr.io
           username: hanzo-dev
           password: ${{ secrets.GH_PAT }}
-      - name: Build + push ghcr.io/hanzoai/hanzo-app
+      - name: Build + push ghcr.io/hanzoai/app
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile.production
           platforms: linux/amd64
           push: true
-          tags: ghcr.io/hanzoai/hanzo-app:${{ steps.ver.outputs.version_v }}
+          tags: ghcr.io/hanzoai/app:${{ steps.ver.outputs.version_v }}
           provenance: false
           # Without this the shipped bundle carries no ingest key and every
           # logged-out pageview is refused 403 by api.hanzo.ai. Build-time by
@@ -143,7 +143,7 @@ jobs:
           set -euo pipefail
           v="${{ steps.ver.outputs.version_v }}"
           for i in 1 2 3 4 5 6; do
-            if docker manifest inspect "ghcr.io/hanzoai/hanzo-app:${v}" >/dev/null 2>&1; then
+            if docker manifest inspect "ghcr.io/hanzoai/app:${v}" >/dev/null 2>&1; then
               echo "image ${v} is resolvable — safe to tag"; exit 0
             fi
             echo "ghcr manifest ${v} not visible yet (attempt ${i}/6) — retrying"; sleep 5
