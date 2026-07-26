@@ -22,6 +22,20 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 # NEXT_BUILD_ONLY signals our own code to skip env validation at build time.
 ENV NEXT_BUILD_ONLY=true
 
+# Publishable ingest key (pk_…) for @hanzo/event. WITHOUT it, api.hanzo.ai answers
+# every LOGGED-OUT pageview with 403 "valid bearer or a resolvable ingest key
+# required" — reproduced from a real browser against the live site — so anonymous
+# traffic, which is most of it, never reaches hanzo.events at all. The code has
+# always read it (components/providers/analytics.tsx); it was simply never
+# provisioned.
+#
+# It must be a BUILD ARG: Next inlines NEXT_PUBLIC_* at build time, so setting it
+# on the pod is too late. Safe to ship in the bundle — pk_ is ingest-only by
+# construction (publishable.go keeps the prefix out of the bearer/principal path),
+# so it can write events and cannot read anything.
+ARG NEXT_PUBLIC_EVENT_INGEST_KEY
+ENV NEXT_PUBLIC_EVENT_INGEST_KEY=$NEXT_PUBLIC_EVENT_INGEST_KEY
+
 # CI=false so Next generates the clientReferenceManifest (it skips it when
 # CI=true, which GitHub Actions sets and leaks into the Docker build).
 RUN CI=false pnpm run build && \

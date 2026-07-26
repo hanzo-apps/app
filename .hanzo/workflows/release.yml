@@ -129,6 +129,11 @@ jobs:
           push: true
           tags: ghcr.io/hanzoai/hanzo-app:${{ steps.ver.outputs.version_v }}
           provenance: false
+          # Without this the shipped bundle carries no ingest key and every
+          # logged-out pageview is refused 403 by api.hanzo.ai. Build-time by
+          # necessity: Next inlines NEXT_PUBLIC_* into the client bundle.
+          build-args: |
+            NEXT_PUBLIC_EVENT_INGEST_KEY=${{ secrets.EVENT_INGEST_KEY }}
       - name: Verify the pushed image is pullable (guard the image ⇔ tag invariant)
         # build-push-action can exit 0 while the manifest isn't yet resolvable at the
         # registry (or a partial push). If we tag git anyway, the CR bump lands on a
