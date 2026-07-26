@@ -71,10 +71,11 @@
 }
 
 /* ── Build-composer living gradient ──────────────────────────────────────────
-   A restrained accent flourish on the "Ask Hanzo to build…" bubble: a
-   slow-drifting conic ring + soft glow in the ONE brand accent (purple),
-   ~10s loop. Single-hue (v2 palette = white + gray + purple) — no rainbow.
-   Reduced-motion → the gradient holds a static frame (still colorful, no drift).
+   A restrained flourish on the "Ask Hanzo to build…" bubble: a slow-drifting
+   conic ring + soft glow, ~10s loop. MONOCHROME — a travelling white highlight
+   around a hairline, which is the house language everywhere else; it was a
+   saturated Radix-violet ring, the only colored accent on any Hanzo surface.
+   Reduced-motion → the gradient holds a static frame (still lit, no drift).
 
    Structure (see components/build-composer): a padded `.hz-composer` hosts the
    conic ring (::before, fills the box) + the blurred glow (::after, extends past
@@ -116,10 +117,10 @@
   border-radius: inherit;
   background: conic-gradient(
     from var(--hz-angle),
-    #6e56cf,
-    #8b74e8,
-    #4a3a8f,
-    #6e56cf
+    rgba(255, 255, 255, 0.3),
+    rgba(255, 255, 255, 0.75),
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.3)
   );
   animation: hzComposerSpin 10s linear infinite;
   z-index: 0;
@@ -133,10 +134,10 @@
   border-radius: inherit;
   background: conic-gradient(
     from var(--hz-angle),
-    #6e56cf,
-    #8b74e8,
-    #4a3a8f,
-    #6e56cf
+    rgba(255, 255, 255, 0.3),
+    rgba(255, 255, 255, 0.75),
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.3)
   );
   filter: blur(28px);
   opacity: 0.5;
@@ -544,6 +545,13 @@ html:not(.dark) {
   }
   html {
     @apply scroll-smooth;
+  }
+  /* Tailwind v4's preflight dropped v3's `cursor: pointer` on buttons, so every
+     button in the app fell back to the UA default arrow — indistinguishable
+     from dead text. Restore it once, here, rather than per component. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
   }
   /* Selection = the one purple accent (soft). */
   ::selection {

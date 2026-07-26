@@ -261,10 +261,13 @@ const ROWS: Row[] = [
   },
 ];
 
+// Severity reads as LIGHTNESS, not hue — the house is monochrome, and the
+// argument ("row one is a clean sweep") survives it: Hanzo's row stays solid
+// white while everyone else's dots fade out.
 const DOT: Record<Tone, string> = {
-  good: "bg-emerald-400",
-  mid: "bg-amber-400",
-  bad: "bg-red-500/70",
+  good: "bg-foreground",
+  mid: "bg-foreground/45",
+  bad: "bg-foreground/20",
   na: "bg-transparent ring-1 ring-inset ring-foreground/20",
 };
 const TEXT: Record<Tone, string> = {
