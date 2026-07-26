@@ -26,7 +26,13 @@ jobs:
         with:
           node-version: '22'
       - name: Install pnpm
-        run: npm i -g pnpm@10
+        # corepack, not `npm i -g pnpm@10`: the act runners persist
+        # /opt/hostedtoolcache between jobs, so once any job has installed pnpm the
+        # next one dies with EEXIST and the whole release fails before a single
+        # test runs. corepack is also the only way the version actually matches —
+        # it reads packageManager from package.json (pnpm@10.18.0), where the old
+        # line just took "latest 10". Same mechanism the Dockerfile already uses.
+        run: corepack enable pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Install Playwright (chromium)
