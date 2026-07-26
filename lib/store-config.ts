@@ -19,7 +19,13 @@ export type StoreMode = "ecommerce" | "b2c" | "b2b";
 
 export interface StoreSubsystems {
   commerce: boolean;
-  payments: "square"; // the only processor — never Stripe
+  // Whether payments are on — NOT which processor. Every other field here is a
+  // boolean and this was the odd one out, pinned to a single vendor. Commerce
+  // owns the processor set per tenant (payment/processor registry + router, 13
+  // providers) and serves it live at GET /v1/commerce/tenant, e.g.
+  // providers:[{square,enabled},{crypto,enabled},{wire,enabled}]. Naming one here
+  // both duplicated that and was already false for any tenant with more than one.
+  payments: boolean;
   base: boolean;
   iam_customers: boolean;
   search: boolean;
@@ -51,7 +57,7 @@ const COLLECTION = "store_configs";
 
 const DEFAULT_SUBSYSTEMS: StoreSubsystems = {
   commerce: true,
-  payments: "square",
+  payments: true,
   base: true,
   iam_customers: true,
   search: true,
