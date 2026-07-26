@@ -121,7 +121,7 @@ export const templates: Template[] = [
       "Download & share",
       "Usage tracking"
     ],
-    techStack: ["Next.js 14", "@hanzo/ui", "OpenAI DALL-E", "Cloudinary", "Redis"],
+    techStack: ["Next.js 14", "@hanzo/ui", "OpenAI DALL-E", "Cloudinary", "Hanzo KV"],
     difficulty: "intermediate",
     estimatedTime: "2-3 hours"
   },
@@ -229,7 +229,7 @@ export const templates: Template[] = [
       "Tournaments",
       "Spectator mode"
     ],
-    techStack: ["Next.js 14", "@hanzo/ui", "Socket.io", "WebRTC", "Redis"],
+    techStack: ["Next.js 14", "@hanzo/ui", "Socket.io", "WebRTC", "Hanzo KV"],
     difficulty: "advanced",
     estimatedTime: "5-6 hours"
   }

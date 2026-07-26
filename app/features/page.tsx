@@ -437,7 +437,7 @@ export default function FeaturesPage() {
                   <Server className="w-8 h-8 text-green-400" />
                 </div>
                 <h3 className="text-xl font-medium mb-2 text-foreground">Database Solutions</h3>
-                <p className="text-muted-foreground">Managed PostgreSQL, SQLite, and Redis with auto-backups</p>
+                <p className="text-muted-foreground">Hanzo Base (SQLite), Hanzo SQL, and Hanzo KV with auto-backups</p>
               </div>
               <div className="text-center">
                 <div className="inline-flex p-4 bg-gradient-to-br from-purple-500/10 to-violet-500/10 rounded-2xl border border-purple-500/20 mb-4">

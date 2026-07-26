@@ -13,7 +13,8 @@ interface RateLimitEntry {
   resetTime: number;
 }
 
-// In-memory store for rate limiting (use Redis in production)
+// In-memory store. Per-instance by construction: a distributed limiter would
+// go through Hanzo KV, never Redis.
 const rateLimitStore = new Map<string, RateLimitEntry>();
 
 // Clean up expired entries periodically
@@ -147,66 +148,6 @@ export const rateLimiters = {
     maxRequests: 20, // 20 requests per hour
   }),
 };
-
-// Redis-backed rate limiter for production
-export class RedisRateLimiter extends RateLimiter {
-  private redisClient: any; // Replace with actual Redis client type
-
-  constructor(config: RateLimitConfig, redisClient: any) {
-    super(config);
-    this.redisClient = redisClient;
-  }
-
-  async checkLimit(req: NextRequest): Promise<{ allowed: boolean; remaining: number; resetTime: number }> {
-    if (!this.redisClient) {
-      // Fallback to in-memory if Redis is not available
-      return super.checkLimit(req);
-    }
-
-    const key = this.config.keyGenerator(req);
-    const now = Date.now();
-    const windowStart = now - this.config.windowMs;
-
-    try {
-      // Use Redis sorted set for sliding window rate limiting
-      const pipeline = this.redisClient.pipeline();
-
-      // Remove old entries
-      pipeline.zremrangebyscore(key, '-inf', windowStart);
-
-      // Count current entries
-      pipeline.zcard(key);
-
-      // Add new entry if under limit
-      pipeline.zadd(key, now, `${now}-${Math.random()}`);
-
-      // Set expiry
-      pipeline.expire(key, Math.ceil(this.config.windowMs / 1000));
-
-      const results = await pipeline.exec();
-      const count = results[1][1];
-
-      const allowed = count < this.config.maxRequests;
-      const remaining = Math.max(0, this.config.maxRequests - count);
-      const resetTime = now + this.config.windowMs;
-
-      if (!allowed) {
-        // Remove the entry we just added since we're over the limit
-        await this.redisClient.zrem(key, `${now}-${Math.random()}`);
-      }
-
-      return {
-        allowed,
-        remaining,
-        resetTime,
-      };
-    } catch (error) {
-      console.error('Redis rate limit error:', error);
-      // Fallback to in-memory on error
-      return super.checkLimit(req);
-    }
-  }
-}
 
 // Helper function for easy rate limiting in API routes
 export async function applyRateLimiting(
