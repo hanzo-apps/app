@@ -154,19 +154,6 @@ export function sanitizeRequest(request: NextRequest): NextRequest {
   return request;
 }
 
-// IP extraction helper
-export function getClientIP(request: NextRequest): string {
-  const forwarded = request.headers.get('x-forwarded-for');
-  const realIP = request.headers.get('x-real-ip');
-  const cfIP = request.headers.get('cf-connecting-ip');
-
-  if (cfIP) return cfIP;
-  if (forwarded) return forwarded.split(',')[0].trim();
-  if (realIP) return realIP;
-
-  return 'unknown';
-}
-
 // User agent validation
 export function validateUserAgent(request: NextRequest): boolean {
   const userAgent = request.headers.get('user-agent') || '';
@@ -228,7 +215,6 @@ export const security = {
   applySecurityHeaders,
   applyRateLimiting,
   sanitizeRequest,
-  getClientIP,
   validateUserAgent,
   securityMiddleware,
 };
