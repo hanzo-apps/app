@@ -167,9 +167,10 @@ export function BuildComposer({
   const submit = () => {
     const text = idea.trim();
     if (!text) return;
-    // Top-of-funnel build intent — the landing composer fires this for logged-out
-    // visitors too. Enumerated props only; never the prompt text.
-    analytics.capture(EVENTS.APP_CREATED, { mode, withBase });
+    // Top-of-funnel build INTENT — the landing composer fires this for logged-out
+    // visitors too, and no app exists yet (that is `app_created`, at publish).
+    // FUNNELS.appShip step 2. Enumerated props only; never the prompt text.
+    analytics.capture(EVENTS.BUILD_STARTED, { mode, withBase });
     setBaseEnabled(withBase);
     if (onSubmit) {
       onSubmit(text, mode);

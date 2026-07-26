@@ -89,6 +89,15 @@ export const DeployButtonContent = ({
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
+        // The most expensive drop in the product: the user asked to ship and did
+        // not. `status` distinguishes "needs onboarding" (a product gap we can
+        // fix) from a real server failure — a status code, never the response body.
+        analytics.capture(EVENTS.DEPLOY_FAILED, {
+          framework: "static",
+          update: Boolean(existingSlug),
+          status: res.status,
+          reason: data?.needsOnboarding ? "needs_onboarding" : "error",
+        });
         if (res.status === 409 && data?.needsOnboarding) {
           toast.error("Set up your organization first.");
           router.push("/new");
@@ -141,6 +150,19 @@ export const DeployButtonContent = ({
       // back into the editor. This is the moment that makes the builder shareable.
       if (liveUrl && data?.slug) {
         setPublished({ url: liveUrl, slug: data.slug, org: data?.org || data?.project?.org });
+        // FUNNELS.appShip terminal step — a live URL exists. This is the whole
+        // point of the product, so it is its own event, never inferred from a
+        // deploy_started with no error. Never the URL/name (that is user content).
+        analytics.capture(EVENTS.DEPLOY_SUCCEEDED, {
+          framework: "static",
+          update: Boolean(existingSlug),
+          withBase: baseEnabled(),
+        });
+        if (!existingSlug) {
+          // First live app = this person's activation moment. ONE activation
+          // event across every product; `action` names the product's moment.
+          analytics.capture(EVENTS.FIRST_ACTION, { action: "app_live" });
+        }
         toast.success("Your project is live! 🎉");
         return;
       }
@@ -158,6 +180,12 @@ export const DeployButtonContent = ({
       // (/dev/<org>/<slug> — the same link console.hanzo.ai uses).
       router.push(builderLink(data.slug, data?.org || data?.project?.org));
     } catch (err) {
+      analytics.capture(EVENTS.DEPLOY_FAILED, {
+        framework: "static",
+        update: Boolean(existingSlug),
+        reason: "exception",
+      });
+      analytics.captureError(err, { properties: { where: "publish" } });
       toast.error(err instanceof Error ? err.message : "Failed to publish project");
     } finally {
       setLoading(false);

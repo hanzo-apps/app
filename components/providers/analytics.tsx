@@ -7,6 +7,7 @@ import { useUser } from '@/hooks/useUser';
 import { createAnalytics } from '@hanzo/event';
 import { AnalyticsProvider, ErrorBoundary, useAnalytics, usePageview } from '@hanzo/event/react';
 import { setErrorReporter, type ErrorContext } from '@/lib/error-handling/error-logger';
+import { currentOrg } from '@/lib/org-scope';
 
 /** The Hanzo Cloud event-stream door — POST api.hanzo.ai/v1/event. The client
  *  never sends the org; Cloud resolves the tenant server-side from the validated
@@ -56,6 +57,14 @@ function Identity() {
   // Stable OIDC subject, never email/PII.
   useEffect(() => {
     if (user?.id) analytics.identify(user.id);
+  }, [user?.id, analytics]);
+  // The org. Cloud already resolves the tenant server-side for billing; group()
+  // is what makes ORG-level funnels queryable ("which orgs stalled before their
+  // first deploy?"). Read after auth resolves so the scope is the real one.
+  useEffect(() => {
+    if (!user?.id) return;
+    const org = currentOrg();
+    if (org) analytics.group(org);
   }, [user?.id, analytics]);
   return null;
 }
