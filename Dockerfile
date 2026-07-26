@@ -22,8 +22,17 @@ ARG NEXT_PUBLIC_IAM_CLIENT_ID
 ARG IAM_ENDPOINT=https://hanzo.id
 ARG IAM_ORGANIZATION=hanzo
 ARG IAM_APPLICATION=app-hanzo
+# Publishable ingest key (pk_…) for @hanzo/event. WITHOUT it, api.hanzo.ai answers
+# every LOGGED-OUT pageview with 403 "valid bearer or a resolvable ingest key
+# required" — verified from a real browser against the live site — so anonymous
+# traffic, which is most of it, is silently dropped. NEXT_PUBLIC_* is inlined by
+# Next at BUILD time, so this has to be a build arg; setting it on the pod is too
+# late. Write-only and safe to ship in the bundle: pk_ is ingest-only by
+# construction and cannot read. Mint per org with POST /v1/ingest/keys.
+ARG NEXT_PUBLIC_EVENT_INGEST_KEY
 
 ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+ENV NEXT_PUBLIC_EVENT_INGEST_KEY=$NEXT_PUBLIC_EVENT_INGEST_KEY
 ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN corepack enable pnpm && pnpm build
