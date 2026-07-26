@@ -2237,9 +2237,180 @@ const RAW: RawEntry[] = [
   // -------------------------------------------------------------------------
   // Real Hanzo-stack starters (kind:"repo") — buildable hanzo-apps repos the
   // builder CLONES-AND-RUNS via /dev?repo=<clone-url>. Featured default
-  // starters; they fill the Blog / Editorial / Music / Product Management /
-  // Events categories. React 19 + @hanzo/gui + Hanzo IAM (PKCE) + Hanzo Base.
+  // starters, 33 of them across 14 categories.
+  // React 19 + @hanzo/gui + Hanzo IAM (PKCE) + Hanzo Base.
+  //
+  // ORDER IS THE STOREFRONT. TemplateGallery floats `featured` to the top and is
+  // otherwise stable, so position in THIS array is literally what a first-time
+  // visitor sees first. The lead is chosen, not incidental: a storefront reads
+  // instantly and exercises the most of the stack (Base + PKCE + commerce), then
+  // a waitlist (the commonest same-day job, and it moves), then the restaurant
+  // and photo-essay pair that show the design system off. Sort this array for
+  // tidiness and you have quietly redecorated the front door.
   // -------------------------------------------------------------------------
+  {
+    slug: "shop-storefront",
+    name: "Shop Storefront",
+    tagline: "A minimal product storefront",
+    description:
+      "A minimal, editorial product storefront on the Hanzo stack — a monochrome storefront grid, product detail, and cart backed by org-scoped Hanzo Base collections. Built entirely from @hanzo/gui primitives with PKCE sign-in via hanzo.id, it forks and deploys to hanzo.app as a static SPA. A clean starting point for a small catalogue, with a checkout stub ready to wire to Hanzo Commerce.",
+    category: "Ecommerce",
+    tags: ["Apps"],
+    keyHighlights: [
+      { title: "Three real shopping views", body: "Storefront grid, product detail, and cart — each a genuine @hanzo/gui surface with longhand Tamagui styling, not a static mockup. A stock-bounded quantity stepper and add-to-cart write straight to Base." },
+      { title: "Org-scoped Base data", body: "products and cart_items are real Hanzo Base collections; every row is stamped owner+org and isolated to the signed-in user's organization via the @request.auth.org_id = org rule." },
+      { title: "Ambient PKCE sign-in", body: "OAuth2 PKCE against hanzo.id with no local passwords; the IAM access token carries straight through to Base for every read and write." },
+      { title: "Imagery from the design system", body: "Product art is generated — a paper ground, one ink mark, and an editorial index derived from the product name — so the catalogue looks art-directed with zero image assets. A real photo URL wins when present." },
+      { title: "Seed-on-publish schema", body: "schema.sql provisions the two collections on deploy; an empty shop seeds a nine-object demo collection into Base with a single press." },
+      { title: "Checkout stub, ready to wire", body: "Checkout clears the cart and is a clearly-marked stub — the one place to connect Hanzo Commerce for real orders." },
+    ],
+    about:
+      "Shop Storefront (MONO) is a small editorial retail template: a monochrome catalogue of design objects with a storefront grid, product detail, and cart. It is built on the canonical Hanzo stack — Vite + React 19, @hanzo/gui for every pixel, PKCE auth via hanzo.id, and org-scoped Hanzo Base collections — and ships as a real, buildable repo you fork and deploy to your-slug.hanzo.app. It keeps the hanzo-starter provider stack, vite config, auth, and deploy contract identical, and adds a genuine three-view shopping flow on top.",
+    perfectFor: [
+      "A small brand or maker shipping a lookbook-style storefront",
+      "Prototyping an org-scoped catalogue and cart on Hanzo Base",
+      "A starting point before wiring Hanzo Commerce checkout",
+      "Learning the @hanzo/gui + IAM + Base stack from a real ecommerce app",
+      "Editorial, design-led product galleries",
+    ],
+    framework: "React + Hanzo GUI",
+    kind: "repo",
+    featured: true,
+    repo: "https://github.com/hanzo-apps/shop-storefront.git",
+    seoTitle: "Shop Storefront — Product Storefront Template | Hanzo",
+    seoDescription:
+      "Fork Shop Storefront, a React + Hanzo monochrome storefront with grid, product and cart on org-scoped Base. Remix with AI and deploy on Hanzo.",
+  },
+  {
+    slug: "waitlist-launchpad",
+    name: "Launchpad Waitlist",
+    tagline: "Collect signups with a countdown",
+    description:
+      "Launchpad Waitlist is a dark, motion-rich launch landing page for collecting early-access signups. A live countdown, an animated signup counter, and a single email call to action sit over Hanzo IAM sign-in and an org-scoped Hanzo Base collection, with a signed-in admin dashboard to manage every signup. Fork it, set your launch date, and ship it live on Hanzo.",
+    category: "Landing Page",
+    tags: ["SaaS"],
+    keyHighlights: [
+      { title: "Live countdown to launch", body: "A real ticking countdown (days / hours / minutes / seconds) drives to your launch date. Set VITE_LAUNCH_AT to an ISO instant, or let it roll a 30-day window so a fresh fork is always live." },
+      { title: "Animated signup counter", body: "The signup total eases up with a requestAnimationFrame count-up, reading the real count from Base — no fabricated numbers. A fresh list honestly reads \"Be the first in line.\"" },
+      { title: "One focused call to action", body: "A single email field claims a spot, then rides Hanzo PKCE sign-in so every signup is written under a verified identity — no scattered buttons competing for the click." },
+      { title: "Admin dashboard, private to your org", body: "The second view is the running total, the countdown, and every signup (email + join date) with add, filter, and remove — org-scoped in Hanzo Base by the @request.auth.org_id = org rule." },
+      { title: "Real motion, no animation library", body: "The drifting aurora, hero entrance, and CTA glow are CSS keyframes applied through @hanzo/gui's className hatch and honor prefers-reduced-motion; the countdown and counter are plain interval + rAF." },
+      { title: "100% @hanzo/gui, static-SPA deploy", body: "Every surface is Hanzo GUI primitives (no Tailwind, no second kit). npm run build → dist/ served at <slug>.hanzo.app; schema.sql provisions the signups collection on publish." },
+    ],
+    about:
+      "Launchpad Waitlist is a pre-launch landing page built on the canonical Hanzo app stack — Vite + React 19, @hanzo/gui for UI, @hanzo/iam for PKCE auth against hanzo.id, and @hanzo/base for org-scoped data. The public landing captures emails behind a live countdown and an easing signup counter; the signed-in admin view manages the resulting signups collection with add, filter, and remove. It ships as a real, buildable repo you fork on hanzo.app and deploy live on Hanzo Cloud as a static SPA.",
+    perfectFor: [
+      "Pre-launch email capture for a new product or app",
+      "Coming-soon pages with a hard launch date",
+      "Invite-only or early-access waitlists",
+      "Indie makers validating demand before building",
+      "Founders who want signups private to their org",
+    ],
+    framework: "React + Hanzo GUI",
+    kind: "repo",
+    featured: true,
+    repo: "https://github.com/hanzo-apps/waitlist-launchpad.git",
+    seoTitle: "Launchpad Waitlist — Signup Countdown Template | Hanzo",
+    seoDescription:
+      "Fork Launchpad, a React + Hanzo waitlist landing with a live countdown and admin dashboard on org-scoped Base. Remix with AI and deploy on Hanzo.",
+  },
+  {
+    slug: "bistro-site",
+    name: "Bistro Site",
+    tagline: "A warm restaurant website with menu",
+    description:
+      "Ember is a warm, wood-fired restaurant website built on the Hanzo stack: an editorial ember-and-cream landing with serif headings, a printed-carte menu, and a reservation-request form. The menu and reservations are real Hanzo Base collections, org-scoped through a Hanzo IAM sign-in, so a restaurant can publish its live carte and collect table requests. It ships as a static React 19 SPA that deploys to a hanzo.app subdomain with the schema auto-provisioned on publish.",
+    category: "Websites",
+    tags: ["Services"],
+    keyHighlights: [
+      { title: "Editorial dining design", body: "Warm ember-and-cream palette, serif display headings, a hero on a charred-ember gradient, and an inline wood-fire mark — built entirely from @hanzo/gui primitives with no Tailwind and no second UI kit." },
+      { title: "Menu backed by Hanzo Base", body: "The dining carte reads from a menu_items collection grouped by section; a signed-in owner publishes dishes live, and a house menu stands in as the empty state until the kitchen goes live." },
+      { title: "Reservation requests", body: "A name / party-size / when form writes to an org-scoped reservations collection — sending requires a Hanzo PKCE sign-in and each row is stamped owner+org, with a per-org list of your requests." },
+      { title: "Ambient Hanzo IAM auth", body: "OAuth2 PKCE S256 against hanzo.id reading the client id from import.meta.env.VITE_HANZO_CLIENT_ID (fallback hanzo-app); tokens persist in localStorage and carry through to Base as the bearer." },
+      { title: "One static SPA, one deploy contract", body: "Vite + React 19 builds to dist/ and serves at <slug>.hanzo.app with no server process; schema.sql is the databaseSchema that provisionBaseFromDDL turns into org-scoped collections on publish." },
+      { title: "Green by CI", body: "tsc --noEmit and vite build both pass locally and in GitHub Actions (npm ci + typecheck + build on every push) — verified green on the first run." },
+    ],
+    about:
+      "Bistro Site (\"Ember\") is a restaurant website template for the Hanzo app platform. It pairs a public, editorial storefront with two genuine data surfaces — a Base-backed dining menu and reservation requests — so a small venue gets a marketing site and a live back-of-house from a single fork. It is a real, buildable app (not a mockup): the same provider stack, vite.config, PKCE auth, and deploy contract as the canonical hanzo-starter, varied only in views, schema, and palette.",
+    perfectFor: [
+      "Restaurants, cafes, and bars that need a menu plus reservation requests",
+      "Pop-ups, supper clubs, and residencies",
+      "Any small venue wanting a public site with a live, editable menu",
+      "Founders looking for a real Hanzo IAM + Base starter with warm, content-rich UI",
+    ],
+    framework: "React + Hanzo GUI",
+    kind: "repo",
+    featured: true,
+    repo: "https://github.com/hanzo-apps/bistro-site.git",
+    seoTitle: "Bistro Site — Restaurant Website Template | Hanzo",
+    seoDescription:
+      "Fork Ember, a React + Hanzo restaurant site with a live menu and reservation requests on org-scoped Base. Remix with AI and deploy on Hanzo.",
+  },
+  {
+    slug: "photo-essay",
+    name: "Frame Story — Visual Photo Essays",
+    tagline: "Scroll it like a story.",
+    description:
+      "Frame Story is a long-scroll photo essay builder: sequence full-bleed images and quiet text passages into a cinematic vertical scroll, then publish. Readers fall through published essays as immersive, edge-to-edge visual narratives with thin white type and near-zero chrome. Built on React 19 with @hanzo/gui, PKCE sign-in via @hanzo/iam, and org-scoped @hanzo/base collections.",
+    category: "Editorial",
+    tags: ["Portfolio"],
+    keyHighlights: [
+      { title: "Cinematic full-bleed reader", body: "Published essays play as a slow vertical scroll of edge-to-edge images and centered text passages, with darkened frames, thin white type, and captions in small tracked capitals — near-zero chrome." },
+      { title: "Beat-sequencing builder", body: "Compose an essay by adding image and text beats, reordering them up or down, editing cover and byline against a live preview, and flipping publish to push it onto the public index." },
+      { title: "Org-scoped data on Hanzo Base", body: "stories and blocks are Hanzo Base collections; every read and write carries the signed-in user's IAM token, so essays are visible only within your org (rule @request.auth.org_id = org)." },
+      { title: "PKCE sign-in, no passwords", body: "Auth is OAuth2 PKCE (S256) against hanzo.id via @hanzo/iam; the app never handles a credential and keeps tokens in localStorage for a durable, refresh-aware session." },
+      { title: "100% @hanzo/gui, renders offline", body: "The UI is built only from @hanzo/gui primitives using Tamagui longhand props, and the cinematic cover frames are self-contained SVG — nothing depends on the network to render." },
+      { title: "One-click sample essay", body: "Seed a complete, publishable piece from the bundled frames to see the reader immediately, then edit or replace its beats with your own photos." },
+    ],
+    about:
+      "Frame Story turns a set of photographs into a cinematic vertical story. Editors compose an essay as an ordered sequence of beats — full-bleed image blocks interleaved with short text passages — set a cover and byline, then publish. Published essays land on a poster-tile index; opening one drops the reader into a slow, immersive scroll where each image fills the frame under a soft dark wash and captions sit in small tracked capitals. The whole experience is composed entirely from @hanzo/gui primitives (no Tailwind, no second kit), authenticated with OAuth2 PKCE against hanzo.id, and backed by two org-scoped Hanzo Base collections (stories and blocks) so a team's essays stay private to their org. It ships as a real, buildable static SPA on the canonical Hanzo stack — fork it, run npm run build, and deploy on Hanzo Cloud.",
+    perfectFor: [
+      "Photographers publishing a series or portfolio story",
+      "Editorial, documentary, and reportage storytelling",
+      "Brand lookbooks and visual case studies",
+      "Travel and photojournalism narratives",
+      "Turning any photo set into a scrollable, cinematic story",
+    ],
+    framework: "React + Hanzo GUI",
+    kind: "repo",
+    featured: true,
+    repo: "https://github.com/hanzo-apps/photo-essay.git",
+    seoTitle: "Frame Story — Visual Photo Essay Template | Hanzo",
+    seoDescription:
+      "Fork Frame Story, a React + Hanzo long-scroll photo essay builder with full-bleed image beats and org-scoped Base storage. Remix with AI and deploy on Hanzo.",
+  },
+  {
+    slug: "digital-dropstore",
+    name: "Digital Dropstore",
+    tagline: "Sell digital downloads and drops",
+    description:
+      "Digital Dropstore is a real, buildable Hanzo-stack starter for selling digital downloads and drops — list products as bold poster cards, open a drop's detail page, and claim it to a personal library. It runs on Vite + React 19 with a hype, dark-first UI built entirely from @hanzo/gui, PKCE auth via @hanzo/iam against hanzo.id, and org-scoped @hanzo/base collections provisioned from schema.sql. Fork it on hanzo.app and deploy live on Hanzo Cloud with no server to run.",
+    category: "Ecommerce",
+    tags: ["Apps"],
+    keyHighlights: [
+      { title: "Hype drop aesthetic", body: "Dark-first cards, acid-lime accents, and bold typographic posters generated from each drop's name — no image assets, so the whole store renders offline and stays on-brand." },
+      { title: "Three real views", body: "A storefront landing, a per-drop detail page with a claim/purchase stub, and a personal library that joins your claims against the catalog." },
+      { title: "PKCE auth via hanzo.id", body: "Sign in with Hanzo IAM (OAuth2 PKCE S256) — no local passwords. The IAM access token flows straight into every Base query." },
+      { title: "Org-scoped Base data", body: "drops and claims are Hanzo Base collections provisioned from schema.sql; every row is stamped owner+org and scoped to your org (rule @request.auth.org_id = org)." },
+      { title: "100% @hanzo/gui", body: "Every surface is built from @hanzo/gui (Tamagui) primitives with longhand props through one Btn atom — one design system, no Tailwind, no second kit." },
+      { title: "Static SPA, zero backend", body: "npm run build to dist/, served at <slug>.hanzo.app. Identity and data happen in the browser; there is no server process to run or scale." },
+    ],
+    about:
+      "Digital Dropstore turns the canonical hanzo-starter into a streetwear-style storefront for digital goods. Sellers list drops — sound packs, presets, LUTs, UI kits, files — with a price and delivered file; buyers browse the org's lineup, open a drop, and claim it in a stubbed purchase that lands the item in their library. It keeps the starter's exact provider stack, vite.config, PKCE auth, and Base deploy contract, so it builds green and deploys on Hanzo Cloud unchanged, while the UI is a genuinely distinct hype-drop aesthetic: near-black canvas, acid-lime accents, and typographic posters generated from each drop's name (no image assets).",
+    perfectFor: [
+      "Selling digital downloads, presets, or templates",
+      "Community drop stores and limited releases",
+      "Creator and marketplace MVPs on the Hanzo stack",
+      "Learning @hanzo/gui + IAM + Base end to end",
+    ],
+    framework: "React + Hanzo GUI",
+    kind: "repo",
+    featured: true,
+    repo: "https://github.com/hanzo-apps/digital-dropstore.git",
+    seoTitle: "Digital Dropstore — Digital Downloads Template | Hanzo",
+    seoDescription:
+      "Fork Digital Dropstore, a React + Hanzo storefront for digital drops with a personal library on org-scoped Base. Remix with AI and deploy on Hanzo.",
+  },
   {
     slug: "changelog-ship",
     name: "Shipwright — Product Changelog & Blog",
@@ -2402,39 +2573,6 @@ const RAW: RawEntry[] = [
     seoTitle: "Dispatch — Newsletter Archive Template | Hanzo",
     seoDescription:
       "Fork Dispatch, a React + Hanzo newsletter archive with subscriber capture and a signed-in composer on org-scoped Base. Remix with AI and deploy on Hanzo.",
-  },
-  {
-    slug: "photo-essay",
-    name: "Frame Story — Visual Photo Essays",
-    tagline: "Scroll it like a story.",
-    description:
-      "Frame Story is a long-scroll photo essay builder: sequence full-bleed images and quiet text passages into a cinematic vertical scroll, then publish. Readers fall through published essays as immersive, edge-to-edge visual narratives with thin white type and near-zero chrome. Built on React 19 with @hanzo/gui, PKCE sign-in via @hanzo/iam, and org-scoped @hanzo/base collections.",
-    category: "Editorial",
-    tags: ["Portfolio"],
-    keyHighlights: [
-      { title: "Cinematic full-bleed reader", body: "Published essays play as a slow vertical scroll of edge-to-edge images and centered text passages, with darkened frames, thin white type, and captions in small tracked capitals — near-zero chrome." },
-      { title: "Beat-sequencing builder", body: "Compose an essay by adding image and text beats, reordering them up or down, editing cover and byline against a live preview, and flipping publish to push it onto the public index." },
-      { title: "Org-scoped data on Hanzo Base", body: "stories and blocks are Hanzo Base collections; every read and write carries the signed-in user's IAM token, so essays are visible only within your org (rule @request.auth.org_id = org)." },
-      { title: "PKCE sign-in, no passwords", body: "Auth is OAuth2 PKCE (S256) against hanzo.id via @hanzo/iam; the app never handles a credential and keeps tokens in localStorage for a durable, refresh-aware session." },
-      { title: "100% @hanzo/gui, renders offline", body: "The UI is built only from @hanzo/gui primitives using Tamagui longhand props, and the cinematic cover frames are self-contained SVG — nothing depends on the network to render." },
-      { title: "One-click sample essay", body: "Seed a complete, publishable piece from the bundled frames to see the reader immediately, then edit or replace its beats with your own photos." },
-    ],
-    about:
-      "Frame Story turns a set of photographs into a cinematic vertical story. Editors compose an essay as an ordered sequence of beats — full-bleed image blocks interleaved with short text passages — set a cover and byline, then publish. Published essays land on a poster-tile index; opening one drops the reader into a slow, immersive scroll where each image fills the frame under a soft dark wash and captions sit in small tracked capitals. The whole experience is composed entirely from @hanzo/gui primitives (no Tailwind, no second kit), authenticated with OAuth2 PKCE against hanzo.id, and backed by two org-scoped Hanzo Base collections (stories and blocks) so a team's essays stay private to their org. It ships as a real, buildable static SPA on the canonical Hanzo stack — fork it, run npm run build, and deploy on Hanzo Cloud.",
-    perfectFor: [
-      "Photographers publishing a series or portfolio story",
-      "Editorial, documentary, and reportage storytelling",
-      "Brand lookbooks and visual case studies",
-      "Travel and photojournalism narratives",
-      "Turning any photo set into a scrollable, cinematic story",
-    ],
-    framework: "React + Hanzo GUI",
-    kind: "repo",
-    featured: true,
-    repo: "https://github.com/hanzo-apps/photo-essay.git",
-    seoTitle: "Frame Story — Visual Photo Essay Template | Hanzo",
-    seoDescription:
-      "Fork Frame Story, a React + Hanzo long-scroll photo essay builder with full-bleed image beats and org-scoped Base storage. Remix with AI and deploy on Hanzo.",
   },
   {
     slug: "artist-epk",
@@ -3159,104 +3297,6 @@ const RAW: RawEntry[] = [
       "Fork Quotewright, a React + Hanzo proposal and quoting tool with live totals on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
   {
-    slug: "shop-storefront",
-    name: "Shop Storefront",
-    tagline: "A minimal product storefront",
-    description:
-      "A minimal, editorial product storefront on the Hanzo stack — a monochrome storefront grid, product detail, and cart backed by org-scoped Hanzo Base collections. Built entirely from @hanzo/gui primitives with PKCE sign-in via hanzo.id, it forks and deploys to hanzo.app as a static SPA. A clean starting point for a small catalogue, with a checkout stub ready to wire to Hanzo Commerce.",
-    category: "Ecommerce",
-    tags: ["Apps"],
-    keyHighlights: [
-      { title: "Three real shopping views", body: "Storefront grid, product detail, and cart — each a genuine @hanzo/gui surface with longhand Tamagui styling, not a static mockup. A stock-bounded quantity stepper and add-to-cart write straight to Base." },
-      { title: "Org-scoped Base data", body: "products and cart_items are real Hanzo Base collections; every row is stamped owner+org and isolated to the signed-in user's organization via the @request.auth.org_id = org rule." },
-      { title: "Ambient PKCE sign-in", body: "OAuth2 PKCE against hanzo.id with no local passwords; the IAM access token carries straight through to Base for every read and write." },
-      { title: "Imagery from the design system", body: "Product art is generated — a paper ground, one ink mark, and an editorial index derived from the product name — so the catalogue looks art-directed with zero image assets. A real photo URL wins when present." },
-      { title: "Seed-on-publish schema", body: "schema.sql provisions the two collections on deploy; an empty shop seeds a nine-object demo collection into Base with a single press." },
-      { title: "Checkout stub, ready to wire", body: "Checkout clears the cart and is a clearly-marked stub — the one place to connect Hanzo Commerce for real orders." },
-    ],
-    about:
-      "Shop Storefront (MONO) is a small editorial retail template: a monochrome catalogue of design objects with a storefront grid, product detail, and cart. It is built on the canonical Hanzo stack — Vite + React 19, @hanzo/gui for every pixel, PKCE auth via hanzo.id, and org-scoped Hanzo Base collections — and ships as a real, buildable repo you fork and deploy to your-slug.hanzo.app. It keeps the hanzo-starter provider stack, vite config, auth, and deploy contract identical, and adds a genuine three-view shopping flow on top.",
-    perfectFor: [
-      "A small brand or maker shipping a lookbook-style storefront",
-      "Prototyping an org-scoped catalogue and cart on Hanzo Base",
-      "A starting point before wiring Hanzo Commerce checkout",
-      "Learning the @hanzo/gui + IAM + Base stack from a real ecommerce app",
-      "Editorial, design-led product galleries",
-    ],
-    framework: "React + Hanzo GUI",
-    kind: "repo",
-    featured: true,
-    repo: "https://github.com/hanzo-apps/shop-storefront.git",
-    seoTitle: "Shop Storefront — Product Storefront Template | Hanzo",
-    seoDescription:
-      "Fork Shop Storefront, a React + Hanzo monochrome storefront with grid, product and cart on org-scoped Base. Remix with AI and deploy on Hanzo.",
-  },
-  {
-    slug: "digital-dropstore",
-    name: "Digital Dropstore",
-    tagline: "Sell digital downloads and drops",
-    description:
-      "Digital Dropstore is a real, buildable Hanzo-stack starter for selling digital downloads and drops — list products as bold poster cards, open a drop's detail page, and claim it to a personal library. It runs on Vite + React 19 with a hype, dark-first UI built entirely from @hanzo/gui, PKCE auth via @hanzo/iam against hanzo.id, and org-scoped @hanzo/base collections provisioned from schema.sql. Fork it on hanzo.app and deploy live on Hanzo Cloud with no server to run.",
-    category: "Ecommerce",
-    tags: ["Apps"],
-    keyHighlights: [
-      { title: "Hype drop aesthetic", body: "Dark-first cards, acid-lime accents, and bold typographic posters generated from each drop's name — no image assets, so the whole store renders offline and stays on-brand." },
-      { title: "Three real views", body: "A storefront landing, a per-drop detail page with a claim/purchase stub, and a personal library that joins your claims against the catalog." },
-      { title: "PKCE auth via hanzo.id", body: "Sign in with Hanzo IAM (OAuth2 PKCE S256) — no local passwords. The IAM access token flows straight into every Base query." },
-      { title: "Org-scoped Base data", body: "drops and claims are Hanzo Base collections provisioned from schema.sql; every row is stamped owner+org and scoped to your org (rule @request.auth.org_id = org)." },
-      { title: "100% @hanzo/gui", body: "Every surface is built from @hanzo/gui (Tamagui) primitives with longhand props through one Btn atom — one design system, no Tailwind, no second kit." },
-      { title: "Static SPA, zero backend", body: "npm run build to dist/, served at <slug>.hanzo.app. Identity and data happen in the browser; there is no server process to run or scale." },
-    ],
-    about:
-      "Digital Dropstore turns the canonical hanzo-starter into a streetwear-style storefront for digital goods. Sellers list drops — sound packs, presets, LUTs, UI kits, files — with a price and delivered file; buyers browse the org's lineup, open a drop, and claim it in a stubbed purchase that lands the item in their library. It keeps the starter's exact provider stack, vite.config, PKCE auth, and Base deploy contract, so it builds green and deploys on Hanzo Cloud unchanged, while the UI is a genuinely distinct hype-drop aesthetic: near-black canvas, acid-lime accents, and typographic posters generated from each drop's name (no image assets).",
-    perfectFor: [
-      "Selling digital downloads, presets, or templates",
-      "Community drop stores and limited releases",
-      "Creator and marketplace MVPs on the Hanzo stack",
-      "Learning @hanzo/gui + IAM + Base end to end",
-    ],
-    framework: "React + Hanzo GUI",
-    kind: "repo",
-    featured: true,
-    repo: "https://github.com/hanzo-apps/digital-dropstore.git",
-    seoTitle: "Digital Dropstore — Digital Downloads Template | Hanzo",
-    seoDescription:
-      "Fork Digital Dropstore, a React + Hanzo storefront for digital drops with a personal library on org-scoped Base. Remix with AI and deploy on Hanzo.",
-  },
-  {
-    slug: "waitlist-launchpad",
-    name: "Launchpad Waitlist",
-    tagline: "Collect signups with a countdown",
-    description:
-      "Launchpad Waitlist is a dark, motion-rich launch landing page for collecting early-access signups. A live countdown, an animated signup counter, and a single email call to action sit over Hanzo IAM sign-in and an org-scoped Hanzo Base collection, with a signed-in admin dashboard to manage every signup. Fork it, set your launch date, and ship it live on Hanzo.",
-    category: "Landing Page",
-    tags: ["SaaS"],
-    keyHighlights: [
-      { title: "Live countdown to launch", body: "A real ticking countdown (days / hours / minutes / seconds) drives to your launch date. Set VITE_LAUNCH_AT to an ISO instant, or let it roll a 30-day window so a fresh fork is always live." },
-      { title: "Animated signup counter", body: "The signup total eases up with a requestAnimationFrame count-up, reading the real count from Base — no fabricated numbers. A fresh list honestly reads \"Be the first in line.\"" },
-      { title: "One focused call to action", body: "A single email field claims a spot, then rides Hanzo PKCE sign-in so every signup is written under a verified identity — no scattered buttons competing for the click." },
-      { title: "Admin dashboard, private to your org", body: "The second view is the running total, the countdown, and every signup (email + join date) with add, filter, and remove — org-scoped in Hanzo Base by the @request.auth.org_id = org rule." },
-      { title: "Real motion, no animation library", body: "The drifting aurora, hero entrance, and CTA glow are CSS keyframes applied through @hanzo/gui's className hatch and honor prefers-reduced-motion; the countdown and counter are plain interval + rAF." },
-      { title: "100% @hanzo/gui, static-SPA deploy", body: "Every surface is Hanzo GUI primitives (no Tailwind, no second kit). npm run build → dist/ served at <slug>.hanzo.app; schema.sql provisions the signups collection on publish." },
-    ],
-    about:
-      "Launchpad Waitlist is a pre-launch landing page built on the canonical Hanzo app stack — Vite + React 19, @hanzo/gui for UI, @hanzo/iam for PKCE auth against hanzo.id, and @hanzo/base for org-scoped data. The public landing captures emails behind a live countdown and an easing signup counter; the signed-in admin view manages the resulting signups collection with add, filter, and remove. It ships as a real, buildable repo you fork on hanzo.app and deploy live on Hanzo Cloud as a static SPA.",
-    perfectFor: [
-      "Pre-launch email capture for a new product or app",
-      "Coming-soon pages with a hard launch date",
-      "Invite-only or early-access waitlists",
-      "Indie makers validating demand before building",
-      "Founders who want signups private to their org",
-    ],
-    framework: "React + Hanzo GUI",
-    kind: "repo",
-    featured: true,
-    repo: "https://github.com/hanzo-apps/waitlist-launchpad.git",
-    seoTitle: "Launchpad Waitlist — Signup Countdown Template | Hanzo",
-    seoDescription:
-      "Fork Launchpad, a React + Hanzo waitlist landing with a live countdown and admin dashboard on org-scoped Base. Remix with AI and deploy on Hanzo.",
-  },
-  {
     slug: "resume-curriculum",
     name: "Curriculum Resume",
     tagline: "A polished online resume",
@@ -3287,38 +3327,6 @@ const RAW: RawEntry[] = [
     seoTitle: "Curriculum Resume — Online Resume Template | Hanzo",
     seoDescription:
       "Fork Curriculum, a React + Hanzo print-ready online resume on org-scoped Base. Remix with AI and deploy on Hanzo.",
-  },
-  {
-    slug: "bistro-site",
-    name: "Bistro Site",
-    tagline: "A warm restaurant website with menu",
-    description:
-      "Ember is a warm, wood-fired restaurant website built on the Hanzo stack: an editorial ember-and-cream landing with serif headings, a printed-carte menu, and a reservation-request form. The menu and reservations are real Hanzo Base collections, org-scoped through a Hanzo IAM sign-in, so a restaurant can publish its live carte and collect table requests. It ships as a static React 19 SPA that deploys to a hanzo.app subdomain with the schema auto-provisioned on publish.",
-    category: "Websites",
-    tags: ["Services"],
-    keyHighlights: [
-      { title: "Editorial dining design", body: "Warm ember-and-cream palette, serif display headings, a hero on a charred-ember gradient, and an inline wood-fire mark — built entirely from @hanzo/gui primitives with no Tailwind and no second UI kit." },
-      { title: "Menu backed by Hanzo Base", body: "The dining carte reads from a menu_items collection grouped by section; a signed-in owner publishes dishes live, and a house menu stands in as the empty state until the kitchen goes live." },
-      { title: "Reservation requests", body: "A name / party-size / when form writes to an org-scoped reservations collection — sending requires a Hanzo PKCE sign-in and each row is stamped owner+org, with a per-org list of your requests." },
-      { title: "Ambient Hanzo IAM auth", body: "OAuth2 PKCE S256 against hanzo.id reading the client id from import.meta.env.VITE_HANZO_CLIENT_ID (fallback hanzo-app); tokens persist in localStorage and carry through to Base as the bearer." },
-      { title: "One static SPA, one deploy contract", body: "Vite + React 19 builds to dist/ and serves at <slug>.hanzo.app with no server process; schema.sql is the databaseSchema that provisionBaseFromDDL turns into org-scoped collections on publish." },
-      { title: "Green by CI", body: "tsc --noEmit and vite build both pass locally and in GitHub Actions (npm ci + typecheck + build on every push) — verified green on the first run." },
-    ],
-    about:
-      "Bistro Site (\"Ember\") is a restaurant website template for the Hanzo app platform. It pairs a public, editorial storefront with two genuine data surfaces — a Base-backed dining menu and reservation requests — so a small venue gets a marketing site and a live back-of-house from a single fork. It is a real, buildable app (not a mockup): the same provider stack, vite.config, PKCE auth, and deploy contract as the canonical hanzo-starter, varied only in views, schema, and palette.",
-    perfectFor: [
-      "Restaurants, cafes, and bars that need a menu plus reservation requests",
-      "Pop-ups, supper clubs, and residencies",
-      "Any small venue wanting a public site with a live, editable menu",
-      "Founders looking for a real Hanzo IAM + Base starter with warm, content-rich UI",
-    ],
-    framework: "React + Hanzo GUI",
-    kind: "repo",
-    featured: true,
-    repo: "https://github.com/hanzo-apps/bistro-site.git",
-    seoTitle: "Bistro Site — Restaurant Website Template | Hanzo",
-    seoDescription:
-      "Fork Ember, a React + Hanzo restaurant site with a live menu and reservation requests on org-scoped Base. Remix with AI and deploy on Hanzo.",
   },
 ];
 
