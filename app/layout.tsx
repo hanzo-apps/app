@@ -121,10 +121,16 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground min-h-screen`}
-      >
+    // next/font's generated variables live on <html>, not <body>: they ARE design
+    // tokens, so they have to be readable from `:root` where every other token is
+    // declared. On <body> they were invisible to `:root { --font-sans: … }` and to
+    // Tailwind's `--default-font-family`, which left <html> itself on the OS stack.
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable}`}
+      suppressHydrationWarning
+    >
+      <body className="antialiased bg-background text-foreground min-h-screen">
         <IframeDetector />
         <ChunkReloader />
         <PointerEventsGuard />

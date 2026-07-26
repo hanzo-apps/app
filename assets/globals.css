@@ -615,6 +615,38 @@ html:not(.dark) {
   backdrop-filter: none;
 }
 
+/* ── One font token chain — every family name resolves to the real Geist ─────
+   Two upstream token sets name families this app has no @font-face for, so both
+   fell through to the OS stack:
+
+     @hanzo/brand   :root { --font-sans: 'Geist Sans', -apple-system, … }
+     @hanzo/gui     :root .font_body|.font_heading { --f-family: -apple-system, … }
+
+   next/font generates the family "Geist" (never "Geist Sans") and hands it over
+   as --font-geist-sans, so the fix is to point the tokens at that variable —
+   never at a literal family name, which is what drifted in the first place.
+
+   --f-family is the load-bearing one: Tamagui pairs it with
+   `.font_body, .font_heading, .is_View { font-family: var(--f-family) }`, and
+   @hanzo/gui's provider wraps the whole tree in <span class="_dsp_contents
+   font_body"> INSIDE <body>. Inheritance follows proximity, so that one span
+   beat body's Geist for every h1/h2/p/a beneath it while <button>/<code> — which
+   set their own family below — kept the webfont. Correcting the token fixes the
+   entire subtree in one declaration instead of per component.
+
+   Next decides stylesheet order and puts both upstream sheets AFTER this one
+   (brand as its own chunk, gui as an inline <style>), so an equal-specificity
+   :root would lose. The html:root anchor outranks their :root / :root .font_*
+   (0,1,1 and 0,2,1 over 0,1,0 and 0,2,0) and holds whatever the order. */
+html:root {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+html:root .font_body,
+html:root .font_heading {
+  --f-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
 /* ── Geist everywhere — no OS/UA fonts leak in ───────────────────────────────
    Form controls (button/input/textarea/select) do NOT inherit font-family: the
    UA sheet pins them to a system font, so every input/button in the app was
