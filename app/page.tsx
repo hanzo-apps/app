@@ -178,7 +178,10 @@ export default function LandingPage() {
 
             <Reveal delay={60}>
               <h1 className="text-balance text-[1.9rem] font-medium leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
-                Describe your app.
+                {/* The space is explicit: JSX drops the whitespace around the <br>,
+                    and the <br> is hidden below sm — without it the mobile heading
+                    reads "Describe your app.Hanzo builds and ships it." */}
+                Describe your app.{' '}
                 <br className="hidden sm:block" />
                 Hanzo builds and ships it.
               </h1>
