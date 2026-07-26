@@ -124,54 +124,15 @@ export async function applyRateLimiting(
   return null;
 }
 
-// CORS configuration
-const corsHeaders = {
-  'Access-Control-Allow-Origin': process.env.NEXT_PUBLIC_APP_URL || '*',
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, X-CSRF-Token',
-  'Access-Control-Max-Age': '86400',
-  'Access-Control-Allow-Credentials': 'true',
-};
-
-// Apply CORS headers for API routes
-export function applyCORSHeaders(response: NextResponse, origin?: string | null): NextResponse {
-  // In production, validate origin against whitelist
-  if (process.env.NODE_ENV === 'production' && origin) {
-    const allowedOrigins = [
-      process.env.NEXT_PUBLIC_APP_URL,
-      'https://hanzo.ai',
-      'https://hanzo.app',
-      'https://hanzo.io',
-      'https://hanzo.bot',
-      'https://hanzo.team',
-      'https://hanzo.chat',
-      'https://s3.hanzo.ai',
-      'https://app.hanzo.bot',
-      'https://chat.hanzo.ai',
-      'https://console.hanzo.ai',
-    ].filter(Boolean);
-
-    // Also allow *.hanzo.ai subdomains
-    if (origin && (origin.endsWith('.hanzo.ai') || origin.endsWith('.hanzo.app') || origin.endsWith('.hanzo.bot'))) {
-      response.headers.set('Access-Control-Allow-Origin', origin);
-      return response;
-    }
-
-    if (!allowedOrigins.includes(origin)) {
-      // Don't set CORS headers for unauthorized origins
-      return response;
-    }
-
-    response.headers.set('Access-Control-Allow-Origin', origin);
-  } else {
-    // Development mode or no origin
-    Object.entries(corsHeaders).forEach(([key, value]) => {
-      response.headers.set(key, value);
-    });
-  }
-
-  return response;
-}
+// CORS lives in ONE place: lib/edit/cors.ts, which the cross-origin widget
+// routes (/v1/me, /v1/suggest, /v1/edit, /v1/register) call directly. A second
+// allowlist used to sit here, unreferenced, and it was wrong in three ways that
+// a reader would have trusted: it fell back to `Access-Control-Allow-Origin: *`
+// alongside `Allow-Credentials: true` (a combination browsers reject outright),
+// it suffix-matched `.hanzo.app` — handing every user-published tenant site a
+// credentialed channel — and it allowlisted hanzo.io, a parked domain we do not
+// serve. Deleted rather than reconciled: two allowlists drift, and the drift is
+// exactly what broke hanzo.chat.
 
 // Request sanitization
 export function sanitizeRequest(request: NextRequest): NextRequest {
@@ -266,7 +227,6 @@ export async function securityMiddleware(
 export const security = {
   applySecurityHeaders,
   applyRateLimiting,
-  applyCORSHeaders,
   sanitizeRequest,
   getClientIP,
   validateUserAgent,

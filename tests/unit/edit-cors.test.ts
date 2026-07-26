@@ -48,6 +48,32 @@ describe('isAllowedOrigin — credentialed reads', () => {
     }
   });
 
+  /**
+   * Regression pinned: a brand APEX is its own origin and no `*.hanzo.ai`
+   * pattern reaches it. The chat client is served at `hanzo.chat`
+   * (chat.hanzo.ai 308s there) and embeds the widget, so `/v1/me` saw
+   * `Origin: https://hanzo.chat` and answered with allow-methods +
+   * allow-headers but NO allow-origin — half-configured, which looks
+   * configured while the browser still blocks the read, so the chat client
+   * could never resolve identity. All three must move together.
+   */
+  it('a brand apex that serves a browser surface gets all three headers', () => {
+    for (const o of ['https://hanzo.chat', 'https://hanzo.team']) {
+      const h = corsHeaders(o);
+      expect(h['Access-Control-Allow-Origin']).toBe(o);
+      expect(h['Access-Control-Allow-Credentials']).toBe('true');
+      expect(h['Access-Control-Allow-Methods']).toBeDefined();
+      expect(h['Access-Control-Allow-Headers']).toBeDefined();
+    }
+  });
+
+  /** Credentialed CORS may never be wildcarded — browsers reject `*` + credentials. */
+  it('never answers with a wildcard origin', () => {
+    for (const o of ['https://hanzo.chat', 'https://hanzo.ai', 'https://evil.com', null]) {
+      expect(corsHeaders(o)['Access-Control-Allow-Origin']).not.toBe('*');
+    }
+  });
+
   it('an unrelated or malformed origin is refused', () => {
     expect(isAllowedOrigin('https://evil.com')).toBe(false);
     expect(isAllowedOrigin('https://nothanzo.ai')).toBe(false);

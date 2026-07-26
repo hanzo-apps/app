@@ -32,12 +32,28 @@
  */
 const TENANT_SUFFIXES = ['hanzo.app'];
 
-/** Host suffixes trusted to send the first-party cookie credentialed. */
+/**
+ * Host suffixes trusted to send the first-party cookie credentialed.
+ *
+ * A BRAND APEX IS ITS OWN ORIGIN — no `*.hanzo.ai` entry covers `hanzo.chat`.
+ * The chat client is served at the `hanzo.chat` apex (chat.hanzo.ai 308s there),
+ * and its page embeds this widget, so its probe of `/v1/me` arrived with
+ * `Origin: https://hanzo.chat` — absent here, it got allow-methods and
+ * allow-headers but NO allow-origin. Two of three headers reads as configured
+ * while the browser still blocks the read, so identity silently never resolved.
+ * `hanzo.team` is the same surface class and was missing for the same reason.
+ * Both apexes are already trusted by this app's CSP frame-ancestors
+ * (lib/security/middleware.ts) and by cloud's CLOUD_CORS_ORIGINS; only this
+ * list had drifted. Keep an apex here the moment a brand serves a browser
+ * surface — a sub-domain pattern will not do it for you.
+ */
 const DEFAULT_SUFFIXES = [
   'hanzo.ai',
   'hanzo.app',
   'hanzo.id',
   'hanzo.bot',
+  'hanzo.chat',
+  'hanzo.team',
   'hanzo.network',
   'hanzo.computer',
   'lux.network',
