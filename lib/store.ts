@@ -22,6 +22,9 @@
 // No secret lives here beyond the KMS-injected storefront token; Square creds
 // never leave commerce.
 
+// Host only — the commerce surface path (/v1/commerce/...) belongs in the calls
+// below, not baked into the base. commerce.hanzo.ai is NOT it: that host 404s
+// every /v1 route now that cloud serves commerce natively at /v1/commerce.
 const COMMERCE_STORE_URL = (
   process.env.HANZO_COMMERCE_STORE_URL || "https://api.hanzo.ai"
 ).replace(/\/+$/, "");
@@ -226,7 +229,7 @@ interface RawStore {
  */
 async function fetchStore(binding: StoreBinding): Promise<RawStore> {
   return commerceFetch<RawStore>(
-    `/v1/store/${encodeURIComponent(binding.storeId)}`,
+    `/v1/commerce/store/${encodeURIComponent(binding.storeId)}`,
     { org: binding.org, token: readAuthToken(binding), method: "GET" },
   );
 }
@@ -285,7 +288,7 @@ function normalizeCart(raw: RawCart): StoreCart {
 
 /** Create a cart in the org's store. */
 export async function createCart(binding: StoreBinding): Promise<StoreCart> {
-  const raw = await commerceFetch<RawCart>(`/v1/cart`, {
+  const raw = await commerceFetch<RawCart>(`/v1/commerce/cart`, {
     org: binding.org,
     token: readAuthToken(binding),
     method: "POST",
@@ -301,7 +304,7 @@ export async function getCart(
 ): Promise<StoreCart | null> {
   try {
     const raw = await commerceFetch<RawCart>(
-      `/v1/cart/${encodeURIComponent(cartId)}`,
+      `/v1/commerce/cart/${encodeURIComponent(cartId)}`,
       { org: binding.org, token: readAuthToken(binding), method: "GET" },
     );
     return normalizeCart(raw);
@@ -318,7 +321,7 @@ export async function setCartItem(
   line: StoreCartLine,
 ): Promise<StoreCart> {
   const raw = await commerceFetch<RawCart>(
-    `/v1/cart/${encodeURIComponent(cartId)}/set`,
+    `/v1/commerce/cart/${encodeURIComponent(cartId)}/set`,
     {
       org: binding.org,
       token: readAuthToken(binding),
@@ -388,7 +391,7 @@ export async function createCheckoutSession(
       quantity: it.quantity,
     })),
   };
-  return commerceFetch<CheckoutSession>(`/v1/checkout/sessions`, {
+  return commerceFetch<CheckoutSession>(`/v1/commerce/checkout/sessions`, {
     org: input.org,
     method: "POST",
     body: JSON.stringify(body),
@@ -406,7 +409,7 @@ export async function getOrder(
 ): Promise<unknown | null> {
   try {
     return await commerceFetch<unknown>(
-      `/v1/order/${encodeURIComponent(orderId)}`,
+      `/v1/commerce/order/${encodeURIComponent(orderId)}`,
       { org: binding.org, token: readAuthToken(binding), method: "GET" },
     );
   } catch (e) {
