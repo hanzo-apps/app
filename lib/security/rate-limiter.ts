@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { SESSION_COOKIE } from '@hanzo/iam/server';
 
 interface RateLimitConfig {
   windowMs: number;
@@ -105,6 +106,29 @@ export class RateLimiter {
 }
 
 // Pre-configured rate limiters for different endpoints
+/**
+ * The subject a request's token CLAIMS, for bucketing only.
+ *
+ * Deliberately not `lib/iam.ts`: `keyGenerator` is synchronous and runs in the
+ * edge middleware, and a rate-limit bucket is not an authorization decision —
+ * the worst a forged `sub` buys is a different bucket, which sending no token at
+ * all already does. Identity is verified per request, later, in lib/iam.ts.
+ */
+export function subjectOf(req: NextRequest): string | null {
+  const auth = req.headers.get('authorization');
+  const tok =
+    (auth && /^Bearer\s+/i.test(auth) ? auth.replace(/^Bearer\s+/i, '') : null) ||
+    req.cookies.get(SESSION_COOKIE)?.value;
+  const payload = tok?.split('.')[1];
+  if (!payload) return null;
+  try {
+    const sub = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/'))).sub;
+    return typeof sub === 'string' && sub ? sub : null;
+  } catch {
+    return null;
+  }
+}
+
 export const rateLimiters = {
   // Strict rate limit for authentication endpoints
   auth: new RateLimiter({
@@ -125,17 +149,21 @@ export const rateLimiters = {
   }),
 
   // Rate limit for AI endpoints (expensive operations). Keyed PER-USER, not
-  // per-IP: /v1/generate is authenticated (hanzo_token cookie), and behind the
-  // shared cluster ingress an IP key collapses EVERY user into one global bucket
-  // (so one person's builds 429 everyone). Per-user gives each builder their own
-  // headroom; 30/min covers interactive iterate-and-rebuild while still guarding
-  // cost. Falls back to IP only for unauthenticated callers.
+  // per-IP: /v1/generate is authenticated, and behind the shared cluster ingress
+  // an IP key collapses EVERY user into one global bucket (so one person's
+  // builds 429 everyone). Per-user gives each builder their own headroom; 30/min
+  // covers interactive iterate-and-rebuild while still guarding cost. Falls back
+  // to IP only for unauthenticated callers.
+  //
+  // The key is the token's SUBJECT, not the token: a refresh mints a new token
+  // for the same person, so keying on the token itself handed anyone who
+  // refreshed a brand-new budget. `sub` is stable for the life of the account.
   ai: new RateLimiter({
     windowMs: 60 * 1000, // 1 minute
     maxRequests: 30, // per authenticated user
     keyGenerator: (req) => {
-      const tok = req.cookies.get('hanzo_token')?.value;
-      if (tok) return `rate-limit:ai:user:${tok.slice(-24)}`;
+      const sub = subjectOf(req);
+      if (sub) return `rate-limit:ai:user:${sub}`;
       const fwd = req.headers.get('x-forwarded-for');
       const ip = fwd ? fwd.split(',')[0] : req.headers.get('x-real-ip') || 'unknown';
       return `rate-limit:ai:ip:${ip}`;

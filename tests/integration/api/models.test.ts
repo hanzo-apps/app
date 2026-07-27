@@ -16,7 +16,10 @@
  */
 import { NextRequest } from "next/server";
 import { http, HttpResponse } from "msw";
+import { clearJwksCache } from "@hanzo/iam/auth";
+
 import { server } from "../../../jest.setup";
+import { IAM, CLIENT_ID, iamHandlers, mint } from "../../iam-fixture";
 
 import { GET as listModels } from "@/app/v1/models/route";
 
@@ -24,9 +27,21 @@ const GATEWAY = "https://api.hanzo.ai/v1";
 
 function req(token?: string) {
   const headers = new Headers();
-  if (token) headers.set("cookie", `hanzo_token=${token}`);
+  if (token) headers.set("authorization", `Bearer ${AUTH}`);
   return new NextRequest("http://localhost/v1/models", { headers });
 }
+
+// A token is only a caller if IAM signed it, so these suites mint real ones
+// against an in-process IAM (tests/iam-fixture). `AUTH` stands in wherever a
+// case used to hand over a made-up string.
+let AUTH: string;
+beforeEach(async () => {
+  process.env.IAM_URL = IAM;
+  process.env.IAM_CLIENT_ID = CLIENT_ID;
+  clearJwksCache();
+  server.use(...(await iamHandlers()));
+  AUTH = await mint();
+});
 
 describe("BFF: GET /v1/models", () => {
   it("returns the offline fallback (200) when no token cookie is present", async () => {
@@ -70,7 +85,7 @@ describe("BFF: GET /v1/models", () => {
     const body = await res.json();
 
     expect(res.status).toBe(200);
-    expect(seenAuth).toBe("Bearer tok-abc");
+    expect(seenAuth).toBe(`Bearer ${AUTH}`);
     expect(body.ok).toBe(true);
     expect(body.fallback).toBe(false);
     expect(body.models).toEqual([

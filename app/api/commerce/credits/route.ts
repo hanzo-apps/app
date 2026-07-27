@@ -5,12 +5,12 @@ import {
   getCustomerCredits,
   isCommerceConfigured,
 } from '@/lib/commerce';
-import { getUserSession } from '@/lib/session';
+import { session } from '@/lib/iam';
 
 // GET - Get current credit balance
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const user = await getUserSession();
+    const user = await session(req);
 
     if (!user) {
       return NextResponse.json({
@@ -28,7 +28,7 @@ export async function GET() {
 
     const customer = await getOrCreateCustomer({
       token: user.token,
-      userId: user.id,
+      userId: user.sub,
       email: user.email,
       name: user.name,
     });
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const user = await getUserSession();
+    const user = await session(req);
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -67,25 +67,25 @@ export async function POST(req: NextRequest) {
 
     const customer = await getOrCreateCustomer({
       token: user.token,
-      userId: user.id,
+      userId: user.sub,
       email: user.email,
       name: user.name,
     });
 
     const origin = req.headers.get('origin') || 'http://localhost:3000';
 
-    const session = await createCreditsCheckoutSession({
+    const checkout = await createCreditsCheckoutSession({
       token: user.token,
       customerId: customer.id,
       amount,
       successUrl: `${origin}/billing?credits_added=true&amount=${amount}`,
       cancelUrl: `${origin}/billing?canceled=true`,
       metadata: {
-        userId: user.id,
+        userId: user.sub,
       },
     });
 
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({ url: checkout.url });
   } catch (error) {
     console.error('Error creating credits checkout:', error);
     return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 });

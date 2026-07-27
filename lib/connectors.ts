@@ -6,7 +6,7 @@
  * to the cloud connectors surface as the signed-in user (falling back to the legacy
  * `/v1/integrations` cloud prefix during the cloud rename). Cloud derives the
  * org from the bearer `owner` claim (gateway-minted `X-Org-Id`), so every
- * connection is org-scoped — and the httpOnly `hanzo_token` is NEVER read by
+ * connection is org-scoped — and the IAM token is NEVER read by
  * browser JS (the cookie rides the same-origin request; least privilege).
  *
  * The types + normalizers MIRROR console's client (console/src/lib/api/

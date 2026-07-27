@@ -8,7 +8,7 @@
  * header — so we forward only the bearer and let the gateway scope the org.
  *
  * Auth is per-user: we forward the signed-in user's IAM token (the
- * `hanzo_token` cookie mirrored from the @hanzo/iam SDK). No token → honest
+ * verified IAM session — see lib/iam.ts). No session → honest
  * 401 with `openLogin` so the client opens the login flow. No shared server
  * key fallback — reads and runs are always the caller's own org.
  *
@@ -18,7 +18,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import MY_TOKEN_KEY from "@/lib/get-cookie-name";
+import { session } from "@/lib/iam";
 import { isCrossSite } from "@/lib/csrf";
 
 const HANZO_AI_BASE_URL =
@@ -33,7 +33,7 @@ const unauthorized = () =>
   );
 
 export async function GET(request: NextRequest) {
-  const token = request.cookies.get(MY_TOKEN_KEY())?.value;
+  const token = (await session(request))?.token;
   if (!token) return unauthorized();
 
   let gateway: Response;
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const token = request.cookies.get(MY_TOKEN_KEY())?.value;
+  const token = (await session(request))?.token;
   if (!token) return unauthorized();
 
   const body = await request.json().catch(() => ({}));

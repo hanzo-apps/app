@@ -12,7 +12,7 @@
  *   DELETE /v1/base/todos/<id>            // delete
  *
  * `<collection>[/rest]` maps to Base `/v1/collections/<collection>/records[/rest]`.
- * The signed-in Hanzo identity is injected SERVER-SIDE (the httpOnly `hanzo_token`
+ * The signed-in Hanzo identity is injected SERVER-SIDE (the verified IAM session
  * cookie → a Bearer the Base backend validates against hanzo.id JWKS), so the
  * browser never holds a Base credential and org/tenant scoping is derived from the
  * verified JWT — never from a client-supplied header.

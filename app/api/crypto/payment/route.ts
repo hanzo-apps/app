@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server'
-import { getUserSession } from '@/lib/session'
+import { NextResponse, type NextRequest } from 'next/server'
+import { session } from '@/lib/iam'
 
 // Crypto payment processing is not yet implemented.
 // When ready, this endpoint must:
@@ -10,8 +10,8 @@ import { getUserSession } from '@/lib/session'
 //
 // Until all of the above are in place, this endpoint returns 503.
 
-export async function POST() {
-  const user = await getUserSession()
+export async function POST(req: NextRequest) {
+  const user = await session(req)
 
   if (!user) {
     return NextResponse.json(

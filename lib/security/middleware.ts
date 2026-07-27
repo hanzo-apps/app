@@ -176,7 +176,6 @@ export async function securityMiddleware(
   request: NextRequest,
   options?: {
     rateLimit?: 'auth' | 'api' | 'public' | 'ai' | 'payment';
-    requireAuth?: boolean;
     validateUA?: boolean;
   }
 ): Promise<NextResponse | null> {
@@ -192,15 +191,6 @@ export async function securityMiddleware(
       if (rateLimitResponse) {
         return rateLimitResponse;
       }
-    }
-
-    // Check authentication if required
-    if (options?.requireAuth) {
-      const token = request.headers.get('authorization')?.replace('Bearer ', '');
-      if (!token) {
-        return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-      }
-      // Additional token validation would go here
     }
 
     return null; // Continue with request processing

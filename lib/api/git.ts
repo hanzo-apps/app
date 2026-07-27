@@ -3,7 +3,7 @@
  *
  * These endpoints resolve the user's IAM-linked GitHub token server-side and
  * return only repository/account metadata — the token stays on the server. All
- * calls are same-origin so the httpOnly `hanzo_token` cookie rides automatically
+ * calls are same-origin so the IAM session cookie rides automatically
  * (`credentials: "include"`). Every helper resolves (never throws): a not-
  * connected/unauthenticated response yields empty data so the UI can show the
  * honest "Connect GitHub" CTA instead of crashing.
@@ -145,7 +145,7 @@ export interface SyncGitResult {
 /**
  * Push the builder project to the user's GitHub/GitLab repo (`POST /v1/git/sync`).
  *
- * Same-origin so the httpOnly `hanzo_token` rides automatically; the provider
+ * Same-origin so the IAM session cookie rides automatically; the provider
  * token is resolved + used SERVER-SIDE only. Never throws — a not-connected (401)
  * or error response is returned with `ok:false` so the UI can show the honest
  * "Connect …" CTA or the error.

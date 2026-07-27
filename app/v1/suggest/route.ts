@@ -15,7 +15,7 @@ import type { NextRequest } from 'next/server';
 
 import { parseOwnerRepo, GitSyncError } from '@/lib/git/sync';
 import { cleanLine } from '@/lib/git/summarize';
-import { readWidgetBearer, resolveOrgIdentity } from '@/lib/org/server';
+import { session } from '@/lib/iam';
 import { providerFor, providerName } from '@/lib/edit/provider';
 import { resolveEditToken } from '@/lib/edit/token';
 import { preflight, withCors } from '@/lib/edit/cors';
@@ -53,13 +53,12 @@ export async function POST(req: NextRequest) {
   }
 
   const provider = providerName(body.provider);
-  const bearer = readWidgetBearer(req);
   // Best-effort actor label for the issue body (validated only when a bearer is
   // present; anonymous suggestions are labeled honestly).
-  const id = bearer ? await resolveOrgIdentity(req, { validate: true, bearer }) : null;
+  const id = await session(req);
   const actor = id ? `@${id.name}${id.isAdmin ? ' (admin)' : ''}` : 'an anonymous visitor';
 
-  const editToken = await resolveEditToken(req, provider, bearer);
+  const editToken = await resolveEditToken(req, provider, id?.token ?? null);
   if (!editToken) {
     // No forge token available (anonymous + no bot configured). Acknowledge
     // honestly — do NOT claim a filing that didn't happen.

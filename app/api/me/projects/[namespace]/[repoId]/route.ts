@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 // TODO: Migrate project storage from @huggingface/hub to Hanzo storage API
 import { RepoDesignation, spaceInfo, uploadFiles, listFiles } from "@huggingface/hub";
 
-import { isAuthenticated } from "@/lib/auth";
+import { session } from "@/lib/iam";
 import {
   getProject,
   createProject,
@@ -16,7 +16,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ namespace: string; repoId: string }> }
 ) {
-  const user = await isAuthenticated();
+  const user = await session(req);
 
   if (user instanceof NextResponse || !user) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -25,7 +25,7 @@ export async function GET(
   const param = await params;
   const { namespace, repoId } = param;
 
-  const project = await getProject(user.token, user.id, spaceId(namespace, repoId));
+  const project = await getProject(user.token, user.sub, spaceId(namespace, repoId));
   if (!project) {
     return NextResponse.json(
       {
@@ -124,7 +124,7 @@ export async function GET(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.statusCode === 404) {
-      await deleteProject(user.token, user.id, spaceId(namespace, repoId));
+      await deleteProject(user.token, user.sub, spaceId(namespace, repoId));
       return NextResponse.json(
         { error: "Space not found", ok: false },
         { status: 404 }
@@ -141,7 +141,7 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ namespace: string; repoId: string }> }
 ) {
-  const user = await isAuthenticated();
+  const user = await session(req);
 
   if (user instanceof NextResponse || !user) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -151,7 +151,7 @@ export async function PUT(
   const { namespace, repoId } = param;
   const { pages, prompts } = await req.json();
 
-  const project = await getProject(user.token, user.id, spaceId(namespace, repoId));
+  const project = await getProject(user.token, user.sub, spaceId(namespace, repoId));
   if (!project) {
     return NextResponse.json(
       {
@@ -183,7 +183,7 @@ export async function PUT(
     commitTitle: `${prompts[prompts.length - 1]} - Follow Up Deployment`,
   });
 
-  await updateProject(user.token, user.id, spaceId(namespace, repoId), {
+  await updateProject(user.token, user.sub, spaceId(namespace, repoId), {
     prompts: [...prompts],
   });
   return NextResponse.json({ ok: true }, { status: 200 });
@@ -193,7 +193,7 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ namespace: string; repoId: string }> }
 ) {
-  const user = await isAuthenticated();
+  const user = await session(req);
 
   if (user instanceof NextResponse || !user) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -227,7 +227,7 @@ export async function POST(
     );
   }
 
-  const existing = await getProject(user.token, user.id, spaceId(namespace, repoId));
+  const existing = await getProject(user.token, user.sub, spaceId(namespace, repoId));
   if (existing) {
     // redirect to the project page if it already exists
     return NextResponse.json(
@@ -241,7 +241,7 @@ export async function POST(
   }
 
   const newProject = await createProject(user.token, {
-    userId: user.id,
+    userId: user.sub,
     spaceId: spaceId(namespace, repoId),
     prompts: [],
   });

@@ -9,7 +9,7 @@
  * hiding or fabricating a result.
  *
  * Auth + tenancy identical to the list route: forward the signed-in user's
- * IAM token (the `hanzo_token` cookie); the gateway mints `X-Org-Id`
+ * verified IAM token; the gateway mints `X-Org-Id`
  * (HIP-0026) from it, so one org can never run another's agent. No token →
  * 401 with `openLogin`.
  *
@@ -22,7 +22,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import MY_TOKEN_KEY from "@/lib/get-cookie-name";
+import { session } from "@/lib/iam";
 import { isCrossSite } from "@/lib/csrf";
 
 const HANZO_AI_BASE_URL =
@@ -52,7 +52,7 @@ export async function POST(
     );
   }
 
-  const token = request.cookies.get(MY_TOKEN_KEY())?.value;
+  const token = (await session(request))?.token;
   if (!token) return unauthorized();
 
   const { name } = await params;

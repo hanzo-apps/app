@@ -5,7 +5,7 @@ import fs from 'fs';
 /**
  * Real Hanzo IAM sign-in (HIP-0111 OIDC PKCE via hanzo.id) — the ONE way the app
  * authenticates. Runs once as a Playwright dependency project and persists the
- * session (cookies incl. the httpOnly `hanzo_token`) to storageState, which every
+ * session (localStorage token store + session cookie) to storageState, which every
  * `authed/*.spec.ts` reuses. No mock cookies — a real logged-in session.
  *
  * Credentials come from the environment (CI secrets, sourced from KMS) — NEVER

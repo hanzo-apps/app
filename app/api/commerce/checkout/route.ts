@@ -6,11 +6,11 @@ import {
   COMMERCE_PRODUCTS,
   isCommerceConfigured,
 } from '@/lib/commerce';
-import { getUserSession } from '@/lib/session';
+import { session } from '@/lib/iam';
 
 export async function POST(req: NextRequest) {
   try {
-    const user = await getUserSession();
+    const user = await session(req);
     if (!user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
     const customer = await getOrCreateCustomer({
       token: user.token,
-      userId: user.id,
+      userId: user.sub,
       email: user.email,
       name: user.name,
     });
@@ -44,16 +44,16 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Minimum credit purchase is $5' }, { status: 400 });
       }
 
-      const session = await createCreditsCheckoutSession({
+      const checkout = await createCreditsCheckoutSession({
         token: user.token,
         customerId: customer.id,
         amount,
         successUrl: body.successUrl || `${origin}/billing?credits_added=true&amount=${amount}`,
         cancelUrl: body.cancelUrl || `${origin}/billing?canceled=true`,
-        metadata: { userId: user.id },
+        metadata: { userId: user.sub },
       });
 
-      return NextResponse.json({ url: session.url });
+      return NextResponse.json({ url: checkout.url });
     }
 
     // Subscription plan flow
@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid plan' }, { status: 400 });
     }
 
-    const session = await createCheckoutSession({
+    const checkout = await createCheckoutSession({
       token: user.token,
       customerId: customer.id,
       priceId,
@@ -82,13 +82,13 @@ export async function POST(req: NextRequest) {
       successUrl: `${origin}/billing?success=true&session_id=${'{CHECKOUT_SESSION_ID}'}`,
       cancelUrl: `${origin}/pricing?canceled=true`,
       metadata: {
-        userId: user.id,
+        userId: user.sub,
         plan,
         billing: billing || 'monthly',
       },
     });
 
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({ url: checkout.url });
   } catch (error) {
     console.error('Error creating checkout session:', error);
     return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 });
@@ -102,7 +102,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.redirect(`${origin}/pricing?error=payment_not_configured`);
     }
 
-    const user = await getUserSession();
+    const user = await session(req);
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -118,7 +118,7 @@ export async function GET(req: NextRequest) {
 
     const customer = await getOrCreateCustomer({
       token: user.token,
-      userId: user.id,
+      userId: user.sub,
       email: user.email,
       name: user.name,
     });
@@ -137,7 +137,7 @@ export async function GET(req: NextRequest) {
     }
 
     const origin = req.headers.get('origin') || 'http://localhost:3000';
-    const session = await createCheckoutSession({
+    const checkout = await createCheckoutSession({
       token: user.token,
       customerId: customer.id,
       priceId,
@@ -145,13 +145,13 @@ export async function GET(req: NextRequest) {
       successUrl: `${origin}/billing?success=true&session_id=${'{CHECKOUT_SESSION_ID}'}`,
       cancelUrl: `${origin}/pricing?canceled=true`,
       metadata: {
-        userId: user.id,
+        userId: user.sub,
         plan,
         billing: billing || 'monthly',
       },
     });
 
-    return NextResponse.redirect(session.url!);
+    return NextResponse.redirect(checkout.url!);
   } catch (error) {
     console.error('Error creating checkout session:', error);
     const origin = req.headers.get('origin') || 'http://localhost:3002';

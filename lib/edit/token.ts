@@ -43,7 +43,7 @@ function botToken(p: ProviderName): EditToken | null {
 
 /**
  * Resolve the acting forge token. `bearer` is the caller's IAM bearer (already
- * read via `readWidgetBearer`), used to fetch their linked-provider token; it is
+ * resolved by `lib/iam.ts`), used to fetch their linked-provider token; it is
  * null on the anonymous suggest path, which falls straight through to the bot.
  */
 export async function resolveEditToken(

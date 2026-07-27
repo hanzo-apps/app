@@ -9,16 +9,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerAdapter } from '@/lib/vfs/adapters/server';
 import { Skill } from '@/lib/vfs/skills/types';
-import { requireAuth } from '@/lib/auth/session';
+import { requireSession } from '@/lib/iam';
 import { logger } from '@/lib/utils';
 
 /**
  * GET /api/sync/skills - List all custom skills from server
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     // Require authentication
-    await requireAuth();
+    await requireSession(request);
 
     const adapter = await createServerAdapter();
     await adapter.init();
@@ -53,7 +53,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     // Require authentication
-    await requireAuth();
+    await requireSession(request);
 
     const body = await request.json();
     const { skills } = body as { skills: Skill[] };

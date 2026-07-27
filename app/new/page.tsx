@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { Suspense, useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@hanzo/ui";
 import {
@@ -33,7 +33,7 @@ import { OrgGate, OrgSwitcher } from "@/components/org-switcher";
 import { isGitUrl, gitUrlGateMessage } from "@/lib/git/url";
 import { useProjectImport } from "@/lib/import/use-project-import";
 
-export default function NewProjectPage() {
+function NewProject() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const forwarded = useRef(false);
@@ -495,5 +495,19 @@ function NewProjectInner() {
         }
       `}</style>
     </div>
+  );
+}
+
+/**
+ * The query string is an input here (?template, ?repo), and `useSearchParams`
+ * opts a page out of static prerendering unless a Suspense boundary marks the
+ * client-only part. See app/dev/page.tsx for why this is now each page's own
+ * declaration rather than a side effect of the root layout.
+ */
+export default function NewProjectPage() {
+  return (
+    <Suspense fallback={null}>
+      <NewProject />
+    </Suspense>
   );
 }

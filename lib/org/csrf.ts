@@ -2,7 +2,7 @@
  * Same-origin CSRF guard for the cookie-authenticated BFFs.
  *
  * MIRRORED FROM console2's `bearer-proxy.ts` `sameOriginOK` (identical logic).
- * Our BFFs authenticate from the first-party httpOnly `hanzo_token` cookie, which
+ * Our BFFs accept the first-party IAM session cookie, which
  * the browser auto-sends cross-site — so a cross-origin page could otherwise drive
  * a state change (publish a site, create an org, spend credits) as the victim.
  * On MUTATING methods (POST/PUT/PATCH/DELETE) we require two independent signals,

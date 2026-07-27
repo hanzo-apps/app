@@ -2,41 +2,13 @@
 "use client";
 
 import { useUser } from "@/hooks/useUser";
-import { usePathname, useRouter } from "next/navigation";
-import { useMount } from "react-use";
+import { usePathname } from "next/navigation";
 import { UserContext } from "@/components/contexts/user-context";
-import { User } from "@/types";
-import { toast } from "@hanzo/ui";
 import { useBroadcastChannel } from "@/lib/useBroadcastChannel";
 
-export default function AppContext({
-  children,
-  me: initialData,
-}: {
-  children: React.ReactNode;
-  me?: {
-    user: User | null;
-    errCode: number | null;
-  };
-}) {
-  const { loginFromCode, user, logout, loading, errCode } =
-    useUser(initialData);
+export default function AppContext({ children }: { children: React.ReactNode }) {
+  const { loginFromCode, user, logout, loading } = useUser();
   const pathname = usePathname();
-  const router = useRouter();
-
-  useMount(() => {
-    if (!initialData?.user && !user) {
-      if ([401, 403].includes(errCode as number)) {
-        logout();
-      } else if (pathname.includes("/spaces")) {
-        if (errCode) {
-          toast.error("An error occured while trying to log in");
-        }
-        // If we did not manage to log in (probs because api is down), we simply redirect to the home page
-        router.push("/");
-      }
-    }
-  });
 
   const events: any = {};
 

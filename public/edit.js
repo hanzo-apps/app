@@ -63,12 +63,12 @@
     /* keep default */
   }
 
-  // A same-site httpOnly cookie rides automatically (credentials:'include'); a
-  // different-site Hanzo app can expose its IAM token as window.HANZO_TOKEN (or a
-  // readable hanzo_token cookie) which we forward as a bearer.
+  // The IAM access token, forwarded as a bearer. Same-site the SDK's session
+  // cookie is readable here; a different-site Hanzo app exposes its own token as
+  // window.HANZO_TOKEN. hanzo.app verifies whatever arrives against IAM's JWKS.
   function bearer() {
     if (window.HANZO_TOKEN) return String(window.HANZO_TOKEN);
-    var m = document.cookie.match(/(?:^|;\s*)hanzo_token=([^;]+)/);
+    var m = document.cookie.match(/(?:^|;\s*)hanzo_iam_access_token=([^;]+)/);
     return m ? decodeURIComponent(m[1]) : '';
   }
 

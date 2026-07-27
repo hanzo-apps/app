@@ -4,7 +4,7 @@
 //
 // IAM-native, per-user, fail-closed:
 //   Every user-scoped call is made AS the logged-in user by forwarding that
-//   user's IAM access token (from the `hanzo_token` cookie via getUserSession()).
+//   user's IAM access token (the verified session — lib/iam.ts).
 //   There is NO shared service/admin API key in this surface — Commerce is
 //   already IAM-native and meters/credits the token's `sub`. A call with no
 //   user token throws (fail-closed) rather than silently acting as an admin.

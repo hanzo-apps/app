@@ -6,7 +6,7 @@
 //
 // IAM-native, per-org, fail-closed:
 //   Every call is made AS the logged-in user by forwarding that user's IAM
-//   access token (from getUserSession()). /v1/platform derives the tenant org
+//   access token (the verified session — lib/iam.ts). /v1/platform derives the org
 //   from the token owner — the builder never sends an org, so a user can only
 //   ever build/deploy into their own namespace. There is NO shared service key
 //   in this surface. A call with no user token fails closed.

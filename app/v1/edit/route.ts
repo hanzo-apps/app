@@ -19,7 +19,7 @@
 import type { NextRequest } from 'next/server';
 
 import { GitSyncError } from '@/lib/git/sync';
-import { readWidgetBearer, resolveOrgIdentity } from '@/lib/org/server';
+import { session } from '@/lib/iam';
 import { spendableCents } from '@/lib/billing/server';
 import { providerFor } from '@/lib/edit/provider';
 import { parseTarget, runEdit } from '@/lib/edit/flow';
@@ -39,10 +39,9 @@ export function OPTIONS(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const origin = req.headers.get('origin');
-  const bearer = readWidgetBearer(req);
 
   // 1) Identity — IAM-validated, so isAdmin/isSuperAdmin are authoritative.
-  const id = await resolveOrgIdentity(req, { validate: true, bearer: bearer ?? undefined });
+  const id = await session(req);
   if (!id) {
     return withCors(origin, { ok: false, error: 'Sign in to open a PR.', openLogin: true }, 401);
   }
@@ -106,7 +105,7 @@ export async function POST(req: NextRequest) {
   }
 
   // 4) Resolve the caller's forge token (their linked account, or the Hanzo bot).
-  const editToken = await resolveEditToken(req, target.provider, bearer);
+  const editToken = await resolveEditToken(req, target.provider, id.token);
   if (!editToken) {
     return withCors(
       origin,

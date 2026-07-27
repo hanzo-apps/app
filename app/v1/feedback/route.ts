@@ -6,7 +6,7 @@
  * (the `chatcmpl-…` the routing ledger on api.hanzo.ai keys on). The gateway's
  * `/v1/feedback` handler is ORG-SCOPED to the caller principal, so we preserve
  * the user's identity exactly like `/v1/generate`: forward the signed-in user's
- * IAM token (`hanzo_token` cookie) as `Authorization: Bearer <token>`.
+ * verified IAM token as `Authorization: Bearer <token>`.
  *
  * Guarantees:
  *  - The payload is whitelisted to EXACTLY {request_id, signal, rating?} — any
@@ -18,7 +18,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import MY_TOKEN_KEY from "@/lib/get-cookie-name";
+import { session } from "@/lib/iam";
 import { requireSameOrigin } from "@/lib/org/csrf";
 
 const HANZO_AI_BASE_URL =
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
   if (feedbackDisabled()) return noContent();
 
   // No signed-in user → nothing to attribute; no-op silently (never a 401).
-  const token = request.cookies.get(MY_TOKEN_KEY())?.value;
+  const token = (await session(request))?.token;
   if (!token) return noContent();
 
   // Fire-and-forget: await so the request is actually sent, but swallow every

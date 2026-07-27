@@ -6,7 +6,12 @@ const path = require('path');
 // react-native-web (discovered, not hardcoded — the set moves with the gui version).
 // Same recipe console uses; @hanzogui/next-plugin has a broken dep so we lean on
 // Next's built-in transpilePackages + a react-native→react-native-web alias instead.
-function guiPackages() {
+//
+// Second group: deps that ship ESM ONLY. Next copes either way, but a CJS
+// consumer (the jest runtime, which reads this same list via next/jest) is
+// handed a bare `export {}` unless they are transpiled. ONE list, so the build
+// and the tests can never disagree about what needs transforming.
+function transpiled() {
   let scoped = [];
   try {
     const dir = path.join(__dirname, 'node_modules', '@hanzogui');
@@ -25,6 +30,9 @@ function guiPackages() {
     '@hanzo/brand',
     'react-native-web',
     ...scoped,
+    // ESM-only
+    'jose',
+    'uuid',
   ];
 }
 
@@ -34,7 +42,7 @@ const nextConfig = {
   // runtime image is a fraction of the full node_modules (see Dockerfile.production).
   output: "standalone",
 
-  transpilePackages: guiPackages(),
+  transpilePackages: transpiled(),
 
   // Disable development indicators in production
   devIndicators: {

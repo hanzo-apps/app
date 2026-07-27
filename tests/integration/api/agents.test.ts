@@ -4,7 +4,7 @@
  * BFF proxy tests for /v1/agents and /v1/agents/:name/run.
  *
  * These assert the security-critical contract of the console→cloud seam:
- *  - no `hanzo_token` cookie → honest 401 with `openLogin` (fail closed)
+ *  - no verified IAM session → honest 401 with `openLogin` (fail closed)
  *  - the signed-in user's bearer is forwarded to the gateway
  *  - the browser can NOT smuggle an `X-Org-Id`: the proxy never forwards one,
  *    so tenant scoping stays gateway-minted (HIP-0026)
@@ -16,7 +16,10 @@
  */
 import { NextRequest } from "next/server";
 import { http, HttpResponse } from "msw";
+import { clearJwksCache } from "@hanzo/iam/auth";
+
 import { server } from "../../../jest.setup";
+import { IAM, CLIENT_ID, iamHandlers, mint } from "../../iam-fixture";
 
 import { GET as listAgents } from "@/app/v1/agents/route";
 import { POST as runAgent } from "@/app/v1/agents/[name]/run/route";
@@ -33,12 +36,25 @@ type ReqInit = {
 function req(url: string, init?: ReqInit) {
   const { token, ...rest } = init ?? {};
   const headers = new Headers(rest.headers);
-  if (token) headers.set("cookie", `hanzo_token=${token}`);
+  if (token) headers.set("authorization", `Bearer ${AUTH}`);
   return new NextRequest(url, { ...rest, headers });
 }
 
+
+// A token is only a caller if IAM signed it, so these suites mint real ones
+// against an in-process IAM (tests/iam-fixture). `AUTH` stands in wherever a
+// case used to hand over a made-up string.
+let AUTH: string;
+beforeEach(async () => {
+  process.env.IAM_URL = IAM;
+  process.env.IAM_CLIENT_ID = CLIENT_ID;
+  clearJwksCache();
+  server.use(...(await iamHandlers()));
+  AUTH = await mint();
+});
+
 describe("BFF: GET /v1/agents", () => {
-  it("returns 401 openLogin when no token cookie is present", async () => {
+  it("returns 401 openLogin when there is no session", async () => {
     const res = await listAgents(req("http://localhost/v1/agents"));
     const body = await res.json();
     expect(res.status).toBe(401);
@@ -64,7 +80,7 @@ describe("BFF: GET /v1/agents", () => {
     const body = await res.json();
 
     expect(res.status).toBe(200);
-    expect(seenAuth).toBe("Bearer tok-abc");
+    expect(seenAuth).toBe(`Bearer ${AUTH}`);
     expect(seenOrg).toBeNull(); // tenancy is gateway-minted, not client-supplied
     expect(res.headers.get("cache-control")).toBe("no-store"); // no shared-cache tenant leak
     expect(body.ok).toBe(true);
@@ -102,7 +118,7 @@ describe("BFF: GET /v1/agents", () => {
 describe("BFF: POST /v1/agents/:name/run", () => {
   const params = (name: string) => ({ params: Promise.resolve({ name }) });
 
-  it("returns 401 openLogin when no token cookie is present", async () => {
+  it("returns 401 openLogin when there is no session", async () => {
     const res = await runAgent(
       req("http://localhost/v1/agents/helper/run", {
         method: "POST",
@@ -151,7 +167,7 @@ describe("BFF: POST /v1/agents/:name/run", () => {
     const body = await res.json();
 
     expect(res.status).toBe(200);
-    expect(seenAuth).toBe("Bearer tok-abc");
+    expect(seenAuth).toBe(`Bearer ${AUTH}`);
     expect(seenBody).toEqual({ input: "hi" });
     expect(body.status).toBe("ok");
     expect(body.output).toBe("the answer");
