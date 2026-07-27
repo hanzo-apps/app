@@ -78,7 +78,7 @@ export function BuildComposer({
   onSubmit?: (text: string, mode: ComposerMode) => void;
   /** Idle typewriter phrases completing "Ask Hanzo to build …" (landing hero). */
   typewriter?: string[];
-  /** Starter prompts rendered as pills under the bubble; clicking prefills. */
+  /** Starter prompts rendered as pills under the bubble; clicking submits. */
   starters?: string[];
   subline?: boolean;
 }) {
@@ -159,8 +159,13 @@ export function BuildComposer({
     });
   };
 
-  const submit = () => {
-    const text = idea.trim();
+  /**
+   * The ONE submit. `raw` defaults to the composer's draft, so the send button
+   * and Enter submit what was typed; a starter pill passes its own text (state
+   * updates are async — the click cannot rely on `idea` having landed yet).
+   */
+  const submit = (raw: string = idea) => {
+    const text = raw.trim();
     if (!text) return;
     // Top-of-funnel build INTENT — the landing composer fires this for logged-out
     // visitors too, and no app exists yet (that is `app_created`, at publish).
@@ -330,7 +335,7 @@ export function BuildComposer({
               )}
               <button
                 type="button"
-                onClick={submit}
+                onClick={() => submit()}
                 disabled={!idea.trim()}
                 aria-label="Start building"
                 className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground transition-all hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
@@ -342,7 +347,9 @@ export function BuildComposer({
         </div>
       </div>
 
-      {/* Starter prompts — honest app types; clicking prefills the input. */}
+      {/* Starter prompts — honest app types. Clicking one IS the intent, so it
+          submits through the same `submit` the send button and Enter use; the
+          draft is set too so it stays visible if submit bounces to login. */}
       {!!starters?.length && (
         <div className="mt-4 flex flex-wrap justify-center gap-2">
           {starters.map((s) => (
@@ -351,7 +358,7 @@ export function BuildComposer({
               type="button"
               onClick={() => {
                 setIdea(s);
-                textareaRef.current?.focus();
+                submit(s);
               }}
               className="rounded-full border border-border bg-muted px-3.5 py-1.5 text-xs text-muted-foreground transition-all hover:border-border hover:text-foreground"
             >
