@@ -46,7 +46,7 @@ import { FileTree } from "./file-tree";
 import { HistoryPanel } from "./history";
 import { RevisionDetails, type DetailsRev } from "./history/details";
 import { ShareModal } from "./share-modal";
-import { StatusBar } from "./status-bar";
+import { Console } from "./console";
 import { VisualEditor } from "./visual-editor";
 import { OrgProvider } from "@/lib/org/client";
 import { Button } from "@hanzo/ui";
@@ -257,8 +257,6 @@ export const AppEditor = ({
         currentPage={currentPage}
         onSelectPage={setCurrentPage}
         onOpenExternal={openInNewTab}
-        sidebarCollapsed={sidebarCollapsed}
-        onToggleSidebar={() => setSidebarCollapsed((v) => !v)}
         historyOpen={historyOpen}
         onToggleHistory={() => {
           const next = !historyOpen;
@@ -523,11 +521,14 @@ export const AppEditor = ({
         </div>
       </main>
 
-      {/* Thin VS-Code-style status bar — real state on the one hairline surface. */}
-      <StatusBar
+      {/* The developer console — the status strip IS the dock's handle: hover
+          it to resize, drag it up, click it open. The chat/AI panel toggle and
+          the dictation mic ride far right on the same bar. */}
+      <Console
         isAiWorking={isAiWorking}
-        project={project}
         pageCount={pages.length}
+        sidebarCollapsed={sidebarCollapsed}
+        onToggleSidebar={() => setSidebarCollapsed((v) => !v)}
       />
 
       <ShareModal

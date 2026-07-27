@@ -16,22 +16,30 @@ Directory notes load on demand: `components/landing/CLAUDE.md` for the
 marketing landing, `components/editor/CLAUDE.md` for the `/dev` builder chrome
 and the design-token convergence.
 
-### Local-dev landmine: `react-resizable-panels` shim (dev-only crash)
+### The `react-resizable-panels` shim (fixed — keep it, keep it exact-match)
 
-`next.config.js` aliases `react-resizable-panels` → `lib/shims/react-resizable-panels.js`,
-but the shim does `export … from 'react-resizable-panels'` — the alias re-catches
-the shim's own import, so it re-exports **itself**. In `next dev` (webpack HMR
-harmony getters) this recurses → `RangeError: Maximum call stack size exceeded`
-on EVERY route through the layout (500). The **production** build/`next start`
-does NOT crash (webpack resolves the circular re-export to `undefined` bindings
-instead of recursing — which is why live 1.42.x works), but Panel/Group/Separator
-from the shim are effectively `undefined` in prod too. The installed real package
-is v4.7.4 which already exports `Group`/`Panel`/`Separator` natively, so the shim
-is largely obsolete. To fix properly: alias only the exact bare specifier
-(`react-resizable-panels$`) to the shim and have the shim re-export from a
-sentinel (`react-resizable-panels-real$` → `require.resolve('react-resizable-panels')`),
-never from the bare specifier. Until then, verify the landing via
-`next build && next start` (production), not `next dev`.
+`next.config.js` aliases the bare specifier `react-resizable-panels$` →
+`lib/shims/react-resizable-panels.js`. The shim exists because `@hanzo/ui`'s
+`resizable` module imports the **v2** names `{ Panel, PanelGroup,
+PanelResizeHandle }` while the installed package is **v4.7.4**, which exports
+`{ Panel, Group, Separator }`. Nothing in the app imports the package directly,
+but the `@hanzo/ui` barrel pulls that module in — so the bare specifier must
+resolve to something carrying BOTH name sets. **The shim is load-bearing; do
+not delete it.**
+
+It used to re-export from the bare specifier, which the alias caught again and
+pointed back at the shim — it re-exported *itself*: infinite recursion in
+`next dev` (`RangeError` on every route) and silently `undefined` bindings in
+the production build. Two things keep that from coming back, and
+`tests/unit/resizable-shim.test.ts` fails if either is undone:
+
+1. the shim imports the `react-resizable-panels/dist/…` **subpath**, never the
+   bare specifier, and
+2. the alias key is **exact-match** (`…$`), so only the bare specifier is
+   caught and the shim's own subpath import reaches the real package.
+
+Note that the builder's own resizers (the chat/preview splitter and the console
+dock) are hand-rolled pointer handlers — they do not use this package at all.
 
 Note: a local `next start` bounces anon users to IAM (`hanzo.id`/`console.hanzo.ai`)
 because the prod build points auth at the in-cluster `iam.hanzo.svc` (unreachable
