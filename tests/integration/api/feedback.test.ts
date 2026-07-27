@@ -17,7 +17,10 @@
  */
 import { NextRequest } from "next/server";
 import { http, HttpResponse } from "msw";
+import { clearJwksCache } from "@hanzo/iam/auth";
+
 import { server } from "../../../jest.setup";
+import { IAM, CLIENT_ID, iamHandlers, mint } from "../../iam-fixture";
 
 import { POST as feedback } from "@/app/v1/feedback/route";
 
@@ -28,7 +31,7 @@ type ReqInit = { body?: unknown; headers?: HeadersInit; token?: string };
 function req(init?: ReqInit) {
   const { token, body, ...rest } = init ?? {};
   const headers = new Headers(rest.headers);
-  if (token) headers.set("cookie", `hanzo_token=${token}`);
+  if (token) headers.set("authorization", `Bearer ${AUTH}`);
   // Default to same-origin so the CSRF guard passes unless a test overrides it.
   if (!headers.has("origin")) headers.set("origin", "http://localhost");
   headers.set("host", "localhost");
@@ -38,6 +41,18 @@ function req(init?: ReqInit) {
     body: body === undefined ? undefined : JSON.stringify(body),
   });
 }
+
+// A token is only a caller if IAM signed it, so these suites mint real ones
+// against an in-process IAM (tests/iam-fixture). `AUTH` stands in wherever a
+// case used to hand over a made-up string.
+let AUTH: string;
+beforeEach(async () => {
+  process.env.IAM_URL = IAM;
+  process.env.IAM_CLIENT_ID = CLIENT_ID;
+  clearJwksCache();
+  server.use(...(await iamHandlers()));
+  AUTH = await mint();
+});
 
 describe("BFF: POST /v1/feedback", () => {
   const OLD_ENV = process.env.HANZO_FEEDBACK;
@@ -73,7 +88,7 @@ describe("BFF: POST /v1/feedback", () => {
     );
 
     expect(res.status).toBe(204);
-    expect(seenAuth).toBe("Bearer tok-abc");
+    expect(seenAuth).toBe(`Bearer ${AUTH}`);
     // Exactly the whitelisted fields — rating dropped because signal !== "rating".
     expect(seenBody).toEqual({ request_id: "chatcmpl-xyz", signal: "up" });
     expect(Object.keys(seenBody)).toEqual(["request_id", "signal"]);

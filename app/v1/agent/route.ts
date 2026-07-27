@@ -14,14 +14,14 @@
  * chat panel opts in behind `NEXT_PUBLIC_AGENT_SERVER`.
  *
  * Auth mirrors `/v1/generate` exactly: same-origin CSRF guard + the caller's
- * IAM bearer (`hanzo_token` cookie) forwarded to the gateway. Billing is
+ * verified IAM bearer forwarded to the gateway. Billing is
  * per-user; there is no shared server key. Tenant isolation is the
  * gateway-minted `X-Org-Id` derived from that bearer — never client-supplied.
  */
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import MY_TOKEN_KEY from "@/lib/get-cookie-name";
+import { session } from "@/lib/iam";
 import { requireSameOrigin } from "@/lib/org/csrf";
 import { resolveModelId } from "@/lib/providers";
 import { runAgent, type AgentEvent, type AgentFile } from "@/lib/agent";
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
   const csrf = requireSameOrigin(request);
   if (csrf) return csrf;
 
-  const token = request.cookies.get(MY_TOKEN_KEY())?.value;
+  const token = (await session(request))?.token;
   if (!token) return unauthorized();
 
   let body: AgentRequestBody;

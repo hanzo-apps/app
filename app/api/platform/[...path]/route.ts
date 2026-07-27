@@ -12,13 +12,13 @@
  * plane without reimplementing it.
  */
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserSession } from '@/lib/session';
+import { session } from '@/lib/iam';
 import { PLATFORM_BASE } from '@/lib/platform';
 
 type Ctx = { params: Promise<{ path: string[] }> };
 
 async function proxy(req: NextRequest, ctx: Ctx): Promise<NextResponse> {
-  const user = await getUserSession();
+  const user = await session(req);
   if (!user) {
     return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
   }

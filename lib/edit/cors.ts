@@ -5,7 +5,7 @@
  * origin, so these three routes are cross-origin BY DESIGN (unlike the builder's
  * same-origin BFFs, which are CSRF-gated). We therefore:
  *   - reflect the request Origin ONLY when it belongs to the Hanzo family
- *     (so the first-party `hanzo_token` cookie may ride a same-site request and
+ *     (so the first-party IAM session cookie may ride a same-site request and
  *     no unrelated site can read a credentialed response), and
  *   - always allow an `Authorization` bearer, which is how a DIFFERENT-site Hanzo
  *     app authenticates (a SameSite=Lax cookie does not ride a cross-site fetch),

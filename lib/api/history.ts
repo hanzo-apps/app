@@ -4,7 +4,7 @@
  * The durable primary is Hanzo Base (per user + app); these helpers resolve
  * (never throw) so the History panel can fall back to localStorage whenever the
  * store is unconfigured/unreachable (`durable:false`). Same-origin so the httpOnly
- * `hanzo_token` cookie rides automatically.
+ * IAM session cookie rides automatically.
  */
 
 /** A persisted revision row (rich metadata for the timeline). */

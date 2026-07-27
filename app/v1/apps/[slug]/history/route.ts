@@ -16,7 +16,7 @@
  */
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { resolveOrgIdentity } from '@/lib/org/server';
+import { session } from '@/lib/iam';
 import { requireSameOrigin } from '@/lib/org/csrf';
 import {
   historyDurable,
@@ -42,7 +42,7 @@ async function appKey(ctx: Ctx): Promise<string> {
 }
 
 export async function GET(req: NextRequest, ctx: Ctx) {
-  const id = await resolveOrgIdentity(req);
+  const id = await session(req);
   if (!id) return NextResponse.json({ durable: false, bookmarks: [], revisions: [] }, { headers: NO_STORE });
   const app = await appKey(ctx);
   if (!app || !historyDurable()) {
@@ -63,7 +63,7 @@ export async function PUT(req: NextRequest, ctx: Ctx) {
   const csrf = requireSameOrigin(req);
   if (csrf) return csrf;
 
-  const id = await resolveOrgIdentity(req);
+  const id = await session(req);
   if (!id) return NextResponse.json({ durable: false, error: 'Unauthorized' }, { status: 401, headers: NO_STORE });
   const app = await appKey(ctx);
   const body = (await req.json().catch(() => ({}))) as { bookmark?: unknown };
@@ -86,7 +86,7 @@ export async function POST(req: NextRequest, ctx: Ctx) {
   const csrf = requireSameOrigin(req);
   if (csrf) return csrf;
 
-  const id = await resolveOrgIdentity(req);
+  const id = await session(req);
   if (!id) return NextResponse.json({ durable: false, error: 'Unauthorized' }, { status: 401, headers: NO_STORE });
   const app = await appKey(ctx);
   const body = (await req.json().catch(() => ({}))) as { revision?: Partial<RevisionRecordInput> };

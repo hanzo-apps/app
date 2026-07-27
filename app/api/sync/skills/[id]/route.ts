@@ -10,7 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerAdapter } from '@/lib/vfs/adapters/server';
 import { Skill } from '@/lib/vfs/skills/types';
-import { requireAuth } from '@/lib/auth/session';
+import { requireSession } from '@/lib/iam';
 import { logger } from '@/lib/utils';
 
 interface RouteParams {
@@ -22,7 +22,7 @@ interface RouteParams {
  */
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    await requireAuth();
+    await requireSession(request);
 
     const { id } = await params;
 
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
  */
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
-    await requireAuth();
+    await requireSession(request);
 
     const { id } = await params;
     const body = await request.json();
@@ -144,7 +144,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
  */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
-    await requireAuth();
+    await requireSession(request);
 
     const { id } = await params;
 

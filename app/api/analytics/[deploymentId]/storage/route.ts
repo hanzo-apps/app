@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@/lib/auth/session';
+import { session } from '@/lib/iam';
 import { getSQLiteAdapter } from '@/lib/vfs/adapters/server';
 
 interface StorageBreakdown {
@@ -31,8 +31,7 @@ export async function GET(
 ) {
   try {
     // Require authentication
-    const session = await getSession();
-    if (!session) {
+    if (!(await session(request))) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

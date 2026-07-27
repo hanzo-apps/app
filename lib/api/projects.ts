@@ -4,7 +4,7 @@
  * Talks to the SAME-ORIGIN `/v1/projects` BFF (app/v1/projects/[[...path]]),
  * which forwards to the cloud projects service as the signed-in user. The org is
  * derived server-side from the bearer owner claim, so every record is org-scoped
- * and billed to the right org — and the httpOnly `hanzo_token` is NEVER read by
+ * and billed to the right org — and the IAM token is NEVER read by
  * browser JS (the cookie rides the same-origin request; least privilege).
  *
  * Shape mirrors the projects service CONTRACT.md exactly (name + slug + framework +

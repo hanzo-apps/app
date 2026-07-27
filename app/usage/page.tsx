@@ -1,8 +1,9 @@
 import Link from 'next/link';
+import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { Activity, ExternalLink } from 'lucide-react';
 
-import { isAuthenticated } from '@/lib/auth';
+import { session } from '@/lib/iam';
 import { listProjects } from '@/lib/db/projects';
 import { buildUsage } from '@/lib/usage';
 import { AppShell } from '@/components/app-shell';
@@ -11,16 +12,16 @@ import CloudUsagePanel from '@/components/usage/cloud-usage-panel';
 import { Button } from '@hanzo/ui';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@hanzo/ui';
 
-// Reads the caller's cookies/token — must render per-request.
+// Resolves the caller's verified IAM session — must render per-request.
 export const dynamic = 'force-dynamic';
 
 export default async function UsagePage() {
-  const user = await isAuthenticated();
+  const user = await session({ headers: await headers() });
   if (!user) redirect('/login');
 
   let projectCount = 0;
   try {
-    projectCount = (await listProjects(user.token, user.id)).length;
+    projectCount = (await listProjects(user.token, user.sub)).length;
   } catch {
     projectCount = 0;
   }

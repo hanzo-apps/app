@@ -12,7 +12,7 @@ const envSchema = z.object({
   // Authentication (Hanzo IAM) - only required in production
   IAM_CLIENT_ID: isProd && !isCI ? z.string().min(1) : z.string().optional(),
   IAM_CLIENT_SECRET: isProd && !isCI ? z.string().min(1) : z.string().optional(),
-  IAM_ENDPOINT: z.string().url().optional(),
+  IAM_URL: z.string().url().optional(),
   NEXTAUTH_SECRET: isProd && !isCI ? z.string().min(32) : z.string().optional(),
   NEXTAUTH_URL: isProd && !isCI ? z.string().url() : z.string().optional(),
 

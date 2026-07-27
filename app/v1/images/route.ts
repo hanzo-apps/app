@@ -3,7 +3,7 @@
  *
  * Symmetric to /v1/generate: the builder POSTs a prompt and this forwards it to
  * the single Hanzo AI gateway (`${HANZO_AI_BASE_URL}/images/generations`,
- * OpenAI-compatible) as the signed-in user (their `hanzo_token` IAM bearer). The
+ * OpenAI-compatible) as the signed-in user (their verified IAM bearer). The
  * gateway owns provider sourcing and MimeType — nothing is re-implemented here.
  *
  * Auth is per-user (BYOK-style): no signed-in user → honest 401 "Sign in to
@@ -17,7 +17,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import MY_TOKEN_KEY from "@/lib/get-cookie-name";
+import { session } from "@/lib/iam";
 import { requireSameOrigin } from "@/lib/org/csrf";
 
 const HANZO_AI_BASE_URL =
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
   const csrf = requireSameOrigin(request);
   if (csrf) return csrf;
 
-  const token = request.cookies.get(MY_TOKEN_KEY())?.value;
+  const token = (await session(request))?.token;
   if (!token) return unauthorized();
 
   const body = await request.json().catch(() => ({}));

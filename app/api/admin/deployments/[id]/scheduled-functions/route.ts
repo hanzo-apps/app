@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth/session';
+import { requireSession } from '@/lib/iam';
 import { getSQLiteAdapter } from '@/lib/vfs/adapters/server';
 import { validateFunctionName } from '@/lib/edge-functions/executor';
 import cronParser from 'cron-parser';
@@ -23,7 +23,7 @@ export async function GET(
   { params }: RouteParams
 ): Promise<NextResponse> {
   try {
-    await requireAuth();
+    await requireSession(request);
     const { id: deploymentId } = await params;
 
     const adapter = getSQLiteAdapter();
@@ -61,7 +61,7 @@ export async function POST(
   { params }: RouteParams
 ): Promise<NextResponse> {
   try {
-    await requireAuth();
+    await requireSession(request);
     const { id: deploymentId } = await params;
     const body = await request.json();
 

@@ -15,7 +15,7 @@
  * can only ever deploy into their own namespace.
  */
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserSession } from '@/lib/session';
+import { session } from '@/lib/iam';
 import {
   deploy,
   deployStatus,
@@ -25,7 +25,7 @@ import {
 } from '@/lib/platform';
 
 export async function POST(req: NextRequest) {
-  const user = await getUserSession();
+  const user = await session(req);
   if (!user) {
     return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
   }
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const user = await getUserSession();
+  const user = await session(req);
   if (!user) {
     return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
   }

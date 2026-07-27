@@ -22,7 +22,7 @@ import { InMemoryProjectFs } from "./fs";
 import { AGENT_TOOL_DEFS, executeAgentTool } from "./tools";
 
 export interface RunAgentOptions {
-  /** IAM bearer (the caller's `hanzo_token`) forwarded to the gateway. */
+  /** The caller's verified IAM bearer, forwarded to the gateway. */
   token: string;
   /** Gateway base URL, e.g. `https://api.hanzo.ai/v1`. */
   baseUrl: string;

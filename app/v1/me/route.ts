@@ -2,10 +2,10 @@
  * /v1/me — the Hanzo Edit widget's identity + entitlement probe.
  *
  * Cross-origin (the widget runs on every Hanzo app), so it accepts the caller's
- * IAM bearer via cookie (same-origin hanzo.app) OR `Authorization` header
- * (different-site Hanzo apps, where a SameSite=Lax cookie can't ride) — see
- * `readWidgetBearer`. Identity is ALWAYS IAM-validated (validate:true), so
- * `isAdmin` is authoritative.
+ * IAM bearer via `Authorization` header (different-site Hanzo apps, where a
+ * SameSite=Lax cookie can't ride) or the session cookie (same-origin hanzo.app).
+ * Either way the token is JWKS-verified by `lib/iam.ts`, so `isAdmin` is
+ * authoritative and a forged token is simply not a caller.
  *
  * Returns the shape the widget uses to pick a CTA:
  *   { authenticated, isAdmin, org, balance, hasCredits }
@@ -19,7 +19,7 @@
  */
 import type { NextRequest } from 'next/server';
 
-import { resolveOrgIdentity, readWidgetBearer } from '@/lib/org/server';
+import { session } from '@/lib/iam';
 import { spendableCents } from '@/lib/billing/server';
 import { preflight, withCors } from '@/lib/edit/cors';
 
@@ -31,7 +31,7 @@ export function OPTIONS(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   const origin = req.headers.get('origin');
-  const id = await resolveOrgIdentity(req, { validate: true, bearer: readWidgetBearer(req) ?? undefined });
+  const id = await session(req);
 
   if (!id) {
     return withCors(origin, {
@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
   return withCors(origin, {
     authenticated: true,
     isAdmin: id.isAdmin,
-    org: id.homeOrg,
+    org: id.org,
     balance: cents,
     hasCredits,
   });

@@ -12,7 +12,7 @@
  * is owned by the gateway's provider registry, NOT re-implemented here.
  *
  * Auth is per-user (BYOK-style): we forward the signed-in user's IAM token
- * (the `hanzo_token` cookie mirrored from the @hanzo/iam SDK) as `Authorization:
+ * (the verified IAM session — see lib/iam.ts) as `Authorization:
  * Bearer <token>`. No signed-in user → honest 401 "Sign in to build". We do
  * NOT fall back to a shared server key — billing is per-user by design.
  */
@@ -32,7 +32,7 @@ import {
   UPDATE_PAGE_END,
 } from "@/lib/prompts";
 import { resolveModelId } from "@/lib/providers";
-import MY_TOKEN_KEY from "@/lib/get-cookie-name";
+import { session } from "@/lib/iam";
 import { requireSameOrigin } from "@/lib/org/csrf";
 import { Page } from "@/types";
 
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
   const csrf = requireSameOrigin(request);
   if (csrf) return csrf;
 
-  const token = request.cookies.get(MY_TOKEN_KEY())?.value;
+  const token = (await session(request))?.token;
   if (!token) return unauthorized();
 
   const body = await request.json();
@@ -255,7 +255,7 @@ export async function PATCH(request: NextRequest) {
   const csrf = requireSameOrigin(request);
   if (csrf) return csrf;
 
-  const token = request.cookies.get(MY_TOKEN_KEY())?.value;
+  const token = (await session(request))?.token;
   if (!token) return unauthorized();
 
   const body = await request.json();
@@ -363,7 +363,7 @@ export async function PATCH(request: NextRequest) {
  * the old /api/ask-ai PUT contract the follow-up flow depends on.
  */
 export async function PUT(request: NextRequest) {
-  const token = request.cookies.get(MY_TOKEN_KEY())?.value;
+  const token = (await session(request))?.token;
   if (!token) return unauthorized();
 
   const body = await request.json();

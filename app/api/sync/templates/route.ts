@@ -9,16 +9,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerAdapter } from '@/lib/vfs/adapters/server';
 import { CustomTemplate } from '@/lib/vfs/types';
-import { requireAuth } from '@/lib/auth/session';
+import { requireSession } from '@/lib/iam';
 import { logger } from '@/lib/utils';
 
 /**
  * GET /api/sync/templates - List all custom templates from server
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     // Require authentication
-    await requireAuth();
+    await requireSession(request);
 
     const adapter = await createServerAdapter();
     await adapter.init();
@@ -51,7 +51,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     // Require authentication
-    await requireAuth();
+    await requireSession(request);
 
     const body = await request.json();
     const { templates } = body as { templates: CustomTemplate[] };

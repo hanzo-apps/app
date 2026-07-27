@@ -79,7 +79,7 @@ const CREDIT_TIERS = [
 export default function BillingPage() {
   // Auth is the ONE canonical source: the @hanzo/iam SDK (useUser), not a
   // hand-rolled /api/auth/check probe. `/billing` is also middleware-protected
-  // (hanzo_token cookie required), so the client redirect below is only a
+  // (a live IAM session required), so the client redirect below is only a
   // belt-and-suspenders gate once the SDK has resolved.
   const { user, isAuthenticated: authenticated, loading: authLoading } = useUser();
   const router = useRouter();

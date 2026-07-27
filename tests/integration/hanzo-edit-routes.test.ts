@@ -8,26 +8,16 @@
  *                 issue when a forge token is available)
  * Node env (NextRequest extends the global Request).
  */
-// `jose` ships ESM that jest doesn't transform inside node_modules; org/server
-// only needs `decodeJwt` (unverified claim decode), which is a base64url unwrap
-// of the payload — mock it so the route chain loads under jest.
-jest.mock('jose', () => ({
-  decodeJwt: (t: string) =>
-    JSON.parse(Buffer.from(String(t).split('.')[1] || '', 'base64url').toString('utf8') || '{}'),
-}));
-
 import { NextRequest } from 'next/server';
+import { clearJwksCache } from '@hanzo/iam/auth';
+
+import { IAM, CLIENT_ID, discovery, jwks, isDiscoveryUrl, mint } from '../iam-fixture';
 
 import { GET as meGET } from '@/app/v1/me/route';
 import { POST as editPOST } from '@/app/v1/edit/route';
 import { POST as suggestPOST } from '@/app/v1/suggest/route';
 
 // --- helpers ---------------------------------------------------------------
-
-const b64url = (o: unknown) => Buffer.from(JSON.stringify(o)).toString('base64url');
-/** An unsigned JWT jose.decodeJwt can read (claims only — validity comes from the mocked userinfo). */
-const jwt = (claims: Record<string, unknown>) =>
-  `${b64url({ alg: 'none', typ: 'JWT' })}.${b64url({ exp: Math.floor(Date.now() / 1000) + 3600, ...claims })}.sig`;
 
 interface FetchOpts { balance?: number; githubToken?: string | null }
 
@@ -36,6 +26,10 @@ function installFetch(o: FetchOpts = {}) {
     new Response(JSON.stringify(b), { status: s, headers: { 'content-type': 'application/json' } });
   return jest.spyOn(global, 'fetch').mockImplementation(async (input: RequestInfo | URL) => {
     const url = typeof input === 'string' ? input : input instanceof URL ? input.href : (input as Request).url;
+    // The verifier really fetches IAM's key set — serve it from the fixture.
+    if (isDiscoveryUrl(url)) {
+      return json(url.includes('openid-configuration') ? await discovery() : await jwks());
+    }
     if (url.includes('/v1/iam/get-account')) {
       const props: Record<string, string> = {};
       if (o.githubToken) {
@@ -67,17 +61,20 @@ function req(
   });
 }
 
-// An admin token elevates ONLY when it was minted for hanzo.app's OWN IAM client
-// (aud === IAM_CLIENT_ID) — FIX #2 (confused-deputy guard). ADMIN carries our
-// audience; ADMIN_FOREIGN is an admin-owner token from a DIFFERENT app's client.
-const ADMIN = () => jwt({ owner: 'admin', name: 'z', aud: 'hanzo-app' });
-const ADMIN_FOREIGN = () => jwt({ owner: 'admin', name: 'z', aud: 'hanzo-chat' });
-const USER = () => jwt({ owner: 'acme', name: 'bob', aud: 'hanzo-app' });
+// An admin token elevates ONLY when IAM minted it for hanzo.app's OWN client
+// (aud === IAM_CLIENT_ID) — the confused-deputy guard. ADMIN carries our
+// audience; ADMIN_FOREIGN is a genuinely-signed admin-owner token from a
+// DIFFERENT app's client, which is exactly the token that must not elevate.
+const ADMIN = () => mint({ owner: 'admin', name: 'z' });
+const ADMIN_FOREIGN = () => mint({ owner: 'admin', name: 'z', aud: 'hanzo-chat' });
+const USER = () => mint({ owner: 'acme', name: 'bob' });
 const EDIT_BODY = { repo: 'hanzoai/app', path: 'README.md', instruction: 'fix a typo' };
 
 beforeEach(() => {
   delete process.env.HANZO_EDIT_BOT_TOKEN;
-  process.env.IAM_CLIENT_ID = 'hanzo-app';
+  process.env.IAM_URL = IAM;
+  process.env.IAM_CLIENT_ID = CLIENT_ID;
+  clearJwksCache();
 });
 afterEach(() => jest.restoreAllMocks());
 
@@ -96,19 +93,19 @@ describe('GET /v1/me', () => {
 
   it('user with credits → hasCredits true, real balance', async () => {
     installFetch({ balance: 500 });
-    const res = await meGET(req('https://hanzo.app/v1/me', { token: USER() }));
+    const res = await meGET(req('https://hanzo.app/v1/me', { token: await USER() }));
     expect(await res.json()).toMatchObject({ authenticated: true, isAdmin: false, hasCredits: true, balance: 500 });
   });
 
   it('user without credits → hasCredits false', async () => {
     installFetch({ balance: 0 });
-    const res = await meGET(req('https://hanzo.app/v1/me', { token: USER() }));
+    const res = await meGET(req('https://hanzo.app/v1/me', { token: await USER() }));
     expect(await res.json()).toMatchObject({ authenticated: true, isAdmin: false, hasCredits: false, balance: 0 });
   });
 
   it('admin → free (hasCredits true, balance skipped)', async () => {
     installFetch();
-    const res = await meGET(req('https://hanzo.app/v1/me', { token: ADMIN() }));
+    const res = await meGET(req('https://hanzo.app/v1/me', { token: await ADMIN() }));
     expect(await res.json()).toMatchObject({ authenticated: true, isAdmin: true, hasCredits: true, balance: null });
   });
 });
@@ -125,21 +122,21 @@ describe('POST /v1/edit — the gate', () => {
 
   it('non-admin with no credits → 402 needsCredits', async () => {
     installFetch({ balance: 0 });
-    const res = await editPOST(req('https://hanzo.app/v1/edit', { method: 'POST', token: USER(), body: EDIT_BODY }));
+    const res = await editPOST(req('https://hanzo.app/v1/edit', { method: 'POST', token: await USER(), body: EDIT_BODY }));
     expect(res.status).toBe(402);
     expect(await res.json()).toMatchObject({ ok: false, needsCredits: true });
   });
 
   it('non-admin WITH credits passes the gate (then needs a linked forge → 409)', async () => {
     installFetch({ balance: 500, githubToken: null });
-    const res = await editPOST(req('https://hanzo.app/v1/edit', { method: 'POST', token: USER(), body: EDIT_BODY }));
+    const res = await editPOST(req('https://hanzo.app/v1/edit', { method: 'POST', token: await USER(), body: EDIT_BODY }));
     expect(res.status).toBe(409); // past the gate; stopped only for lack of a GitHub link
     expect(await res.json()).toMatchObject({ ok: false, connect: true });
   });
 
   it('admin passes the gate FREE — no balance needed (then 409 for no linked forge)', async () => {
     installFetch({ githubToken: null }); // note: no balance provided; admin must not consult billing
-    const res = await editPOST(req('https://hanzo.app/v1/edit', { method: 'POST', token: ADMIN(), body: EDIT_BODY }));
+    const res = await editPOST(req('https://hanzo.app/v1/edit', { method: 'POST', token: await ADMIN(), body: EDIT_BODY }));
     expect(res.status).toBe(409);
     expect(await res.json()).toMatchObject({ ok: false, connect: true });
   });
@@ -147,10 +144,10 @@ describe('POST /v1/edit — the gate', () => {
   // FIX #2: an `owner:admin` token minted for a DIFFERENT (lower-trust) app's IAM
   // client must NOT elevate — it is treated as a normal user, so with no credits
   // it is stopped at the 402 billing gate, never granted the free admin path.
-  it('admin-owner token from a FOREIGN app client does NOT elevate → 402', async () => {
+  it('admin-owner token from a FOREIGN app client authenticates but does NOT elevate → 402', async () => {
     installFetch({ balance: 0, githubToken: null });
     const res = await editPOST(
-      req('https://hanzo.app/v1/edit', { method: 'POST', token: ADMIN_FOREIGN(), body: EDIT_BODY }),
+      req('https://hanzo.app/v1/edit', { method: 'POST', token: await ADMIN_FOREIGN(), body: EDIT_BODY }),
     );
     expect(res.status).toBe(402);
     expect(await res.json()).toMatchObject({ ok: false, needsCredits: true });
@@ -159,7 +156,7 @@ describe('POST /v1/edit — the gate', () => {
   it('rejects a body with no path', async () => {
     installFetch({ balance: 500 });
     const res = await editPOST(
-      req('https://hanzo.app/v1/edit', { method: 'POST', token: USER(), body: { repo: 'a/b', instruction: 'x' } }),
+      req('https://hanzo.app/v1/edit', { method: 'POST', token: await USER(), body: { repo: 'a/b', instruction: 'x' } }),
     );
     expect(res.status).toBe(400);
   });
@@ -180,7 +177,7 @@ describe('POST /v1/suggest', () => {
   it('authenticated with a linked forge → files an issue', async () => {
     installFetch({ githubToken: 'ght' });
     const res = await suggestPOST(
-      req('https://hanzo.app/v1/suggest', { method: 'POST', token: USER(), body: { repo: 'owner/repo', suggestion: 'fix a typo' } }),
+      req('https://hanzo.app/v1/suggest', { method: 'POST', token: await USER(), body: { repo: 'owner/repo', suggestion: 'fix a typo' } }),
     );
     expect(res.status).toBe(200);
     expect(await res.json()).toMatchObject({ ok: true, filed: true, issueUrl: expect.stringContaining('/issues/9') });

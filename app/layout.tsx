@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { cookies } from "next/headers";
 
 import TanstackProvider from "@/components/providers/tanstack-query-provider";
 // @hanzo/brand monochrome design tokens (--hanzo-*, --font-size-*, --z-*) load
@@ -10,8 +8,6 @@ import TanstackProvider from "@/components/providers/tanstack-query-provider";
 // Tamagui `--background !important` fix. One import, at the root, once.
 import "@hanzo/brand/styles/variables.css";
 import "@/assets/globals.css";
-import MY_TOKEN_KEY from "@/lib/get-cookie-name";
-import { apiServer } from "@/lib/api";
 import { SITE_URL } from "@/lib/site";
 import AppContext from "@/components/contexts/app-context";
 import IframeDetector from "@/components/iframe-detector";
@@ -91,29 +87,11 @@ export const viewport: Viewport = {
   themeColor: "#000000",
 };
 
-async function getMe() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(MY_TOKEN_KEY())?.value;
-  if (!token) return { user: null, errCode: null };
-  try {
-    const res = await apiServer.get("/me", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return { user: res.data.user, errCode: null };
-  } catch (err: any) {
-    return { user: null, errCode: err.status };
-  }
-}
-
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const data = await getMe();
-
   // Error reporting is wired by AnalyticsRoot (the authed @hanzo/event client);
   // errorLogger just queues until then. initialize() stays for API compatibility.
   if (typeof window !== 'undefined') {
@@ -137,7 +115,7 @@ export default async function RootLayout({
         <ErrorBoundary level="app">
           <Providers>
             <TanstackProvider>
-              <AppContext me={data}>{children}</AppContext>
+              <AppContext>{children}</AppContext>
             </TanstackProvider>
           </Providers>
         </ErrorBoundary>

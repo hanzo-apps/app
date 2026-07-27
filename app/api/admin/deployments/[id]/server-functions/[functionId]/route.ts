@@ -7,7 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth/session';
+import { requireSession } from '@/lib/iam';
 import { getSQLiteAdapter } from '@/lib/vfs/adapters/server';
 import { validateFunctionCode, validateServerFunctionName } from '@/lib/edge-functions/executor';
 import { ServerFunction } from '@/lib/vfs/types';
@@ -24,7 +24,7 @@ export async function GET(
   { params }: RouteParams
 ): Promise<NextResponse> {
   try {
-    await requireAuth();
+    await requireSession(request);
     const { id: deploymentId, functionId } = await params;
 
     const adapter = getSQLiteAdapter();
@@ -67,7 +67,7 @@ export async function PUT(
   { params }: RouteParams
 ): Promise<NextResponse> {
   try {
-    await requireAuth();
+    await requireSession(request);
     const { id: deploymentId, functionId } = await params;
     const body = await request.json();
 
@@ -154,7 +154,7 @@ export async function DELETE(
   { params }: RouteParams
 ): Promise<NextResponse> {
   try {
-    await requireAuth();
+    await requireSession(request);
     const { id: deploymentId, functionId } = await params;
 
     const adapter = getSQLiteAdapter();

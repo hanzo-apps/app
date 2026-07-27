@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth/session';
+import { requireSession } from '@/lib/iam';
 import { getSQLiteAdapter } from '@/lib/vfs/adapters/server';
 import { DeploymentDatabase } from '@/lib/vfs/adapters/deployment-database';
 import {
@@ -45,7 +45,7 @@ export async function POST(
   context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse<MutationResponse>> {
   try {
-    await requireAuth();
+    await requireSession(request);
     const { id: deploymentId } = await context.params;
     const body: MutationRequest = await request.json();
     const { operation, path, content } = body;

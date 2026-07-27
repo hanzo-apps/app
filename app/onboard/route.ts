@@ -1,7 +1,7 @@
 /**
  * Org onboarding — create the signed-in user's organization, server-side.
  *
- * Same-origin (`/onboard`): the browser sends only its httpOnly `hanzo_token`;
+ * Same-origin (`/onboard`): the browser presents only its IAM token;
  * this handler resolves the user from that bearer and acts as the confidential
  * IAM client to create a customer/personal org and make the user its admin. An
  * IAM user belongs to exactly ONE org (their `owner`), so a zero-org user is
@@ -23,7 +23,7 @@
  */
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { resolveOrgIdentity } from '@/lib/org/server';
+import { session } from '@/lib/iam';
 import { requireSameOrigin } from '@/lib/org/csrf';
 import {
   createOrganization,
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const csrf = requireSameOrigin(req);
   if (csrf) return csrf;
 
-  const user = await resolveOrgIdentity(req, { validate: true });
+  const user = await session(req);
   if (!user) {
     return NextResponse.json({ error: 'Sign in to create an organization.' }, { status: 401 });
   }
@@ -82,7 +82,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   // Default (no name) = personal org — the "just let me build" path.
   const personal = body.personal === true || !body.name;
 
-  const additional = Boolean(user.homeOrg);
+  const additional = Boolean(user.org);
   if (additional && personal) {
     return NextResponse.json(
       { error: 'You already have an organization. Name the new one explicitly.' },
@@ -125,11 +125,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       name: slug,
       displayName,
       personal,
-      sourceOwner: user.homeOrg,
+      sourceOwner: user.org,
     });
     // First-run only: make the zero-org user this org's admin (owner-move).
     if (!additional) {
-      const id = user.homeOrg ? `${user.homeOrg}/${user.name}` : user.name;
+      const id = user.org ? `${user.org}/${user.name}` : user.name;
       await moveUserToOrg(id, slug);
     }
   } catch (e) {

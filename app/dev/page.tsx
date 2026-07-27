@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AppEditor } from "@/components/editor";
 import { builderLink, fetchProject } from "@/lib/api/projects";
@@ -21,7 +21,7 @@ function stagedRank(path: string): number {
   return 2;
 }
 
-export default function DevPage() {
+function Dev() {
   const searchParams = useSearchParams();
   const repoUrl = searchParams.get("repo") || searchParams.get("template") || "";
   const action = searchParams.get("action") || "edit"; // edit or deploy
@@ -404,5 +404,21 @@ export default function DevPage() {
       isNew
       pages={templatePages ?? importedPages ?? undefined}
     />
+  );
+}
+
+/**
+ * `useSearchParams` opts a page out of static prerendering unless it sits under
+ * a Suspense boundary — the builder IS its query string (?repo, ?project,
+ * ?prompt), so the boundary is the honest way to say "this part is client-only".
+ * The root layout used to force every page dynamic by reading cookies for an
+ * identity it never actually resolved; with that gone, this page has to declare
+ * its own bailout.
+ */
+export default function DevPage() {
+  return (
+    <Suspense fallback={null}>
+      <Dev />
+    </Suspense>
   );
 }

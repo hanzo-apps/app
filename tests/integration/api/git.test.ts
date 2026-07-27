@@ -4,7 +4,7 @@
  * BFF tests for /v1/git/accounts and /v1/git/repos — the real GitHub import seam.
  *
  * The security-critical contract:
- *  - no `hanzo_token` cookie → honest not-connected (accounts) / 401 (repos),
+ *  - no verified IAM session → honest not-connected (accounts) / 401 (repos),
  *    never fabricated rows and never a service token;
  *  - the user's IAM bearer resolves their linked GitHub token from IAM
  *    get-account (self ⇒ unmasked), and that GitHub token — NOT the IAM bearer —
@@ -18,24 +18,27 @@
  */
 import { NextRequest } from "next/server";
 import { http, HttpResponse } from "msw";
+import { clearJwksCache } from "@hanzo/iam/auth";
+
 import { server } from "../../../jest.setup";
+import { IAM as IAM_HOST, CLIENT_ID, iamHandlers, mint } from "../../iam-fixture";
 
 import { GET as getAccounts } from "@/app/v1/git/accounts/route";
 import { GET as getRepos } from "@/app/v1/git/repos/route";
 
-const IAM = "https://hanzo.id/v1/iam/get-account";
+const GET_ACCOUNT = `${IAM_HOST}/v1/iam/get-account`;
 const GH = "https://api.github.com";
 const GH_TOKEN = "gho_realgithubtoken";
 
 function req(url: string, token?: string) {
   const headers = new Headers();
-  if (token) headers.set("cookie", `hanzo_token=${token}`);
+  if (token) headers.set("authorization", `Bearer ${AUTH}`);
   return new NextRequest(url, { headers });
 }
 
 /** IAM get-account for a user WITH a linked GitHub token (self ⇒ unmasked). */
 function iamLinked() {
-  return http.get(IAM, () =>
+  return http.get(GET_ACCOUNT, () =>
     HttpResponse.json({
       status: "ok",
       data: {
@@ -49,6 +52,18 @@ function iamLinked() {
   );
 }
 
+// A token is only a caller if IAM signed it, so these suites mint real ones
+// against an in-process IAM (tests/iam-fixture). `AUTH` stands in wherever a
+// case used to hand over a made-up string.
+let AUTH: string;
+beforeEach(async () => {
+  process.env.IAM_URL = IAM_HOST;
+  process.env.IAM_CLIENT_ID = CLIENT_ID;
+  clearJwksCache();
+  server.use(...(await iamHandlers()));
+  AUTH = await mint();
+});
+
 describe("BFF: GET /v1/git/accounts", () => {
   it("no token cookie → connected:false, accounts:[] (honest CTA state)", async () => {
     const res = await getAccounts(req("http://localhost/v1/git/accounts"));
@@ -61,7 +76,7 @@ describe("BFF: GET /v1/git/accounts", () => {
 
   it("token but no GitHub linked in IAM → connected:false", async () => {
     server.use(
-      http.get(IAM, () =>
+      http.get(GET_ACCOUNT, () =>
         HttpResponse.json({ status: "ok", data: { properties: {} } }),
       ),
     );
@@ -72,7 +87,7 @@ describe("BFF: GET /v1/git/accounts", () => {
 
   it("masked token ('***') is treated as not connected", async () => {
     server.use(
-      http.get(IAM, () =>
+      http.get(GET_ACCOUNT, () =>
         HttpResponse.json({
           status: "ok",
           data: { properties: { oauth_GitHub_accessToken: "***" } },
@@ -87,7 +102,7 @@ describe("BFF: GET /v1/git/accounts", () => {
     let iamAuth: string | null = null;
     let ghAuth: string | null = null;
     server.use(
-      http.get(IAM, ({ request }) => {
+      http.get(GET_ACCOUNT, ({ request }) => {
         iamAuth = request.headers.get("authorization");
         return HttpResponse.json({
           status: "ok",
@@ -110,7 +125,7 @@ describe("BFF: GET /v1/git/accounts", () => {
     const body = await res.json();
 
     expect(res.status).toBe(200);
-    expect(iamAuth).toBe("Bearer iam-bearer"); // IAM called as the user
+    expect(iamAuth).toBe(`Bearer ${AUTH}`); // IAM called as the user
     expect(ghAuth).toBe(`Bearer ${GH_TOKEN}`); // GitHub called with the GH token
     expect(body.connected).toBe(true);
     expect(body.accounts).toEqual([

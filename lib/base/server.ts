@@ -7,21 +7,17 @@
  */
 
 import "server-only";
-import { cookies, headers } from "next/headers";
+import { headers } from "next/headers";
 import type { BaseClient } from "@hanzo/base";
 import { baseAs, isBaseConfigured } from "@/lib/base";
+import { session } from "@/lib/iam";
 
-const COOKIE_NAME = "hanzo_token";
-
-/** Extract the raw IAM access token from the current request, if present. */
+/**
+ * The VERIFIED IAM token for the current request, if any. Same one reader as
+ * every other server path — a token that does not verify is not a token.
+ */
 export async function resolveIamToken(): Promise<string | undefined> {
-  const h = await headers();
-  const authHeader = h.get("authorization") || h.get("Authorization");
-  if (authHeader) {
-    return authHeader.startsWith("Bearer ") ? authHeader.slice(7) : authHeader;
-  }
-  const cookieStore = await cookies();
-  return cookieStore.get(COOKIE_NAME)?.value;
+  return (await session({ headers: await headers() }))?.token || undefined;
 }
 
 /**

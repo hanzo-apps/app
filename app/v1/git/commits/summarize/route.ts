@@ -12,14 +12,14 @@
  *     subject from the session's edit prompts, authored BEFORE a push so new
  *     commits are born clean. Not cached (session-specific).
  *
- * Cookie-authenticated (the user's IAM bearer mirrored to `hanzo_token`) and
+ * Authenticated by the user's verified IAM bearer (lib/iam.ts) and
  * same-origin (CSRF) like `/v1/generate` — it spends the user's AI credit. No
  * signed-in user ⇒ 401. On any gateway failure the pure layer falls back to the
  * raw first line, so a `summaries`/`message` value is NEVER blank.
  */
 import { type NextRequest, NextResponse } from 'next/server';
 
-import MY_TOKEN_KEY from '@/lib/get-cookie-name';
+import { session } from '@/lib/iam';
 import { requireSameOrigin } from '@/lib/org/csrf';
 import {
   cleanCommitMessages,
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
   const csrf = requireSameOrigin(req);
   if (csrf) return csrf;
 
-  const token = req.cookies.get(MY_TOKEN_KEY())?.value;
+  const token = (await session(req))?.token;
   if (!token) {
     return NextResponse.json(
       { ok: false, openLogin: true, message: 'Sign in first' },
