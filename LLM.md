@@ -39,3 +39,26 @@ off-cluster). This is an env artifact — the live `/` is public (middleware tre
 `/` as a public route). Block those hosts in the browser to verify below-fold
 sections locally.
 
+### Typography landmine: three packages claim `:root`, and Tamagui wins on proximity
+
+`@hanzo/gui`'s provider wraps the whole tree in `<span class="_dsp_contents
+font_body">` **inside** `<body>`, and Tamagui pairs `.font_body, .font_heading,
+.is_View { font-family: var(--f-family) }` with a `:root .font_*` declaration of
+`--f-family`. Inheritance follows proximity, so that one span silently beat
+`<body>`'s Geist for every heading, paragraph and link — only elements that set
+their own family (`button`, `code`/`pre`) kept the webfont. Separately,
+`@hanzo/brand` ships `:root { --font-sans: 'Geist Sans', … }`, a family with no
+`@font-face` at all: next/font generates `Geist` / `Geist Fallback`.
+
+Next decides stylesheet order and puts both upstream sheets **after**
+`assets/globals.css` (brand as its own chunk, gui as an inline `<style>`), so an
+equal-specificity `:root` override loses. globals.css therefore anchors on
+`html:root` (0,1,1 and 0,2,1) to outrank them, and points every token at
+next/font's generated `--font-geist-sans` — never a literal family name, which is
+what drifted in the first place. next/font's variables live on `<html>` for the
+same reason: they are tokens and must resolve at `:root`.
+
+Verify font work with CDP `CSS.getPlatformFontsForNode` (`familyName` +
+`isCustomFont`) and `FontFace.status`. Never `document.fonts.check()` — it returns
+true even on a page with zero `@font-face` rules, so it proves nothing.
+
