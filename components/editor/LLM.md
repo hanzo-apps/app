@@ -247,9 +247,16 @@ there was no way to discover — let alone perform — a resize. It is now
   They are absolutely positioned OVER the separator so the drag target underneath
   stays one uninterrupted strip, and the status readout is `pointer-events-none`
   for the same reason.
-- **The mic moved too**, and there is still exactly one of it. `ask-ai/dictation.ts`
-  is the seam: the composer registers where a transcript lands, the mic delivers
-  one. The mic is an input DEVICE (chrome); the prompt is a VALUE (the composer).
+- **The mic moved too**, and there is still exactly one of it — now a
+  CONVERSATION, not a dictation key (`@hanzo/voice`, shared with hanzo.chat).
+  `ask-ai/mic.ts` is the seam: the composer OFFERS its voice machine and the bar
+  draws it. The composer has to own it, because a conversation needs all three of
+  the things only the composer has — the prompt the transcript lands in, the
+  submit path (`callAi`, never a second one), and the reply to read back. The mic
+  is an input DEVICE (chrome); the conversation is a VALUE (the composer).
+  Speech is the platform's own `/v1/audio/{transcriptions,speech}`, lent the
+  caller's IAM session by `app/v1/audio/[kind]/route.ts` so the browser never
+  holds a gateway token.
 - **Real content**: `console/capture.ts` patches the preview iframe's `console`
   plus `error`/`unhandledrejection`. The preview is double-buffered and rewrites
   `srcDoc` mid-stream, so it re-patches on every frame load — caught by listening

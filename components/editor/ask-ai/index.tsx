@@ -33,15 +33,22 @@ import { useCallAi } from "@/hooks/useCallAi";
 import { sendRewardSignal, getLastGenerationRequestId } from "@/lib/reward-signal";
 import { SelectedFiles } from "./selected-files";
 import { Uploader } from "./uploader";
-import { receiveDictation } from "./dictation";
+import { offer } from "./mic";
+import { sentence } from "./sentence";
 import { ChatThread, type ThreadMessage } from "./chat-thread";
 import { isConversational } from "./intent";
+import { useVoice, speech } from "@hanzo/voice";
+
+// The builder's ear and voice, lent the caller's IAM session by the app's own
+// `/v1/audio/*` proxy — so the browser never carries a gateway token.
+const HANZO_SPEECH = speech({ baseUrl: "" });
 
 // Fix mode composes this short, human intent preamble in front of the user's
 // text (empty text is fine when references are attached). The reference images
 // ride the UNCHANGED follow-up `files` path — Fix adds no new API surface.
 const FIX_PREAMBLE =
   "Fix the current design to match the attached reference. Change only what differs from the reference; keep what already matches.";
+
 
 // Contextual next-step suggestions shown as dismissible chips above the composer
 // (Lovable parity). Honest, app-agnostic starters — clicking one sends it as a
@@ -103,15 +110,6 @@ export function AskAI({
 
   const [open, setOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
-  // The mic lives on the console bar; the prompt lives here. This is where a
-  // spoken phrase lands — appended, exactly as the in-composer mic used to.
-  useEffect(
-    () =>
-      receiveDictation((text) =>
-        setPrompt((p) => (p.trim() ? `${p.trim()} ${text}` : text)),
-      ),
-    [],
-  );
   const [provider, setProvider] = useLocalStorage("provider", "auto");
   // The persisted `model` is the user OVERRIDE: `AUTO_MODEL` = smart routing on,
   // a concrete id = routing off, unset = follow the org default. A NEW session
@@ -576,6 +574,49 @@ export function AskAI({
       }
     }
   };
+
+  // ── the spoken conversation ───────────────────────────────────────────────
+  //
+  // The composer owns the voice because it owns all three things a conversation
+  // needs: the prompt the transcript lands in, the submit path a finished turn
+  // goes through, and the reply to read back. The mic itself lives on the
+  // console bar and is handed this machine by `mic.ts`.
+  //
+  // Anything already typed is kept: the transcript is appended to it, and the
+  // turn that gets sent is the whole line, exactly as if it had been typed.
+  const typed = useRef<string | null>(null);
+  const held = useRef(prompt);
+  held.current = prompt;
+  const join = (heard: string) =>
+    typed.current ? `${typed.current} ${heard}` : heard;
+
+  const voice = useVoice({
+    speech: HANZO_SPEECH,
+    onPartial: (heard) => {
+      if (typed.current === null) typed.current = held.current.trim();
+      setPrompt(join(heard));
+    },
+    onUtterance: (said) => {
+      const turn = join(said);
+      typed.current = null;
+      // The EXISTING submit path — voice is a way of typing, not a way of sending.
+      callAi(undefined, turn);
+    },
+  });
+
+  // The console bar draws it.
+  useEffect(() => offer(voice), [voice]);
+
+  // Read the settled reply back. `say` is a no-op outside a conversation, so a
+  // typed turn stays silent without asking anyone here whether it was spoken.
+  const read = useRef<string | null>(null);
+  useEffect(() => {
+    const last = messages[messages.length - 1];
+    if (!last || last.role !== "assistant" || last.phase !== "done") return;
+    if (!last.text || read.current === last.id) return;
+    read.current = last.id;
+    void voice.say(sentence(last.text));
+  }, [messages, voice]);
 
   // Reasoning stream → the active turn's plan card (streamed live, monochrome
   // shimmer while designing). Only callAiNewProject emits <think>.

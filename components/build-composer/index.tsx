@@ -19,6 +19,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { EVENTS } from '@hanzo/event';
 import { useAnalytics } from '@hanzo/event/react';
+import { Voice, useVoice } from '@hanzo/voice';
 import {
   ArrowUp,
   Mic,
@@ -39,27 +40,6 @@ const MODES: { value: ComposerMode; label: string; icon: React.ElementType; hint
   { value: 'build', label: 'Build', icon: Hammer, hint: 'Generate and edit the app directly' },
   { value: 'plan', label: 'Plan', icon: ListTodo, hint: 'Draft a plan before writing code' },
 ];
-
-/** Minimal shape of the Web Speech API we use (kept local — not in DOM libs). */
-interface SpeechLike {
-  lang: string;
-  interimResults: boolean;
-  continuous: boolean;
-  start(): void;
-  stop(): void;
-  onresult: ((e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
-  onend: (() => void) | null;
-  onerror: (() => void) | null;
-}
-
-function speechCtor(): (new () => SpeechLike) | null {
-  if (typeof window === 'undefined') return null;
-  const w = window as unknown as {
-    SpeechRecognition?: new () => SpeechLike;
-    webkitSpeechRecognition?: new () => SpeechLike;
-  };
-  return w.SpeechRecognition || w.webkitSpeechRecognition || null;
-}
 
 export function BuildComposer({
   greetingName,
@@ -90,13 +70,9 @@ export function BuildComposer({
   // unless the user opts out. Persisted so the builder + publish read the same value.
   const [withBase, setWithBase] = useState(true);
   const [focused, setFocused] = useState(false);
-  const [listening, setListening] = useState(false);
-  const [micSupported, setMicSupported] = useState(false);
-  const recRef = useRef<SpeechLike | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    setMicSupported(!!speechCtor());
     setWithBase(baseEnabled());
   }, []);
 
@@ -186,28 +162,25 @@ export function BuildComposer({
     router.push('/dev');
   };
 
-  const toggleDictation = () => {
-    const Ctor = speechCtor();
-    if (!Ctor) return;
-    if (listening) {
-      recRef.current?.stop();
-      return;
-    }
-    const rec = new Ctor();
-    rec.lang = 'en-US';
-    rec.interimResults = true;
-    rec.continuous = false;
-    rec.onresult = (e) => {
-      let transcript = '';
-      for (let i = 0; i < e.results.length; i++) transcript += e.results[i][0].transcript;
-      setIdea((prev) => (prev ? `${prev} ${transcript}`.replace(/\s+/g, ' ') : transcript));
-    };
-    rec.onend = () => setListening(false);
-    rec.onerror = () => setListening(false);
-    recRef.current = rec;
-    setListening(true);
-    rec.start();
-  };
+  // Say the idea instead of typing it. The same machine hanzo.chat and the
+  // builder use — here there is no reply to read back, so the turn simply goes
+  // through `submit`, exactly as the send button does.
+  const kept = useRef<string | null>(null);
+  const held = useRef(idea);
+  held.current = idea;
+  const join = (heard: string) => (kept.current ? `${kept.current} ${heard}` : heard);
+
+  const voice = useVoice({
+    onPartial: (heard) => {
+      if (kept.current === null) kept.current = held.current.trim();
+      setIdea(join(heard));
+    },
+    onUtterance: (said) => {
+      const turn = join(said);
+      kept.current = null;
+      submit(turn);
+    },
+  });
 
   const CurrentMode = MODES.find((m) => m.value === mode) ?? MODES[0];
 
@@ -317,22 +290,19 @@ export function BuildComposer({
             </div>
 
             <div className="flex items-center gap-1">
-              {micSupported && (
-                <button
-                  type="button"
-                  onClick={toggleDictation}
-                  aria-label={listening ? 'Stop dictation' : 'Dictate'}
-                  aria-pressed={listening}
-                  className={cn(
-                    'rounded-lg p-2 transition-colors',
-                    listening
-                      ? 'bg-accent text-foreground'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-                  )}
-                >
-                  <Mic className={cn('h-4 w-4', listening && 'animate-pulse')} />
-                </button>
-              )}
+              <Voice
+                voice={voice}
+                className={cn(
+                  'rounded-lg p-2 text-muted-foreground transition-colors',
+                  'hover:bg-muted hover:text-foreground disabled:opacity-40',
+                  'data-[state=listening]:bg-accent data-[state=listening]:text-foreground',
+                  '[&_svg]:h-4 [&_svg]:w-4',
+                )}
+              >
+                {(state) => (
+                  <Mic className={cn('h-4 w-4', state === 'listening' && 'animate-pulse')} />
+                )}
+              </Voice>
               <button
                 type="button"
                 onClick={() => submit()}
