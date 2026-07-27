@@ -6,9 +6,8 @@
 // invented metrics. CTA reuses the canonical signup funnel (login signup hint →
 // /dev), the same pattern as components/layout/header.tsx getStarted().
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Check, ArrowRight } from "lucide-react";
 import { EVENTS } from "@hanzo/event";
 import { useAnalytics } from "@hanzo/event/react";
@@ -18,11 +17,16 @@ import Reveal from "@/components/landing/reveal";
 import FaqSection from "@/components/marketing/faq-section";
 import { billingFaq } from "@/components/marketing/faq-data";
 import { useUser } from "@/hooks/useUser";
+import { usePlans, usd } from "@/lib/plans";
+import { goToCheckout } from "@/lib/pay";
 
+// Marketing copy only. The PRICE is deliberately absent: commerce's catalog
+// (`GET /v1/billing/plans`) is the one authority, and it is what
+// `subscribe/card` actually charges. Carrying a second price here is how a page
+// ends up advertising $100 for a plan the server bills at $25.
 interface Plan {
   id: string;
   name: string;
-  price: number;
   tagline: string;
   features: string[];
   highlighted?: boolean;
@@ -36,7 +40,6 @@ const plans: Plan[] = [
   {
     id: "pro",
     name: "Pro",
-    price: 20,
     tagline: "For individual builders shipping real apps.",
     features: [
       "Shared AI usage across every Hanzo app — builder, Chat, and API",
@@ -51,7 +54,6 @@ const plans: Plan[] = [
   {
     id: "team",
     name: "Team",
-    price: 100,
     tagline: "For teams building together in one org.",
     highlighted: true,
     badge: "Most popular",
@@ -67,7 +69,6 @@ const plans: Plan[] = [
   {
     id: "max",
     name: "Max",
-    price: 200,
     tagline: "For heavy usage and larger organizations.",
     features: [
       "Everything in Team",
@@ -79,7 +80,6 @@ const plans: Plan[] = [
 ];
 
 export default function PricingPage() {
-  const router = useRouter();
   const analytics = useAnalytics();
   const { isAuthenticated, login } = useUser();
 
@@ -87,38 +87,31 @@ export default function PricingPage() {
     analytics.capture(EVENTS.PRICING_VIEWED);
   }, [analytics]);
 
-  const [checkingOut, setCheckingOut] = useState<string | null>(null);
+  // The live catalog — both the price we SHOW and the price we send to checkout.
+  const { plans: catalog, loading: catalogLoading, error: catalogError } = usePlans();
 
-  // Turn a plan choice into a real subscription checkout. A signed-out visitor goes
-  // through the canonical IAM signup funnel first (header.tsx getStarted()). A
-  // signed-in user gets a Hanzo Commerce checkout session for that plan and is sent
-  // straight to it — no more pricing↔billing ping-pong. If the plan isn't purchasable
-  // yet (no SKU provisioned, or Commerce unconfigured), fall back to /billing rather
-  // than dead-end, so the CTA always does something honest.
-  const choosePlan = async (planId: string) => {
+  // Turn a plan choice into a real subscription. A signed-out visitor goes through
+  // the canonical IAM signup funnel first. A signed-in user goes straight to the
+  // ONE live Square surface for a card-on-file subscription at the catalog price.
+  //
+  // This used to POST /api/commerce/checkout and, when that failed, bounce to
+  // /billing — which is what it did on every single click, because that route
+  // 503s without a webhook secret and the Commerce endpoint behind it (
+  // /v1/checkout/charge) does not exist. Hence "the buttons do nothing".
+  const choosePlan = (planId: string) => {
     analytics.capture(EVENTS.PLAN_CLICKED, { plan: planId });
     if (!isAuthenticated) {
-      login("/dev", { signup: true });
+      login("/pricing", { signup: true });
       return;
     }
-    setCheckingOut(planId);
-    try {
-      const res = await fetch("/api/commerce/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: planId, billing: "monthly" }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (res.ok && data?.url) {
-        window.location.href = data.url as string; // hosted Commerce checkout
-        return;
-      }
-      router.push("/billing"); // plan not purchasable yet — manage/credits there
-    } catch {
-      router.push("/billing");
-    } finally {
-      setCheckingOut(null);
-    }
+    const priced = catalog.get(planId);
+    // Refuse rather than guess: no catalog price ⇒ no checkout.
+    if (!priced || priced.contactSales || priced.price <= 0) return;
+    goToCheckout({
+      amountUsd: priced.price / 100,
+      plan: planId,
+      returnUrl: `${window.location.origin}/billing`,
+    });
   };
 
   return (
@@ -187,28 +180,37 @@ export default function PricingPage() {
                     {plan.tagline}
                   </p>
 
+                  {/* Price straight from the catalog that will be charged. While
+                      it loads we show a dash — never a stand-in number. */}
                   <div className="mt-5 flex items-baseline gap-1.5">
                     <span className="font-mono text-4xl font-medium tracking-tight">
-                      ${plan.price}
+                      {catalog.get(plan.id) ? usd(catalog.get(plan.id)!.price) : "—"}
                     </span>
-                    <span className="text-sm text-muted-foreground">/month</span>
+                    <span className="text-sm text-muted-foreground">
+                      {catalog.get(plan.id)?.perSeat ? "/seat/month" : "/month"}
+                    </span>
                   </div>
 
                   <button
                     onClick={() => choosePlan(plan.id)}
-                    disabled={checkingOut !== null}
+                    disabled={
+                      isAuthenticated && (catalogLoading || !catalog.get(plan.id))
+                    }
+                    title={catalogError ?? undefined}
                     className={`mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium transition-all disabled:opacity-60 ${
                       plan.highlighted
                         ? "bg-primary text-primary-foreground hover:bg-primary/90"
                         : "border border-border bg-muted text-foreground hover:border-foreground/30 hover:bg-accent"
                     }`}
                   >
-                    {checkingOut === plan.id
-                      ? "Starting checkout…"
-                      : isAuthenticated
-                        ? "Choose plan"
-                        : "Get started"}
-                    {checkingOut === plan.id ? null : <ArrowRight className="h-4 w-4" />}
+                    {!isAuthenticated
+                      ? "Get started"
+                      : catalogLoading
+                        ? "Loading…"
+                        : catalog.get(plan.id)
+                          ? "Choose plan"
+                          : "Unavailable"}
+                    <ArrowRight className="h-4 w-4" />
                   </button>
 
                   <ul className="mt-7 space-y-3.5 border-t border-border pt-6">

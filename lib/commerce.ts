@@ -144,104 +144,20 @@ export async function getOrCreateCustomer({
 }
 
 // ---------------------------------------------------------------------------
-// Checkout sessions
+// Checkout — deliberately ABSENT
 // ---------------------------------------------------------------------------
-
-interface CheckoutSession {
-  url: string;
-  id: string;
-}
-
-/** Create a checkout session for subscription plans (as the user). */
-export async function createCheckoutSession({
-  token,
-  customerId,
-  priceId,
-  mode = 'subscription',
-  successUrl,
-  cancelUrl,
-  metadata = {},
-}: {
-  token: string;
-  customerId?: string;
-  priceId: string;
-  mode?: 'payment' | 'subscription';
-  successUrl: string;
-  cancelUrl: string;
-  metadata?: Record<string, string>;
-}): Promise<CheckoutSession> {
-  return commerceRequest<CheckoutSession>(token, 'POST', '/checkout/charge', {
-    customerId,
-    planId: priceId,
-    mode,
-    successUrl,
-    cancelUrl,
-    paymentMethod: { type: 'card' },
-    metadata,
-  });
-}
-
-/** Create a checkout session for credit purchases (as the user). */
-export async function createCreditsCheckoutSession({
-  token,
-  customerId,
-  amount,
-  successUrl,
-  cancelUrl,
-  metadata = {},
-}: {
-  token: string;
-  customerId?: string;
-  customerEmail?: string;
-  amount: number;
-  successUrl: string;
-  cancelUrl: string;
-  metadata?: Record<string, string>;
-}): Promise<CheckoutSession> {
-  return commerceRequest<CheckoutSession>(token, 'POST', '/checkout/charge', {
-    customerId,
-    items: [
-      {
-        productId: COMMERCE_PRODUCTS.credits.productId,
-        quantity: 1,
-        price: amount * 100, // cents
-      },
-    ],
-    paymentMethod: { type: 'card' },
-    successUrl,
-    cancelUrl,
-    metadata: {
-      ...metadata,
-      type: 'credits',
-      amount: amount.toString(),
-    },
-  });
-}
-
-// ---------------------------------------------------------------------------
-// Billing portal
-// ---------------------------------------------------------------------------
-
-interface PortalSession {
-  url: string;
-  expiresAt: string;
-}
-
-/** Get a billing portal URL for the calling user. */
-export async function createPortalSession({
-  token,
-  returnUrl,
-}: {
-  token: string;
-  customerId: string;
-  returnUrl: string;
-}): Promise<PortalSession> {
-  return commerceRequest<PortalSession>(
-    token,
-    'GET',
-    `/billing/portal?returnUrl=${encodeURIComponent(returnUrl)}`,
-  );
-}
+//
+// There is no checkout here, and there must never be one again. The functions
+// that used to live at this spot (createCheckoutSession,
+// createCreditsCheckoutSession, createPortalSession) POSTed to
+// `/v1/checkout/charge` and `/v1/user` — Stripe-shaped routes Hanzo Commerce has
+// never served, so every one of them 404'd behind a 503 config gate. That was
+// the whole reason the Buy buttons did nothing.
+//
+// The ONE way to start a payment is `lib/pay.ts` → pay.hanzo.ai, the live Square
+// surface (Web Payments SDK → /v1/billing/topup/token for a top-up,
+// /v1/billing/subscribe/card for a plan). A second implementation in this file
+// would be a second place for money bugs to live.
 
 // ---------------------------------------------------------------------------
 // Subscriptions
