@@ -10,7 +10,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth/session';
+import { requireSession } from '@/lib/iam';
 import { getSQLiteAdapter } from '@/lib/vfs/adapters/server';
 
 interface ShellResult {
@@ -25,7 +25,7 @@ interface ShellResult {
 export async function POST(request: NextRequest): Promise<NextResponse<ShellResult>> {
   try {
     // Require authentication
-    await requireAuth();
+    await requireSession(request);
 
     const body = await request.json();
     const { deploymentId, cmd } = body;

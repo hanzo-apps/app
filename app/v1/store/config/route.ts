@@ -14,7 +14,8 @@
 // Otherwise anyone could bind their project to someone else's tenant and take
 // checkout through that org's Square account.
 import { NextRequest, NextResponse } from "next/server";
-import { resolveOrgIdentity, effectiveOrg } from "@/lib/org/server";
+import { effectiveOrg } from "@/lib/org/server";
+import { session } from "@/lib/iam";
 import {
   getStoreConfig,
   upsertStoreConfig,
@@ -38,7 +39,7 @@ export async function GET(req: NextRequest) {
       { status: 400 },
     );
   }
-  const id = await resolveOrgIdentity(req, { validate: true });
+  const id = await session(req);
   if (!id) return unauthorized();
 
   // id.token IS the raw IAM bearer, resolved from THIS request. Do not reach for
@@ -57,7 +58,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const id = await resolveOrgIdentity(req, { validate: true });
+  const id = await session(req);
   if (!id) return unauthorized();
 
   let body: {

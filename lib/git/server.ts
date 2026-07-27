@@ -6,7 +6,7 @@
  * OAuth token in their account `Properties["oauth_<Provider>_accessToken"]`. IAM
  * masks per-provider tokens for every caller EXCEPT the user themselves, so
  * calling `GET /v1/iam/get-account` with the user's OWN bearer (which we already
- * hold as the httpOnly `hanzo_token` cookie) returns the token unmasked.
+ * hold, verified, from `lib/iam.ts`) returns the token unmasked.
  *
  * This module reads that token SERVER-SIDE and uses it to call the provider's
  * REST API on the user's behalf. The provider token NEVER reaches the browser —
@@ -18,7 +18,7 @@ import 'server-only';
 
 import type { NextRequest } from 'next/server';
 
-import MY_TOKEN_KEY from '@/lib/get-cookie-name';
+import { session } from '@/lib/iam';
 import type { GitProvider } from '@/lib/api/git';
 
 const trim = (s: string) => s.replace(/\/+$/, '');
@@ -44,21 +44,6 @@ function gitlabApi(): string {
  */
 export function gitlabConnectable(): boolean {
   return process.env.GITLAB_CONNECT_ENABLED === 'true';
-}
-
-/**
- * Read the user's IAM bearer. Production is COOKIE-ONLY (the httpOnly
- * `hanzo_token` set from the @hanzo/iam SDK) so a client can never inject a
- * bearer; a header is honored only outside production for local curl/testing.
- */
-function readBearer(req: NextRequest): string | null {
-  const cookie = req.cookies.get(MY_TOKEN_KEY())?.value;
-  if (cookie) return cookie;
-  if (process.env.NODE_ENV !== 'production') {
-    const h = req.headers.get('authorization');
-    if (h) return h.startsWith('Bearer ') ? h.slice(7) : h;
-  }
-  return null;
 }
 
 /** A resolved git-provider connection for the signed-in user. */
@@ -152,10 +137,9 @@ export async function resolveConnection(
   provider: GitProvider,
   bearerOverride?: string,
 ): Promise<GitConnection | null> {
-  // `bearerOverride` is the cross-origin Edit-widget opt-in (the route already
-  // read the bearer via `readWidgetBearer`); every other caller passes nothing
-  // and keeps the cookie-only `readBearer` behavior unchanged.
-  const bearer = bearerOverride || readBearer(req);
+  // `bearerOverride` lets a route that already resolved its session hand the
+  // verified bearer straight in, rather than verifying the same token twice.
+  const bearer = bearerOverride || (await session(req))?.token;
   if (!bearer) return null;
   if (provider === 'hanzo') {
     // The push client sends this bearer as Authorization; the gateway derives
@@ -172,7 +156,7 @@ export async function resolveConnection(
  * Empty array ⇒ unauthenticated or nothing linked.
  */
 export async function resolveAllConnections(req: NextRequest): Promise<GitConnection[]> {
-  const bearer = readBearer(req);
+  const bearer = (await session(req))?.token;
   if (!bearer) return [];
   const account = await fetchIamAccount(bearer);
   if (!account) return [];

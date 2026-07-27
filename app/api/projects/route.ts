@@ -5,14 +5,14 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth/session';
+import { requireSession } from '@/lib/iam';
 import { createServerAdapter } from '@/lib/vfs/adapters/server';
 import { logger } from '@/lib/utils';
 
 export async function GET(request: NextRequest) {
   try {
     // Require authentication
-    await requireAuth();
+    await requireSession(request);
 
     // Get server adapter
     const adapter = await createServerAdapter();

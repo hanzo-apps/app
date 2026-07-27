@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import { getOrCreateCustomer, isCommerceConfigured, getSubscriptionStatus } from '@/lib/commerce';
-import { getUserSession } from '@/lib/session';
+import { session } from '@/lib/iam';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const user = await getUserSession();
+    const user = await session(req);
 
     if (!user) {
       return NextResponse.json({ subscription: null });
@@ -16,7 +16,7 @@ export async function GET() {
 
     const customer = await getOrCreateCustomer({
       token: user.token,
-      userId: user.id,
+      userId: user.sub,
       email: user.email,
       name: user.name,
     });

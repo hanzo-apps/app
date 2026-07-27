@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { SESSION_COOKIE } from "@hanzo/iam/server";
 import { applySecurityHeaders, applyRateLimiting } from "@/lib/security/middleware";
-
-const TOKEN_COOKIE = "hanzo_token";
 
 // Routes that require authentication (prefix match).
 const PROTECTED_PREFIXES = [
@@ -63,10 +62,16 @@ export async function middleware(request: NextRequest) {
     return rateLimitResponse;
   }
 
-  // --- IAM token-based auth gate ---
-  // Only enforce on protected routes; public routes and assets pass through.
+  // --- IAM token gate ---
+  // A navigation carries cookies and nothing else, so this is the only signal
+  // available at the edge. It is a LIVENESS check, not an authorization one: the
+  // cookie is written with the token's own remaining lifetime
+  // (IamClientProvider), so its presence means a live IAM token exists — an
+  // expired session bounces to login instead of landing on a page whose every
+  // call then 401s. Authorization is decided per request in `lib/iam.ts`, which
+  // verifies the token against IAM's JWKS; nothing here is ever trusted.
   if (isProtectedRoute(path)) {
-    const token = request.cookies.get(TOKEN_COOKIE);
+    const token = request.cookies.get(SESSION_COOKIE);
     if (!token?.value) {
       const loginUrl = new URL("/login", request.url);
       // Preserve the full path AND query so a cross-surface deep link

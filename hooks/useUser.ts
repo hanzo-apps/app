@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo } from "react";
-import { useIam, useIamIdentity } from "@hanzo/iam/react";
+import { useIam, useIamIdentity, resolveIdentity } from "@hanzo/iam/react";
 
 import { User } from "@/types";
 
@@ -40,26 +40,27 @@ export const useUser = () => {
 
   // Who to SHOW. IAM's `name` claim carries the Casdoor username, which for
   // SSO/seeded accounts IS the uuid — reading it directly is how the header came
-  // to render `e7d7fda0-…`. `useIamIdentity` runs `resolveIdentity`, which walks
-  // every name claim, refuses anything id-SHAPED whatever key it arrived under,
-  // and falls back to the email's local part. A name is what a person answers to.
-  const identity = useIamIdentity();
+  // to render `e7d7fda0-…`. `resolveIdentity` walks every name claim, refuses
+  // anything id-SHAPED whatever key it arrived under, and falls back to the
+  // email's local part. One rule, reached two ways: the hook when the session
+  // lives in IamProvider, the function on the same claims when it does not.
+  const resolved = useIamIdentity();
 
   const user = useMemo<User | null>(() => {
     if (!iamUser) return null;
-    const email = identity?.email ?? iamUser.email;
-    const name = identity?.name ?? email?.split("@")[0] ?? "";
+    const who = resolved ?? resolveIdentity(iamUser as Record<string, unknown>, {});
+    const name = who?.name ?? "";
     return {
       id: iamUser.sub,
       name,
       fullname: name,
-      initials: identity?.initials ?? name.slice(0, 2).toUpperCase(),
-      email,
+      initials: who?.initials ?? "",
+      email: who?.email ?? iamUser.email,
       username: name,
-      avatarUrl: identity?.avatarUrl ?? iamUser.picture ?? "",
+      avatarUrl: who?.avatarUrl ?? iamUser.picture ?? "",
       isPro: false,
     };
-  }, [iamUser, identity]);
+  }, [iamUser, resolved]);
 
   const openLoginWindow = useCallback(async () => {
     if (typeof window !== "undefined") {

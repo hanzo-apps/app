@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
-import { isAuthenticated } from "@/lib/auth";
+import { session } from "@/lib/iam";
 import { listProjects } from "@/lib/db/projects";
 import { buildUsage } from "@/lib/usage";
 
@@ -13,15 +13,15 @@ import { buildUsage } from "@/lib/usage";
  * count from the Hanzo Base data plane; everything else is flagged
  * not-yet-metered. No random numbers, no invented caps.
  */
-export async function GET() {
-  const user = await isAuthenticated();
+export async function GET(request: NextRequest) {
+  const user = await session(request);
   if (!user) {
     return NextResponse.json({ error: "Authentication required" }, { status: 401 });
   }
 
   let projectCount = 0;
   try {
-    const projects = await listProjects(user.token, user.id);
+    const projects = await listProjects(user.token, user.sub);
     projectCount = projects.length;
   } catch {
     // Base unreachable — report zero rather than fabricate.

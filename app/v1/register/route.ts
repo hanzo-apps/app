@@ -16,7 +16,8 @@
  */
 import type { NextRequest } from 'next/server';
 
-import { ensureProjectForRepo, resolveOrgIdentity, readWidgetBearer } from '@/lib/org/server';
+import { ensureProjectForRepo } from '@/lib/org/server';
+import { session } from '@/lib/iam';
 import { preflight, withCors } from '@/lib/edit/cors';
 
 export const runtime = 'nodejs';
@@ -27,12 +28,11 @@ export function OPTIONS(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const origin = req.headers.get('origin');
-  const bearer = readWidgetBearer(req);
 
   // Only a validated, signed-in user registers (skip for anon).
-  const id = await resolveOrgIdentity(req, { validate: true, bearer: bearer ?? undefined });
+  const id = await session(req);
   if (!id) return withCors(origin, { ok: false, authenticated: false });
-  if (!id.homeOrg) {
+  if (!id.org) {
     // No home org yet → nothing to scope a project to. Not an error.
     return withCors(origin, { ok: true, authenticated: true, registered: false, needsOnboarding: true });
   }

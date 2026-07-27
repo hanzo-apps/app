@@ -22,7 +22,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import MY_TOKEN_KEY from "@/lib/get-cookie-name";
+import { session } from "@/lib/iam";
 import { isCrossSite } from "@/lib/csrf";
 
 const HANZO_AI_BASE_URL =
@@ -52,7 +52,7 @@ export async function POST(
     );
   }
 
-  const token = request.cookies.get(MY_TOKEN_KEY())?.value;
+  const token = (await session(request))?.token;
   if (!token) return unauthorized();
 
   const { name } = await params;

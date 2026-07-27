@@ -19,7 +19,7 @@
  */
 import type { NextRequest } from 'next/server';
 
-import { resolveOrgIdentity, readWidgetBearer } from '@/lib/org/server';
+import { session } from '@/lib/iam';
 import { spendableCents } from '@/lib/billing/server';
 import { preflight, withCors } from '@/lib/edit/cors';
 
@@ -31,7 +31,7 @@ export function OPTIONS(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   const origin = req.headers.get('origin');
-  const id = await resolveOrgIdentity(req, { validate: true, bearer: readWidgetBearer(req) ?? undefined });
+  const id = await session(req);
 
   if (!id) {
     return withCors(origin, {
@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
   return withCors(origin, {
     authenticated: true,
     isAdmin: id.isAdmin,
-    org: id.homeOrg,
+    org: id.org,
     balance: cents,
     hasCredits,
   });
