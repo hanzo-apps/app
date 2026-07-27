@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 // TODO: Migrate project storage from @huggingface/hub to Hanzo storage API
 import { RepoDesignation, uploadFiles } from "@huggingface/hub";
 
-import { isAuthenticated } from "@/lib/auth";
+import { session } from "@/lib/iam";
 import { getProject, spaceId } from "@/lib/db/projects";
 
 // No longer need the ImageUpload interface since we're handling FormData with File objects
@@ -12,7 +12,7 @@ export async function POST(
   { params }: { params: Promise<{ namespace: string; repoId: string }> }
 ) {
   try {
-    const user = await isAuthenticated();
+    const user = await session(req);
 
     if (user instanceof NextResponse || !user) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -21,7 +21,7 @@ export async function POST(
     const param = await params;
     const { namespace, repoId } = param;
 
-    const project = await getProject(user.token, user.id, spaceId(namespace, repoId));
+    const project = await getProject(user.token, user.sub, spaceId(namespace, repoId));
 
 
     if (!project) {

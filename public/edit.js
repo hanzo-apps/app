@@ -381,12 +381,12 @@
     // circle framing a white ring read as two rings stacked. What is left is the
     // ensō itself, larger and heavier so it holds its own without a plate, and a
     // ring of light that blooms from the stroke on hover.
-    '.fab{position:fixed;right:16px;bottom:16px;z-index:2147483000;display:inline-flex;' +
-    'align-items:center;justify-content:center;width:56px;height:56px;padding:0;' +
+    '.fab{position:fixed;right:20px;bottom:20px;z-index:2147483000;display:inline-flex;' +
+    'align-items:center;justify-content:center;width:44px;height:44px;padding:0;' +
     'border-radius:999px;border:0;background:transparent;color:#fff;' +
     'cursor:pointer;line-height:0;-webkit-tap-highlight-color:transparent;' +
     'transition:transform .2s ease,filter .25s ease}' +
-    '.fab svg{width:34px;height:34px;display:block;overflow:visible;' +
+    '.fab svg{width:28px;height:28px;display:block;overflow:visible;' +
     'filter:drop-shadow(0 2px 6px rgba(0,0,0,.55));transition:filter .25s ease}' +
     '.fab:hover svg,.fab:focus-visible svg{' +
     'filter:drop-shadow(0 0 3px rgba(255,255,255,.95)) drop-shadow(0 0 10px rgba(255,255,255,.55)) drop-shadow(0 0 22px rgba(255,255,255,.28))}' +
@@ -394,16 +394,34 @@
     '.fab:focus-visible{outline:none}' +
     '.fab:active{transform:scale(.96)}' +
     '@media (prefers-reduced-motion:reduce){.fab{transition:none}.fab:hover{transform:none}}' +
-    '.panel{position:fixed;right:16px;bottom:16px;z-index:2147483001;width:360px;max-width:92vw;background:#0e0e0e;' +
+    '.panel{position:fixed;right:20px;bottom:76px;z-index:2147483001;width:352px;max-width:calc(100vw - 32px);background:#0e0e0e;' +
     'color:#f4f4f5;border:1px solid rgba(255,255,255,.14);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.5);' +
     'overflow:hidden;display:none}' +
     '.panel.open{display:block}' +
-    '.hd{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.08)}' +
+    '.hd{display:flex;align-items:center;justify-content:space-between;padding:11px 12px}' +
     '.hd b{font-size:13px;font-weight:600}' +
     '.hd .sub{font-size:11px;color:#9a9a9a;margin-top:2px}' +
     '.x{background:none;border:none;color:#9a9a9a;cursor:pointer;font-size:18px;line-height:1;padding:2px 4px}' +
     '.x:hover{color:#fff}' +
-    '.bd{padding:14px}' +
+    '.bd{padding:0 12px 12px}' +
+    '.tabs{display:flex;gap:2px;padding:3px;background:#171717;border:1px solid rgba(255,255,255,.08);border-radius:9px;margin-bottom:12px}' +
+    '.tab{flex:1;border:0;border-radius:6px;padding:7px 8px;background:transparent;color:#8a8a8a;font-size:12px;font-weight:550;cursor:pointer}' +
+    '.tab:hover{color:#ddd}.tab.on{background:#292929;color:#fff}' +
+    '.lead{font-size:13px;color:#a1a1aa;line-height:1.45;margin:0 1px 10px}' +
+    '.thread{display:flex;flex-direction:column;gap:7px;max-height:240px;overflow:auto;margin-bottom:9px}' +
+    '.bubble{max-width:88%;padding:8px 10px;border-radius:10px;font-size:13px;line-height:1.45;white-space:pre-wrap;word-break:break-word}' +
+    '.bubble.user{align-self:flex-end;background:#fff;color:#111}.bubble.ai{align-self:flex-start;background:#1b1b1b;color:#e4e4e7}' +
+    '.askrow{display:flex;align-items:flex-end;gap:7px}' +
+    '.askrow textarea{min-height:42px;max-height:112px;resize:none}' +
+    '.send{flex:0 0 42px;width:42px;height:42px;border:0;border-radius:8px;background:#fff;color:#000;font-size:19px;cursor:pointer}' +
+    '.send:hover{background:#e8e8e8}.send:disabled{opacity:.5;cursor:default}' +
+    '.under{display:flex;align-items:center;justify-content:space-between;margin-top:8px;font-size:11px;color:#777}' +
+    '.modeLink{border:0;background:none;padding:0;color:#aaa;font-size:11px;cursor:pointer}.modeLink:hover{color:#fff}' +
+    '.support{border:1px solid rgba(255,255,255,.1);background:#161616;border-radius:10px;padding:11px;margin-bottom:8px}' +
+    '.support b{display:block;font-size:13px;margin-bottom:3px}.support span{display:block;font-size:12px;color:#999;line-height:1.4}' +
+    '.support .btn{display:block;width:100%;margin-top:10px;text-align:center;text-decoration:none}' +
+    'details.more{margin-top:8px;border-top:1px solid rgba(255,255,255,.08);padding-top:8px}' +
+    'details.more summary{font-size:11px;color:#777;cursor:pointer;list-style:none}details.more summary:hover{color:#bbb}' +
     'textarea{width:100%;min-height:84px;resize:vertical;background:#171717;color:#fff;border:1px solid rgba(255,255,255,.14);' +
     'border-radius:8px;padding:9px 10px;font-size:13px;outline:none}' +
     'textarea:focus{border-color:#666}' +
@@ -450,13 +468,11 @@
     // inset) with larger touch targets; the FAB tucks above the home indicator.
     '@media (max-width:560px){' +
     '.fab{right:12px;bottom:calc(12px + env(safe-area-inset-bottom))}' +
-    '.panel{left:0;right:0;bottom:0;top:auto;width:100%;max-width:100%;border-radius:16px 16px 0 0;' +
-    'border-left:none;border-right:none;border-bottom:none;max-height:88vh;overflow-y:auto;' +
-    'padding-bottom:env(safe-area-inset-bottom)}' +
-    '.hd{padding:14px 16px}.bd{padding:16px}' +
+    '.panel{left:12px;right:12px;bottom:calc(68px + env(safe-area-inset-bottom));width:auto;max-width:none;max-height:76vh;overflow-y:auto}' +
+    '.hd{padding:13px 14px}.bd{padding:0 14px 14px}' +
     'textarea{min-height:96px;font-size:16px}' + // 16px ⇒ iOS never zooms on focus
     'input.path{font-size:14px;padding:11px 12px}' +
-    '.btn{padding:14px 14px;font-size:15px}.btn.sec{padding:14px 16px}.btn.ghost{padding:13px 14px}' +
+    '.btn{padding:12px 14px;font-size:14px}.btn.sec{padding:12px 16px}.btn.ghost{padding:12px 14px}' +
     '.cand{padding:6px 10px;font-size:12px}' +
     '.x{font-size:24px;padding:6px 10px}' +
     '}';
@@ -476,8 +492,8 @@
 
   var fab = document.createElement('button');
   fab.className = 'fab';
-  fab.setAttribute('aria-label', 'Ask or edit this page');
-  fab.setAttribute('title', 'Ask or edit this page');
+  fab.setAttribute('aria-label', 'Ask Hanzo');
+  fab.setAttribute('title', 'Ask Hanzo');
   fab.innerHTML = ENSO;
   root.appendChild(fab);
 
@@ -486,6 +502,8 @@
   root.appendChild(panel);
 
   var ME = { authenticated: false, isAdmin: false, hasCredits: false, balance: null };
+  var VIEW = 'ask';
+  var CHAT = [];
 
   // Resolved-once-per-open view context.
   var CTX = { candidates: [], version: undefined, chosen: '' };
@@ -494,6 +512,128 @@
     return String(s).replace(/[&<>"]/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
     });
+  }
+
+  function tabs() {
+    return (
+      '<div class="tabs" role="tablist" aria-label="Help options">' +
+      '<button class="tab' + (VIEW === 'ask' ? ' on' : '') + '" data-view="ask" role="tab">Ask</button>' +
+      '<button class="tab' + (VIEW === 'support' ? ' on' : '') + '" data-view="support" role="tab">Support</button>' +
+      '<button class="tab' + (VIEW === 'edit' ? ' on' : '') + '" data-view="edit" role="tab">' +
+      (ME.isAdmin ? 'Edit' : 'Improve') +
+      '</button></div>'
+    );
+  }
+
+  function frame(title, body) {
+    panel.innerHTML =
+      '<div class="hd"><b>' + esc(title) + '</b><button class="x" aria-label="Close">×</button></div>' +
+      '<div class="bd">' + tabs() + body + '</div>';
+    panel.querySelector('.x').onclick = close;
+    Array.prototype.forEach.call(panel.querySelectorAll('[data-view]'), function (button) {
+      button.onclick = function () {
+        VIEW = button.getAttribute('data-view');
+        renderCurrent();
+      };
+    });
+  }
+
+  function renderCurrent() {
+    if (VIEW === 'support') renderSupport();
+    else if (VIEW === 'edit') renderForm();
+    else renderAsk();
+  }
+
+  function renderAsk() {
+    var thread = CHAT.length
+      ? '<div class="thread" aria-live="polite">' +
+        CHAT.map(function (turn) {
+          return '<div class="bubble ' + (turn.role === 'user' ? 'user' : 'ai') + '">' + esc(turn.content) + '</div>';
+        }).join('') +
+        '</div>'
+      : '<p class="lead">Ask about this page, Hanzo products, or your account.</p>';
+    frame(
+      'Ask Hanzo',
+      thread +
+        '<div class="askrow"><textarea aria-label="Question" placeholder="Ask a question…"></textarea>' +
+        '<button class="send" aria-label="Send">↑</button></div>' +
+        '<div class="under"><span>Page context is attached</span><button class="modeLink" data-human>Talk to a person</button></div>',
+    );
+    var ta = panel.querySelector('textarea');
+    var send = panel.querySelector('.send');
+    var human = panel.querySelector('[data-human]');
+    human.onclick = function () {
+      VIEW = 'support';
+      renderSupport();
+    };
+    function ask() {
+      var question = (ta.value || '').trim();
+      if (!question) return;
+      CHAT.push({ role: 'user', content: question });
+      send.disabled = true;
+      send.innerHTML = '<span class="spin"></span>';
+      api('/v1/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question: question,
+          title: document.title,
+          url: location.href,
+          context: selection(),
+          history: CHAT.slice(0, -1),
+        }),
+      })
+        .then(readJson)
+        .then(function (r) {
+          var d = r.data || {};
+          if (d.ok && d.answer) CHAT.push({ role: 'assistant', content: d.answer });
+          else if (d.openLogin)
+            CHAT.push({ role: 'assistant', content: 'Log in to ask Hanzo, or choose Support to talk to a person.' });
+          else if (d.needsCredits)
+            CHAT.push({ role: 'assistant', content: 'You’re out of credits. Choose Support to talk to a person.' });
+          else CHAT.push({ role: 'assistant', content: d.error || 'I couldn’t answer that. Try human support.' });
+          renderAsk();
+        })
+        .catch(function () {
+          CHAT.push({ role: 'assistant', content: 'I couldn’t connect. Try human support.' });
+          renderAsk();
+        });
+    }
+    send.onclick = ask;
+    ta.onkeydown = function (e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        ask();
+      }
+    };
+    ta.focus();
+    var list = panel.querySelector('.thread');
+    if (list) list.scrollTop = list.scrollHeight;
+  }
+
+  function renderSupport() {
+    frame(
+      'Human support',
+      '<p class="lead">Send the team a note. Your email app will open with this page attached.</p>' +
+        '<textarea aria-label="Support message" placeholder="What do you need help with?"></textarea>' +
+        '<div class="support"><b>Email support</b><span>Best for account, billing, and technical help.</span>' +
+        '<a class="btn" data-email href="mailto:support@hanzo.ai">Email support</a></div>' +
+        '<div class="under"><a class="link" href="' + BASE + '/help" target="_blank" rel="noopener">Help center ↗</a>' +
+        '<button class="modeLink" data-ask>Ask Hanzo instead</button></div>',
+    );
+    var ta = panel.querySelector('textarea');
+    panel.querySelector('[data-email]').onclick = function (e) {
+      e.preventDefault();
+      var subject = 'Hanzo support: ' + document.title;
+      var body = ((ta.value || '').trim() + '\n\nPage: ' + location.href).trim();
+      location.href =
+        'mailto:support@hanzo.ai?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    };
+    panel.querySelector('[data-ask]').onclick = function () {
+      VIEW = 'ask';
+      renderAsk();
+    };
+    ta.focus();
   }
 
   // Decide the primary CTA from identity + credits. Admin's primary is the
@@ -536,22 +676,17 @@
           .join('') +
         '</div>'
       : '';
-    panel.innerHTML =
-      '<div class="hd"><div><b>' +
-      (c.admin ? 'Command this page' : 'Improve this page') +
-      '</b><div class="sub">' +
-      esc(REPO) +
-      (BRANCH ? ' · ' + esc(BRANCH) : '') +
-      (c.admin ? ' · <span class="adm">admin</span>' : '') +
-      '</div></div><button class="x" aria-label="Close">×</button></div>' +
-      '<div class="bd">' +
+    frame(
+      c.admin ? 'Edit this page' : 'Improve this page',
       '<textarea placeholder="' +
       (c.admin
-        ? 'Command — e.g. “change the hero headline to Ship faster”'
+        ? 'Describe the change…'
         : 'Describe the change or fix…') +
       '"></textarea>' +
       (showPath
-        ? '<input class="path" placeholder="auto-detected file — edit to override" value="' + esc(chosen) + '"/>' + candChips
+        ? '<details class="more"><summary>Source · ' + esc(chosen || 'auto') + '</summary>' +
+          '<input class="path" placeholder="auto-detected file — edit to override" value="' + esc(chosen) + '"/>' +
+          candChips + '</details>'
         : '') +
       (c.admin
         ? '<button type="button" class="btn ghost" data-inline>✎ Edit text directly on the page</button>'
@@ -573,15 +708,9 @@
       (c.login
         ? '<div class="note"><a class="link" href="' + BASE + '/login" target="_blank" rel="noopener">Log in</a> to open a PR directly.</div>'
         : '') +
-      '<div class="ctx">Context attached: <b>' +
-      esc(location.pathname) +
-      '</b>' +
-      (CTX.candidates.length ? ' · ' + CTX.candidates.length + ' candidate file' + (CTX.candidates.length > 1 ? 's' : '') : '') +
-      (CTX.version ? ' · v' + esc(CTX.version) : '') +
-      '</div>' +
-      '</div>';
+      '<div class="ctx">Context attached: <b>' + esc(location.pathname) + '</b></div>',
+    );
 
-    panel.querySelector('.x').onclick = close;
     var ta = panel.querySelector('textarea');
     var pathInput = panel.querySelector('.path');
     ta.focus();
@@ -975,14 +1104,15 @@
 
   function open() {
     panel.classList.add('open');
-    fab.style.display = 'none';
+    fab.setAttribute('aria-expanded', 'true');
     CTX.chosen = '';
-    renderForm(); // render immediately (candidates fill in when resolved)
+    VIEW = 'ask';
+    renderCurrent();
     resolveCandidates()
       .then(function (res) {
         CTX.candidates = res.candidates;
         CTX.version = res.version;
-        if (panel.classList.contains('open')) renderForm();
+        if (panel.classList.contains('open') && VIEW === 'edit') renderForm();
       })
       .catch(function () {
         /* keep the form usable with no candidates */
@@ -990,9 +1120,13 @@
   }
   function close() {
     panel.classList.remove('open');
+    fab.setAttribute('aria-expanded', 'false');
     fab.style.display = '';
   }
-  fab.onclick = open;
+  fab.onclick = function () {
+    if (panel.classList.contains('open')) close();
+    else open();
+  };
 
   // Register this property as a project so it "ties back" and shows in
   // hanzo.app's projects list. Fire-and-forget, idempotent (the server only
@@ -1024,6 +1158,7 @@
         ME.balance = typeof d.balance === 'number' ? d.balance : null;
       }
       if (ME.authenticated) registerProperty();
+      if (panel.classList.contains('open')) renderCurrent();
     })
     .catch(function () {
       /* anonymous suggest still works */

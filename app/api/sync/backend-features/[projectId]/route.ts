@@ -9,7 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSQLiteAdapter } from '@/lib/vfs/adapters/server';
 import { getCoreDatabase } from '@/lib/vfs/adapters/sqlite-connection';
-import { requireAuth } from '@/lib/auth/session';
+import { requireSession } from '@/lib/iam';
 import type { EdgeFunction, ServerFunction, Secret, ScheduledFunction } from '@/lib/vfs/types';
 
 interface BackendFeaturesPayload {
@@ -25,7 +25,7 @@ export async function GET(
   context: { params: Promise<{ projectId: string }> }
 ) {
   try {
-    await requireAuth();
+    await requireSession(_request);
 
     const { projectId } = await context.params;
 
@@ -65,7 +65,7 @@ export async function POST(
   context: { params: Promise<{ projectId: string }> }
 ) {
   try {
-    await requireAuth();
+    await requireSession(request);
 
     const { projectId } = await context.params;
     const body = await request.json() as BackendFeaturesPayload;

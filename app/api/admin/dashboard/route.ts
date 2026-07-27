@@ -7,9 +7,8 @@
  * Protected by admin authentication.
  */
 
-import { NextResponse } from 'next/server';
-import { verifySession } from '@/lib/auth/session';
-import { cookies } from 'next/headers';
+import { NextResponse, type NextRequest } from 'next/server';
+import { session } from '@/lib/iam';
 import { getCoreDatabase } from '@/lib/vfs/adapters/sqlite-connection';
 import { getRequestStats, cleanupOldLogs } from '@/lib/logging/request-logger';
 import { promises as fs } from 'fs';
@@ -142,18 +141,11 @@ async function countDeploymentDatabases(): Promise<number> {
   return count;
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    // Verify admin authentication
-    const cookieStore = await cookies();
-    const token = cookieStore.get('osw_session')?.value;
-
-    if (!token) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const session = await verifySession(token);
-    if (!session || !session.isAdmin) {
+    // Staff only — read off a JWKS-verified IAM token, never a self-issued one.
+    const caller = await session(request);
+    if (!caller?.isAdmin) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

@@ -1,5 +1,5 @@
 /**
- * CORS for the Hanzo Edit widget routes (`/v1/me`, `/v1/suggest`, `/v1/edit`).
+ * CORS for the Hanzo widget routes (`/v1/me`, `/v1/ask`, `/v1/suggest`, `/v1/edit`).
  *
  * The widget is a drop-in served from hanzo.app but RUNS on every Hanzo app's
  * origin, so these three routes are cross-origin BY DESIGN (unlike the builder's

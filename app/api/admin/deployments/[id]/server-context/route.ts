@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth/session';
+import { requireSession } from '@/lib/iam';
 import { getSQLiteAdapter } from '@/lib/vfs/adapters/server';
 import {
   generateEdgeFunctionFile,
@@ -31,7 +31,7 @@ export async function GET(
   try {
     // Same gate as the mutate sibling: this returns a deployment's DB schema,
     // secret names, and edge/server function SOURCE — never anonymously.
-    await requireAuth();
+    await requireSession(_request);
 
     const { id: deploymentId } = await context.params;
 

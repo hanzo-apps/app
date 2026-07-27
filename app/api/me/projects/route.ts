@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 
-import { isAuthenticated } from "@/lib/auth";
+import { session } from "@/lib/iam";
 import { listProjects, createProject } from "@/lib/db/projects";
 import { createServerAdapter } from "@/lib/vfs/adapters/server";
 import { buildStaticDeployment } from "@/lib/compiler/static-builder";
@@ -14,15 +14,15 @@ import {
 } from "@/lib/vfs/types";
 import { Page } from "@/types";
 
-export async function GET() {
-  const user = await isAuthenticated();
+export async function GET(request: NextRequest) {
+  const user = await session(request);
 
   if (user instanceof NextResponse || !user) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
   return NextResponse.json(
-    { ok: true, projects: await listProjects(user.token, user.id) },
+    { ok: true, projects: await listProjects(user.token, user.sub) },
     { status: 200 }
   );
 }
@@ -32,7 +32,7 @@ export async function GET() {
 // in a Deployment, and compiled by the same buildStaticDeployment() engine the
 // deployments admin uses. Served live at /deployments/<id>/.
 export async function POST(request: NextRequest) {
-  const user = await isAuthenticated();
+  const user = await session(request);
 
   if (user instanceof NextResponse || !user) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
     let project_record;
     try {
       project_record = await createProject(user.token, {
-        userId: user.id,
+        userId: user.sub,
         spaceId: deployment.id,
         prompts: prompts ?? [],
       });

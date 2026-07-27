@@ -10,14 +10,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerAdapter } from '@/lib/vfs/adapters/server';
 import { VirtualFile } from '@/lib/vfs/types';
 import { serializeFilesForResponse } from '@/lib/vfs/sync-utils';
-import { requireAuth } from '@/lib/auth/session';
+import { requireSession } from '@/lib/iam';
 import { logger } from '@/lib/utils';
 
 // GET /api/sync/files?projectId=xxx - Get all files for a project
 export async function GET(request: NextRequest) {
   try {
     // Require authentication
-    await requireAuth();
+    await requireSession(request);
 
     const { searchParams } = new URL(request.url);
     const projectId = searchParams.get('projectId');
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Require authentication
-    await requireAuth();
+    await requireSession(request);
 
     const body = await request.json();
     const { projectId, files } = body as { projectId: string; files: (VirtualFile & { _isBinaryBase64?: boolean })[] };

@@ -13,7 +13,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import MY_TOKEN_KEY from "@/lib/get-cookie-name";
+import { session } from "@/lib/iam";
 
 const HANZO_AI_BASE_URL =
   process.env.HANZO_AI_BASE_URL || "https://api.hanzo.ai/v1";
@@ -37,7 +37,7 @@ type CloudResp = {
 };
 
 export async function GET(request: NextRequest) {
-  const token = request.cookies.get(MY_TOKEN_KEY())?.value;
+  const token = (await session(request))?.token;
   if (!token) return absent();
 
   let body: CloudResp;

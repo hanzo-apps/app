@@ -16,7 +16,8 @@
  */
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { cloudBase, effectiveOrg, resolveOrgIdentity } from '@/lib/org/server';
+import { cloudBase, effectiveOrg } from '@/lib/org/server';
+import { session } from '@/lib/iam';
 import { requireSameOrigin } from '@/lib/org/csrf';
 import { slugifyProject } from '@/lib/org/policy';
 import { buildTarGz, type TarEntry } from '@/lib/org/targz';
@@ -60,9 +61,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Payload too large.' }, { status: 413 });
   }
 
-  const id = await resolveOrgIdentity(req, { validate: true });
+  const id = await session(req);
   if (!id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  if (!id.homeOrg) {
+  if (!id.org) {
     return NextResponse.json(
       { error: 'Set up your organization before publishing.', needsOnboarding: true },
       { status: 409 },
@@ -119,7 +120,7 @@ export async function POST(req: NextRequest) {
     Authorization: `Bearer ${id.token}`,
     Accept: 'application/json',
   };
-  if (org && org !== id.homeOrg) bearer['X-Org-Id'] = org; // only reachable for a validated admin
+  if (org && org !== id.org) bearer['X-Org-Id'] = org; // only reachable for a validated admin
   const base = cloudBase();
 
   // 1) Ensure the org-scoped record (idempotent: reuse an existing slug, else

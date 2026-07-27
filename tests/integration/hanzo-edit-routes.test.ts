@@ -19,6 +19,7 @@ jest.mock('jose', () => ({
 import { NextRequest } from 'next/server';
 
 import { GET as meGET } from '@/app/v1/me/route';
+import { POST as askPOST } from '@/app/v1/ask/route';
 import { POST as editPOST } from '@/app/v1/edit/route';
 import { POST as suggestPOST } from '@/app/v1/suggest/route';
 
@@ -45,6 +46,8 @@ function installFetch(o: FetchOpts = {}) {
       return json({ status: 'ok', data: { properties: props } });
     }
     if (url.includes('/v1/billing/balance')) return json({ available: o.balance ?? 0 });
+    if (url.includes('/chat/completions'))
+      return json({ choices: [{ message: { content: 'The concise answer.' } }] });
     if (url.includes('api.github.com') && url.endsWith('/issues'))
       return json({ html_url: 'https://github.com/owner/repo/issues/9', number: 9 });
     if (url.includes('hanzo.id')) return json({ sub: 'bob', preferred_username: 'bob', name: 'bob', email: 'b@x' });
@@ -110,6 +113,46 @@ describe('GET /v1/me', () => {
     installFetch();
     const res = await meGET(req('https://hanzo.app/v1/me', { token: ADMIN() }));
     expect(await res.json()).toMatchObject({ authenticated: true, isAdmin: true, hasCredits: true, balance: null });
+  });
+});
+
+// --- /v1/ask ---------------------------------------------------------------
+
+describe('POST /v1/ask', () => {
+  it('requires a validated Hanzo identity', async () => {
+    installFetch();
+    const res = await askPOST(
+      req('https://hanzo.app/v1/ask', {
+        method: 'POST',
+        origin: 'https://docs.hanzo.ai',
+        body: { question: 'Where is billing?' },
+      }),
+    );
+    expect(res.status).toBe(401);
+    expect(await res.json()).toMatchObject({ ok: false, openLogin: true });
+  });
+
+  it('answers in the widget and reflects the calling Hanzo origin', async () => {
+    installFetch();
+    const res = await askPOST(
+      req('https://hanzo.app/v1/ask', {
+        method: 'POST',
+        token: USER(),
+        origin: 'https://docs.hanzo.ai',
+        body: { question: 'Where is billing?', url: 'https://docs.hanzo.ai/start' },
+      }),
+    );
+    expect(res.status).toBe(200);
+    expect(res.headers.get('access-control-allow-origin')).toBe('https://docs.hanzo.ai');
+    expect(await res.json()).toEqual({ ok: true, answer: 'The concise answer.' });
+  });
+
+  it('rejects an empty question', async () => {
+    installFetch();
+    const res = await askPOST(
+      req('https://hanzo.app/v1/ask', { method: 'POST', token: USER(), body: { question: ' ' } }),
+    );
+    expect(res.status).toBe(400);
   });
 });
 
