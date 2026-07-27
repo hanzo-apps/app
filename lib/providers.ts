@@ -24,16 +24,17 @@ export type ModelOption = {
 };
 
 // The model the builder opens on when neither storage nor the gateway pick one.
-// enso (Enso Pro) is the balanced default: the gateway routes each request to the
-// best-fit model, so an easy edit bills cheap and only a hard one escalates. `enso`
-// is already a build-ladder family and a FALLBACK_MODELS entry, so the picker lists
-// it and resolveModelId keeps it (not a dead id).
-// GATED — do not deploy until cleared: an earlier attempt to default the builder to
-// Enso surfaced a raw "opus-4.8" upstream error, so go-live depends on Enso being
-// served + brand-masked on api.hanzo.ai (ENSO_URL in ai) and on the enso-ultra
-// preservation validation. A code builder may still prefer a coding-tuned default
-// (zen5-coder → glm-5.2) — that is the product call to make at go-live.
-export const DEFAULT_MODEL = "enso";
+// enso-flash, not bare enso, for two measured reasons:
+//   1. Tier. The enso ladder is gated per SKU in ai (`controllers/family_tier.go`,
+//      min_tier from discovery): enso-flash is FREE — everyone — while `enso` is
+//      trial+ and enso-ultra is paid-only. A signed-out or free-plan visitor can
+//      only be served the flash rung, so it is the only correct fresh-session
+//      default; anything above it defaults the builder to a denial.
+//   2. Cost. api.hanzo.ai GET /v1/models prices enso-flash at $2/$4 per Mtok and
+//      enso at $4/$20 — 5x on output, and output is what a builder generates.
+// Both are Enso, both stream, and both pass isBuildModel/resolveModelId, so the
+// picker lists this and a user who wants the bigger rung still picks it.
+export const DEFAULT_MODEL = "enso-flash";
 
 // The Hanzo gateway (api.hanzo.ai) serves the Zen/Enso ladder + connected
 // providers AND — since DO GenAI funded the proprietary catalog — a CURATED set
@@ -206,8 +207,11 @@ export function buildModelsFrom(
 // OFFLINE LAST-RESORT ONLY. This is the sole hardcoded list, used solely when
 // the live gateway list is unreachable — the server /v1/models offline path and
 // the client useModels() fallback — so the picker never breaks. It is NOT the
-// source of truth; the gateway is. Keep it to the current Zen 5 ladder.
+// source of truth; the gateway is. Keep it to the current Zen 5 ladder. It MUST
+// carry DEFAULT_MODEL: the offline path returns DEFAULT_MODEL verbatim, so a
+// default missing from this list would name a model the picker cannot show.
 export const FALLBACK_MODELS: ModelOption[] = [
+  { value: "enso-flash", label: "Enso Flash" },
   { value: "zen5-coder", label: "Zen 5 Coder" },
   { value: "enso", label: "Enso" },
   { value: "zen5-flash", label: "Zen 5 Flash" },
