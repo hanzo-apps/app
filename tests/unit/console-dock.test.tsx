@@ -8,11 +8,13 @@
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { useEffect } from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import { TooltipProvider } from "@/components/overlay";
 import { Console } from "@/components/editor/console";
+import { offer } from "@/components/editor/ask-ai/mic";
 import { BAR, COLLAPSE_AT, MIN_OPEN, resolveHeight, maxOpen } from "@/components/editor/console/dock";
 
 // jsdom has no PointerEvent and no pointer capture; the dock only needs the
@@ -36,27 +38,35 @@ beforeAll(() => {
     hasPointerCapture: jest.fn(() => false),
   });
   Element.prototype.scrollIntoView = jest.fn();
-  // The mic only renders where the browser can actually listen.
-  (window as unknown as Record<string, unknown>).SpeechRecognition = class {
-    lang = "";
-    continuous = false;
-    interimResults = false;
-    onresult = null;
-    onerror = null;
-    onend = null;
-    start() {}
-    stop() {}
-    abort() {}
-  };
 });
 
 beforeEach(() => window.localStorage.clear());
 
-const setup = (onToggleSidebar = jest.fn()) => {
+/**
+ * The composer, reduced to the one thing the bar wants from it: a voice. The
+ * bar draws a machine it does not own, so the seam is what gets tested.
+ */
+const machine = (toggle = jest.fn()) => ({
+  state: "idle" as const,
+  open: false,
+  blocked: null,
+  reason: null,
+  toggle,
+  say: async () => {},
+  hush: () => {},
+});
+
+function Composer({ voice }: { voice: ReturnType<typeof machine> }) {
+  useEffect(() => offer(voice), [voice]);
+  return null;
+}
+
+const setup = (onToggleSidebar = jest.fn(), voice: ReturnType<typeof machine> | null = machine()) => {
   const view = render(
     // The app mounts one TooltipProvider in `app/providers.tsx`; the dock lives
     // under it, and the mic's tooltip needs it.
     <TooltipProvider>
+      {voice && <Composer voice={voice} />}
       <Console
         isAiWorking={false}
         pageCount={1}
@@ -67,7 +77,7 @@ const setup = (onToggleSidebar = jest.fn()) => {
   );
   const handle = screen.getByRole("separator", { name: /console/i });
   const dock = view.container.querySelector("[data-console]") as HTMLElement;
-  return { ...view, handle, dock, onToggleSidebar };
+  return { ...view, handle, dock, onToggleSidebar, voice };
 };
 
 /** Height the dock is actually painting, in px. */
@@ -198,16 +208,23 @@ describe("the workspace controls ride far right on the bar", () => {
     expect(onToggleSidebar).toHaveBeenCalledTimes(1);
   });
 
-  it("carries the dictation mic", () => {
-    const { dock } = setup();
-    const mic = screen.getByRole("button", { name: /dictate/i });
+  it("carries the composer's mic, and clicking it opens the conversation", () => {
+    const { dock, voice } = setup();
+    const mic = screen.getByRole("button", { name: /talk to hanzo/i });
     expect(dock).toContainElement(mic);
+    fireEvent.click(mic);
+    expect(voice!.toggle).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows no mic at all until a composer offers its voice", () => {
+    setup(jest.fn(), null);
+    expect(screen.queryByRole("button", { name: /talk to hanzo/i })).toBeNull();
   });
 
   it("puts both of them to the right of the status readout", () => {
     const { dock } = setup();
     const ai = screen.getByRole("button", { name: /chat panel/i });
-    const mic = screen.getByRole("button", { name: /dictate/i });
+    const mic = screen.getByRole("button", { name: /talk to hanzo/i });
     const cluster = ai.parentElement as HTMLElement;
     expect(cluster).toContainElement(mic);
     expect(cluster.className).toContain("right-2");

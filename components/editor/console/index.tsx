@@ -4,8 +4,9 @@ import { useEffect, useRef } from "react";
 import { Check, GitBranch, PanelLeft, PanelLeftClose } from "lucide-react";
 import classNames from "classnames";
 
-import { VoiceInput } from "@/components/editor/ask-ai/voice-input";
-import { dictate } from "@/components/editor/ask-ai/dictation";
+import { Voice } from "@hanzo/voice";
+
+import { useMic } from "@/components/editor/ask-ai/mic";
 
 import { BAR, MIN_OPEN, STEP, maxOpen, useDock } from "./dock";
 import { usePreviewConsole } from "./capture";
@@ -46,6 +47,8 @@ export function Console({
 }) {
   const { height, open, setHeight, toggle, nudge } = useDock();
   const { entries } = usePreviewConsole();
+  // The composer's voice, drawn here. Null until a composer is mounted.
+  const voice = useMic();
 
   // Builder projects are single-branch by construction: git-on-publish commits
   // to `main`. The editor's Project carries no branch field, so state it rather
@@ -176,9 +179,22 @@ export function Console({
               <PanelLeftClose className="size-3.5" />
             )}
           </button>
-          <span className="flex items-center [&_button]:size-5 [&_button]:min-w-0 [&_svg]:size-3.5">
-            <VoiceInput onTranscript={dictate} disabled={isAiWorking} />
-          </span>
+          {voice && (
+            <Voice
+              voice={voice}
+              disabled={isAiWorking}
+              className={classNames(
+                "flex size-5 items-center justify-center rounded text-muted-foreground transition-colors duration-150",
+                "hover:bg-foreground/[0.08] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "disabled:opacity-40",
+                // Listening and speaking are the same control in two moods:
+                // lit while the conversation is live, breathing while it talks.
+                "data-[state=listening]:text-foreground data-[state=speaking]:text-foreground",
+                "data-[state=speaking]:animate-pulse motion-reduce:data-[state=speaking]:animate-none",
+                "[&_svg]:size-3.5"
+              )}
+            />
+          )}
         </div>
       </div>
 
