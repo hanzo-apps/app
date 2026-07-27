@@ -37,7 +37,8 @@ import {
   Wallet,
 } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage, Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Input } from "@hanzo/ui";
+import { Avatar, AvatarFallback, AvatarImage, Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@hanzo/ui";
+import { Input } from "@/components/control";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "@/components/overlay";
 
 import { useUser } from "@/hooks/useUser";

@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import { PublishSettings, Project } from '@/lib/vfs/types';
-import { Label } from '@hanzo/ui';
-import { Input } from '@hanzo/ui';
-import { Switch } from '@hanzo/ui';
+import { Label } from '@/components/control';
+import { Input } from '@/components/control';
+import { Switch } from '@/components/control';
 import { Badge } from '@hanzo/ui';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
 import { Globe, AlertTriangle } from 'lucide-react';

@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { PublishSettings, AnalyticsConfig } from '@/lib/vfs/types';
-import { Label } from '@hanzo/ui';
-import { Input } from '@hanzo/ui';
-import { Textarea } from '@hanzo/ui';
-import { Switch } from '@hanzo/ui';
+import { Label } from '@/components/control';
+import { Input } from '@/components/control';
+import { Textarea } from '@/components/control';
+import { Switch } from '@/components/control';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
 import { BarChart3, Shield, Info } from 'lucide-react';
 

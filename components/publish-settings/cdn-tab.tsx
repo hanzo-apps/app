@@ -3,9 +3,9 @@
 import React, { useState } from 'react';
 import { PublishSettings, CdnConfig } from '@/lib/vfs/types';
 import { Button } from '@hanzo/ui';
-import { Input } from '@hanzo/ui';
-import { Label } from '@hanzo/ui';
-import { Switch } from '@hanzo/ui';
+import { Input } from '@/components/control';
+import { Label } from '@/components/control';
+import { Switch } from '@/components/control';
 import { Badge } from '@hanzo/ui';
 import {
   Dialog,

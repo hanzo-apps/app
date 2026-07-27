@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from "@hanzo/ui";
-import { Label } from "@hanzo/ui";
+import { Label } from "@/components/control";
 import { Badge } from "@hanzo/ui";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";
 import { Loader2, RefreshCw, Info } from 'lucide-react';

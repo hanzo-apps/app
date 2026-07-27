@@ -3,7 +3,7 @@ import Image from "next/image";
 
 import Loading from "@/components/loading";
 import { Button } from "@hanzo/ui";
-import { Input } from "@hanzo/ui";
+import { Input } from "@/components/control";
 import SpaceIcon from "@/assets/space.svg";
 import { Page } from "@/types";
 import { builderLink } from "@/lib/api/projects";

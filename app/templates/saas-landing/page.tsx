@@ -3,7 +3,7 @@
 import { Button } from "@hanzo/ui";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@hanzo/ui";
 import { Badge } from "@hanzo/ui";
-import { Input } from "@hanzo/ui";
+import { Input } from "@/components/control";
 import { CheckCircle, ArrowRight, Star, Zap, Shield, Globe } from "lucide-react";
 
 const features = [

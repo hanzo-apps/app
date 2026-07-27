@@ -10,8 +10,8 @@ import {
   DialogTitle,
 } from '@hanzo/ui';
 import { Button } from '@hanzo/ui';
-import { Input } from '@hanzo/ui';
-import { Label } from '@hanzo/ui';
+import { Input } from '@/components/control';
+import { Label } from '@/components/control';
 import { Loader2, AlertCircle, Eye, EyeOff, Info } from 'lucide-react';
 
 interface SecretEditorProps {

@@ -40,6 +40,8 @@ import {
   type Project,
   type Deployment,
 } from "@/lib/api/projects";
+import { Input } from "@/components/control";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";
 import { statusOf } from "@/lib/project-status";
 import { relativeTime } from "@/lib/projects-view";
 import { currentOrg, setCurrentOrg } from "@/lib/org-scope";
@@ -164,24 +166,21 @@ export default function ProjectSettingsPage() {
             {/* General */}
             <Section icon={Pencil} title="General">
               <Field label="Project name">
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground outline-none focus:border-foreground/25"
-                />
+                <Input value={name} onChange={(e) => setName(e.target.value)} />
               </Field>
               <Field label="Framework">
-                <select
-                  value={framework}
-                  onChange={(e) => setFramework(e.target.value)}
-                  className="w-full rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground outline-none focus:border-foreground/25"
-                >
-                  {FRAMEWORKS.map((f) => (
-                    <option key={f.value} value={f.value} className="bg-card">
-                      {f.label}
-                    </option>
-                  ))}
-                </select>
+                <Select value={framework} onValueChange={setFramework}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {FRAMEWORKS.map((f) => (
+                      <SelectItem key={f.value} value={f.value}>
+                        {f.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </Field>
               <div className="flex justify-end pt-1">
                 <button

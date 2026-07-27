@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@hanzo/ui';
-import { Input } from '@hanzo/ui';
+import { Input } from '@/components/control';
 import { Plus, Search, FolderOpen, Loader2 } from 'lucide-react';
 import {
   fetchProjects,

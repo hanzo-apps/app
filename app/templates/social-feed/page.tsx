@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@hanzo/ui";
 import { Button } from "@hanzo/ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
-import { Textarea } from "@hanzo/ui";
+import { Textarea } from "@/components/control";
 import { Badge } from "@hanzo/ui";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
 import { ScrollArea } from "@hanzo/ui";

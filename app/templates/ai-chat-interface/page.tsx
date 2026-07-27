@@ -10,11 +10,11 @@ import {
   CardTitle
 } from "@hanzo/ui";
 import { Button } from "@hanzo/ui";
-import { Input } from "@hanzo/ui";
+import { Input } from "@/components/control";
 import { ScrollArea } from "@hanzo/ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
 import { Badge } from "@hanzo/ui";
-import { Textarea } from "@hanzo/ui";
+import { Textarea } from "@/components/control";
 import {
   Send,
   Bot,

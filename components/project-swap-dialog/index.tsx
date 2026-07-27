@@ -10,8 +10,8 @@ import {
   DialogFooter,
 } from '@hanzo/ui';
 import { Button } from '@hanzo/ui';
-import { Switch } from '@hanzo/ui';
-import { Label } from '@hanzo/ui';
+import { Switch } from '@/components/control';
+import { Label } from '@/components/control';
 import {
   Loader2, AlertTriangle, Plus, Minus, RefreshCw, Key,
   Code2, Wrench, Clock,

@@ -19,8 +19,8 @@ import { Badge } from "@hanzo/ui";
 import { ScrollArea } from "@hanzo/ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@hanzo/ui";
-import { Input } from "@hanzo/ui";
-import { Textarea } from "@hanzo/ui";
+import { Input } from "@/components/control";
+import { Textarea } from "@/components/control";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";
 import {
   Plus,

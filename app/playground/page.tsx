@@ -29,12 +29,12 @@ import {
   BarChart3
 } from "lucide-react";
 import { Button } from "@hanzo/ui";
-import { Textarea } from "@hanzo/ui";
+import { Textarea } from "@/components/control";
 import { Badge } from "@hanzo/ui";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@hanzo/ui";
 import { Slider } from "@hanzo/ui";
-import { Switch } from "@hanzo/ui";
-import { Label } from "@hanzo/ui";
+import { Switch } from "@/components/control";
+import { Label } from "@/components/control";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/overlay";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";

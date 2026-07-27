@@ -13,7 +13,7 @@ import {
   Globe,
 } from "lucide-react";
 import { Button } from "@hanzo/ui";
-import { Textarea } from "@hanzo/ui";
+import { Textarea } from "@/components/control";
 import { Card } from "@hanzo/ui";
 import { Badge } from "@hanzo/ui";
 import Link from "next/link";

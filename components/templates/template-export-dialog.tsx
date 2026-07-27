@@ -5,9 +5,9 @@ import { Project, LICENSE_OPTIONS } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';
 import { templateService, TemplateMetadata } from '@/lib/vfs/template-service';
 import { Button } from '@hanzo/ui';
-import { Input } from '@hanzo/ui';
-import { Label } from '@hanzo/ui';
-import { Textarea } from '@hanzo/ui';
+import { Input } from '@/components/control';
+import { Label } from '@/components/control';
+import { Textarea } from '@/components/control';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
 import {
   Dialog,

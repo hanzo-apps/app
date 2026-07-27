@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from '@hanzo/ui';
-import { Input } from '@hanzo/ui';
-import { Label } from '@hanzo/ui';
+import { Input } from '@/components/control';
+import { Label } from '@/components/control';
 import { ExternalLink, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { ConnectionBadge } from '@/components/settings/connection-badge';
 import { toast } from '@hanzo/ui';

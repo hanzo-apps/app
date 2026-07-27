@@ -28,6 +28,9 @@ import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import { Check, ChevronDown, ChevronRight, ChevronUp, Circle } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
+// The ONE control geometry, so a SelectTrigger and the Input beside it are the
+// same height, radius and type size by construction rather than by coincidence.
+import { field } from '@/components/control';
 
 /**
  * Opaque panel, hairline border, one radius, one shadow — and a REAL elevation.
@@ -196,11 +199,18 @@ export const SelectTrigger = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <SelectPrimitive.Trigger
     ref={ref}
+    /*
+     * The trigger is the one part of a Select that is NOT a floating surface — it
+     * is a control, and it sits next to inputs. It used to carry its own geometry
+     * (36px tall, 8px radius, 14px text) while `components/control` built fields at
+     * 30/10/13, so a select and the input beside it never lined up. It now wears the
+     * SAME `field` spec; the panel below is still this module's business.
+     */
     className={cn(
-      'flex h-9 w-full items-center justify-between gap-2 rounded-lg border border-border bg-transparent',
-      'px-3 py-2 text-sm text-foreground outline-none transition-colors',
-      'data-[placeholder]:text-muted-foreground focus:ring-1 focus:ring-ring',
-      'disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 [&>span]:text-left',
+      field,
+      'items-center justify-between gap-2',
+      'data-[placeholder]:text-muted-foreground',
+      'disabled:opacity-50 [&>span]:line-clamp-1 [&>span]:text-left',
       className,
     )}
     {...props}

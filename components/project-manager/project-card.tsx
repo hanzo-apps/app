@@ -7,8 +7,8 @@ import { vfs } from '@/lib/vfs';
 import { logger } from '@/lib/utils';
 import { Button } from '@hanzo/ui';
 import { Badge } from '@hanzo/ui';
-import { Input } from '@hanzo/ui';
-import { Textarea } from '@hanzo/ui';
+import { Input } from '@/components/control';
+import { Textarea } from '@/components/control';
 import {
   Trash2,
   Download,

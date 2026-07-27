@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 import { toast } from "@hanzo/ui";
 import { Button } from "@hanzo/ui";
-import { Input } from "@hanzo/ui";
+import { Input } from "@/components/control";
 import { Badge } from "@hanzo/ui";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@hanzo/ui";
 import { HanzoLogo } from "@/components/HanzoLogo";

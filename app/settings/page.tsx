@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Key, Bell, Palette, Shield, CreditCard } from "lucide-react";
 import { Button } from "@hanzo/ui";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";
 import { useUser } from "@/hooks/useUser";
 import { AppShell } from "@/components/app-shell";
 import { HanzoLogo } from "@/components/HanzoLogo";
@@ -111,16 +112,19 @@ export default function SettingsPage() {
                       <label htmlFor="theme-select" className="block text-sm font-medium text-muted-foreground mb-2">
                         Theme
                       </label>
-                      <select
-                        id="theme-select"
+                      <Select
                         value={mounted ? (theme ?? "system") : "system"}
-                        onChange={(e) => setTheme(e.target.value)}
-                        className="w-full bg-muted text-foreground border border-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-ring"
+                        onValueChange={setTheme}
                       >
-                        <option value="light">Light</option>
-                        <option value="dark">Dark</option>
-                        <option value="system">System</option>
-                      </select>
+                        <SelectTrigger id="theme-select">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="light">Light</SelectItem>
+                          <SelectItem value="dark">Dark</SelectItem>
+                          <SelectItem value="system">System</SelectItem>
+                        </SelectContent>
+                      </Select>
                       <p className="mt-1.5 text-xs text-muted-foreground">Applies instantly across the app.</p>
                     </div>
 
@@ -128,19 +132,25 @@ export default function SettingsPage() {
                       <label htmlFor="model-select" className="block text-sm font-medium text-muted-foreground mb-2">
                         Default AI Model
                       </label>
-                      <select
-                        id="model-select"
+                      <Select
                         value={defaultModel}
-                        onChange={(e) => {
-                          setDefaultModelState(e.target.value);
-                          configManager.setDefaultModel(e.target.value);
+                        onValueChange={(v) => {
+                          setDefaultModelState(v);
+                          configManager.setDefaultModel(v);
                         }}
-                        className="w-full bg-muted text-foreground border border-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-ring"
                       >
-                        {models.map((m) => (
-                          <option key={m.value} value={m.value}>{m.label}</option>
-                        ))}
-                      </select>
+                        <SelectTrigger id="model-select">
+                          {/* `defaultModel` is "" until configManager reads back on
+                              mount, and the native <select> showed an empty box in
+                              that window. Name the state instead of drawing a blank. */}
+                          <SelectValue placeholder="Enso (auto-route)" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {models.map((m) => (
+                            <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <p className="mt-1.5 text-xs text-muted-foreground">
                         Used when you don&apos;t pick a model in the composer.{" "}
                         <span className="font-medium text-foreground">Enso</span> auto-routes to the best model per request.

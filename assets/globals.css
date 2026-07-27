@@ -459,6 +459,9 @@
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: var(--brand-accent);
+  /* The ONE keyboard-focus ring, per theme — near-black on the light ground.
+     Consumed by the single :focus-visible rule below @layer base. */
+  --focus-ring: rgba(0, 0, 0, 0.72);
   /* Charts carry real, distinguishable hue — data series must be told apart. */
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -502,6 +505,9 @@
   --border: rgba(255, 255, 255, 0.06);
   --input: rgba(255, 255, 255, 0.08);
   --ring: var(--brand-accent);
+  /* The ONE keyboard-focus ring, per theme — white on the dark ground. This is the
+     value the landing page already proved legible; it is now the whole app's. */
+  --focus-ring: rgba(255, 255, 255, 0.72);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -569,12 +575,21 @@ html:not(.dark) {
   }
 }
 
-/* Landing — visible keyboard focus (keyboard-only via :focus-visible) on every
-   interactive element, tuned to the monochrome dark ground. Pointer focus stays
-   quiet (the composer's own border cue handles it); the outline follows each
-   element's border-radius so pills, cards and buttons ring cleanly. */
-.landing-root :is(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.72);
+/* ONE visible keyboard focus, everywhere (keyboard-only via :focus-visible).
+   This used to be scoped to `.landing-root`, which meant the product had TWO focus
+   systems for one concept: a real 2px white ring on the marketing pages, and — on
+   every signed-in surface — nothing but the user agent's 1px `outline: auto`,
+   tinted by the global `outline-ring/50` into a faint purple hairline. (@hanzo/ui's
+   own `focus-visible:ring-*` classes never compiled, so the components brought no
+   ring of their own; see components/control.) Unscoping it is the whole fix.
+
+   `--focus-ring` is per-theme so the ring is legible on both grounds — a white ring
+   would have been invisible in light mode, which is why the landing rule could get
+   away with hardcoding one and a global rule cannot. Pointer focus stays quiet (the
+   composer's own border cue handles it); the outline follows each element's
+   border-radius so pills, cards and buttons ring cleanly. */
+:is(a, button, input, textarea, select, summary, [role="button"], [tabindex]):focus-visible {
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -687,49 +702,20 @@ html:not(.dark) .preview-stage {
     linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
 }
 
-/* ── ONE compact control spec, applied ───────────────────────────────────────
-   Compact, consistent, softly-rounded — NOT blocky. The @hanzo/ui shadcn Input +
-   SelectTrigger share the `h-input` signature class and ship a floating-label
-   giant (undefined height + pt-8/pt-6). Pin the ONE control spec on every control
-   so an input and its adjacent button/select match exactly in height, radius, and
-   type size — no per-file edits, no oversized inputs. (The @hanzo/data control
-   tokens carry these same numbers, so migrating a surface to @hanzo/ui v8
-   primitives keeps the identical register.) */
-[class~="h-input"] {
-  height: var(--control-h) !important;
-  min-height: var(--control-h) !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-  padding-inline: 0.625rem !important;
-  border-radius: var(--control-radius) !important;
-  font-size: var(--control-fs) !important;
-  line-height: 1.1 !important;
-}
-[class~="h-input"]::placeholder {
-  color: var(--muted-foreground);
-  opacity: 1;
-}
-/* SelectTrigger's chevron is absolutely positioned for the tall floating-label
-   box (top-[23px]); re-center it for the compact 30px control. */
-[class~="h-input"] svg[class~="absolute"] {
-  top: 50% !important;
-  bottom: auto !important;
-  transform: translateY(-50%);
-}
-/* Textarea keeps its multi-line height but drops the floating-label top-padding and
-   adopts the one radius + 13px size. */
-textarea[class*="pt-7"],
-textarea[class*="pt-8"] {
-  padding-top: 0.5rem !important;
-  padding-bottom: 0.5rem !important;
-  border-radius: var(--control-radius) !important;
-  font-size: var(--control-fs) !important;
-}
-textarea[class*="pt-7"]::placeholder,
-textarea[class*="pt-8"]::placeholder {
-  color: var(--muted-foreground);
-  opacity: 1;
-}
+/* The compact control spec used to be re-imposed here, in ~40 lines of
+   `!important`, on the signature classes @hanzo/ui's Input / SelectTrigger / Textarea
+   happened to ship (`h-input`, `pt-7`, `pt-8`). That block is gone: those components
+   are gone. `components/control` now BUILDS the control at the right height, radius
+   and type size from the same tokens, so there is nothing left to override.
+
+   It is worth recording why the override had to die rather than be tuned. Pinning
+   `padding-inline: 0.625rem !important` on every `h-input` also beat the `pl-9` that
+   /store and /skills pass to make room for their search icon — so the magnifier
+   painted directly on top of the placeholder text. A fix written in CSS produced a
+   defect in the DOM, which is what a second implementation of a spec does. The
+   control now merges its classes through `cn()`, so a call site that needs one axis
+   (`pl-9`, `h-10`) gets it, and no rule has to shout. */
+
 /* ONE radius for EVERY shadcn button — the control radius (10px) — on ALL sizes
    (default/sm/lg/xs/icon/iconXs/icon-sm/…), beating any stray rounded-md/sm/none a
    call site hardcoded. This is the fix for "buttons aren't getting the 10px radius":

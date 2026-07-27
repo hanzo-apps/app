@@ -24,8 +24,8 @@ import {
 } from "lucide-react";
 
 import { Button } from "@hanzo/ui";
-import { Input } from "@hanzo/ui";
-import { Switch } from "@hanzo/ui";
+import { Input } from "@/components/control";
+import { Switch } from "@/components/control";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/overlay";
 
 import { HanzoLogo } from "@/components/HanzoLogo";

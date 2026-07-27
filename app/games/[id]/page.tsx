@@ -210,7 +210,9 @@ export default function GameDetail() {
               </p>
             )}
             <a href={studioHref(game)} target="_blank" rel="noopener noreferrer">
-              <Button className="gap-2 bg-gradient-to-r from-neutral-700 to-neutral-900 hover:from-neutral-900 hover:to-neutral-700">
+              {/* Same defect as the /enterprise CTA: a hand-painted dark-neutral
+                  gradient under the default variant's near-black text. */}
+              <Button className="gap-2">
                 <Wand2 className="h-4 w-4" />
                 Generate assets in Studio
                 <ArrowUpRight className="h-4 w-4" />
