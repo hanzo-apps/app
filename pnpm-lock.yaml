@@ -99,8 +99,8 @@ importers:
         specifier: ^0.1.6
         version: 0.1.6(@hanzo/gui@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native-web@0.21.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0))(@hanzogui/lucide-icons-2@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0))(react@19.2.4)
       '@hanzo/voice':
-        specifier: 0.1.0
-        version: 0.1.0(react@19.2.4)
+        specifier: 0.1.1
+        version: 0.1.1(react@19.2.4)
       '@hanzogui/config':
         specifier: 7.3.0
         version: 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native-reanimated@4.5.1(react-native-worklets@0.10.2(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
@@ -1404,8 +1404,8 @@ packages:
       react:
         optional: true
 
-  '@hanzo/voice@0.1.0':
-    resolution: {integrity: sha512-MZ5OuqWmwiKn5NUrABDKbmZlbmR9SzcXrgouN4cKZRYMhD/Op3u2a8UwCC+RgT9k6NXJdIFaEQ3I9kTzlpVRww==}
+  '@hanzo/voice@0.1.1':
+    resolution: {integrity: sha512-JpMQzdp0Jbj2uKv1W7Koo43fUCoLCoPi3diqkSbZhJKuPCdQBCkSNna3jc7T/9TWq+Fww2OOc63oq2OOj1Lg/A==}
     engines: {node: '>=18'}
     peerDependencies:
       react: '>=18'
@@ -11254,7 +11254,7 @@ snapshots:
       '@hanzogui/lucide-icons-2': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
 
-  '@hanzo/voice@0.1.0(react@19.2.4)':
+  '@hanzo/voice@0.1.1(react@19.2.4)':
     dependencies:
       react: 19.2.4
 
