@@ -40,6 +40,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
 import { ScrollArea } from "@hanzo/ui";
 import { HanzoLogo } from "@/components/HanzoLogo";
+import { DEFAULT_MODEL } from "@/lib/providers";
+import { useModels } from "@/lib/hooks/use-models";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { toast } from "@hanzo/ui";
@@ -76,8 +78,11 @@ export default function PlaygroundPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState("default");
 
+  // Left pane opens on the product default — DEFAULT_MODEL, never a literal.
+  // The right pane is the CONTRAST it is compared against, so it names a
+  // deliberately different model rather than restating the default.
   const [leftConfig, setLeftConfig] = useState<ModelConfig>({
-    model: "enso",
+    model: DEFAULT_MODEL,
     temperature: 0.7,
     maxTokens: 2048,
     topP: 1,
@@ -99,19 +104,11 @@ export default function PlaygroundPage() {
   const [results, setResults] = useState<ComparisonResult[]>([]);
   const [activeResult, setActiveResult] = useState<ComparisonResult | null>(null);
 
-  // Current models served by api.hanzo.ai/v1 (values are the gateway model ids).
-  const models = [
-    { value: "enso", label: "Enso (smart routing)", provider: "Hanzo" },
-    { value: "enso-flash", label: "Enso Flash", provider: "Hanzo" },
-    { value: "claude-opus-4.8", label: "Claude Opus 4.8", provider: "Anthropic" },
-    { value: "claude-5-sonnet", label: "Claude Sonnet 5", provider: "Anthropic" },
-    { value: "claude-haiku-4.5", label: "Claude Haiku 4.5", provider: "Anthropic" },
-    { value: "gpt-5.2", label: "GPT-5.2", provider: "OpenAI" },
-    { value: "gpt-5.4", label: "GPT-5.4", provider: "OpenAI" },
-    { value: "deepseek-v4-pro", label: "DeepSeek V4 Pro", provider: "DeepSeek" },
-    { value: "llama-4-maverick", label: "Llama 4 Maverick", provider: "Meta" },
-    { value: "gemma-4-31b", label: "Gemma 4", provider: "Google" }
-  ];
+  // The live gateway ladder — the same list the builder's picker reads, shaped
+  // by the one catalog rule set in @/lib/providers. Never a hand-written list:
+  // the previous one had drifted onto upstream vendor names (a brand leak) and
+  // onto ids the gateway no longer serves.
+  const { models } = useModels();
 
   const presets = [
     { value: "default", label: "Default", description: "Balanced settings" },
@@ -207,7 +204,6 @@ export default function PlaygroundPage() {
               <SelectItem key={model.value} value={model.value}>
                 <div className="flex items-center justify-between w-full">
                   <span>{model.label}</span>
-                  <Badge variant="outline" className="ml-2 text-xs">{model.provider}</Badge>
                 </div>
               </SelectItem>
             ))}

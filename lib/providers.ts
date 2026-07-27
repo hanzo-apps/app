@@ -24,17 +24,21 @@ export type ModelOption = {
 };
 
 // The model the builder opens on when neither storage nor the gateway pick one.
-// enso-flash, not bare enso, for two measured reasons:
-//   1. Tier. The enso ladder is gated per SKU in ai (`controllers/family_tier.go`,
-//      min_tier from discovery): enso-flash is FREE — everyone — while `enso` is
-//      trial+ and enso-ultra is paid-only. A signed-out or free-plan visitor can
-//      only be served the flash rung, so it is the only correct fresh-session
-//      default; anything above it defaults the builder to a denial.
-//   2. Cost. api.hanzo.ai GET /v1/models prices enso-flash at $2/$4 per Mtok and
-//      enso at $4/$20 — 5x on output, and output is what a builder generates.
-// Both are Enso, both stream, and both pass isBuildModel/resolveModelId, so the
-// picker lists this and a user who wants the bigger rung still picks it.
-export const DEFAULT_MODEL = "enso-flash";
+// Bare `enso` — the rung that picks best. This is the ONE place the default
+// lives; no page, component or env var restates it.
+//
+// It costs more than the flash rung and that is the accepted trade. Measured at
+// the family service itself (enso.enso.svc:8080 GET /v1/models, the catalog the
+// gateway proxies): enso is $4/$20 per Mtok against enso-flash's $2/$4 — 2x in,
+// 5x out. Output dominates a builder's spend, so this is a real 5x.
+//
+// Tier: the same catalog marks enso `min_tier: "trial"`. Commerce maps the
+// starter plan to `trial` (ai `controllers/family_tier.go` commerceTierToLadder),
+// and a new account lands on starter with its auto-credit, so a signed-in user
+// clears this gate. `familyTierAllowed` also fails OPEN when commerce cannot
+// name a tier. Signed-out visitors never generate — /v1/generate is the auth
+// seam — so no reachable session defaults to a denial.
+export const DEFAULT_MODEL = "enso";
 
 // The Hanzo gateway (api.hanzo.ai) serves the Zen/Enso ladder + connected
 // providers AND — since DO GenAI funded the proprietary catalog — a CURATED set
@@ -99,8 +103,13 @@ export type SmartRoutingState = {
 // never touched (follow the org default). `defaults` is the server-driven org
 // policy, or null when unknown (older cloud-api / fetch failed).
 //
-// Fail-soft: with no org policy, behave exactly as before — the user's local
-// preference alone, defaulting to on (smart routing was the prior default).
+// With no org policy the fresh session opens on DEFAULT_MODEL, not on `auto`.
+// `auto` used to win this slot, which meant the default model was never the
+// thing a new user saw — the composer said "Auto" and DEFAULT_MODEL was dead
+// text. Two answers to "what runs my prompt?"; the model default is the one the
+// product states, so it wins. `auto` survives as an explicit pick and as an org
+// policy (`defaultSessionRouting`) — it is a different router (ai's own
+// cross-family one), not a second spelling of Enso.
 // When the org disables routing, the toggle is off and locked regardless of any
 // local preference. Otherwise the user's override wins, else the org default.
 export function resolveSmartRouting(
@@ -108,7 +117,7 @@ export function resolveSmartRouting(
   defaults: RoutingDefaults | null
 ): SmartRoutingState {
   if (!defaults) {
-    return { enabled: localPref ?? true, toggleDisabled: false };
+    return { enabled: localPref ?? false, toggleDisabled: false };
   }
   if (!defaults.autoRoutingActive) {
     return { enabled: false, toggleDisabled: true };
@@ -210,10 +219,17 @@ export function buildModelsFrom(
 // source of truth; the gateway is. Keep it to the current Zen 5 ladder. It MUST
 // carry DEFAULT_MODEL: the offline path returns DEFAULT_MODEL verbatim, so a
 // default missing from this list would name a model the picker cannot show.
+// The enso rungs here are the three the family service actually serves
+// (enso.enso.svc:8080 GET /v1/models → enso, enso-flash, enso-ultra). `enso-pro`
+// is deliberately ABSENT: ai synthesizes a listing entry for it from a pin
+// (`controllers/zen_client.go` ensoFam.pins) but the family has no such SKU, so
+// a pick would pass through verbatim and fail at generation. A picker entry that
+// cannot serve is worse than an absent one — list it only once the family does.
 export const FALLBACK_MODELS: ModelOption[] = [
-  { value: "enso-flash", label: "Enso Flash" },
-  { value: "zen5-coder", label: "Zen 5 Coder" },
   { value: "enso", label: "Enso" },
+  { value: "enso-flash", label: "Enso Flash" },
+  { value: "enso-ultra", label: "Enso Ultra" },
+  { value: "zen5-coder", label: "Zen 5 Coder" },
   { value: "zen5-flash", label: "Zen 5 Flash" },
   { value: "zen5", label: "Zen 5" },
   { value: "zen5-pro", label: "Zen 5 Pro" },

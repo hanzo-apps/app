@@ -137,16 +137,16 @@ export function Settings({
             </p>
           )}
 
-          {/* Auto (Enso smart routing) is the default and a first-class VALUE of
-              the persisted `model` — the builder's "Routed: …" banner and the
-              smart-routing card read it. Enso auto-picks the best model AND the
-              provider per request, so there is no separate provider choice. The
-              dropdown below is an optional explicit override (family-grouped:
-              Enso / Zen / Anthropic / OpenAI). */}
+          {/* `auto` is a first-class VALUE of the persisted `model` — the
+              builder's "Routed: …" banner and the smart-routing card read it. It
+              is the gateway's OWN cross-family router (cheapest capable across
+              Enso / Zen / Anthropic / OpenAI), which is NOT what Enso does, so
+              it says so rather than borrowing Enso's name. It is no longer the
+              fresh-session default: that is Enso, in the list below. */}
           <div className="rounded-xl border border-border bg-card/60 p-1">
             <ModelRow
               label="Auto · smart routing"
-              hint="Enso picks the best model & provider per request"
+              hint="Routes each request to the cheapest capable model"
               selected={isAuto}
               onClick={() => onModelChange(AUTO_MODEL)}
             />
