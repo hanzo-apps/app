@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@hanzo/ui';
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/overlay';
-import { Input } from '@hanzo/ui';
+import { Input } from '@/components/control';
 import { toast } from '@hanzo/ui';
 
 interface FileExplorerProps {

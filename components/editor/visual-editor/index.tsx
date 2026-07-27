@@ -25,7 +25,8 @@ import {
   X,
   Check
 } from "lucide-react";
-import { Button, Input, Label, Tabs, TabsContent, TabsList, TabsTrigger, Switch } from "@hanzo/ui";
+import { Button, Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
+import { Input, Label, Switch } from "@/components/control";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuCheckboxItem, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent } from "@/components/overlay";
 import { cn } from "@/lib/utils";
 import type { CodeEditorHandle } from "@/components/code-editor";

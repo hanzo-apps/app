@@ -10,9 +10,9 @@ import {
   DialogTitle,
 } from '@hanzo/ui';
 import { Button } from '@hanzo/ui';
-import { Input } from '@hanzo/ui';
-import { Label } from '@hanzo/ui';
-import { Textarea } from '@hanzo/ui';
+import { Input } from '@/components/control';
+import { Label } from '@/components/control';
+import { Textarea } from '@/components/control';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
 import { Loader2, AlertCircle, Info } from 'lucide-react';
 

@@ -11,7 +11,8 @@ import {
   Lock,
   UserPlus,
 } from "lucide-react";
-import { Button, Input, Label, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@hanzo/ui";
+import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@hanzo/ui";
+import { Input, Label } from "@/components/control";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";
 import { useUser } from "@/hooks/useUser";
 

@@ -4,7 +4,7 @@ import { toast } from "@hanzo/ui";
 
 import { Button } from "@hanzo/ui";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/overlay";
-import { Input } from "@hanzo/ui";
+import { Input } from "@/components/control";
 import Loading from "@/components/loading";
 import { api } from "@/lib/api";
 

@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
 import { AspectRatio } from "@hanzo/ui";
 import { ScrollArea } from "@hanzo/ui";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
-import { Textarea } from "@hanzo/ui";
+import { Textarea } from "@/components/control";
 import { Progress } from "@hanzo/ui";
 import {
   Play,

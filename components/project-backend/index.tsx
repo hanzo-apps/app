@@ -8,9 +8,9 @@ import { ServerFunctionsManager } from '@/components/database-manager/server-fun
 import { SecretsManager } from '@/components/database-manager/secrets-manager';
 import { ScheduledFunctionsManager } from '@/components/database-manager/scheduled-functions-manager';
 import { Code2, Wrench, Key, Clock, Lock, Settings2, PowerOff, Database } from 'lucide-react';
-import { Switch } from '@hanzo/ui';
-import { Input } from '@hanzo/ui';
-import { Label } from '@hanzo/ui';
+import { Switch } from '@/components/control';
+import { Input } from '@/components/control';
+import { Label } from '@/components/control';
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/overlay';
 import {
   Dialog,

@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@hanzo/ui";
 import { Badge } from "@hanzo/ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
-import { Input } from "@hanzo/ui";
+import { Input } from "@/components/control";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
 import { AspectRatio } from "@hanzo/ui";
 import {
@@ -129,7 +129,9 @@ export default function BlogPlatform() {
                   className="pl-9 w-[250px]"
                 />
               </div>
-              <Button className="bg-gradient-to-r from-[#171717] to-[#404040] hover:from-[#000000] hover:to-[#171717]">
+              {/* Same defect as the /enterprise CTA: a hand-painted near-black
+                  gradient under the default variant's near-black text. */}
+              <Button>
                 <Edit className="w-4 h-4 mr-2" />
                 Write
               </Button>

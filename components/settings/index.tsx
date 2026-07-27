@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { configManager, AppSettings, CostSettings } from '@/lib/config/storage';
 import { Button } from '@hanzo/ui';
-import { Input } from '@hanzo/ui';
-import { Label } from '@hanzo/ui';
-import { Switch } from '@hanzo/ui';
+import { Input } from '@/components/control';
+import { Label } from '@/components/control';
+import { Switch } from '@/components/control';
 import { toast } from '@hanzo/ui';
 import { useTheme } from 'next-themes';
 import { DollarSign, AlertTriangle, Info, Download, Upload, Database, ChevronDown, Palette } from 'lucide-react';

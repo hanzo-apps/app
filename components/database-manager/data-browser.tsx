@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button } from '@hanzo/ui';
-import { Input } from '@hanzo/ui';
+import { Input } from '@/components/control';
 import {
   Database, Plus, RefreshCw, Trash2, Pencil, X, Loader2, Search, TableProperties,
 } from 'lucide-react';

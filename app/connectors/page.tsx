@@ -42,7 +42,8 @@ import {
   Cloud,
   Mail,
 } from "lucide-react";
-import { Button, Input, Badge } from "@hanzo/ui";
+import { Button, Badge } from "@hanzo/ui";
+import { Input } from "@/components/control";
 import { toast } from "@hanzo/ui";
 
 import { useUser } from "@/hooks/useUser";

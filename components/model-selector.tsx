@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { Label } from '@hanzo/ui';
+import { Label } from '@/components/control';
 import { Badge } from '@hanzo/ui';
 import { logger, cn } from '@/lib/utils';
 import { Button } from '@hanzo/ui';
-import { Input } from '@hanzo/ui';
-import { Switch } from '@hanzo/ui';
+import { Input } from '@/components/control';
+import { Switch } from '@/components/control';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/overlay';
 import {
   Loader2,

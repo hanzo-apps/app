@@ -12,7 +12,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Card, CardContent, CardFooter } from "@hanzo/ui";
 import { Button } from "@hanzo/ui";
 import { Badge } from "@hanzo/ui";
-import { Input } from "@hanzo/ui";
+import { Input } from "@/components/control";
 import { AspectRatio } from "@hanzo/ui";
 import { ShoppingCart, Search, Store as StoreIcon, Loader2 } from "lucide-react";
 

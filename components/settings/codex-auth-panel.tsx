@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@hanzo/ui';
-import { Label } from '@hanzo/ui';
+import { Label } from '@/components/control';
 import { ExternalLink, Loader2, Terminal, TriangleAlert } from 'lucide-react';
 import { ConnectionBadge } from '@/components/settings/connection-badge';
 import { toast } from '@hanzo/ui';

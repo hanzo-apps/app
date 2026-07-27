@@ -2,6 +2,8 @@
 
 import { Button } from "@hanzo/ui";
 import { Badge } from "@hanzo/ui";
+import { Input, Textarea } from "@/components/control";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";
 import { Shield, Lock, Users, Zap, Globe, HeadphonesIcon, ArrowRight, CheckCircle2, Building } from "lucide-react";
 import Header from "@/components/layout/header";
 import LogoWall from "@/components/landing/logo-wall";
@@ -152,32 +154,35 @@ export default function EnterprisePage() {
               <p className="text-muted-foreground mb-8">
                 Tell us about your needs and we'll create a custom plan for your organization
               </p>
+              {/* This form used to run its own control spec, and got five controls
+                  onto four of them: two 49px hand-rolled inputs, a 46px NATIVE
+                  <select> painting a raw OS chevron and OS menu beside Radix-quality
+                  siblings, a 118px textarea, and a 30px submit. Its only focus cue
+                  was `focus:border-violet-500/50`, which the monochrome sweep
+                  neutralises to a grey barely distinct from the resting border. All
+                  five are now the ONE control. */}
               <form className="space-y-4">
-                <input
-                  type="text"
-                  placeholder="Company Name"
-                  className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-violet-500/50"
-                />
-                <input
-                  type="email"
-                  placeholder="Work Email"
-                  className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-violet-500/50"
-                />
-                <select className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-foreground focus:outline-none focus:border-violet-500/50">
-                  <option>Company Size</option>
-                  <option>10-50 employees</option>
-                  <option>50-200 employees</option>
-                  <option>200-1000 employees</option>
-                  <option>1000+ employees</option>
-                </select>
-                <textarea
-                  placeholder="Tell us about your project"
-                  rows={4}
-                  className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-violet-500/50"
-                />
-                <Button className="w-full bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-400 hover:to-purple-400">
-                  Contact Sales Team
-                </Button>
+                <Input type="text" placeholder="Company Name" />
+                <Input type="email" placeholder="Work Email" />
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Company Size" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10-50">10-50 employees</SelectItem>
+                    <SelectItem value="50-200">50-200 employees</SelectItem>
+                    <SelectItem value="200-1000">200-1000 employees</SelectItem>
+                    <SelectItem value="1000+">1000+ employees</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Textarea placeholder="Tell us about your project" rows={4} />
+                {/* The fill is the variant's to choose, not this call site's. It
+                    used to hand-paint a violet->purple gradient; the monochrome
+                    sweep neutralises those decorative hues to a mid grey, but the
+                    Button kept the near-black foreground that was picked for its
+                    WHITE default fill — leaving the page's primary CTA at 1.10:1.
+                    Its sibling, which never hand-painted, measures 19.80:1. */}
+                <Button className="w-full">Contact Sales Team</Button>
               </form>
             </div>
           </div>

@@ -8,8 +8,8 @@ import { vfs } from '@/lib/vfs';
 import { templateService } from '@/lib/vfs/template-service';
 import { logger } from '@/lib/utils';
 import { Button } from '@hanzo/ui';
-import { Input } from '@hanzo/ui';
-import { Textarea } from '@hanzo/ui';
+import { Input } from '@/components/control';
+import { Textarea } from '@/components/control';
 import { ProjectCard } from './project-card';
 import { MultipagePreview } from '@/components/preview/multipage-preview';
 import { AboutModal } from '@/components/about-modal';
@@ -33,7 +33,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@hanzo/ui';
-import { Label } from '@hanzo/ui';
+import { Label } from '@/components/control';
 import { toast } from '@hanzo/ui';
 import { EVENTS } from '@hanzo/event';
 import { useAnalytics } from '@hanzo/event/react';
