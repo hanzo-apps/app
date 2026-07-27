@@ -6,6 +6,8 @@ import { useUser } from '@/hooks/useUser';
 import { AppShell } from '@/components/app-shell';
 import { CryptoPayment, CRYPTO_PAYMENTS_ENABLED } from '@/components/crypto-payment';
 import { WalletBoundary } from '@/components/providers/WalletBoundary';
+import { TopUp, Subscribe } from '@/components/billing/purchase';
+import { useCloudBalance, spendableCents } from '@/lib/billing/live-balance';
 
 // UI Components
 import { Button } from "@hanzo/ui";
@@ -68,13 +70,15 @@ interface Subscription {
   cancelAtPeriodEnd?: boolean;
 }
 
-// Credit tier options for checkout
-const CREDIT_TIERS = [
-  { amount: 10, credits: 1000, label: 'Starter' },
-  { amount: 25, credits: 2750, label: 'Popular', popular: true },
-  { amount: 50, credits: 6000, label: 'Pro' },
-  { amount: 100, credits: 13000, label: 'Enterprise' },
-];
+// Credit tiers live in <TopUp> (components/billing/purchase.tsx), next to the
+// checkout that sells them, and are amounts rather than bonus "packs" because
+// commerce credits exactly the cents charged. There is no second tier table.
+
+// The customer billing portal (the @hanzo/billing SPA) — where an EXISTING
+// subscription is managed. Buying is pay.hanzo.ai (lib/pay.ts); managing is
+// here. Same host the sidebar wallet already links to.
+const BILLING_PORTAL_URL =
+  process.env.NEXT_PUBLIC_BILLING_URL || 'https://billing.hanzo.ai';
 
 export default function BillingPage() {
   // Auth is the ONE canonical source: the @hanzo/iam SDK (useUser), not a
@@ -93,10 +97,16 @@ export default function BillingPage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [creditModalOpen, setCreditModalOpen] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'crypto'>('card');
-  const [checkoutLoading, setCheckoutLoading] = useState<number | null>(null);
+
+  // The REAL per-org balance, from the ONE shared live store the sidebar wallet
+  // and the usage dialog already read (`/v1/wallet` → gateway
+  // `/v1/billing/balance`). This page used to keep its own `credits` number fed
+  // by a Commerce endpoint that does not exist, so it always rendered 0 no
+  // matter what the ledger said. One ledger, one reader.
+  const { phase: balancePhase, balance, refresh: refreshBalance } = useCloudBalance();
+  const balanceCents = spendableCents(balance);
 
   // Billing data
-  const [credits, setCredits] = useState(0);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [usage, setUsage] = useState<Usage>({
@@ -146,12 +156,7 @@ export default function BillingPage() {
         }
       }
 
-      // Fetch credits
-      const creditsResponse = await fetch('/api/commerce/credits');
-      if (creditsResponse.ok) {
-        const creditsData = await creditsResponse.json();
-        setCredits(creditsData.credits || 0);
-      }
+      // The balance is NOT fetched here — `useCloudBalance` owns it, live.
     } catch (error) {
       console.error('Error fetching billing data:', error);
       setSubscription({ plan: 'Pay as you go', status: 'active' });
@@ -167,7 +172,10 @@ export default function BillingPage() {
   }, [authenticated, fetchBillingData]);
 
   const handleCryptoPaymentSuccess = (txHash: string, creditsAdded: number) => {
-    setCredits(prev => prev + creditsAdded);
+    // Re-read the ledger rather than adding to a local number: the balance we
+    // show must be the balance the gateway will debit, never an optimistic
+    // guess that drifts from it.
+    refreshBalance();
     setCreditModalOpen(false);
 
     // Add to local invoice list
@@ -182,69 +190,33 @@ export default function BillingPage() {
     }, ...prev]);
   };
 
-  const handleCardCheckout = async (amount: number, credits: number) => {
-    setCheckoutLoading(amount);
-    try {
-      const response = await fetch('/api/commerce/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount,
-          credits,
-          type: 'credits',
-          successUrl: `${window.location.origin}/billing?success=true&credits=${credits}`,
-          cancelUrl: `${window.location.origin}/billing?canceled=true`,
-        }),
-      });
+  // Card checkout is a plain navigation to the ONE live Square surface — see
+  // <TopUp>/<Subscribe> in components/billing/purchase.tsx. There is no
+  // "create a session" round-trip here any more: the version that lived here
+  // POSTed to /api/commerce/checkout, which 503'd (no webhook secret on this
+  // deployment) or 404'd (Commerce has no /v1/checkout/charge), and then
+  // swallowed the failure into console.error — which is precisely why the Buy
+  // buttons appeared to do nothing at all.
 
-      if (!response.ok) {
-        throw new Error('Failed to create checkout session');
-      }
-
-      const data = await response.json();
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch (error) {
-      console.error('Checkout error:', error);
-    } finally {
-      setCheckoutLoading(null);
-    }
+  // Managing an existing subscription is the billing PORTAL's job — the live
+  // @hanzo/billing SPA over the same commerce backend. hanzo.app does not
+  // reimplement it. (The /api/commerce/portal round-trip this replaces asked
+  // Commerce for a portal URL via an endpoint that does not exist, got nothing,
+  // and silently did nothing — the same failure as the Buy buttons.)
+  const handleManageSubscription = () => {
+    window.location.href = `${BILLING_PORTAL_URL}/subscriptions`;
   };
 
-  const handleManageSubscription = async () => {
-    try {
-      const response = await fetch('/api/commerce/portal', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          returnUrl: `${window.location.origin}/billing`,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.url) {
-          window.location.href = data.url;
-        }
-      }
-    } catch (error) {
-      console.error('Portal error:', error);
-    }
-  };
-
-  // Handle checkout success redirect
+  // Returning from checkout: re-read the ledger. We deliberately do NOT trust a
+  // `credits=` query param to move the displayed balance — anyone can type one,
+  // and the only number worth showing is the one the gateway will debit.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('success') === 'true') {
-      const addedCredits = parseInt(params.get('credits') || '0', 10);
-      if (addedCredits > 0) {
-        setCredits(prev => prev + addedCredits);
-      }
-      // Clean URL
+    if (params.get('success') === 'true' || params.get('paid') === 'true') {
+      refreshBalance();
       window.history.replaceState({}, '', '/billing');
     }
-  }, []);
+  }, [refreshBalance]);
 
   const calculateUsagePercentage = (used: number, limit: number) => {
     if (limit === 0) return 0;
@@ -313,14 +285,9 @@ export default function BillingPage() {
                 )}
                 <div className="flex gap-2">
                   {(!subscription || subscription.plan === 'Pay as you go') ? (
-                    <Button
-                      onClick={() => router.push('/pricing')}
-                      className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                      size="sm"
-                    >
-                      <Sparkles className="w-4 h-4 mr-2" />
-                      Upgrade to Pro
-                    </Button>
+                    /* Straight to the card form at the catalog price — the same
+                       checkout the plans page uses. No pricing↔billing ping-pong. */
+                    <Subscribe slug="pro" />
                   ) : (
                     <Button
                       onClick={handleManageSubscription}
@@ -339,16 +306,27 @@ export default function BillingPage() {
           {/* Credits */}
           <Card className="bg-card border-border hover:border-foreground/20 transition-colors">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Credits Balance</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Credit Balance</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-2xl font-medium">{credits.toLocaleString()}</span>
+                  {/* The real per-org ledger, in the currency it is actually
+                      denominated in (USD). Honest states: never a placeholder
+                      number standing in for an unknown balance. */}
+                  <span className="text-2xl font-medium">
+                    {balancePhase === 'ready' && balanceCents !== null
+                      ? `$${(balanceCents / 100).toFixed(2)}`
+                      : balancePhase === 'loading' || balancePhase === 'idle'
+                        ? '—'
+                        : balancePhase === 'noauth'
+                          ? 'Sign in'
+                          : 'Unavailable'}
+                  </span>
                   <TrendingUp className="w-5 h-5 text-green-500" />
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  1 credit = 1 AI response
+                  Spendable credit across every Hanzo service
                 </p>
                 <Button
                   onClick={() => setActiveTab('add-credits')}
@@ -357,7 +335,7 @@ export default function BillingPage() {
                   className="w-full border-border text-foreground hover:bg-accent"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Credits
+                  Add Credit
                 </Button>
               </div>
             </CardContent>
@@ -503,111 +481,11 @@ export default function BillingPage() {
             </div>
             )}
 
-            {paymentMethod === 'card' ? (
-              <Card className="bg-card border-border">
-                <CardHeader>
-                  <CardTitle>Purchase Credits with Card</CardTitle>
-                  <CardDescription>Powered by Hanzo Commerce. All major cards accepted.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {CREDIT_TIERS.map((tier) => (
-                      <div
-                        key={tier.amount}
-                        className={`relative p-5 rounded-xl border transition-all ${
-                          tier.popular
-                            ? 'border-foreground/30 bg-muted'
-                            : 'border-border hover:border-foreground/30 bg-card'
-                        }`}
-                      >
-                        {tier.popular && (
-                          <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs">
-                            Most Popular
-                          </Badge>
-                        )}
-                        <div className="text-center mb-4">
-                          <div className="text-3xl font-medium">${tier.amount}</div>
-                          <div className="text-sm text-muted-foreground mt-1">{tier.label}</div>
-                        </div>
-                        <div className="flex items-center justify-center text-sm text-foreground mb-4">
-                          <Zap className="w-4 h-4 mr-1 text-yellow-500" />
-                          {tier.credits.toLocaleString()} credits
-                        </div>
-                        <Button
-                          onClick={() => handleCardCheckout(tier.amount, tier.credits)}
-                          disabled={checkoutLoading !== null}
-                          className={`w-full ${
-                            tier.popular
-                              ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                              : 'bg-accent hover:bg-foreground/20'
-                          }`}
-                          size="sm"
-                        >
-                          {checkoutLoading === tier.amount ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <>
-                              <CreditCard className="w-4 h-4 mr-2" />
-                              Buy
-                            </>
-                          )}
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            ) : (
-              <Card className="bg-card border-border">
-                <CardHeader>
-                  <CardTitle>Purchase Credits with USDC</CardTitle>
-                  <CardDescription>Pay with USDC on Base, Ethereum, or Arbitrum.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {CREDIT_TIERS.map((tier) => (
-                      <div
-                        key={tier.amount}
-                        className={`relative p-5 rounded-xl border transition-all ${
-                          tier.popular
-                            ? 'border-foreground/30 bg-muted'
-                            : 'border-border hover:border-foreground/30 bg-card'
-                        }`}
-                      >
-                        {tier.popular && (
-                          <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs">
-                            Most Popular
-                          </Badge>
-                        )}
-                        <div className="text-center mb-4">
-                          <div className="text-3xl font-medium">${tier.amount}</div>
-                          <div className="text-sm text-muted-foreground mt-1">USDC</div>
-                        </div>
-                        <div className="flex items-center justify-center text-sm text-foreground mb-4">
-                          <Zap className="w-4 h-4 mr-1 text-yellow-500" />
-                          {tier.credits.toLocaleString()} credits
-                        </div>
-                        <Button
-                          onClick={() => setCreditModalOpen(true)}
-                          className={`w-full ${
-                            tier.popular
-                              ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                              : 'bg-accent hover:bg-foreground/20'
-                          }`}
-                          size="sm"
-                        >
-                          <Wallet className="w-4 h-4 mr-2" />
-                          Buy
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-4 text-center">
-                    Treasury: 0xda93...f5c -- USDC on Base, Ethereum Mainnet, and Arbitrum
-                  </p>
-                </CardContent>
-              </Card>
-            )}
+            {/* Card is the only live rail. The USDC grid that used to sit here
+                was unreachable (CRYPTO_PAYMENTS_ENABLED is false, so the toggle
+                never renders and paymentMethod never leaves 'card') and it
+                advertised bonus credits no backend grants. */}
+            <TopUp />
           </TabsContent>
 
           {/* History / Invoices Tab */}
@@ -706,16 +584,12 @@ export default function BillingPage() {
                       <div className="text-xs text-muted-foreground">AI credits used</div>
                     </div>
                     <div className="p-3 rounded-lg bg-card border border-border">
-                      <div className="text-lg font-medium">{credits.toLocaleString()}</div>
-                      <div className="text-xs text-muted-foreground">Credits remaining</div>
-                    </div>
-                    <div className="p-3 rounded-lg bg-card border border-border">
                       <div className="text-lg font-medium">
-                        {credits > 0 && (usage.ai_responses?.used ?? 0) > 0
-                          ? Math.ceil(credits / ((usage.ai_responses?.used ?? 0) / 30))
+                        {balancePhase === 'ready' && balanceCents !== null
+                          ? `$${(balanceCents / 100).toFixed(2)}`
                           : '--'}
                       </div>
-                      <div className="text-xs text-muted-foreground">Est. days left</div>
+                      <div className="text-xs text-muted-foreground">Credit remaining</div>
                     </div>
                   </div>
                 </div>
