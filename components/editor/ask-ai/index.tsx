@@ -41,6 +41,13 @@ import { useVoice, speech } from "@hanzo/voice";
 
 // The builder's ear and voice, lent the caller's IAM session by the app's own
 // `/v1/audio/*` proxy — so the browser never carries a gateway token.
+//
+// Measured 2026-07-26: the gateway resolves /v1/audio/* through IAM and does not
+// yet accept a hanzo.id bearer with `aud: hanzo-app` (401 — the same 401 that
+// makes /v1/models fall back to its offline ladder; it is not audio-specific).
+// That costs the platform VOICE, not the conversation: the browser's own
+// recogniser still gives a live transcript and its own voice reads the reply,
+// and this upgrades itself the day the gateway accepts that audience.
 const HANZO_SPEECH = speech({ baseUrl: "" });
 
 // Fix mode composes this short, human intent preamble in front of the user's

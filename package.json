@@ -36,7 +36,7 @@
     "@hanzo/observe": "^0.1.0",
     "@hanzo/ui": "npm:@hanzo/ui-shadcn@^5.9.0",
     "@hanzo/usage": "^0.1.6",
-    "@hanzo/voice": "0.1.0",
+    "@hanzo/voice": "0.1.1",
     "@hanzogui/config": "7.3.0",
     "@hanzogui/lucide-icons-2": "7.3.0",
     "@hanzogui/shell": "^7.6.3",
