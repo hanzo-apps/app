@@ -50,12 +50,13 @@ describe("BFF: GET /v1/models", () => {
     expect(res.status).toBe(200);
     expect(body.ok).toBe(true);
     expect(body.fallback).toBe(true);
-    // Offline default is DEFAULT_MODEL verbatim — now enso (Enso Pro), which IS a
-    // FALLBACK_MODELS entry, so the offline default is selectable in the picker.
-    expect(body.defaultModel).toBe("enso");
-    expect(body.models).toHaveLength(9);
+    // Offline default is DEFAULT_MODEL verbatim — enso-flash, the free rung of the
+    // enso ladder — and it IS a FALLBACK_MODELS entry, so the offline default is
+    // selectable in the picker.
+    expect(body.defaultModel).toBe("enso-flash");
+    expect(body.models).toHaveLength(10);
     const offlineIds = body.models.map((m: { value: string }) => m.value);
-    expect(offlineIds).toContain("enso");
+    expect(offlineIds).toContain("enso-flash");
     expect(offlineIds).toContain("zen5-coder");
     expect(res.headers.get("cache-control")).toBe("no-store");
   });
@@ -120,7 +121,7 @@ describe("BFF: GET /v1/models", () => {
     const body = await res.json();
     expect(res.status).toBe(200);
     expect(body.fallback).toBe(true);
-    expect(body.models).toHaveLength(9);
+    expect(body.models).toHaveLength(10);
   });
 
   it("falls back (200) when the gateway serves no build models", async () => {

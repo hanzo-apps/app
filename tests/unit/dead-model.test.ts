@@ -36,8 +36,9 @@ test("genuinely-dead legacy ids are flagged", () => {
 
 test("live gateway ids and the smart-routing sentinel pass through", () => {
   for (const id of [
-    "enso", // Hanzo's frontier orchestrator — the current default
-    "enso-flash",
+    "enso", // Hanzo's frontier orchestrator — the trial+ rung
+    "enso-flash", // its free rung, and the builder's default
+
     "enso-ultra",
     "zen5-coder",
     "zen5-flash",
