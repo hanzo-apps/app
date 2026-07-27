@@ -6,6 +6,7 @@ import { AppEditor } from "@/components/editor";
 import { builderLink, fetchProject } from "@/lib/api/projects";
 import { DevOnboarding } from "@/components/dev-onboarding";
 import { TemplateLoader } from "@/components/template-loader";
+import { AppShell } from "@/components/app-shell";
 import { parseGitUrl } from "@/lib/git/url";
 import { readStagedProject, clearStagedProject } from "@/lib/import/staging";
 import {
@@ -19,6 +20,43 @@ function stagedRank(path: string): number {
   if (/(^|\/)index\.html?$/i.test(path)) return 0;
   if (/\.html?$/i.test(path)) return 1;
   return 2;
+}
+
+/**
+ * Every /dev state EXCEPT the editor renders inside the app shell.
+ *
+ * /dev used to return bare full-screen markup from all six of its branches, so the
+ * landing and every loading state appeared with no logo, no navigation and no
+ * account menu — the one route in the signed-in app with no chrome at all
+ * (/projects, /settings, /connectors, /gallery and /dev/[org]/[project]/settings
+ * all wrap in AppShell already).
+ *
+ * The editor is the deliberate exception: AppEditor owns the whole viewport and
+ * carries its own chrome, matching /dev/[org]/[project]. Wrapping it would nest two
+ * headers.
+ *
+ * Wrapping the transient splashes too is what makes the chrome RELIABLE rather than
+ * merely present: the header stays put while a template or import resolves, instead
+ * of the page flashing chromeless and then gaining a header when the editor mounts.
+ */
+function Shell({ children }: { children: React.ReactNode }) {
+  return <AppShell currentView="templates">{children}</AppShell>;
+}
+
+/**
+ * The hold-state shown while something resolves. Four byte-identical copies of this
+ * markup had accumulated, one per branch; they differed only in their sentence.
+ * `flex-1` rather than a viewport height, so it fills the shell's content area
+ * instead of fighting the header for the full screen.
+ */
+function Splash({ children }: { children: React.ReactNode }) {
+  return (
+    <Shell>
+      <div className="flex flex-1 items-center justify-center bg-neutral-950 text-neutral-400 text-sm">
+        {children}
+      </div>
+    </Shell>
+  );
 }
 
 function Dev() {
@@ -330,20 +368,24 @@ function Dev() {
 
   if (showTemplateLoader && repoData) {
     return (
-      <TemplateLoader
-        templateRepo={repoData}
-        action={action as "edit" | "deploy"}
-        onProceed={handleTemplateAction}
-      />
+      <Shell>
+        <TemplateLoader
+          templateRepo={repoData}
+          action={action as "edit" | "deploy"}
+          onProceed={handleTemplateAction}
+        />
+      </Shell>
     );
   }
 
   if (showOnboarding) {
     return (
-      <DevOnboarding
-        initialPrompt={initialPrompt}
-        onComplete={handleOnboardingComplete}
-      />
+      <Shell>
+        <DevOnboarding
+          initialPrompt={initialPrompt}
+          onComplete={handleOnboardingComplete}
+        />
+      </Shell>
     );
   }
 
@@ -351,32 +393,20 @@ function Dev() {
   // canonical /dev/<org>/<slug> page (site + history loaded) takes over without
   // an empty editor flashing first.
   if (projectSlug && projectResolving) {
-    return (
-      <div className="h-[100dvh] bg-neutral-950 flex items-center justify-center text-neutral-400 text-sm">
-        Opening {projectSlug}…
-      </div>
-    );
+    return <Splash>Opening {projectSlug}…</Splash>;
   }
 
   // Fork → builder: while the seed is being staged, hold a brief splash so the
   // editor mounts only AFTER window.__initialPrompt is set — AskAI reads it on
   // mount to auto-start the first generation.
   if (seedPrompt.trim() && !seedReady) {
-    return (
-      <div className="h-[100dvh] bg-neutral-950 flex items-center justify-center text-neutral-400 text-sm">
-        Preparing your first edition…
-      </div>
-    );
+    return <Splash>Preparing your first edition…</Splash>;
   }
 
   // Drag-and-drop import: hold a splash until the staged files are read, then
   // mount the editor seeded with the imported project's files.
   if (isImport && !importDone) {
-    return (
-      <div className="h-[100dvh] bg-neutral-950 flex items-center justify-center text-neutral-400 text-sm">
-        Importing your project…
-      </div>
-    );
+    return <Splash>Importing your project…</Splash>;
   }
 
   // A template/repo URL is still resolving, OR a gallery edit whose preview HTML
@@ -391,11 +421,7 @@ function Dev() {
     (!repoData ||
       (action === "edit" && !!repoData?.name && !templateEditDone));
   if (resolvingTemplate) {
-    return (
-      <div className="h-[100dvh] bg-neutral-950 flex items-center justify-center text-neutral-400 text-sm">
-        Loading template…
-      </div>
-    );
+    return <Splash>Loading template…</Splash>;
   }
 
   // Pass the seeded template pages (or imported pages) to AppEditor.
