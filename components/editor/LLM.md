@@ -220,3 +220,42 @@ fix it. Blocker fix is Phase-1 / package-owner scope: **v8 must ship a COMPILED 
 (tsup/tsc — no raw-`.ts` `'use client'` at the consumer), OR a Next transpile path that
 handles v8's client modules. Until then the gui menu cannot be adopted here. Phase 3 (the
 theme controller) is done and independent — the menu unblocks the moment v8 ships dist.
+
+### Iteration 6 — the console dock (the footer became a handle)
+
+The bottom strip was a plain `<footer>`: it painted state and nothing else, so
+there was no way to discover — let alone perform — a resize. It is now
+`components/editor/console/`, a dock whose BAR is that same status strip:
+
+- **One height, no `expanded` flag** (`console/dock.ts`). `open = height > BAR`,
+  so a dragged size and a toggled state cannot disagree. `restore` remembers the
+  last height the dock stood open at — read only while collapsed — which is what
+  a click reopens to (never a hardcoded default). Persisted under one key,
+  `hanzo.console`, so the size survives navigation. Every gesture funnels through
+  `resolveHeight`: at or below `COLLAPSE_AT` it closes, otherwise it is clamped
+  into `[MIN_OPEN, 70% of viewport]` — so it can never be dragged into a sliver.
+- **One gesture, two meanings.** A pointer that moved is a resize; one that did
+  not is a click. Starting collapsed, a drag begins at `MIN_OPEN` so the first
+  pixel upward opens the dock and then tracks the cursor 1:1 (no dead travel).
+  Arrow keys nudge, shift-arrow by four, Enter/Space toggles.
+- **No verb on the bar.** No "Open", no "Hide" — the row-resize cursor, the grip
+  that fades in on hover/focus/drag, and the click ARE the affordance. Screen
+  readers get a named `role="separator"` carrying `aria-expanded` +
+  `aria-valuenow/min/max`, which cannot go stale the way a word would.
+- **Far right: the workspace controls.** The chat/AI panel toggle moved OFF the
+  header onto this bar (same handler, same icons), next to the dictation mic.
+  They are absolutely positioned OVER the separator so the drag target underneath
+  stays one uninterrupted strip, and the status readout is `pointer-events-none`
+  for the same reason.
+- **The mic moved too**, and there is still exactly one of it. `ask-ai/dictation.ts`
+  is the seam: the composer registers where a transcript lands, the mic delivers
+  one. The mic is an input DEVICE (chrome); the prompt is a VALUE (the composer).
+- **Real content**: `console/capture.ts` patches the preview iframe's `console`
+  plus `error`/`unhandledrejection`. The preview is double-buffered and rewrites
+  `srcDoc` mid-stream, so it re-patches on every frame load — caught by listening
+  for `load` in the CAPTURE phase on `document` (load does not bubble, but it does
+  capture), which keeps `preview/` unaware this panel exists.
+
+Monochrome throughout except the pre-existing accent "live" dot and `destructive`
+for error lines (console output is content, not chrome). Contract tests:
+`tests/unit/console-dock.test.tsx`.

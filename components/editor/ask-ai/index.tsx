@@ -33,7 +33,7 @@ import { useCallAi } from "@/hooks/useCallAi";
 import { sendRewardSignal, getLastGenerationRequestId } from "@/lib/reward-signal";
 import { SelectedFiles } from "./selected-files";
 import { Uploader } from "./uploader";
-import { VoiceInput } from "./voice-input";
+import { receiveDictation } from "./dictation";
 import { ChatThread, type ThreadMessage } from "./chat-thread";
 import { isConversational } from "./intent";
 
@@ -103,6 +103,15 @@ export function AskAI({
 
   const [open, setOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
+  // The mic lives on the console bar; the prompt lives here. This is where a
+  // spoken phrase lands — appended, exactly as the in-composer mic used to.
+  useEffect(
+    () =>
+      receiveDictation((text) =>
+        setPrompt((p) => (p.trim() ? `${p.trim()} ${text}` : text)),
+      ),
+    [],
+  );
   const [provider, setProvider] = useLocalStorage("provider", "auto");
   // The persisted `model` is the user OVERRIDE: `AUTO_MODEL` = smart routing on,
   // a concrete id = routing off, unset = follow the org default. A NEW session
@@ -1227,14 +1236,6 @@ export function AskAI({
               open={openProvider}
               error={providerError}
               onClose={setOpenProvider}
-            />
-            {/* Voice dictation — appends the spoken phrase to the prompt. Renders
-                nothing where the browser has no SpeechRecognition. */}
-            <VoiceInput
-              disabled={isAiWorking || isUploading}
-              onTranscript={(t) =>
-                setPrompt((p) => (p.trim() ? `${p.trim()} ${t}` : t))
-              }
             />
             {isAiWorking ? (
               <Button

@@ -8,8 +8,6 @@ import {
   History,
   MessageCircleCode,
   Monitor,
-  PanelLeft,
-  PanelLeftClose,
   RefreshCcw,
   Smartphone,
 } from "lucide-react";
@@ -43,7 +41,8 @@ const DEVICES = [
  * raised preview card is the only thing that lifts off it.
  *
  *   LEFT   the workspace menu (org·project identity, credits, wallet, account —
- *          the ONE identity anchor) + the panel/sidebar toggle
+ *          the ONE identity anchor). The chat/AI panel toggle lives on the
+ *          console bar at the bottom, with the other workspace controls.
  *   CENTER the view switcher (Chat·Preview·Code), device switcher, refresh, the
  *          page selector, and open-in-new-tab — one grouped cluster
  *   RIGHT  the primary actions passed as `children` (Share · Load · Push …
@@ -60,8 +59,6 @@ export function Header({
   currentPage,
   onSelectPage,
   onOpenExternal,
-  sidebarCollapsed,
-  onToggleSidebar,
   historyOpen,
   onToggleHistory,
   project,
@@ -77,8 +74,6 @@ export function Header({
   currentPage: string;
   onSelectPage: (path: string) => void;
   onOpenExternal: () => void;
-  sidebarCollapsed: boolean;
-  onToggleSidebar: () => void;
   /** Whether the left-pane history/rollback panel is showing (item 10). */
   historyOpen?: boolean;
   /** Toggle the history/rollback panel over the chat pane. */
@@ -111,8 +106,8 @@ export function Header({
 
   return (
     <header className="z-20 flex items-center gap-2 bg-card px-3 py-2 sm:gap-3 lg:grid lg:grid-cols-[auto_1fr_auto] lg:px-4">
-      {/* LEFT — the workspace menu (identity/home anchor) + the desktop sidebar
-          toggle. Everything about who/where you are lives in the menu. */}
+      {/* LEFT — the workspace menu (identity/home anchor) + version history.
+          Everything about who/where you are lives in the menu. */}
       <div className="flex shrink-0 items-center gap-1.5">
         {/* The ONE Hanzo block-H (mark from @hanzo/logo MARK_PATHS, via the
             shared HanzoLogo). Home anchor, top-left — the IDE's brand corner. */}
@@ -126,20 +121,6 @@ export function Header({
         <div className="min-w-0">
           <WorkspaceMenu project={project} onRenamed={onRenamed} />
         </div>
-        <button
-          type="button"
-          onClick={onToggleSidebar}
-          title={sidebarCollapsed ? "Show chat panel" : "Hide chat panel"}
-          aria-label={sidebarCollapsed ? "Show chat panel" : "Hide chat panel"}
-          aria-pressed={!sidebarCollapsed}
-          className="hidden size-8 items-center justify-center rounded-lg text-muted-foreground ring-1 ring-border transition-colors duration-150 hover:bg-foreground/[0.08] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:flex"
-        >
-          {sidebarCollapsed ? (
-            <PanelLeft className="size-4" />
-          ) : (
-            <PanelLeftClose className="size-4" />
-          )}
-        </button>
         {/* History / rollback — toggles the version-history panel over the chat
             pane (item 10). Chat is the default; this flips to the git timeline. */}
         {onToggleHistory && (
