@@ -111,12 +111,15 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
     router.push(repoImportLink(url));
   };
 
+    // `flex-1` and not `h-screen`: this renders inside AppShell, and a full
+    // viewport height here would add the header's height to the page and push the
+    // foot of the content off-screen.
     return (
-      <div className="min-h-screen h-screen overflow-y-auto bg-background flex justify-center items-start px-6 py-16">
+      <div className="flex-1 overflow-y-auto bg-background flex justify-center items-start px-6 py-16">
         <div className="max-w-6xl w-full">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-medium text-foreground mb-4">
-              Welcome to Hanzo AI ✨
+              Welcome to Hanzo AI
             </h1>
             <p className="text-xl text-muted-foreground">
               Your AI-powered development platform is ready
