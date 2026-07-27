@@ -85,11 +85,18 @@ jobs:
           # v1.42.11 instead of v1.42.13. Fold BOTH v-prefixed and legacy non-v 1.42.x
           # image tags so the v-stream never numerically collides with the retired
           # platform-build non-v tags. jq-optional: grep fallback if a runner lacks jq.
+          #
+          # The package scanned MUST be the one this job pushes to. It named the
+          # retired `hanzo-app` package while the build pushed `app`, so the scan
+          # read a stream that stopped at 1.42.153 and the floor came from git
+          # alone — and the forge's tag stream lags GitHub's, so v1.42.158 was cut
+          # AFTER v1.42.163 was already live. The image ⇔ tag guard below cannot
+          # catch that: the image resolved, it was simply numbered backwards.
           cont_max=""
           if [ -n "${GH_PAT:-}" ]; then
             _pkgjson="$(curl -fsSL -H "Authorization: Bearer $GH_PAT" \
               -H "Accept: application/vnd.github+json" \
-              'https://api.github.com/orgs/hanzoai/packages/container/hanzo-app/versions?per_page=100' 2>/dev/null || true)"
+              'https://api.github.com/orgs/hanzoai/packages/container/app/versions?per_page=100' 2>/dev/null || true)"
             cont_max="$(printf '%s' "$_pkgjson" \
               | { jq -r '.[].metadata.container.tags[]?' 2>/dev/null || grep -oE '"v?[0-9]+\.[0-9]+\.[0-9]+"' | tr -d '"'; } \
               | sed 's/^v//' | grep -E "^${LINE//./\\.}[0-9]+$" | sort -V | tail -1 || true)"
