@@ -122,7 +122,8 @@ export function AskAI({
   // a concrete id = routing off, unset = follow the org default. A NEW session
   // (unset) opens on the org's server-driven default (`/v1/routing-defaults`) —
   // Auto when the org defaults routing on, else the concrete default model.
-  // Fail-soft: with no org policy known this stays on Auto, exactly as before.
+  // With no org policy known that is DEFAULT_MODEL — a new session opens on
+  // Enso, the rung that picks best, not on the separate `auto` router.
   const [storedModel, setModel] = useLocalStorage<string>("model");
   // A dead id persisted by an older build (e.g. a retired `gpt-*-codex`) is
   // treated as UNSET so we open on smart-routing/default instead of sending an

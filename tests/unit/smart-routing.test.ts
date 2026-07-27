@@ -9,10 +9,12 @@ import { resolveSmartRouting } from "../../lib/providers";
  * server-driven org policy (null = unknown / older cloud-api).
  */
 
-test("fail-soft: no org policy → local preference only, default on", () => {
-  // prior behavior: smart routing was the default when nothing is set
+test("fail-soft: no org policy → local preference only, default OFF", () => {
+  // A fresh session with no org policy opens on DEFAULT_MODEL (Enso), not on
+  // the separate `auto` router — otherwise the stated product default is never
+  // what a new user actually gets.
   assert.deepEqual(resolveSmartRouting(null, null), {
-    enabled: true,
+    enabled: false,
     toggleDisabled: false,
   });
   assert.deepEqual(resolveSmartRouting(true, null), {
