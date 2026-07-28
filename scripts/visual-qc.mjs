@@ -188,14 +188,20 @@ const PROBE = () => {
     }
   }
 
+  // Broken = the browser finished with it and got no pixels. `complete` is the
+  // load-settled flag; without it every below-the-fold lazy image that simply
+  // had not started yet counts as broken (it reported valid 200 PNGs as broken
+  // on three demos before this guard).
   R.brokenImgs = [];
+  R.pendingImgs = 0;
   for (const im of document.images) {
-    if (im.naturalWidth === 0 && (im.currentSrc || im.src)) {
-      const r = im.getBoundingClientRect();
-      if (!r.width && !r.height) continue;           // hidden / lazy placeholder
-      R.brokenImgs.push((im.currentSrc || im.src).slice(0, 160));
-      if (R.brokenImgs.length >= 8) break;
-    }
+    if (!(im.currentSrc || im.src)) continue;
+    if (!im.complete) { R.pendingImgs++; continue; }
+    if (im.naturalWidth > 0) continue;
+    const r = im.getBoundingClientRect();
+    if (!r.width && !r.height) continue;             // hidden placeholder
+    R.brokenImgs.push((im.currentSrc || im.src).slice(0, 160));
+    if (R.brokenImgs.length >= 8) break;
   }
   R.imgCount = document.images.length;
 
