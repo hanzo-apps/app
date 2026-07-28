@@ -5,6 +5,8 @@
  * that happens: a slug that isn't in the catalog at all, and a slug that WAS
  * measured serving scaffolding rather than the template.
  */
+import { readdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { demoCount, demoUrl } from '@/lib/template-demos';
 import { TEMPLATES, getTemplate } from '@/lib/templates-catalog';
 
@@ -40,5 +42,16 @@ describe('template demos', () => {
   it('falls back to a shot or the generated tile when there is no demo', () => {
     for (const t of TEMPLATES) if (!t.demo) expect(t.demo).toBeNull();
     expect(withDemo.length).toBeLessThan(TEMPLATES.length);
+  });
+
+  it('lets [slug] own every catalog slug — no static route shadows a detail page', () => {
+    // A folder at app/templates/<slug>/ wins over [slug], so the catalog's
+    // detail page silently never renders for that slug. app/templates/
+    // saas-landing/ did exactly that: a second in-app copy of a template
+    // already served at saas-landing.hanzo.app, hiding its own detail page.
+    const routes = readdirSync(join(process.cwd(), 'app/templates'), { withFileTypes: true })
+      .filter((e) => e.isDirectory() && e.name !== '[slug]')
+      .map((e) => e.name);
+    expect(routes.filter((r) => getTemplate(r))).toEqual([]);
   });
 });
