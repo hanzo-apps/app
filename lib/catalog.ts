@@ -11,12 +11,32 @@
 
 import { API_BASE } from "@/lib/platform";
 
+/** The four lanes. `/templates` browses one, `/community` the next. */
+export type CatalogOrigin = "template" | "community" | "third-party" | "product";
+
+/** Rail order and wording — our lanes, in our order, not sorted by count. */
+export const ORIGIN_LABELS: Record<CatalogOrigin, string> = {
+  template: "starters",
+  community: "community",
+  "third-party": "third-party",
+  product: "our software",
+};
+
 export type CatalogEntry = {
   id: string;
   org: string;
   name: string;
   title?: string;
   kind: string;
+  /**
+   * What this IS to you, and the axis the lanes are cut on:
+   *   template     our curated starter — the thing you fork FROM
+   *   community    somebody built this (ours carry `official`)
+   *   third-party  somebody else's work, carried only with its credit
+   *   product      our own software
+   * Always present — a row with no lane is the flattening this field ended.
+   */
+  origin: CatalogOrigin;
   archetype?: string;
   language?: string;
   description?: string;
@@ -56,6 +76,10 @@ export type CatalogQuery = {
   kind?: string;
   archetype?: string;
   language?: string;
+  /** The lane: this is what makes /templates and /community two VIEWS, not two catalogs. */
+  origin?: string;
+  /** Lineage: "<parent id>" — everything forked from that one template. */
+  template?: string;
   /** "true" | "false" | "" — the axis has three answers, and "" is unasked. */
   forkable?: string;
   /** Same three answers: "show me only ours" and "show me what is NOT ours". */
@@ -74,6 +98,8 @@ export async function searchCatalog(
   if (query.kind) p.set("kind", query.kind);
   if (query.archetype) p.set("archetype", query.archetype);
   if (query.language) p.set("language", query.language);
+  if (query.origin) p.set("origin", query.origin);
+  if (query.template) p.set("template", query.template);
   // forkable rides the same "set it or leave it out" rule as every other axis;
   // it is a string BECAUSE "false" is a real question ("what can I not fork?"),
   // and a boolean flag could only ever ask half of it.
