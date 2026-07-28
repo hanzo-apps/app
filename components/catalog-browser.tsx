@@ -53,15 +53,15 @@ function Pill({
   );
 }
 
+// Card has TWO destinations, which is why the whole thing is not one <a>: the
+// title takes you to the thing (the demo if it is live, else the repo) and the
+// footer takes you to its SOURCE. A live demo you cannot get from to the code is
+// a screenshot. The title link stretches over the card so the card still reads as
+// one target; the source link sits above it so it wins its own clicks.
 function Card({ e }: { e: CatalogEntry }) {
   const href = e.url || e.repo;
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-      className="group relative flex flex-col gap-2 rounded-2xl border border-border bg-muted p-4 transition-all duration-200 hover:-translate-y-1 hover:border-foreground/30 sm:p-5"
-    >
+    <div className="group relative flex flex-col gap-2 rounded-2xl border border-border bg-muted p-4 transition-all duration-200 hover:-translate-y-1 hover:border-foreground/30 sm:p-5">
       <div className="flex items-center gap-2">
         <span className="rounded-full border border-border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
           {e.org}
@@ -80,7 +80,9 @@ function Card({ e }: { e: CatalogEntry }) {
       </div>
 
       <h3 className="flex items-start gap-1.5 text-[15px] font-medium leading-snug tracking-tight text-foreground">
-        <span className="line-clamp-1">{e.title || e.name}</span>
+        <a href={href} target="_blank" rel="noreferrer" className="after:absolute after:inset-0">
+          <span className="line-clamp-1">{e.title || e.name}</span>
+        </a>
         <ArrowUpRight
           className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground"
           strokeWidth={1.6}
@@ -106,8 +108,21 @@ function Card({ e }: { e: CatalogEntry }) {
           </span>
         )}
         {e.url && e.kind === "site" && <span>live</span>}
+        {/* The trace out of a demo. z-10 puts it above the title's stretched
+            hit area, so clicking "source" goes to the source. */}
+        {e.repo && e.repo !== href && (
+          <a
+            href={e.repo}
+            target="_blank"
+            rel="noreferrer"
+            className="relative z-10 underline-offset-4 hover:text-foreground hover:underline"
+          >
+            source
+          </a>
+        )}
+        {e.template && <span title={`forked from ${e.template}`}>← {e.template}</span>}
       </div>
-    </a>
+    </div>
   );
 }
 
@@ -117,7 +132,7 @@ export function CatalogBrowser() {
   const [kind, setKind] = useState(ALL);
   const [archetype, setArchetype] = useState(ALL);
   const [language, setLanguage] = useState(ALL);
-  const [forkable, setForkable] = useState(false);
+  const [forkable, setForkable] = useState(ALL);
 
   const [rows, setRows] = useState<CatalogEntry[]>([]);
   const [facets, setFacets] = useState<CatalogFacets>({});
@@ -197,11 +212,17 @@ export function CatalogBrowser() {
             onClick={() => setKind(kind === k ? ALL : k)}
           />
         ))}
-        <Pill
-          label="Forkable"
-          active={forkable}
-          onClick={() => setForkable((v) => !v)}
-        />
+        {/* forkable is a rail, not a toggle: the server counts both sides, so
+            "what can I NOT fork" is as clickable as "what can I". */}
+        {buckets(facets, "forkable").map(([f, n]) => (
+          <Pill
+            key={f}
+            label={f === "true" ? "forkable" : "not forkable"}
+            count={n}
+            active={forkable === f}
+            onClick={() => setForkable(forkable === f ? ALL : f)}
+          />
+        ))}
       </div>
 
       <div className="mt-2 flex flex-wrap gap-2">

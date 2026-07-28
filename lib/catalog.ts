@@ -20,8 +20,12 @@ export type CatalogEntry = {
   archetype?: string;
   language?: string;
   description?: string;
+  /** Live, if it is deployed. */
   url?: string;
+  /** Source — the repo this was built from. A demo you cannot read is a screenshot. */
   repo?: string;
+  /** Lineage — "<org>/<slug>" of the parent this was forked from. */
+  template?: string;
   forkable?: boolean;
   stars?: number;
   updated?: string;
@@ -43,7 +47,8 @@ export type CatalogQuery = {
   kind?: string;
   archetype?: string;
   language?: string;
-  forkable?: boolean;
+  /** "true" | "false" | "" — the axis has three answers, and "" is unasked. */
+  forkable?: string;
   limit?: number;
   offset?: number;
 };
@@ -58,7 +63,10 @@ export async function searchCatalog(
   if (query.kind) p.set("kind", query.kind);
   if (query.archetype) p.set("archetype", query.archetype);
   if (query.language) p.set("language", query.language);
-  if (query.forkable) p.set("forkable", "true");
+  // forkable rides the same "set it or leave it out" rule as every other axis;
+  // it is a string BECAUSE "false" is a real question ("what can I not fork?"),
+  // and a boolean flag could only ever ask half of it.
+  if (query.forkable) p.set("forkable", query.forkable);
   p.set("limit", String(query.limit ?? 60));
   if (query.offset) p.set("offset", String(query.offset));
 
