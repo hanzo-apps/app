@@ -84,7 +84,7 @@ export const LoadProject = ({
           <Button
             variant="outline"
             size="sm"
-            className="!h-7 gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-accent max-lg:hidden"
+            className="gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-accent max-lg:hidden"
             onClick={() => setOpenLoginModal(true)}
           >
             <Import className="size-3.5" />
@@ -93,7 +93,7 @@ export const LoadProject = ({
           <Button
             variant="outline"
             size="sm"
-            className="!h-7 gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-accent lg:hidden"
+            className="gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-accent lg:hidden"
             onClick={() => setOpenLoginModal(true)}
           >
             {fullXsBtn && <Import className="size-3.5" />}
@@ -114,7 +114,7 @@ export const LoadProject = ({
               <Button
                 variant="outline"
                 size="sm"
-                className="!h-7 gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-muted max-lg:hidden"
+                className="gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-muted max-lg:hidden"
               >
                 <Import className="size-3.5" />
                 Load
@@ -122,7 +122,7 @@ export const LoadProject = ({
               <Button
                 variant="outline"
                 size="sm"
-                className="!h-7 gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-muted lg:hidden"
+                className="gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-muted lg:hidden"
               >
                 {fullXsBtn && <Import className="size-3.5" />}
                 Load

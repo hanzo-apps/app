@@ -524,9 +524,9 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
             {searchQuery && (
               <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
                 onClick={() => setSearchQuery('')}
-                className="h-5 w-5 p-0"
+                className="p-0"
               >
                 <X className="h-3 w-3" />
               </Button>
@@ -589,9 +589,9 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
             {searchQuery && (
               <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
                 onClick={() => setSearchQuery('')}
-                className="h-5 w-5 p-0"
+                className="p-0"
               >
                 <X className="h-3 w-3" />
               </Button>

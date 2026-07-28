@@ -318,7 +318,7 @@ export function GitSyncButton({
           variant="outline"
           size="sm"
           disabled={disabled}
-          className="!h-7 gap-1.5 px-2.5 text-xs !border-border !bg-foreground/[0.04] !text-foreground transition-colors duration-150 hover:!bg-muted"
+          className="gap-1.5 px-2.5 text-xs !border-border !bg-foreground/[0.04] !text-foreground transition-colors duration-150 hover:!bg-muted"
           title="Push your project to Hanzo git, GitHub, or GitLab"
         >
           <UploadCloud className="size-3.5" />

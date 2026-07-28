@@ -219,10 +219,10 @@ export function ProjectCard({
                         maxLength={50}
                         placeholder="Project name"
                       />
-                      <Button size="icon" variant="ghost" className="h-6 w-6 shrink-0" onClick={saveEdits}>
+                      <Button size="icon" variant="ghost" className="shrink-0" onClick={saveEdits}>
                         <Check className="h-3 w-3" />
                       </Button>
-                      <Button size="icon" variant="ghost" className="h-6 w-6 shrink-0" onClick={cancelEdit}>
+                      <Button size="icon" variant="ghost" className="shrink-0" onClick={cancelEdit}>
                         <X className="h-3 w-3" />
                       </Button>
                     </div>
@@ -252,7 +252,7 @@ export function ProjectCard({
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity"
                       onClick={(e) => {
                         e.stopPropagation();
                         setIsEditing(true);
@@ -320,7 +320,7 @@ export function ProjectCard({
                 onClick={(e) => e.stopPropagation()}
                 data-tour-id={highlightExport ? 'project-actions-trigger' : undefined}
               >
-                <Button size="icon" variant="ghost" className="h-8 w-8">
+                <Button size="icon" variant="ghost">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -435,10 +435,10 @@ export function ProjectCard({
                   autoFocus
                   maxLength={50}
                 />
-                <Button size="icon" variant="ghost" className="h-5 w-5" onClick={saveEdits}>
+                <Button size="icon" variant="ghost" onClick={saveEdits}>
                   <Check className="h-3 w-3" />
                 </Button>
-                <Button size="icon" variant="ghost" className="h-5 w-5" onClick={cancelEdit}>
+                <Button size="icon" variant="ghost" onClick={cancelEdit}>
                   <X className="h-3 w-3" />
                 </Button>
               </div>
@@ -450,7 +450,7 @@ export function ProjectCard({
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="opacity-0 group-hover:opacity-100 transition-opacity"
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsEditing(true);
@@ -467,7 +467,7 @@ export function ProjectCard({
               onClick={(e) => e.stopPropagation()}
               data-tour-id={highlightExport ? 'project-actions-trigger' : undefined}
             >
-              <Button size="icon" variant="ghost" className="h-8 w-8">
+              <Button size="icon" variant="ghost">
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>

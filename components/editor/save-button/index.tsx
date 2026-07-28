@@ -52,7 +52,7 @@ export function SaveButton({
       setLoading(false);
     }
   };
-  // Same treatment as the sibling header actions (Share / Push) — !h-7 text-xs,
+  // Same treatment as the sibling header actions (Share / Push) — text-xs,
   // solid primary — so the whole action cluster reads as one set. Was an oversized
   // `!px-4` button with the long "Publish your Project" label, which made Publish
   // visibly taller/wider than everything beside it.
@@ -61,7 +61,7 @@ export function SaveButton({
       <Button
         variant="default"
         size="sm"
-        className="max-lg:hidden !h-7 gap-1.5 px-2.5 text-xs relative"
+        className="max-lg:hidden gap-1.5 px-2.5 text-xs relative"
         onClick={updateSpace}
         disabled={loading}
       >
@@ -72,7 +72,7 @@ export function SaveButton({
       <Button
         variant="default"
         size="sm"
-        className="lg:hidden !h-7 px-2.5 text-xs relative"
+        className="lg:hidden px-2.5 text-xs relative"
         onClick={updateSpace}
         disabled={loading}
       >

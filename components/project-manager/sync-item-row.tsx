@@ -67,7 +67,7 @@ export function SyncItemRow({
             size="sm"
             onClick={onResolve}
             disabled={disabled || syncing}
-            className="h-7 text-xs"
+            className="text-xs"
           >
             Resolve
           </Button>
@@ -79,7 +79,6 @@ export function SyncItemRow({
                 size="icon"
                 onClick={onPush}
                 disabled={disabled || syncing}
-                className="h-7 w-7"
                 title="Push to server"
               >
                 {syncing ? (
@@ -95,7 +94,6 @@ export function SyncItemRow({
                 size="icon"
                 onClick={onPull}
                 disabled={disabled || syncing}
-                className="h-7 w-7"
                 title="Pull from server"
               >
                 {syncing ? (

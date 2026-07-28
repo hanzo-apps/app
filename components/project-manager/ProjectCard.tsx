@@ -39,7 +39,7 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="ghost" className="h-7 w-7 shrink-0">
+              <Button size="icon" variant="ghost" className="shrink-0">
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -85,7 +85,7 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
           <Button
             size="sm"
             variant="ghost"
-            className="h-7 px-2 text-xs"
+            className="px-2 text-xs"
             onClick={() => router.push(builderLink(project.slug, project.org))}
           >
             <Pencil className="h-3 w-3 mr-1" />

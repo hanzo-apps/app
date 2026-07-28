@@ -172,7 +172,7 @@ export function AppHeader({
                   size={action.size || 'sm'}
                   onClick={action.onClick}
                   disabled={action.disabled}
-                  className="h-8 px-3"
+                  className="px-3"
                   data-tour-id={action.dataTourId}
                 >
                   {action.icon && <action.icon className="h-4 w-4 mr-2" />}
@@ -188,7 +188,7 @@ export function AppHeader({
               variant="ghost"
               size="icon"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="h-8 w-8 md:hidden"
+              className="md:hidden"
             >
               {mobileMenuOpen ? (
                 <ChevronUp className="h-4 w-4" />
@@ -204,7 +204,7 @@ export function AppHeader({
               variant="ghost"
               size="icon"
               onClick={onMobileMenuClick}
-              className="md:hidden h-8 w-8"
+              className="md:hidden"
             >
               <Menu className="h-5 w-5" />
             </Button>

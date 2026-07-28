@@ -95,7 +95,7 @@ export const Uploader = ({
       <form>
         <PopoverTrigger asChild>
           <Button
-            size="iconXs"
+            size="icon"
             variant="ghost"
             aria-label="Add images"
             className="rounded-full text-muted-foreground hover:bg-accent hover:text-foreground"
@@ -248,7 +248,7 @@ export const Uploader = ({
   ) : (
     <>
       <Button
-        size="iconXs"
+        size="icon"
         variant="ghost"
         aria-label="Add images"
         className="rounded-full text-muted-foreground hover:bg-accent hover:text-foreground"

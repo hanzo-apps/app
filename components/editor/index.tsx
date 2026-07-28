@@ -272,7 +272,7 @@ export const AppEditor = ({
           variant="outline"
           size="sm"
           onClick={() => setIsShareModalOpen(true)}
-          className="!h-7 gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-muted"
+          className="gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-muted"
         >
           <Share2 className="size-3.5" />
           <span className="hidden md:inline">Share</span>

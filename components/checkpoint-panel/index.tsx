@@ -79,7 +79,7 @@ export function CheckpointPanel({
           )}
         </div>
         {onClose && (
-          <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={onClose}>
+          <Button variant="ghost" size="icon" className="p-0" onClick={onClose}>
             <X className="h-3.5 w-3.5" />
           </Button>
         )}
@@ -138,7 +138,7 @@ export function CheckpointPanel({
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-5 px-1.5 text-[10px] text-muted-foreground hover:text-foreground"
+                        className="px-1.5 text-[10px] text-muted-foreground hover:text-foreground"
                         onClick={() => onScrollToTurn(cp.id)}
                       >
                         <ArrowRight className="h-3 w-3 mr-0.5" />
@@ -148,7 +148,7 @@ export function CheckpointPanel({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-5 px-1.5 text-[10px] text-muted-foreground hover:text-foreground ml-auto"
+                      className="px-1.5 text-[10px] text-muted-foreground hover:text-foreground ml-auto"
                       onClick={() => onRestore(cp.id, cp.description)}
                     >
                       <RotateCcw className="h-3 w-3 mr-0.5" />

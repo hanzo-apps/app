@@ -303,7 +303,7 @@ function NewProjectInner() {
                 <Button
                   onClick={() => submit()}
                   disabled={loading || !value.trim()}
-                  className="h-9 gap-1.5 rounded-xl px-4"
+                  className="gap-1.5 rounded-xl px-4"
                 >
                   {loading ? (
                     <Loader2 className="h-4 w-4 animate-spin" />

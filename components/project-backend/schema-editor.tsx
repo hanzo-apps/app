@@ -186,7 +186,7 @@ export function SchemaEditor({ projectId, enabled, onSchemaChange }: SchemaEdito
               </div>
               <Button
                 size="sm"
-                className="h-7 px-2 text-xs"
+                className="px-2 text-xs"
                 onClick={applyDDL}
                 disabled={applying || !ddl.trim()}
               >

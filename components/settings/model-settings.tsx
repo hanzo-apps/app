@@ -256,7 +256,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="absolute right-1 top-1 h-7 w-7"
+                  className="absolute right-1 top-1"
                   onClick={() => setShowApiKey(!showApiKey)}
                 >
                   {showApiKey ? (
@@ -316,7 +316,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
               <Button
                 size="icon"
                 variant="ghost"
-                className="absolute right-1 top-1 h-7 w-7"
+                className="absolute right-1 top-1"
                 onClick={() => setShowApiKey(!showApiKey)}
               >
                 {showApiKey ? (

@@ -263,15 +263,15 @@ export function SkillsManager() {
 
               {/* Actions */}
               <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={handleImport} className="h-10 sm:h-9">
+                <Button variant="outline" size="sm" onClick={handleImport}>
                   <Upload className="w-4 h-4 mr-2" />
                   Import
                 </Button>
-                <Button variant="outline" size="sm" onClick={handleExportAll} className="h-10 sm:h-9">
+                <Button variant="outline" size="sm" onClick={handleExportAll}>
                   <Download className="w-4 h-4 mr-2" />
                   Export
                 </Button>
-                <Button onClick={handleCreateNew} size="sm" className="h-10 sm:h-9">
+                <Button onClick={handleCreateNew} size="sm">
                   <Plus className="w-4 h-4 mr-2" />
                   New
                 </Button>

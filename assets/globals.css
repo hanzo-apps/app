@@ -812,30 +812,63 @@ html:not(.dark) .preview-stage {
    control now merges its classes through `cn()`, so a call site that needs one axis
    (`pl-9`, `h-10`) gets it, and no rule has to shout. */
 
-/* ONE radius for EVERY shadcn button — the control radius (10px) — on ALL sizes
-   (default/sm/lg/xs/icon/iconXs/icon-sm/…), beating any stray rounded-md/sm/none a
-   call site hardcoded. This is the fix for "buttons aren't getting the 10px radius":
-   the size-specific rule below only covered default/sm/lg, so every icon/xs button
-   kept shadcn's base rounded-md (6px). Deliberate pills/circles (a button explicitly
-   marked `rounded-full`, e.g. the composer send/stop) keep their full round via the
-   more-specific rule. */
-[data-slot="button"] {
+/* ONE geometry for EVERY shadcn button — the same height, radius and type size the
+   app's own Input and SelectTrigger wear, so a button beside a field lines up.
+   ────────────────────────────────────────────────────────────────────────────
+   Stated positively, because the two things this rule used to name both drifted:
+
+   1. It listed the sizes it covered — `default|sm|lg|xs`. `xs` does not exist in
+      @hanzo/ui 5.9.0 and every `icon*` size was missing, so measured at 1280:
+      icon 36px, icon-sm 32px, icon-lg 40px, against a 30px row. Worse at 390,
+      where --control-h becomes 44px for WCAG 2.5.8: text buttons grew, icon
+      buttons stayed 36/32/40, and the ::after touch target below deliberately
+      skips shadcn buttons — so 71 icon call sites had NO touch compensation at
+      all. A whitelist that has to track a third-party variant table is a second
+      copy of that table, and only one copy was being maintained.
+
+   2. It matched `[data-slot="button"]`. DialogContent renames its close button to
+      `data-slot="dialog-close"`, so the rule missed it and it sat 32px inside a
+      30px dialog. `data-variant` + `data-size` is the pair every @hanzo/ui Button
+      emits and no wrapper renames. `Item` is the one other component carrying
+      both — a list ROW, not a control — so it opts out by name.
+
+   Why a size name can be wrong at all: @hanzo/ui ships no `dist/index.d.ts`, so
+   the package types as `any` and `tsc` cannot see a bad `size`. CVA then looks the
+   name up, finds nothing, and emits no size class — `size="iconXs"` measured
+   18.8px tall, height computed from line-height with no padding. Sixteen call
+   sites had drifted that way. Height is SET here, so an unknown name can no longer
+   silently collapse a control.
+
+   ONE deliberate way out, and it works in both directions: an !important height.
+   The old rule also set `min-height`, which made that escape one-way — it floored
+   every control at the scale, so the ten `!h-7`s on the editor header actions had
+   been rendering 30px, not 28px, since the day they were written (measured, in
+   this rule and the one before it; the old comment claimed they "still win"). A
+   half-working escape is worse than none, because the source then says one height
+   and the screen shows another. Those ten dead `!h-7`s are deleted rather than
+   honoured — 30px is what they have always rendered and what the row wants — and
+   dropping `min-height` lets the three genuine exceptions below actually take
+   effect. Everything that is a control simply takes the scale. */
+[data-variant][data-size]:not([data-slot="item"]) {
   border-radius: var(--control-radius) !important;
-}
-[data-slot="button"].rounded-full {
-  border-radius: 9999px !important;
-}
-/* Rectangular text buttons also share the control height so a button lines up with
-   an adjacent input/select. Icon-only buttons keep their square footprint; a call
-   site's own !important height (e.g. !h-7 / !h-11) still wins. */
-[data-slot="button"][data-size="default"],
-[data-slot="button"][data-size="sm"],
-[data-slot="button"][data-size="lg"],
-[data-slot="button"][data-size="xs"] {
   height: var(--control-h);
-  min-height: var(--control-h);
   font-size: var(--control-fs);
+}
+/* An icon button is SQUARE AT THE CONTROL SIZE — square was never the argument,
+   36-vs-30 was. Width as well as height, because a size name CVA does not know
+   leaves the box to size from its content (`iconXs` measured 40px wide, 18.8 tall
+   — not square in either sense). */
+[data-variant][data-size^="icon"] {
+  width: var(--control-h);
+  padding-inline: 0;
+}
+[data-variant][data-size]:not([data-size^="icon"]):not([data-slot="item"]) {
   padding-inline: 0.75rem;
+}
+/* Deliberate pills/circles (a button explicitly marked `rounded-full`, e.g. the
+   composer send/stop) keep their full round. */
+[data-variant][data-size].rounded-full {
+  border-radius: 9999px !important;
 }
 /* Raw <button> elements (not the shadcn Button) normalize to the control radius so
    no custom button is a sharp rectangle. This covers bare buttons AND ones that

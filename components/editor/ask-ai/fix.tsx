@@ -19,7 +19,7 @@ export function Fix({
     <Tooltip>
       <TooltipTrigger asChild>
         <Button
-          size="iconXs"
+          size="icon"
           variant={active ? "default" : "ghost"}
           onClick={onToggle}
           aria-pressed={active}
