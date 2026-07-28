@@ -11,6 +11,7 @@ import { AppShell } from "@/components/app-shell";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { configManager } from "@/lib/config/storage";
 import { useModels } from "@/lib/hooks/use-models";
+import { usePlan, unpaid } from "@/lib/billing/entitlements";
 
 export default function SettingsPage() {
   // All hooks must be called unconditionally before any conditional returns
@@ -21,6 +22,7 @@ export default function SettingsPage() {
   // directly — same source the in-app settings panel + sonner read.
   const { theme, setTheme } = useTheme();
   const { models } = useModels();
+  const plan = usePlan();
   const [mounted, setMounted] = useState(false);
   const [defaultModel, setDefaultModelState] = useState("");
   const [notifs, setNotifs] = useState<Record<string, boolean>>({});
@@ -248,10 +250,27 @@ export default function SettingsPage() {
                 <div className="space-y-6">
                   <h2 className="text-xl font-medium text-foreground mb-4">Billing & Usage</h2>
 
+                  {/* The plan is READ, never assumed. This panel used to hardcode
+                      "Current Plan: Free" and "0 / 100 AI generations used this
+                      month" — two assertions about a customer's account that
+                      nothing had ever asked commerce about, shown identically to
+                      someone paying us every month. A number nobody measured is
+                      worse than no number, so the generations line is gone rather
+                      than replaced with another guess; usage lives on /billing,
+                      which actually reads it. */}
                   <div className="bg-muted border border-border rounded-lg p-4">
-                    <p className="text-sm text-foreground mb-2">Current Plan: Free</p>
-                    <p className="text-xs text-muted-foreground mb-4">0 / 100 AI generations used this month</p>
-                    <Button className="w-full">Upgrade to Pro</Button>
+                    <p className="text-sm text-foreground mb-2">
+                      {plan.phase === "loading"
+                        ? "Current Plan: …"
+                        : plan.phase === "unknown"
+                          ? "Current Plan: unavailable"
+                          : `Current Plan: ${plan.tier || "Free"}`}
+                    </p>
+                    {unpaid(plan) && (
+                      <Button className="w-full" onClick={() => router.push("/billing")}>
+                        Upgrade to Pro
+                      </Button>
+                    )}
                   </div>
 
                   <div className="space-y-2">
