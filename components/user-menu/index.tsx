@@ -6,6 +6,7 @@ import {
   Settings,
   Home,
   MessageCircle,
+  Search,
   Sparkles,
   User,
   DollarSign,
@@ -100,6 +101,13 @@ export const UserMenu = ({ className }: { className?: string }) => {
             <DropdownMenuItem>
               <Sparkles className="size-4 text-muted-foreground" />
               Gallery
+            </DropdownMenuItem>
+          </Link>
+          {/* Everything the fleet has built, across every org — /v1/catalog. */}
+          <Link href="/catalog">
+            <DropdownMenuItem>
+              <Search className="size-4 text-muted-foreground" />
+              Catalog
             </DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>
