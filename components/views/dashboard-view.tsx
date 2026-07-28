@@ -22,7 +22,7 @@ import { vfs } from '@/lib/vfs';
 import { templateService } from '@/lib/vfs/template-service';
 import { skillsService } from '@/lib/vfs/skills';
 import { fetchProjects, type Project as CloudProject } from '@/lib/api/projects';
-import pkg from '@/package.json';
+import { VERSION } from '@/lib/version';
 
 const isServerMode = process.env.NEXT_PUBLIC_SERVER_MODE === 'true';
 
@@ -462,7 +462,7 @@ function BrowserOverview({
   onRefresh: () => void;
 }) {
   const stats = [
-    { label: 'Version', value: `v${pkg.version}` },
+    { label: 'Version', value: `v${VERSION}` },
     { label: 'Projects', value: formatNumber(data.content.projects) },
     { label: 'Templates', value: formatNumber(data.content.templates) },
     { label: 'Skills', value: formatNumber(data.content.skills) },

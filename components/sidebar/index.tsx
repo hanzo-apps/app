@@ -46,7 +46,7 @@ import { useUser } from '@/hooks/useUser';
 import { builderLink } from '@/lib/api/projects';
 import { useFolders } from '@/hooks/useFolders';
 import { markProjectOpened, orderByRecentlyOpened } from '@/lib/recent-projects';
-import pkg from '@/package.json';
+import { VERSION } from '@/lib/version';
 
 // Collapsed sidebar width (icon-only rail). Kept exported for callers that lay
 // out around the sidebar; the width itself is applied via a Tailwind class now.
@@ -330,7 +330,7 @@ function SidebarContent({
                 <span className="flex min-w-0 flex-col text-left">
                   <span className="truncate text-sm font-medium leading-none">Hanzo&nbsp;App</span>
                   <span className="mt-0.5 text-[10px] leading-[10px] text-muted-foreground">
-                    {isServerMode ? `Server · v${pkg.version}` : `v${pkg.version}`}
+                    {isServerMode ? `Server · v${VERSION}` : `v${VERSION}`}
                   </span>
                 </span>
               </button>

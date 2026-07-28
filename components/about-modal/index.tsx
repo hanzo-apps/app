@@ -1,10 +1,7 @@
 'use client';
 
 import React from 'react';
-// Use package.json version as fallback when env var is not provided
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore - JSON import for version string
-import pkg from '../../package.json';
+import { VERSION } from '@/lib/version';
 import {
   Dialog,
   DialogContent,
@@ -105,7 +102,7 @@ export function AboutModal({ open, onOpenChange }: AboutModalProps) {
 
         <div className="flex justify-between items-center pt-4 border-t">
           <Badge variant="secondary" className="text-xs">
-            v{process.env.NEXT_PUBLIC_APP_VERSION || pkg.version}
+            v{VERSION}
           </Badge>
           <Button onClick={() => onOpenChange(false)}>
             Close

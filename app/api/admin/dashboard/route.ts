@@ -13,18 +13,7 @@ import { getCoreDatabase } from '@/lib/vfs/adapters/sqlite-connection';
 import { getRequestStats, cleanupOldLogs } from '@/lib/logging/request-logger';
 import { promises as fs } from 'fs';
 import path from 'path';
-
-// Read version from package.json
-async function getVersion(): Promise<string> {
-  try {
-    const packagePath = path.join(process.cwd(), 'package.json');
-    const content = await fs.readFile(packagePath, 'utf-8');
-    const pkg = JSON.parse(content);
-    return pkg.version || 'unknown';
-  } catch {
-    return 'unknown';
-  }
-}
+import { VERSION } from '@/lib/version';
 
 // Parse What's New from docs/WHATS_NEW.md
 interface WhatsNewData {
@@ -168,7 +157,7 @@ export async function GET(request: NextRequest) {
       trafficStats,
       whatsNew,
     ] = await Promise.all([
-      getVersion(),
+      Promise.resolve(VERSION),
       Promise.resolve((db.prepare('SELECT COUNT(*) as count FROM projects').get() as { count: number }).count),
       Promise.resolve((db.prepare('SELECT COUNT(*) as count FROM custom_templates').get() as { count: number }).count),
       Promise.resolve((db.prepare('SELECT COUNT(*) as count FROM skills').get() as { count: number }).count),
