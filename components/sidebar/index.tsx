@@ -5,6 +5,7 @@ import { Project } from '@/lib/vfs/types';
 import { getSyncOverviewStatus, SyncOverviewStatus } from '@/lib/vfs/auto-sync';
 import { Button } from '@hanzo/ui';
 import { HanzoLogo } from '@/components/HanzoLogo';
+import { usePlan, unpaid } from '@/lib/billing/entitlements';
 import {
   Activity,
   FolderOpen,
@@ -671,8 +672,18 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
   );
 }
 
-/** Upgrade card → billing. */
+/**
+ * Upgrade card → billing. Renders ONLY for a caller we know pays for nothing.
+ *
+ * It used to render unconditionally, so a customer on a paid plan was told to
+ * upgrade to the thing they had already bought. `unpaid` is false while the plan
+ * is loading AND when the read failed, because neither is evidence of a free
+ * account — an upgrade offer is a claim about someone's billing, and a UI that
+ * makes that claim has to have asked.
+ */
 function UpgradeCard({ onClick }: { onClick: () => void }) {
+  const plan = usePlan();
+  if (!unpaid(plan)) return null;
   return (
     <button
       onClick={onClick}
