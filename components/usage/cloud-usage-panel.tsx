@@ -30,7 +30,7 @@ import { useIamToken } from '@hanzo/iam/react'
 import guiConfig from '@/lib/gui.config'
 
 // get-cloud-usages + ai/connections live on the cloud API (api.hanzo.ai), not this origin.
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.hanzo.ai'
+import { API_BASE } from '@/lib/platform'
 
 // The providers a customer can connect to import third-party usage (backend allow-list).
 const CONNECTED_PROVIDERS = ['openai', 'anthropic', 'google'] as const
