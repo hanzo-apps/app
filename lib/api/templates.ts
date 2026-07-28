@@ -1,6 +1,8 @@
 /**
  * Cloud templates client — the ONE client for the read-only Hanzo starter-kit
- * gallery (the real hanzoai/gallery catalog, ~69 templates).
+ * gallery (the real hanzoai/gallery catalog). ONE entry per template: the
+ * format/page/theme shapes it ships in are `variants` inside the entry, not
+ * sibling cards.
  *
  * Talks to the SAME-ORIGIN `/v1/templates` BFF (app/v1/templates/[[...path]]),
  * which forwards to the cloud `/v1/templates` catalog. This surface is PUBLIC
@@ -30,6 +32,20 @@ export interface GalleryTemplate {
   preview: string;
   rating?: number;
   tier?: number;
+  /** Live demo (<slug>.hanzo.app), when one is deployed. */
+  demo?: string;
+  /** The shapes this template ships in — format/page/theme, picked at fork time. */
+  variants?: GalleryVariant[];
+}
+
+/** One shape of a template (cloud clients/templates.Variant). */
+export interface GalleryVariant {
+  id: string;
+  label: string;
+  /** The axis it varies: format | page | theme. */
+  kind: string;
+  framework?: string;
+  source: string;
 }
 
 export interface GalleryResult {
@@ -148,7 +164,22 @@ export function normalizeTemplate(raw: unknown): GalleryTemplate | null {
     preview: str(r.preview),
     rating: num(r.rating),
     tier: num(r.tier),
+    demo: str(r.demo),
+    variants: normalizeVariants(r.variants),
   };
+}
+
+/** Coerce a template's variants; drop any that could not be selected. */
+function normalizeVariants(v: unknown): GalleryVariant[] {
+  if (!Array.isArray(v)) return [];
+  return v.flatMap((raw) => {
+    const x = (raw ?? {}) as Record<string, unknown>;
+    const id = str(x.id).trim();
+    const source = str(x.source).trim();
+    return id && source
+      ? [{ id, label: str(x.label) || id, kind: str(x.kind), framework: str(x.framework), source }]
+      : [];
+  });
 }
 
 // --- API ---

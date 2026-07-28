@@ -455,7 +455,14 @@ function NewProjectInner() {
                       <div className="min-w-0 flex-1">
                         <div className="truncate text-sm font-medium text-foreground">{t.title}</div>
                         <div className="truncate text-xs text-muted-foreground">
-                          {[t.framework, t.category].filter(Boolean).join(" · ") || "Starter"}
+                          {[
+                            t.framework,
+                            t.category,
+                            // One card = one template; say how many shapes it ships in.
+                            t.variants?.length ? `${t.variants.length} variants` : "",
+                          ]
+                            .filter(Boolean)
+                            .join(" · ") || "Starter"}
                         </div>
                       </div>
                       <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground" />
