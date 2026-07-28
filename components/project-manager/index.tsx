@@ -530,7 +530,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
   }
 
   return (
-    <div className="flex flex-col h-[100dvh]" style={{ background: `linear-gradient(var(--project-background-tint), var(--project-background-tint)), var(--background)` }}>
+    <div className="flex flex-col h-[100dvh]" style={{ background: `linear-gradient(rgb(var(--tint) / 0.015), rgb(var(--tint) / 0.015)), var(--background)` }}>
       {/* Main Content */}
       <main className="flex-1 min-h-0 overflow-auto">
         <div className="h-full flex flex-col">

@@ -221,7 +221,7 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
         <div className="flex items-center gap-2">
           <Code2
             className="h-4 w-4 md:hidden"
-            style={{ color: 'var(--button-editor-active)' }}
+            style={{ color: 'var(--brand-accent)' }}
           />
           {onClose ? (
             <button
@@ -232,14 +232,14 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
             >
               <Code2
                 className="h-4 w-4 transition-opacity group-hover:opacity-0"
-                style={{ color: 'var(--button-editor-active)' }}
+                style={{ color: 'var(--brand-accent)' }}
               />
               <X className="absolute h-3 w-3 opacity-0 transition-opacity group-hover:opacity-100" />
             </button>
           ) : (
             <Code2
               className="hidden h-4 w-4 md:inline-flex"
-              style={{ color: 'var(--button-editor-active)' }}
+              style={{ color: 'var(--brand-accent)' }}
             />
           )}
           <h3 className="text-sm font-medium">Code Editor</h3>

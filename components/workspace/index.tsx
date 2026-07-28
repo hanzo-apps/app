@@ -1268,7 +1268,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                       : 'bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground'
                   }`}
                   style={{
-                    backgroundColor: showChat ? 'var(--button-assistant-active)' : undefined,
+                    backgroundColor: showChat ? 'var(--brand-accent)' : undefined,
                     color: showChat ? 'white' : undefined
                   }}
                   onClick={() => setShowChat(!showChat)}
@@ -1290,7 +1290,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                       : 'bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground'
                   }`}
                   style={{
-                    backgroundColor: showFiles ? 'var(--button-files-active)' : undefined,
+                    backgroundColor: showFiles ? 'var(--brand-accent)' : undefined,
                     color: showFiles ? 'white' : undefined
                   }}
                   onClick={() => setShowFiles(!showFiles)}
@@ -1312,7 +1312,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                       : 'bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground'
                   }`}
                   style={{
-                    backgroundColor: showEditor ? 'var(--button-editor-active)' : undefined,
+                    backgroundColor: showEditor ? 'var(--brand-accent)' : undefined,
                     color: showEditor ? 'white' : undefined
                   }}
                   onClick={() => setShowEditor(!showEditor)}
@@ -1334,7 +1334,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                       : 'bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground'
                   }`}
                   style={{
-                    backgroundColor: showPreview ? 'var(--button-preview-active)' : undefined,
+                    backgroundColor: showPreview ? 'var(--brand-accent)' : undefined,
                     color: showPreview ? 'white' : undefined
                   }}
                   onClick={() => setShowPreview(!showPreview)}
@@ -1356,7 +1356,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                       : 'bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground'
                   }`}
                   style={{
-                    backgroundColor: showCheckpoints ? 'var(--button-checkpoint-active)' : undefined,
+                    backgroundColor: showCheckpoints ? 'var(--brand-accent)' : undefined,
                     color: showCheckpoints ? 'white' : undefined
                   }}
                   onClick={() => setShowCheckpoints(!showCheckpoints)}
@@ -1440,7 +1440,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                 defaultSize={defaultSizes.files}
                 minSize={14}
               >
-                <div className="h-full border border-border rounded-lg shadow-sm overflow-hidden relative" style={{ background: `linear-gradient(0deg, rgba(var(--panel-files-rgb), 0.01), rgba(var(--panel-files-rgb), 0.01)), var(--card)`, minWidth: '240px' }}>
+                <div className="h-full border border-border rounded-lg shadow-sm overflow-hidden relative" style={{ background: `linear-gradient(0deg, rgb(var(--tint) / 0.01), rgb(var(--tint) / 0.01)), var(--card)`, minWidth: '240px' }}>
                       <FileExplorer
                         projectId={project.id}
                         onFileSelect={handleFileSelect}
@@ -1464,7 +1464,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                 defaultSize={defaultSizes.editor}
                 minSize={20}
               >
-                <div className="h-full border border-border rounded-lg shadow-sm overflow-hidden relative" style={{ background: `linear-gradient(0deg, rgba(var(--panel-editor-rgb), 0.01), rgba(var(--panel-editor-rgb), 0.01)), var(--card)`, minWidth: '240px' }}>
+                <div className="h-full border border-border rounded-lg shadow-sm overflow-hidden relative" style={{ background: `linear-gradient(0deg, rgb(var(--tint) / 0.01), rgb(var(--tint) / 0.01)), var(--card)`, minWidth: '240px' }}>
                       <MultiTabEditor
                         projectId={project.id}
                         runtime={project.settings?.runtime}
@@ -1486,7 +1486,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                 defaultSize={defaultSizes.preview}
                 minSize={20}
               >
-                <div className="h-full border border-border rounded-lg shadow-sm overflow-hidden relative" style={{ background: `linear-gradient(0deg, rgba(var(--panel-preview-rgb), 0.01), rgba(var(--panel-preview-rgb), 0.01)), var(--card)`, minWidth: '240px' }}>
+                <div className="h-full border border-border rounded-lg shadow-sm overflow-hidden relative" style={{ background: `linear-gradient(0deg, rgb(var(--tint) / 0.01), rgb(var(--tint) / 0.01)), var(--card)`, minWidth: '240px' }}>
                       <MultipagePreview
                         ref={previewRef}
                         projectId={project.id}
@@ -1573,7 +1573,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
             )}
 
             {activeMobilePanel === 'files' && (
-              <div className="h-full border border-border rounded-lg shadow-sm overflow-hidden relative" style={{ background: `linear-gradient(0deg, rgba(var(--panel-files-rgb), 0.01), rgba(var(--panel-files-rgb), 0.01)), var(--card)` }}>
+              <div className="h-full border border-border rounded-lg shadow-sm overflow-hidden relative" style={{ background: `linear-gradient(0deg, rgb(var(--tint) / 0.01), rgb(var(--tint) / 0.01)), var(--card)` }}>
                 <FileExplorer
                   projectId={project.id}
                   onFileSelect={handleFileSelect}
@@ -1586,7 +1586,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
             )}
 
             {activeMobilePanel === 'editor' && (
-              <div className="h-full border border-border rounded-lg shadow-sm overflow-hidden relative" style={{ background: `linear-gradient(0deg, rgba(var(--panel-editor-rgb), 0.01), rgba(var(--panel-editor-rgb), 0.01)), var(--card)` }}>
+              <div className="h-full border border-border rounded-lg shadow-sm overflow-hidden relative" style={{ background: `linear-gradient(0deg, rgb(var(--tint) / 0.01), rgb(var(--tint) / 0.01)), var(--card)` }}>
                 <MultiTabEditor
                   projectId={project.id}
                   runtime={project.settings?.runtime}
@@ -1597,7 +1597,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
             )}
 
             {activeMobilePanel === 'preview' && (
-              <div className="h-full border border-border rounded-lg shadow-sm overflow-hidden relative" style={{ background: `linear-gradient(0deg, rgba(var(--panel-preview-rgb), 0.01), rgba(var(--panel-preview-rgb), 0.01)), var(--card)` }}>
+              <div className="h-full border border-border rounded-lg shadow-sm overflow-hidden relative" style={{ background: `linear-gradient(0deg, rgb(var(--tint) / 0.01), rgb(var(--tint) / 0.01)), var(--card)` }}>
                 <MultipagePreview
                   ref={previewRef}
                   projectId={project.id}
@@ -1624,7 +1624,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                     : 'bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground'
                 }`}
                 style={{
-                  backgroundColor: activeMobilePanel === 'chat' ? 'var(--button-assistant-active)' : undefined,
+                  backgroundColor: activeMobilePanel === 'chat' ? 'var(--brand-accent)' : undefined,
                 }}
                 onClick={() => setActiveMobilePanel('chat')}
               >
@@ -1638,7 +1638,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                     : 'bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground'
                 }`}
                 style={{
-                  backgroundColor: activeMobilePanel === 'files' ? 'var(--button-files-active)' : undefined,
+                  backgroundColor: activeMobilePanel === 'files' ? 'var(--brand-accent)' : undefined,
                 }}
                 onClick={() => setActiveMobilePanel('files')}
               >
@@ -1652,7 +1652,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                     : 'bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground'
                 }`}
                 style={{
-                  backgroundColor: activeMobilePanel === 'editor' ? 'var(--button-editor-active)' : undefined,
+                  backgroundColor: activeMobilePanel === 'editor' ? 'var(--brand-accent)' : undefined,
                 }}
                 onClick={() => setActiveMobilePanel('editor')}
               >
@@ -1666,7 +1666,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                     : 'bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground'
                 }`}
                 style={{
-                  backgroundColor: activeMobilePanel === 'preview' ? 'var(--button-preview-active)' : undefined,
+                  backgroundColor: activeMobilePanel === 'preview' ? 'var(--brand-accent)' : undefined,
                 }}
                 onClick={() => setActiveMobilePanel('preview')}
               >

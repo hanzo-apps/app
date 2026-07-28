@@ -60,7 +60,7 @@ export function CheckpointPanel({
     <div
       className="h-full border border-border rounded-lg shadow-sm overflow-hidden flex flex-col"
       style={{
-        background: `linear-gradient(0deg, rgba(var(--panel-checkpoint-rgb), 0.01), rgba(var(--panel-checkpoint-rgb), 0.01)), var(--card)`,
+        background: `linear-gradient(0deg, rgb(var(--tint) / 0.01), rgb(var(--tint) / 0.01)), var(--card)`,
         minWidth: '240px'
       }}
     >
@@ -68,11 +68,11 @@ export function CheckpointPanel({
       <div
         className="flex items-center justify-between px-3 py-2 border-b border-border shrink-0"
         style={{
-          background: `linear-gradient(0deg, rgba(var(--panel-checkpoint-rgb), 0.03), rgba(var(--panel-checkpoint-rgb), 0.05))`
+          background: `linear-gradient(0deg, rgb(var(--tint) / 0.03), rgb(var(--tint) / 0.05))`
         }}
       >
         <div className="flex items-center gap-2">
-          <History className="h-3.5 w-3.5" style={{ color: 'var(--button-checkpoint-active)' }} />
+          <History className="h-3.5 w-3.5" style={{ color: 'var(--brand-accent)' }} />
           <span className="text-xs font-medium">Checkpoints</span>
           {checkpoints.length > 0 && (
             <span className="text-[10px] text-muted-foreground">({checkpoints.length})</span>

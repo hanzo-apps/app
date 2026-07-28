@@ -655,7 +655,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
         <div className="flex items-center gap-2">
           <FolderTree 
             className="h-4 w-4 md:hidden" 
-            style={{ color: 'var(--button-files-active)' }} 
+            style={{ color: 'var(--brand-accent)' }} 
           />
           {onClose ? (
             <button
@@ -666,14 +666,14 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
             >
               <FolderTree 
                 className="h-4 w-4 transition-opacity group-hover:opacity-0" 
-                style={{ color: 'var(--button-files-active)' }} 
+                style={{ color: 'var(--brand-accent)' }} 
               />
               <X className="absolute h-3 w-3 opacity-0 transition-opacity group-hover:opacity-100" />
             </button>
           ) : (
             <FolderTree 
               className="hidden h-4 w-4 md:inline-flex" 
-              style={{ color: 'var(--button-files-active)' }} 
+              style={{ color: 'var(--brand-accent)' }} 
             />
           )}
           <h3 className="text-sm font-medium">File Explorer</h3>

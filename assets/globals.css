@@ -429,6 +429,38 @@
   --brand-accent-muted: var(--hanzo-accent-muted, #a78bfa);
   --brand-accent-soft: var(--hanzo-accent-soft, rgba(139, 92, 246, 0.12));
   --brand-accent-fg: #ffffff;
+  /* The lift — the one neutral a raised surface is tinted with.
+     ────────────────────────────────────────────────────────────
+     Bare channels, so the call site owns the alpha: `rgb(var(--tint) / .01)`
+     for a panel, `/ .05` for its header. It inverts with the ground (a lift on
+     black, a shade on white) in `.dark` below, so a panel reads as raised in
+     both themes from ONE name.
+
+     It replaces eleven names — `--panel-{editor,files,preview,checkpoint}-rgb`,
+     `--project-{card,background}-tint` and five `--button-*-active` — that were
+     referenced from the initial commit and declared NOWHERE, in either theme.
+     Not a cosmetic miss: an unresolved var() is invalid at computed-value time,
+     so the property drops to its initial value AND takes the rest of its
+     declaration with it. Measured in a browser against live hanzo.app:
+
+       background: linear-gradient(var(--project-card-tint), …), var(--card)
+         → background-image: none · background-color: rgba(0, 0, 0, 0)
+
+     The card lost the `var(--card)` fill sitting in the same declaration — it
+     did not fall back to it. Every workspace panel and every project card
+     painted transparent; every active toolbar button painted no active state at
+     all. Nothing errored and nothing logged, which is why it survived from the
+     initial commit through every review since: the reference is a string built
+     at runtime, so neither `tsc` nor grep for a token name can see it.
+
+     Eleven names, two values. The four panel triples were one neutral and the
+     five button names were one accent, so they are now one neutral and
+     `--brand-accent` — which already reads `--hanzo-accent` from @hanzo/brand
+     and therefore follows the host with no change at any call site. Five
+     per-panel hues would have meant five brand values invented in the consumer,
+     which is how one question ends up with three answers on three surfaces.
+     `tests/unit/token-resolution.test.ts` fails if a name goes undeclared again. */
+  --tint: 0 0 0;
   /* Radius scale (v2): card 8 / control 10 / panel·preview 12. */
   --radius-card: 0.5rem;      /* 8px */
   --radius-control: 0.625rem; /* 10px */
@@ -521,6 +553,9 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: rgba(255, 255, 255, 0.06);
   --sidebar-ring: var(--brand-accent);
+  /* The lift inverts with the ground: white on black, black on white. The accent
+     does not — it is one value in both themes, set once in :root. */
+  --tint: 255 255 255;
 }
 
 /* Post-Phase-3 (GuiThemeBridge): Tamagui's root theme now FOLLOWS next-themes

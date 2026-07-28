@@ -84,8 +84,8 @@ importers:
         specifier: 7.3.0
         version: 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native-web@0.21.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzo/iam':
-        specifier: ^0.21.0
-        version: 0.21.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: ^0.21.1
+        version: 0.21.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@hanzo/logo':
         specifier: ^1.0.13
         version: 1.0.13(react@19.2.4)
@@ -109,7 +109,7 @@ importers:
         version: 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/shell':
         specifier: ^7.6.3
-        version: 7.6.3(@hanzo/iam@0.21.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 7.6.3(@hanzo/iam@0.21.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@huggingface/hub':
         specifier: ^2.11.0
         version: 2.11.0
@@ -1282,8 +1282,8 @@ packages:
       react: '>=19'
       react-native: '*'
 
-  '@hanzo/iam@0.21.0':
-    resolution: {integrity: sha512-VvnPXQqvyQQ0rwraaMUIRrc8N2eXMtUsXsT3hltstYmghv7F/03sfmus/lWvkShiVYHWzHkh8B/vno8VphgnTg==}
+  '@hanzo/iam@0.21.1':
+    resolution: {integrity: sha512-mjdC67CeShO0wp/HzbPOPg/K3TYOhaWJg+begWv67RpzBcYBicZRglSvfA+jD/tIuPMAiBTVGPs+P18S94Xy1g==}
     engines: {node: '>=18'}
     peerDependencies:
       react: '>=17'
@@ -11149,7 +11149,7 @@ snapshots:
       - sf-symbols-typescript
       - zeego
 
-  '@hanzo/iam@0.21.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@hanzo/iam@0.21.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       jose: 6.2.4
       libphonenumber-js: 1.13.7
@@ -12798,9 +12798,9 @@ snapshots:
       - sf-symbols-typescript
       - zeego
 
-  '@hanzogui/shell@7.6.3(@hanzo/iam@0.21.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@hanzogui/shell@7.6.3(@hanzo/iam@0.21.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
-      '@hanzo/iam': 0.21.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@hanzo/iam': 0.21.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
 
