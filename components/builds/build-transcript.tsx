@@ -20,6 +20,7 @@ import Link from "next/link";
 import { ChevronRight, GitCommit, ArrowUpRight, Terminal, User, Bot } from "lucide-react";
 import Header from "@/components/layout/header";
 import SiteFooter from "@/components/landing/site-footer";
+import { MarkdownRenderer } from "@/components/markdown-renderer";
 
 export type BuildTurn = {
   turn: number;
@@ -48,15 +49,15 @@ export type Build = {
 
 const EYEBROW = "font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground";
 
-// A turn's body can be long; the page shows it whole rather than truncating,
-// because an elided transcript is the thing this feature exists to replace.
-// `whitespace-pre-wrap` keeps the agent's own line breaks.
+// A turn's body is MARKDOWN — the agent writes it, so it arrives with headings,
+// emphasis, code fences and lists. It goes through the app's one renderer at its
+// compact density, the same treatment the builder's own chat thread uses, rather
+// than a <p> that would show literal `**` and backticks to the reader.
+//
+// Shown whole, never truncated: an elided transcript is the thing this feature
+// exists to replace.
 function TurnBody({ text }: { text: string }) {
-  return (
-    <p className="whitespace-pre-wrap text-pretty text-sm leading-relaxed text-muted-foreground">
-      {text}
-    </p>
-  );
+  return <MarkdownRenderer content={text} compact className="text-muted-foreground" />;
 }
 
 // forkCommand is the real, runnable way to leave from this turn. It is built
