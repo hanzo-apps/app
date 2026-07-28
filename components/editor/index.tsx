@@ -402,7 +402,13 @@ export const AppEditor = ({
             currentTab === "chat" ? "hidden lg:block" : "block"
           )}
         >
-          <div className="preview-stage relative h-full w-full overflow-hidden rounded-xl border border-border bg-background shadow-xl shadow-black/30 ring-1 ring-border">
+          {/* ONE edge. This carried `border border-border` AND `ring-1
+              ring-border` — a Tailwind ring is a box-shadow drawn OUTSIDE the
+              border box, so two 1px lines in the same colour abutted and read as
+              a single 2px rule. The ring is the redundant one and removing it is
+              layout-neutral (a shadow occupies no space), so the frame keeps its
+              exact geometry and loses the doubled weight. */}
+          <div className="preview-stage relative h-full w-full overflow-hidden rounded-xl border border-border bg-background shadow-xl shadow-black/30">
             {/* Faint top highlight — a crisp edge that reads as raised glass. */}
             <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-px bg-gradient-to-r from-transparent via-foreground/10 to-transparent" />
             <Preview

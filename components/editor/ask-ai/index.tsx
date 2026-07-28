@@ -870,11 +870,29 @@ export function AskAI({
 
   return (
     // The chat pane is a flex column: the thread scrolls at the top and the
-    // composer is pinned at the bottom. With an empty thread (ChatThread returns
-    // null) the composer's `mt-auto` keeps it docked exactly as before.
-    <div ref={rootRef} className="mx-auto flex h-full min-h-0 w-full max-w-2xl flex-col">
+    // composer is pinned at the bottom.
+    //
+    // With an EMPTY thread ChatThread returns null, so the column has one child
+    // and `mt-auto` docked it to the bottom of the full pane height — leaving a
+    // tall band of nothing above it that reads as broken layout rather than as
+    // an empty state. The composer centres instead, which is what every chat
+    // surface does on a new thread, and `mt-auto` is dropped in that case
+    // because it would fight `justify-center`. Once a first message exists the
+    // thread takes flex-1 and the composer docks exactly as before.
+    <div
+      ref={rootRef}
+      className={classNames(
+        "mx-auto flex h-full min-h-0 w-full max-w-2xl flex-col",
+        messages.length === 0 && "justify-center"
+      )}
+    >
       <ChatThread messages={messages} className="min-h-0 flex-1" />
-      <div className="mt-auto px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+      <div
+        className={classNames(
+          "px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]",
+          messages.length > 0 && "mt-auto"
+        )}
+      >
       {/* Stacked Message Queue Cards */}
       {messageQueue.length > 0 && (
         <div className="mb-4 space-y-2">
