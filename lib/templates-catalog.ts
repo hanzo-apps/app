@@ -17,6 +17,7 @@
 // detail pages) import TEMPLATES / CATEGORIES / the helpers below.
 
 import { TEMPLATE_SHOTS } from "./template-shots";
+import { demoUrl } from "./template-demos";
 
 // ---------------------------------------------------------------------------
 // Taxonomy
@@ -246,7 +247,12 @@ export interface TemplateEntry {
    * (github.com/hanzo-apps/<slug>); for 'repo' starters the clone URL (….git).
    */
   repo: string;
-  /** Live preview page for the template. */
+  /**
+   * The template running live at `https://<slug>.hanzo.app`, or null when it has
+   * no verified demo (lib/template-demos). Drives the detail page's live preview.
+   */
+  demo: string | null;
+  /** Where "Preview" goes — the live demo when there is one, else the source repo. */
   previewUrl: string;
   /** The established fork wire the whole app uses. */
   fork: string;
@@ -259,22 +265,30 @@ export interface TemplateEntry {
 }
 
 /**
- * Authoring shape — mechanical fields (previewUrl/fork/hasShot) are derived.
+ * Authoring shape — mechanical fields (demo/previewUrl/fork/hasShot) are derived.
  * `repo` is derived for 'page' templates but may be supplied as the clone URL
  * for 'repo' starters.
  */
-type RawEntry = Omit<TemplateEntry, "previewUrl" | "fork" | "hasShot" | "repo"> & {
+type RawEntry = Omit<
+  TemplateEntry,
+  "demo" | "previewUrl" | "fork" | "hasShot" | "repo"
+> & {
   repo?: string;
 };
 
 function entry(raw: RawEntry): TemplateEntry {
   const kind = raw.kind ?? "page";
   const repo = raw.repo ?? `https://github.com/hanzo-apps/${raw.slug}`;
+  const demo = demoUrl(raw.slug);
   return {
     ...raw,
     kind,
     repo,
-    previewUrl: `https://gallery.hanzo.ai/templates/${raw.slug}`,
+    demo,
+    // gallery.hanzo.ai/templates/<slug> 404s for every slug in this catalog, so
+    // "Preview" pointed at nothing on all 105 detail pages. Send it to the live
+    // demo when one exists, else to the source the template is forked from.
+    previewUrl: demo ?? repo,
     fork:
       kind === "repo"
         ? `/dev?repo=${repo}&action=edit`

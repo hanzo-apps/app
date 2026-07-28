@@ -1,47 +1,53 @@
 'use client';
 
 /**
- * ProjectThumb — the ONE honest project thumbnail.
+ * ProjectThumb — the ONE honest live-site thumbnail.
  *
- * A live project renders its REAL published site as a scaled-down desktop
- * preview inside a sandboxed, inert iframe (no cookies, no navigation, no
- * pointer events — `sandbox="allow-scripts"` only). A project without a live
- * deployment falls back to its monogram tile.
+ * Anything with a live URL renders its REAL deployed site as a scaled-down
+ * desktop preview inside a sandboxed, inert iframe (no navigation, no pointer
+ * events). Used for published projects AND for the template gallery's live
+ * demos; without a live URL it renders `fallback` (default: a monogram tile).
  *
  * CRITICAL layout contract: the iframe is ABSOLUTELY positioned at a fixed
  * logical desktop size and scaled with a CSS transform. Absolute positioning
  * takes it OUT of layout flow, so it can never contribute its (large) intrinsic
  * width to a parent grid track — the earlier `w-[400%]` in-flow iframe collapsed
- * every grid to 0-width columns. A ResizeObserver keeps the scale = cellWidth /
- * logicalWidth so the preview always fills its cell at any breakpoint.
+ * every grid to 0-width columns. A ResizeObserver keeps scale = boxWidth /
+ * logicalWidth, and the logical HEIGHT is derived from the measured box, so the
+ * preview fills any aspect the caller sizes it to (16/9 cards, 16/10 heroes).
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 // The logical viewport the site is rendered at before scaling — a desktop width
-// so the thumbnail shows the desktop layout, then scaled down to fit the cell.
+// so the thumbnail shows the desktop layout, then scaled down to fit the box.
 const LOGICAL_W = 1280;
-const LOGICAL_H = 720; // 16:9, matches aspect-video
 
 export function ProjectThumb({
   name,
   liveUrl,
+  fallback,
+  aspect = 'aspect-video',
   className = '',
 }: {
   name: string;
   liveUrl?: string | null;
+  /** Rendered when there is no live URL (or the frame fails). */
+  fallback?: ReactNode;
+  /** Box shape when the parent doesn't set a height (cards: 16/9, heroes: 16/10). */
+  aspect?: string;
   className?: string;
 }) {
   const [failed, setFailed] = useState(false);
   const hostRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(0.25);
+  const [box, setBox] = useState({ scale: 0.25, h: 720 });
 
   useEffect(() => {
     const el = hostRef.current;
     if (!el || typeof ResizeObserver === 'undefined') return;
     const measure = () => {
       const w = el.clientWidth;
-      if (w > 0) setScale(w / LOGICAL_W);
+      if (w > 0) setBox({ scale: w / LOGICAL_W, h: (el.clientHeight * LOGICAL_W) / w });
     };
     measure();
     const ro = new ResizeObserver(measure);
@@ -54,7 +60,7 @@ export function ProjectThumb({
   return (
     <div
       ref={hostRef}
-      className={`relative aspect-video w-full overflow-hidden bg-gradient-to-br from-foreground/[0.07] to-transparent ${className}`}
+      className={`relative ${aspect} h-full w-full overflow-hidden bg-gradient-to-br from-foreground/[0.07] to-transparent ${className}`}
     >
       {showLive ? (
         <iframe
@@ -63,25 +69,36 @@ export function ProjectThumb({
           loading="lazy"
           tabIndex={-1}
           aria-hidden
-          sandbox="allow-scripts"
+          // `allow-same-origin` is REQUIRED, not a relaxation: without it the
+          // frame gets an opaque origin and any site that touches localStorage
+          // on boot throws before first paint (measured — the `kinetic` demo
+          // rendered a blank 3-node document). The framed host is always a
+          // DIFFERENT origin than this app, so restoring its own origin gives it
+          // nothing it doesn't already have when visited directly: it still
+          // cannot script this page, and hanzo.app's session cookie is host-only
+          // (no Domain=), so a subdomain can never read it. Top-level navigation,
+          // forms, popups and modals all stay denied.
+          sandbox="allow-scripts allow-same-origin"
           scrolling="no"
           onError={() => setFailed(true)}
           // Absolute + fixed logical size + transform scale → never affects the
-          // grid track width; visually fills the cell via the ResizeObserver scale.
+          // grid track width; visually fills the box via the ResizeObserver scale.
           className="pointer-events-none absolute left-0 top-0 border-0 bg-white"
           style={{
             width: LOGICAL_W,
-            height: LOGICAL_H,
-            transform: `scale(${scale})`,
+            height: box.h,
+            transform: `scale(${box.scale})`,
             transformOrigin: 'top left',
           }}
         />
       ) : (
-        <div className="flex h-full items-center justify-center">
-          <span className="text-4xl font-medium text-muted-foreground">
-            {(name || '?').charAt(0).toUpperCase()}
-          </span>
-        </div>
+        fallback ?? (
+          <div className="flex h-full items-center justify-center">
+            <span className="text-4xl font-medium text-muted-foreground">
+              {(name || '?').charAt(0).toUpperCase()}
+            </span>
+          </div>
+        )
       )}
       {/* Click shield — the card owns every interaction. */}
       <div className="absolute inset-0" />
