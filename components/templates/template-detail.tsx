@@ -6,10 +6,11 @@
 // needs no client state itself, so it stays lean.
 //
 // Honesty: every field rendered here comes from the real catalog SOT
-// (lib/templates-catalog.ts). The hero reuses <TemplateThumb>, which is
-// image-first (the real self-hosted /templates/<slug>.webp when one exists) and
-// falls back to the on-brand generated tile otherwise — that behavior is not
-// changed here.
+// (lib/templates-catalog.ts). The hero is the template ITSELF when it has a
+// verified live demo (`t.demo` → <ProjectThumb>, the one inert scaled-iframe
+// preview the dashboard already uses), and otherwise falls back to
+// <TemplateThumb> — image-first with the real self-hosted /templates/<slug>.webp
+// when one exists, else the on-brand generated tile.
 
 import Link from "next/link";
 import {
@@ -30,6 +31,7 @@ import Header from "@/components/layout/header";
 import SiteFooter from "@/components/landing/site-footer";
 import Reveal from "@/components/landing/reveal";
 import { TemplateThumb } from "@/components/template-thumb";
+import { ProjectThumb } from "@/components/project-thumb";
 import { categorySlug, type TemplateEntry } from "@/lib/templates-catalog";
 
 // Decorative, neutral icons for the Key Highlights grid, chosen by position.
@@ -118,13 +120,15 @@ export function TemplateDetail({
                     rel="noreferrer"
                     className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-5 py-3 text-sm font-medium text-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
                   >
-                    Preview
+                    {t.demo ? "Open live demo" : "View source"}
                     <ArrowUpRight className="h-4 w-4" />
                   </a>
                 </div>
               </Reveal>
 
-              {/* Right — real shot (or generated tile), clickable → fork */}
+              {/* Right — the template running LIVE when it has a demo, else the
+                  real shot / generated tile. Clickable → fork either way: the
+                  frame is inert, so the whole hero stays one target. */}
               <Reveal delay={80}>
                 <Link
                   href={t.fork}
@@ -132,12 +136,25 @@ export function TemplateDetail({
                   className="group block overflow-hidden rounded-2xl border border-border bg-muted shadow-2xl shadow-black/40 transition-colors hover:border-foreground/30"
                 >
                   <div className="relative aspect-[16/10] overflow-hidden bg-muted">
-                    <TemplateThumb
+                    <ProjectThumb
                       name={t.name}
-                      category={t.category}
-                      slug={t.slug}
-                      className="transition-transform duration-500 group-hover:scale-[1.03]"
+                      liveUrl={t.demo}
+                      aspect="aspect-[16/10]"
+                      fallback={
+                        <TemplateThumb
+                          name={t.name}
+                          category={t.category}
+                          slug={t.slug}
+                          className="transition-transform duration-500 group-hover:scale-[1.03]"
+                        />
+                      }
                     />
+                    {t.demo && (
+                      <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-black/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/70 backdrop-blur">
+                        <span className="h-1.5 w-1.5 rounded-full bg-white" />
+                        Live demo
+                      </span>
+                    )}
                   </div>
                 </Link>
               </Reveal>

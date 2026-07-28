@@ -1,0 +1,44 @@
+/**
+ * lib/template-demos — the ONE registry of catalog templates with a verified
+ * live demo at `<slug>.hanzo.app`. The detail page frames `t.demo`, so a stale
+ * entry here puts a broken iframe on a marketing page. These pin the two ways
+ * that happens: a slug that isn't in the catalog at all, and a slug that WAS
+ * measured serving scaffolding rather than the template.
+ */
+import { demoCount, demoUrl } from '@/lib/template-demos';
+import { TEMPLATES, getTemplate } from '@/lib/templates-catalog';
+
+const withDemo = TEMPLATES.filter((t) => t.demo);
+
+describe('template demos', () => {
+  it('registers only real catalog slugs', () => {
+    expect(withDemo).toHaveLength(demoCount());
+  });
+
+  it('points every demo at its own hanzo.app subdomain', () => {
+    for (const t of withDemo) expect(t.demo).toBe(`https://${t.slug}.hanzo.app`);
+  });
+
+  it('excludes slugs measured serving scaffolding, not the template', () => {
+    // beta/serif -> raw file index ("Page List" / "Index Page"); prism -> link
+    // index; savor -> "Application error: a client-side exception has occurred";
+    // soar -> vendor purchase splash; metrics -> the Hanzo marketing page.
+    for (const slug of ['beta', 'serif', 'prism', 'savor', 'soar', 'metrics']) {
+      expect(getTemplate(slug)).toBeDefined();
+      expect(demoUrl(slug)).toBeNull();
+    }
+  });
+
+  it('never sends Preview to the dead gallery.hanzo.ai path', () => {
+    // gallery.hanzo.ai/templates/<slug> 404s for every slug in this catalog.
+    for (const t of TEMPLATES) {
+      expect(t.previewUrl).not.toContain('gallery.hanzo.ai');
+      expect(t.previewUrl).toBe(t.demo ?? t.repo);
+    }
+  });
+
+  it('falls back to a shot or the generated tile when there is no demo', () => {
+    for (const t of TEMPLATES) if (!t.demo) expect(t.demo).toBeNull();
+    expect(withDemo.length).toBeLessThan(TEMPLATES.length);
+  });
+});
