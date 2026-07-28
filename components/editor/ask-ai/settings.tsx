@@ -80,6 +80,7 @@ export function Settings({
   model,
   error,
   onModelChange,
+  routedModel,
 }: {
   open: boolean;
   // `provider`/`onChange` stay in the contract: the parent (ask-ai/index.tsx)
@@ -92,6 +93,8 @@ export function Settings({
   onClose: React.Dispatch<React.SetStateAction<boolean>>;
   onChange: (provider: string) => void;
   onModelChange: (model: string) => void;
+  /** Which model smart routing actually served the last turn, when it did. */
+  routedModel?: string | null;
 }) {
   // The list is live from the gateway (via /v1/models); never a static catalog.
   const { models } = useModels();
@@ -146,7 +149,11 @@ export function Settings({
           <div className="rounded-xl border border-border bg-card/60 p-1">
             <ModelRow
               label="Auto · smart routing"
-              hint="Routes each request to the cheapest capable model"
+              hint={
+                isAuto && routedModel
+                  ? `Last request went to ${routedModel} — you are billed as what served you`
+                  : "Routes each request to the cheapest capable model"
+              }
               selected={isAuto}
               onClick={() => onModelChange(AUTO_MODEL)}
             />
