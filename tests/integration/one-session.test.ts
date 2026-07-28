@@ -48,11 +48,12 @@ beforeEach(async () => {
 });
 
 describe('lib/iam: the one trust decision', () => {
-  it('accepts a genuinely signed token and reads the org off the `owner` claim', async () => {
+  it('accepts a genuinely signed token and reads the org off the `orgs` claim', async () => {
     const s = await session(bearer('http://localhost/x', await mint({ owner: 'acme' })));
     expect(s).not.toBeNull();
-    // NOT the SDK's `owner` (which derives from a "org/user" sub and would be
-    // "unknown" for IAM's uuid subjects) — the verified claim itself.
+    // The USER's own org — the first entry of the signed membership set. NOT the
+    // SDK's `owner` (which derives from a "org/user" sub and would be "unknown"
+    // for IAM's uuid subjects), and NOT the `owner` claim, which is the APP's org.
     expect(s!.org).toBe('acme');
     expect(s!.sub).toBe('11111111-2222-3333-4444-555555555555');
   });
@@ -98,6 +99,26 @@ describe('lib/iam: the one trust decision', () => {
     expect(normal!.isSuperAdmin).toBe(false);
     const sudo = await session(bearer('http://localhost/x', await mint({ owner: 'admin' })));
     expect(sudo!.isSuperAdmin).toBe(true);
+  });
+
+  it('takes the USER\'s org, never the APP\'s — a real signed token, claims split', async () => {
+    // IAM stamps the APPLICATION's org into `owner`, so a customer of `acme` who
+    // signs in through an app owned by `admin` carries owner=admin. Reading that
+    // claim handed them sudo AND pointed billing at the wrong ledger. The signed
+    // membership set is the only thing that says who they actually are.
+    const s = await session(
+      bearer('http://localhost/x', await mint({ owner: 'admin', home: 'acme' })),
+    );
+    expect(s!.org).toBe('acme');
+    expect(s!.isSuperAdmin).toBe(false);
+  });
+
+  it('resolves NO org for a token that names no membership — fail closed', async () => {
+    // A legacy token (minted before IAM emitted `orgs`) must grant no org scope
+    // at all rather than falling back to the app-selected `owner`.
+    const s = await session(bearer('http://localhost/x', await mint({ home: '' })));
+    expect(s!.org).toBe('');
+    expect(s!.isSuperAdmin).toBe(false);
   });
 });
 
