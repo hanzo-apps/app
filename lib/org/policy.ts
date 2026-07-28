@@ -32,9 +32,11 @@ export const STAFF_EMAIL_DOMAIN = 'hanzo.ai';
  * decision of their own.
  */
 export interface AdminClaims {
-  /** IAM `owner` claim — the user's home org. */
-  owner?: string;
-  /** IAM `isAdmin` claim — org-admin within `owner`. */
+  /** The user's OWN org — lib/iam.ts `homeOrg` (first entry of the signed `orgs`
+   *  claim). NEVER the IAM `owner` claim, which carries the APPLICATION's org and
+   *  would make every predicate below selectable by choosing a login app. */
+  org?: string;
+  /** IAM `isAdmin` claim — org-admin within {@link AdminClaims.org}. */
   isAdmin?: boolean;
   /** Email as asserted by IAM userinfo (never a client-supplied value). */
   email?: string;
@@ -51,7 +53,7 @@ export interface AdminClaims {
  * there is no stored flag anywhere in the estate, so it cannot drift.
  */
 export function isSuperAdmin(c: AdminClaims): boolean {
-  return (c.owner ?? '').trim() === ADMIN_ORG;
+  return (c.org ?? '').trim() === ADMIN_ORG;
 }
 
 /**
@@ -64,7 +66,7 @@ export function isSuperAdmin(c: AdminClaims): boolean {
  */
 export function isStaffAdmin(c: AdminClaims): boolean {
   if (isSuperAdmin(c)) return true;
-  if (c.isAdmin === true && BRAND_ORGS.has((c.owner ?? '').trim())) return true;
+  if (c.isAdmin === true && BRAND_ORGS.has((c.org ?? '').trim())) return true;
   return (c.email ?? '').trim().toLowerCase().endsWith(`@${STAFF_EMAIL_DOMAIN}`);
 }
 

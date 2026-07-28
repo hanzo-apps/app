@@ -5,7 +5,7 @@
  * app has to go and fetch, with claims it has to actually verify. So this stands
  * up an RS256 key pair, serves OIDC discovery + JWKS from it over MSW, and mints
  * tokens shaped exactly like the ones hanzo.id issues (verified against a live
- * token: uuid `sub`, `owner`/`organization` claims, `aud` = the client id).
+ * token: uuid `sub`, `owner`/`organization` + `orgs` claims, `aud` = the client id).
  *
  * That makes the interesting cases expressible: a token whose payload is right
  * but whose SIGNATURE is forged, and a genuinely-signed token minted for a
@@ -58,7 +58,15 @@ export async function iamHandlers() {
 
 export interface MintOptions {
   sub?: string;
+  /** The `owner` claim — IAM stamps the APPLICATION's org here, not the user's. */
   owner?: string;
+  /**
+   * The user's HOME org — the first entry of the signed `orgs` membership set,
+   * which is what identity actually resolves from. Defaults to `owner` because
+   * for most real users the two coincide; set it DIFFERENT from `owner` to
+   * express the split that made an app-selected tenant possible.
+   */
+  home?: string;
   email?: string;
   name?: string;
   aud?: string;
@@ -73,6 +81,7 @@ export async function mint(o: MintOptions = {}): Promise<string> {
   return new SignJWT({
     owner: o.owner ?? 'acme',
     organization: o.owner ?? 'acme',
+    orgs: [{ org: o.home ?? o.owner ?? 'acme' }],
     email: o.email ?? 'someone@acme.test',
     name: o.name ?? 'Someone',
     azp: o.aud ?? CLIENT_ID,

@@ -3,11 +3,17 @@
  *
  * The gate (server-side, IAM-validated — never a client-supplied "isAdmin"):
  *   - not signed in                       → 401 { openLogin:true }
- *   - signed in, no credits, not admin    → 402 { needsCredits:true }
+ *   - balance refused the caller (401/403)→ 401 { openLogin:true }  ← NOT 402
+ *   - balance unreadable (5xx/unrouted)   → 503                     ← NOT 402
+ *   - signed in, KNOWN zero, not admin    → 402 { needsCredits:true }
  *   - global admin                        → allowed, FREE
  *   - signed in WITH credits              → allowed, the agent run debits them
  * i.e. `isAdmin || (authenticated && hasCredits)`. The widget hiding the
  * button is only cosmetic; THIS is what actually protects the flow.
+ *
+ * 402 is reserved for a balance we actually READ and found empty. An unknown
+ * balance never becomes "add credits": that answer is wrong for a funded customer
+ * and blames them for a fault that is ours.
  *
  * On pass, it runs the whole vertical for ONE file (fork→edit→PR) via the
  * provider abstraction (`lib/edit/*`): resolve the caller's forge token
@@ -20,7 +26,7 @@ import type { NextRequest } from 'next/server';
 
 import { GitSyncError } from '@/lib/git/sync';
 import { session } from '@/lib/iam';
-import { spendableCents } from '@/lib/billing/server';
+import { spendable, funded } from '@/lib/billing/server';
 import { providerFor } from '@/lib/edit/provider';
 import { parseTarget, runEdit } from '@/lib/edit/flow';
 import { MAX_FILE_BYTES } from '@/lib/edit/agent';
@@ -47,13 +53,30 @@ export async function POST(req: NextRequest) {
   }
 
   // 2) Entitlement gate: admin is free; everyone else needs spendable credits.
+  //    A balance we could not READ is not a balance of zero, so it does not get the
+  //    "add credits" answer — telling a funded customer to pay because their session
+  //    expired is wrong AND blames them for our failure.
   const free = id.isAdmin;
   if (!free) {
-    const cents = await spendableCents(id.token);
-    if (!(typeof cents === 'number' && cents > 0)) {
+    const bal = await spendable(id.token);
+    if (bal.state === 'noauth') {
       return withCors(
         origin,
-        { ok: false, error: 'Add credits to open a PR.', needsCredits: true, balance: cents },
+        { ok: false, error: 'Your session expired. Sign in again.', openLogin: true },
+        401,
+      );
+    }
+    if (bal.state === 'unavailable') {
+      return withCors(
+        origin,
+        { ok: false, error: 'Billing is temporarily unavailable. Try again shortly.' },
+        503,
+      );
+    }
+    if (!funded(bal)) {
+      return withCors(
+        origin,
+        { ok: false, error: 'Add credits to open a PR.', needsCredits: true, balance: bal.cents },
         402,
       );
     }
