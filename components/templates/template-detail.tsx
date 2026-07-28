@@ -33,6 +33,7 @@ import Reveal from "@/components/landing/reveal";
 import { TemplateThumb } from "@/components/template-thumb";
 import { ProjectThumb } from "@/components/project-thumb";
 import { categorySlug, type TemplateEntry } from "@/lib/templates-catalog";
+import type { BuildSummary } from "@/lib/builds";
 
 // Decorative, neutral icons for the Key Highlights grid, chosen by position.
 // The catalog's highlights carry no icon of their own, so these are purely
@@ -45,9 +46,13 @@ const SECTION = "border-t border-border px-4 py-20 md:px-8 md:py-24";
 export function TemplateDetail({
   template: t,
   related,
+  build,
 }: {
   template: TemplateEntry;
   related: TemplateEntry[];
+  // The published build of this template, when one exists. Passed in rather
+  // than fetched here so the page owns its own data and this stays presentation.
+  build?: BuildSummary | null;
 }) {
   const catHref = `/templates?category=${categorySlug(t.category)}`;
 
@@ -124,6 +129,19 @@ export function TemplateDetail({
                     <ArrowUpRight className="h-4 w-4" />
                   </a>
                 </div>
+
+                {/* How this was actually made. Rendered only when a build is
+                    published — an always-on link to a story that may not exist
+                    is the same broken promise as a 404 screenshot. */}
+                {build ? (
+                  <Link
+                    href={`/builds/${build.org}/${build.project}`}
+                    className="mt-5 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    Read the build — {build.turns} turns, {build.agent}
+                    <ArrowRight className="h-3 w-3" />
+                  </Link>
+                ) : null}
               </Reveal>
 
               {/* Right — the template running LIVE when it has a demo, else the

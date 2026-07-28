@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
 import { useUser } from "@/hooks/useUser";
 import { toast } from "@hanzo/ui";
 import { HanzoLogo } from "@/components/HanzoLogo";
+import { MyBuilds } from "@/components/builds/my-builds";
 
 export default function ProfilePage() {
   // All hooks must be called unconditionally before any conditional returns
@@ -246,28 +247,10 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Stats */}
-            <div className="mt-8 pt-6 border-t border-border">
-              <h3 className="text-lg font-medium text-foreground mb-4">Statistics</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-muted/50 rounded-lg p-4 text-center">
-                  <p className="text-2xl font-medium text-foreground">12</p>
-                  <p className="text-sm text-muted-foreground">Projects</p>
-                </div>
-                <div className="bg-muted/50 rounded-lg p-4 text-center">
-                  <p className="text-2xl font-medium text-foreground">342</p>
-                  <p className="text-sm text-muted-foreground">AI Generations</p>
-                </div>
-                <div className="bg-muted/50 rounded-lg p-4 text-center">
-                  <p className="text-2xl font-medium text-foreground">89</p>
-                  <p className="text-sm text-muted-foreground">Deployments</p>
-                </div>
-                <div className="bg-muted/50 rounded-lg p-4 text-center">
-                  <p className="text-2xl font-medium text-foreground">2.3k</p>
-                  <p className="text-sm text-muted-foreground">Views</p>
-                </div>
-              </div>
-            </div>
+            {/* Your builds — the sessions behind your projects. This replaced four
+                hardcoded counters (12 / 342 / 89 / 2.3k) that were identical for
+                every account and true for none. */}
+            <MyBuilds />
           </div>
         </div>
       </div>

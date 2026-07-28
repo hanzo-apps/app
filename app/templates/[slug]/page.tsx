@@ -13,8 +13,14 @@ import {
   TEMPLATES,
 } from "@/lib/templates-catalog";
 import { TemplateDetail } from "@/components/templates/template-detail";
+import { findBuildFor } from "@/lib/builds";
 
 const SITE = "https://hanzo.app";
+
+// Revalidated rather than frozen at build time: whether a template has a
+// published build is the authors' running decision, and a page baked before the
+// build existed would never link to it.
+export const revalidate = 60;
 
 export function generateStaticParams() {
   return TEMPLATES.map((t) => ({ slug: t.slug }));
@@ -66,7 +72,14 @@ export default async function TemplateDetailPage({
   const template = getTemplate(slug);
   if (!template) notFound();
 
+  // Link to the build only when one is actually published — never a guessed URL.
+  const build = await findBuildFor(slug);
+
   return (
-    <TemplateDetail template={template} related={relatedTemplates(slug, 4)} />
+    <TemplateDetail
+      template={template}
+      related={relatedTemplates(slug, 4)}
+      build={build}
+    />
   );
 }
