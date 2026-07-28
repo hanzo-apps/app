@@ -161,7 +161,13 @@ export function Header({
                 title={item.label}
                 onClick={() => onNewTab(item.value)}
                 className={classNames(
-                  "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                  // h-7 (28px), NOT py-1.5. Inside this group's p-0.5 that makes
+                  // the pill 32px — the header's one control height, shared with
+                  // the device group beside it (size-7 + p-0.5) and every size-8
+                  // button. py-1.5 + text-sm computes to 32px of CONTENT, so the
+                  // group rendered 36px and sat 4px taller than its own sibling.
+                  // Set the height; never let padding + line-height decide it.
+                  "inline-flex h-7 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   "mobileOnly" in item && item.mobileOnly ? "lg:hidden" : "",
                   active
                     ? "bg-muted text-foreground shadow-sm"
