@@ -17,6 +17,7 @@
     "test:e2e": "playwright test",
     "test:e2e:auth": "playwright test --project=authenticated",
     "test:e2e:public": "playwright test --project=public",
+    "qc": "node scripts/visual-qc.mjs",
     "sync:design-skill": "node scripts/sync-design-skill.mjs",
     "lint:design": "hanzo-design-lint components app"
   },
