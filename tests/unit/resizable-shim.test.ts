@@ -70,6 +70,33 @@ describe("the names the shim promises actually exist", () => {
     }
   });
 
+  // The check above only asks whether the names APPEAR in the shim, which is
+  // equally true of a shim that maps them the wrong way round — and one did. It
+  // re-exported `PanelGroup as Group`: it READ the name v4 dropped and published
+  // the one v4 already ships. A missing named export is a webpack warning, not
+  // an error, so the build stayed green and `PanelGroup`/`PanelResizeHandle`
+  // were `undefined` at runtime — `<ResizablePanelGroup>` renders "Element type
+  // is invalid". What has to be pinned is the direction: every name the shim
+  // READS must be one the installed package really exports.
+  it("reads only names the installed package exports", () => {
+    const code = read(SHIM)
+      .split("\n")
+      .filter((l) => !l.trimStart().startsWith("//"))
+      .join("\n");
+    const clause = code.match(/export\s*\{([\s\S]*?)\}\s*from/);
+    expect(clause).not.toBeNull();
+    const sources = clause![1]
+      .split(",")
+      .map((s) => s.trim().split(/\s+as\s+/)[0].trim())
+      .filter(Boolean);
+    expect(sources.length).toBeGreaterThan(0);
+
+    const dist = read(`node_modules/${PKG}/dist/${PKG}.d.ts`);
+    const exported = (n: string) =>
+      new RegExp(`export declare (function|const) ${n}\\b`).test(dist);
+    expect(sources.filter((n) => !exported(n))).toEqual([]);
+  });
+
   it("is still load-bearing: @hanzo/ui imports the v2 names v4 does not export", () => {
     const consumer = read(`node_modules/@hanzo/ui/dist/resizable.mjs`);
     expect(consumer).toContain("PanelGroup");
