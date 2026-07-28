@@ -35,10 +35,13 @@ describe("font tokens", () => {
   });
 
   it("points --font-sans and --font-mono at next/font, never at a literal family", () => {
-    const rule = css.match(/html:root\s*\{([^}]*)\}/);
+    // `html:root {}` is opened more than once — media queries anchor their own
+    // overrides on it too (the mobile --control-h). Pin the block that declares
+    // the font tokens, not whichever one happens to come first in the file.
+    const rule = css.match(/html:root\s*\{[^}]*--font-sans:[^}]*\}/);
     expect(rule).not.toBeNull();
-    expect(rule![1]).toMatch(/--font-sans:\s*var\(--font-geist-sans\)/);
-    expect(rule![1]).toMatch(/--font-mono:\s*var\(--font-geist-mono\)/);
+    expect(rule![0]).toMatch(/--font-sans:\s*var\(--font-geist-sans\)/);
+    expect(rule![0]).toMatch(/--font-mono:\s*var\(--font-geist-mono\)/);
   });
 
   it("declares next/font's variables on <html>, where :root can read them", () => {
