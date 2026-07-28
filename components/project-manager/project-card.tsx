@@ -183,7 +183,7 @@ export function ProjectCard({
     return (
       <div
         className={`group border border-border rounded-lg p-4 hover:shadow-md transition-all cursor-pointer hover:border-primary/50 ${highlightExport ? 'ring-2 ring-primary/70 animate-ring-opacity' : ''}`}
-        style={{ background: `linear-gradient(var(--project-card-tint), var(--project-card-tint)), var(--card)` }}
+        style={{ background: `linear-gradient(rgb(var(--tint) / 0.02), rgb(var(--tint) / 0.02)), var(--card)` }}
         onClick={() => onSelect(project)}
       >
         <div className="flex items-start gap-4">
@@ -398,7 +398,7 @@ export function ProjectCard({
   return (
     <div
       className={`border border-border rounded-lg overflow-hidden hover:shadow-lg transition-all cursor-pointer hover:border-primary/50 group ${highlightExport ? 'ring-2 ring-primary/70 animate-ring-opacity' : ''}`}
-      style={{ background: `linear-gradient(var(--project-card-tint), var(--project-card-tint)), var(--card)` }}
+      style={{ background: `linear-gradient(rgb(var(--tint) / 0.02), rgb(var(--tint) / 0.02)), var(--card)` }}
       onClick={() => onSelect(project)}
       data-tour-id="project-card"
     >

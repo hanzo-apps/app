@@ -728,7 +728,7 @@ export function ChatPanel({
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-border bg-muted/30 shrink-0">
         <div className="flex items-center gap-2">
-          <MessageSquare className="h-4 w-4 md:hidden" style={{ color: 'var(--button-assistant-active)' }} />
+          <MessageSquare className="h-4 w-4 md:hidden" style={{ color: 'var(--brand-accent)' }} />
           {onClose ? (
             <button
               type="button"
@@ -738,14 +738,14 @@ export function ChatPanel({
             >
               <MessageSquare
                 className="h-4 w-4 transition-opacity group-hover:opacity-0"
-                style={{ color: 'var(--button-assistant-active)' }}
+                style={{ color: 'var(--brand-accent)' }}
               />
               <X className="absolute h-3 w-3 opacity-0 transition-opacity group-hover:opacity-100" />
             </button>
           ) : (
             <MessageSquare
               className="hidden h-4 w-4 md:inline-flex"
-              style={{ color: 'var(--button-assistant-active)' }}
+              style={{ color: 'var(--brand-accent)' }}
             />
           )}
           <span className="font-medium text-sm">Chat</span>

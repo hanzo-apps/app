@@ -94,10 +94,14 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
 
   const crosshairButtonStyle = useMemo(() => {
     if (selectorActive) {
-      return { backgroundColor: 'var(--button-preview-active)', color: 'white' };
+      return { backgroundColor: 'var(--brand-accent)', color: 'var(--brand-accent-fg)' };
     }
     if (hasFocusTarget) {
-      return { backgroundColor: 'rgba(99, 102, 241, 0.12)', color: 'var(--button-preview-active)' };
+      // The armed-but-not-active state is the accent at low alpha. It was an
+      // indigo literal at 12% — not even the app's purple, so it could not
+      // follow the host; --brand-accent-soft is that idea already named, and it
+      // moves when the accent does.
+      return { backgroundColor: 'var(--brand-accent-soft)', color: 'var(--brand-accent)' };
     }
     return {};
   }, [selectorActive, hasFocusTarget]);
@@ -144,7 +148,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
     <div className="p-3 border-b bg-muted/70 flex items-center gap-2">
       <Eye 
         className="h-4 w-4 md:hidden" 
-        style={{ color: 'var(--button-preview-active)' }} 
+        style={{ color: 'var(--brand-accent)' }} 
       />
       {onClose ? (
         <button
@@ -155,14 +159,14 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
         >
           <Eye 
             className="h-4 w-4 transition-opacity group-hover:opacity-0" 
-            style={{ color: 'var(--button-preview-active)' }} 
+            style={{ color: 'var(--brand-accent)' }} 
           />
           <X className="absolute h-3 w-3 opacity-0 transition-opacity group-hover:opacity-100" />
         </button>
       ) : (
         <Eye 
           className="hidden h-4 w-4 md:inline-flex" 
-          style={{ color: 'var(--button-preview-active)' }} 
+          style={{ color: 'var(--brand-accent)' }} 
         />
       )}
       <h3 className="text-sm font-medium">Live Preview</h3>
@@ -964,7 +968,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
             onClick={() => setSelectorActive(prev => !prev)}
             disabled={!iframeReady}
             style={{
-              backgroundColor: selectorActive ? 'var(--button-preview-active)' : undefined,
+              backgroundColor: selectorActive ? 'var(--brand-accent)' : undefined,
               color: selectorActive ? 'white' : undefined
             }}
             title={selectorActive ? 'Cancel element focus' : 'Select element'}
@@ -1011,7 +1015,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
             variant="ghost"
             className="h-5 w-5 rounded-sm"
             style={{
-              backgroundColor: deviceSize === 'mobile' ? 'var(--button-preview-active)' : undefined,
+              backgroundColor: deviceSize === 'mobile' ? 'var(--brand-accent)' : undefined,
               color: deviceSize === 'mobile' ? 'white' : undefined
             }}
             onClick={() => setDeviceSize('mobile')}
@@ -1023,7 +1027,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
             variant="ghost"
             className="h-5 w-5 rounded-sm"
             style={{
-              backgroundColor: deviceSize === 'tablet' ? 'var(--button-preview-active)' : undefined,
+              backgroundColor: deviceSize === 'tablet' ? 'var(--brand-accent)' : undefined,
               color: deviceSize === 'tablet' ? 'white' : undefined
             }}
             onClick={() => setDeviceSize('tablet')}
@@ -1035,7 +1039,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
             variant="ghost"
             className="h-5 w-5 rounded-sm"
             style={{
-              backgroundColor: deviceSize === 'desktop' ? 'var(--button-preview-active)' : undefined,
+              backgroundColor: deviceSize === 'desktop' ? 'var(--brand-accent)' : undefined,
               color: deviceSize === 'desktop' ? 'white' : undefined
             }}
             onClick={() => setDeviceSize('desktop')}
