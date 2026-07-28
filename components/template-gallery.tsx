@@ -24,7 +24,7 @@ import {
   templatesByCategory,
   type TemplateEntry,
 } from "@/lib/templates-catalog";
-import { authorOf } from "@/lib/template-authors";
+import { authorOf, OFFICIAL_LABEL } from "@/lib/template-authors";
 import { TemplateThumb } from "@/components/template-thumb";
 
 const ALL = "all";
@@ -65,6 +65,15 @@ function TemplateCard({ t, showAuthor = false }: { t: TemplateEntry; showAuthor?
         />
         <span className="absolute left-3 top-3 rounded-full border border-white/10 bg-black/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/70 backdrop-blur">
           {t.category}
+        </span>
+        {/* Every catalog template is published by Hanzo itself. Say so ON the card,
+            not only in the metadata — a reader must not have to infer it from the
+            author handle. */}
+        <span
+          data-official="true"
+          className="absolute right-3 top-3 rounded-full border border-white/10 bg-black/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/70 backdrop-blur"
+        >
+          {OFFICIAL_LABEL}
         </span>
       </div>
 
@@ -110,7 +119,9 @@ export function TemplateGallery({
   className = "",
   eyebrow = "Built with AI",
   heading = "Website & app templates",
-  lead = "Production-ready apps from the Hanzo community.",
+  // "from the Hanzo community" was not true of this catalog: every entry is a
+  // first-party example Hanzo publishes. Say what it is.
+  lead = "Production-ready example apps, published by Hanzo. Fork any of them.",
   showAuthor = false,
 }: {
   className?: string;
