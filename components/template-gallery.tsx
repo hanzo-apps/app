@@ -63,18 +63,29 @@ function TemplateCard({ t, showAuthor = false }: { t: TemplateEntry; showAuthor?
           slug={t.slug}
           className="transition-transform duration-500 group-hover:scale-[1.03]"
         />
-        <span className="absolute left-3 top-3 rounded-full border border-white/10 bg-black/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/70 backdrop-blur">
-          {t.category}
+        {/* Left rail: what this is, and who published it. The "Hanzo Example" badge
+            rides beside the category rather than opposite it, because top-right is
+            the live-demo slot. Every catalog template is published by Hanzo itself,
+            and a reader must not have to infer that from the author handle. */}
+        <span className="absolute left-3 top-3 flex flex-wrap items-center gap-1.5">
+          <span className="rounded-full border border-white/10 bg-black/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/70 backdrop-blur">
+            {t.category}
+          </span>
+          <span
+            data-official="true"
+            className="rounded-full border border-white/10 bg-black/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/70 backdrop-blur"
+          >
+            {OFFICIAL_LABEL}
+          </span>
         </span>
-        {/* Every catalog template is published by Hanzo itself. Say so ON the card,
-            not only in the metadata — a reader must not have to infer it from the
-            author handle. */}
-        <span
-          data-official="true"
-          className="absolute right-3 top-3 rounded-full border border-white/10 bg-black/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/70 backdrop-blur"
-        >
-          {OFFICIAL_LABEL}
-        </span>
+        {/* The grid keeps the (fast) screenshot — 105 iframes would be a page of
+            them — but says which cards open on a template you can actually use. */}
+        {t.demo && (
+          <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-black/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/70 backdrop-blur">
+            <span className="h-1.5 w-1.5 rounded-full bg-white" />
+            Live
+          </span>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col p-4 sm:p-5">
