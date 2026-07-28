@@ -614,11 +614,17 @@ function grade(results) {
           kinds.add('brand-leak');
         }
       }
-      for (const [ix, kind, h] of [[shotIx, 'dup-screenshot', v.shotHash], [domIx, 'dup-dom', v.domHash]]) {
-        const g = ix.get(vp + '|' + h);
-        if (g && g.size > 1) {
-          D(r, vp, kind, 'identical to: ' + [...g].filter((x) => x !== r.slug).join(', ').slice(0, 180));
-          kinds.add(kind);
+      // Byte-identical means BOTH the DOM and the pixels match. Either alone
+      // lies: five Flutter demos share a DOM (the framework's bootstrap shell
+      // is all the DOM there is) while painting five different apps, and any
+      // two flat-coloured pages share a screenshot while being unrelated.
+      const sameShot = shotIx.get(vp + '|' + v.shotHash);
+      const sameDom = domIx.get(vp + '|' + v.domHash);
+      if (sameShot?.size > 1 && sameDom?.size > 1) {
+        const both = [...sameShot].filter((x) => x !== r.slug && sameDom.has(x));
+        if (both.length) {
+          D(r, vp, 'duplicate', 'DOM and screenshot identical to: ' + both.join(', ').slice(0, 180));
+          kinds.add('duplicate');
         }
       }
     }
