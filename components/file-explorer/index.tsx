@@ -682,7 +682,6 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
             onClick={() => fileInputRef.current?.click()}
             title="Upload files"
           >
@@ -691,7 +690,6 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
             onClick={() => handleCreateFile('/')}
             title="New file"
           >
@@ -700,7 +698,6 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
             onClick={() => handleCreateDirectory('/')}
             title="New folder"
           >
@@ -781,7 +778,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
             <Button
               size="sm"
               variant="outline"
-              className="h-6 text-xs px-2"
+              className="text-xs px-2"
               onClick={onAddPromptFile}
             >
               Add
@@ -789,7 +786,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
             <Button
               size="sm"
               variant="ghost"
-              className="h-6 text-xs px-2"
+              className="text-xs px-2"
               onClick={() => {
                 setPromptDismissed(true);
                 localStorage.setItem(`osw-prompt-dismissed-${projectId}`, 'true');

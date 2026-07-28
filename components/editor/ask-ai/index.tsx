@@ -1230,7 +1230,7 @@ export function AskAI({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    size="xs"
+                    size="sm"
                     variant={isEditableModeEnabled ? "default" : "ghost"}
                     onClick={() => {
                       setIsEditableModeEnabled?.(!isEditableModeEnabled);
@@ -1306,7 +1306,7 @@ export function AskAI({
             />
             {isAiWorking ? (
               <Button
-                size="iconXs"
+                size="icon"
                 variant="destructive"
                 onClick={stopController}
                 className="gap-1 rounded-full"
@@ -1315,7 +1315,7 @@ export function AskAI({
               </Button>
             ) : (
               <Button
-                size="iconXs"
+                size="icon"
                 className="rounded-full"
                 disabled={
                   isUploading ||

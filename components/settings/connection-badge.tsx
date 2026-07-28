@@ -29,7 +29,7 @@ export function ConnectionBadge({ method, extra, info, onDisconnect, disconnecti
         <Button
           size="sm"
           variant="ghost"
-          className="gap-1 text-muted-foreground hover:text-destructive h-7 px-2 text-xs"
+          className="gap-1 text-muted-foreground hover:text-destructive px-2 text-xs"
           onClick={onDisconnect}
           disabled={disconnecting}
         >

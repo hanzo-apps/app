@@ -146,8 +146,8 @@ export function DeploymentCard({
             <span className="flex-1 truncate">{publicUrl}</span>
             <Button
               variant="ghost"
-              size="sm"
-              className="h-6 w-6 p-0"
+              size="icon"
+              className="p-0"
               onClick={handleCopyUrl}
               title="Copy URL"
             >

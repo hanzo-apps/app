@@ -21,7 +21,7 @@ export function InviteFriends() {
       <form>
         <DialogTrigger asChild>
           <Button
-            size="iconXs"
+            size="icon"
             variant="outline"
             className="!border-border !text-muted-foreground hover:!border-border hover:!text-foreground"
           >

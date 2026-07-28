@@ -420,7 +420,7 @@ function CompactOverview({
           size="sm"
           onClick={onRefresh}
           disabled={loading}
-          className="h-7 px-2"
+          className="px-2"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
         </Button>
@@ -481,7 +481,7 @@ function BrowserOverview({
           size="sm"
           onClick={onRefresh}
           disabled={loading}
-          className="h-7 px-2"
+          className="px-2"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
         </Button>

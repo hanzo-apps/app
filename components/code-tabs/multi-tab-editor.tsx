@@ -248,7 +248,7 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
           <Button
             size="sm"
             variant="ghost"
-            className="h-5 px-2 gap-1.5"
+            className="px-2 gap-1.5"
             onClick={() => saveFile(activeFilePath!)}
           >
             <Save className="h-3 w-3" />
@@ -289,7 +289,7 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-4 w-4 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="!h-4 !w-4 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
                 onClick={(e) => closeFile(path, e)}
               >
                 <X className="h-3 w-3 hover:text-destructive" />

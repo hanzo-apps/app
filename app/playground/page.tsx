@@ -342,7 +342,7 @@ export default function PlaygroundPage() {
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <Label>Quick Templates</Label>
-                    <Button variant="ghost" size="sm" className="h-6 text-xs">
+                    <Button variant="ghost" size="sm" className="text-xs">
                       View All
                     </Button>
                   </div>
@@ -352,7 +352,7 @@ export default function PlaygroundPage() {
                         key={i}
                         variant="ghost"
                         size="sm"
-                        className="w-full justify-start text-xs h-8"
+                        className="w-full justify-start text-xs"
                         onClick={() => setPrompt(template.prompt)}
                       >
                         {template.label}

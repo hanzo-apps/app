@@ -110,7 +110,7 @@ export function Settings({
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
-          size="iconXs"
+          size="icon"
           title="Settings — model, mode & options"
           aria-label="Settings"
           className="rounded-full !text-muted-foreground hover:!bg-accent hover:!text-foreground"

@@ -55,7 +55,7 @@ export function ReImagine({
       <form>
         <PopoverTrigger asChild>
           <Button
-            size="iconXs"
+            size="icon"
             variant="ghost"
             aria-label="Redesign from a URL"
             title="Redesign: recreate an existing site's look from its URL"

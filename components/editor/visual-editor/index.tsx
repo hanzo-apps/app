@@ -508,8 +508,8 @@ export function VisualEditor({
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          size="sm"
-          className="size-8 shrink-0 p-0 text-muted-foreground hover:bg-muted hover:text-foreground"
+          size="icon"
+          className="shrink-0 p-0 text-muted-foreground hover:bg-muted hover:text-foreground"
           title="More"
           aria-label="Visual editor options"
         >

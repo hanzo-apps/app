@@ -95,7 +95,7 @@ export default function SignupPage() {
               <Button
                 onClick={handleSignup}
                 disabled={loading}
-                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-medium h-12"
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
                 size="lg"
               >
                 {loading ? (

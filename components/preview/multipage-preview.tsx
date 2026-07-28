@@ -850,7 +850,6 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
             onClick={handleBack}
             disabled={historyIndex === 0}
           >
@@ -859,7 +858,6 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
             onClick={handleForward}
             disabled={historyIndex >= navigationHistory.length - 1}
           >
@@ -868,7 +866,6 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
             onClick={handleHome}
           >
             <Home className="h-3 w-3" />
@@ -876,7 +873,6 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
             onClick={handleRefresh}
           >
             <RefreshCw className="h-3 w-3" />
@@ -884,7 +880,6 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
             onClick={() => setSelectorActive(prev => !prev)}
             disabled={!iframeReady}
             style={crosshairButtonStyle}
@@ -897,7 +892,6 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
             <Button
               size="icon"
               variant="ghost"
-              className="h-5 w-5"
               onClick={handleCaptureClick}
               disabled={!iframeReady || isCapturing}
               title="Capture screenshot as thumbnail"
@@ -930,7 +924,6 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
             onClick={handleBack}
             disabled={historyIndex === 0}
           >
@@ -939,7 +932,6 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
             onClick={handleForward}
             disabled={historyIndex >= navigationHistory.length - 1}
           >
@@ -948,7 +940,6 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
             onClick={handleHome}
           >
             <Home className="h-3 w-3" />
@@ -956,7 +947,6 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
             onClick={handleRefresh}
           >
             <RefreshCw className="h-3 w-3" />
@@ -964,7 +954,6 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
             onClick={() => setSelectorActive(prev => !prev)}
             disabled={!iframeReady}
             style={{
@@ -980,7 +969,6 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
             <Button
               size="icon"
               variant="ghost"
-              className="h-5 w-5"
               onClick={handleCaptureClick}
               disabled={!iframeReady || isCapturing}
               title="Capture screenshot as thumbnail"
@@ -1013,7 +1001,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5 rounded-sm"
+            className="rounded-sm"
             style={{
               backgroundColor: deviceSize === 'mobile' ? 'var(--brand-accent)' : undefined,
               color: deviceSize === 'mobile' ? 'white' : undefined
@@ -1025,7 +1013,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5 rounded-sm"
+            className="rounded-sm"
             style={{
               backgroundColor: deviceSize === 'tablet' ? 'var(--brand-accent)' : undefined,
               color: deviceSize === 'tablet' ? 'white' : undefined
@@ -1037,7 +1025,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5 rounded-sm"
+            className="rounded-sm"
             style={{
               backgroundColor: deviceSize === 'desktop' ? 'var(--brand-accent)' : undefined,
               color: deviceSize === 'desktop' ? 'white' : undefined

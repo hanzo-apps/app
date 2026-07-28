@@ -357,7 +357,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
           <Button
             size="sm"
             variant="ghost"
-            className="h-6 px-2 text-xs"
+            className="px-2 text-xs"
             onClick={() => setFocusContext(null)}
             title="Clear focus context"
           >
@@ -1174,7 +1174,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
       <Button
         variant="outline"
         size="sm"
-        className="h-8 px-3 flex items-center gap-2"
+        className="px-3 flex items-center gap-2"
         onClick={() => setShowProjectSettingsModal(true)}
         title="Project Settings"
       >
@@ -1188,7 +1188,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
           <Button
             variant="outline"
             size="sm"
-            className="h-8 px-3 flex items-center gap-2"
+            className="px-3 flex items-center gap-2"
             title="Project cost and settings"
           >
             {shouldShowCosts && (

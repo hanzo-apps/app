@@ -20,7 +20,7 @@ export const AskAi = () => {
         <div className="flex items-center justify-between gap-2 px-4 pb-3">
           <div className="flex-1 flex justify-start">
             <Button
-              size="iconXs"
+              size="icon"
               variant="outline"
               className="!border-border !text-muted-foreground !hover:!border-foreground/30 hover:!text-foreground"
             >
@@ -32,7 +32,7 @@ export const AskAi = () => {
               <PiGearSixFill className="size-4" />
               Settings
             </Button>
-            <Button size="iconXs">
+            <Button size="icon">
               <ArrowUp className="size-4" />
             </Button>
           </div>

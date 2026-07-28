@@ -32,7 +32,7 @@ export function ListPagesItem({
     >
       {/* {index > 0 && (
         <Button
-          size="iconXsss"
+          size="icon"
           variant="ghost"
           onClick={(e: React.MouseEvent) => {
             e.stopPropagation();
@@ -60,7 +60,7 @@ export function ListPagesItem({
       {page.path}
       {index > 0 && (
         <Button
-          size="iconXsss"
+          size="icon"
           variant="ghost"
           className="group-hover:opacity-100 opacity-0"
           onClick={(e: React.MouseEvent) => {

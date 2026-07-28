@@ -166,7 +166,7 @@ export default function VideoStreaming() {
                       <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
                         <Button
                           size="icon"
-                          className="h-16 w-16 rounded-full bg-[#171717] hover:bg-[#000000]"
+                          className="!h-16 !w-16 rounded-full bg-[#171717] hover:bg-[#000000]"
                           onClick={() => setIsPlaying(true)}
                         >
                           <Play className="w-8 h-8 ml-1" />
@@ -344,7 +344,7 @@ export default function VideoStreaming() {
                           </Button>
                         )}
                       </div>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <Button variant="ghost" size="icon">
                         <MoreVertical className="w-4 h-4" />
                       </Button>
                     </div>

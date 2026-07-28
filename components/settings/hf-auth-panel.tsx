@@ -215,7 +215,7 @@ export function HFAuthPanel({ onAuthChange }: HFAuthPanelProps) {
             <Button
               size="icon"
               variant="ghost"
-              className="absolute right-1 top-1 h-7 w-7"
+              className="absolute right-1 top-1"
               onClick={() => setShowToken(!showToken)}
             >
               {showToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}

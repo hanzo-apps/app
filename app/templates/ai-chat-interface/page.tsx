@@ -175,10 +175,10 @@ The UI is built entirely with @hanzo/ui primitives like Card, Button, ScrollArea
                         </span>
                         {message.role === "assistant" && !message.isStreaming && (
                           <div className="flex gap-1">
-                            <Button variant="ghost" size="icon" className="h-6 w-6">
+                            <Button variant="ghost" size="icon">
                               <Copy className="w-3 h-3" />
                             </Button>
-                            <Button variant="ghost" size="icon" className="h-6 w-6">
+                            <Button variant="ghost" size="icon">
                               <RefreshCw className="w-3 h-3" />
                             </Button>
                           </div>

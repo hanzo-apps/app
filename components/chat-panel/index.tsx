@@ -701,7 +701,7 @@ export function ChatPanel({
         <Button
           size="sm"
           variant="ghost"
-          className="h-6 px-2 text-xs"
+          className="px-2 text-xs"
           onClick={() => setFocusContext(null)}
           title="Clear focus context"
         >
@@ -756,7 +756,7 @@ export function ChatPanel({
               variant="ghost"
               size="sm"
               onClick={onClearChat}
-              className="h-7 px-2 hover:bg-muted"
+              className="px-2 hover:bg-muted"
               title="Clear chat"
               data-tour-id="clear-chat-button"
             >
@@ -1106,7 +1106,7 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
                   size="sm"
                   variant="ghost"
                   onClick={() => onRestore(turn.checkpointId!)}
-                  className="h-6 px-2 text-xs"
+                  className="px-2 text-xs"
                   title="Restore to this checkpoint"
                 >
                   <RotateCcw className="h-3 w-3 mr-1" />
@@ -1118,7 +1118,7 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
                   size="sm"
                   variant="ghost"
                   onClick={() => onRetry(turn.checkpointId!)}
-                  className="h-6 px-2 text-xs"
+                  className="px-2 text-xs"
                   title="Restore files and retry from this checkpoint"
                 >
                   <RefreshCw className="h-3 w-3 mr-1" />

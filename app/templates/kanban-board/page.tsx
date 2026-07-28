@@ -246,7 +246,7 @@ export default function KanbanBoard() {
                       {column.tasks.length}
                     </Badge>
                   </div>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Button variant="ghost" size="icon">
                     <Plus className="w-4 h-4" />
                   </Button>
                 </div>
@@ -266,7 +266,7 @@ export default function KanbanBoard() {
                         <CardTitle className="text-sm font-medium">
                           {task.title}
                         </CardTitle>
-                        <Button variant="ghost" size="icon" className="h-6 w-6 -mr-2 -mt-1">
+                        <Button variant="ghost" size="icon" className="-mr-2 -mt-1">
                           <MoreHorizontal className="w-3 h-3" />
                         </Button>
                       </div>

@@ -119,7 +119,7 @@ export function ModelSelector({
           variant="ghost"
           onClick={handleRefresh}
           disabled={loading}
-          className="h-8 px-2"
+          className="px-2"
         >
           <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
         </Button>

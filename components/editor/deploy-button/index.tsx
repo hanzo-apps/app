@@ -36,7 +36,7 @@ export function DeployButton({
                 <Button
                   variant="default"
                   size="sm"
-                  className="max-lg:hidden !h-7 gap-1.5 px-2.5 text-xs"
+                  className="max-lg:hidden gap-1.5 px-2.5 text-xs"
                   disabled={disabled}
                 >
                   <MdSave className="size-3.5" />
@@ -45,7 +45,7 @@ export function DeployButton({
                 <Button
                   variant="default"
                   size="sm"
-                  className="lg:hidden !h-7 px-2.5 text-xs"
+                  className="lg:hidden px-2.5 text-xs"
                   disabled={disabled}
                 >
                   {disabled ? "Building…" : "Publish"}
@@ -65,7 +65,7 @@ export function DeployButton({
             <Button
               variant="default"
               size="sm"
-              className="max-lg:hidden !h-7 gap-1.5 px-2.5 text-xs"
+              className="max-lg:hidden gap-1.5 px-2.5 text-xs"
               onClick={() => setOpen(true)}
               disabled={disabled}
             >
@@ -75,7 +75,7 @@ export function DeployButton({
             <Button
               variant="default"
               size="sm"
-              className="lg:hidden !h-7 px-2.5 text-xs"
+              className="lg:hidden px-2.5 text-xs"
               onClick={() => setOpen(true)}
               disabled={disabled}
             >

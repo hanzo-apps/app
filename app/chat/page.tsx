@@ -421,7 +421,7 @@ export default function ChatPage() {
                 <div className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                      <Button variant="ghost" size="icon" className="p-0">
                         <MoreHorizontal className="w-4 h-4" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -586,17 +586,17 @@ export default function ChatPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-8 px-2 text-muted-foreground hover:text-foreground"
+                              className="px-2 text-muted-foreground hover:text-foreground"
                               onClick={() => copyMessage(message.content)}
                             >
                               <Copy className="w-3 h-3 mr-1" />
                               Copy
                             </Button>
-                            <Button variant="ghost" size="sm" className="h-8 px-2 text-muted-foreground hover:text-foreground">
+                            <Button variant="ghost" size="sm" className="px-2 text-muted-foreground hover:text-foreground">
                               <RefreshCw className="w-3 h-3 mr-1" />
                               Regenerate
                             </Button>
-                            <Button variant="ghost" size="sm" className="h-8 px-2 text-muted-foreground hover:text-foreground">
+                            <Button variant="ghost" size="sm" className="px-2 text-muted-foreground hover:text-foreground">
                               <Share2 className="w-3 h-3" />
                             </Button>
                           </div>
@@ -661,8 +661,8 @@ export default function ChatPage() {
                   <Button
                     onClick={sendMessage}
                     disabled={!inputMessage.trim() || isStreaming}
-                    size="sm"
-                    className="absolute right-2 bottom-2 h-8 w-8 p-0 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                    size="icon"
+                    className="absolute right-2 bottom-2 p-0 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
                   >
                     {isStreaming ? (
                       <StopCircle className="w-4 h-4" />
@@ -677,7 +677,7 @@ export default function ChatPage() {
                   {isStreaming ? "Generating..." : "Press Enter to send, Shift+Enter for new line"}
                 </p>
                 <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="sm" className="h-6 text-xs text-muted-foreground hover:text-foreground">
+                  <Button variant="ghost" size="sm" className="text-xs text-muted-foreground hover:text-foreground">
                     <Sparkles className="w-3 h-3 mr-1" />
                     Enhance prompt
                   </Button>

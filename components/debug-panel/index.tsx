@@ -177,7 +177,7 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
             variant="ghost"
             size="sm"
             onClick={handleClear}
-            className="h-7 px-2 hover:bg-muted"
+            className="px-2 hover:bg-muted"
             title="Clear all events"
           >
             <Trash2 className="h-3 w-3" />
@@ -186,7 +186,7 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
             variant="ghost"
             size="sm"
             onClick={handleExport}
-            className="h-7 px-2 text-xs hover:bg-muted"
+            className="px-2 text-xs hover:bg-muted"
             title="Export to JSON"
           >
             Export
@@ -302,7 +302,7 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
               size="sm"
               onClick={handleRunCommand}
               disabled={isRunning || !command.trim()}
-              className="h-6 px-2 text-xs text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800"
+              className="px-2 text-xs text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800"
             >
               {isRunning ? '...' : 'Run'}
             </Button>
