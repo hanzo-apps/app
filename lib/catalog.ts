@@ -29,6 +29,15 @@ export type CatalogEntry = {
   forkable?: boolean;
   stars?: number;
   updated?: string;
+  /**
+   * Authorship. `official` is the platform-gated first-party marker — only an
+   * admin can raise it, so the card may state it as fact. `upstream`/`license`
+   * credit somebody ELSE's work. A card that renders neither is not being
+   * neutral: under a page headed with our own org names, silence reads as ours.
+   */
+  official?: boolean;
+  upstream?: string;
+  license?: string;
   /** "public" = the cross-org catalog; "org" = visible only to this caller. */
   scope: "public" | "org";
 };
@@ -49,6 +58,8 @@ export type CatalogQuery = {
   language?: string;
   /** "true" | "false" | "" — the axis has three answers, and "" is unasked. */
   forkable?: string;
+  /** Same three answers: "show me only ours" and "show me what is NOT ours". */
+  official?: string;
   limit?: number;
   offset?: number;
 };
@@ -67,6 +78,7 @@ export async function searchCatalog(
   // it is a string BECAUSE "false" is a real question ("what can I not fork?"),
   // and a boolean flag could only ever ask half of it.
   if (query.forkable) p.set("forkable", query.forkable);
+  if (query.official) p.set("official", query.official);
   p.set("limit", String(query.limit ?? 60));
   if (query.offset) p.set("offset", String(query.offset));
 

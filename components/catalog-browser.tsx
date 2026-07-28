@@ -19,6 +19,7 @@ import {
   type CatalogEntry,
   type CatalogFacets,
 } from "@/lib/catalog";
+import { OFFICIAL_LABEL } from "@/lib/template-authors";
 
 const ALL = "";
 
@@ -77,6 +78,14 @@ function Card({ e }: { e: CatalogEntry }) {
             private
           </span>
         )}
+        {/* Authorship, and it only ever appears when it was EARNED: the API sets
+            official from a marker no tenant can raise. The same label the
+            template gallery uses, so a reader meets one word, not two. */}
+        {e.official && (
+          <span className="rounded-full border border-foreground/30 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-foreground">
+            {OFFICIAL_LABEL}
+          </span>
+        )}
       </div>
 
       <h3 className="flex items-start gap-1.5 text-[15px] font-medium leading-snug tracking-tight text-foreground">
@@ -92,6 +101,17 @@ function Card({ e }: { e: CatalogEntry }) {
       <p className="line-clamp-2 min-h-[2.5rem] text-[13px] leading-relaxed text-muted-foreground">
         {e.description || (e.url ? e.url.replace(/^https?:\/\//, "") : "")}
       </p>
+
+      {/* The credit line. It sits ABOVE the fold of the footer rather than in it,
+          because "this is somebody else's work" is not a stat next to the star
+          count — it is the first thing a reader needs in order to read the rest
+          of the card correctly. */}
+      {e.upstream && (
+        <p className="text-[11px] leading-relaxed text-muted-foreground/80">
+          Third-party work, shown with credit: {e.upstream}
+          {e.license ? ` · ${e.license}` : ""}
+        </p>
+      )}
 
       <div className="mt-auto flex items-center gap-3 pt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground/70">
         {e.language && <span>{e.language}</span>}
@@ -133,6 +153,7 @@ export function CatalogBrowser() {
   const [archetype, setArchetype] = useState(ALL);
   const [language, setLanguage] = useState(ALL);
   const [forkable, setForkable] = useState(ALL);
+  const [official, setOfficial] = useState(ALL);
 
   const [rows, setRows] = useState<CatalogEntry[]>([]);
   const [facets, setFacets] = useState<CatalogFacets>({});
@@ -149,7 +170,10 @@ export function CatalogBrowser() {
     inflight.current = ac;
     setLoading(true);
     try {
-      const r = await searchCatalog({ q, org, kind, archetype, language, forkable }, ac.signal);
+      const r = await searchCatalog(
+        { q, org, kind, archetype, language, forkable, official },
+        ac.signal,
+      );
       setRows(r.data ?? []);
       setFacets(r.facets ?? {});
       setTotal(r.total ?? 0);
@@ -160,7 +184,7 @@ export function CatalogBrowser() {
     } finally {
       if (!ac.signal.aborted) setLoading(false);
     }
-  }, [q, org, kind, archetype, language, forkable]);
+  }, [q, org, kind, archetype, language, forkable, official]);
 
   useEffect(() => {
     const t = setTimeout(load, q ? 200 : 0);
@@ -181,7 +205,9 @@ export function CatalogBrowser() {
       </h1>
       <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-muted-foreground">
         Every project, app and site across Hanzo, Lux and Zoo — searchable in one
-        place. Sign in to see your own projects here too.
+        place. Entries we built ourselves carry a {OFFICIAL_LABEL} badge; anything
+        here that is somebody else&rsquo;s work is shown with its author and licence,
+        never as ours. Sign in to see your own projects here too.
       </p>
 
       <div className="relative mt-6">
@@ -221,6 +247,18 @@ export function CatalogBrowser() {
             count={n}
             active={forkable === f}
             onClick={() => setForkable(forkable === f ? ALL : f)}
+          />
+        ))}
+        {/* Authorship is a rail for the same reason: once a reader knows the
+            catalog carries other people's work, "show me what is NOT ours" is
+            the next question, and it has to be as clickable as the first. */}
+        {buckets(facets, "official").map(([f, n]) => (
+          <Pill
+            key={f}
+            label={f === "true" ? OFFICIAL_LABEL : "third-party"}
+            count={n}
+            active={official === f}
+            onClick={() => setOfficial(official === f ? ALL : f)}
           />
         ))}
       </div>
