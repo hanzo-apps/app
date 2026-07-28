@@ -22,7 +22,6 @@ export type CatalogEntry = {
   description?: string;
   url?: string;
   repo?: string;
-  template?: string;
   forkable?: boolean;
   stars?: number;
   updated?: string;
