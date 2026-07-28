@@ -822,7 +822,7 @@ html:not(.dark) .preview-stage {
       icon 36px, icon-sm 32px, icon-lg 40px, against a 30px row. Worse at 390,
       where --control-h becomes 44px for WCAG 2.5.8: text buttons grew, icon
       buttons stayed 36/32/40, and the ::after touch target below deliberately
-      skips shadcn buttons — so 71 icon call sites had NO touch compensation at
+      skips shadcn buttons — so 72 icon call sites had NO touch compensation at
       all. A whitelist that has to track a third-party variant table is a second
       copy of that table, and only one copy was being maintained.
 
@@ -835,7 +835,7 @@ html:not(.dark) .preview-stage {
    Why a size name can be wrong at all: @hanzo/ui ships no `dist/index.d.ts`, so
    the package types as `any` and `tsc` cannot see a bad `size`. CVA then looks the
    name up, finds nothing, and emits no size class — `size="iconXs"` measured
-   18.8px tall, height computed from line-height with no padding. Sixteen call
+   18.8px tall, height computed from line-height with no padding. Fourteen call
    sites had drifted that way. Height is SET here, so an unknown name can no longer
    silently collapse a control.
 
