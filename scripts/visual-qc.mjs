@@ -161,8 +161,17 @@ async function enumerate() {
   for (const p of ['', '/catalog', '/templates', '/gallery']) {
     add('hanzo.app' + p.replace(/\//g, '_'), 'https://hanzo.app' + p, 'hanzo.app');
   }
-  const html = await (await fetch('https://hanzo.app/templates')).text();
+  // Discovery that silently finds nothing is worse than discovery that fails:
+  // a throttled or erroring /templates response once dropped all 106 detail
+  // pages from the sweep and the run still reported a tidy green summary.
+  const tplRes = await fetch('https://hanzo.app/templates');
+  const html = await tplRes.text();
   const slugs = [...new Set([...html.matchAll(/\/templates\/([a-z0-9][a-z0-9-]{1,60})/g)].map((m) => m[1]))].sort();
+  if (!tplRes.ok || !slugs.length) {
+    throw new Error(`template discovery failed: /templates -> HTTP ${tplRes.status}, ` +
+      `${slugs.length} slugs. Refusing to sweep a silently truncated target set. ` +
+      `Retry, or pass --targets with a known-good list.`);
+  }
   for (const s of slugs) add('tpl_' + s, `https://hanzo.app/templates/${s}`, 'template-detail');
 
   for (const [org, hosts] of Object.entries(SURFACES)) {
