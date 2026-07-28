@@ -510,6 +510,67 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
+/* The touch register — 44px, the size of a fingertip.
+   ────────────────────────────────────────────────────────────────────────────
+   30px is a POINTER height: right when a 1px cursor does the aiming, unhittable
+   when a finger does. Measured on /skills at 390 before this block: of the 24
+   controls reachable there, ZERO were 44px in both axes, and a real dispatched
+   tap 21px above or below a Switch's centre flipped nothing on all ten of them.
+
+   A control's PAINTED size and its TOUCHABLE size are two different concerns, and
+   which one to move depends on whether the control can grow:
+
+   1. It can grow — an input, or any sized button, including every sidebar row.
+      They already share --control-h, so raising the token gives them real height.
+      Real height, not an overlay, because these sit in stacks: a 44px box over a
+      30px row in a 30px-pitch list reaches 14px into its neighbour and, later
+      siblings winning the hit test, hands the tap to the row below. Growing the
+      row for real grows the pitch with it. Measured after: 0 stolen taps.
+
+   2. It cannot grow — a Switch is 36x20 BY DESIGN, an icon button is square, the
+      brand row is text. For those the hit area is a centred ::after that paints
+      nothing, so the control is 36x20 to the eye and 44x44 to a finger. `100%`
+      over a `min-*` floor makes it monotone: it can only ever grow a target,
+      never shrink one, so it is safe on a bare button of any size.
+
+   Every remaining short control on the page was a bare <button>, so case 2 is one
+   rule here rather than a class threaded through call sites — the Switch and its
+   26 call sites need no edit at all. Buttons that position themselves keep their
+   own containing block; only static ones need the anchor, and adding `relative`
+   to an absolutely-placed button would move it, hence the guard.
+
+   Width is the signal rather than `pointer: coarse`, deliberately: a coarse-pointer
+   query is invisible in a resized desktop window, which is where this gets checked,
+   and a fix you cannot see is how the dead `h-10` on these buttons survived. */
+@media (max-width: 767px) {
+  html:root {
+    --control-h: 2.75rem; /* 44px — Apple HIG minimum, WCAG 2.5.8 with room over */
+  }
+
+  /* A full-width bare button is a ROW in a stack, so it takes case 1: real height,
+     which grows the stack's pitch with it. Measured why this is separate — the two
+     footer rows sit 6px apart, so as 31px boxes with 44px overlays they clipped each
+     other and the upper one hit-tested at 40px, still short. Grown for real: 44. */
+  button:not([data-slot="button"])[class*="w-full"] {
+    min-height: var(--control-h);
+  }
+
+  button:not([data-slot="button"]):not([class*="absolute"]):not([class*="fixed"]):not([class*="sticky"]) {
+    position: relative;
+  }
+  button:not([data-slot="button"])::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    translate: -50% -50%;
+    height: 100%;
+    width: 100%;
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+  }
+}
+
 .dark {
   /* Layered blacks (v2) — every panel a subtly different near-black, no gray
      panels: bg #080808 · card #0d0d0d · popover #111 · muted #171717. */
