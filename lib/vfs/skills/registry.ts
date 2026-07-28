@@ -12,6 +12,7 @@ import { SERVER_SKILL } from './built-in/server';
 import { FUNCTIONS_SKILL } from './built-in/functions';
 import { DATABASE_SKILL } from './built-in/database';
 import { SECRETS_SKILL } from './built-in/secrets';
+import { DESIGN_SYSTEM_SKILL } from './built-in/design-system';
 
 /**
  * Registry of all built-in skills
@@ -49,6 +50,10 @@ export const BUILT_IN_SKILLS: BuiltInSkillDefinition[] = [
   {
     id: 'secrets',
     content: SECRETS_SKILL
+  },
+  {
+    id: 'design-system',
+    content: DESIGN_SYSTEM_SKILL
   }
 ];
 
