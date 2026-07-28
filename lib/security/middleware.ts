@@ -82,7 +82,11 @@ const devSecurityHeaders = {
     "img-src 'self' data: blob: http: https:",
     "media-src 'self' blob: data:",
     "connect-src 'self' http://localhost:* ws://localhost:* wss://localhost:* https://*.hanzo.ai https://hanzo.id https://lux.id https://zoo.id https://pars.id",
-    "frame-src 'self' http://localhost:*",
+    // Same remote frames as production. Dev used to allow localhost only, so
+    // every live preview — dashboard project thumbs, the template gallery's demo
+    // heroes — rendered a silent blank box locally while working in prod. A
+    // preview you cannot see locally is a preview nobody checks.
+    "frame-src 'self' http://localhost:* https://*.hanzo.ai https://*.hanzo.app",
     "frame-ancestors 'self' http://localhost:*",
   ].join('; '),
 };
