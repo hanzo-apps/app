@@ -27,6 +27,17 @@ const PLATFORM_API_URL =
 /** Base for the per-org PaaS control plane. */
 export const PLATFORM_BASE = `${PLATFORM_API_URL.replace(/\/+$/, '')}/v1/platform`;
 
+/**
+ * The same ONE host as seen from the BROWSER. It is a separate constant because
+ * it must resolve from a NEXT_PUBLIC_ var — the server-only names above are not
+ * inlined into the client bundle, so a client component reading them would
+ * silently fall back to the default and drift from the server. Same host, two
+ * environments, one place each.
+ */
+export const API_BASE = (
+  process.env.NEXT_PUBLIC_API_URL || 'https://api.hanzo.ai'
+).replace(/\/+$/, '');
+
 /** Thrown when a call is attempted without a user IAM token (fail-closed). */
 export class PlatformAuthError extends Error {
   constructor() {

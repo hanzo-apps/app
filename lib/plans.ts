@@ -14,7 +14,7 @@
 
 import { useEffect, useState } from 'react';
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'https://api.hanzo.ai').replace(/\/+$/, '');
+import { API_BASE } from '@/lib/platform';
 
 export interface Plan {
   slug: string;

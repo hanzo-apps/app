@@ -1,0 +1,242 @@
+"use client";
+
+// The cross-org catalog browser — everything the fleet has built, in one place:
+// hanzo, lux and zoo repos plus every site this platform is serving. ONE component
+// over ONE surface (/v1/catalog); search and browse are the same request, so the
+// rail below is not a second code path, it is the facet counts the API already
+// returned.
+//
+// Filtering is SERVER-side, not client-side like the templates gallery: that
+// gallery browses a curated catalog of a few dozen embedded entries, this one
+// browses hundreds of live rows across orgs, and the counts have to come from the
+// corpus rather than from the page. Same true-black monochrome as the landing.
+
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ArrowUpRight, GitFork, Search, Star } from "lucide-react";
+import {
+  buckets,
+  searchCatalog,
+  type CatalogEntry,
+  type CatalogFacets,
+} from "@/lib/catalog";
+
+const ALL = "";
+
+/** The brand rail is ordered, not count-sorted: these are our orgs, in our order. */
+const ORG_ORDER = ["hanzo", "lux", "zoo", "zen"];
+
+function Pill({
+  label,
+  count,
+  active,
+  onClick,
+}: {
+  label: string;
+  count?: number;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
+        active
+          ? "bg-primary text-primary-foreground"
+          : "border border-border bg-muted text-muted-foreground hover:border-foreground/30 hover:text-foreground"
+      }`}
+    >
+      {label}
+      {count !== undefined && (
+        <span className="ml-1.5 font-mono text-[10px] opacity-60">{count}</span>
+      )}
+    </button>
+  );
+}
+
+function Card({ e }: { e: CatalogEntry }) {
+  const href = e.url || e.repo;
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className="group relative flex flex-col gap-2 rounded-2xl border border-border bg-muted p-4 transition-all duration-200 hover:-translate-y-1 hover:border-foreground/30 sm:p-5"
+    >
+      <div className="flex items-center gap-2">
+        <span className="rounded-full border border-border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+          {e.org}
+        </span>
+        {e.archetype && (
+          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground/70">
+            {e.archetype}
+          </span>
+        )}
+        {/* Provenance, never decoration: a row only this org can see says so. */}
+        {e.scope === "org" && (
+          <span className="rounded-full border border-foreground/20 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-foreground/70">
+            private
+          </span>
+        )}
+      </div>
+
+      <h3 className="flex items-start gap-1.5 text-[15px] font-medium leading-snug tracking-tight text-foreground">
+        <span className="line-clamp-1">{e.title || e.name}</span>
+        <ArrowUpRight
+          className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground"
+          strokeWidth={1.6}
+        />
+      </h3>
+
+      <p className="line-clamp-2 min-h-[2.5rem] text-[13px] leading-relaxed text-muted-foreground">
+        {e.description || (e.url ? e.url.replace(/^https?:\/\//, "") : "")}
+      </p>
+
+      <div className="mt-auto flex items-center gap-3 pt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground/70">
+        {e.language && <span>{e.language}</span>}
+        {!!e.stars && (
+          <span className="inline-flex items-center gap-1">
+            <Star className="h-3 w-3" strokeWidth={1.6} />
+            {e.stars}
+          </span>
+        )}
+        {e.forkable && (
+          <span className="inline-flex items-center gap-1">
+            <GitFork className="h-3 w-3" strokeWidth={1.6} />
+            forkable
+          </span>
+        )}
+        {e.url && e.kind === "site" && <span>live</span>}
+      </div>
+    </a>
+  );
+}
+
+export function CatalogBrowser() {
+  const [q, setQ] = useState("");
+  const [org, setOrg] = useState(ALL);
+  const [archetype, setArchetype] = useState(ALL);
+  const [language, setLanguage] = useState(ALL);
+  const [forkable, setForkable] = useState(false);
+
+  const [rows, setRows] = useState<CatalogEntry[]>([]);
+  const [facets, setFacets] = useState<CatalogFacets>({});
+  const [total, setTotal] = useState(0);
+  const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  // One in-flight request: a keystroke aborts the previous one rather than racing
+  // it, so the rendered page is always the answer to the CURRENT query.
+  const inflight = useRef<AbortController | null>(null);
+  const load = useCallback(async () => {
+    inflight.current?.abort();
+    const ac = new AbortController();
+    inflight.current = ac;
+    setLoading(true);
+    try {
+      const r = await searchCatalog({ q, org, archetype, language, forkable }, ac.signal);
+      setRows(r.data ?? []);
+      setFacets(r.facets ?? {});
+      setTotal(r.total ?? 0);
+      setErr("");
+    } catch (e) {
+      if ((e as Error).name === "AbortError") return;
+      setErr((e as Error).message);
+    } finally {
+      if (!ac.signal.aborted) setLoading(false);
+    }
+  }, [q, org, archetype, language, forkable]);
+
+  useEffect(() => {
+    const t = setTimeout(load, q ? 200 : 0);
+    return () => clearTimeout(t);
+  }, [load, q]);
+
+  const orgs = useMemo(() => {
+    const counts = facets.org ?? {};
+    const known = ORG_ORDER.filter((o) => counts[o]);
+    const rest = Object.keys(counts).filter((o) => !ORG_ORDER.includes(o)).sort();
+    return [...known, ...rest].map((o) => [o, counts[o]] as [string, number]);
+  }, [facets]);
+
+  return (
+    <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
+      <h1 className="text-2xl font-medium tracking-tight text-foreground sm:text-3xl">
+        Catalog
+      </h1>
+      <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-muted-foreground">
+        Every project, app and site across Hanzo, Lux and Zoo — searchable in one
+        place. Sign in to see your own projects here too.
+      </p>
+
+      <div className="relative mt-6">
+        <Search
+          className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+          strokeWidth={1.6}
+        />
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Search across every org…"
+          className="w-full rounded-full border border-border bg-muted py-2.5 pl-10 pr-4 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-foreground/30"
+        />
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        <Pill label="All orgs" active={org === ALL} onClick={() => setOrg(ALL)} />
+        {orgs.map(([o, n]) => (
+          <Pill key={o} label={o} count={n} active={org === o} onClick={() => setOrg(o)} />
+        ))}
+        <span className="mx-1 self-center text-border">|</span>
+        <Pill
+          label="Forkable"
+          active={forkable}
+          onClick={() => setForkable((v) => !v)}
+        />
+      </div>
+
+      <div className="mt-2 flex flex-wrap gap-2">
+        <Pill label="Any kind" active={archetype === ALL} onClick={() => setArchetype(ALL)} />
+        {buckets(facets, "archetype").map(([a, n]) => (
+          <Pill
+            key={a}
+            label={a}
+            count={n}
+            active={archetype === a}
+            onClick={() => setArchetype(a)}
+          />
+        ))}
+      </div>
+
+      <div className="mt-2 flex flex-wrap gap-2">
+        <Pill label="Any language" active={language === ALL} onClick={() => setLanguage(ALL)} />
+        {buckets(facets, "language")
+          .slice(0, 12)
+          .map(([l, n]) => (
+            <Pill
+              key={l}
+              label={l}
+              count={n}
+              active={language === l}
+              onClick={() => setLanguage(l)}
+            />
+          ))}
+      </div>
+
+      <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+        {err ? `error: ${err}` : loading ? "searching…" : `${total} results`}
+      </p>
+
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {rows.map((e) => (
+          <Card key={`${e.scope}:${e.id}`} e={e} />
+        ))}
+      </div>
+
+      {!loading && !err && rows.length === 0 && (
+        <p className="mt-10 text-sm text-muted-foreground">
+          Nothing matches that yet.
+        </p>
+      )}
+    </div>
+  );
+}
