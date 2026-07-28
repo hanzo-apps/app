@@ -3,7 +3,8 @@
  *
  * Forwards to the gateway `/v1/billing/balance` as the signed-in user (their IAM
  * bearer), so the balance is the REAL per-org credit the gateway debits — scoped
- * to the caller's org (owner claim; a global admin may target another via
+ * to the caller's org (their HOME org from the signed `orgs` claim — never the
+ * `owner` claim, which is the app's; a global admin may target another via
  * X-Org-Id). Honest states: 401/403 → the caller's auth surfaces it; 404/501 →
  * "not available" (billing not routed / unconfigured on this deployment). Never
  * fabricates a balance.
