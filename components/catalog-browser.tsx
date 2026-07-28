@@ -114,6 +114,7 @@ function Card({ e }: { e: CatalogEntry }) {
 export function CatalogBrowser() {
   const [q, setQ] = useState("");
   const [org, setOrg] = useState(ALL);
+  const [kind, setKind] = useState(ALL);
   const [archetype, setArchetype] = useState(ALL);
   const [language, setLanguage] = useState(ALL);
   const [forkable, setForkable] = useState(false);
@@ -133,7 +134,7 @@ export function CatalogBrowser() {
     inflight.current = ac;
     setLoading(true);
     try {
-      const r = await searchCatalog({ q, org, archetype, language, forkable }, ac.signal);
+      const r = await searchCatalog({ q, org, kind, archetype, language, forkable }, ac.signal);
       setRows(r.data ?? []);
       setFacets(r.facets ?? {});
       setTotal(r.total ?? 0);
@@ -144,7 +145,7 @@ export function CatalogBrowser() {
     } finally {
       if (!ac.signal.aborted) setLoading(false);
     }
-  }, [q, org, archetype, language, forkable]);
+  }, [q, org, kind, archetype, language, forkable]);
 
   useEffect(() => {
     const t = setTimeout(load, q ? 200 : 0);
@@ -187,6 +188,15 @@ export function CatalogBrowser() {
           <Pill key={o} label={o} count={n} active={org === o} onClick={() => setOrg(o)} />
         ))}
         <span className="mx-1 self-center text-border">|</span>
+        {buckets(facets, "kind").map(([k, n]) => (
+          <Pill
+            key={k}
+            label={k}
+            count={n}
+            active={kind === k}
+            onClick={() => setKind(kind === k ? ALL : k)}
+          />
+        ))}
         <Pill
           label="Forkable"
           active={forkable}

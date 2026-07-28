@@ -41,6 +41,7 @@ export type CatalogResponse = {
 export type CatalogQuery = {
   q?: string;
   org?: string;
+  kind?: string;
   archetype?: string;
   language?: string;
   forkable?: boolean;
@@ -55,6 +56,7 @@ export async function searchCatalog(
   const p = new URLSearchParams();
   if (query.q) p.set("q", query.q);
   if (query.org) p.set("org", query.org);
+  if (query.kind) p.set("kind", query.kind);
   if (query.archetype) p.set("archetype", query.archetype);
   if (query.language) p.set("language", query.language);
   if (query.forkable) p.set("forkable", "true");
