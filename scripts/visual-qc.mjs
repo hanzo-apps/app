@@ -101,11 +101,26 @@ function hostGate(url) {
   if (!gates.has(h)) gates.set(h, { n: 0, q: [] });
   const g = gates.get(h);
   return {
-    async acquire() {
-      if (g.n < HOST_CONC) { g.n++; return; }
-      await new Promise((r) => g.q.push(r));   // resumed already holding the slot
+    // Bounded wait. An unbounded one deadlocks the whole sweep: if a slot
+    // holder wedges inside the browser, every other worker blocks on acquire
+    // forever and the run sits at a fixed count with live processes and no
+    // output (observed: 85 targets from the end). Throttling is best-effort;
+    // starving is not acceptable, so after maxWaitMs we proceed WITHOUT a slot
+    // and say so, and release() must then not decrement a counter we never took.
+    async acquire(maxWaitMs = 60000) {
+      if (g.n < HOST_CONC) { g.n++; return true; }
+      let entry;
+      return await new Promise((res) => {
+        entry = () => res(true);
+        g.q.push(entry);
+        setTimeout(() => {
+          const i = g.q.indexOf(entry);
+          if (i >= 0) { g.q.splice(i, 1); res(false); }
+        }, maxWaitMs).unref();
+      });
     },
-    release() {
+    release(held) {
+      if (!held) return;
       const next = g.q.shift();
       if (next) next(); else g.n--;
     },
@@ -393,7 +408,7 @@ async function shoot(browser, t) {
       const v = { consoleErrors: [], pageErrors: [], netFail: [], status: null };
       cur = v;
       const gate = hostGate(t.url);
-      await gate.acquire();
+      const held = await gate.acquire();
       try {
         await page.setViewportSize(cfg);
         // Reload at each width: media queries, JS breakpoint logic and lazy
@@ -426,7 +441,7 @@ async function shoot(browser, t) {
         v.ok = false;
         v.error = String(e.message).split('\n')[0].slice(0, 200);
       } finally {
-        gate.release();
+        gate.release(held);
       }
       cur = null;
       rec.viewports[vp] = v;
