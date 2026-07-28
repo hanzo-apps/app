@@ -255,12 +255,25 @@ const PROBE = () => {
   // "blank". Measure how much of the viewport a *visible* canvas covers; that
   // is the signal that separates "renders into a canvas" from "renders nothing"
   // -- a Flutter build that failed to boot never creates its canvas at all.
+  // Must pierce shadow roots: Flutter web mounts its canvas inside
+  // <flt-glass-pane>'s shadow DOM, so a plain querySelectorAll finds nothing and
+  // six fully working Flutter demos (a Material 3 gallery, a sign-in screen)
+  // were reported blank. Walk open shadow roots too.
   R.canvasArea = 0;
-  for (const c of document.querySelectorAll('canvas')) {
-    const r = c.getBoundingClientRect();
-    const cs = getComputedStyle(c);
-    if (cs.visibility === 'hidden' || cs.display === 'none' || cs.opacity === '0') continue;
-    R.canvasArea = Math.max(R.canvasArea, (r.width * r.height) / (window.innerWidth * window.innerHeight));
+  const vpArea = window.innerWidth * window.innerHeight;
+  const roots = [document];
+  for (let i = 0; i < roots.length && i < 400; i++) {
+    const root = roots[i];
+    let els;
+    try { els = root.querySelectorAll('*'); } catch { continue; }
+    for (const el of els) {
+      if (el.shadowRoot) roots.push(el.shadowRoot);
+      if (el.tagName !== 'CANVAS') continue;
+      const r = el.getBoundingClientRect();
+      const cs = getComputedStyle(el);
+      if (cs.visibility === 'hidden' || cs.display === 'none' || cs.opacity === '0') continue;
+      R.canvasArea = Math.max(R.canvasArea, (r.width * r.height) / vpArea);
+    }
   }
 
   // Clipped text: content wider/taller than its own clipping box. Deliberate
