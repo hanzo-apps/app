@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { TemplateManager } from '@/components/template-manager';
 import { TemplateGallery } from '@/components/template-gallery';
-import { Sparkles, Package } from 'lucide-react';
+import { Sparkles, Package, Users } from 'lucide-react';
 
 interface TemplatesViewProps {
   onProjectSelect?: (project: { id: string }) => void;
@@ -59,6 +60,13 @@ export function TemplatesView({ onProjectSelect }: TemplatesViewProps) {
               My Templates
             </button>
           </div>
+          <Link
+            href="/community"
+            className="ml-auto inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <Users className="h-4 w-4" />
+            See what people built
+          </Link>
         </div>
       </div>
 

@@ -15,9 +15,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUpRight, GitFork, Search, Star } from "lucide-react";
 import {
   buckets,
+  ORIGIN_LABELS,
   searchCatalog,
   type CatalogEntry,
   type CatalogFacets,
+  type CatalogOrigin,
 } from "@/lib/catalog";
 import { OFFICIAL_LABEL } from "@/lib/template-authors";
 
@@ -25,6 +27,9 @@ const ALL = "";
 
 /** The brand rail is ordered, not count-sorted: these are our orgs, in our order. */
 const ORG_ORDER = ["hanzo", "lux", "zoo", "zen"];
+
+/** Same rule for the lane rail — our four nouns, in the order a person meets them. */
+const ORIGIN_ORDER: CatalogOrigin[] = ["template", "community", "third-party", "product"];
 
 function Pill({
   label,
@@ -59,7 +64,17 @@ function Pill({
 // footer takes you to its SOURCE. A live demo you cannot get from to the code is
 // a screenshot. The title link stretches over the card so the card still reads as
 // one target; the source link sits above it so it wins its own clicks.
-function Card({ e }: { e: CatalogEntry }) {
+function Card({
+  e,
+  showOrigin,
+  onParent,
+}: {
+  e: CatalogEntry;
+  /** Off inside a pinned lane: repeating the lane on every card says nothing. */
+  showOrigin: boolean;
+  /** Narrow the lane to one lineage. Absent ⇒ the parent is text, not a filter. */
+  onParent?: (parent: string) => void;
+}) {
   const href = e.url || e.repo;
   return (
     <div className="group relative flex flex-col gap-2 rounded-2xl border border-border bg-muted p-4 transition-all duration-200 hover:-translate-y-1 hover:border-foreground/30 sm:p-5">
@@ -67,6 +82,14 @@ function Card({ e }: { e: CatalogEntry }) {
         <span className="rounded-full border border-border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
           {e.org}
         </span>
+        {/* The lane, on the card, because "what IS this" is the question the flat
+            list could not answer: a curated starter, a stranger's remix and a
+            bought UI kit all rendered identically here. */}
+        {showOrigin && e.origin && (
+          <span className="rounded-full border border-border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+            {ORIGIN_LABELS[e.origin] ?? e.origin}
+          </span>
+        )}
         {e.archetype && (
           <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground/70">
             {e.archetype}
@@ -101,6 +124,26 @@ function Card({ e }: { e: CatalogEntry }) {
       <p className="line-clamp-2 min-h-[2.5rem] text-[13px] leading-relaxed text-muted-foreground">
         {e.description || (e.url ? e.url.replace(/^https?:\/\//, "") : "")}
       </p>
+
+      {/* Lineage, and it is the whole reason a community lane is browsable rather
+          than a pile: what this was forked FROM, and who built it. The parent is
+          a filter, so "everything built from folio" is one click, not a search. */}
+      {e.template && (
+        <p className="text-[11px] leading-relaxed text-muted-foreground/80">
+          Forked from{" "}
+          {onParent ? (
+            <button
+              onClick={() => onParent(e.template!)}
+              className="relative z-10 underline underline-offset-4 hover:text-foreground"
+            >
+              {e.template}
+            </button>
+          ) : (
+            <span className="text-foreground/80">{e.template}</span>
+          )}{" "}
+          · by {e.org}
+        </p>
+      )}
 
       {/* The credit line. It sits ABOVE the fold of the footer rather than in it,
           because "this is somebody else's work" is not a stat next to the star
@@ -140,20 +183,39 @@ function Card({ e }: { e: CatalogEntry }) {
             source
           </a>
         )}
-        {e.template && <span title={`forked from ${e.template}`}>← {e.template}</span>}
       </div>
     </div>
   );
 }
 
-export function CatalogBrowser() {
+/**
+ * One browser, three mounts. `origin` PINS a lane, which is what makes
+ * /templates and /community two views of the one corpus instead of two catalogs
+ * that drift apart: same component, same request, same rows — only the lane and
+ * the words around it differ. Unpinned (/catalog) it browses everything and the
+ * lane becomes a rail.
+ */
+export function CatalogBrowser({
+  origin = ALL,
+  title = "Catalog",
+  blurb,
+}: {
+  origin?: string;
+  title?: string;
+  blurb?: React.ReactNode;
+} = {}) {
   const [q, setQ] = useState("");
   const [org, setOrg] = useState(ALL);
   const [kind, setKind] = useState(ALL);
   const [archetype, setArchetype] = useState(ALL);
   const [language, setLanguage] = useState(ALL);
+  const [lane, setLane] = useState(ALL);
+  const [parent, setParent] = useState(ALL);
   const [forkable, setForkable] = useState(ALL);
   const [official, setOfficial] = useState(ALL);
+  // A pinned lane is not a filter the visitor chose, so it is not one they can
+  // clear: /community browses community, full stop.
+  const pinned = origin !== ALL;
 
   const [rows, setRows] = useState<CatalogEntry[]>([]);
   const [facets, setFacets] = useState<CatalogFacets>({});
@@ -171,7 +233,8 @@ export function CatalogBrowser() {
     setLoading(true);
     try {
       const r = await searchCatalog(
-        { q, org, kind, archetype, language, forkable, official },
+        { q, org, kind, archetype, language, template: parent, forkable, official,
+          origin: pinned ? origin : lane },
         ac.signal,
       );
       setRows(r.data ?? []);
@@ -184,7 +247,7 @@ export function CatalogBrowser() {
     } finally {
       if (!ac.signal.aborted) setLoading(false);
     }
-  }, [q, org, kind, archetype, language, forkable, official]);
+  }, [q, org, kind, archetype, language, parent, forkable, official, lane, origin, pinned]);
 
   useEffect(() => {
     const t = setTimeout(load, q ? 200 : 0);
@@ -201,13 +264,18 @@ export function CatalogBrowser() {
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
       <h1 className="text-2xl font-medium tracking-tight text-foreground sm:text-3xl">
-        Catalog
+        {title}
       </h1>
       <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-muted-foreground">
-        Every project, app and site across Hanzo, Lux and Zoo — searchable in one
-        place. Entries we built ourselves carry a {OFFICIAL_LABEL} badge; anything
-        here that is somebody else&rsquo;s work is shown with its author and licence,
-        never as ours. Sign in to see your own projects here too.
+        {blurb ?? (
+          <>
+            Every project, app and site across Hanzo, Lux and Zoo — searchable in
+            one place, and filed by what each one IS: our starters, what people
+            built on them, somebody else&rsquo;s work shown with credit, and our
+            own software. Entries we built ourselves carry a {OFFICIAL_LABEL}{" "}
+            badge. Sign in to see your own projects here too.
+          </>
+        )}
       </p>
 
       <div className="relative mt-6">
@@ -222,6 +290,44 @@ export function CatalogBrowser() {
           className="w-full rounded-full border border-border bg-muted py-2.5 pl-10 pr-4 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-foreground/30"
         />
       </div>
+
+      {/* The lane rail comes FIRST, because it is the question that has to be
+          answered before any of the others mean anything. It is absent inside a
+          pinned lane, where it could only ever say "yes, still here". */}
+      {!pinned && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Pill label="Everything" active={lane === ALL} onClick={() => setLane(ALL)} />
+          {ORIGIN_ORDER.filter((o) => facets.origin?.[o]).map((o) => (
+            <Pill
+              key={o}
+              label={ORIGIN_LABELS[o]}
+              count={facets.origin?.[o]}
+              active={lane === o}
+              onClick={() => setLane(lane === o ? ALL : o)}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Lineage as a rail: the parents this lane's apps were built from, biggest
+          family first. This is what turns "a pile of forks" into something a
+          person can read. */}
+      {buckets(facets, "template").length > 1 && (
+        <div className="mt-2 flex flex-wrap gap-2">
+          <Pill label="Any parent" active={parent === ALL} onClick={() => setParent(ALL)} />
+          {buckets(facets, "template")
+            .slice(0, 10)
+            .map(([tmpl, n]) => (
+              <Pill
+                key={tmpl}
+                label={`from ${tmpl}`}
+                count={n}
+                active={parent === tmpl}
+                onClick={() => setParent(parent === tmpl ? ALL : tmpl)}
+              />
+            ))}
+        </div>
+      )}
 
       <div className="mt-4 flex flex-wrap gap-2">
         <Pill label="All orgs" active={org === ALL} onClick={() => setOrg(ALL)} />
@@ -297,7 +403,7 @@ export function CatalogBrowser() {
 
       <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {rows.map((e) => (
-          <Card key={`${e.scope}:${e.id}`} e={e} />
+          <Card key={`${e.scope}:${e.id}`} e={e} showOrigin={!pinned} onParent={setParent} />
         ))}
       </div>
 
