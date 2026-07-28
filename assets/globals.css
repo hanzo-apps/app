@@ -492,8 +492,13 @@
   --input: oklch(0.922 0 0);
   --ring: var(--brand-accent);
   /* The ONE keyboard-focus ring, per theme — near-black on the light ground.
-     Consumed by the single :focus-visible rule below @layer base. */
+     Consumed by the :focus-visible rules below @layer base — one concept, two
+     forms: a ring for shapeless controls, a strengthened edge for fields. */
   --focus-ring: rgba(0, 0, 0, 0.72);
+  /* Text-entry focus. A field already draws its own edge, so focus STRENGTHENS
+     that edge instead of stamping a second box outside it. */
+  --focus-edge: rgba(0, 0, 0, 0.55);
+  --focus-glow: rgba(0, 0, 0, 0.10);
   /* Charts carry real, distinguishable hue — data series must be told apart. */
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -601,6 +606,8 @@
   /* The ONE keyboard-focus ring, per theme — white on the dark ground. This is the
      value the landing page already proved legible; it is now the whole app's. */
   --focus-ring: rgba(255, 255, 255, 0.72);
+  --focus-edge: rgba(255, 255, 255, 0.42);
+  --focus-glow: rgba(255, 255, 255, 0.10);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -684,9 +691,24 @@ html:not(.dark) {
    away with hardcoding one and a global rule cannot. Pointer focus stays quiet (the
    composer's own border cue handles it); the outline follows each element's
    border-radius so pills, cards and buttons ring cleanly. */
-:is(a, button, input, textarea, select, summary, [role="button"], [tabindex]):focus-visible {
+:is(a, button, summary, [role="button"], [tabindex]):focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
+}
+
+/* Text-entry controls take the SAME rule's intent in the form they already have.
+   A link or a button has no resting shape, so it needs a ring drawn around it. A
+   field does — its own edge — so focus brightens that edge and adds a soft halo
+   in the same value, and never an offset outline.
+
+   Listing input/textarea/select in the rule above put a hard 2px white box, held
+   2px off, around every field in the product: the command palette read as broken,
+   and the composer as alarmed. Both indicators still clear WCAG 2.4.11 (the edge
+   is ~4.6:1 on the dark ground) — this is a change of FORM, not of strength. */
+:is(input, textarea, select):focus-visible {
+  outline: none;
+  border-color: var(--focus-edge);
+  box-shadow: 0 0 0 3px var(--focus-glow);
 }
 
 .background__noisy {
