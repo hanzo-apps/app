@@ -4,7 +4,7 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import classNames from "classnames";
 import { toast } from "@hanzo/ui";
 import { useLocalStorage } from "react-use";
-import { ArrowUp, Crosshair, ImagePlus, X } from "lucide-react";
+import { ArrowUp, ImagePlus, MoreHorizontal, X } from "lucide-react";
 import { FaStopCircle } from "react-icons/fa";
 
 import ProModal from "@/components/pro-modal";
@@ -18,7 +18,6 @@ import { HtmlHistory, Page, Project } from "@/types";
 import { Settings } from "@/components/editor/ask-ai/settings";
 import { LoginModal } from "@/components/login-modal";
 import { ReImagine } from "@/components/editor/ask-ai/re-imagine";
-import { Fix } from "@/components/editor/ask-ai/fix";
 import { imageFilesFrom, uploadProjectImages } from "@/lib/upload-project-images";
 import {
   addReferenceImages,
@@ -26,7 +25,15 @@ import {
   referenceImagesKey,
 } from "@/lib/reference-images";
 import Loading from "@/components/loading";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/overlay";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/overlay";
 import { SelectedHtmlElement } from "./selected-html-element";
 import { isTheSameHtml } from "@/lib/compare-html-diff";
 import { useCallAi } from "@/hooks/useCallAi";
@@ -851,6 +858,18 @@ export function AskAI({
     return isTheSameHtml(currentPage.html);
   }, [currentPage.html]);
 
+  // The working modes currently on. ONE list: it names the overflow control, it
+  // fills its tooltip, and its length is what accents the trigger — so a mode
+  // that is folded into the menu can never be silently on.
+  const modes = useMemo(
+    () =>
+      [
+        isEditableModeEnabled && "Select an element",
+        isFixMode && "Match a reference",
+      ].filter(Boolean) as string[],
+    [isEditableModeEnabled, isFixMode]
+  );
+
   // Drive the active turn's build phase + live activity from the ONE generation
   // stream: for a streaming turn (newProject/newPage), pages stay untouched
   // while reasoning streams (the hook gates page rendering on <think>), then
@@ -1028,8 +1047,17 @@ export function AskAI({
         </div>
       )}
 
+      {/* ONE widget, ONE edge. This carried a `border` AND a `ring-2` that both
+          resolved to a visible colour on focus; a ring is a box-shadow drawn
+          OUTSIDE the border box, so the two abutted into a 2px rule that read as
+          a chunky frame rather than as focus. The single border changes colour
+          instead — the same correction the preview frame got.
+
+          Darker than the panel it sits in (`--background`, not `--card`), so the
+          composer reads as a well the page recedes into rather than a card
+          stacked on top of another card. */}
       <div
-        className="relative bg-card border border-border rounded-xl ring-2 focus-within:ring-ring/25 focus-within:border-ring ring-transparent z-10 w-full group"
+        className="group relative z-10 w-full rounded-xl border border-border bg-background transition-colors focus-within:border-ring/60"
         onDragOver={handleDragOver}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
@@ -1073,7 +1101,7 @@ export function AskAI({
           }
         />
         {selectedElement && (
-          <div className="px-4 pt-3">
+          <div className="px-3 pt-2.5">
             <SelectedHtmlElement
               element={selectedElement}
               isAiWorking={isAiWorking}
@@ -1083,7 +1111,7 @@ export function AskAI({
         )}
         <div className="w-full relative flex items-center justify-between">
           {(isAiWorking || isUploading) && (
-            <div className="absolute top-0 left-4 right-12 h-8 z-10 flex items-center justify-between pointer-events-none">
+            <div className="absolute top-0 left-3 right-12 h-8 z-10 flex items-center justify-between pointer-events-none">
               <div className="flex items-center justify-start gap-2 bg-muted px-2 py-1 rounded-md">
                 <Loading overlay={false} className="!size-3 opacity-50" />
                 <p className="text-muted-foreground text-xs">
@@ -1167,9 +1195,9 @@ export function AskAI({
             disabled={isUploading}
             style={{ height: composerH, maxHeight: "40dvh" }}
             className={classNames(
-              "w-full bg-transparent text-sm outline-none text-foreground placeholder:text-muted-foreground p-4 resize-none overflow-y-auto",
+              "w-full resize-none overflow-y-auto bg-transparent px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground",
               {
-                "!pt-2.5": selectedElement && !isAiWorking,
+                "!pt-2": selectedElement && !isAiWorking,
                 "opacity-100": isAiWorking && !isUploading,
               }
             )}
@@ -1201,8 +1229,8 @@ export function AskAI({
             }}
           />
         </div>
-        <div className="flex items-center justify-between gap-2 px-4 pb-3 mt-2">
-          <div className="flex min-w-0 flex-1 items-center justify-start gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+        <div className="flex items-center justify-between gap-1.5 px-2 pb-2">
+          <div className="flex min-w-0 flex-1 items-center justify-start gap-1 overflow-x-auto [&::-webkit-scrollbar]:hidden">
             <Uploader
               pages={pages}
               onLoading={setIsUploading}
@@ -1220,35 +1248,66 @@ export function AskAI({
               project={project}
             />
             {isNew && <ReImagine onRedesign={(md) => callAi(md)} />}
+            {/* The two working modes, behind ONE control.
+                They were two icon-only buttons on the bar — a wrench and a
+                crosshair — which is two mysteries the bar had to carry at all
+                times to say something each is one word long. In the menu they
+                get their names, their state gets a checkmark, and the bar keeps
+                one trigger. It accents when either mode is on, so nothing is
+                hidden that is currently doing something. */}
             {!isSameHtml && (
-              <Fix
-                active={isFixMode}
-                onToggle={() => setIsFixMode((v) => !v)}
-              />
-            )}
-            {!isSameHtml && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    size="sm"
-                    variant={isEditableModeEnabled ? "default" : "ghost"}
-                    onClick={() => {
-                      setIsEditableModeEnabled?.(!isEditableModeEnabled);
-                    }}
-                    className={classNames("h-[28px]", {
-                      "text-muted-foreground hover:bg-accent hover:!text-foreground":
-                        !isEditableModeEnabled,
-                    })}
-                    aria-label="Select an element to edit"
+              <DropdownMenu>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        aria-label={
+                          modes.length
+                            ? `More — ${modes.join(", ")} on`
+                            : "More composer modes"
+                        }
+                        className={classNames("rounded-full", {
+                          "text-[var(--brand-accent)] hover:!text-[var(--brand-accent)]":
+                            modes.length > 0,
+                          "text-muted-foreground hover:bg-accent hover:!text-foreground":
+                            modes.length === 0,
+                        })}
+                      >
+                        <MoreHorizontal className="size-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent align="start">
+                    {modes.length ? `${modes.join(", ")} on` : "More"}
+                  </TooltipContent>
+                </Tooltip>
+                <DropdownMenuContent align="start" side="top" className="w-64">
+                  <DropdownMenuCheckboxItem
+                    checked={isEditableModeEnabled}
+                    onCheckedChange={(v) => setIsEditableModeEnabled?.(!!v)}
                   >
-                    <Crosshair className="size-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent align="start">
-                  Select an element on the page to ask Hanzo edit it
-                  directly.
-                </TooltipContent>
-              </Tooltip>
+                    <span className="flex flex-col">
+                      <span>Select an element</span>
+                      <span className="text-xs text-muted-foreground">
+                        Click something on the page to edit it directly
+                      </span>
+                    </span>
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={isFixMode}
+                    onCheckedChange={(v) => setIsFixMode(!!v)}
+                  >
+                    <span className="flex flex-col">
+                      <span>Match a reference</span>
+                      <span className="text-xs text-muted-foreground">
+                        Attach an image; Hanzo changes only what differs
+                      </span>
+                    </span>
+                  </DropdownMenuCheckboxItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
             {/* <InviteFriends /> */}
           </div>
@@ -1282,19 +1341,11 @@ export function AskAI({
                 </button>
               ))}
             </div>
-            {isSmartRouting(model) && routedModel && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span className="text-xs text-muted-foreground px-2 py-1 rounded-md bg-muted truncate max-w-[10rem]">
-                    Routed: {routedModel}
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent align="end">
-                  Smart routing sent this request to {routedModel}. You&apos;re
-                  billed as what served you.
-                </TooltipContent>
-              </Tooltip>
-            )}
+            {/* Which model smart routing picked is a DETAIL of the model
+                choice, so it lives where the choice is made — inside the model
+                popover, on the Auto row. It used to be spelled out on the bar as
+                a "Routed: …" chip that took a tenth of the composer's width to
+                report something that changes per request. */}
             <Settings
               provider={provider as string}
               model={model as string}
@@ -1303,12 +1354,19 @@ export function AskAI({
               open={openProvider}
               error={providerError}
               onClose={setOpenProvider}
+              routedModel={routedModel}
             />
+            {/* The one control that must never be in doubt. It is the only
+                FILLED control on the strip — everything beside it is a ghost —
+                which is what makes it read as primary. It does not get to be a
+                different SIZE: every control in this app is one height, from
+                --control-h (tests/unit/control-scale.test.ts). */}
             {isAiWorking ? (
               <Button
                 size="icon"
                 variant="destructive"
                 onClick={stopController}
+                aria-label="Stop"
                 className="gap-1 rounded-full"
               >
                 <FaStopCircle className="size-4" />
@@ -1316,6 +1374,7 @@ export function AskAI({
             ) : (
               <Button
                 size="icon"
+                aria-label="Send"
                 className="rounded-full"
                 disabled={
                   isUploading ||
