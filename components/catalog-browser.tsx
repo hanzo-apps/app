@@ -361,7 +361,10 @@ export function CatalogBrowser({
         {buckets(facets, "official").map(([f, n]) => (
           <Pill
             key={f}
-            label={f === "true" ? OFFICIAL_LABEL : "third-party"}
+            // NOT "third-party": that is now a LANE with its own count, and one
+            // word meaning two different numbers on one screen is worse than the
+            // flattening it came from. Authorship's negative is "not ours".
+            label={f === "true" ? OFFICIAL_LABEL : "not ours"}
             count={n}
             active={official === f}
             onClick={() => setOfficial(official === f ? ALL : f)}
