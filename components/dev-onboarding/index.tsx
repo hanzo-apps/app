@@ -118,12 +118,14 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
       <div className="flex-1 overflow-y-auto bg-background flex justify-center items-start px-6 py-16">
         <div className="max-w-6xl w-full">
           <div className="text-center mb-12">
+            {/* Names the ACTION, not the company. Someone who clicked "build with
+                app" has already chosen Hanzo — greeting them by brand answers a
+                question they did not ask and hides the one they did. Each surface
+                states its own verb: hanzo.app builds, hanzo.chat asks, the
+                extension (which drives the browser) does. */}
             <h1 className="text-4xl font-medium text-foreground mb-4">
-              Welcome to Hanzo AI
+              Build anything
             </h1>
-            <p className="text-xl text-muted-foreground">
-              Your AI-powered development platform is ready
-            </p>
           </div>
 
           {/* Quick Start Options */}
