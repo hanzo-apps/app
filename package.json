@@ -96,7 +96,6 @@
     "react-markdown": "^10.1.0",
     "react-native": "0.83.9",
     "react-native-web": "0.21.2",
-    "react-resizable-panels": "^4.7.4",
     "react-use": "^17.6.0",
     "remark-gfm": "^4.0.1",
     "server-only": "^0.0.1",
@@ -174,7 +173,7 @@
       "better-sqlite3"
     ]
   },
-  "description": "Hanzo App \u2014 AI web & app builder on Hanzo Cloud",
+  "description": "Hanzo App — AI web & app builder on Hanzo Cloud",
   "author": "Hanzo AI, Inc.",
   "repository": {
     "type": "git",

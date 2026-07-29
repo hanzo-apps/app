@@ -1,4 +1,3 @@
-import path from 'node:path';
 import type { NextConfig } from 'next';
 
 import { transpiled } from './transpile';
@@ -73,13 +72,6 @@ const nextConfig: NextConfig = {
 
     config.resolve.alias = {
       ...config.resolve.alias,
-      // Exact-match ($) so ONLY the bare specifier is shimmed — the shim's own
-      // `react-resizable-panels/dist/...` subpath import must resolve to the
-      // real package, else it aliases back to the shim → infinite SSR recursion.
-      'react-resizable-panels$': path.resolve(
-        __dirname,
-        'lib/shims/react-resizable-panels.js',
-      ),
       // @hanzo/gui (Tamagui) targets react-native; on web the bare specifier
       // maps to react-native-web (exact-match so subpaths hit the real package).
       'react-native$': 'react-native-web',
