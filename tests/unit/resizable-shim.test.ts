@@ -46,7 +46,7 @@ describe("the shim cannot re-export itself", () => {
 });
 
 describe("the alias is exact-match only", () => {
-  const config = read("next.config.js");
+  const config = read("next.config.ts");
 
   it("aliases the bare specifier and nothing beneath it", () => {
     const keys = [...config.matchAll(/['"](react-resizable-panels[^'"]*)['"]\s*:/g)].map(
