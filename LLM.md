@@ -27,7 +27,27 @@ an app file can import BOTH.
 
 `@hanzo/gui` is already mounted app-wide (`app/providers.tsx` wraps the tree in
 `GuiProvider`), so a `@hanzo/ui@8` component costs only its own bytes — the
-Tamagui runtime is already paid for on every route.
+Tamagui runtime is already paid for on every route. Measured by building
+`app/chat/page.tsx`'s composer against `@hanzo/ui@8.0.29`: **+9,427 raw /
++4,941 gzip** over the whole client bundle, landing in ONE 14,623 / 5,703 chunk,
+with no `tailwind-merge` and no Radix added. Importing `Composer` alone left
+`Thread` and `Message` out of that chunk, so the `./chat` subpath tree-shakes.
+
+That adoption is NOT in the tree: `@hanzo/ui@8.0.29` is the first version with
+`./chat`, and npm still serves 8.0.28. Adopting it means one dependency line and
+one import — do not re-derive it, and never pin a `file:` tarball (that is what
+made `origin/blue/gui-migration` unmergeable).
+
+### Five composers, five Enter rules
+
+`components/editor/ask-ai` (the builder), `components/build-composer`,
+`components/chat-panel`, `app/chat` and `app/new` each hand-roll Enter-to-send,
+and they disagree: chat-panel needs Ctrl/Cmd+Enter, `app/new` accepts Cmd, Ctrl
+OR bare Enter, the rest are Enter-unless-Shift. **None checks
+`e.isComposing`**, so an open IME candidate — every Japanese, Chinese and Korean
+user, mid-word — submits the turn instead of accepting the candidate. The fix is
+`sends()` from `@hanzo/ui/chat`, which is one function with those cases already
+covered; do not write a sixth copy here.
 
 ### ONE next config
 
