@@ -10,11 +10,7 @@ import { TopUp, Subscribe } from '@/components/billing/purchase';
 import { useCloudBalance, spendableCents } from '@/lib/billing/live-balance';
 
 // UI Components
-import { Button } from "@hanzo/ui";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@hanzo/ui";
-import { Badge } from "@hanzo/ui";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@hanzo/ui";
-import { Progress } from "@hanzo/ui";
+import { Button, Card, CardContent, CardHeader, CardTitle, CardDescription, Badge, Tabs, TabsList, TabsTrigger, TabsContent, Progress } from '@hanzo/ui';
 
 // Icons
 import {

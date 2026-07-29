@@ -1,16 +1,7 @@
 'use client';
 
 import React from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@hanzo/ui';
-import { Button } from '@hanzo/ui';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@hanzo/ui';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, Button, Collapsible, CollapsibleContent, CollapsibleTrigger } from '@hanzo/ui';
 import { ChevronDown } from 'lucide-react';
 import { setTelemetryOptIn, track } from '@/lib/telemetry';
 

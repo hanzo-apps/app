@@ -31,13 +31,7 @@ import {
   MoreHorizontal,
   Users
 } from "lucide-react";
-import { Button } from "@hanzo/ui";
-import { Input } from "@/components/control";
-import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
-import { ScrollArea } from "@hanzo/ui";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/overlay";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";
-import { Textarea } from "@/components/control";
+import { Button, Input, Avatar, AvatarFallback, AvatarImage, ScrollArea, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea } from '@hanzo/ui';
 import { cn } from "@/lib/utils";
 import { DEFAULT_MODEL } from "@/lib/providers";
 import { useModels } from "@/lib/hooks/use-models";

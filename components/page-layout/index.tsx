@@ -9,15 +9,7 @@ import { SyncDialog } from '@/components/project-manager/sync-dialog';
 import { cn, logger } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { getSyncOverviewStatus } from '@/lib/vfs/auto-sync';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@hanzo/ui';
-import { Button } from '@hanzo/ui';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Button } from '@hanzo/ui';
 
 interface PageLayoutProps {
   children: React.ReactNode;

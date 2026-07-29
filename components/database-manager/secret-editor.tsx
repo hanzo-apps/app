@@ -2,16 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Secret } from '@/lib/vfs/types';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@hanzo/ui';
-import { Button } from '@hanzo/ui';
-import { Input } from '@/components/control';
-import { Label } from '@/components/control';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Button, Input, Label } from '@hanzo/ui';
 import { Loader2, AlertCircle, Eye, EyeOff, Info } from 'lucide-react';
 
 interface SecretEditorProps {

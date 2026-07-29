@@ -18,9 +18,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/overlay";
-import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
-import { Button } from "@hanzo/ui";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, Avatar, AvatarFallback, AvatarImage, Button } from '@hanzo/ui';
 import { useUser } from "@/hooks/useUser";
 
 export const UserMenu = ({ className }: { className?: string }) => {

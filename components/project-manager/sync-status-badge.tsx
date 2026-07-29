@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils';
 import { ItemSyncStatus } from '@/lib/vfs/sync-types';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/overlay';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@hanzo/ui';
 import {
   CheckCircle,
   ArrowUp,

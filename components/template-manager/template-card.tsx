@@ -4,12 +4,9 @@ import React from 'react';
 import { CustomTemplate, LICENSE_OPTIONS } from '@/lib/vfs/types';
 import type { BuiltInTemplateMetadata } from '@/lib/vfs/templates/registry';
 import { getRuntimeBadge } from '@/lib/runtimes/registry';
-import { Button } from '@hanzo/ui';
-import { Badge } from '@hanzo/ui';
+import { Button, Badge, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, Tooltip, TooltipContent, TooltipTrigger } from '@hanzo/ui';
 import { Trash2, Plus, FileBox, Download, Link2, ExternalLink, MoreVertical, Server } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/overlay';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/overlay';
 
 interface TemplateCardProps {
   template: CustomTemplate | BuiltInTemplateMetadata;

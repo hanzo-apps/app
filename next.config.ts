@@ -27,7 +27,6 @@ const nextConfig: NextConfig = {
     optimizePackageImports: [
       "@hanzo/ui",
       "lucide-react",
-      "@radix-ui",
       "framer-motion"
     ],
   },

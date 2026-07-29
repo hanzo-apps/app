@@ -7,11 +7,10 @@ import { ErrorBoundary } from '@/components/error-boundary';
 import IamClientProvider from '@/components/providers/IamClientProvider';
 import { AnalyticsRoot } from '@/components/providers/analytics';
 import { UsageLimitProvider } from '@/components/usage/usage-limit';
-import { Toaster } from '@hanzo/ui';
-import { TooltipProvider } from '@/components/overlay';
+import { Toaster, TooltipProvider } from '@hanzo/ui';
 import { ReactNode } from 'react';
 
-import guiConfig from '@/lib/gui.config';
+import guiConfig from '@hanzo/ui/gui-config';
 
 interface ProvidersProps {
   children: ReactNode;

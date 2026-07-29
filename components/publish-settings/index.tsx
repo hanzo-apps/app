@@ -2,31 +2,13 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Project, PublishSettings } from '@/lib/vfs/types';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@hanzo/ui';
-import { Button } from '@hanzo/ui';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@hanzo/ui';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Button, Tabs, TabsContent, TabsList, TabsTrigger, Dialog as AlertDialog, DialogContent as AlertDialogContent, DialogDescription as AlertDialogDescription, DialogFooter as AlertDialogFooter, DialogHeader as AlertDialogHeader, DialogTitle as AlertDialogTitle, Button as AlertDialogAction, Button as AlertDialogCancel } from '@hanzo/ui';
 import { GeneralTab } from './general-tab';
 import { ScriptsTab } from './scripts-tab';
 import { CdnTab } from './cdn-tab';
 import { AnalyticsTab } from './analytics-tab';
 import { SeoTab } from './seo-tab';
 import { ComplianceTab } from './compliance-tab';
-import {
-  Dialog as AlertDialog,
-  DialogContent as AlertDialogContent,
-  DialogDescription as AlertDialogDescription,
-  DialogFooter as AlertDialogFooter,
-  DialogHeader as AlertDialogHeader,
-  DialogTitle as AlertDialogTitle,
-} from '@hanzo/ui';
-import { Button as AlertDialogAction } from '@hanzo/ui';
-import { Button as AlertDialogCancel } from '@hanzo/ui';
 
 interface PublishSettingsModalProps {
   project: Project;

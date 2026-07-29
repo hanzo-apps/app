@@ -2,11 +2,7 @@
 
 import React from 'react';
 import { PublishSettings, ComplianceConfig } from '@/lib/vfs/types';
-import { Label } from '@/components/control';
-import { Input } from '@/components/control';
-import { Textarea } from '@/components/control';
-import { Switch } from '@/components/control';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
+import { Label, Input, Textarea, Switch, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import { Shield, Info, Cookie } from 'lucide-react';
 
 interface ComplianceTabProps {

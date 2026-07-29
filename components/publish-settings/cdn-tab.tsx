@@ -2,20 +2,7 @@
 
 import React, { useState } from 'react';
 import { PublishSettings, CdnConfig } from '@/lib/vfs/types';
-import { Button } from '@hanzo/ui';
-import { Input } from '@/components/control';
-import { Label } from '@/components/control';
-import { Switch } from '@/components/control';
-import { Badge } from '@hanzo/ui';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@hanzo/ui';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
+import { Button, Input, Label, Switch, Badge, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import { Plus, Edit, Trash2, Link2 } from 'lucide-react';
 
 interface CdnTabProps {

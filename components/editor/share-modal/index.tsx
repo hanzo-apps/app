@@ -11,9 +11,7 @@ import {
   Lock,
   UserPlus,
 } from "lucide-react";
-import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@hanzo/ui";
-import { Input, Label } from "@/components/control";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";
+import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import { useUser } from "@/hooks/useUser";
 
 interface ShareModalProps {

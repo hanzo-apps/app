@@ -2,12 +2,7 @@
 
 import React, { useState } from 'react';
 import { PublishSettings, SeoConfig } from '@/lib/vfs/types';
-import { Label } from '@/components/control';
-import { Input } from '@/components/control';
-import { Textarea } from '@/components/control';
-import { Button } from '@hanzo/ui';
-import { Badge } from '@hanzo/ui';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
+import { Label, Input, Textarea, Button, Badge, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import { Search, Image as ImageIcon, X } from 'lucide-react';
 
 interface SeoTabProps {

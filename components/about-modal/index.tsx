@@ -5,16 +5,8 @@ import React from 'react';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - JSON import for version string
 import pkg from '../../package.json';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@hanzo/ui';
-import { Button } from '@hanzo/ui';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Button, Badge } from '@hanzo/ui';
 import { Logo } from '@/components/ui/logo';
-import { Badge } from '@hanzo/ui';
 import { Github, ExternalLink } from 'lucide-react';
 import { DiscordIcon } from '@/components/ui/discord-icon';
 

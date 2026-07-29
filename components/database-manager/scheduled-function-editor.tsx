@@ -2,18 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ScheduledFunction, EdgeFunction } from '@/lib/vfs/types';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@hanzo/ui';
-import { Button } from '@hanzo/ui';
-import { Input } from '@/components/control';
-import { Label } from '@/components/control';
-import { Textarea } from '@/components/control';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Button, Input, Label, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import { Loader2, AlertCircle, Info } from 'lucide-react';
 
 interface ScheduledFunctionEditorProps {

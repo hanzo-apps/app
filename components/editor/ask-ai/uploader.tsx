@@ -2,8 +2,7 @@ import { useRef, useState } from "react";
 import { Plus, Upload, Sparkles } from "lucide-react";
 import Image from "next/image";
 
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/overlay";
-import { Button } from "@hanzo/ui";
+import { Popover, PopoverContent, PopoverTrigger, Button } from '@hanzo/ui';
 import { Page, Project } from "@/types";
 import Loading from "@/components/loading";
 import { RiCheckboxCircleFill } from "react-icons/ri";

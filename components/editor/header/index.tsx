@@ -12,7 +12,7 @@ import {
   Smartphone,
 } from "lucide-react";
 
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/overlay";
+import { Popover, PopoverContent, PopoverTrigger } from '@hanzo/ui';
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { PagePanel } from "@/components/editor/page-navigator";
 import { WorkspaceMenu } from "@/components/editor/workspace-menu";

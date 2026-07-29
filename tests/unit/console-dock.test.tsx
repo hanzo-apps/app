@@ -12,7 +12,7 @@ import { useEffect } from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
-import { TooltipProvider } from "@/components/overlay";
+import { TooltipProvider } from '@hanzo/ui';
 import { Console } from "@/components/editor/console";
 import { offer } from "@/components/editor/ask-ai/mic";
 import { BAR, COLLAPSE_AT, MIN_OPEN, resolveHeight, maxOpen } from "@/components/editor/console/dock";

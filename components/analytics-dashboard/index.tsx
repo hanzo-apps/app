@@ -2,20 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { Deployment } from '@/lib/vfs/types';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@hanzo/ui';
-import { Button } from '@hanzo/ui';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@hanzo/ui';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Button, Tabs, TabsContent, TabsList, TabsTrigger, toast } from '@hanzo/ui';
 import { HeatmapViewer } from '@/components/heatmap-viewer';
 import { SessionViewer } from '@/components/session-viewer';
 import { EngagementMetrics } from '@/components/engagement-metrics';
 import { X, BarChart3, MousePointerClick, Users, Activity, Download, Trash2 } from 'lucide-react';
-import { toast } from '@hanzo/ui';
 
 interface AnalyticsDashboardProps {
   deployment: Deployment;

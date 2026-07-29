@@ -1,8 +1,7 @@
 import { Wrench } from "lucide-react";
 import classNames from "classnames";
 
-import { Button } from "@hanzo/ui";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/overlay";
+import { Button, Tooltip, TooltipTrigger, TooltipContent } from '@hanzo/ui';
 
 // Fix — a bar toggle sibling to Re-imagine. Re-imagine seeds a NEW design from a
 // URL; Fix corrects the CURRENT design to match attached reference images. It is

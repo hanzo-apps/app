@@ -4,20 +4,7 @@ import React, { useState } from 'react';
 import { Project, LICENSE_OPTIONS } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';
 import { templateService, TemplateMetadata } from '@/lib/vfs/template-service';
-import { Button } from '@hanzo/ui';
-import { Input } from '@/components/control';
-import { Label } from '@/components/control';
-import { Textarea } from '@/components/control';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@hanzo/ui';
-import { toast } from '@hanzo/ui';
+import { Button, Input, Label, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, toast } from '@hanzo/ui';
 import { logger } from '@/lib/utils';
 import { Info, FileBox } from 'lucide-react';
 

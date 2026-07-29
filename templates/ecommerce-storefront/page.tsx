@@ -1,13 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardFooter } from "@hanzo/ui";
-import { Button } from "@hanzo/ui";
-import { Badge } from "@hanzo/ui";
-import { Input } from "@hanzo/ui";
-import { AspectRatio } from "@hanzo/ui";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@hanzo/ui";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
+import { Card, CardContent, CardFooter, Button, Badge, Input, AspectRatio, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Tabs, TabsContent, TabsList, TabsTrigger } from '@hanzo/ui';
 import { ShoppingCart, Search, Star, Filter, Heart, Share2 } from "lucide-react";
 
 const products = [

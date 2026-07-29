@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { Project } from '@/lib/vfs/types';
 import { getSyncOverviewStatus, SyncOverviewStatus } from '@/lib/vfs/auto-sync';
-import { Button } from '@hanzo/ui';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@hanzo/ui';
 import { HanzoLogo } from '@/components/HanzoLogo';
 import {
   Activity,
@@ -35,7 +35,6 @@ import {
   Copy,
   Gift,
 } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/overlay';
 import { cn } from '@/lib/utils';
 import { OrgProvider } from '@/lib/org/client';
 import { OrgSwitcher } from '@/components/org-switcher';

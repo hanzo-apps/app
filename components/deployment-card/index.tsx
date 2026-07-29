@@ -2,9 +2,7 @@
 
 import React from 'react';
 import { Deployment, Project } from '@/lib/vfs/types';
-import { Button } from '@hanzo/ui';
-import { Badge } from '@hanzo/ui';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/overlay';
+import { Button, Badge, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@hanzo/ui';
 import {
   Globe,
   Settings,

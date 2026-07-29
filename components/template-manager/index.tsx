@@ -6,11 +6,9 @@ import { vfs } from '@/lib/vfs';
 import { templateService } from '@/lib/vfs/template-service';
 import { createProjectFromTemplate, BUILT_IN_TEMPLATES, type BuiltInTemplateMetadata } from '@/lib/vfs/templates';
 import { BAREBONES_PROJECT_TEMPLATE, DEMO_PROJECT_TEMPLATE, CONTACT_LANDING_PROJECT_TEMPLATE, BLOG_PROJECT_TEMPLATE, VIBE_CHECK_PROJECT_TEMPLATE } from '@/lib/vfs/project-templates';
-import { Button } from '@hanzo/ui';
-import { Input } from '@/components/control';
+import { Button, Input, toast, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Popover, PopoverContent, PopoverTrigger } from '@hanzo/ui';
 import { TemplateCard } from './template-card';
 import { logger } from '@/lib/utils';
-import { toast } from '@hanzo/ui';
 import { provisionBackendFeatures } from '@/lib/vfs/provision-backend-features';
 import {
   Upload,
@@ -21,8 +19,6 @@ import {
   Package,
   Filter
 } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/overlay';
 
 interface TemplateManagerProps {
   onProjectCreated?: (projectId: string, hasBackendFeatures: boolean) => void;

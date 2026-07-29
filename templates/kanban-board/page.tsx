@@ -13,15 +13,7 @@ interface Task {
   attachments: number;
   labels: string[];
 }
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@hanzo/ui";
-import { Button } from "@hanzo/ui";
-import { Badge } from "@hanzo/ui";
-import { ScrollArea } from "@hanzo/ui";
-import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@hanzo/ui";
-import { Input } from "@hanzo/ui";
-import { Textarea } from "@hanzo/ui";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@hanzo/ui";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Button, Badge, ScrollArea, Avatar, AvatarFallback, AvatarImage, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, Input, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import {
   Plus,
   MoreHorizontal,

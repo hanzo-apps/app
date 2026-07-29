@@ -1,11 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@hanzo/ui";
-import { Button } from "@hanzo/ui";
-import { Badge } from "@hanzo/ui";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@hanzo/ui";
-import { Progress } from "@hanzo/ui";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, Button, Badge, Tabs, TabsContent, TabsList, TabsTrigger, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Progress } from '@hanzo/ui';
 import {
   TrendingUp,
   TrendingDown,

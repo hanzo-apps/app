@@ -9,11 +9,7 @@
 // See universe/docs/architecture/hanzo-app-cloud-integration.md §6.
 
 import { useCallback, useEffect, useState } from "react";
-import { Card, CardContent, CardFooter } from "@hanzo/ui";
-import { Button } from "@hanzo/ui";
-import { Badge } from "@hanzo/ui";
-import { Input } from "@/components/control";
-import { AspectRatio } from "@hanzo/ui";
+import { Card, CardContent, CardFooter, Button, Badge, Input, AspectRatio } from '@hanzo/ui';
 import { ShoppingCart, Search, Store as StoreIcon, Loader2 } from "lucide-react";
 
 interface StoreProduct {

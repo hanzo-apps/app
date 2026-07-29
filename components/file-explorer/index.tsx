@@ -22,10 +22,7 @@ import {
   Home,
   ScrollText
 } from 'lucide-react';
-import { Button } from '@hanzo/ui';
-import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/overlay';
-import { Input } from '@/components/control';
-import { toast } from '@hanzo/ui';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Input, toast } from '@hanzo/ui';
 
 interface FileExplorerProps {
   projectId: string;

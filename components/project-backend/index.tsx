@@ -2,24 +2,12 @@
 
 import React, { useState, useMemo } from 'react';
 import { vfs } from '@/lib/vfs';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@hanzo/ui';
+import { Tabs, TabsContent, TabsList, TabsTrigger, Switch, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, Dialog, DialogContent, DialogHeader, DialogTitle, Tooltip, TooltipContent, TooltipTrigger, toast } from '@hanzo/ui';
 import { FunctionsManager } from '@/components/database-manager/functions-manager';
 import { ServerFunctionsManager } from '@/components/database-manager/server-functions-manager';
 import { SecretsManager } from '@/components/database-manager/secrets-manager';
 import { ScheduledFunctionsManager } from '@/components/database-manager/scheduled-functions-manager';
 import { Code2, Wrench, Key, Clock, Lock, Settings2, PowerOff, Database } from 'lucide-react';
-import { Switch } from '@/components/control';
-import { Input } from '@/components/control';
-import { Label } from '@/components/control';
-import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/overlay';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@hanzo/ui';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/overlay';
-import { toast } from '@hanzo/ui';
 import { logger } from '@/lib/utils';
 import type { Project, ProjectRuntime } from '@/lib/vfs/types';
 import { getProjectRuntimes } from '@/lib/runtimes/registry';
