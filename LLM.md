@@ -16,27 +16,34 @@ Directory notes load on demand: `components/landing/CLAUDE.md` for the
 marketing landing, `components/editor/CLAUDE.md` for the `/dev` builder chrome
 and the design-token convergence.
 
-### Two packages, two names
+### One library: `@hanzo/ui@8`
 
-`@hanzo/ui-shadcn@5.9.x` is the Radix/Tailwind library this app's chrome is
-built from. It used to be installed under the alias `"@hanzo/ui":
-"npm:@hanzo/ui-shadcn@^5.9.0"`, which spent the name that belongs to the real
-`@hanzo/ui@8+` — the one canonical library, built on `@hanzo/gui`, where the
-chat shell lives. The alias is gone; each package now goes by its own name, so
-an app file can import BOTH.
+The chrome is `@hanzo/ui@8+`, the canonical library built on `@hanzo/gui`.
+`@hanzo/ui-shadcn` (Radix/Tailwind) is GONE — 155 files moved off it. Do not
+reintroduce it, and do not add Radix or `tailwind-merge` back alongside it.
 
-`@hanzo/gui` is already mounted app-wide (`app/providers.tsx` wraps the tree in
-`GuiProvider`), so a `@hanzo/ui@8` component costs only its own bytes — the
-Tamagui runtime is already paid for on every route. Measured by building
-`app/chat/page.tsx`'s composer against `@hanzo/ui@8.0.29`: **+9,427 raw /
-+4,941 gzip** over the whole client bundle, landing in ONE 14,623 / 5,703 chunk,
-with no `tailwind-merge` and no Radix added. Importing `Composer` alone left
-`Thread` and `Message` out of that chunk, so the `./chat` subpath tree-shakes.
+`@hanzo/gui` is mounted app-wide (`app/providers.tsx` wraps the tree in
+`GuiProvider`), so the Tamagui runtime is already paid for on every route and a
+`@hanzo/ui` component costs only its own bytes.
 
-That adoption is NOT in the tree: `@hanzo/ui@8.0.29` is the first version with
-`./chat`, and npm still serves 8.0.28. Adopting it means one dependency line and
-one import — do not re-derive it, and never pin a `file:` tarball (that is what
-made `origin/blue/gui-migration` unmergeable).
+**These are gui primitives, not DOM elements, and that difference is the whole
+migration.** A prop that looks like an HTML attribute may not be typed, and one
+that IS typed may not behave the way the DOM one does:
+
+- The field emits **text**, not a change event: `onChangeText={(t) => …}`, never
+  `onChange={(e) => e.target.value}`. The DOM spelling type-checked only while
+  the package was declared `any`, and it never fired — six handlers in this app
+  were dead code that way.
+- Toast placement belongs to the `Toaster` viewport. There is no per-toast
+  `position`.
+- Web-only attributes (`title`, `type`, `indicatorClassName`) are declared on
+  the components that spread them, from `@hanzo/ui@8.0.33`. If one is missing,
+  widen the type in `@hanzo/ui` — do not work around it here, and never
+  re-declare the package as `any`.
+
+That last rule has teeth: `@types/hanzo-ui.d.ts` used to declare every export as
+`any`. "Zero type errors" then meant no types existed to check. Deleting it
+surfaced 79 real errors, one of which was the dead-handler bug above.
 
 ### Five composers, five Enter rules
 
@@ -57,30 +64,24 @@ silently wins and any edit to the `.ts` is a no-op — that happened, and it cos
 a release. The transpile list lives in `./transpile.js` because `jest.config.js`
 needs the same array; one list, so build and tests cannot disagree.
 
-### The `react-resizable-panels` shim (fixed — keep it, keep it exact-match)
+### The `react-resizable-panels` shim (GONE — do not restore it)
 
-`next.config.ts` aliases the bare specifier `react-resizable-panels$` →
-`lib/shims/react-resizable-panels.js`. The shim exists because
-`@hanzo/ui-shadcn`'s `resizable` module imports the **v2** names `{ Panel,
-PanelGroup, PanelResizeHandle }` while the installed package is **v4.7.4**,
-which exports `{ Panel, Group, Separator }`. Nothing in the app imports the
-package directly, but the `@hanzo/ui-shadcn` barrel pulls that module in — so
-the bare specifier must resolve to something carrying BOTH name sets. **The
-shim is load-bearing; do not delete it.**
+There used to be a shim, a webpack alias pointing at it, a test guarding it and
+a dependency under it. All four served exactly one consumer: `@hanzo/ui-shadcn`'s
+`resizable` module, which imported the v2 names `{ Panel, PanelGroup,
+PanelResizeHandle }` from a package that had moved to `{ Panel, Group,
+Separator }`. Nothing in this app ever imported it; the shadcn barrel pulled it
+in.
 
-It used to re-export from the bare specifier, which the alias caught again and
-pointed back at the shim — it re-exported *itself*: infinite recursion in
-`next dev` (`RangeError` on every route) and silently `undefined` bindings in
-the production build. Two things keep that from coming back, and
-`tests/unit/resizable-shim.test.ts` fails if either is undone:
+That barrel is gone, so the chain lost its only consumer and became a closed
+loop: an alias pointing at a shim, guarded by a test that tested the shim.
+Deleted whole. The builder's own resizers (the chat/preview splitter, the
+console dock) are hand-rolled pointer handlers and never used the package, so
+nothing visible changed.
 
-1. the shim imports the `react-resizable-panels/dist/…` **subpath**, never the
-   bare specifier, and
-2. the alias key is **exact-match** (`…$`), so only the bare specifier is
-   caught and the shim's own subpath import reaches the real package.
-
-Note that the builder's own resizers (the chat/preview splitter and the console
-dock) are hand-rolled pointer handlers — they do not use this package at all.
+Recorded because the shape recurs: when a dependency's last real consumer
+leaves, the scaffolding around it keeps passing its own tests and reads as
+load-bearing. Check who imports it, not whether it is referenced.
 
 Note: a local `next start` bounces anon users to IAM (`hanzo.id`/`console.hanzo.ai`)
 because the prod build points auth at the in-cluster `iam.hanzo.svc` (unreachable
