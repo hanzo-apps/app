@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser } from "@/hooks/useUser";
-import { Button } from "@hanzo/ui";
+import { Button } from "@hanzo/ui-shadcn";
 
 export const NotLogged = () => {
   const { openLoginWindow } = useUser();

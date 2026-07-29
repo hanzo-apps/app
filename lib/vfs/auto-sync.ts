@@ -8,7 +8,7 @@
 import { Project } from './types';
 import { vfs } from './index';
 import { logger } from '@/lib/utils';
-import { toast } from '@hanzo/ui';
+import { toast } from '@hanzo/ui-shadcn';
 
 export type SyncStatus = 'synced' | 'local-newer' | 'server-newer' | 'conflict' | 'never-synced' | 'local-only' | 'server-only';
 

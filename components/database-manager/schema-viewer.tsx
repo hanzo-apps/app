@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { TableInfo } from '@/lib/vfs/types';
 import { ChevronRight, ChevronDown, Table2, KeyRound, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@hanzo/ui';
+import { Button } from '@hanzo/ui-shadcn';
 
 interface SchemaViewerProps {
   deploymentId?: string;

@@ -7,8 +7,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@hanzo/ui";
-import { Button } from "@hanzo/ui";
+} from "@hanzo/ui-shadcn";
+import { Button } from "@hanzo/ui-shadcn";
 import { ExternalLink, AlertTriangle } from "lucide-react";
 import { SITE_URL } from "@/lib/site";
 

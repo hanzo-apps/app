@@ -8,9 +8,9 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@hanzo/ui';
-import { Button } from '@hanzo/ui';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@hanzo/ui';
+} from '@hanzo/ui-shadcn';
+import { Button } from '@hanzo/ui-shadcn';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@hanzo/ui-shadcn';
 import { GeneralTab } from '../publish-settings/general-tab';
 import { ScriptsTab } from '../publish-settings/scripts-tab';
 import { CdnTab } from '../publish-settings/cdn-tab';

@@ -23,7 +23,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Building2, Check, ChevronsUpDown, Loader2, Plus, Search, Settings, Sparkles } from 'lucide-react';
-import { Button } from '@hanzo/ui';
+import { Button } from '@hanzo/ui-shadcn';
 
 import { useOrg } from '@/lib/org/client';
 import { currentOrg, switchOrg, filterOrgs, isScopedAway, setCurrentOrg, getHomeOrg, orgDisplayName, titleCase } from '@/lib/org-scope';

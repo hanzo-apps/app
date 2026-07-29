@@ -5,7 +5,7 @@ import { MultiTabEditor, openFileInEditor } from '@/components/code-tabs';
 import { FileExplorer } from '@/components/file-explorer';
 import { VirtualFile } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';
-import { Button } from '@hanzo/ui';
+import { Button } from '@hanzo/ui-shadcn';
 import { FolderTree, Code2, Columns2, PanelLeft, PanelRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

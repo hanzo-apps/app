@@ -6,7 +6,7 @@ import {
   Loader2, AlertCircle, RefreshCw, Trash2, CheckCircle2, XCircle,
   Clock, ArrowRight
 } from 'lucide-react';
-import { Button } from '@hanzo/ui';
+import { Button } from '@hanzo/ui-shadcn';
 import { cn } from '@/lib/utils';
 
 interface LogsViewerProps {

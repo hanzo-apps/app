@@ -13,7 +13,7 @@ import {
   X,
 } from "lucide-react";
 import classNames from "classnames";
-import { toast } from "@hanzo/ui";
+import { toast } from "@hanzo/ui-shadcn";
 
 import { Page } from "@/types";
 import {

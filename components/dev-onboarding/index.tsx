@@ -12,10 +12,10 @@ import {
   Database,
   Globe,
 } from "lucide-react";
-import { Button } from "@hanzo/ui";
+import { Button } from "@hanzo/ui-shadcn";
 import { Textarea } from "@/components/control";
-import { Card } from "@hanzo/ui";
-import { Badge } from "@hanzo/ui";
+import { Card } from "@hanzo/ui-shadcn";
+import { Badge } from "@hanzo/ui-shadcn";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {

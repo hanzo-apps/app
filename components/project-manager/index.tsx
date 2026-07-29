@@ -7,7 +7,7 @@ import { getProjectRuntimes } from '@/lib/runtimes/registry';
 import { vfs } from '@/lib/vfs';
 import { templateService } from '@/lib/vfs/template-service';
 import { logger } from '@/lib/utils';
-import { Button } from '@hanzo/ui';
+import { Button } from '@hanzo/ui-shadcn';
 import { Input } from '@/components/control';
 import { Textarea } from '@/components/control';
 import { ProjectCard } from './project-card';
@@ -32,9 +32,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@hanzo/ui';
+} from '@hanzo/ui-shadcn';
 import { Label } from '@/components/control';
-import { toast } from '@hanzo/ui';
+import { toast } from '@hanzo/ui-shadcn';
 import { EVENTS } from '@hanzo/event';
 import { useAnalytics } from '@hanzo/event/react';
 import { provisionBackendFeatures } from '@/lib/vfs/provision-backend-features';

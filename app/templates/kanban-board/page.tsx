@@ -13,12 +13,12 @@ interface Task {
   attachments: number;
   labels: string[];
 }
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@hanzo/ui";
-import { Button } from "@hanzo/ui";
-import { Badge } from "@hanzo/ui";
-import { ScrollArea } from "@hanzo/ui";
-import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@hanzo/ui";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@hanzo/ui-shadcn";
+import { Button } from "@hanzo/ui-shadcn";
+import { Badge } from "@hanzo/ui-shadcn";
+import { ScrollArea } from "@hanzo/ui-shadcn";
+import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui-shadcn";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@hanzo/ui-shadcn";
 import { Input } from "@/components/control";
 import { Textarea } from "@/components/control";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";

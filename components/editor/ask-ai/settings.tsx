@@ -3,7 +3,7 @@ import { PiGearSixFill } from "react-icons/pi";
 import { Check } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/overlay";
-import { ModelSelector, type ModelCatalogEntry } from "@hanzo/ui/models";
+import { ModelSelector, type ModelCatalogEntry } from "@hanzo/ui-shadcn/models";
 import {
   AUTO_MODEL,
   FALLBACK_MODELS,
@@ -12,7 +12,7 @@ import {
   type ModelOption,
 } from "@/lib/providers";
 import { useModels } from "@/lib/hooks/use-models";
-import { Button } from "@hanzo/ui";
+import { Button } from "@hanzo/ui-shadcn";
 import { useMemo } from "react";
 
 /**

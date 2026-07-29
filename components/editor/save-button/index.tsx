@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import { toast } from "@hanzo/ui";
+import { toast } from "@hanzo/ui-shadcn";
 import { MdSave } from "react-icons/md";
 import { useParams } from "next/navigation";
 
 import Loading from "@/components/loading";
-import { Button } from "@hanzo/ui";
+import { Button } from "@hanzo/ui-shadcn";
 import { api } from "@/lib/api";
 import { Page } from "@/types";
 

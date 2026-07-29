@@ -16,8 +16,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@hanzo/ui';
-import { Button } from '@hanzo/ui';
+} from '@hanzo/ui-shadcn';
+import { Button } from '@hanzo/ui-shadcn';
 
 interface PageLayoutProps {
   children: React.ReactNode;

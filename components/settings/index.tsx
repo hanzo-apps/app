@@ -2,19 +2,19 @@
 
 import React, { useState, useEffect } from 'react';
 import { configManager, AppSettings, CostSettings } from '@/lib/config/storage';
-import { Button } from '@hanzo/ui';
+import { Button } from '@hanzo/ui-shadcn';
 import { Input } from '@/components/control';
 import { Label } from '@/components/control';
 import { Switch } from '@/components/control';
-import { toast } from '@hanzo/ui';
+import { toast } from '@hanzo/ui-shadcn';
 import { useTheme } from 'next-themes';
 import { DollarSign, AlertTriangle, Info, Download, Upload, Database, ChevronDown, Palette } from 'lucide-react';
 import { CostCalculator } from '@/lib/llm/cost-calculator';
 import { AboutModal } from '@/components/about-modal';
 import { BackupService } from '@/lib/vfs/backup-service';
 import { setTelemetryOptIn } from '@/lib/telemetry';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@hanzo/ui';
-import { ToggleGroup, ToggleGroupItem } from '@hanzo/ui';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@hanzo/ui-shadcn';
+import { ToggleGroup, ToggleGroupItem } from '@hanzo/ui-shadcn';
 
 interface SettingsPanelProps {
   onClose?: () => void;

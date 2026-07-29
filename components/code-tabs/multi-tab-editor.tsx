@@ -5,7 +5,7 @@ import { CodeEditor } from '@/components/code-editor';
 import { VirtualFile } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';
 import { X, Code2, Save, FileCode, Image as ImageIcon, AlertCircle } from 'lucide-react';
-import { Button } from '@hanzo/ui';
+import { Button } from '@hanzo/ui-shadcn';
 import { cn } from '@/lib/utils';
 
 interface MultiTabEditorProps {

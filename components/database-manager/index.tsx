@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@hanzo/ui';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@hanzo/ui-shadcn';
 import { DataBrowser } from './data-browser';
 import { SchemaViewer } from './schema-viewer';
 import { SqlEditor } from './sql-editor';

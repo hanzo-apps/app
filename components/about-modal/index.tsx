@@ -8,10 +8,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@hanzo/ui';
-import { Button } from '@hanzo/ui';
+} from '@hanzo/ui-shadcn';
+import { Button } from '@hanzo/ui-shadcn';
 import { Logo } from '@/components/ui/logo';
-import { Badge } from '@hanzo/ui';
+import { Badge } from '@hanzo/ui-shadcn';
 import { Github, ExternalLink } from 'lucide-react';
 import { DiscordIcon } from '@/components/ui/discord-icon';
 

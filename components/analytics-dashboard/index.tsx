@@ -8,14 +8,14 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@hanzo/ui';
-import { Button } from '@hanzo/ui';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@hanzo/ui';
+} from '@hanzo/ui-shadcn';
+import { Button } from '@hanzo/ui-shadcn';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@hanzo/ui-shadcn';
 import { HeatmapViewer } from '@/components/heatmap-viewer';
 import { SessionViewer } from '@/components/session-viewer';
 import { EngagementMetrics } from '@/components/engagement-metrics';
 import { X, BarChart3, MousePointerClick, Users, Activity, Download, Trash2 } from 'lucide-react';
-import { toast } from '@hanzo/ui';
+import { toast } from '@hanzo/ui-shadcn';
 
 interface AnalyticsDashboardProps {
   deployment: Deployment;

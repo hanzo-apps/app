@@ -4,11 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { Skill } from '@/lib/vfs/skills/types';
 import { skillsService } from '@/lib/vfs/skills';
 import { createSkillTemplate, parseSkillFile, generateSkillFile } from '@/lib/vfs/skills/parser';
-import { Button } from '@hanzo/ui';
+import { Button } from '@hanzo/ui-shadcn';
 import { Input } from '@/components/control';
 import { Textarea } from '@/components/control';
 import { Label } from '@/components/control';
-import { toast } from '@hanzo/ui';
+import { toast } from '@hanzo/ui-shadcn';
 import { ArrowLeft, Save, FileText } from 'lucide-react';
 
 interface SkillEditorProps {

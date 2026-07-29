@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@hanzo/ui";
-import { Button } from "@hanzo/ui";
+import { Card, CardContent, CardHeader, CardTitle } from "@hanzo/ui-shadcn";
+import { Button } from "@hanzo/ui-shadcn";
 import { Textarea } from "@/components/control";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui-shadcn";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";
-import { Separator } from "@hanzo/ui";
-import { ScrollArea } from "@hanzo/ui";
+import { Separator } from "@hanzo/ui-shadcn";
+import { ScrollArea } from "@hanzo/ui-shadcn";
 import {
   Bold,
   Italic,
@@ -42,8 +42,8 @@ Built with **@hanzo/ui components** for a seamless writing experience.
 ## Code Example
 
 \`\`\`typescript
-import { Card } from "@hanzo/ui";
-import { Button } from "@hanzo/ui";
+import { Card } from "@hanzo/ui-shadcn";
+import { Button } from "@hanzo/ui-shadcn";
 
 export function MyComponent() {
   return (

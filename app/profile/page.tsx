@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Save, Camera, Link as LinkIcon, Twitter, Github, Globe } from "lucide-react";
-import { Button } from "@hanzo/ui";
-import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
+import { Button } from "@hanzo/ui-shadcn";
+import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui-shadcn";
 import { useUser } from "@/hooks/useUser";
-import { toast } from "@hanzo/ui";
+import { toast } from "@hanzo/ui-shadcn";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { MyBuilds } from "@/components/builds/my-builds";
 

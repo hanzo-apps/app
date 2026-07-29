@@ -6,11 +6,11 @@ import { vfs } from '@/lib/vfs';
 import { templateService } from '@/lib/vfs/template-service';
 import { createProjectFromTemplate, BUILT_IN_TEMPLATES, type BuiltInTemplateMetadata } from '@/lib/vfs/templates';
 import { BAREBONES_PROJECT_TEMPLATE, DEMO_PROJECT_TEMPLATE, CONTACT_LANDING_PROJECT_TEMPLATE, BLOG_PROJECT_TEMPLATE, VIBE_CHECK_PROJECT_TEMPLATE } from '@/lib/vfs/project-templates';
-import { Button } from '@hanzo/ui';
+import { Button } from '@hanzo/ui-shadcn';
 import { Input } from '@/components/control';
 import { TemplateCard } from './template-card';
 import { logger } from '@/lib/utils';
-import { toast } from '@hanzo/ui';
+import { toast } from '@hanzo/ui-shadcn';
 import { provisionBackendFeatures } from '@/lib/vfs/provision-backend-features';
 import {
   Upload,

@@ -6,7 +6,7 @@ import { SummaryBar } from './summary-bar';
 import { SyncItemRow } from '../sync-item-row';
 import { skillsService } from '@/lib/vfs/skills/service';
 import { getSyncManager } from '@/lib/vfs/sync-manager';
-import { toast } from '@hanzo/ui';
+import { toast } from '@hanzo/ui-shadcn';
 import { logger } from '@/lib/utils';
 
 interface SkillsTabProps {

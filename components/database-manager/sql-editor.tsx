@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { CodeEditor } from '@/components/code-editor';
 import { Play, Loader2, AlertCircle, CheckCircle2, History, X } from 'lucide-react';
-import { Button } from '@hanzo/ui';
+import { Button } from '@hanzo/ui-shadcn';
 import { cn } from '@/lib/utils';
 
 interface SqlEditorProps {

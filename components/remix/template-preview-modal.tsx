@@ -9,7 +9,7 @@
  * and link straight to their existing detail page instead.
  */
 
-import { Dialog, DialogContent, DialogTitle, Button } from '@hanzo/ui';
+import { Dialog, DialogContent, DialogTitle, Button } from '@hanzo/ui-shadcn';
 import { ExternalLink, Sparkles, Gamepad2 } from 'lucide-react';
 import Link from 'next/link';
 import type { ResourceItem } from '@/lib/resources-catalog';
