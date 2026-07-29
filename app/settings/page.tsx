@@ -219,7 +219,7 @@ export default function SettingsPage() {
                   <h2 className="text-xl font-medium text-foreground mb-4">Security Settings</h2>
 
                   {/* Password, MFA, sessions and account deletion are owned by
-                      IAM (hanzo.id / Casdoor account page) — the ONE identity
+                      IAM (the hanzo.id account page) — the ONE identity
                       source. Link out rather than re-implement auth here. */}
                   <div className="space-y-4">
                     <a href="https://hanzo.id/account" target="_blank" rel="noopener noreferrer" className="block">

@@ -33,12 +33,12 @@ export const useUser = () => {
 
   // The SDK's runtime `user` is the OIDC userinfo response (sub/email/name/
   // picture — see react.js setUser(getUserInfo())); its .d.ts mislabels it as
-  // the Casdoor admin User shape. Type the claims here until the SDK fixes it.
+  // the IAM admin User shape. Type the claims here until the SDK fixes it.
   const iamUser = rawIamUser as
     | { sub: string; email?: string; name?: string; picture?: string }
     | null;
 
-  // Who to SHOW. IAM's `name` claim carries the Casdoor username, which for
+  // Who to SHOW. IAM's `name` claim carries the account username, which for
   // SSO/seeded accounts IS the uuid — reading it directly is how the header came
   // to render `e7d7fda0-…`. `resolveIdentity` walks every name claim, refuses
   // anything id-SHAPED whatever key it arrived under, and falls back to the

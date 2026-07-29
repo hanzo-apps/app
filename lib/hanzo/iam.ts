@@ -96,7 +96,7 @@ function iamOrigin(): string {
  * authorize URL — PKCE, OIDC discovery, and the app's REGISTERED `/auth/callback`
  * redirect_uri — is built entirely by the SDK engine (`getSigninUrl`); we only
  * add the `provider` hint (IAM auto-hops straight to the provider's chooser) and
- * `method=link` (Casdoor's account-link method, encoded into the OAuth state).
+ * `method=link` (IAM's account-link method, encoded into the OAuth state).
  * The redirect_uri is the app's own `/auth/callback` (registered for `hanzo-app`)
  * — NEVER IAM's own `/callback`, which the app can't register and which is the
  * source of the "Redirect URI … doesn't exist in the allowed list" error.
