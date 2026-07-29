@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import { vfs } from '@/lib/vfs';
 import { checkpointManager } from '@/lib/vfs/checkpoint';
 import { saveManager } from '@/lib/vfs/save-manager';
@@ -27,7 +26,7 @@ function wait(ms: number, signal?: AbortSignal): Promise<void> {
 
 function toTranscriptId(): string {
   try {
-    return uuidv4();
+    return crypto.randomUUID();
   } catch {
     return `evt-${Date.now()}-${Math.random()}`;
   }

@@ -1,9 +1,7 @@
 'use client';
 
 import { XStack, SizableText, Paragraph, YStack } from '@hanzo/gui';
-import { TiUserAdd } from "react-icons/ti";
-import { Link } from "lucide-react";
-import { FaXTwitter } from "react-icons/fa6";
+import { Link, Twitter, UserPlus } from "lucide-react";
 import { useCopyToClipboard } from "react-use";
 import { toast, Button, Dialog, DialogContent, DialogTitle, DialogTrigger } from '@hanzo/ui';
 
@@ -21,7 +19,7 @@ export function InviteFriends() {
             variant="outline"
             borderColor="$borderColor" color="$color11" hoverStyle={{ borderColor: "$borderColor", color: "$color" }}
           >
-            <TiUserAdd size={16} />
+            <UserPlus size={16} />
           </Button>
         </DialogTrigger>
         <DialogContent borderRadius="$6" backgroundColor="$background" color="$color" borderColor="$borderColor" $sm={{ maxWidth: 512 }} $lg={{ padding: "$6" }}>
@@ -52,7 +50,7 @@ export function InviteFriends() {
                 rel="noopener noreferrer"
               >
                 <Button variant="outline" size="sm">
-                  <FaXTwitter size={16} />
+                  <Twitter size={16} />
                   Share on
                 </Button>
               </a>

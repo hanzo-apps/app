@@ -1,9 +1,7 @@
 "use client";
 
 import { YStack, XStack } from '@hanzo/gui';
-import { ArrowUp } from "lucide-react";
-import { PiGearSixFill } from "react-icons/pi";
-import { TiUserAdd } from "react-icons/ti";
+import { ArrowUp, Settings, UserPlus } from "lucide-react";
 
 import { Button, Textarea } from '@hanzo/ui';
 
@@ -25,12 +23,12 @@ export const AskAi = () => {
               variant="outline"
               borderColor="$borderColor" color="$color11" hoverStyle={{ borderColor: "$color", color: "$color" }}
             >
-              <TiUserAdd size={16} />
+              <UserPlus size={16} />
             </Button>
           </XStack>
           <XStack alignItems="center" justifyContent="flex-end" gap="$2">
             <Button backgroundColor="$color12" color="$color4" size="sm">
-              <PiGearSixFill size={16} />
+              <Settings size={16} />
               Settings
             </Button>
             <Button size="iconXs">

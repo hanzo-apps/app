@@ -3,12 +3,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { toast, Button } from '@hanzo/ui';
-import { MdSave } from "react-icons/md";
 import { useParams } from "next/navigation";
 
 import Loading from "@/components/loading";
 import { api } from "@/lib/api";
 import { Page } from "@/types";
+import { Save } from "lucide-react";
 
 export function SaveButton({
   pages,
@@ -66,7 +66,7 @@ export function SaveButton({
         onClick={updateSpace}
         disabled={loading}
       >
-        <MdSave size={14} />
+        <Save size={14} />
         {loading ? "Publishing…" : "Publish"}
         {loading && <Loading className="ml-1 size-3.5 animate-spin" />}
       </Button>

@@ -14,7 +14,6 @@
  */
 
 import type { Database } from 'better-sqlite3';
-import { v4 as uuidv4 } from 'uuid';
 import { VirtualFile, FileTreeNode, Deployment, EdgeFunction, FunctionLog, TableInfo, ServerFunction, Secret, ScheduledFunction } from '../types';
 import { encryptSecret, isEncryptionConfigured } from '../../edge-functions/secrets-crypto';
 import { getRuntimeDatabaseConnection, closeRuntimeDatabase } from './sqlite-connection';
@@ -542,7 +541,7 @@ export class RuntimeDatabase {
   // ============================================
 
   createFunction(fn: Omit<EdgeFunction, 'id' | 'projectId' | 'createdAt' | 'updatedAt'>): string {
-    const id = uuidv4();
+    const id = crypto.randomUUID();
     const now = new Date().toISOString();
 
     const stmt = this.db.prepare(`
@@ -697,7 +696,7 @@ export class RuntimeDatabase {
   // ============================================
 
   createServerFunction(fn: Omit<ServerFunction, 'id' | 'projectId' | 'createdAt' | 'updatedAt'>): string {
-    const id = uuidv4();
+    const id = crypto.randomUUID();
     const now = new Date().toISOString();
 
     const stmt = this.db.prepare(`
@@ -781,7 +780,7 @@ export class RuntimeDatabase {
       throw new Error('Secrets encryption not configured. Set SECRETS_ENCRYPTION_KEY environment variable.');
     }
 
-    const id = uuidv4();
+    const id = crypto.randomUUID();
     const now = new Date().toISOString();
     const encrypted = encryptSecret(value);
 
@@ -871,7 +870,7 @@ export class RuntimeDatabase {
   }
 
   createSecretPlaceholder(name: string, description?: string): string {
-    const id = uuidv4();
+    const id = crypto.randomUUID();
     const now = new Date().toISOString();
 
     this.db.prepare(`
@@ -887,7 +886,7 @@ export class RuntimeDatabase {
   // ============================================
 
   createScheduledFunction(fn: Omit<ScheduledFunction, 'id' | 'projectId' | 'createdAt' | 'updatedAt'>): string {
-    const id = uuidv4();
+    const id = crypto.randomUUID();
     const now = new Date().toISOString();
 
     const stmt = this.db.prepare(`

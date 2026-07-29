@@ -10,7 +10,6 @@
  */
 
 import type { Database } from 'better-sqlite3';
-import { v4 as uuidv4 } from 'uuid';
 import { getAnalyticsDatabaseConnection, closeAnalyticsDatabase } from './sqlite-connection';
 
 // Analytics types
@@ -186,7 +185,7 @@ export class AnalyticsDatabase {
     `);
 
     stmt.run(
-      uuidv4(),
+      crypto.randomUUID(),
       data.sessionId,
       data.pagePath,
       data.interactionType,
@@ -218,7 +217,7 @@ export class AnalyticsDatabase {
           id, session_id, entry_page, exit_page,
           page_count, is_bounce
         ) VALUES (?, ?, ?, ?, 1, 1)
-      `).run(uuidv4(), sessionId, pagePath, pagePath);
+      `).run(crypto.randomUUID(), sessionId, pagePath, pagePath);
     }
   }
 

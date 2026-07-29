@@ -3,7 +3,7 @@
  * "drag & drop your project".
  *
  * Sources, one honest path each:
- *   - a `.zip`            → unzipped in-browser with fflate (small, fast)
+ *   - a `.zip`            → unzipped in-browser with JSZip (the one zip library)
  *   - a folder            → walked via the File System Entries API (webkitEntry)
  *   - loose files         → taken as-is
  *
@@ -14,7 +14,7 @@
  * or hostile drop can't hang the tab or blow memory — over-cap files are skipped
  * and reported, never silently swallowed.
  */
-import { unzip, type Unzipped } from 'fflate';
+import JSZip from 'jszip';
 
 export interface StagedFile {
   /** Project-relative path, e.g. `index.html`, `assets/app.css`. */
@@ -107,18 +107,12 @@ function stripCommonRoot(files: StagedFile[]): StagedFile[] {
   }));
 }
 
-function unzipAsync(data: Uint8Array): Promise<Unzipped> {
-  return new Promise((resolve, reject) => {
-    unzip(data, (err, out) => (err ? reject(err) : resolve(out)));
-  });
-}
-
 async function collectZip(file: File, c: Collector): Promise<void> {
   if (file.size > MAX_ZIP_BYTES) throw new Error('zip-too-large');
-  const buf = new Uint8Array(await file.arrayBuffer());
-  const entries = await unzipAsync(buf);
-  for (const [path, bytes] of Object.entries(entries)) {
-    if (!c.add(path, bytes)) break;
+  const zip = await JSZip.loadAsync(await file.arrayBuffer());
+  for (const [path, entry] of Object.entries(zip.files)) {
+    if (entry.dir) continue;
+    if (!c.add(path, await entry.async('uint8array'))) break;
   }
 }
 

@@ -7,7 +7,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerAdapter } from '@/lib/vfs/adapters/server';
 import { Deployment } from '@/lib/vfs/types';
-import { v4 as uuidv4 } from 'uuid';
 
 export async function GET() {
   try {
@@ -55,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     // Create new deployment
     const deployment: Deployment = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       projectId,
       name,
       slug: slug || undefined,
