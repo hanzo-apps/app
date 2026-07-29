@@ -3,8 +3,7 @@
  *
  * The CANONICAL contract is `orgScope`/`filterOrgs` in `@hanzo/ui@8` (hoisted
  * per hanzoai/ui#36); this module matches it. It stays LOCAL here (recorded
- * debt) because (a) this app aliases `@hanzo/ui` → `@hanzo/ui-shadcn`, so the
- * hoisted package would need a second import name, and (b) the hoisted factory
+ * debt) because the hoisted factory
  * fixes `brandOrg` at construction while hanzo.app's default is the signed-in
  * user's HOME org (their IAM owner claim), seeded late by the OrgProvider via
  * `setHomeOrg`. Behavior is identical: `currentOrg()` reads a localStorage

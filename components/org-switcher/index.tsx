@@ -3,8 +3,8 @@
 /**
  * OrgSwitcher + OrgGate — this app's render of the shared org-switcher contract.
  * The CANONICAL component is `OrgSwitcher` in `@hanzo/ui@8` (`@hanzo/gui`-based,
- * hoisted per hanzoai/ui#36); this stays a LOCAL Tailwind/Radix render (recorded
- * debt) because `@hanzo/ui` here is aliased to `@hanzo/ui-shadcn` and the
+ * hoisted per hanzoai/ui#36); this stays a LOCAL render (recorded
+ * debt) because the
  * identity bar needs `direction="up"` + the personal badge/settings affordances
  * the hoisted popover doesn't carry. The LOGIC (`lib/org-scope.ts`) matches the
  * hoisted `orgScope` contract.

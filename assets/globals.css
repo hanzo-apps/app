@@ -205,7 +205,7 @@ textarea {
   /* ONE control spec — the single height / radius / text-size every form control
      (input, select, button) shares. ~30px tall, one soft radius, 13px text — the
      compact, consistent, softly-rounded register (NOT blocky). Applied in @layer
-     base below to both the @hanzo/ui shadcn controls (interim) and, unchanged, to
+     base below to both the @hanzo/ui controls and, unchanged, to
      the @hanzo/gui v8 controls as surfaces migrate. */
   --control-h: 1.875rem;          /* 30px */
   --control-radius: var(--radius-control);  /* 10px — one soft radius for every control */
@@ -571,7 +571,7 @@ code, pre, kbd, samp, .font-mono, [class~="font-mono"] {
    node_modules/@hanzo/ui), so a horizontal tab set fell back to the base `flex`
    (row) — laying the tab LIST beside the CONTENT and squishing content grids
    (the dashboard project grid) into a narrow right-hand strip. Force the
-   shadcn/Radix convention directly via the data attributes — no Tailwind
+   the data-state convention directly — no compiler
    compilation required, fixes every horizontal Tabs in one place. */
 [data-slot="tabs"][data-orientation="horizontal"] {
   flex-direction: column;
@@ -610,11 +610,11 @@ html:not(.dark) .preview-stage {
    control now merges its classes through `cn()`, so a call site that needs one axis
    (`pl-9`, `h-10`) gets it, and no rule has to shout. */
 
-/* ONE radius for EVERY shadcn button — the control radius (10px) — on ALL sizes
+/* ONE radius for EVERY button — the control radius (10px) — on ALL sizes
    (default/sm/lg/xs/icon/iconXs/icon-sm/…), beating any stray rounded-md/sm/none a
    call site hardcoded. This is the fix for "buttons aren't getting the 10px radius":
    the size-specific rule below only covered default/sm/lg, so every icon/xs button
-   kept shadcn's base rounded-md (6px). Deliberate pills/circles (a button explicitly
+   kept a 6px base radius. Deliberate pills/circles (a button explicitly
    marked `rounded-full`, e.g. the composer send/stop) keep their full round via the
    more-specific rule. */
 [data-slot="button"] {
@@ -635,7 +635,7 @@ html:not(.dark) .preview-stage {
   font-size: var(--control-fs);
   padding-inline: 0.75rem;
 }
-/* Raw <button> elements (not the shadcn Button) normalize to the control radius so
+/* Raw <button> elements (not the @hanzo/ui Button) normalize to the control radius so
    no custom button is a sharp rectangle. This covers bare buttons AND ones that
    hardcoded a small/sharp radius (rounded / -sm / -md / -lg / -none — the source of
    the 2–6px chrome buttons). Only deliberately-LARGE radii (rounded-xl / -2xl /
