@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Paintbrush } from "lucide-react";
-import { toast } from "@hanzo/ui-shadcn";
+import { toast } from "@hanzo/ui";
 
-import { Button } from "@hanzo/ui-shadcn";
+import { Button } from "@hanzo/ui";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/overlay";
 import { Input } from "@/components/control";
 import Loading from "@/components/loading";

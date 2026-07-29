@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useMount, useUnmount } from "react-use";
 import classNames from "classnames";
 
-import { Button } from "@hanzo/ui-shadcn";
+import { Button } from "@hanzo/ui";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { useUser } from "@/hooks/useUser";
 import { UserMenu } from "@/components/user-menu";

@@ -8,7 +8,7 @@
 import { Project } from './types';
 import { vfs } from './index';
 import { logger } from '@/lib/utils';
-import { toast } from '@hanzo/ui-shadcn';
+import { toast } from '@hanzo/ui';
 
 export type SyncStatus = 'synced' | 'local-newer' | 'server-newer' | 'conflict' | 'never-synced' | 'local-only' | 'server-only';
 
@@ -150,8 +150,7 @@ export async function autoSyncProject(projectId: string): Promise<void> {
 
     // Show subtle success notification
     toast.success('Project synced ✓', {
-      duration: 2000,
-      position: 'bottom-right'
+      duration: 2000
     });
   } catch (error) {
     logger.error(`[AutoSync] Failed to sync project ${projectId}:`, error);
@@ -171,8 +170,7 @@ export async function autoSyncProject(projectId: string): Promise<void> {
     const errorMessage = error instanceof Error ? error.message : '';
     if (!errorMessage.includes('Server mode not enabled')) {
       toast.error('Sync failed - will retry', {
-        duration: 4000,
-        position: 'bottom-right'
+        duration: 4000
       });
     }
   }

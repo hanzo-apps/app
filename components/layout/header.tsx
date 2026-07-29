@@ -14,7 +14,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Menu, X, LogOut, Settings, Home, DollarSign, ChevronDown } from "lucide-react";
-import { Button, Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui-shadcn";
+import { Button, Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/overlay";
 import { AppSwitcher } from "@/components/layout/app-switcher";
 import { HeaderSearch } from "@/components/layout/header-search";

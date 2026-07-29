@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { vfs } from '@/lib/vfs';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@hanzo/ui-shadcn';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@hanzo/ui';
 import { FunctionsManager } from '@/components/database-manager/functions-manager';
 import { ServerFunctionsManager } from '@/components/database-manager/server-functions-manager';
 import { SecretsManager } from '@/components/database-manager/secrets-manager';
@@ -17,9 +17,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@hanzo/ui-shadcn';
+} from '@hanzo/ui';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/overlay';
-import { toast } from '@hanzo/ui-shadcn';
+import { toast } from '@hanzo/ui';
 import { logger } from '@/lib/utils';
 import type { Project, ProjectRuntime } from '@/lib/vfs/types';
 import { getProjectRuntimes } from '@/lib/runtimes/registry';

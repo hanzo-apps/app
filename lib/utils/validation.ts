@@ -1,4 +1,4 @@
-import { toast } from '@hanzo/ui-shadcn';
+import { toast } from '@hanzo/ui';
 
 export interface ValidationResult {
   isValid: boolean;

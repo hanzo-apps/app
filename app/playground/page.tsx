@@ -28,23 +28,23 @@ import {
   History,
   BarChart3
 } from "lucide-react";
-import { Button } from "@hanzo/ui-shadcn";
+import { Button } from "@hanzo/ui";
 import { Textarea } from "@/components/control";
-import { Badge } from "@hanzo/ui-shadcn";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@hanzo/ui-shadcn";
-import { Slider } from "@hanzo/ui-shadcn";
+import { Badge } from "@hanzo/ui";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@hanzo/ui";
+import { Slider } from "@hanzo/ui";
 import { Switch } from "@/components/control";
 import { Label } from "@/components/control";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/overlay";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui-shadcn";
-import { ScrollArea } from "@hanzo/ui-shadcn";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
+import { ScrollArea } from "@hanzo/ui";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { DEFAULT_MODEL } from "@/lib/providers";
 import { useModels } from "@/lib/hooks/use-models";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { toast } from "@hanzo/ui-shadcn";
+import { toast } from "@hanzo/ui";
 
 interface ModelConfig {
   model: string;

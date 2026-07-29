@@ -1,7 +1,7 @@
 /**
  * @hanzo/ui Button `asChild` — runtime contract test.
  *
- * History: @hanzo/ui-shadcn ≤5.7.4 rendered [spinner-slot, children] into the
+ * History: @hanzo/ui ≤5.7.4 rendered [spinner-slot, children] into the
  * component regardless of `asChild`; under `asChild` that array reaches Radix
  * `<Slot>`, which calls `React.Children.only` and throws "expected to receive
  * a single React element child" — crashing any `<Button asChild><Link/>`.
@@ -16,7 +16,7 @@
  */
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { Button } from "@hanzo/ui-shadcn";
+import { Button } from "@hanzo/ui";
 
 describe("@hanzo/ui Button asChild (React.Children.only crash guard)", () => {
   it("renders an anchor child without throwing", () => {

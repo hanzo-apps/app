@@ -25,7 +25,7 @@ import {
   X,
 } from "lucide-react";
 import classNames from "classnames";
-import { toast } from "@hanzo/ui-shadcn";
+import { toast } from "@hanzo/ui";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/overlay";
 
 import { HtmlHistory, Page } from "@/types";

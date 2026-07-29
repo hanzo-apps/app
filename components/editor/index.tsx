@@ -1,6 +1,6 @@
 "use client";
 import { useMemo, useRef, useState } from "react";
-import { toast } from "@hanzo/ui-shadcn";
+import { toast } from "@hanzo/ui";
 import type { CodeEditorHandle } from "@/components/code-editor";
 import dynamic from "next/dynamic";
 import { CopyIcon, Share2 } from "lucide-react";
@@ -49,7 +49,7 @@ import { ShareModal } from "./share-modal";
 import { Console } from "./console";
 import { VisualEditor } from "./visual-editor";
 import { OrgProvider } from "@/lib/org/client";
-import { Button } from "@hanzo/ui-shadcn";
+import { Button } from "@hanzo/ui";
 
 export const AppEditor = ({
   project,

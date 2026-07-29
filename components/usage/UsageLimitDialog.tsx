@@ -21,7 +21,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@hanzo/ui-shadcn';
+} from '@hanzo/ui';
 import { Wallet, Sparkles, ArrowRight, type LucideIcon } from 'lucide-react';
 
 import { useCloudBalance, spendableCents } from '@/lib/billing/live-balance';

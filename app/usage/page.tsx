@@ -9,8 +9,8 @@ import { buildUsage } from '@/lib/usage';
 import { AppShell } from '@/components/app-shell';
 import SmartRoutingCard from '@/components/usage/smart-routing-card';
 import CloudUsagePanel from '@/components/usage/cloud-usage-panel';
-import { Button } from '@hanzo/ui-shadcn';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@hanzo/ui-shadcn';
+import { Button } from '@hanzo/ui';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@hanzo/ui';
 
 // Resolves the caller's verified IAM session — must render per-request.
 export const dynamic = 'force-dynamic';

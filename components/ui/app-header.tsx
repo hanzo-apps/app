@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button } from '@hanzo/ui-shadcn';
-import { Badge } from '@hanzo/ui-shadcn';
+import { Button } from '@hanzo/ui';
+import { Badge } from '@hanzo/ui';
 import { Logo } from '@/components/ui/logo';
 import { ChevronDown, ChevronUp, Menu } from 'lucide-react';
 

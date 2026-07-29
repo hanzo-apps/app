@@ -8,8 +8,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@hanzo/ui-shadcn';
-import { Button } from '@hanzo/ui-shadcn';
+} from '@hanzo/ui';
+import { Button } from '@hanzo/ui';
 import { Switch } from '@/components/control';
 import { Label } from '@/components/control';
 import {

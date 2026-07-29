@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button } from '@hanzo/ui-shadcn';
+import { Button } from '@hanzo/ui';
 import { Input } from '@/components/control';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { Loader2 } from 'lucide-react';

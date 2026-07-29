@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Button } from '@hanzo/ui-shadcn';
+import { Button } from '@hanzo/ui';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
 import { Label } from '@/components/control';
-import { toast } from '@hanzo/ui-shadcn';
+import { toast } from '@hanzo/ui';
 
 interface HeatmapPoint {
   x: number;

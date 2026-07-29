@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { Badge, Button } from '@hanzo/ui-shadcn';
+import { Badge, Button } from '@hanzo/ui';
 import {
   Gamepad2,
   Play,

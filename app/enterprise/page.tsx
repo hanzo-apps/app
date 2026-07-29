@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@hanzo/ui-shadcn";
-import { Badge } from "@hanzo/ui-shadcn";
+import { Button } from "@hanzo/ui";
+import { Badge } from "@hanzo/ui";
 import { Input, Textarea } from "@/components/control";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";
 import { Shield, Lock, Users, Zap, Globe, HeadphonesIcon, ArrowRight, CheckCircle2, Building } from "lucide-react";

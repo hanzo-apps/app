@@ -8,7 +8,7 @@ import {
   type ComponentType,
 } from "react";
 import { useIam } from "@hanzo/iam/react";
-import { toast } from "@hanzo/ui-shadcn";
+import { toast } from "@hanzo/ui";
 import {
   AlertCircle,
   Check,
@@ -23,7 +23,7 @@ import {
   UploadCloud,
 } from "lucide-react";
 
-import { Button } from "@hanzo/ui-shadcn";
+import { Button } from "@hanzo/ui";
 import { Input } from "@/components/control";
 import { Switch } from "@/components/control";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/overlay";

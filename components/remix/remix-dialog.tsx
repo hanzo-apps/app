@@ -10,7 +10,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import { Dialog, DialogContent, DialogTitle, DialogDescription, Button, Checkbox } from '@hanzo/ui-shadcn';
+import { Dialog, DialogContent, DialogTitle, DialogDescription, Button, Checkbox } from '@hanzo/ui';
 import { Input } from '@/components/control';
 
 const ACK_TEXT =

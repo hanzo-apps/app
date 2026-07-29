@@ -8,9 +8,9 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@hanzo/ui-shadcn';
-import { Button } from '@hanzo/ui-shadcn';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@hanzo/ui-shadcn';
+} from '@hanzo/ui';
+import { Button } from '@hanzo/ui';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@hanzo/ui';
 import { GeneralTab } from './general-tab';
 import { ScriptsTab } from './scripts-tab';
 import { CdnTab } from './cdn-tab';
@@ -24,9 +24,9 @@ import {
   DialogFooter as AlertDialogFooter,
   DialogHeader as AlertDialogHeader,
   DialogTitle as AlertDialogTitle,
-} from '@hanzo/ui-shadcn';
-import { Button as AlertDialogAction } from '@hanzo/ui-shadcn';
-import { Button as AlertDialogCancel } from '@hanzo/ui-shadcn';
+} from '@hanzo/ui';
+import { Button as AlertDialogAction } from '@hanzo/ui';
+import { Button as AlertDialogCancel } from '@hanzo/ui';
 
 interface PublishSettingsModalProps {
   project: Project;

@@ -45,7 +45,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { statusOf } from "@/lib/project-status";
 import { relativeTime } from "@/lib/projects-view";
 import { currentOrg, setCurrentOrg } from "@/lib/org-scope";
-import { toast } from "@hanzo/ui-shadcn";
+import { toast } from "@hanzo/ui";
 
 export default function ProjectSettingsPage() {
   const params = useParams<{ org: string; project: string }>();

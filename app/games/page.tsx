@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Badge } from '@hanzo/ui-shadcn';
+import { Badge } from '@hanzo/ui';
 import { Input } from '@/components/control';
 import { Gamepad2, Search } from 'lucide-react';
 import { AppShell } from '@/components/app-shell';

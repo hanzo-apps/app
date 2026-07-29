@@ -132,7 +132,7 @@ export default function SocialFeed() {
                   <Textarea
                     placeholder="What's happening?"
                     value={newPost}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNewPost(e.target.value)}
+                    onChangeText={(text: string) => setNewPost(text)}
                     className="border-0 p-0 resize-none focus-visible:ring-0"
                   />
                   <div className="flex items-center justify-between mt-4">

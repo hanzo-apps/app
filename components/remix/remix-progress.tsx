@@ -20,7 +20,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Dialog, DialogContent, DialogTitle } from '@hanzo/ui-shadcn';
+import { Dialog, DialogContent, DialogTitle } from '@hanzo/ui';
 import { Check, Loader2, Circle } from 'lucide-react';
 import { HanzoLogo } from '@/components/HanzoLogo';
 import {

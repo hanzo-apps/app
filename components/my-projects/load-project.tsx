@@ -3,16 +3,16 @@ import { useState } from "react";
 import { Import } from "lucide-react";
 
 import { Project } from "@/types";
-import { Button } from "@hanzo/ui-shadcn";
+import { Button } from "@hanzo/ui";
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   DialogTrigger,
-} from "@hanzo/ui-shadcn";
+} from "@hanzo/ui";
 import { Input } from "@/components/control";
 import Loading from "@/components/loading";
-import { toast } from "@hanzo/ui-shadcn";
+import { toast } from "@hanzo/ui";
 import { api } from "@/lib/api";
 import { useUser } from "@/hooks/useUser";
 import { LoginModal } from "../login-modal";

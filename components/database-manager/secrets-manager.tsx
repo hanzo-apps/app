@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { toast } from '@hanzo/ui-shadcn';
+import { toast } from '@hanzo/ui';
 import { Secret } from '@/lib/vfs/types';
 import {
   Plus, Loader2, AlertCircle, Key, MoreVertical, Pencil, Trash2, AlertTriangle
 } from 'lucide-react';
-import { Badge } from '@hanzo/ui-shadcn';
-import { Button } from '@hanzo/ui-shadcn';
+import { Badge } from '@hanzo/ui';
+import { Button } from '@hanzo/ui';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/overlay';
 import { SecretEditor } from './secret-editor';
 import { cn } from '@/lib/utils';
