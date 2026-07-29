@@ -1,6 +1,6 @@
-import { Wrench } from "lucide-react";
-import classNames from "classnames";
+'use client';
 
+import { Wrench } from "lucide-react";
 import { Button, Tooltip, TooltipTrigger, TooltipContent } from '@hanzo/ui';
 
 // Fix — a bar toggle sibling to Re-imagine. Re-imagine seeds a NEW design from a
@@ -23,15 +23,12 @@ export function Fix({
           onClick={onToggle}
           aria-pressed={active}
           aria-label="Fix design to match a reference"
-          className={classNames("rounded-full", {
-            "text-muted-foreground hover:bg-accent hover:!text-foreground":
-              !active,
-          })}
+          borderRadius="$10" {...{ color: !active ? "$color11" : undefined, hoverStyle: !active ? {"backgroundColor":"$color3","color":"$color"} : undefined }}
         >
-          <Wrench className="size-4" />
+          <Wrench size={16} />
         </Button>
       </TooltipTrigger>
-      <TooltipContent align="start" className="max-w-[220px]">
+      <TooltipContent align="start" maxWidth={220}>
         Fix the current design to match a reference. Attach reference images —
         drop or paste them here, or pick from your uploads — then send.
       </TooltipContent>

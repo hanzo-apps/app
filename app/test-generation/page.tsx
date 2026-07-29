@@ -1,5 +1,6 @@
 'use client';
 
+import { YStack, XStack, H3, Paragraph, SizableText, H2 } from '@hanzo/gui';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { Button, toast, Popover, PopoverContent, PopoverTrigger } from '@hanzo/ui';
 import { MultiAgentOrchestrator } from '@/lib/llm/multi-agent-orchestrator';
@@ -595,11 +596,11 @@ export default function TestGenerationPage() {
 
   const getStatusIcon = (status: TestResult['status']) => {
     switch (status) {
-      case 'success': return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'failed': return <XCircle className="h-4 w-4 text-red-500" />;
-      case 'stopped': return <Square className="h-4 w-4 text-orange-500" />;
-      case 'running': return <RefreshCw className="h-4 w-4 text-blue-500 animate-spin" />;
-      default: return <Clock className="h-4 w-4 text-neutral-400" />;
+      case 'success': return <CheckCircle size={16} color="$green9" />;
+      case 'failed': return <XCircle size={16} color="$red9" />;
+      case 'stopped': return <Square size={16} color="$orange9" />;
+      case 'running': return <RefreshCw size={16} color="$blue9" />;
+      default: return <Clock size={16} color="$color8" />;
     }
   };
 
@@ -935,58 +936,58 @@ export default function TestGenerationPage() {
   ];
 
   return (
-    <div className="h-screen flex flex-col">
+    <YStack height="100%">
       <AppHeader
         leftText="Hanzo Benchmark"
         onLogoClick={() => router.push('/')}
         actions={headerActions}
-      />
+  />
 
-      <div className="flex-1 overflow-auto bg-background p-6">
-        <div className="max-w-6xl mx-auto">
+      <YStack flex={1} overflow="scroll" backgroundColor="$background" padding="$5">
+        <YStack maxWidth={1152} alignSelf="center">
 
         {/* Info Banner */}
-        <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
-          <div className="flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
-            <div className="flex-1">
-              <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-1">How to Interpret Benchmark Results</h3>
-              <p className="text-sm text-blue-800 dark:text-blue-200">
+        <YStack backgroundColor="$blue1" borderWidth={1} borderColor="$blue3" borderRadius="$5" padding="$4" marginBottom="$5" $theme-dark={{ backgroundColor: "$blue12", borderColor: "$blue11" }}>
+          <XStack alignItems="flex-start" gap="$3">
+            <AlertCircle size={20} color="$blue10" />
+            <YStack flex={1}>
+              <H3 fontWeight="500" color="$blue12" marginBottom="$1" $theme-dark={{ color: "$blue2" }}>How to Interpret Benchmark Results</H3>
+              <Paragraph fontSize="$3" color="$blue11" $theme-dark={{ color: "$blue3" }}>
                 This benchmark evaluates how well a model performs with Hanzo App&apos;s agentic tools (shell, write, evaluation).
                 A <strong>passing test</strong> means the model completed the task using the right tools.
                 A <strong>failing test</strong> means the model couldn&apos;t complete the task or encountered errors.
-              </p>
-              <div className="mt-2 text-xs text-blue-700 dark:text-blue-300">
+              </Paragraph>
+              <SizableText marginTop="$2" fontSize="$1" color="$blue11" display="flex" flexDirection="column" $theme-dark={{ color: "$blue4" }}>
                 <strong>Tip:</strong> Select your preferred provider and model below to benchmark specific configurations.
                 The generation output will show you what the AI is doing during execution.
-              </div>
-            </div>
-          </div>
-        </div>
+              </SizableText>
+            </YStack>
+          </XStack>
+        </YStack>
 
         {/* Cost Warning Banner */}
-        <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-4 mb-6">
-          <div className="flex items-start gap-3">
-            <div className="text-amber-600 dark:text-amber-400 mt-0.5">💡</div>
-            <div className="flex-1">
-              <h3 className="font-medium text-amber-900 dark:text-amber-100 mb-1">Cost Warning</h3>
-              <p className="text-sm text-amber-800 dark:text-amber-200">
+        <YStack backgroundColor="$yellow1" borderWidth={1} borderColor="$yellow3" borderRadius="$5" padding="$4" marginBottom="$5" $theme-dark={{ backgroundColor: "$yellow12", borderColor: "$yellow11" }}>
+          <XStack alignItems="flex-start" gap="$3">
+            <SizableText color="$yellow10" marginTop="$0.5" display="flex" flexDirection="column" $theme-dark={{ color: "$yellow8" }}>💡</SizableText>
+            <YStack flex={1}>
+              <H3 fontWeight="500" color="$yellow12" marginBottom="$1" $theme-dark={{ color: "$yellow2" }}>Cost Warning</H3>
+              <Paragraph fontSize="$3" color="$yellow11" $theme-dark={{ color: "$yellow3" }}>
                 Running benchmarks can be <strong>very expensive</strong> and likely isn&apos;t necessary.
                 It&apos;s cheaper and easier to just use good models and research community feedback about agentic capabilities.
-              </p>
-              <p className="text-sm text-amber-800 dark:text-amber-200 mt-2">
+              </Paragraph>
+              <Paragraph fontSize="$3" color="$yellow11" marginTop="$2" $theme-dark={{ color: "$yellow3" }}>
                 This benchmark is for evaluating how models perform with Hanzo App&apos;s agentic system
                 and using those results to improve it.
-              </p>
-            </div>
-          </div>
-        </div>
+              </Paragraph>
+            </YStack>
+          </XStack>
+        </YStack>
 
         {/* Round progress indicator */}
         {totalRounds > 1 && activeTrack && (
-          <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg px-4 py-2 mb-4 text-sm text-blue-800 dark:text-blue-200">
+          <SizableText backgroundColor="$blue1" borderWidth={1} borderColor="$blue3" borderRadius="$5" paddingHorizontal="$4" paddingVertical="$2" marginBottom="$4" fontSize="$3" color="$blue11" display="flex" flexDirection="column" $theme-dark={{ backgroundColor: "$blue12", borderColor: "$blue11", color: "$blue3" }}>
             Round {currentRound + 1} of {totalRounds} ({roundHistory.length} completed)
-          </div>
+          </SizableText>
         )}
 
         {/* Stats Overview */}
@@ -1019,87 +1020,87 @@ export default function TestGenerationPage() {
 
           return (
             <>
-              <div className={`grid grid-cols-2 ${stats.rounds ? 'md:grid-cols-4 lg:grid-cols-7' : 'md:grid-cols-3 lg:grid-cols-6'} gap-4 mb-4`}>
+              <YStack gap="$4" marginBottom="$4">
                 {stats.rounds !== undefined && (
-                  <div className="bg-card border rounded-lg p-4">
-                    <div className="text-sm font-medium text-muted-foreground mb-1">Rounds</div>
-                    <div className="text-2xl font-medium">{stats.rounds}</div>
-                  </div>
+                  <YStack backgroundColor="$background" borderWidth={1} borderRadius="$5" padding="$4">
+                    <SizableText fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1" display="flex" flexDirection="column">Rounds</SizableText>
+                    <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{stats.rounds}</SizableText>
+                  </YStack>
                 )}
-                <div className="bg-card border rounded-lg p-4">
-                  <div className="text-sm font-medium text-muted-foreground mb-1">Total Tests</div>
-                  <div className="text-2xl font-medium">{stats.total}</div>
-                </div>
-                <div className="bg-card border rounded-lg p-4">
-                  <div className="text-sm font-medium text-muted-foreground mb-1">Passed</div>
-                  <div className="text-2xl font-medium text-green-600">{stats.passed}</div>
-                </div>
-                <div className="bg-card border rounded-lg p-4">
-                  <div className="text-sm font-medium text-muted-foreground mb-1">Failed</div>
-                  <div className="text-2xl font-medium text-red-600">{stats.failed}</div>
-                </div>
-                <div className="bg-card border rounded-lg p-4">
-                  <div className="text-sm font-medium text-muted-foreground mb-1">Pass Rate</div>
-                  <div className="text-2xl font-medium">{stats.successRate.toFixed(1)}%</div>
-                </div>
-                <div className="bg-card border rounded-lg p-4">
-                  <div className="text-sm font-medium text-muted-foreground mb-1">Cost</div>
-                  <div className="text-2xl font-medium">
+                <YStack backgroundColor="$background" borderWidth={1} borderRadius="$5" padding="$4">
+                  <SizableText fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1" display="flex" flexDirection="column">Total Tests</SizableText>
+                  <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{stats.total}</SizableText>
+                </YStack>
+                <YStack backgroundColor="$background" borderWidth={1} borderRadius="$5" padding="$4">
+                  <SizableText fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1" display="flex" flexDirection="column">Passed</SizableText>
+                  <SizableText fontSize="$8" fontWeight="500" color="$green10" display="flex" flexDirection="column">{stats.passed}</SizableText>
+                </YStack>
+                <YStack backgroundColor="$background" borderWidth={1} borderRadius="$5" padding="$4">
+                  <SizableText fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1" display="flex" flexDirection="column">Failed</SizableText>
+                  <SizableText fontSize="$8" fontWeight="500" color="$red10" display="flex" flexDirection="column">{stats.failed}</SizableText>
+                </YStack>
+                <YStack backgroundColor="$background" borderWidth={1} borderRadius="$5" padding="$4">
+                  <SizableText fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1" display="flex" flexDirection="column">Pass Rate</SizableText>
+                  <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{stats.successRate.toFixed(1)}%</SizableText>
+                </YStack>
+                <YStack backgroundColor="$background" borderWidth={1} borderRadius="$5" padding="$4">
+                  <SizableText fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1" display="flex" flexDirection="column">Cost</SizableText>
+                  <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">
                     {formatCost(stats.totalCost)}
-                  </div>
-                </div>
-                <div className="bg-card border rounded-lg p-4">
-                  <div className="text-sm font-medium text-muted-foreground mb-1">Tokens</div>
-                  <div className="text-2xl font-medium">{stats.totalTokens.toLocaleString()}</div>
-                  <div className="text-xs text-muted-foreground mt-0.5">
+                  </SizableText>
+                </YStack>
+                <YStack backgroundColor="$background" borderWidth={1} borderRadius="$5" padding="$4">
+                  <SizableText fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1" display="flex" flexDirection="column">Tokens</SizableText>
+                  <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{stats.totalTokens.toLocaleString()}</SizableText>
+                  <SizableText fontSize="$1" color="$color11" marginTop="$0.5" display="flex" flexDirection="column">
                     {stats.promptTokens.toLocaleString()} in &rarr; {stats.completionTokens.toLocaleString()} out
-                  </div>
-                </div>
-              </div>
+                  </SizableText>
+                </YStack>
+              </YStack>
 
               {/* Tool usage summary */}
               {stats.toolStats.total > 0 && (() => {
                 const ts = stats.toolStats;
                 const knownEntries = Object.entries(ts.breakdown).filter(([name]) => KNOWN_TOOLS.has(name));
                 return (
-                  <div className="bg-card border rounded-lg overflow-hidden mb-6">
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2.5 border-b bg-muted/30">
-                      <span className="text-sm font-medium">Tool Calls: {ts.total}</span>
-                      <span className="text-sm text-green-600">{ts.success} successful</span>
-                      {ts.failed > 0 && <span className="text-sm text-red-600">{ts.failed} failed</span>}
-                      {ts.invalid > 0 && <span className="text-sm text-orange-500">{ts.invalid} invalid</span>}
-                    </div>
-                    <table className="w-full text-sm">
+                  <YStack backgroundColor="$background" borderWidth={1} borderRadius="$5" overflow="hidden" marginBottom="$5">
+                    <XStack flexWrap="wrap" alignItems="center" columnGap="$4" rowGap="$1" paddingHorizontal="$4" paddingVertical="$2.5" borderBottomWidth={1} backgroundColor="$color3">
+                      <SizableText fontSize="$3" fontWeight="500">Tool Calls: {ts.total}</SizableText>
+                      <SizableText fontSize="$3" color="$green10">{ts.success} successful</SizableText>
+                      {ts.failed > 0 && <SizableText fontSize="$3" color="$red10">{ts.failed} failed</SizableText>}
+                      {ts.invalid > 0 && <SizableText fontSize="$3" color="$orange9">{ts.invalid} invalid</SizableText>}
+                    </XStack>
+                    <SizableText width="100%" fontSize="$3" display="flex" flexDirection="column">
                       <thead>
-                        <tr className="text-xs text-muted-foreground">
-                          <th className="text-left px-4 py-1.5 font-medium">Tool</th>
-                          <th className="text-right px-4 py-1.5 font-medium">Total</th>
-                          <th className="text-right px-4 py-1.5 font-medium text-green-600">OK</th>
-                          <th className="text-right px-4 py-1.5 font-medium text-red-500">Failed</th>
-                        </tr>
+                        <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
+                          <SizableText textAlign="left" paddingHorizontal="$4" paddingVertical="$1.5" fontWeight="500">Tool</SizableText>
+                          <SizableText textAlign="right" paddingHorizontal="$4" paddingVertical="$1.5" fontWeight="500">Total</SizableText>
+                          <SizableText textAlign="right" paddingHorizontal="$4" paddingVertical="$1.5" fontWeight="500" color="$green10">OK</SizableText>
+                          <SizableText textAlign="right" paddingHorizontal="$4" paddingVertical="$1.5" fontWeight="500" color="$red9">Failed</SizableText>
+                        </SizableText>
                       </thead>
                       <tbody>
                         {knownEntries.map(([name, counts]) => (
-                          <tr key={name} className="border-t border-border/50">
-                            <td className="px-4 py-1.5 font-medium">{name}</td>
-                            <td className="px-4 py-1.5 text-right text-muted-foreground">{counts.total}</td>
-                            <td className="px-4 py-1.5 text-right text-green-600">{counts.success}</td>
-                            <td className={`px-4 py-1.5 text-right ${counts.failed > 0 ? 'text-red-500 font-medium' : 'text-red-500/40'}`}>
+                          <YStack key={name} borderTopWidth={1} borderColor="$borderColor">
+                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" fontWeight="500">{name}</SizableText>
+                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" textAlign="right" color="$color11">{counts.total}</SizableText>
+                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" textAlign="right" color="$green10">{counts.success}</SizableText>
+                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" textAlign="right" {...{ color: counts.failed > 0 ? "$red9" : "$red9", fontWeight: counts.failed > 0 ? "500" : undefined }}>
                               {counts.failed}
-                            </td>
-                          </tr>
+                            </SizableText>
+                          </YStack>
                         ))}
                         {ts.invalid > 0 && (
-                          <tr className="border-t border-border/50">
-                            <td className="px-4 py-1.5 font-medium text-orange-500">invalid</td>
-                            <td className="px-4 py-1.5 text-right text-orange-500">{ts.invalid}</td>
-                            <td className="px-4 py-1.5 text-right text-green-600/40">0</td>
-                            <td className="px-4 py-1.5 text-right text-red-500 font-medium">{ts.invalid}</td>
-                          </tr>
+                          <YStack borderTopWidth={1} borderColor="$borderColor">
+                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" fontWeight="500" color="$orange9">invalid</SizableText>
+                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" textAlign="right" color="$orange9">{ts.invalid}</SizableText>
+                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" textAlign="right" color="$green10">0</SizableText>
+                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" textAlign="right" color="$red9" fontWeight="500">{ts.invalid}</SizableText>
+                          </YStack>
                         )}
                       </tbody>
-                    </table>
-                  </div>
+                    </SizableText>
+                  </YStack>
                 );
               })()}
             </>
@@ -1107,47 +1108,47 @@ export default function TestGenerationPage() {
         })()}
 
         {/* Controls */}
-        <div className="flex flex-wrap gap-3 mb-6">
+        <XStack flexWrap="wrap" gap="$3" marginBottom="$5">
           <Popover open={showModelSettings} onOpenChange={setShowModelSettings}>
             <PopoverTrigger asChild>
               <Button variant="outline">
                 <span>{getModelDisplayName(currentModel)}</span>
                 {showModelSettings ? (
-                  <ChevronDown className="h-4 w-4 ml-2" />
+                  <ChevronDown size={16} />
                 ) : (
-                  <ChevronUp className="h-4 w-4 ml-2" />
+                  <ChevronUp size={16} />
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-96" align="start" side="bottom" sideOffset={4} avoidCollisions={false}>
+            <PopoverContent width={384} align="start" side="bottom" sideOffset={4} avoidCollisions={false}>
               <ModelSettingsPanel
                 onClose={() => setShowModelSettings(false)}
                 onModelChange={(modelId) => setCurrentModel(modelId)}
                 showJudgeModel
                 onJudgeModelChange={(modelId) => setJudgeModel(modelId)}
-              />
+  />
             </PopoverContent>
           </Popover>
 
-          <div className="inline-flex items-center rounded-md border border-input">
-            <button
+          <XStack alignItems="center" borderRadius="$3" borderWidth={1} borderColor="$color2">
+            <Button
               onClick={() => setTotalRounds(r => Math.max(1, r - 1))}
               disabled={isRunning || totalRounds <= 1}
-              className="h-9 w-8 inline-flex items-center justify-center rounded-l-md hover:bg-accent disabled:opacity-50 disabled:pointer-events-none"
+              height={36} width="$6" alignItems="center" justifyContent="center" borderTopLeftRadius="$3" borderBottomLeftRadius="$3" hoverStyle={{ backgroundColor: "$color3" }} disabledStyle={{ opacity: 0.5, pointerEvents: "none" }}
             >
-              <Minus className="h-3 w-3" />
-            </button>
-            <span className="h-9 px-2 inline-flex items-center justify-center text-sm font-medium min-w-[5rem] border-x border-input select-none">
+              <Minus size={12} />
+            </Button>
+            <SizableText height={36} paddingHorizontal="$2" alignItems="center" justifyContent="center" fontSize="$3" fontWeight="500" minWidth="5rem" borderLeftWidth={1} borderRightWidth={1} borderColor="$color2" userSelect="none">
               {totalRounds} Round{totalRounds > 1 ? 's' : ''}
-            </span>
-            <button
+            </SizableText>
+            <Button
               onClick={() => setTotalRounds(r => Math.min(10, r + 1))}
               disabled={isRunning || totalRounds >= 10}
-              className="h-9 w-8 inline-flex items-center justify-center rounded-r-md hover:bg-accent disabled:opacity-50 disabled:pointer-events-none"
+              height={36} width="$6" alignItems="center" justifyContent="center" borderTopRightRadius="$3" borderBottomRightRadius="$3" hoverStyle={{ backgroundColor: "$color3" }} disabledStyle={{ opacity: 0.5, pointerEvents: "none" }}
             >
-              <Plus className="h-3 w-3" />
-            </button>
-          </div>
+              <Plus size={12} />
+            </Button>
+          </XStack>
 
           {testTracks.map(track => (
             <Button
@@ -1156,7 +1157,7 @@ export default function TestGenerationPage() {
               disabled={isRunning}
               variant={activeTrack === track.id ? 'default' : 'outline'}
             >
-              <Play className="h-4 w-4 mr-2" />
+              <Play size={16} />
               {track.name} ({track.scenarioIds.length})
             </Button>
           ))}
@@ -1165,79 +1166,79 @@ export default function TestGenerationPage() {
             disabled={isRunning}
             variant={activeTrack === 'all' ? 'default' : 'outline'}
           >
-            <Play className="h-4 w-4 mr-2" />
+            <Play size={16} />
             All ({allScenarioIds.length})
           </Button>
           {isRunning ? (
             <Button variant="destructive" onClick={stopBenchmark}>
-              <Square className="h-4 w-4 mr-2" />
+              <Square size={16} />
               Stop
             </Button>
           ) : (
             <Button variant="outline" onClick={resetTests}>
-              <RefreshCw className="h-4 w-4 mr-2" />
+              <RefreshCw size={16} />
               Reset
             </Button>
           )}
 
           {(overallStats.total > 0 || roundHistory.length > 0) && (
             <>
-              <div className="w-px h-6 bg-border self-center" />
+              <YStack width={1} height="$5" backgroundColor="$borderColor" alignSelf="center" />
               <Button variant="outline" onClick={exportJSON} disabled={isRunning}>
-                <Download className="h-4 w-4 mr-2" />
+                <Download size={16} />
                 JSON
               </Button>
               <Button variant="outline" onClick={exportMarkdown} disabled={isRunning}>
-                <Download className="h-4 w-4 mr-2" />
+                <Download size={16} />
                 Markdown
               </Button>
             </>
           )}
-        </div>
+        </XStack>
 
         {/* Test Results — grouped by track */}
-        <div className="space-y-8">
+        <YStack rowGap="$6">
           {testTracks.map(track => {
             const report = trackReports[track.id];
             return (
               <div key={track.id}>
                 {/* Track header */}
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="h-px flex-1 bg-border" />
-                  <h2 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+                <XStack alignItems="center" gap="$3" marginBottom="$3">
+                  <YStack height={1} flex={1} backgroundColor="$borderColor" />
+                  <H2 fontSize="$3" fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11">
                     {track.name}
-                  </h2>
-                  <span className="text-xs text-muted-foreground">{track.description}</span>
-                  <div className="h-px flex-1 bg-border" />
-                </div>
+                  </H2>
+                  <SizableText fontSize="$1" color="$color11">{track.description}</SizableText>
+                  <YStack height={1} flex={1} backgroundColor="$borderColor" />
+                </XStack>
 
                 {/* Scenarios in this track */}
-                <div className="grid gap-4">
+                <YStack gap="$4">
                   {track.scenarioIds.map(scenarioId => {
                     const result = testResults.find(r => r.id === scenarioId);
                     const scenario = testScenarios.find(s => s.id === scenarioId);
                     if (!result || !scenario) return null;
 
                     return (
-                      <div key={result.id} className="bg-card border rounded-lg p-4">
-                        <div className="flex items-center justify-between mb-2">
+                      <YStack key={result.id} backgroundColor="$background" borderWidth={1} borderRadius="$5" padding="$4">
+                        <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
                           <div>
-                            <div className="flex items-center gap-2 font-medium">
+                            <SizableText alignItems="center" gap="$2" fontWeight="500" display="flex" flexDirection="row">
                               {getStatusIcon(result.status)}
                               {result.name}
-                              <span className="text-sm font-normal text-muted-foreground">
+                              <SizableText fontSize="$3" fontWeight="400" color="$color11">
                                 ({scenario.category})
-                              </span>
-                            </div>
-                            <div className="text-sm text-muted-foreground mt-1">
+                              </SizableText>
+                            </SizableText>
+                            <SizableText fontSize="$3" color="$color11" marginTop="$1" display="flex" flexDirection="column">
                               {scenario.prompt.substring(0, 100)}...
-                            </div>
+                            </SizableText>
                           </div>
-                          <div className="flex items-center gap-2">
+                          <XStack alignItems="center" gap="$2">
                             {result.executionTime && (
-                              <span className="text-sm text-muted-foreground">
+                              <SizableText fontSize="$3" color="$color11">
                                 {(result.executionTime / 1000).toFixed(1)}s
-                              </span>
+                              </SizableText>
                             )}
                             {result.status === 'running' && runningTest === result.id ? (
                               <Button
@@ -1245,7 +1246,7 @@ export default function TestGenerationPage() {
                                 variant="destructive"
                                 onClick={() => stopTest(result.id)}
                               >
-                                <Square className="h-3 w-3 mr-1" />
+                                <Square size={12} />
                                 Stop
                               </Button>
                             ) : (
@@ -1255,7 +1256,7 @@ export default function TestGenerationPage() {
                                 onClick={() => runSingleTest(result.id)}
                                 disabled={isRunning}
                               >
-                                <Play className="h-3 w-3 mr-1" />
+                                <Play size={12} />
                                 Test
                               </Button>
                             )}
@@ -1276,145 +1277,145 @@ export default function TestGenerationPage() {
                                 }}
                               >
                                 {expandedTests.has(result.id) ? (
-                                  <ChevronUp className="h-3 w-3" />
+                                  <ChevronUp size={12} />
                                 ) : (
-                                  <ChevronDown className="h-3 w-3" />
+                                  <ChevronDown size={12} />
                                 )}
                               </Button>
                             )}
-                          </div>
-                        </div>
+                          </XStack>
+                        </XStack>
                         {/* Generation Output Display */}
                         {(result.status === 'running' || expandedTests.has(result.id)) && (result.generationOutput || generationOutputs.get(result.id)) && (
-                          <div className="mt-3 pt-3 border-t">
-                            <div className="flex items-center gap-2 mb-2">
-                              <div className="text-sm font-medium text-muted-foreground">Generation Output</div>
+                          <YStack marginTop="$3" paddingTop="$3" borderTopWidth={1}>
+                            <XStack alignItems="center" gap="$2" marginBottom="$2">
+                              <SizableText fontSize="$3" fontWeight="500" color="$color11" display="flex" flexDirection="column">Generation Output</SizableText>
                               {result.status === 'running' && (
-                                <div className="flex items-center gap-1">
-                                  <RefreshCw className="h-3 w-3 animate-spin" />
-                                  <span className="text-xs text-muted-foreground">Generating...</span>
-                                </div>
+                                <XStack alignItems="center" gap="$1">
+                                  <RefreshCw size={12} />
+                                  <SizableText fontSize="$1" color="$color11">Generating...</SizableText>
+                                </XStack>
                               )}
-                            </div>
-                            <div
-                              className="bg-muted/50 rounded-md p-3 max-h-64 overflow-y-auto"
+                            </XStack>
+                            <YStack
+                              backgroundColor="$color3" borderRadius="$3" padding="$3" maxHeight={256} overflow="scroll"
                               ref={(el) => {
                                 if (el) {
                                   generationOutputRefs.current.set(result.id, el);
                                 }
                               }}
                             >
-                              <pre className="text-xs font-mono whitespace-pre-wrap text-foreground/80">
+                              <SizableText fontSize="$1" fontFamily="$mono" whiteSpace="pre" color="$color">
                                 {result.generationOutput || generationOutputs.get(result.id) || ''}
-                              </pre>
-                            </div>
-                          </div>
+                              </SizableText>
+                            </YStack>
+                          </YStack>
                         )}
 
                         {(result.status === 'success' || result.status === 'failed' || result.status === 'stopped') && (
-                          <div className="mt-3 pt-3 border-t space-y-2 text-sm">
+                          <SizableText marginTop="$3" paddingTop="$3" borderTopWidth={1} rowGap="$2" fontSize="$3" display="flex" flexDirection="column">
                             {result.details && (
                               <div>
                                 <strong>Result:</strong> {result.details}
                               </div>
                             )}
-                            <div className="flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground">
+                            <SizableText flexWrap="wrap" columnGap="$4" rowGap="$1" color="$color11" display="flex" flexDirection="row">
                               {result.totalCost !== undefined && (
                                 <span>
-                                  <strong className="text-foreground">Cost:</strong>{' '}
+                                  <SizableText color="$color">Cost:</SizableText>{' '}
                                   {formatCost(result.totalCost)}
                                 </span>
                               )}
                               {result.totalTokens !== undefined && (
                                 <span>
-                                  <strong className="text-foreground">Tokens:</strong>{' '}
+                                  <SizableText color="$color">Tokens:</SizableText>{' '}
                                   {(result.promptTokens || 0).toLocaleString()} &rarr; {(result.completionTokens || 0).toLocaleString()} ({result.totalTokens.toLocaleString()} total)
                                 </span>
                               )}
                               {result.toolCalls !== undefined && (
                                 <span>
-                                  <strong className="text-foreground">Tool Calls:</strong> {result.toolCalls}
+                                  <SizableText color="$color">Tool Calls:</SizableText> {result.toolCalls}
                                 </span>
                               )}
-                            </div>
+                            </SizableText>
                             {result.toolCallDetails && result.toolCallDetails.length > 0 && (() => {
                               const ts = computeToolStats(result.toolCallDetails);
                               return (
-                                <div className="mt-1">
-                                  <div className="text-xs text-muted-foreground mb-1">
-                                    <span className="font-medium text-foreground">{ts.total} tool call{ts.total !== 1 ? 's' : ''}</span>
+                                <YStack marginTop="$1">
+                                  <SizableText fontSize="$1" color="$color11" marginBottom="$1" display="flex" flexDirection="column">
+                                    <SizableText fontWeight="500" color="$color">{ts.total} tool call{ts.total !== 1 ? 's' : ''}</SizableText>
                                     {' — '}
-                                    <span className="text-green-600">{ts.success} ok</span>
-                                    {ts.failed > 0 && <>, <span className="text-red-500">{ts.failed} failed</span></>}
-                                    {ts.invalid > 0 && <>, <span className="text-orange-500">{ts.invalid} invalid</span></>}
-                                  </div>
-                                  <div className="space-y-0.5 font-mono text-xs">
+                                    <SizableText color="$green10">{ts.success} ok</SizableText>
+                                    {ts.failed > 0 && <>, <SizableText color="$red9">{ts.failed} failed</SizableText></>}
+                                    {ts.invalid > 0 && <>, <SizableText color="$orange9">{ts.invalid} invalid</SizableText></>}
+                                  </SizableText>
+                                  <SizableText rowGap="$0.5" fontFamily="$mono" fontSize="$1" display="flex" flexDirection="column">
                                     {result.toolCallDetails.map((tc, i) => {
                                       const isInvalid = !KNOWN_TOOLS.has(tc.name);
                                       return (
-                                        <div key={i} className="flex items-center gap-1.5">
-                                          <span className={tc.status === 'success' && !isInvalid ? 'text-green-500' : isInvalid ? 'text-orange-500' : 'text-red-500'}>
+                                        <XStack key={i} alignItems="center" gap="$1.5">
+                                          <SizableText className={`${tc.status === 'success' && !isInvalid ? 'text-green-500' : isInvalid ? 'text-orange-500' : 'text-red-500'}`}>
                                             {tc.status === 'success' && !isInvalid ? '\u2713' : '\u2717'}
-                                          </span>
-                                          <span className={`font-medium ${isInvalid ? 'text-orange-500' : ''}`}>{tc.name}</span>
+                                          </SizableText>
+                                          <SizableText fontWeight="500" {...{ color: isInvalid ? "$orange9" : undefined }}>{tc.name}</SizableText>
                                           {isInvalid && (
-                                            <span className="text-orange-500 text-[10px] border border-orange-400/50 rounded px-1">invalid</span>
+                                            <SizableText color="$orange9" fontSize={10} borderWidth={1} borderColor="$orange8" borderRadius="$2" paddingHorizontal="$1">invalid</SizableText>
                                           )}
                                           {tc.args && (
-                                            <span className="text-muted-foreground truncate max-w-md">
+                                            <SizableText color="$color11" numberOfLines={1} maxWidth={448}>
                                               &mdash; {tc.args}
-                                            </span>
+                                            </SizableText>
                                           )}
-                                        </div>
+                                        </XStack>
                                       );
                                     })}
-                                  </div>
-                                </div>
+                                  </SizableText>
+                                </YStack>
                               );
                             })()}
                             {result.assertionResults && result.assertionResults.length > 0 && (
-                              <div className="mt-2 pt-2 border-t border-dashed">
-                                <div className="text-xs font-medium text-muted-foreground mb-1">
+                              <YStack marginTop="$2" paddingTop="$2" borderTopWidth={1} borderStyle="dashed">
+                                <SizableText fontSize="$1" fontWeight="500" color="$color11" marginBottom="$1" display="flex" flexDirection="column">
                                   Assertions: {result.assertionResults.filter(a => a.passed).length}/{result.assertionResults.length} passed
                                   {result.assertionScore !== undefined && ` (${result.assertionScore.toFixed(0)}%)`}
-                                </div>
-                                <div className="space-y-0.5 font-mono text-xs">
+                                </SizableText>
+                                <SizableText rowGap="$0.5" fontFamily="$mono" fontSize="$1" display="flex" flexDirection="column">
                                   {result.assertionResults.map((ar, i) => (
-                                    <div key={i} className="flex items-start gap-1.5">
-                                      <span className={ar.passed ? 'text-green-500' : 'text-red-500'}>
+                                    <XStack key={i} alignItems="flex-start" gap="$1.5">
+                                      <SizableText {...{ color: ar.passed ? "$green9" : "$red9" }}>
                                         {ar.passed ? '\u2713' : '\u2717'}
-                                      </span>
-                                      <span className={ar.passed ? 'text-muted-foreground' : 'text-foreground'}>
+                                      </SizableText>
+                                      <SizableText {...{ color: ar.passed ? "$color11" : "$color" }}>
                                         {ar.assertion.description}
-                                      </span>
+                                      </SizableText>
                                       {!ar.passed && ar.actual && (
-                                        <span className="text-red-400 truncate max-w-sm">
+                                        <SizableText color="$red8" numberOfLines={1} maxWidth={384}>
                                           &mdash; {ar.actual}
-                                        </span>
+                                        </SizableText>
                                       )}
-                                    </div>
+                                    </XStack>
                                   ))}
-                                </div>
-                              </div>
+                                </SizableText>
+                              </YStack>
                             )}
                             {result.errors && result.errors.length > 0 && (
-                              <div className="text-red-600">
+                              <SizableText color="$red10" display="flex" flexDirection="column">
                                 <strong>Errors:</strong> {result.errors.join(', ')}
-                              </div>
+                              </SizableText>
                             )}
-                          </div>
+                          </SizableText>
                         )}
-                      </div>
+                      </YStack>
                     );
                   })}
-                </div>
+                </YStack>
 
                 {/* Track Report — shown when all tests in this track are done */}
                 {report.allDone && (
-                  <div className="mt-4 bg-muted/40 border rounded-lg p-4">
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-3">
-                      <h3 className="text-sm font-medium">{track.name} Track Report</h3>
-                      <span className="text-xs text-muted-foreground">
+                  <YStack marginTop="$4" backgroundColor="$color3" borderWidth={1} borderRadius="$5" padding="$4">
+                    <XStack flexWrap="wrap" alignItems="center" columnGap="$2" rowGap="$1" marginBottom="$3">
+                      <H3 fontSize="$3" fontWeight="500">{track.name} Track Report</H3>
+                      <SizableText fontSize="$1" color="$color11">
                         Passed: {report.passed}/{report.total} ({report.successRate.toFixed(1)}%)
                         {report.totalAssertions > 0 && (
                           <>&nbsp;|&nbsp; Assertions: {report.passedAssertions}/{report.totalAssertions} ({report.assertionScore.toFixed(0)}%)</>
@@ -1427,9 +1428,9 @@ export default function TestGenerationPage() {
                         &nbsp;|&nbsp; Tokens: {report.totalTokens.toLocaleString()}
                         &nbsp;|&nbsp; Tool calls: {report.totalToolCalls}
                         {' ('}
-                        <span className="text-green-600">{report.toolStats.success} ok</span>
-                        {report.toolStats.failed > 0 && <>, <span className="text-red-500">{report.toolStats.failed} fail</span></>}
-                        {report.toolStats.invalid > 0 && <>, <span className="text-orange-500">{report.toolStats.invalid} invalid</span></>}
+                        <SizableText color="$green10">{report.toolStats.success} ok</SizableText>
+                        {report.toolStats.failed > 0 && <>, <SizableText color="$red9">{report.toolStats.failed} fail</SizableText></>}
+                        {report.toolStats.invalid > 0 && <>, <SizableText color="$orange9">{report.toolStats.invalid} invalid</SizableText></>}
                         {')'}
                         {Object.keys(report.toolStats.breakdown).length > 0 && (
                           <> &mdash; {Object.entries(report.toolStats.breakdown)
@@ -1438,131 +1439,125 @@ export default function TestGenerationPage() {
                             <span key={name}>
                               {i > 0 ? ', ' : ''}
                               {name}: {counts.total}
-                              {counts.failed > 0 && <span className="text-red-500"> ({counts.failed}&#x2717;)</span>}
+                              {counts.failed > 0 && <SizableText color="$red9"> ({counts.failed}&#x2717;)</SizableText>}
                             </span>
                           ))}</>
                         )}
-                      </span>
-                    </div>
-                    <div className="space-y-1">
+                      </SizableText>
+                    </XStack>
+                    <YStack rowGap="$1">
                       {report.results.map(r => {
                         const isPass = r.status === 'success';
                         return (
-                          <div key={r.id} className="flex items-center gap-2 text-xs font-mono">
-                            <span className={isPass ? 'text-green-500' : 'text-red-500'}>
+                          <SizableText key={r.id} alignItems="center" gap="$2" fontSize="$1" fontFamily="$mono" display="flex" flexDirection="row">
+                            <SizableText {...{ color: isPass ? "$green9" : "$red9" }}>
                               {isPass ? '\u2713' : '\u2717'}
-                            </span>
-                            <span className="w-48 truncate">{r.id}</span>
-                            <span className="w-16 text-right text-muted-foreground">
+                            </SizableText>
+                            <SizableText width="$19" numberOfLines={1}>{r.id}</SizableText>
+                            <SizableText width="$10" textAlign="right" color="$color11">
                               {r.executionTime ? `${(r.executionTime / 1000).toFixed(1)}s` : '—'}
-                            </span>
-                            <span className="w-20 text-right text-muted-foreground">
+                            </SizableText>
+                            <SizableText width="$11" textAlign="right" color="$color11">
                               {r.totalCost !== undefined ? formatCost(r.totalCost) : ''}
-                            </span>
-                            <span className="w-20 text-right text-muted-foreground">
+                            </SizableText>
+                            <SizableText width="$11" textAlign="right" color="$color11">
                               {r.totalTokens !== undefined ? `${r.totalTokens.toLocaleString()} tok` : ''}
-                            </span>
-                            <span className="w-32 text-muted-foreground">
+                            </SizableText>
+                            <SizableText width="$14" color="$color11">
                               {r.toolCallDetails && r.toolCallDetails.length > 0 ? (() => {
                                 const ts = computeToolStats(r.toolCallDetails);
                                 return (
                                   <>
                                     {ts.total} tools
                                     {' ('}
-                                    <span className="text-green-600">{ts.success}</span>
-                                    {ts.failed > 0 && <>/<span className="text-red-500">{ts.failed}</span></>}
-                                    {ts.invalid > 0 && <>/<span className="text-orange-500">{ts.invalid}!</span></>}
+                                    <SizableText color="$green10">{ts.success}</SizableText>
+                                    {ts.failed > 0 && <>/<SizableText color="$red9">{ts.failed}</SizableText></>}
+                                    {ts.invalid > 0 && <>/<SizableText color="$orange9">{ts.invalid}!</SizableText></>}
                                     {')'}
                                   </>
                                 );
                               })() : r.toolCalls !== undefined ? `${r.toolCalls} tools` : ''}
-                            </span>
+                            </SizableText>
                             {r.assertionScore !== undefined && (
-                              <span className={`w-16 text-right ${r.assertionScore === 100 ? 'text-green-500' : r.assertionScore > 0 ? 'text-yellow-500' : 'text-red-500'}`}>
+                              <SizableText width="$10" textAlign="right" className={`${r.assertionScore === 100 ? 'text-green-500' : r.assertionScore > 0 ? 'text-yellow-500' : 'text-red-500'}`}>
                                 {r.assertionScore.toFixed(0)}%
-                              </span>
+                              </SizableText>
                             )}
                             {r.errors && r.errors.length > 0 && (
-                              <span className="text-red-500 truncate">— {r.errors[0]}</span>
+                              <SizableText color="$red9" numberOfLines={1}>— {r.errors[0]}</SizableText>
                             )}
-                          </div>
+                          </SizableText>
                         );
                       })}
-                    </div>
-                  </div>
+                    </YStack>
+                  </YStack>
                 )}
               </div>
             );
           })}
-        </div>
+        </YStack>
 
         {/* Aggregated Results Table — multi-round only */}
         {benchmarkComplete && roundHistory.length > 1 && aggregatedResults.length > 0 && (
-          <div className="mt-8">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="h-px flex-1 bg-border" />
-              <h2 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+          <YStack marginTop="$6">
+            <XStack alignItems="center" gap="$3" marginBottom="$3">
+              <YStack height={1} flex={1} backgroundColor="$borderColor" />
+              <H2 fontSize="$3" fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11">
                 Aggregated Results ({roundHistory.length} Rounds)
-              </h2>
-              <div className="h-px flex-1 bg-border" />
-            </div>
-            <div className="bg-card border rounded-lg overflow-hidden">
-              <table className="w-full text-sm">
+              </H2>
+              <YStack height={1} flex={1} backgroundColor="$borderColor" />
+            </XStack>
+            <YStack backgroundColor="$background" borderWidth={1} borderRadius="$5" overflow="hidden">
+              <SizableText width="100%" fontSize="$3" display="flex" flexDirection="column">
                 <thead>
-                  <tr className="border-b bg-muted/40">
-                    <th className="text-left px-4 py-2 font-medium text-muted-foreground">Test</th>
-                    <th className="text-right px-4 py-2 font-medium text-muted-foreground">Pass Rate</th>
-                    <th className="text-right px-4 py-2 font-medium text-muted-foreground">Avg Time</th>
-                    <th className="text-right px-4 py-2 font-medium text-muted-foreground">Min/Max</th>
-                    <th className="text-right px-4 py-2 font-medium text-muted-foreground">Avg Cost</th>
-                    <th className="text-right px-4 py-2 font-medium text-muted-foreground">Avg Tokens</th>
-                    <th className="text-right px-4 py-2 font-medium text-muted-foreground">Avg Tools</th>
-                    <th className="text-right px-4 py-2 font-medium text-muted-foreground">Assert %</th>
-                  </tr>
+                  <YStack borderBottomWidth={1} backgroundColor="$color3">
+                    <SizableText textAlign="left" paddingHorizontal="$4" paddingVertical="$2" fontWeight="500" color="$color11">Test</SizableText>
+                    <SizableText textAlign="right" paddingHorizontal="$4" paddingVertical="$2" fontWeight="500" color="$color11">Pass Rate</SizableText>
+                    <SizableText textAlign="right" paddingHorizontal="$4" paddingVertical="$2" fontWeight="500" color="$color11">Avg Time</SizableText>
+                    <SizableText textAlign="right" paddingHorizontal="$4" paddingVertical="$2" fontWeight="500" color="$color11">Min/Max</SizableText>
+                    <SizableText textAlign="right" paddingHorizontal="$4" paddingVertical="$2" fontWeight="500" color="$color11">Avg Cost</SizableText>
+                    <SizableText textAlign="right" paddingHorizontal="$4" paddingVertical="$2" fontWeight="500" color="$color11">Avg Tokens</SizableText>
+                    <SizableText textAlign="right" paddingHorizontal="$4" paddingVertical="$2" fontWeight="500" color="$color11">Avg Tools</SizableText>
+                    <SizableText textAlign="right" paddingHorizontal="$4" paddingVertical="$2" fontWeight="500" color="$color11">Assert %</SizableText>
+                  </YStack>
                 </thead>
                 <tbody>
                   {aggregatedResults.map(r => (
-                    <tr key={r.id} className="border-b last:border-b-0">
-                      <td className="px-4 py-2 font-medium">{r.name}</td>
-                      <td className={`px-4 py-2 text-right font-medium ${
-                        r.passRate === 100 ? 'text-green-500' : r.passRate > 0 ? 'text-yellow-500' : 'text-red-500'
-                      }`}>
+                    <YStack key={r.id} borderBottomWidth={1} className="last:border-b-0">
+                      <SizableText paddingHorizontal="$4" paddingVertical="$2" fontWeight="500">{r.name}</SizableText>
+                      <SizableText paddingHorizontal="$4" paddingVertical="$2" textAlign="right" fontWeight="500" className={`${r.passRate === 100 ? 'text-green-500' : r.passRate > 0 ? 'text-yellow-500' : 'text-red-500'}`}>
                         {r.passRate.toFixed(0)}%
-                        <span className="text-xs font-normal text-muted-foreground ml-1">
+                        <SizableText fontSize="$1" fontWeight="400" color="$color11" marginLeft="$1">
                           ({r.passCount}/{r.roundCount})
-                        </span>
-                      </td>
-                      <td className="px-4 py-2 text-right text-muted-foreground">
+                        </SizableText>
+                      </SizableText>
+                      <SizableText paddingHorizontal="$4" paddingVertical="$2" textAlign="right" color="$color11">
                         {(r.avgTime / 1000).toFixed(1)}s
-                      </td>
-                      <td className="px-4 py-2 text-right text-muted-foreground text-xs">
+                      </SizableText>
+                      <SizableText paddingHorizontal="$4" paddingVertical="$2" textAlign="right" color="$color11" fontSize="$1">
                         {(r.minTime / 1000).toFixed(1)}s / {(r.maxTime / 1000).toFixed(1)}s
-                      </td>
-                      <td className="px-4 py-2 text-right text-muted-foreground">
+                      </SizableText>
+                      <SizableText paddingHorizontal="$4" paddingVertical="$2" textAlign="right" color="$color11">
                         {formatCost(r.avgCost)}
-                      </td>
-                      <td className="px-4 py-2 text-right text-muted-foreground">
+                      </SizableText>
+                      <SizableText paddingHorizontal="$4" paddingVertical="$2" textAlign="right" color="$color11">
                         {Math.round(r.avgTokens).toLocaleString()}
-                      </td>
-                      <td className="px-4 py-2 text-right text-muted-foreground">
+                      </SizableText>
+                      <SizableText paddingHorizontal="$4" paddingVertical="$2" textAlign="right" color="$color11">
                         {r.avgToolCalls.toFixed(1)}
-                      </td>
-                      <td className={`px-4 py-2 text-right ${
-                        r.avgAssertionScore !== undefined
-                          ? r.avgAssertionScore === 100 ? 'text-green-500' : r.avgAssertionScore > 0 ? 'text-yellow-500' : 'text-red-500'
-                          : 'text-muted-foreground'
-                      }`}>
+                      </SizableText>
+                      <SizableText paddingHorizontal="$4" paddingVertical="$2" textAlign="right" className={`${r.avgAssertionScore !== undefined ? r.avgAssertionScore === 100 ? 'text-green-500' : r.avgAssertionScore > 0 ? 'text-yellow-500' : 'text-red-500' : 'text-muted-foreground'}`}>
                         {r.avgAssertionScore !== undefined ? `${r.avgAssertionScore.toFixed(0)}%` : '-'}
-                      </td>
-                    </tr>
+                      </SizableText>
+                    </YStack>
                   ))}
                 </tbody>
-              </table>
-            </div>
-          </div>
+              </SizableText>
+            </YStack>
+          </YStack>
         )}
-        </div>
-      </div>
-    </div>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }

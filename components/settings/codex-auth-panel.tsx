@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { Button, Label, toast } from '@hanzo/ui';
+import { SizableText, XStack, Paragraph, Anchor, YStack } from '@hanzo/gui';
+import { useState, useEffect, useCallback } from 'react';
+import { Button, Label, toast, Textarea } from '@hanzo/ui';
 import { ExternalLink, Loader2, Terminal, TriangleAlert } from 'lucide-react';
 import { ConnectionBadge } from '@/components/settings/connection-badge';
 import { configManager } from '@/lib/config/storage';
@@ -110,28 +111,28 @@ export function CodexAuthPanel({ onAuthChange }: CodexAuthPanelProps) {
   };
 
   const warningBanner = (
-    <div className="p-2.5 border border-yellow-600/30 rounded-md bg-yellow-950/20 text-xs text-yellow-200/80 space-y-1">
-      <div className="flex items-start gap-2">
-        <TriangleAlert className="h-3.5 w-3.5 text-yellow-500 mt-0.5 shrink-0" />
+    <SizableText padding="$2.5" borderWidth={1} borderColor="$yellow10" borderRadius="$3" backgroundColor="$yellow12" fontSize="$1" color="$yellow3" rowGap="$1" display="flex" flexDirection="column">
+      <XStack alignItems="flex-start" gap="$2">
+        <TriangleAlert size={14} color="$yellow9" />
         <div>
           <p>
-            <span className="font-medium text-yellow-400">Use at your own risk.</span>{' '}
+            <SizableText fontWeight="500" color="$yellow8">Use at your own risk.</SizableText>{' '}
             This routes requests through an unofficial backend using your ChatGPT session token. Your token is sent to ChatGPT servers but the usage is outside the intended Codex CLI.
           </p>
-          <p className="mt-1">
+          <Paragraph marginTop="$1">
             OpenAI may restrict or revoke access to this endpoint at any time. For reliable, long-term use consider an{' '}
-            <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-yellow-400 hover:underline">OpenAI API key</a>{' '}
+            <Anchor href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" color="$yellow8" hoverStyle={{ textDecorationLine: "underline" }}>OpenAI API key</Anchor>{' '}
             instead.
-          </p>
+          </Paragraph>
         </div>
-      </div>
-    </div>
+      </XStack>
+    </SizableText>
   );
 
   // --- Authenticated state ---
   if (isAuthenticated && auth) {
     return (
-      <div className="space-y-3">
+      <YStack rowGap="$3">
         {warningBanner}
 
         <ConnectionBadge
@@ -140,77 +141,77 @@ export function CodexAuthPanel({ onAuthChange }: CodexAuthPanelProps) {
           info={auth.expires_at ? `Expires in ${formatExpiry()}` : undefined}
           onDisconnect={handleDisconnect}
           disconnecting={isLoading}
-        />
-      </div>
+  />
+      </YStack>
     );
   }
 
   // --- Unauthenticated state ---
   return (
-    <div className="space-y-3">
+    <YStack rowGap="$3">
       <Label>ChatGPT Authentication</Label>
-      <p className="text-xs text-muted-foreground">
+      <Paragraph fontSize="$1" color="$color11">
         Use your ChatGPT Plus/Pro subscription instead of an API key.
         Tokens refresh automatically once connected.
-      </p>
+      </Paragraph>
 
       {warningBanner}
 
-      <div className="p-3 border rounded-md bg-muted/50 space-y-3">
-        <div className="flex items-center gap-2 text-sm font-medium">
-          <Terminal className="h-4 w-4" />
+      <YStack padding="$3" borderWidth={1} borderRadius="$3" backgroundColor="$color3" rowGap="$3">
+        <SizableText alignItems="center" gap="$2" fontSize="$3" fontWeight="500" display="flex" flexDirection="row">
+          <Terminal size={16} />
           Setup Instructions
-        </div>
+        </SizableText>
 
-        <ol className="text-xs text-muted-foreground space-y-2 list-decimal list-inside">
+        <SizableText fontSize="$1" color="$color11" rowGap="$2" display="flex" flexDirection="column">
           <li>
             Install the{' '}
-            <a
+            <Anchor
               href="https://github.com/openai/codex"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-primary hover:underline inline-flex items-center gap-0.5"
+              color="$color12" alignItems="center" gap="$0.5" hoverStyle={{ textDecorationLine: "underline" }}
             >
-              Codex CLI <ExternalLink className="h-2.5 w-2.5" />
-            </a>
+              Codex CLI <ExternalLink size={10} />
+            </Anchor>
             {': '}
-            <code className="bg-muted px-1 rounded">npm i -g @openai/codex</code>
+            <SizableText backgroundColor="$color3" paddingHorizontal="$1" borderRadius="$2">npm i -g @openai/codex</SizableText>
           </li>
           <li>
-            Run <code className="bg-muted px-1 rounded">codex login</code> and follow the browser prompts
+            Run <SizableText backgroundColor="$color3" paddingHorizontal="$1" borderRadius="$2">codex login</SizableText> and follow the browser prompts
           </li>
           <li>
             Copy your token by running:<br />
-            <code className="bg-muted px-1 rounded select-all">cat ~/.codex/auth.json | pbcopy</code>
-            <span className="text-muted-foreground/60 ml-1">(macOS)</span>
+            <SizableText backgroundColor="$color3" paddingHorizontal="$1" borderRadius="$2" userSelect="all">cat ~/.codex/auth.json | pbcopy</SizableText>
+            <SizableText color="$color11" marginLeft="$1">(macOS)</SizableText>
             <br />
-            <code className="bg-muted px-1 rounded select-all">cat ~/.codex/auth.json | xclip -sel c</code>
-            <span className="text-muted-foreground/60 ml-1">(Linux)</span>
+            <SizableText backgroundColor="$color3" paddingHorizontal="$1" borderRadius="$2" userSelect="all">cat ~/.codex/auth.json | xclip -sel c</SizableText>
+            <SizableText color="$color11" marginLeft="$1">(Linux)</SizableText>
           </li>
           <li>
-            Paste below with <code className="bg-muted px-1 rounded">Cmd+V</code> / <code className="bg-muted px-1 rounded">Ctrl+V</code>
+            Paste below with <SizableText backgroundColor="$color3" paddingHorizontal="$1" borderRadius="$2">Cmd+V</SizableText> / <SizableText backgroundColor="$color3" paddingHorizontal="$1" borderRadius="$2">Ctrl+V</SizableText>
           </li>
-        </ol>
-      </div>
+        </SizableText>
+      </YStack>
 
-      <div className="space-y-2">
-        <Label htmlFor="codex-token" className="text-xs">Auth Token JSON</Label>
-        <textarea
+      <YStack rowGap="$2">
+        <Label htmlFor="codex-token" fontSize="$1">Auth Token JSON</Label>
+        <Textarea
           id="codex-token"
-          className="w-full h-24 text-xs font-mono p-2 rounded-md border bg-background resize-none"
+          width="100%" height="$12" fontSize="$1" fontFamily="$mono" padding="$2" borderRadius="$3" borderWidth={1} backgroundColor="$background" resize="none"
           placeholder={'{\n  "access_token": "ey...",\n  "refresh_token": "v1.ey...",\n  "expires_at": 1234567890\n}'}
           value={pasteValue}
           onChange={(e) => setPasteValue(e.target.value)}
-        />
+  />
         <Button
           size="sm"
           onClick={handlePasteToken}
           disabled={!pasteValue.trim() || isLoading}
         >
-          {isLoading && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
+          {isLoading && <Loader2 size={12} />}
           Save Token
         </Button>
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }

@@ -13,11 +13,11 @@
  * one file (that is genuinely all it has); a multi-page app shows them all.
  */
 
+import { Button, Input } from '@hanzo/ui';
+import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
 import { useState } from "react";
 import { FileCode2, Plus, Trash2, Check, X, Pencil } from "lucide-react";
 import { Page } from "@/types";
-import { cn } from "@/lib/utils";
-
 export function FileTree({
   pages,
   currentPage,
@@ -45,38 +45,33 @@ export function FileTree({
   };
 
   return (
-    <div className="flex h-full w-48 shrink-0 flex-col border-r border-border bg-card">
-      <div className="flex items-center justify-between px-3 py-2.5">
-        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+    <YStack height="100%" width="$19" flexShrink={0} borderRightWidth={1} borderColor="$borderColor" backgroundColor="$background">
+      <XStack alignItems="center" justifyContent="space-between" paddingHorizontal="$3" paddingVertical="$2.5">
+        <SizableText fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={2.24} color="$color11">
           Files
-        </span>
-        <button
+        </SizableText>
+        <Button
           type="button"
           onClick={onNewPage}
           title="New file"
-          className="grid h-5 w-5 place-items-center rounded text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+          height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
         >
-          <Plus className="h-3.5 w-3.5" />
-        </button>
-      </div>
+          <Plus size={14} />
+        </Button>
+      </XStack>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-1.5 pb-2">
+      <YStack minHeight={0} flex={1} paddingHorizontal="$1.5" paddingBottom="$2" overflow="scroll">
         {pages.map((page) => {
           const active = page.path === currentPage;
           const isRenaming = renaming === page.path;
           return (
-            <div
+            <SizableText
               key={page.path}
-              className={cn(
-                "group flex items-center gap-1.5 rounded-md px-2 py-1.5 text-[13px]",
-                active
-                  ? "bg-muted text-foreground"
-                  : "text-muted-foreground hover:bg-white/[0.05] hover:text-foreground",
-              )}
+              group alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1.5" fontSize={13} display="flex" flexDirection="row" {...{ backgroundColor: active ? "$color3" : undefined, color: active ? "$color" : "$color11", hoverStyle: active ? undefined : {"backgroundColor":"white","color":"$color"} }}
             >
-              <FileCode2 className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+              <FileCode2 size={14} color="$color11" />
               {isRenaming ? (
-                <input
+                <Input
                   autoFocus
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
@@ -85,59 +80,59 @@ export function FileTree({
                     if (e.key === "Escape") setRenaming(null);
                   }}
                   onBlur={() => commitRename(page.path)}
-                  className="min-w-0 flex-1 rounded bg-background/40 px-1 py-0.5 font-mono text-[12px] text-foreground outline-none ring-1 ring-white/20"
-                />
+                  minWidth={0} flex={1} borderRadius="$2" backgroundColor="$background" paddingHorizontal="$1" paddingVertical="$0.5" fontFamily="$mono" fontSize={12} color="$color" outlineWidth={0}
+  />
               ) : (
-                <button
+                <Button
                   type="button"
                   onClick={() => onSelectPage(page.path)}
-                  className="min-w-0 flex-1 truncate text-left font-mono"
+                  minWidth={0} flex={1} numberOfLines={1} textAlign="left" fontFamily="$mono"
                   title={page.path}
                 >
                   {page.path}
-                </button>
+                </Button>
               )}
 
               {isRenaming ? (
-                <button
+                <Button
                   type="button"
                   onClick={() => commitRename(page.path)}
-                  className="shrink-0 text-muted-foreground hover:text-foreground"
+                  flexShrink={0} color="$color11" hoverStyle={{ color: "$color" }}
                 >
-                  <Check className="h-3 w-3" />
-                </button>
+                  <Check size={12} />
+                </Button>
               ) : (
-                <span className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
-                  <button
+                <SizableText flexShrink={0} alignItems="center" gap="$0.5" opacity={0} $group-hover={{ opacity: 1 }}>
+                  <Button
                     type="button"
                     onClick={() => startRename(page.path)}
                     title="Rename"
-                    className="text-muted-foreground hover:text-foreground"
+                    color="$color11" hoverStyle={{ color: "$color" }}
                   >
-                    <Pencil className="h-3 w-3" />
-                  </button>
+                    <Pencil size={12} />
+                  </Button>
                   {pages.length > 1 && (
-                    <button
+                    <Button
                       type="button"
                       onClick={() => onDeletePage(page.path)}
                       title="Delete"
-                      className="text-muted-foreground hover:text-red-400"
+                      color="$color11" hoverStyle={{ color: "$red8" }}
                     >
-                      <Trash2 className="h-3 w-3" />
-                    </button>
+                      <Trash2 size={12} />
+                    </Button>
                   )}
-                </span>
+                </SizableText>
               )}
-            </div>
+            </SizableText>
           );
         })}
         {pages.length === 0 && (
-          <div className="flex flex-col items-center gap-2 px-3 py-8 text-center">
-            <X className="h-4 w-4 text-muted-foreground" />
-            <p className="text-[11px] text-muted-foreground">No files yet.</p>
-          </div>
+          <SizableText flexDirection="column" alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$6" textAlign="center" display="flex">
+            <X size={16} color="$color11" />
+            <Paragraph fontSize={11} color="$color11">No files yet.</Paragraph>
+          </SizableText>
         )}
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }

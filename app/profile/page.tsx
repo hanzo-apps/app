@@ -1,9 +1,10 @@
 "use client";
 
+import { XStack, SizableText, Paragraph, YStack, H1, H2, H3 } from '@hanzo/gui';
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Save, Camera, Link as LinkIcon, Twitter, Github, Globe } from "lucide-react";
-import { Button, Avatar, AvatarFallback, AvatarImage, toast } from '@hanzo/ui';
+import { ArrowLeft, Save, Camera, Twitter, Github, Globe } from "lucide-react";
+import { Button, Avatar, AvatarFallback, AvatarImage, toast, Input, Label, Textarea } from '@hanzo/ui';
 import { useUser } from "@/hooks/useUser";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { MyBuilds } from "@/components/builds/my-builds";
@@ -29,24 +30,24 @@ export default function ProfilePage() {
   // Show loading state while checking auth
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
+      <XStack minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="$background">
+        <SizableText textAlign="center" display="flex" flexDirection="column">
           <HanzoLogo className="w-12 h-12 mx-auto mb-4 animate-pulse" />
-          <p className="text-muted-foreground">Loading profile...</p>
-        </div>
-      </div>
+          <Paragraph color="$color11">Loading profile...</Paragraph>
+        </SizableText>
+      </XStack>
     );
   }
 
   // Show loading state while redirecting
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
+      <XStack minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="$background">
+        <SizableText textAlign="center" display="flex" flexDirection="column">
           <HanzoLogo className="w-12 h-12 mx-auto mb-4 animate-pulse" />
-          <p className="text-muted-foreground">Redirecting to login...</p>
-        </div>
-      </div>
+          <Paragraph color="$color11">Redirecting to login...</Paragraph>
+        </SizableText>
+      </XStack>
     );
   }
 
@@ -57,30 +58,30 @@ export default function ProfilePage() {
     .replace(/^-+|-+$/g, "");
 
   return (
-    <div className="min-h-screen bg-background">
+    <YStack minHeight="100%" backgroundColor="$background">
       {/* Header */}
-      <header className="border-b border-border px-6 py-4">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      <YStack borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$5" paddingVertical="$4">
+        <XStack maxWidth={896} alignSelf="center" alignItems="center" justifyContent="space-between">
+          <XStack alignItems="center" gap="$4">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => router.back()}
-              className="gap-2"
+              gap="$2"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft size={16} />
               Back
             </Button>
-            <h1 className="text-2xl font-medium text-foreground">Profile</h1>
-          </div>
-          <div className="flex items-center gap-2">
+            <H1 fontSize="$8" fontWeight="500" color="$color">Profile</H1>
+          </XStack>
+          <XStack alignItems="center" gap="$2">
             {isEditing ? (
               <>
                 <Button variant="outline" onClick={() => setIsEditing(false)}>
                   Cancel
                 </Button>
-                <Button onClick={handleSave} className="gap-2">
-                  <Save className="w-4 h-4" />
+                <Button onClick={handleSave} gap="$2">
+                  <Save size={16} />
                   Save Changes
                 </Button>
               </>
@@ -89,169 +90,169 @@ export default function ProfilePage() {
                 Edit Profile
               </Button>
             )}
-          </div>
-        </div>
-      </header>
+          </XStack>
+        </XStack>
+      </YStack>
 
-      <div className="container mx-auto px-6 py-8">
-        <div className="max-w-4xl mx-auto">
+      <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$6">
+        <YStack maxWidth={896} alignSelf="center">
           {/* Profile Header */}
-          <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-t-lg p-8">
-            <div className="flex items-center gap-6">
-              <div className="relative">
-                <Avatar className="w-24 h-24 border-4 border-black">
+          <YStack borderTopLeftRadius="$5" borderTopRightRadius="$5" padding="$6">
+            <XStack alignItems="center" gap="$5">
+              <YStack position="relative">
+                <Avatar width="$12" height="$12" borderWidth={4} borderColor="black">
                   <AvatarImage src={user?.avatarUrl} />
-                  <AvatarFallback className="text-2xl bg-purple-600">
+                  <AvatarFallback fontSize="$8" backgroundColor="$purple10">
                     {user?.fullname?.charAt(0).toUpperCase() ?? "U"}
                   </AvatarFallback>
                 </Avatar>
                 {isEditing && (
-                  <button className="absolute bottom-0 right-0 p-1.5 bg-purple-500 rounded-full hover:bg-purple-600 transition-colors">
-                    <Camera className="w-4 h-4 text-foreground" />
-                  </button>
+                  <Button position="absolute" bottom="$0" right="$0" padding="$1.5" backgroundColor="$purple9" borderRadius="$10" hoverStyle={{ backgroundColor: "$purple10" }}>
+                    <Camera size={16} color="$color" />
+                  </Button>
                 )}
-              </div>
+              </YStack>
 
-              <div className="flex-1">
+              <YStack flex={1}>
                 {isEditing ? (
-                  <input
+                  <Input
                     type="text"
                     defaultValue={user?.fullname}
-                    className="text-3xl font-medium bg-transparent text-foreground border-b border-border focus:border-purple-500 outline-none pb-2 mb-2"
-                  />
+                    fontSize="$10" fontWeight="500" backgroundColor="transparent" color="$color" borderBottomWidth={1} borderColor="$borderColor" outlineWidth={0} paddingBottom="$2" marginBottom="$2" focusStyle={{ borderColor: "$purple9" }}
+  />
                 ) : (
-                  <h2 className="text-3xl font-medium text-foreground mb-2">{user?.fullname}</h2>
+                  <H2 fontSize="$10" fontWeight="500" color="$color" marginBottom="$2">{user?.fullname}</H2>
                 )}
-                <p className="text-muted-foreground">@{handle}</p>
-              </div>
-            </div>
-          </div>
+                <Paragraph color="$color11">@{handle}</Paragraph>
+              </YStack>
+            </XStack>
+          </YStack>
 
           {/* Profile Content */}
-          <div className="bg-card rounded-b-lg border border-border p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <YStack backgroundColor="$background" borderBottomLeftRadius="$5" borderBottomRightRadius="$5" borderWidth={1} borderColor="$borderColor" padding="$5">
+            <YStack gap="$5">
               {/* Basic Info */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium text-foreground mb-4">Basic Information</h3>
+              <YStack rowGap="$4">
+                <H3 fontSize="$6" fontWeight="500" color="$color" marginBottom="$4">Basic Information</H3>
 
                 <div>
-                  <label className="block text-sm font-medium text-muted-foreground mb-1">
+                  <Label fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1">
                     Full Name
-                  </label>
+                  </Label>
                   {isEditing ? (
-                    <input
+                    <Input
                       type="text"
                       defaultValue={user?.fullname}
-                      className="w-full bg-muted text-foreground border border-border rounded-lg px-3 py-2"
-                    />
+                      width="100%" backgroundColor="$color3" color="$color" borderWidth={1} borderColor="$borderColor" borderRadius="$5" paddingHorizontal="$3" paddingVertical="$2"
+  />
                   ) : (
-                    <p className="text-foreground">{user?.fullname}</p>
+                    <Paragraph color="$color">{user?.fullname}</Paragraph>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-muted-foreground mb-1">
+                  <Label fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1">
                     Email
-                  </label>
+                  </Label>
                   {isEditing ? (
-                    <input
+                    <Input
                       type="email"
                       defaultValue={user?.email}
-                      className="w-full bg-muted text-foreground border border-border rounded-lg px-3 py-2"
-                    />
+                      width="100%" backgroundColor="$color3" color="$color" borderWidth={1} borderColor="$borderColor" borderRadius="$5" paddingHorizontal="$3" paddingVertical="$2"
+  />
                   ) : (
-                    <p className="text-foreground break-all">{user?.email}</p>
+                    <Paragraph color="$color" wordBreak="break-all">{user?.email}</Paragraph>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-muted-foreground mb-1">
+                  <Label fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1">
                     Username
-                  </label>
+                  </Label>
                   {isEditing ? (
-                    <input
+                    <Input
                       type="text"
                       defaultValue={handle}
-                      className="w-full bg-muted text-foreground border border-border rounded-lg px-3 py-2"
-                    />
+                      width="100%" backgroundColor="$color3" color="$color" borderWidth={1} borderColor="$borderColor" borderRadius="$5" paddingHorizontal="$3" paddingVertical="$2"
+  />
                   ) : (
-                    <p className="text-foreground">@{handle}</p>
+                    <Paragraph color="$color">@{handle}</Paragraph>
                   )}
                 </div>
-              </div>
+              </YStack>
 
               {/* Bio & Links */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium text-foreground mb-4">Bio & Links</h3>
+              <YStack rowGap="$4">
+                <H3 fontSize="$6" fontWeight="500" color="$color" marginBottom="$4">Bio & Links</H3>
 
                 <div>
-                  <label className="block text-sm font-medium text-muted-foreground mb-1">
+                  <Label fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1">
                     Bio
-                  </label>
+                  </Label>
                   {isEditing ? (
-                    <textarea
+                    <Textarea
                       rows={4}
                       placeholder="Tell us about yourself..."
-                      className="w-full bg-muted text-foreground border border-border rounded-lg px-3 py-2 resize-none"
-                    />
+                      width="100%" backgroundColor="$color3" color="$color" borderWidth={1} borderColor="$borderColor" borderRadius="$5" paddingHorizontal="$3" paddingVertical="$2" resize="none"
+  />
                   ) : (
-                    <p className="text-muted-foreground">No bio added yet</p>
+                    <Paragraph color="$color11">No bio added yet</Paragraph>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-muted-foreground mb-2">
+                  <Label fontSize="$3" fontWeight="500" color="$color11" marginBottom="$2">
                     Social Links
-                  </label>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Globe className="w-4 h-4 text-muted-foreground" />
+                  </Label>
+                  <YStack rowGap="$2">
+                    <XStack alignItems="center" gap="$2">
+                      <Globe size={16} color="$color11" />
                       {isEditing ? (
-                        <input
+                        <Input
                           type="url"
                           placeholder="Website"
-                          className="flex-1 bg-muted text-foreground border border-border rounded-lg px-3 py-1.5"
-                        />
+                          flex={1} backgroundColor="$color3" color="$color" borderWidth={1} borderColor="$borderColor" borderRadius="$5" paddingHorizontal="$3" paddingVertical="$1.5"
+  />
                       ) : (
-                        <span className="text-muted-foreground">Not set</span>
+                        <SizableText color="$color11">Not set</SizableText>
                       )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Twitter className="w-4 h-4 text-muted-foreground" />
+                    </XStack>
+                    <XStack alignItems="center" gap="$2">
+                      <Twitter size={16} color="$color11" />
                       {isEditing ? (
-                        <input
+                        <Input
                           type="text"
                           placeholder="Twitter username"
-                          className="flex-1 bg-muted text-foreground border border-border rounded-lg px-3 py-1.5"
-                        />
+                          flex={1} backgroundColor="$color3" color="$color" borderWidth={1} borderColor="$borderColor" borderRadius="$5" paddingHorizontal="$3" paddingVertical="$1.5"
+  />
                       ) : (
-                        <span className="text-muted-foreground">Not set</span>
+                        <SizableText color="$color11">Not set</SizableText>
                       )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Github className="w-4 h-4 text-muted-foreground" />
+                    </XStack>
+                    <XStack alignItems="center" gap="$2">
+                      <Github size={16} color="$color11" />
                       {isEditing ? (
-                        <input
+                        <Input
                           type="text"
                           placeholder="GitHub username"
-                          className="flex-1 bg-muted text-foreground border border-border rounded-lg px-3 py-1.5"
-                        />
+                          flex={1} backgroundColor="$color3" color="$color" borderWidth={1} borderColor="$borderColor" borderRadius="$5" paddingHorizontal="$3" paddingVertical="$1.5"
+  />
                       ) : (
-                        <span className="text-muted-foreground">Not set</span>
+                        <SizableText color="$color11">Not set</SizableText>
                       )}
-                    </div>
-                  </div>
+                    </XStack>
+                  </YStack>
                 </div>
-              </div>
-            </div>
+              </YStack>
+            </YStack>
 
             {/* Your builds — the sessions behind your projects. This replaced four
                 hardcoded counters (12 / 342 / 89 / 2.3k) that were identical for
                 every account and true for none. */}
             <MyBuilds />
-          </div>
-        </div>
-      </div>
-    </div>
+          </YStack>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }

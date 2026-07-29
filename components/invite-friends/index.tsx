@@ -1,3 +1,6 @@
+'use client';
+
+import { XStack, SizableText, Paragraph, YStack } from '@hanzo/gui';
 import { TiUserAdd } from "react-icons/ti";
 import { Link } from "lucide-react";
 import { FaXTwitter } from "react-icons/fa6";
@@ -16,40 +19,40 @@ export function InviteFriends() {
           <Button
             size="iconXs"
             variant="outline"
-            className="!border-border !text-muted-foreground hover:!border-border hover:!text-foreground"
+            borderColor="$borderColor" color="$color11" hoverStyle={{ borderColor: "$borderColor", color: "$color" }}
           >
-            <TiUserAdd className="size-4" />
+            <TiUserAdd size={16} />
           </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-lg lg:!p-8 !rounded-xl bg-card text-foreground border-border">
-          <DialogTitle className="hidden" />
+        <DialogContent borderRadius="$6" backgroundColor="$background" color="$color" borderColor="$borderColor" $sm={{ maxWidth: 512 }} $lg={{ padding: "$6" }}>
+          <DialogTitle display="none" />
           <main>
-            <div className="flex items-center justify-start -space-x-4 mb-5">
-              <div className="size-11 rounded-full bg-muted border border-border shadow-2xs flex items-center justify-center text-2xl">
+            <XStack alignItems="center" justifyContent="flex-start" columnGap="$4" marginBottom="$4.5">
+              <SizableText width={44} height={44} borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$8" display="flex" flexDirection="row">
                 😎
-              </div>
-              <div className="size-11 rounded-full bg-secondary border border-border shadow-2xs flex items-center justify-center text-2xl z-2">
+              </SizableText>
+              <SizableText width={44} height={44} borderRadius="$10" backgroundColor="$color4" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$8" zIndex={2} display="flex" flexDirection="row">
                 😇
-              </div>
-              <div className="size-11 rounded-full bg-muted border border-border shadow-2xs flex items-center justify-center text-2xl">
+              </SizableText>
+              <SizableText width={44} height={44} borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$8" display="flex" flexDirection="row">
                 😜
-              </div>
-            </div>
-            <p className="text-xl font-medium text-foreground max-w-[200px]">
+              </SizableText>
+            </XStack>
+            <Paragraph fontSize="$7" fontWeight="500" color="$color" maxWidth={200}>
               Invite your friends to join us!
-            </p>
-            <p className="text-sm text-muted-foreground mt-2 max-w-sm">
+            </Paragraph>
+            <Paragraph fontSize="$3" color="$color11" marginTop="$2" maxWidth={384}>
               Support us and share the love and let them know about our awesome
               platform.
-            </p>
-            <div className="mt-4 space-x-3.5">
+            </Paragraph>
+            <YStack marginTop="$4" columnGap="$3.5">
               <a
                 href="https://x.com/intent/post?url=https://hanzo.ai/&text=Checkout%20this%20awesome%20Ai%20Tool!%20Vibe%20coding%20has%20never%20been%20so%20easy✨"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <Button variant="outline" size="sm">
-                  <FaXTwitter className="size-4" />
+                  <FaXTwitter size={16} />
                   Share on
                 </Button>
               </a>
@@ -61,10 +64,10 @@ export function InviteFriends() {
                   toast.success("Invite link copied to clipboard!");
                 }}
               >
-                <Link className="size-4" />
+                <Link size={16} />
                 Copy Invite Link
               </Button>
-            </div>
+            </YStack>
           </main>
         </DialogContent>
       </form>

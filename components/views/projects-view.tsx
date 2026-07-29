@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { Project } from '@/lib/vfs/types';
 import { ProjectManager } from '@/components/project-manager';
 

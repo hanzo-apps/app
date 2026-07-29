@@ -1,5 +1,6 @@
 "use client";
 
+import { Image, YStack, XStack, SizableText } from '@hanzo/gui';
 // TemplateThumb — a real preview picture when we have one, else an on-brand tile.
 //
 // Image-first: if the slug has a captured, hand-QC'd shot at
@@ -93,14 +94,14 @@ export function TemplateThumb({
   const [broken, setBroken] = useState(false);
   if (slug && TEMPLATE_SHOTS.has(slug) && !broken) {
     return (
-      <img
+      <Image
         src={`/templates/${slug}.webp`}
         alt={name || "Template preview"}
         loading="lazy"
         decoding="async"
         onError={() => setBroken(true)}
-        className={`h-full w-full object-cover object-top ${className}`}
-      />
+        height="100%" width="100%" objectFit="cover" objectPosition="top" className={`${className}`}
+  />
     );
   }
 
@@ -115,24 +116,24 @@ export function TemplateThumb({
   const dots = (seed & 1) === 0; // texture: dot-grid vs hairline diagonals
 
   return (
-    <div
-      className={`relative h-full w-full overflow-hidden bg-card ${className}`}
+    <YStack
+      position="relative" height="100%" width="100%" overflow="hidden" backgroundColor="$background" className={`${className}`}
     >
       {/* directional base gradient (grayscale) */}
-      <div
-        className="absolute inset-0"
+      <YStack
+        position="absolute" top={0} right={0} bottom={0} left={0}
         style={{
           background: `linear-gradient(${angle}deg, rgba(255,255,255,0.07), rgba(255,255,255,0.015) 55%, rgba(255,255,255,0) 100%)`,
         }}
-      />
+  />
       {/* soft light bloom */}
-      <div
-        className="absolute h-40 w-40 rounded-full bg-foreground/[0.07] blur-3xl"
+      <YStack
+        position="absolute" height="$17" width="$17" borderRadius="$10" backgroundColor="$color"
         style={{ left: `${hx}%`, top: `${hy}%`, transform: "translate(-40%,-40%)" }}
-      />
+  />
       {/* fine texture */}
-      <div
-        className="absolute inset-0"
+      <YStack
+        position="absolute" top={0} right={0} bottom={0} left={0}
         style={
           dots
             ? {
@@ -147,22 +148,22 @@ export function TemplateThumb({
                 opacity: 0.7,
               }
         }
-      />
+  />
       {/* category icon */}
-      <div className="absolute inset-0 flex items-center justify-center">
+      <XStack position="absolute" top={0} right={0} bottom={0} left={0} alignItems="center" justifyContent="center">
         <Icon
           className="h-14 w-14 text-foreground/20"
           strokeWidth={1.1}
           style={{ transform: `rotate(${rot}deg)` }}
-        />
-      </div>
+  />
+      </XStack>
       {showLabel && category ? (
-        <div className="absolute bottom-2.5 left-3 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+        <SizableText position="absolute" bottom="$2.5" left="$3" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={2.24} color="$color11" display="flex" flexDirection="column">
           {category}
-        </div>
+        </SizableText>
       ) : null}
       {/* crisp inner hairline */}
-      <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-foreground/[0.05]" />
-    </div>
+      <YStack pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} />
+    </YStack>
   );
 }

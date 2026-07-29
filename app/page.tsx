@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from '@hanzo/ui';
+import { SizableText, YStack, XStack, H1, Paragraph, H2, H3 } from '@hanzo/gui';
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -155,132 +157,130 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="landing-root relative min-h-screen overflow-x-hidden bg-background text-foreground">
+    <SizableText position="relative" minHeight="100%" backgroundColor="$background" color="$color" overflow="hidden" display="flex" flexDirection="column" className="landing-root">
       {/* Monochrome hero glow — single soft white radial, zero hue. */}
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute left-1/2 top-[-12%] h-[560px] w-[900px] -translate-x-1/2 rounded-full bg-foreground/[0.06] blur-[130px]" />
-      </div>
+      <YStack pointerEvents="none" position="fixed" top={0} right={0} bottom={0} left={0} zIndex={0} overflow="hidden">
+        <YStack position="absolute" left="50%" top="-12%" height={560} width={900} x="50%" borderRadius="$10" backgroundColor="$color" />
+      </YStack>
 
       <Header />
 
-      <main className="relative z-10">
+      <YStack position="relative" zIndex={10}>
         {/* ── Hero ─────────────────────────────────────────────── */}
-        <section className="px-4 pb-14 pt-16 md:px-8 md:pb-20 md:pt-24">
-          <div className="mx-auto max-w-3xl text-center">
+        <YStack paddingHorizontal="$4" paddingBottom="$9" paddingTop="$10" $md={{ paddingHorizontal: "$6", paddingBottom: "$11", paddingTop: "$12" }}>
+          <SizableText alignSelf="center" maxWidth={768} textAlign="center" display="flex" flexDirection="column">
             <Reveal>
-              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-foreground/[0.03] px-3 py-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-foreground/70" />
-                <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-foreground/55">
+              <XStack marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$3" paddingVertical="$1.5">
+                <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color" />
+                <SizableText fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.4} color="$color">
                   Sites, wired to real data &amp; AI
-                </span>
-              </div>
+                </SizableText>
+              </XStack>
             </Reveal>
 
             <Reveal delay={60}>
-              <h1 className="text-balance text-[1.9rem] font-medium leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
+              <H1 color="1.9rem" fontWeight="500" lineHeight={1.05} letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
                 {/* The space is explicit: JSX drops the whitespace around the <br>,
                     and the <br> is hidden below sm — without it the mobile heading
                     reads "Describe your app.Hanzo builds and ships it." */}
                 Describe your app.{' '}
                 <br className="hidden sm:block" />
                 Hanzo builds and ships it.
-              </h1>
+              </H1>
             </Reveal>
 
             <Reveal delay={120}>
-              <p className="mx-auto mt-5 max-w-xl text-pretty text-base text-foreground/55 md:text-lg">
+              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" color="$color" $md={{ fontSize: "$6" }}>
                 One prompt becomes a live app on Hanzo Cloud — UI, database,
                 auth, and 400+ AI models, wired in and deployed.
-              </p>
+              </Paragraph>
             </Reveal>
 
             {/* ── Prompt composer — the ONE BuildComposer ── */}
             <Reveal delay={180}>
-              <div id="build" className="mx-auto mt-8 max-w-2xl text-left">
+              <SizableText id="build" alignSelf="center" marginTop="$6" maxWidth={672} textAlign="left" display="flex" flexDirection="column">
                 <BuildComposer
                   showPill={false}
                   subline={false}
                   typewriter={TYPED}
                   starters={STARTERS}
                   onSubmit={startBuild}
-                />
+  />
 
                 {/* Or start from one of our great templates — one click forks it
                     into the builder, seeded from that template. */}
                 {starterTemplates.length > 0 && (
-                  <div className="mt-6">
-                    <div className="mb-3 flex items-center justify-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/50">
-                      <span className="h-px w-6 bg-border" />
+                  <YStack marginTop="$5">
+                    <SizableText marginBottom="$3" alignItems="center" justifyContent="center" gap="$2.5" fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={1.92} color="$color" display="flex" flexDirection="row">
+                      <SizableText height={1} width="$5" backgroundColor="$borderColor" />
                       or start from a template
-                      <span className="h-px w-6 bg-border" />
-                    </div>
-                    <div className="mx-auto lg:max-w-4xl">
-                      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+                      <SizableText height={1} width="$5" backgroundColor="$borderColor" />
+                    </SizableText>
+                    <YStack alignSelf="center" $lg={{ maxWidth: 896 }}>
+                      <YStack gap="$2.5">
                         {starterTemplates.map((t) => (
-                          <button
+                          <Button
                             key={t.slug}
                             type="button"
                             onClick={() => startFromTemplate(t)}
-                            className="group overflow-hidden rounded-xl border border-border bg-foreground/[0.02] text-left transition-all hover:border-foreground/25 hover:bg-foreground/[0.04]"
+                            group overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" textAlign="left" hoverStyle={{ borderColor: "$color", backgroundColor: "$color" }}
                           >
-                            <div className="relative aspect-[16/10] overflow-hidden bg-foreground/[0.02]">
+                            <YStack position="relative" overflow="hidden" backgroundColor="$color">
                               <TemplateThumb
                                 name={t.displayName}
                                 category={t.category}
                                 slug={t.slug}
                                 className="transition-transform duration-300 group-hover:scale-[1.04]"
-                              />
-                            </div>
-                            <div className="px-2.5 py-2">
-                              <p className="truncate text-xs font-medium text-foreground/80">
+  />
+                            </YStack>
+                            <YStack paddingHorizontal="$2.5" paddingVertical="$2">
+                              <Paragraph numberOfLines={1} fontSize="$1" fontWeight="500" color="$color">
                                 {t.displayName}
-                              </p>
-                              <p className="truncate text-[11px] text-foreground/55">
+                              </Paragraph>
+                              <Paragraph numberOfLines={1} fontSize={11} color="$color">
                                 {t.category}
-                              </p>
-                            </div>
-                          </button>
+                              </Paragraph>
+                            </YStack>
+                          </Button>
                         ))}
-                      </div>
-                    </div>
-                    <div className="mt-3 text-center">
+                      </YStack>
+                    </YStack>
+                    <SizableText marginTop="$3" textAlign="center" display="flex" flexDirection="column">
                       <Link
                         href="/gallery"
-                        className="text-xs text-foreground/40 transition-colors hover:text-foreground"
-                      >
+                      ><SizableText fontSize="$1" color="$color" hoverStyle={{ color: "$color" }}>
                         Browse all templates →
-                      </Link>
-                    </div>
-                  </div>
+                      </SizableText></Link>
+                    </SizableText>
+                  </YStack>
                 )}
 
-                <div className="mt-6 flex flex-col items-center gap-2 text-xs text-foreground/35">
+                <SizableText marginTop="$5" flexDirection="column" alignItems="center" gap="$2" fontSize="$1" color="$color" display="flex">
                   <p>
                     Every app ships on Hanzo Cloud with database, auth, and AI
                     built in.
                   </p>
                   <Link
                     href="/new"
-                    className="inline-flex items-center gap-1.5 text-foreground/45 transition-colors hover:text-foreground"
-                  >
-                    <Github className="h-3.5 w-3.5" />
+                  ><SizableText alignItems="center" gap="$1.5" color="$color" hoverStyle={{ color: "$color" }}>
+                    <Github size={14} />
                     or import an existing GitHub repo
-                  </Link>
-                </div>
-              </div>
+                  </SizableText></Link>
+                </SizableText>
+              </SizableText>
             </Reveal>
-          </div>
+          </SizableText>
 
           {/* Hero focal visual — the builder building an app, live. Lazy: it sits
               just below the composer, so it mounts the moment it nears view. */}
-          <div className="mt-16 md:mt-20">
+          <YStack marginTop="$10" $md={{ marginTop: "$11" }}>
             <LazySection minHeight={520} rootMargin="900px 0px">
               <Reveal delay={240}>
                 <HeroPreview />
               </Reveal>
             </LazySection>
-          </div>
-        </section>
+          </YStack>
+        </YStack>
 
         <LazySection minHeight={180}><LogoWall /></LazySection>
         <LazySection minHeight={420}><CloudIntegration /></LazySection>
@@ -291,77 +291,76 @@ export default function LandingPage() {
 
         {/* ── Continue building (logged-in) ── */}
         {user && projects.length > 0 && (
-          <section className="border-t border-border px-4 py-20 md:px-8 md:py-24">
-            <div className="mx-auto max-w-6xl">
-              <div className="mb-10 flex items-end justify-between">
+          <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
+            <YStack alignSelf="center" maxWidth={1152}>
+              <XStack marginBottom="$7" alignItems="flex-end" justifyContent="space-between">
                 <div>
-                  <h2 className="text-2xl font-medium tracking-tight md:text-3xl">
+                  <H2 fontSize="$8" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$10" }}>
                     Continue building
-                  </h2>
-                  <p className="mt-1.5 text-sm text-foreground/50">
+                  </H2>
+                  <Paragraph marginTop="$1.5" fontSize="$3" color="$color">
                     Jump back into your recent projects.
-                  </p>
+                  </Paragraph>
                 </div>
                 <Link
                   href="/projects"
-                  className="text-sm text-foreground/50 transition-colors hover:text-foreground"
-                >
+                ><SizableText fontSize="$3" color="$color" hoverStyle={{ color: "$color" }}>
                   View all →
-                </Link>
-              </div>
+                </SizableText></Link>
+              </XStack>
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <YStack gap="$4">
                 {projects.slice(0, 4).map((project) => (
-                  <button
+                  <Button
                     key={project.slug}
                     onClick={() => router.push(builderLink(project.slug, project.org))}
-                    className="group overflow-hidden rounded-2xl border border-border bg-foreground/[0.02] text-left transition-all duration-200 hover:border-foreground/20 hover:bg-foreground/[0.03]"
+                    group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" textAlign="left" hoverStyle={{ borderColor: "$color", backgroundColor: "$color" }}
                   >
                     <ProjectThumb name={project.name} liveUrl={project.liveUrl} />
-                    <div className="p-5">
-                      <h3 className="text-sm font-medium text-foreground md:text-base">
+                    <YStack padding="$4.5">
+                      <H3 fontSize="$3" fontWeight="500" color="$color" $md={{ fontSize: "$4" }}>
                         {project.name}
-                      </h3>
-                      <p className="mt-1 line-clamp-2 text-xs text-foreground/50 md:text-sm">
+                      </H3>
+                      <Paragraph marginTop="$1" numberOfLines={2} fontSize="$1" color="$color" $md={{ fontSize: "$3" }}>
                         {project.status === "live" ? "Live" : "Draft"}
-                      </p>
+                      </Paragraph>
                       {project.updatedAtIso && (
-                        <div className="mt-3 font-mono text-[11px] text-foreground/30">
+                        <SizableText marginTop="$3" fontFamily="$mono" fontSize={11} color="$color" display="flex" flexDirection="column">
                           {new Date(project.updatedAtIso).toLocaleDateString()}
-                        </div>
+                        </SizableText>
                       )}
-                    </div>
-                  </button>
+                    </YStack>
+                  </Button>
                 ))}
-              </div>
-            </div>
-          </section>
+              </YStack>
+            </YStack>
+          </YStack>
         )}
 
         {/* ── Final CTA — the SAME composer as the hero, ready to type ── */}
-        <section className="border-t border-border px-4 py-24 md:px-8 md:py-32">
+        <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$12" $md={{ paddingHorizontal: "$6", paddingVertical: "$14" }}>
           <Reveal className="mx-auto max-w-2xl">
-            <div className="text-center">
-              <h2 className="text-3xl font-medium tracking-tight md:text-5xl">
+            <SizableText textAlign="center" display="flex" flexDirection="column">
+              <H2 fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$12" }}>
                 Ship your first app today.
-              </h2>
-              <p className="mx-auto mt-4 max-w-md text-base text-foreground/55 md:text-lg">
+              </H2>
+              <Paragraph alignSelf="center" marginTop="$4" maxWidth={448} fontSize="$4" color="$color" $md={{ fontSize: "$6" }}>
                 Start with a sentence. Deploy to Hanzo Cloud in one click.
-              </p>
-            </div>
-            <div className="mt-8">
+              </Paragraph>
+            </SizableText>
+            <YStack marginTop="$6">
               <BuildComposer
                 showPill={false}
                 typewriter={TYPED}
                 onSubmit={startBuild}
-              />
-            </div>
+  />
+            </YStack>
           </Reveal>
-        </section>
-      </main>
+        </YStack>
+      </YStack>
 
       <LazySection minHeight={200}><PreFooterCTA /></LazySection>
       <LazySection minHeight={240}><SiteFooter /></LazySection>
-    </div>
+    </SizableText>
   );
 }

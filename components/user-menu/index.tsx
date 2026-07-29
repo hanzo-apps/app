@@ -1,3 +1,6 @@
+'use client';
+
+import { SizableText, YStack, Paragraph, XStack } from '@hanzo/gui';
 import {
   CirclePlus,
   FolderCode,
@@ -37,23 +40,23 @@ export const UserMenu = ({ className }: { className?: string }) => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className={`${className}`}>
-          <Avatar className="size-8 mr-1">
+          <Avatar width="$6" height="$6" marginRight="$1">
             <AvatarImage src={user?.avatarUrl} alt={displayName} />
-            <AvatarFallback className="text-sm">
+            <AvatarFallback fontSize="$3">
               {userInitial}
             </AvatarFallback>
           </Avatar>
-          <span className="hidden sm:inline max-w-[12rem] truncate">{displayName}</span>
+          <SizableText display="none" maxWidth="12rem" numberOfLines={1}>{displayName}</SizableText>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="start">
+      <DropdownMenuContent width={224} align="start">
         <DropdownMenuLabel>
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{displayName}</p>
-            <p className="text-xs leading-none text-muted-foreground">
+          <YStack rowGap="$1">
+            <Paragraph fontSize="$3" fontWeight="500" lineHeight={1}>{displayName}</Paragraph>
+            <Paragraph fontSize="$1" lineHeight={1} color="$color11">
               {user?.email || user?.username}
-            </p>
-          </div>
+            </Paragraph>
+          </YStack>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
@@ -61,19 +64,19 @@ export const UserMenu = ({ className }: { className?: string }) => {
         <DropdownMenuGroup>
           <Link href="/dashboard">
             <DropdownMenuItem>
-              <Home className="size-4 text-muted-foreground" />
+              <Home size={16} color="$color11" />
               Dashboard
             </DropdownMenuItem>
           </Link>
           <Link href="/chat">
             <DropdownMenuItem>
-              <MessageCircle className="size-4 text-muted-foreground" />
+              <MessageCircle size={16} color="$color11" />
               Chat
             </DropdownMenuItem>
           </Link>
           <Link href="/new">
             <DropdownMenuItem>
-              <CirclePlus className="size-4 text-muted-foreground" />
+              <CirclePlus size={16} color="$color11" />
               New Project
             </DropdownMenuItem>
           </Link>
@@ -85,26 +88,26 @@ export const UserMenu = ({ className }: { className?: string }) => {
         <DropdownMenuGroup>
           <Link href="/projects">
             <DropdownMenuItem>
-              <FolderCode className="size-4 text-muted-foreground" />
+              <FolderCode size={16} color="$color11" />
               My Projects
             </DropdownMenuItem>
           </Link>
           <Link href="/projects">
             <DropdownMenuItem>
-              <Import className="size-4 text-muted-foreground" />
+              <Import size={16} color="$color11" />
               Import Project
             </DropdownMenuItem>
           </Link>
           <Link href="/gallery">
             <DropdownMenuItem>
-              <Sparkles className="size-4 text-muted-foreground" />
+              <Sparkles size={16} color="$color11" />
               Gallery
             </DropdownMenuItem>
           </Link>
           {/* Everything the fleet has built, across every org — /v1/catalog. */}
           <Link href="/catalog">
             <DropdownMenuItem>
-              <Search className="size-4 text-muted-foreground" />
+              <Search size={16} color="$color11" />
               Catalog
             </DropdownMenuItem>
           </Link>
@@ -116,19 +119,19 @@ export const UserMenu = ({ className }: { className?: string }) => {
         <DropdownMenuGroup>
           <Link href="/settings">
             <DropdownMenuItem>
-              <Settings className="size-4 text-muted-foreground" />
+              <Settings size={16} color="$color11" />
               Settings
             </DropdownMenuItem>
           </Link>
           <Link href="/profile">
             <DropdownMenuItem>
-              <User className="size-4 text-muted-foreground" />
+              <User size={16} color="$color11" />
               Profile
             </DropdownMenuItem>
           </Link>
           <Link href="/billing">
             <DropdownMenuItem>
-              <DollarSign className="size-4 text-muted-foreground" />
+              <DollarSign size={16} color="$color11" />
               Billing
             </DropdownMenuItem>
           </Link>
@@ -138,34 +141,30 @@ export const UserMenu = ({ className }: { className?: string }) => {
 
         {/* Theme — discoverable light/dark/system here instead of only buried in
             Settings. Drives the ONE next-themes source (consistent app-wide). */}
-        <div className="px-2 py-1.5">
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-xs text-muted-foreground">Theme</span>
-            <div className="flex items-center gap-0.5 rounded-md bg-muted/50 p-0.5">
+        <YStack paddingHorizontal="$2" paddingVertical="$1.5">
+          <XStack alignItems="center" justifyContent="space-between" gap="$2">
+            <SizableText fontSize="$1" color="$color11">Theme</SizableText>
+            <XStack alignItems="center" gap="$0.5" borderRadius="$3" backgroundColor="$color3" padding="$0.5">
               {([
                 { v: "light", Icon: Sun, label: "Light" },
                 { v: "dark", Icon: Moon, label: "Dark" },
                 { v: "system", Icon: Monitor, label: "System" },
               ] as const).map(({ v, Icon, label }) => (
-                <button
+                <Button
                   key={v}
                   type="button"
                   onClick={() => setTheme(v)}
                   title={`${label} theme`}
                   aria-label={`${label} theme`}
                   aria-pressed={activeTheme === v}
-                  className={`flex items-center justify-center rounded p-1.5 transition-colors ${
-                    activeTheme === v
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
+                  alignItems="center" justifyContent="center" borderRadius="$2" padding="$1.5" {...{ backgroundColor: activeTheme === v ? "$background" : undefined, color: activeTheme === v ? "$color" : "$color11", elevation: activeTheme === v ? 1 : undefined, hoverStyle: activeTheme === v ? undefined : {"color":"$color"} }}
                 >
                   <Icon className="size-4" />
-                </button>
+                </Button>
               ))}
-            </div>
-          </div>
-        </div>
+            </XStack>
+          </XStack>
+        </YStack>
 
         <DropdownMenuSeparator />
 
@@ -175,9 +174,9 @@ export const UserMenu = ({ className }: { className?: string }) => {
               logout();
             }
           }}
-          className="text-red-500 focus:text-red-600"
+          color="$red9" focusStyle={{ color: "$red10" }}
         >
-          <LogOut className="size-4" />
+          <LogOut size={16} />
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>

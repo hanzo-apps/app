@@ -1,3 +1,6 @@
+'use client';
+
+import { SizableText } from '@hanzo/gui';
 import { SVGProps } from "react"
 import { MARK_PATHS, MARK_VIEWBOX } from "@hanzo/logo/logos"
 import { HanzoLogo as BrandMotion } from "@hanzo/logo/react"
@@ -46,20 +49,20 @@ export function HanzoBrand({
     // The animated reveal is the @hanzo/logo motion shell (flip + breathe +
     // wordmark collapse) — package CSS, not a local keyframe.
     return (
-      <span className={`inline-flex items-center text-lg tracking-tight ${className}`}>
+      <SizableText alignItems="center" fontSize="$6" letterSpacing={-0.4} className={`${className}`}>
         <BrandMotion animated size={32} wordmark={label} />
-      </span>
+      </SizableText>
     )
   }
   return (
-    <span className={`inline-flex items-center gap-2 ${className}`}>
+    <SizableText alignItems="center" gap="$2" className={`${className}`}>
       <HanzoLogo className={markClassName} />
       {showWordmark && (
-        <span className={`overflow-hidden whitespace-nowrap text-lg font-medium tracking-tight ${wordmarkClassName}`}>
+        <SizableText overflow="hidden" whiteSpace="nowrap" fontSize="$6" fontWeight="500" letterSpacing={-0.4} className={`${wordmarkClassName}`}>
           {label}
-        </span>
+        </SizableText>
       )}
-    </span>
+    </SizableText>
   )
 }
 

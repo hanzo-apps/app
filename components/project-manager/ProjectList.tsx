@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { XStack, SizableText, Paragraph, YStack, H2 } from '@hanzo/gui';
+import { useState, useEffect, useCallback } from 'react';
 import { Button, Input } from '@hanzo/ui';
 import { Plus, Search, FolderOpen, Loader2 } from 'lucide-react';
 import {
@@ -68,84 +69,84 @@ export function ProjectList({ showOrgSwitcher = true }: { showOrgSwitcher?: bool
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-24">
-        <div className="text-center">
-          <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto" />
-          <p className="mt-4 text-sm text-muted-foreground">Loading projects…</p>
-        </div>
-      </div>
+      <XStack alignItems="center" justifyContent="center" paddingVertical="$12">
+        <SizableText textAlign="center" display="flex" flexDirection="column">
+          <Loader2 size={40} color="$color12" />
+          <Paragraph marginTop="$4" fontSize="$3" color="$color11">Loading projects…</Paragraph>
+        </SizableText>
+      </XStack>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center py-24">
-        <div className="text-center max-w-sm">
-          <p className="text-destructive font-medium mb-2">Error</p>
-          <p className="text-sm text-muted-foreground mb-4">{error}</p>
+      <XStack alignItems="center" justifyContent="center" paddingVertical="$12">
+        <SizableText textAlign="center" maxWidth={384} display="flex" flexDirection="column">
+          <Paragraph color="$red9" fontWeight="500" marginBottom="$2">Error</Paragraph>
+          <Paragraph fontSize="$3" color="$color11" marginBottom="$4">{error}</Paragraph>
           <Button variant="outline" onClick={load}>Retry</Button>
-        </div>
-      </div>
+        </SizableText>
+      </XStack>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <YStack rowGap="$5">
       {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
-        <div className="relative flex-1 w-full sm:max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <YStack gap="$3" alignItems="flex-start" justifyContent="space-between" $sm={{ flexDirection: "row", alignItems: "center" }}>
+        <YStack position="relative" flex={1} width="100%" $sm={{ maxWidth: 384 }}>
+          <Search size={16} color="$color11" />
           <Input
             placeholder="Search projects…"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-card"
-          />
-        </div>
-        <div className="flex items-center gap-2">
+            paddingLeft="$7" backgroundColor="$background"
+  />
+        </YStack>
+        <XStack alignItems="center" gap="$2">
           {/* Org selector — suppressed when a parent shell already renders one
               (AppShell's sidebar) so the org control never appears twice. */}
           {showOrgSwitcher && <OrgSwitcher />}
           <Button onClick={() => setCreateOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus size={16} />
             New Project
           </Button>
-        </div>
-      </div>
+        </XStack>
+      </YStack>
 
       {/* Which org these projects belong to (billing transparency) */}
       {ctx?.currentOrg && (
-        <p className="text-xs text-muted-foreground">
-          Showing projects in <span className="font-medium">{ctx.currentOrg}</span>
+        <Paragraph fontSize="$1" color="$color11">
+          Showing projects in <SizableText fontWeight="500">{ctx.currentOrg}</SizableText>
           {' '}— created and billed to this organization.
-        </p>
+        </Paragraph>
       )}
 
       {filtered.length === 0 ? (
-        <div className="text-center py-16">
-          <FolderOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h2 className="text-xl font-medium mb-2">
+        <SizableText textAlign="center" paddingVertical="$10" display="flex" flexDirection="column">
+          <FolderOpen size={48} color="$color11" />
+          <H2 fontSize="$7" fontWeight="500" marginBottom="$2">
             {searchQuery ? 'No projects found' : 'No projects yet'}
-          </h2>
-          <p className="text-muted-foreground mb-6">
+          </H2>
+          <Paragraph color="$color11" marginBottom="$5">
             {searchQuery ? 'Try a different search term.' : 'Create your first project to get started.'}
-          </p>
+          </Paragraph>
           {!searchQuery && (
             <Button onClick={() => setCreateOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
+              <Plus size={16} />
               Create Project
             </Button>
           )}
-        </div>
+        </SizableText>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <YStack gap="$4">
           {filtered.map((project) => (
             <ProjectCard key={project.id} project={project} onDelete={handleDelete} />
           ))}
-        </div>
+        </YStack>
       )}
 
       <CreateProject open={createOpen} onOpenChange={setCreateOpen} onCreated={handleCreated} />
-    </div>
+    </YStack>
   );
 }

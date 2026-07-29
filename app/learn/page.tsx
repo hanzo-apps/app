@@ -1,5 +1,6 @@
 "use client";
 
+import { SizableText, YStack, H1, Paragraph, XStack, H2, H3, Anchor } from '@hanzo/gui';
 import Link from "next/link";
 import { Button, Badge } from '@hanzo/ui';
 import { BookOpen, Video, FileCode, Users, Trophy, Clock, ArrowRight, PlayCircle, Code2, Bot, Rocket } from "lucide-react";
@@ -99,186 +100,182 @@ export default function LearnPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
       <Header />
 
       {/* Hero Section */}
-      <section className="px-4 md:px-8 py-16 md:py-24 text-center">
-        <div className="max-w-4xl mx-auto">
-          <Badge className="mb-4 bg-primary text-primary-foreground border-0">
-            <BookOpen className="w-4 h-4 mr-2" />
+      <SizableText paddingHorizontal="$4" paddingVertical="$10" textAlign="center" display="flex" flexDirection="column" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
+        <YStack maxWidth={896} alignSelf="center">
+          <Badge marginBottom="$4" backgroundColor="$color12" color="$background" borderWidth={0}>
+            <BookOpen size={16} />
             Hanzo Academy
           </Badge>
-          <h1 className="text-4xl md:text-6xl font-medium mb-6">
+          <H1 fontSize="$11" fontWeight="500" marginBottom="$5" $md={{ fontSize: "$13" }}>
             Learn to build with AI superpowers
-          </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+          </H1>
+          <Paragraph fontSize="$7" color="$color11" marginBottom="$6" maxWidth={672} alignSelf="center">
             Free courses, tutorials, and resources to help you master AI development
-          </p>
-          <div className="flex items-center gap-4 justify-center">
-            <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-              <PlayCircle className="mr-2 w-5 h-5" />
+          </Paragraph>
+          <XStack alignItems="center" gap="$4" justifyContent="center">
+            <Button size="lg" backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
+              <PlayCircle size={20} />
               Start Learning
             </Button>
-            <Button size="lg" variant="outline" className="border-foreground/20 text-foreground hover:bg-accent">
+            <Button size="lg" variant="outline" borderColor="$color" color="$color" hoverStyle={{ backgroundColor: "$color3" }}>
               Browse Courses
             </Button>
-          </div>
-        </div>
-      </section>
+          </XStack>
+        </YStack>
+      </SizableText>
 
       {/* Learning Paths */}
-      <section className="px-4 md:px-8 py-12 border-y border-border">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-2xl font-medium mb-8">Popular Learning Paths</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <YStack paddingHorizontal="$4" paddingVertical="$8" borderTopWidth={1} borderBottomWidth={1} borderColor="$borderColor" $md={{ paddingHorizontal: "$6" }}>
+        <YStack maxWidth={1280} alignSelf="center">
+          <H2 fontSize="$8" fontWeight="500" marginBottom="$6">Popular Learning Paths</H2>
+          <YStack gap="$5">
             {learningPaths.map(path => (
-              <div key={path.title} className="bg-muted hover:bg-accent rounded-2xl p-6 border border-border hover:border-violet-500/50 transition-all cursor-pointer">
-                <div className="inline-flex rounded-lg border border-border bg-muted p-2 mb-4">
+              <YStack key={path.title} backgroundColor="$color3" borderRadius="$8" padding="$5" borderWidth={1} borderColor="$borderColor" cursor="pointer" hoverStyle={{ backgroundColor: "$color3", borderColor: "$purple9" }}>
+                <XStack borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$2" marginBottom="$4">
                   <path.icon className="w-6 h-6" />
-                </div>
-                <h3 className="text-lg font-medium mb-2">{path.title}</h3>
-                <p className="text-sm text-muted-foreground mb-4">{path.description}</p>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <FileCode className="w-4 h-4" />
+                </XStack>
+                <H3 fontSize="$6" fontWeight="500" marginBottom="$2">{path.title}</H3>
+                <Paragraph fontSize="$3" color="$color11" marginBottom="$4">{path.description}</Paragraph>
+                <SizableText alignItems="center" gap="$4" fontSize="$3" color="$color11" display="flex" flexDirection="row">
+                  <SizableText alignItems="center" gap="$1">
+                    <FileCode size={16} />
                     {path.courses} courses
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-4 h-4" />
+                  </SizableText>
+                  <SizableText alignItems="center" gap="$1">
+                    <Clock size={16} />
                     {path.duration}
-                  </span>
-                </div>
-              </div>
+                  </SizableText>
+                </SizableText>
+              </YStack>
             ))}
-          </div>
-        </div>
-      </section>
+          </YStack>
+        </YStack>
+      </YStack>
 
       {/* Courses Section */}
-      <section className="px-4 md:px-8 py-16">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl md:text-3xl font-medium">All Courses</h2>
-            <Button variant="outline" className="border-foreground/20 text-foreground hover:bg-accent">
-              <Video className="w-5 h-5 mr-2" />
+      <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6" }}>
+        <YStack maxWidth={1280} alignSelf="center">
+          <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
+            <H2 fontSize="$8" fontWeight="500" $md={{ fontSize: "$10" }}>All Courses</H2>
+            <Button variant="outline" borderColor="$color" color="$color" hoverStyle={{ backgroundColor: "$color3" }}>
+              <Video size={20} />
               Watch Live Classes
             </Button>
-          </div>
+          </XStack>
 
           {/* Category Filter */}
-          <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2">
+          <XStack alignItems="center" gap="$2" marginBottom="$6" paddingBottom="$2" overflow="scroll">
             {categories.map(cat => (
-              <button
+              <Button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
-                  selectedCategory === cat
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-foreground/70 hover:text-foreground hover:bg-accent border border-border'
-                }`}
+                paddingHorizontal="$4" paddingVertical="$2" borderRadius="$6" fontSize="$3" fontWeight="500" whiteSpace="nowrap" {...{ backgroundColor: selectedCategory === cat ? "$color12" : "$color3", color: selectedCategory === cat ? "$background" : "$color", borderWidth: selectedCategory === cat ? undefined : 1, borderColor: selectedCategory === cat ? undefined : "$borderColor", hoverStyle: selectedCategory === cat ? undefined : {"color":"$color","backgroundColor":"$color3"} }}
               >
                 {cat}
-              </button>
+              </Button>
             ))}
-          </div>
+          </XStack>
 
           {/* Course Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <YStack gap="$5">
             {filteredCourses.map(course => (
-              <div key={course.id} className="bg-muted hover:bg-accent rounded-2xl border border-border overflow-hidden">
+              <YStack key={course.id} backgroundColor="$color3" borderRadius="$8" borderWidth={1} borderColor="$borderColor" overflow="hidden" hoverStyle={{ backgroundColor: "$color3" }}>
                 {course.featured && (
-                  <div className="bg-gradient-to-r from-violet-500 to-purple-500 text-foreground text-xs px-3 py-1.5 flex items-center gap-1">
-                    <Trophy className="w-3 h-3" />
+                  <SizableText color="$color" fontSize="$1" paddingHorizontal="$3" paddingVertical="$1.5" alignItems="center" gap="$1" display="flex" flexDirection="row">
+                    <Trophy size={12} />
                     Featured Course
-                  </div>
+                  </SizableText>
                 )}
-                <div className="p-6">
-                  <div className="mb-4">
-                    <Badge className="bg-muted text-foreground border-border">
+                <YStack padding="$5">
+                  <YStack marginBottom="$4">
+                    <Badge backgroundColor="$color3" color="$color" borderColor="$borderColor">
                       {course.level}
                     </Badge>
-                  </div>
+                  </YStack>
 
-                  <h3 className="font-medium text-lg mb-2">
+                  <H3 fontWeight="500" fontSize="$6" marginBottom="$2">
                     {course.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-4">
+                  </H3>
+                  <Paragraph fontSize="$3" color="$color11" marginBottom="$4">
                     {course.description}
-                  </p>
+                  </Paragraph>
 
-                  <div className="flex items-center justify-between text-sm text-muted-foreground pt-4 border-t border-border">
-                    <span className="flex items-center gap-1">
-                      <Video className="w-4 h-4" />
+                  <SizableText alignItems="center" justifyContent="space-between" fontSize="$3" color="$color11" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor" display="flex" flexDirection="row">
+                    <SizableText alignItems="center" gap="$1">
+                      <Video size={16} />
                       {course.lessons} lessons
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
+                    </SizableText>
+                    <SizableText alignItems="center" gap="$1">
+                      <Clock size={16} />
                       {course.duration}
-                    </span>
-                  </div>
-                </div>
-              </div>
+                    </SizableText>
+                  </SizableText>
+                </YStack>
+              </YStack>
             ))}
-          </div>
-        </div>
-      </section>
+          </YStack>
+        </YStack>
+      </YStack>
 
       {/* Resources Section */}
-      <section className="px-4 md:px-8 py-16 bg-gradient-to-b from-transparent via-violet-950/10 to-transparent">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-medium mb-4">
+      <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6" }}>
+        <YStack maxWidth={1280} alignSelf="center">
+          <SizableText textAlign="center" marginBottom="$8" display="flex" flexDirection="column">
+            <H2 fontSize="$10" fontWeight="500" marginBottom="$4" $md={{ fontSize: "$11" }}>
               Additional Resources
-            </h2>
-            <p className="text-lg text-muted-foreground">
+            </H2>
+            <Paragraph fontSize="$6" color="$color11">
               Everything you need to succeed
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-muted hover:bg-accent rounded-2xl p-6 border border-border">
-              <BookOpen className="w-8 h-8 mb-4 text-violet-400" />
-              <h3 className="text-xl font-medium mb-2">Documentation</h3>
-              <p className="text-muted-foreground mb-4">Comprehensive guides and API references</p>
-              <Link href="/docs" className="text-violet-400 hover:text-violet-300 flex items-center gap-1">
-                Explore Docs <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-            <div className="bg-muted hover:bg-accent rounded-2xl p-6 border border-border">
-              <Users className="w-8 h-8 mb-4 text-violet-400" />
-              <h3 className="text-xl font-medium mb-2">Community Forum</h3>
-              <p className="text-muted-foreground mb-4">Get help and share knowledge with others</p>
-              <Link href="/community" className="text-violet-400 hover:text-violet-300 flex items-center gap-1">
-                Join Community <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-            <div className="bg-muted hover:bg-accent rounded-2xl p-6 border border-border">
-              <Video className="w-8 h-8 mb-4 text-violet-400" />
-              <h3 className="text-xl font-medium mb-2">YouTube Channel</h3>
-              <p className="text-muted-foreground mb-4">Video tutorials and live coding sessions</p>
-              <a href="https://youtube.com/@hanzoai" className="text-violet-400 hover:text-violet-300 flex items-center gap-1">
-                Watch Videos <ArrowRight className="w-4 h-4" />
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+            </Paragraph>
+          </SizableText>
+          <YStack gap="$5">
+            <YStack backgroundColor="$color3" borderRadius="$8" padding="$5" borderWidth={1} borderColor="$borderColor" hoverStyle={{ backgroundColor: "$color3" }}>
+              <BookOpen size={32} color="$purple8" />
+              <H3 fontSize="$7" fontWeight="500" marginBottom="$2">Documentation</H3>
+              <Paragraph color="$color11" marginBottom="$4">Comprehensive guides and API references</Paragraph>
+              <Link href="/docs"><SizableText color="$purple8" alignItems="center" gap="$1" hoverStyle={{ color: "$purple4" }}>
+                Explore Docs <ArrowRight size={16} />
+              </SizableText></Link>
+            </YStack>
+            <YStack backgroundColor="$color3" borderRadius="$8" padding="$5" borderWidth={1} borderColor="$borderColor" hoverStyle={{ backgroundColor: "$color3" }}>
+              <Users size={32} color="$purple8" />
+              <H3 fontSize="$7" fontWeight="500" marginBottom="$2">Community Forum</H3>
+              <Paragraph color="$color11" marginBottom="$4">Get help and share knowledge with others</Paragraph>
+              <Link href="/community"><SizableText color="$purple8" alignItems="center" gap="$1" hoverStyle={{ color: "$purple4" }}>
+                Join Community <ArrowRight size={16} />
+              </SizableText></Link>
+            </YStack>
+            <YStack backgroundColor="$color3" borderRadius="$8" padding="$5" borderWidth={1} borderColor="$borderColor" hoverStyle={{ backgroundColor: "$color3" }}>
+              <Video size={32} color="$purple8" />
+              <H3 fontSize="$7" fontWeight="500" marginBottom="$2">YouTube Channel</H3>
+              <Paragraph color="$color11" marginBottom="$4">Video tutorials and live coding sessions</Paragraph>
+              <Anchor href="https://youtube.com/@hanzoai" color="$purple8" alignItems="center" gap="$1" hoverStyle={{ color: "$purple4" }}>
+                Watch Videos <ArrowRight size={16} />
+              </Anchor>
+            </YStack>
+          </YStack>
+        </YStack>
+      </YStack>
 
       {/* CTA Section */}
-      <section className="px-4 md:px-8 py-20 text-center">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-medium mb-6">
+      <SizableText paddingHorizontal="$4" paddingVertical="$11" textAlign="center" display="flex" flexDirection="column" $md={{ paddingHorizontal: "$6" }}>
+        <YStack maxWidth={896} alignSelf="center">
+          <H2 fontSize="$10" fontWeight="500" marginBottom="$5" $md={{ fontSize: "$11" }}>
             Start your learning journey today
-          </h2>
-          <p className="text-xl text-muted-foreground mb-8">
+          </H2>
+          <Paragraph fontSize="$7" color="$color11" marginBottom="$6">
             Join thousands of developers mastering AI development
-          </p>
-          <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
+          </Paragraph>
+          <Button size="lg" backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
             Start Free Course
-            <ArrowRight className="ml-2 w-5 h-5" />
+            <ArrowRight size={20} />
           </Button>
-        </div>
-      </section>
-    </div>
+        </YStack>
+      </SizableText>
+    </SizableText>
   );
 }

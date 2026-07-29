@@ -1,13 +1,12 @@
 'use client';
 
+import { YStack, XStack, H3, SizableText, Paragraph, Image } from '@hanzo/gui';
 import React, { useState, useEffect, useCallback } from 'react';
 import { CodeEditor } from '@/components/code-editor';
 import { VirtualFile } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';
 import { X, Code2, Save, FileCode, Image as ImageIcon, AlertCircle } from 'lucide-react';
 import { Button } from '@hanzo/ui';
-import { cn } from '@/lib/utils';
-
 interface MultiTabEditorProps {
   projectId: string;
   onFilesChange?: () => void;
@@ -216,110 +215,105 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
   const activeFile = activeFilePath ? openFiles.get(activeFilePath) : null;
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="p-3 border-b bg-muted/70 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+    <YStack height="100%">
+      <XStack padding="$3" borderBottomWidth={1} backgroundColor="$color3" alignItems="center" justifyContent="space-between">
+        <XStack alignItems="center" gap="$2">
           <Code2
-            className="h-4 w-4 md:hidden"
+            size={16}
             style={{ color: 'var(--brand-accent)' }}
-          />
+  />
           {onClose ? (
-            <button
+            <Button
               type="button"
               onClick={onClose}
               aria-label="Hide code editor"
-              className="relative hidden h-6 w-6 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-destructive md:flex group"
+              position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" color="$color11" group hoverStyle={{ color: "$red9" }}
             >
               <Code2
-                className="h-4 w-4 transition-opacity group-hover:opacity-0"
+                size={16}
                 style={{ color: 'var(--brand-accent)' }}
-              />
-              <X className="absolute h-3 w-3 opacity-0 transition-opacity group-hover:opacity-100" />
-            </button>
+  />
+              <X size={12} />
+            </Button>
           ) : (
             <Code2
-              className="hidden h-4 w-4 md:inline-flex"
+              size={16}
               style={{ color: 'var(--brand-accent)' }}
-            />
+  />
           )}
-          <h3 className="text-sm font-medium">Code Editor</h3>
-        </div>
+          <H3 fontSize="$3" fontWeight="500">Code Editor</H3>
+        </XStack>
         {activeFile?.modified && getFileType(activeFile.file.path).type === 'text' && (
           <Button
             size="sm"
             variant="ghost"
-            className="h-5 px-2 gap-1.5"
+            height="$4.5" paddingHorizontal="$2" gap="$1.5"
             onClick={() => saveFile(activeFilePath!)}
           >
-            <Save className="h-3 w-3" />
-            <span className="text-xs">Save</span>
+            <Save size={12} />
+            <SizableText fontSize="$1">Save</SizableText>
           </Button>
         )}
-      </div>
+      </XStack>
 
       {openFiles.size === 0 ? (
-        <div className="flex-1 flex items-center justify-center text-muted-foreground">
-          <div className="text-center space-y-3">
-            <FileCode className="h-12 w-12 mx-auto opacity-50" />
-            <div className="space-y-1">
-              <p className="text-base font-medium">No files open</p>
-              <p className="text-sm">Select a file from the explorer to edit</p>
-            </div>
-          </div>
-        </div>
+        <SizableText flex={1} alignItems="center" justifyContent="center" color="$color11" display="flex" flexDirection="row">
+          <SizableText textAlign="center" rowGap="$3" display="flex" flexDirection="column">
+            <FileCode size={48} />
+            <YStack rowGap="$1">
+              <Paragraph fontSize="$4" fontWeight="500">No files open</Paragraph>
+              <Paragraph fontSize="$3">Select a file from the explorer to edit</Paragraph>
+            </YStack>
+          </SizableText>
+        </SizableText>
       ) : (
         <>
-      <div className="border-b bg-muted/70">
-        <div className="flex items-center overflow-x-auto scrollbar-thin">
+      <YStack borderBottomWidth={1} backgroundColor="$color3">
+        <XStack alignItems="center" overflow="scroll" className="scrollbar-thin">
           {Array.from(openFiles.entries()).map(([path, file]) => (
-            <div
+            <XStack
               key={path}
-              className={cn(
-                'flex items-center gap-2 px-4 py-2.5 border-r cursor-pointer transition-all relative group',
-                activeFilePath === path
-                  ? 'bg-background border-b-2 border-b-primary shadow-sm'
-                  : 'hover:bg-muted/50 border-b-2 border-b-transparent'
-              )}
+              alignItems="center" gap="$2" paddingHorizontal="$4" paddingVertical="$2.5" borderRightWidth={1} cursor="pointer" position="relative" group {...{ backgroundColor: activeFilePath === path ? "$background" : undefined, borderBottomWidth: activeFilePath === path ? 2 : 2, borderBottomColor: activeFilePath === path ? "$color12" : "transparent", elevation: activeFilePath === path ? 1 : undefined, hoverStyle: activeFilePath === path ? undefined : {"backgroundColor":"$color3"} }}
               onClick={() => setActiveFilePath(path)}
             >
-              <span className="text-sm">
+              <SizableText fontSize="$3">
                 {file.file.name}
-                {file.modified && <span className="text-orange-500 ml-1">●</span>}
-              </span>
+                {file.modified && <SizableText color="$orange9" marginLeft="$1">●</SizableText>}
+              </SizableText>
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-4 w-4 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                height="$4" width="$4" padding="$0" opacity={0} $group-hover={{ opacity: 1 }}
                 onClick={(e) => closeFile(path, e)}
               >
-                <X className="h-3 w-3 hover:text-destructive" />
+                <X size={12} />
               </Button>
-            </div>
+            </XStack>
           ))}
-        </div>
-      </div>
+        </XStack>
+      </YStack>
 
           {activeFile && (
-            <div className="flex-1 border-t">
+            <YStack flex={1} borderTopWidth={1}>
               {(() => {
                 const fileType = getFileType(activeFile.file.path);
 
                 if (fileType.type === 'image') {
                   return (
-                    <div className="h-full flex items-center justify-center bg-background p-8">
-                      <div className="text-center space-y-4 max-w-2xl">
-                        <ImageIcon className="h-12 w-12 mx-auto text-muted-foreground" />
-                        <div className="space-y-2">
-                          <h3 className="text-lg font-medium">Image Preview</h3>
-                          <p className="text-sm text-muted-foreground">
+                    <XStack height="100%" alignItems="center" justifyContent="center" backgroundColor="$background" padding="$6">
+                      <SizableText textAlign="center" rowGap="$4" maxWidth={672} display="flex" flexDirection="column">
+                        <ImageIcon size={48} color="$color11" />
+                        <YStack rowGap="$2">
+                          <H3 fontSize="$6" fontWeight="500">Image Preview</H3>
+                          <Paragraph fontSize="$3" color="$color11">
                             {activeFile.file.name}
-                          </p>
-                        </div>
-                        <div className="border rounded-lg p-4 bg-muted/30 max-h-96 overflow-auto">
-                          <img
+                          </Paragraph>
+                        </YStack>
+                        <YStack borderWidth={1} borderRadius="$5" padding="$4" backgroundColor="$color3" maxHeight={384} overflow="scroll">
+                          <Image
                             src={`data:image/${activeFile.file.path.split('.').pop()};base64,${activeFile.content}`}
                             alt={activeFile.file.name}
-                            className="max-w-full h-auto rounded shadow-sm"
+                            maxWidth="100%" height="auto" borderRadius="$2" elevation={1}
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
                               target.style.display = 'none';
@@ -331,33 +325,33 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
                                 target.parentElement?.appendChild(div);
                               }
                             }}
-                          />
-                        </div>
-                        <p className="text-xs text-muted-foreground">
+  />
+                        </YStack>
+                        <Paragraph fontSize="$1" color="$color11">
                           Image files cannot be edited in the text editor
-                        </p>
-                      </div>
-                    </div>
+                        </Paragraph>
+                      </SizableText>
+                    </XStack>
                   );
                 }
 
                 if (fileType.type === 'unsupported') {
                   return (
-                    <div className="h-full flex items-center justify-center bg-background p-8">
-                      <div className="text-center space-y-4">
-                        <AlertCircle className="h-12 w-12 mx-auto text-muted-foreground" />
-                        <div className="space-y-2">
-                          <h3 className="text-lg font-medium">Unsupported File Type</h3>
-                          <p className="text-sm text-muted-foreground">
+                    <XStack height="100%" alignItems="center" justifyContent="center" backgroundColor="$background" padding="$6">
+                      <SizableText textAlign="center" rowGap="$4" display="flex" flexDirection="column">
+                        <AlertCircle size={48} color="$color11" />
+                        <YStack rowGap="$2">
+                          <H3 fontSize="$6" fontWeight="500">Unsupported File Type</H3>
+                          <Paragraph fontSize="$3" color="$color11">
                             {activeFile.file.name}
-                          </p>
-                          <p className="text-sm text-muted-foreground max-w-md">
+                          </Paragraph>
+                          <Paragraph fontSize="$3" color="$color11" maxWidth={448}>
                             This file type is not supported for editing in the text editor.
                             Binary files and certain document formats cannot be displayed here.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+                          </Paragraph>
+                        </YStack>
+                      </SizableText>
+                    </XStack>
                   );
                 }
 
@@ -368,14 +362,14 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
                     language={getLanguageFromPath(activeFile.file.path)}
                     value={activeFile.content}
                     onChange={(value) => handleContentChange(value, activeFile.file.path)}
-                  />
+  />
                 );
               })()}
-            </div>
+            </YStack>
           )}
         </>
       )}
-    </div>
+    </YStack>
   );
 }
 

@@ -1,8 +1,8 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
 import { useState, useMemo, useRef, useEffect } from "react";
-import classNames from "classnames";
-import { toast, Button, Tooltip, TooltipTrigger, TooltipContent } from '@hanzo/ui';
+import { toast, Button, Tooltip, TooltipTrigger, TooltipContent, Textarea } from '@hanzo/ui';
 import { useLocalStorage } from "react-use";
 import { ArrowUp, Crosshair, ImagePlus, X } from "lucide-react";
 import { FaStopCircle } from "react-icons/fa";
@@ -870,58 +870,58 @@ export function AskAI({
     // The chat pane is a flex column: the thread scrolls at the top and the
     // composer is pinned at the bottom. With an empty thread (ChatThread returns
     // null) the composer's `mt-auto` keeps it docked exactly as before.
-    <div ref={rootRef} className="mx-auto flex h-full min-h-0 w-full max-w-2xl flex-col">
+    <YStack ref={rootRef} alignSelf="center" height="100%" minHeight={0} width="100%" maxWidth={672}>
       <ChatThread messages={messages} className="min-h-0 flex-1" />
-      <div className="mt-auto px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+      <YStack marginTop="auto" paddingHorizontal="$3" paddingBottom="calc(0.75rem+env(safe-area-inset-bottom))">
       {/* Stacked Message Queue Cards */}
       {messageQueue.length > 0 && (
-        <div className="mb-4 space-y-2">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs text-foreground font-medium">
+        <YStack marginBottom="$4" rowGap="$2">
+          <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
+            <SizableText fontSize="$1" color="$color" fontWeight="500">
               Queued Messages ({messageQueue.length})
-            </span>
-            <button
+            </SizableText>
+            <Button
               onClick={() => setMessageQueue([])}
-              className="text-xs text-muted-foreground hover:text-foreground underline"
+              fontSize="$1" color="$color11" textDecorationLine="underline" hoverStyle={{ color: "$color" }}
             >
               Clear all
-            </button>
-          </div>
-          <div className="space-y-2 max-h-64 overflow-y-auto">
+            </Button>
+          </XStack>
+          <YStack rowGap="$2" maxHeight={256} overflow="scroll">
             {messageQueue.map((msg, index) => (
-              <div
+              <YStack
                 key={msg.id}
-                className="relative bg-muted/50 border border-border rounded-lg p-3 animate-slideIn"
+                position="relative" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" borderRadius="$5" padding="$3"
                 style={{
                   animationDelay: `${index * 0.05}s`,
                 }}
               >
-                <div className="flex items-start justify-between gap-2">
-                  <p className="text-sm text-muted-foreground flex-1">{msg.message}</p>
-                  <button
+                <XStack alignItems="flex-start" justifyContent="space-between" gap="$2">
+                  <Paragraph fontSize="$3" color="$color11" flex={1}>{msg.message}</Paragraph>
+                  <Button
                     onClick={() => setMessageQueue(prev => prev.filter(m => m.id !== msg.id))}
-                    className="text-muted-foreground hover:text-foreground"
+                    color="$color11" hoverStyle={{ color: "$color" }}
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
-                  </button>
-                </div>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-xs text-muted-foreground">
+                  </Button>
+                </XStack>
+                <XStack alignItems="center" gap="$2" marginTop="$2">
+                  <SizableText fontSize="$1" color="$color11">
                     {msg.timestamp.toLocaleTimeString()}
-                  </span>
+                  </SizableText>
                   {index === 0 && (
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <div className="w-1.5 h-1.5 bg-foreground rounded-full animate-pulse" />
+                    <SizableText fontSize="$1" color="$color11" alignItems="center" gap="$1">
+                      <YStack width="$1.5" height="$1.5" backgroundColor="$color" borderRadius="$10" />
                       Next in queue
-                    </span>
+                    </SizableText>
                   )}
-                </div>
-              </div>
+                </XStack>
+              </YStack>
             ))}
-          </div>
-        </div>
+          </YStack>
+        </YStack>
       )}
 
       <style jsx>{`
@@ -943,73 +943,73 @@ export function AskAI({
       {/* Post-remix integration chips — one connect/skip row per pending service,
           horizontally scrollable on mobile, with the Plan-mode tip. */}
       {remixPending.length > 0 && (
-        <div className="mb-2 space-y-1.5">
-          <div className="flex items-center gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+        <YStack marginBottom="$2" rowGap="$1.5">
+          <XStack alignItems="center" gap="$1.5" overflow="scroll" className="[&::-webkit-scrollbar]:hidden">
             {remixPending.map((p) => (
-              <div
+              <SizableText
                 key={p.name}
-                className="flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-muted/50 px-2.5 py-1 text-xs"
+                flexShrink={0} alignItems="center" gap="$1.5" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontSize="$1" display="flex" flexDirection="row"
               >
-                <span className="whitespace-nowrap text-foreground">🔥 {p.name}</span>
+                <SizableText whiteSpace="nowrap" color="$color">🔥 {p.name}</SizableText>
                 {p.skippable !== false && (
                   <>
-                    <button
+                    <Button
                       type="button"
                       onClick={() => skipIntegration(p.name)}
-                      className="text-muted-foreground transition-colors hover:text-foreground"
+                      color="$color11" hoverStyle={{ color: "$color" }}
                     >
                       Skip
-                    </button>
-                    <span className="text-muted-foreground">·</span>
+                    </Button>
+                    <SizableText color="$color11">·</SizableText>
                   </>
                 )}
-                <button
+                <Button
                   type="button"
                   onClick={() => connectIntegration(p)}
-                  className="font-medium text-foreground hover:underline"
+                  fontWeight="500" color="$color" hoverStyle={{ textDecorationLine: "underline" }}
                 >
                   Connect
-                </button>
-              </div>
+                </Button>
+              </SizableText>
             ))}
-          </div>
-          <p className="text-[11px] text-muted-foreground">
+          </XStack>
+          <Paragraph fontSize={11} color="$color11">
             Tip: switch from Build to Plan mode to brainstorm or debug without
             code changes.
-          </p>
-        </div>
+          </Paragraph>
+        </YStack>
       )}
 
       {/* Suggestion chips — dismissible, horizontally scrollable (mobile-safe),
           monochrome. Clicking a chip sends it as a message in the current mode.
           Hidden while the AI is working and once dismissed for this project. */}
       {!suggestionsDismissed && !isAiWorking && (
-        <div className="mb-2 flex items-center gap-1.5">
-          <div className="flex flex-1 items-center gap-1.5 overflow-x-auto scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,#000_88%,transparent)]">
+        <XStack marginBottom="$2" alignItems="center" gap="$1.5">
+          <XStack flex={1} alignItems="center" gap="$1.5" overflow="scroll" className="scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,#000_88%,transparent)]">
             {SUGGESTIONS.map((s) => (
-              <button
+              <Button
                 key={s}
                 type="button"
                 onClick={() => runSuggestion(s)}
-                className="shrink-0 whitespace-nowrap rounded-full border border-border bg-muted/50 px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-ring hover:bg-muted hover:text-foreground"
+                flexShrink={0} whiteSpace="nowrap" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$color8", backgroundColor: "$color3", color: "$color" }}
               >
                 {s}
-              </button>
+              </Button>
             ))}
-          </div>
-          <button
+          </XStack>
+          <Button
             type="button"
             aria-label="Dismiss suggestions"
             onClick={() => setSuggestionsDismissed(true)}
-            className="shrink-0 rounded-full p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            flexShrink={0} borderRadius="$10" padding="$1" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
           >
-            <X className="size-3.5" />
-          </button>
-        </div>
+            <X size={14} />
+          </Button>
+        </XStack>
       )}
 
-      <div
-        className="relative bg-card border border-border rounded-xl ring-2 focus-within:ring-ring/25 focus-within:border-ring ring-transparent z-10 w-full group"
+      <YStack
+        position="relative" backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$6" zIndex={10} width="100%" group focusStyle={{ borderColor: "$color8" }}
         onDragOver={handleDragOver}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
@@ -1018,7 +1018,7 @@ export function AskAI({
         {/* Resize grip — drag the input's top edge to grow/shrink it; keyboard
             accessible (↑/↑ taller, ↓ shorter). Replaces the native textarea
             resize corner so it matches the rounded chrome. */}
-        <button
+        <Button
           type="button"
           role="separator"
           aria-orientation="horizontal"
@@ -1033,17 +1033,17 @@ export function AskAI({
               nudgeComposer(-24);
             }
           }}
-          className="absolute -top-1.5 left-1/2 z-20 flex h-3 w-10 -translate-x-1/2 cursor-ns-resize items-center justify-center rounded-full opacity-0 transition-opacity duration-150 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none"
+          position="absolute" top="-1.5" left="50%" zIndex={20} height="$3" width="$7" x="50%" cursor="ns-resize" alignItems="center" justifyContent="center" borderRadius="$10" opacity={0} $group-hover={{ opacity: 1 }} focusVisibleStyle={{ opacity: 1, outlineWidth: 0 }}
         >
-          <span className="h-0.5 w-6 rounded-full bg-muted-foreground" />
-        </button>
+          <SizableText height="$0.5" width="$5" borderRadius="$10" backgroundColor="$color11" />
+        </Button>
         {isDragging && (
-          <div className="absolute inset-0 z-30 rounded-2xl border-2 border-dashed border-muted-foreground bg-card/80 flex items-center justify-center pointer-events-none">
-            <p className="text-sm text-foreground flex items-center gap-2">
-              <ImagePlus className="size-4" />
+          <XStack position="absolute" top={0} right={0} bottom={0} left={0} zIndex={30} borderRadius="$8" borderWidth={2} borderStyle="dashed" borderColor="$color11" backgroundColor="$background" alignItems="center" justifyContent="center" pointerEvents="none">
+            <Paragraph fontSize="$3" color="$color" alignItems="center" gap="$2">
+              <ImagePlus size={16} />
               Drop images to attach as references
-            </p>
-          </div>
+            </Paragraph>
+          </XStack>
         )}
         <SelectedFiles
           files={selectedFiles}
@@ -1051,35 +1051,35 @@ export function AskAI({
           onDelete={(file) =>
             setSelectedFiles((prev) => prev.filter((f) => f !== file))
           }
-        />
+  />
         {selectedElement && (
-          <div className="px-4 pt-3">
+          <YStack paddingHorizontal="$4" paddingTop="$3">
             <SelectedHtmlElement
               element={selectedElement}
               isAiWorking={isAiWorking}
               onDelete={() => setSelectedElement(null)}
-            />
-          </div>
+  />
+          </YStack>
         )}
-        <div className="w-full relative flex items-center justify-between">
+        <XStack width="100%" position="relative" alignItems="center" justifyContent="space-between">
           {(isAiWorking || isUploading) && (
-            <div className="absolute top-0 left-4 right-12 h-8 z-10 flex items-center justify-between pointer-events-none">
-              <div className="flex items-center justify-start gap-2 bg-muted px-2 py-1 rounded-md">
+            <XStack position="absolute" top="$0" left="$4" right="$8" height="$6" zIndex={10} alignItems="center" justifyContent="space-between" pointerEvents="none">
+              <XStack alignItems="center" justifyContent="flex-start" gap="$2" backgroundColor="$color3" paddingHorizontal="$2" paddingVertical="$1" borderRadius="$3">
                 <Loading overlay={false} className="!size-3 opacity-50" />
-                <p className="text-muted-foreground text-xs">
+                <Paragraph color="$color11" fontSize="$1">
                   {isUploading ? (
                     "Uploading images..."
                   ) : isAiWorking && !isSameHtml ? (
                     <>
                       AI is working...
                       {messageQueue.length > 0 && (
-                        <span className="ml-1 text-muted-foreground">
+                        <SizableText marginLeft="$1" color="$color11">
                           ({messageQueue.length} queued)
-                        </span>
+                        </SizableText>
                       )}
                     </>
                   ) : (
-                    <span className="inline-flex">
+                    <SizableText>
                       {[
                         "H",
                         "a",
@@ -1119,9 +1119,9 @@ export function AskAI({
                         ".",
                         ".",
                       ].map((char, index) => (
-                        <span
+                        <SizableText
                           key={index}
-                          className="bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent animate-pulse"
+                          backgroundClip="text" color="transparent"
                           style={{
                             animationDelay: `${index * 0.1}s`,
                             animationDuration: "1.3s",
@@ -1129,30 +1129,24 @@ export function AskAI({
                           }}
                         >
                           {char === " " ? "\u00A0" : char}
-                        </span>
+                        </SizableText>
                       ))}
                       {messageQueue.length > 0 && (
-                        <span className="ml-2 text-muted-foreground">
+                        <SizableText marginLeft="$2" color="$color11">
                           ({messageQueue.length} queued)
-                        </span>
+                        </SizableText>
                       )}
-                    </span>
+                    </SizableText>
                   )}
-                </p>
-              </div>
-            </div>
+                </Paragraph>
+              </XStack>
+            </XStack>
           )}
-          <textarea
+          <Textarea
             ref={textareaRef}
             disabled={isUploading}
             style={{ height: composerH, maxHeight: "40dvh" }}
-            className={classNames(
-              "w-full bg-transparent text-sm outline-none text-foreground placeholder:text-muted-foreground p-4 resize-none overflow-y-auto",
-              {
-                "!pt-2.5": selectedElement && !isAiWorking,
-                "opacity-100": isAiWorking && !isUploading,
-              }
-            )}
+            width="100%" backgroundColor="transparent" fontSize="$3" outlineWidth={0} color="$color" placeholderTextColor="$color11" padding="$4" resize="none" overflow="scroll" {...{ paddingTop: selectedElement && !isAiWorking ? "$2.5" : undefined, opacity: isAiWorking && !isUploading ? 1 : undefined }}
             placeholder={
               isAiWorking
                 ? // Empty while working (unless queueing) so no text sits UNDER
@@ -1179,10 +1173,10 @@ export function AskAI({
                 callAi();
               }
             }}
-          />
-        </div>
-        <div className="flex items-center justify-between gap-2 px-4 pb-3 mt-2">
-          <div className="flex min-w-0 flex-1 items-center justify-start gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+  />
+        </XStack>
+        <XStack alignItems="center" justifyContent="space-between" gap="$2" paddingHorizontal="$4" paddingBottom="$3" marginTop="$2">
+          <XStack minWidth={0} flex={1} alignItems="center" justifyContent="flex-start" gap="$1.5" overflow="scroll" className="[&::-webkit-scrollbar]:hidden">
             <Uploader
               pages={pages}
               onLoading={setIsUploading}
@@ -1198,13 +1192,13 @@ export function AskAI({
               files={files}
               selectedFiles={selectedFiles}
               project={project}
-            />
+  />
             {isNew && <ReImagine onRedesign={(md) => callAi(md)} />}
             {!isSameHtml && (
               <Fix
                 active={isFixMode}
                 onToggle={() => setIsFixMode((v) => !v)}
-              />
+  />
             )}
             {!isSameHtml && (
               <Tooltip>
@@ -1215,13 +1209,10 @@ export function AskAI({
                     onClick={() => {
                       setIsEditableModeEnabled?.(!isEditableModeEnabled);
                     }}
-                    className={classNames("h-[28px]", {
-                      "text-muted-foreground hover:bg-accent hover:!text-foreground":
-                        !isEditableModeEnabled,
-                    })}
+                    height={28} {...{ color: !isEditableModeEnabled ? "$color11" : undefined, hoverStyle: !isEditableModeEnabled ? {"backgroundColor":"$color3","color":"$color"} : undefined }}
                     aria-label="Select an element to edit"
                   >
-                    <Crosshair className="size-4" />
+                    <Crosshair size={16} />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent align="start">
@@ -1231,17 +1222,17 @@ export function AskAI({
               </Tooltip>
             )}
             {/* <InviteFriends /> */}
-          </div>
-          <div className="flex shrink-0 items-center justify-end gap-2">
+          </XStack>
+          <XStack flexShrink={0} alignItems="center" justifyContent="flex-end" gap="$2">
             {/* Build vs Plan mode. Build (default) generates/patches the app;
                 Plan is a conversational turn that never modifies it. Persisted. */}
-            <div
+            <SizableText
               role="group"
               aria-label="Composer mode"
-              className="flex shrink-0 items-center rounded-full border border-border bg-card/60 p-0.5 text-xs"
+              flexShrink={0} alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$0.5" fontSize="$1" display="flex" flexDirection="row"
             >
               {(["build", "plan"] as const).map((m) => (
-                <button
+                <Button
                   key={m}
                   type="button"
                   aria-pressed={mode === m}
@@ -1251,23 +1242,18 @@ export function AskAI({
                       : "Build: generate and modify your app"
                   }
                   onClick={() => setMode(m)}
-                  className={classNames(
-                    "rounded-full px-2.5 py-1 font-medium capitalize transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                    mode === m
-                      ? "bg-[var(--brand-accent)] text-white"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
+                  borderRadius="$10" paddingHorizontal="$2.5" paddingVertical="$1" fontWeight="500" textTransform="capitalize" focusVisibleStyle={{ outlineWidth: 0 }} {...{ backgroundColor: mode === m ? "var(--brand-accent)" : undefined, color: mode === m ? "white" : "$color11", hoverStyle: mode === m ? undefined : {"color":"$color"} }}
                 >
                   {m}
-                </button>
+                </Button>
               ))}
-            </div>
+            </SizableText>
             {isSmartRouting(model) && routedModel && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <span className="text-xs text-muted-foreground px-2 py-1 rounded-md bg-muted truncate max-w-[10rem]">
+                  <SizableText fontSize="$1" color="$color11" paddingHorizontal="$2" paddingVertical="$1" borderRadius="$3" backgroundColor="$color3" numberOfLines={1} maxWidth="10rem">
                     Routed: {routedModel}
-                  </span>
+                  </SizableText>
                 </TooltipTrigger>
                 <TooltipContent align="end">
                   Smart routing sent this request to {routedModel}. You&apos;re
@@ -1283,20 +1269,20 @@ export function AskAI({
               open={openProvider}
               error={providerError}
               onClose={setOpenProvider}
-            />
+  />
             {isAiWorking ? (
               <Button
                 size="iconXs"
                 variant="destructive"
                 onClick={stopController}
-                className="gap-1 rounded-full"
+                gap="$1" borderRadius="$10"
               >
-                <FaStopCircle className="size-4" />
+                <FaStopCircle size={16} />
               </Button>
             ) : (
               <Button
                 size="iconXs"
-                className="rounded-full"
+                borderRadius="$10"
                 disabled={
                   isUploading ||
                   (!prompt.trim() &&
@@ -1304,23 +1290,23 @@ export function AskAI({
                 }
                 onClick={() => callAi()}
               >
-                <ArrowUp className="size-4" />
+                <ArrowUp size={16} />
               </Button>
             )}
-          </div>
-        </div>
+          </XStack>
+        </XStack>
         <LoginModal open={open} onClose={() => setOpen(false)} pages={pages} />
         <ProModal
           pages={pages}
           open={openProModal}
           onClose={() => setOpenProModal(false)}
-        />
-      </div>
+  />
+      </YStack>
       <audio ref={hookAudio} id="audio" className="hidden">
         <source src="/success.mp3" type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }

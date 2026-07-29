@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { YStack, H3, Paragraph, SizableText, Anchor, XStack } from '@hanzo/gui';
+import { useState, useEffect } from 'react';
 import { configManager } from '@/lib/config/storage';
 import { validateApiKey as checkApiKey } from '@/lib/llm/llm-client';
-import { Button, Input, Label, Switch, toast, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
+import { Button, Input, Label, Switch, toast, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Separator } from '@hanzo/ui';
 import { Eye, EyeOff, Check, X, ExternalLink, Loader2 } from 'lucide-react';
 import { ModelSelector } from '@/components/model-selector';
 import { ProviderId } from '@/lib/llm/providers/types';
@@ -155,45 +156,45 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
   const providerConfig = getProvider(selectedProvider);
 
   return (
-    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+    <YStack flex={1} minHeight={0} overflow="hidden">
       {/* Header */}
-      <div className="shrink-0">
-        <h3 className="font-medium text-base tracking-tight">Model Settings</h3>
-        <p className="text-muted-foreground text-xs mt-1">
+      <YStack flexShrink={0}>
+        <H3 fontWeight="500" fontSize="$4" letterSpacing={-0.4}>Model Settings</H3>
+        <Paragraph color="$color11" fontSize="$1" marginTop="$1">
           Configure your AI model and API connection
-        </p>
-      </div>
+        </Paragraph>
+      </YStack>
 
       {/* Scrollable content */}
-      <div className="flex-1 min-h-0 overflow-y-auto mt-5 space-y-5">
+      <YStack flex={1} minHeight={0} marginTop="$4.5" rowGap="$4.5" overflow="scroll">
 
       {/* Provider Selection */}
       <div>
-        <Label htmlFor="provider" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Provider</Label>
+        <Label htmlFor="provider" fontSize="$1" fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11">Provider</Label>
         <Select value={selectedProvider} onValueChange={handleProviderChange}>
-          <SelectTrigger id="provider" className="mt-2 !h-fit w-full">
+          <SelectTrigger id="provider" marginTop="$2" height="fit-content" width="100%">
             <SelectValue placeholder="Select a provider">
               {selectedProvider && (
-                <div className="flex flex-col text-left">
-                  <span className="font-medium">{providerConfig.name}</span>
-                  <span className="text-xs text-muted-foreground">
+                <SizableText flexDirection="column" textAlign="left" display="flex">
+                  <SizableText fontWeight="500">{providerConfig.name}</SizableText>
+                  <SizableText fontSize="$1" color="$color11">
                     {providerConfig.description}
-                  </span>
-                </div>
+                  </SizableText>
+                </SizableText>
               )}
             </SelectValue>
           </SelectTrigger>
-          <SelectContent className="max-h-[400px]">
+          <SelectContent maxHeight={400}>
             {getAllProviders()
               .filter(p => codexAvailable || p.id !== 'openai-codex')
               .map(provider => (
-              <SelectItem key={provider.id} value={provider.id} className="py-2.5">
-                <div className="flex flex-col">
-                  <span className="font-medium">{provider.name}</span>
-                  <span className="text-xs text-muted-foreground">
+              <SelectItem key={provider.id} value={provider.id} paddingVertical="$2.5">
+                <YStack>
+                  <SizableText fontWeight="500">{provider.name}</SizableText>
+                  <SizableText fontSize="$1" color="$color11">
                     {provider.description}
-                  </span>
-                </div>
+                  </SizableText>
+                </YStack>
               </SelectItem>
             ))}
           </SelectContent>
@@ -221,22 +222,22 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
             method="API Key"
             extra={(() => { const k = configManager.getProviderApiKey(selectedProvider); return k ? `···${k.slice(-4)}` : undefined; })()}
             info={providerConfig.apiKeyHelpUrl && (
-              <a
+              <Anchor
                 href={providerConfig.apiKeyHelpUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary hover:underline inline-flex items-center gap-0.5"
+                color="$color12" alignItems="center" gap="$0.5" hoverStyle={{ textDecorationLine: "underline" }}
               >
-                Manage on {providerConfig.name} <ExternalLink className="h-2.5 w-2.5" />
-              </a>
+                Manage on {providerConfig.name} <ExternalLink size={10} />
+              </Anchor>
             )}
             onDisconnect={handleApiKeyDisconnect}
-          />
+  />
         ) : (
           <div>
             <Label htmlFor="api-key">{providerConfig.name} API Key</Label>
-            <div className="flex gap-2 mt-2">
-              <div className="relative flex-1">
+            <XStack gap="$2" marginTop="$2">
+              <YStack position="relative" flex={1}>
                 <Input
                   id="api-key"
                   type={showApiKey ? "text" : "password"}
@@ -244,23 +245,23 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
                   onChange={(e) => { setCurrentApiKey(e.target.value); setKeyValid(null); }}
                   onKeyDown={(e) => { if (e.key === 'Enter' && currentApiKey.trim()) handleConnect(); }}
                   placeholder={providerConfig.apiKeyPlaceholder || 'API Key'}
-                  className="pr-10"
+                  paddingRight="$7"
                   data-tour-id="provider-key-input"
                   disabled={validatingKey}
-                />
+  />
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="absolute right-1 top-1 h-7 w-7"
+                  position="absolute" right="$1" top="$1" height={28} width={28}
                   onClick={() => setShowApiKey(!showApiKey)}
                 >
                   {showApiKey ? (
-                    <EyeOff className="h-4 w-4" />
+                    <EyeOff size={16} />
                   ) : (
-                    <Eye className="h-4 w-4" />
+                    <Eye size={16} />
                   )}
                 </Button>
-              </div>
+              </YStack>
               <Button
                 onClick={handleConnect}
                 disabled={validatingKey || !currentApiKey.trim()}
@@ -268,26 +269,26 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
               >
                 {validatingKey ? (
                   <>
-                    <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                    <Loader2 size={12} />
                     Connecting...
                   </>
                 ) : (
                   'Connect'
                 )}
               </Button>
-            </div>
+            </XStack>
             {providerConfig.apiKeyHelpUrl && (
-              <p className="text-sm text-muted-foreground mt-2">
+              <Paragraph fontSize="$3" color="$color11" marginTop="$2">
                 Get your API key from{' '}
-                <a
+                <Anchor
                   href={providerConfig.apiKeyHelpUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary hover:underline inline-flex items-center gap-1"
+                  color="$color12" alignItems="center" gap="$1" hoverStyle={{ textDecorationLine: "underline" }}
                 >
-                  {providerConfig.name} <ExternalLink className="h-3 w-3" />
-                </a>
-              </p>
+                  {providerConfig.name} <ExternalLink size={12} />
+                </Anchor>
+              </Paragraph>
             )}
           </div>
         )
@@ -295,32 +296,32 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
         <div>
           <Label htmlFor="api-key">
             {providerConfig.name} API Key
-            <span className="text-muted-foreground text-xs ml-1">(optional)</span>
+            <SizableText color="$color11" fontSize="$1" marginLeft="$1">(optional)</SizableText>
           </Label>
-          <div className="flex gap-2 mt-2">
-            <div className="relative flex-1">
+          <XStack gap="$2" marginTop="$2">
+            <YStack position="relative" flex={1}>
               <Input
                 id="api-key"
                 type={showApiKey ? "text" : "password"}
                 value={currentApiKey}
                 onChange={(e) => handleApiKeyChange(e.target.value)}
                 placeholder={providerConfig.apiKeyPlaceholder || 'API Key'}
-                className="pr-10"
+                paddingRight="$7"
                 data-tour-id="provider-key-input"
-              />
+  />
               <Button
                 size="icon"
                 variant="ghost"
-                className="absolute right-1 top-1 h-7 w-7"
+                position="absolute" right="$1" top="$1" height={28} width={28}
                 onClick={() => setShowApiKey(!showApiKey)}
               >
                 {showApiKey ? (
-                  <EyeOff className="h-4 w-4" />
+                  <EyeOff size={16} />
                 ) : (
-                  <Eye className="h-4 w-4" />
+                  <Eye size={16} />
                 )}
               </Button>
-            </div>
+            </YStack>
             <Button
               onClick={validateApiKey}
               disabled={validatingKey || !currentApiKey}
@@ -329,44 +330,44 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
               {validatingKey ? 'Validating...' : 'Validate'}
             </Button>
             {keyValid !== null && (
-              <div className="flex items-center">
+              <XStack alignItems="center">
                 {keyValid ? (
-                  <Check className="h-5 w-5 text-green-500" />
+                  <Check size={20} color="$green9" />
                 ) : (
-                  <X className="h-5 w-5 text-red-500" />
+                  <X size={20} color="$red9" />
                 )}
-              </div>
+              </XStack>
             )}
-          </div>
-          <p className="text-sm text-muted-foreground mt-2">
+          </XStack>
+          <Paragraph fontSize="$3" color="$color11" marginTop="$2">
             API key is optional for {providerConfig.name}. Only needed if you&apos;ve configured authentication on your local server.
-          </p>
+          </Paragraph>
         </div>
       ) : null}
 
       {!providerConfig.apiKeyRequired && providerConfig.isLocal && (
-        <div className="text-sm text-muted-foreground p-3 border rounded-md bg-muted/50">
-          <p className="font-medium mb-1">Local Provider</p>
+        <SizableText fontSize="$3" color="$color11" padding="$3" borderWidth={1} borderRadius="$3" backgroundColor="$color3" display="flex" flexDirection="column">
+          <Paragraph fontWeight="500" marginBottom="$1">Local Provider</Paragraph>
           <p>Make sure {providerConfig.name} is running on your machine.</p>
-          <p>Default endpoint: <code className="text-xs">{providerConfig.baseUrl}</code></p>
+          <p>Default endpoint: <SizableText fontSize="$1">{providerConfig.baseUrl}</SizableText></p>
           {selectedProvider === 'lmstudio' && (
-            <div className="mt-2 text-xs">
-              <p className="font-medium">For tool use support:</p>
+            <SizableText marginTop="$2" fontSize="$1" display="flex" flexDirection="column">
+              <Paragraph fontWeight="500">For tool use support:</Paragraph>
               <p>• Load a model like qwen/qwen3-4b-thinking-2507</p>
               <p>• Start the local server in LM Studio</p>
               <p>• Models will be automatically discovered</p>
-            </div>
+            </SizableText>
           )}
-        </div>
+        </SizableText>
       )}
 
       {/* Divider */}
-      <hr className="border-border" />
+      <Separator borderColor="$borderColor" />
 
       {/* Code Model */}
       <div>
-        <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Code Model</Label>
-        <div className="mt-2">
+        <Label fontSize="$1" fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11">Code Model</Label>
+        <YStack marginTop="$2">
           <ModelSelector
             provider={selectedProvider}
             mode="inline"
@@ -379,32 +380,32 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
               }
             }}
             className="space-y-2"
-          />
-        </div>
+  />
+        </YStack>
       </div>
 
       {/* Separate Chat Model Toggle — hidden in judge mode */}
       {!showJudgeModel && (
-        <div className="flex items-center justify-between gap-3">
+        <XStack alignItems="center" justifyContent="space-between" gap="$3">
           <div>
-            <div className="text-sm font-medium">Use different model for chat</div>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <SizableText fontSize="$3" fontWeight="500" display="flex" flexDirection="column">Use different model for chat</SizableText>
+            <Paragraph fontSize="$1" color="$color11" marginTop="$0.5">
               Select a separate (usually cheaper) model for chat/planning
-            </p>
+            </Paragraph>
           </div>
           <Switch
             id="separate-chat-model"
             checked={useSeparateChatModel}
             onCheckedChange={(checked) => setUseSeparateChatModel(checked)}
-          />
-        </div>
+  />
+        </XStack>
       )}
 
       {/* Chat Model (conditional) — hidden in judge mode */}
       {!showJudgeModel && useSeparateChatModel && (
         <div>
-          <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Chat Model</Label>
-          <div className="mt-2">
+          <Label fontSize="$1" fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11">Chat Model</Label>
+          <YStack marginTop="$2">
             <ModelSelector
               provider={selectedProvider}
               mode="inline"
@@ -415,43 +416,43 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
                 onModelChange?.(modelId);
               }}
               className="space-y-2"
-            />
-          </div>
+  />
+          </YStack>
         </div>
       )}
 
       {/* Judge Model — shown only in benchmark mode */}
       {showJudgeModel && (
         <>
-          <hr className="border-border" />
+          <Separator borderColor="$borderColor" />
           <div>
-            <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Judge Model <span className="normal-case font-normal">(optional)</span>
+            <Label fontSize="$1" fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11">
+              Judge Model <SizableText textTransform="none" fontWeight="400">(optional)</SizableText>
             </Label>
-            <p className="text-xs text-muted-foreground mt-1 mb-2">
+            <Paragraph fontSize="$1" color="$color11" marginTop="$1" marginBottom="$2">
               Separate model for evaluating subjective test criteria
-            </p>
+            </Paragraph>
             <ModelSelector
               provider={selectedProvider}
               mode="inline"
               skipGlobalSync
               onChange={(modelId) => onJudgeModelChange?.(modelId)}
               className="space-y-2"
-            />
+  />
           </div>
         </>
       )}
 
-      </div>{/* end scrollable content */}
+      </YStack>{/* end scrollable content */}
 
       {/* Footer */}
       {onClose && (
-        <div className="shrink-0 flex justify-end pt-4 border-t mt-4">
+        <XStack flexShrink={0} justifyContent="flex-end" paddingTop="$4" borderTopWidth={1} marginTop="$4">
           <Button onClick={onClose} size="sm">
             Done
           </Button>
-        </div>
+        </XStack>
       )}
-    </div>
+    </YStack>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import { YStack, XStack, Paragraph } from '@hanzo/gui';
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ModelSettingsPanel } from '@/components/settings/model-settings';
 import { SettingsPanel } from '@/components/settings';
@@ -16,17 +17,17 @@ function SettingsViewInner({ tab }: SettingsViewProps) {
   const activeTab = settingsTab || tab || 'model';
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex-1 overflow-auto p-6">
+    <YStack height="100%">
+      <YStack flex={1} overflow="scroll" padding="$5">
         {activeTab === 'application' ? <SettingsPanel /> : <ModelSettingsPanel />}
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }
 
 export function SettingsView({ tab }: SettingsViewProps) {
   return (
-    <Suspense fallback={<div className="h-full flex items-center justify-center"><p className="text-muted-foreground">Loading...</p></div>}>
+    <Suspense fallback={<XStack height="100%" alignItems="center" justifyContent="center"><Paragraph color="$color11">Loading...</Paragraph></XStack>}>
       <SettingsViewInner tab={tab} />
     </Suspense>
   );

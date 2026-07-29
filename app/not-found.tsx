@@ -1,3 +1,6 @@
+'use client';
+
+import { SizableText, XStack, H1, Paragraph } from '@hanzo/gui';
 import Link from 'next/link';
 import { HanzoBrand } from '@/components/HanzoLogo';
 
@@ -9,34 +12,32 @@ import { HanzoBrand } from '@/components/HanzoLogo';
  */
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-6 py-20">
-      <div className="w-full max-w-md text-center">
-        <div className="flex justify-center mb-10">
+    <SizableText minHeight="100%" backgroundColor="$background" color="$color" alignItems="center" justifyContent="center" paddingHorizontal="$5" paddingVertical="$11" display="flex" flexDirection="row">
+      <SizableText width="100%" maxWidth={448} textAlign="center" display="flex" flexDirection="column">
+        <XStack justifyContent="center" marginBottom="$7">
           <HanzoBrand
             className="text-foreground"
             markClassName="w-11 h-11"
             wordmarkClassName="text-3xl"
-          />
-        </div>
+  />
+        </XStack>
 
-        <h1 className="text-4xl font-medium mb-4 tracking-tight">404 — page not found</h1>
-        <p className="text-muted-foreground text-lg mb-10">This page does not exist or has moved.</p>
+        <H1 fontSize="$11" fontWeight="500" marginBottom="$4" letterSpacing={-0.4}>404 — page not found</H1>
+        <Paragraph color="$color11" fontSize="$6" marginBottom="$7">This page does not exist or has moved.</Paragraph>
 
-        <div className="flex items-center justify-center gap-4">
+        <XStack alignItems="center" justifyContent="center" gap="$4">
           <Link
             href="/"
-            className="px-5 py-2.5 bg-primary text-primary-foreground rounded-xl font-medium text-sm hover:bg-primary/90 transition-colors"
-          >
+          ><SizableText paddingHorizontal="$4.5" paddingVertical="$2.5" backgroundColor="$color12" color="$background" borderRadius="$6" fontWeight="500" fontSize="$3" hoverStyle={{ backgroundColor: "$color12" }}>
             Back to Hanzo
-          </Link>
+          </SizableText></Link>
           <Link
             href="/dashboard"
-            className="text-sm text-foreground/60 hover:text-foreground/80 transition-colors"
-          >
+          ><SizableText fontSize="$3" color="$color" hoverStyle={{ color: "$color" }}>
             Go to dashboard
-          </Link>
-        </div>
-      </div>
-    </div>
+          </SizableText></Link>
+        </XStack>
+      </SizableText>
+    </SizableText>
   );
 }

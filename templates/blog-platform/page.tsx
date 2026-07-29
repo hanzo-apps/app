@@ -1,5 +1,6 @@
 "use client";
 
+import { YStack, XStack, H1, Image, H2, Paragraph, H3, SizableText } from '@hanzo/gui';
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Button, Badge, Avatar, AvatarFallback, AvatarImage, Input, Tabs, TabsContent, TabsList, TabsTrigger, AspectRatio } from '@hanzo/ui';
 import {
@@ -89,66 +90,62 @@ export default function BlogPlatform() {
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
-    <div className="min-h-screen bg-background">
+    <YStack minHeight="100%" backgroundColor="$background">
       {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-8">
-              <h1 className="text-2xl font-bold">Hanzo Blog</h1>
-              <nav className="hidden md:flex items-center gap-6">
+      <YStack borderBottomWidth={1}>
+        <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$4">
+          <XStack alignItems="center" justifyContent="space-between">
+            <XStack alignItems="center" gap="$6">
+              <H1 fontSize="$8" fontWeight="700">Hanzo Blog</H1>
+              <YStack display="none" alignItems="center" gap="$5">
                 {categories.slice(0, 5).map(cat => (
-                  <button
+                  <Button
                     key={cat.name}
                     onClick={() => setSelectedCategory(cat.name)}
-                    className={`text-sm font-medium transition-colors hover:text-primary ${
-                      selectedCategory === cat.name
-                        ? "text-primary"
-                        : "text-muted-foreground"
-                    }`}
+                    fontSize="$3" fontWeight="500" hoverStyle={{ color: "$color12" }} {...{ color: selectedCategory === cat.name ? "$color12" : "$color11" }}
                   >
                     {cat.name}
-                  </button>
+                  </Button>
                 ))}
-              </nav>
-            </div>
+              </YStack>
+            </XStack>
 
-            <div className="flex items-center gap-4">
-              <div className="relative hidden md:block">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <XStack alignItems="center" gap="$4">
+              <YStack position="relative" display="none">
+                <Search size={16} color="$color11" />
                 <Input
                   placeholder="Search articles..."
                   value={searchQuery}
                   onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setSearchQuery(e.target.value)}
-                  className="pl-9 w-[250px]"
-                />
-              </div>
-              <Button className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600">
-                <Edit className="w-4 h-4 mr-2" />
+                  paddingLeft={36} width={250}
+  />
+              </YStack>
+              <Button>
+                <Edit size={16} />
                 Write
               </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+            </XStack>
+          </XStack>
+        </YStack>
+      </YStack>
 
       {/* Featured Article */}
-      <section className="container mx-auto px-6 py-8">
-        <Card className="overflow-hidden">
-          <div className="grid md:grid-cols-2 gap-6">
+      <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$6">
+        <Card overflow="hidden">
+          <YStack gap="$5">
             <AspectRatio ratio={16/9}>
-              <img
+              <Image
                 src={featuredArticle.coverImage}
                 alt={featuredArticle.title}
-                className="object-cover w-full h-full"
-              />
+                objectFit="cover" width="100%" height="100%"
+  />
             </AspectRatio>
-            <div className="p-6 flex flex-col justify-center">
-              <Badge className="w-fit mb-4 bg-rose-100 text-rose-700 border-rose-200">{featuredArticle.category}</Badge>
-              <h2 className="text-3xl font-bold mb-4">{featuredArticle.title}</h2>
-              <p className="text-muted-foreground mb-6">{featuredArticle.excerpt}</p>
+            <YStack padding="$5" justifyContent="center">
+              <Badge width="fit-content" marginBottom="$4" backgroundColor="$red2" color="$red11" borderColor="$red3">{featuredArticle.category}</Badge>
+              <H2 fontSize="$10" fontWeight="700" marginBottom="$4">{featuredArticle.title}</H2>
+              <Paragraph color="$color11" marginBottom="$5">{featuredArticle.excerpt}</Paragraph>
 
-              <div className="flex items-center gap-4 mb-6">
+              <XStack alignItems="center" gap="$4" marginBottom="$5">
                 <Avatar>
                   <AvatarImage src={featuredArticle.author.avatar} />
                   <AvatarFallback>
@@ -156,190 +153,190 @@ export default function BlogPlatform() {
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-medium">{featuredArticle.author.name}</p>
-                  <p className="text-sm text-muted-foreground">
+                  <Paragraph fontWeight="500">{featuredArticle.author.name}</Paragraph>
+                  <Paragraph fontSize="$3" color="$color11">
                     {featuredArticle.publishDate} · {featuredArticle.readTime}
-                  </p>
+                  </Paragraph>
                 </div>
-              </div>
+              </XStack>
 
-              <div className="flex items-center gap-4">
-                <Button className="bg-rose-600 hover:bg-rose-700">Read Article</Button>
+              <XStack alignItems="center" gap="$4">
+                <Button backgroundColor="$red10" hoverStyle={{ backgroundColor: "$red11" }}>Read Article</Button>
                 <Button variant="ghost" size="icon">
-                  <Bookmark className="w-4 h-4" />
+                  <Bookmark size={16} />
                 </Button>
-              </div>
-            </div>
-          </div>
+              </XStack>
+            </YStack>
+          </YStack>
         </Card>
-      </section>
+      </YStack>
 
       {/* Main Content */}
-      <section className="container mx-auto px-6 py-8">
-        <Tabs defaultValue="latest" className="space-y-6">
+      <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$6">
+        <Tabs defaultValue="latest" rowGap="$5">
           <TabsList>
             <TabsTrigger value="latest">Latest</TabsTrigger>
             <TabsTrigger value="trending">Trending</TabsTrigger>
             <TabsTrigger value="following">Following</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="latest" className="space-y-6">
-            <div className="grid md:grid-cols-3 gap-8">
+          <TabsContent value="latest" rowGap="$5">
+            <YStack gap="$6">
               {/* Articles Grid */}
-              <div className="md:col-span-2 space-y-6">
+              <YStack rowGap="$5">
                 {articles.map(article => (
-                  <Card key={article.id} className="overflow-hidden">
-                    <div className="grid md:grid-cols-3 gap-4">
+                  <Card key={article.id} overflow="hidden">
+                    <YStack gap="$4">
                       <AspectRatio ratio={4/3}>
-                        <img
+                        <Image
                           src={article.coverImage}
                           alt={article.title}
-                          className="object-cover w-full h-full rounded-lg"
-                        />
+                          objectFit="cover" width="100%" height="100%" borderRadius="$5"
+  />
                       </AspectRatio>
-                      <div className="md:col-span-2 p-4">
-                        <div className="flex items-center gap-2 mb-2">
+                      <YStack padding="$4">
+                        <XStack alignItems="center" gap="$2" marginBottom="$2">
                           <Badge variant="outline">{article.category}</Badge>
                           {article.trending && (
-                            <Badge variant="secondary" className="gap-1">
-                              <TrendingUp className="w-3 h-3" />
+                            <Badge variant="secondary" gap="$1">
+                              <TrendingUp size={12} />
                               Trending
                             </Badge>
                           )}
-                        </div>
-                        <h3 className="font-semibold text-lg mb-2">{article.title}</h3>
-                        <p className="text-sm text-muted-foreground mb-4">
+                        </XStack>
+                        <H3 fontWeight="600" fontSize="$6" marginBottom="$2">{article.title}</H3>
+                        <Paragraph fontSize="$3" color="$color11" marginBottom="$4">
                           {article.excerpt}
-                        </p>
+                        </Paragraph>
 
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <Avatar className="h-8 w-8">
+                        <XStack alignItems="center" justifyContent="space-between">
+                          <XStack alignItems="center" gap="$3">
+                            <Avatar height="$6" width="$6">
                               <AvatarImage src={article.author.avatar} />
                               <AvatarFallback>
                                 {article.author.name.split(" ").map(n => n[0]).join("")}
                               </AvatarFallback>
                             </Avatar>
-                            <div className="text-sm">
-                              <p className="font-medium">{article.author.name}</p>
-                              <p className="text-muted-foreground">
+                            <SizableText fontSize="$3" display="flex" flexDirection="column">
+                              <Paragraph fontWeight="500">{article.author.name}</Paragraph>
+                              <Paragraph color="$color11">
                                 {article.publishDate} · {article.readTime}
-                              </p>
-                            </div>
-                          </div>
+                              </Paragraph>
+                            </SizableText>
+                          </XStack>
 
-                          <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                            <button className="flex items-center gap-1 hover:text-primary">
-                              <Heart className="w-4 h-4" />
+                          <SizableText alignItems="center" gap="$3" fontSize="$3" color="$color11" display="flex" flexDirection="row">
+                            <Button alignItems="center" gap="$1" hoverStyle={{ color: "$color12" }}>
+                              <Heart size={16} />
                               {article.likes}
-                            </button>
-                            <button className="hover:text-primary">
-                              <MessageCircle className="w-4 h-4" />
-                            </button>
-                            <button className="hover:text-primary">
-                              <Share2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                            </Button>
+                            <Button hoverStyle={{ color: "$color12" }}>
+                              <MessageCircle size={16} />
+                            </Button>
+                            <Button hoverStyle={{ color: "$color12" }}>
+                              <Share2 size={16} />
+                            </Button>
+                          </SizableText>
+                        </XStack>
+                      </YStack>
+                    </YStack>
                   </Card>
                 ))}
 
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" width="100%">
                   Load More Articles
                 </Button>
-              </div>
+              </YStack>
 
               {/* Sidebar */}
-              <div className="space-y-6">
+              <YStack rowGap="$5">
                 {/* Popular Authors */}
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Users className="w-5 h-5" />
+                    <CardTitle alignItems="center" gap="$2">
+                      <Users size={20} />
                       Popular Authors
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
+                    <YStack rowGap="$4">
                       {popularAuthors.map(author => (
-                        <div key={author.name} className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
+                        <XStack key={author.name} alignItems="center" justifyContent="space-between">
+                          <XStack alignItems="center" gap="$3">
                             <Avatar>
                               <AvatarFallback>
                                 {author.name.split(" ").map(n => n[0]).join("")}
                               </AvatarFallback>
                             </Avatar>
                             <div>
-                              <p className="font-medium text-sm">{author.name}</p>
-                              <p className="text-xs text-muted-foreground">
+                              <Paragraph fontWeight="500" fontSize="$3">{author.name}</Paragraph>
+                              <Paragraph fontSize="$1" color="$color11">
                                 {author.articles} articles
-                              </p>
+                              </Paragraph>
                             </div>
-                          </div>
+                          </XStack>
                           <Button size="sm" variant="outline">Follow</Button>
-                        </div>
+                        </XStack>
                       ))}
-                    </div>
+                    </YStack>
                   </CardContent>
                 </Card>
 
                 {/* Your Stats */}
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <BarChart className="w-5 h-5" />
+                    <CardTitle alignItems="center" gap="$2">
+                      <BarChart size={20} />
                       Your Stats
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-3">
-                      <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">Articles Read</span>
-                        <span className="font-medium">42</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">Reading Streak</span>
-                        <span className="font-medium">7 days</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">Bookmarks</span>
-                        <span className="font-medium">18</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">Following</span>
-                        <span className="font-medium">23</span>
-                      </div>
-                    </div>
+                    <YStack rowGap="$3">
+                      <XStack justifyContent="space-between">
+                        <SizableText fontSize="$3" color="$color11">Articles Read</SizableText>
+                        <SizableText fontWeight="500">42</SizableText>
+                      </XStack>
+                      <XStack justifyContent="space-between">
+                        <SizableText fontSize="$3" color="$color11">Reading Streak</SizableText>
+                        <SizableText fontWeight="500">7 days</SizableText>
+                      </XStack>
+                      <XStack justifyContent="space-between">
+                        <SizableText fontSize="$3" color="$color11">Bookmarks</SizableText>
+                        <SizableText fontWeight="500">18</SizableText>
+                      </XStack>
+                      <XStack justifyContent="space-between">
+                        <SizableText fontSize="$3" color="$color11">Following</SizableText>
+                        <SizableText fontWeight="500">23</SizableText>
+                      </XStack>
+                    </YStack>
                   </CardContent>
                 </Card>
 
                 {/* Reading List */}
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Clock className="w-5 h-5" />
+                    <CardTitle alignItems="center" gap="$2">
+                      <Clock size={20} />
                       Reading List
                     </CardTitle>
                     <CardDescription>Articles saved for later</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-3">
-                      <p className="text-sm">TypeScript Best Practices</p>
-                      <p className="text-sm">Understanding React Server Components</p>
-                      <p className="text-sm">CSS Grid Layout Guide</p>
-                    </div>
+                    <YStack rowGap="$3">
+                      <Paragraph fontSize="$3">TypeScript Best Practices</Paragraph>
+                      <Paragraph fontSize="$3">Understanding React Server Components</Paragraph>
+                      <Paragraph fontSize="$3">CSS Grid Layout Guide</Paragraph>
+                    </YStack>
                   </CardContent>
                   <CardFooter>
-                    <Button variant="outline" className="w-full">View All</Button>
+                    <Button variant="outline" width="100%">View All</Button>
                   </CardFooter>
                 </Card>
-              </div>
-            </div>
+              </YStack>
+            </YStack>
           </TabsContent>
         </Tabs>
-      </section>
-    </div>
+      </YStack>
+    </YStack>
   );
 }

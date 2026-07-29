@@ -1,5 +1,6 @@
 'use client';
 
+import { YStack, XStack, H2, SizableText } from '@hanzo/gui';
 import { useState, useEffect, useCallback } from 'react';
 import { MultiTabEditor, openFileInEditor } from '@/components/code-tabs';
 import { FileExplorer } from '@/components/file-explorer';
@@ -7,8 +8,6 @@ import { VirtualFile } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';
 import { Button } from '@hanzo/ui';
 import { FolderTree, Code2, Columns2, PanelLeft, PanelRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
-
 interface DevEnvironmentProps {
   projectId: string;
 }
@@ -64,24 +63,24 @@ export function DevEnvironment({ projectId }: DevEnvironmentProps) {
   }, [layout]);
 
   return (
-    <div className="h-full flex flex-col">
+    <YStack height="100%">
       {/* Toolbar */}
-      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-2 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <h2 className="text-sm font-medium">Development Environment</h2>
-          <span className="text-xs text-muted-foreground">Project: {projectId}</span>
-        </div>
+      <XStack borderBottomWidth={1} backgroundColor="$background" backdropFilter="blur(8px)" padding="$2" alignItems="center" justifyContent="space-between" className="supports-[backdrop-filter]:bg-background/60">
+        <XStack alignItems="center" gap="$2">
+          <H2 fontSize="$3" fontWeight="500">Development Environment</H2>
+          <SizableText fontSize="$1" color="$color11">Project: {projectId}</SizableText>
+        </XStack>
 
-        <div className="flex items-center gap-1">
+        <XStack alignItems="center" gap="$1">
           {/* Layout Toggle Buttons */}
           <Button
             variant={layout === 'split' ? 'default' : 'ghost'}
             size="sm"
             onClick={() => setLayout('split')}
             title="Split View"
-            className="h-8 w-8 p-0"
+            height="$6" width="$6" padding="$0"
           >
-            <Columns2 className="h-4 w-4" />
+            <Columns2 size={16} />
           </Button>
 
           <Button
@@ -89,9 +88,9 @@ export function DevEnvironment({ projectId }: DevEnvironmentProps) {
             size="sm"
             onClick={() => setLayout('explorer-only')}
             title="Explorer Only"
-            className="h-8 w-8 p-0"
+            height="$6" width="$6" padding="$0"
           >
-            <PanelLeft className="h-4 w-4" />
+            <PanelLeft size={16} />
           </Button>
 
           <Button
@@ -99,9 +98,9 @@ export function DevEnvironment({ projectId }: DevEnvironmentProps) {
             size="sm"
             onClick={() => setLayout('editor-only')}
             title="Editor Only"
-            className="h-8 w-8 p-0"
+            height="$6" width="$6" padding="$0"
           >
-            <PanelRight className="h-4 w-4" />
+            <PanelRight size={16} />
           </Button>
 
           {/* Mobile Quick Toggle */}
@@ -109,27 +108,21 @@ export function DevEnvironment({ projectId }: DevEnvironmentProps) {
             variant="ghost"
             size="sm"
             onClick={toggleLayout}
-            className="md:hidden h-8 px-2"
+            height="$6" paddingHorizontal="$2" $md={{ display: "none" }}
           >
-            {showExplorer && !showEditor && <FolderTree className="h-4 w-4" />}
-            {showEditor && !showExplorer && <Code2 className="h-4 w-4" />}
-            {showExplorer && showEditor && <Columns2 className="h-4 w-4" />}
+            {showExplorer && !showEditor && <FolderTree size={16} />}
+            {showEditor && !showExplorer && <Code2 size={16} />}
+            {showExplorer && showEditor && <Columns2 size={16} />}
           </Button>
-        </div>
-      </div>
+        </XStack>
+      </XStack>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex overflow-hidden">
+      <XStack flex={1} overflow="hidden">
         {/* File Explorer Panel */}
         {showExplorer && (
-          <div
-            className={cn(
-              'border-r bg-background',
-              layout === 'split' && 'w-64 md:w-80',
-              layout === 'explorer-only' && 'flex-1',
-              layout === 'full' && 'w-64 md:w-80',
-              !showEditor && 'w-full'
-            )}
+          <YStack
+            borderRightWidth={1} backgroundColor="$background" {...{ width: !showEditor ? "100%" : layout === 'full' ? 256 : layout === 'split' ? 256 : undefined, $md: layout === 'full' ? {"width":320} : layout === 'split' ? {"width":320} : undefined, flex: layout === 'explorer-only' ? 1 : undefined }}
           >
             <FileExplorer
               projectId={projectId}
@@ -140,13 +133,13 @@ export function DevEnvironment({ projectId }: DevEnvironmentProps) {
                   setLayout('editor-only');
                 }
               }}
-            />
-          </div>
+  />
+          </YStack>
         )}
 
         {/* Editor Panel */}
         {showEditor && (
-          <div className="flex-1 overflow-hidden">
+          <YStack flex={1} overflow="hidden">
             <MultiTabEditor
               projectId={projectId}
               onClose={() => {
@@ -154,20 +147,20 @@ export function DevEnvironment({ projectId }: DevEnvironmentProps) {
                   setLayout('explorer-only');
                 }
               }}
-            />
-          </div>
+  />
+          </YStack>
         )}
 
         {/* Empty State - when both are hidden (shouldn't happen but just in case) */}
         {!showExplorer && !showEditor && (
-          <div className="flex-1 flex items-center justify-center text-muted-foreground">
-            <div className="text-center space-y-4">
-              <Code2 className="h-12 w-12 mx-auto opacity-50" />
+          <SizableText flex={1} alignItems="center" justifyContent="center" color="$color11" display="flex" flexDirection="row">
+            <SizableText textAlign="center" rowGap="$4" display="flex" flexDirection="column">
+              <Code2 size={48} />
               <p>Select a view from the toolbar above</p>
-            </div>
-          </div>
+            </SizableText>
+          </SizableText>
         )}
-      </div>
-    </div>
+      </XStack>
+    </YStack>
   );
 }

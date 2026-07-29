@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { YStack, XStack, SizableText, H3, Paragraph } from '@hanzo/gui';
+import { useState, useEffect } from 'react';
 import { Project } from '@/lib/vfs/types';
 import { getRuntimeBadge } from '@/lib/runtimes/registry';
 import { vfs } from '@/lib/vfs';
@@ -157,11 +158,11 @@ export function ProjectCard({
   // Get icon for file type
   const getFileTypeIcon = (ext: string) => {
     const lowerExt = ext.toLowerCase();
-    if (['html', 'htm'].includes(lowerExt)) return <FileCode className="h-3 w-3" />;
-    if (['css', 'scss', 'sass'].includes(lowerExt)) return <FileText className="h-3 w-3" />;
-    if (['js', 'jsx', 'ts', 'tsx'].includes(lowerExt)) return <FileCode className="h-3 w-3" />;
-    if (['png', 'jpg', 'jpeg', 'gif', 'svg'].includes(lowerExt)) return <Image className="h-3 w-3" />;
-    return <FileText className="h-3 w-3" />;
+    if (['html', 'htm'].includes(lowerExt)) return <FileCode size={12} />;
+    if (['css', 'scss', 'sass'].includes(lowerExt)) return <FileText size={12} />;
+    if (['js', 'jsx', 'ts', 'tsx'].includes(lowerExt)) return <FileCode size={12} />;
+    if (['png', 'jpg', 'jpeg', 'gif', 'svg'].includes(lowerExt)) return <Image size={12} />;
+    return <FileText size={12} />;
   };
 
   // Runtime badge display
@@ -176,29 +177,29 @@ export function ProjectCard({
 
   if (viewMode === 'list') {
     return (
-      <div
-        className={`group border border-border rounded-lg p-4 hover:shadow-md transition-all cursor-pointer hover:border-primary/50 ${highlightExport ? 'ring-2 ring-primary/70 animate-ring-opacity' : ''}`}
+      <YStack
+        group borderWidth={1} borderColor="$borderColor" borderRadius="$5" padding="$4" cursor="pointer" hoverStyle={{ elevation: 3, borderColor: "$color12" }}
         style={{ background: `linear-gradient(rgb(var(--tint) / 0.02), rgb(var(--tint) / 0.02)), var(--card)` }}
         onClick={() => onSelect(project)}
       >
-        <div className="flex items-start gap-4">
+        <XStack alignItems="flex-start" gap="$4">
           {/* Preview Thumbnail */}
           <ThumbnailArea
             image={project.previewImage}
             onCapture={() => captureProjectScreenshot(project.id)}
             onImageChange={(img) => onUpdate({ ...project, previewImage: img, previewUpdatedAt: img ? new Date() : undefined })}
             size="sm"
-          />
+  />
 
           {/* Content - 2 columns on desktop, stacked on mobile */}
-          <div className="flex-1 min-w-0 flex flex-col md:flex-row md:gap-6">
+          <YStack flex={1} minWidth={0} $md={{ flexDirection: "row", gap: "$5" }}>
             {/* Column 2: Primary info (Title, Description, Updated) */}
-            <div className="flex-1 min-w-0 space-y-1">
+            <YStack flex={1} minWidth={0} rowGap="$1">
               {isEditing ? (
-                <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
+                <YStack rowGap="$2" onClick={(e) => e.stopPropagation()}>
                   {/* Name input */}
                   <div>
-                    <div className="flex items-center gap-2">
+                    <XStack alignItems="center" gap="$2">
                       <Input
                         value={editedName}
                         onChange={(e) => setEditedName(e.target.value)}
@@ -209,19 +210,19 @@ export function ProjectCard({
                           }
                           if (e.key === 'Escape') cancelEdit();
                         }}
-                        className="h-7 text-sm font-medium"
+                        height={28} fontSize="$3" fontWeight="500"
                         autoFocus
                         maxLength={50}
                         placeholder="Project name"
-                      />
-                      <Button size="icon" variant="ghost" className="h-6 w-6 shrink-0" onClick={saveEdits}>
-                        <Check className="h-3 w-3" />
+  />
+                      <Button size="icon" variant="ghost" height="$5" width="$5" flexShrink={0} onClick={saveEdits}>
+                        <Check size={12} />
                       </Button>
-                      <Button size="icon" variant="ghost" className="h-6 w-6 shrink-0" onClick={cancelEdit}>
-                        <X className="h-3 w-3" />
+                      <Button size="icon" variant="ghost" height="$5" width="$5" flexShrink={0} onClick={cancelEdit}>
+                        <X size={12} />
                       </Button>
-                    </div>
-                    <span className="text-xs text-muted-foreground">{editedName.length}/50</span>
+                    </XStack>
+                    <SizableText fontSize="$1" color="$color11">{editedName.length}/50</SizableText>
                   </div>
                   {/* Description input */}
                   <div>
@@ -232,91 +233,91 @@ export function ProjectCard({
                         if (e.key === 'Escape') cancelEdit();
                       }}
                       placeholder="Add a description..."
-                      className="min-h-[60px] text-sm resize-none"
+                      minHeight={60} fontSize="$3" resize="none"
                       maxLength={200}
-                    />
-                    <span className="text-xs text-muted-foreground">{editedDescription.length}/200</span>
+  />
+                    <SizableText fontSize="$1" color="$color11">{editedDescription.length}/200</SizableText>
                   </div>
-                </div>
+                </YStack>
               ) : (
                 <>
                   {/* Title row */}
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-medium truncate">{project.name}</h3>
-                    <Badge className={`text-xs px-1.5 py-0 h-auto shrink-0 ${runtimeBadge.className}`}>{runtimeBadge.label}</Badge>
+                  <XStack alignItems="center" gap="$2">
+                    <H3 fontWeight="500" numberOfLines={1}>{project.name}</H3>
+                    <Badge fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0" height="auto" flexShrink={0} className={`${runtimeBadge.className}`}>{runtimeBadge.label}</Badge>
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
+                      height="$4.5" width="$4.5" opacity={0} $group-hover={{ opacity: 1 }}
                       onClick={(e) => {
                         e.stopPropagation();
                         setIsEditing(true);
                       }}
                     >
-                      <Edit2 className="h-3 w-3" />
+                      <Edit2 size={12} />
                     </Button>
-                  </div>
+                  </XStack>
 
                   {/* Description */}
                   {project.description && (
-                    <p className="text-sm text-muted-foreground line-clamp-1">
+                    <Paragraph fontSize="$3" color="$color11" numberOfLines={1}>
                       {project.description}
-                    </p>
+                    </Paragraph>
                   )}
 
                   {/* Updated timestamp */}
-                  <p className="text-xs text-muted-foreground">
+                  <Paragraph fontSize="$1" color="$color11">
                     Updated {formatDistanceToNow(project.updatedAt, { addSuffix: true })}
-                  </p>
+                  </Paragraph>
                 </>
               )}
-            </div>
+            </YStack>
 
             {/* Column 3: Stats and File types */}
-            <div className="space-y-2 mt-2 md:mt-0">
+            <YStack rowGap="$2" marginTop="$2" $md={{ marginTop: "$0" }}>
               {/* Stats - inline on desktop, horizontal on mobile */}
               {stats && (
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <FolderOpen className="h-4 w-4" />
+                <SizableText flexWrap="wrap" alignItems="center" columnGap="$3" rowGap="$1" fontSize="$3" color="$color11" display="flex" flexDirection="row">
+                  <SizableText alignItems="center" gap="$1">
+                    <FolderOpen size={16} />
                     {stats.fileCount} {stats.fileCount === 1 ? 'file' : 'files'}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <HardDrive className="h-4 w-4" />
+                  </SizableText>
+                  <SizableText alignItems="center" gap="$1">
+                    <HardDrive size={16} />
                     {stats.formattedSize}
-                  </span>
+                  </SizableText>
                   {project.costTracking?.totalCost && project.costTracking.totalCost > 0 && (
-                    <span className="flex items-center gap-1">
-                      <DollarSign className="h-4 w-4" />
+                    <SizableText alignItems="center" gap="$1">
+                      <DollarSign size={16} />
                       {formatCost(project.costTracking.totalCost)}
-                    </span>
+                    </SizableText>
                   )}
-                </div>
+                </SizableText>
               )}
 
               {/* File types */}
               {stats && getMainFileTypes().length > 0 && (
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+                <SizableText flexWrap="wrap" alignItems="center" columnGap="$3" rowGap="$1" fontSize="$1" display="flex" flexDirection="row">
                   {getMainFileTypes().map(([ext, count]) => (
-                    <div key={ext} className="flex items-center gap-1 text-muted-foreground">
+                    <SizableText key={ext} alignItems="center" gap="$1" color="$color11" display="flex" flexDirection="row">
                       {getFileTypeIcon(ext)}
                       <span>{ext.toUpperCase()} ({count})</span>
-                    </div>
+                    </SizableText>
                   ))}
-                </div>
+                </SizableText>
               )}
-            </div>
-          </div>
+            </YStack>
+          </YStack>
 
-          <div className="flex items-center gap-2 ml-4">
+          <XStack alignItems="center" gap="$2" marginLeft="$4">
             <DropdownMenu open={forceMenuOpen ? true : menuOpen} onOpenChange={handleMenuOpenChange}>
               <DropdownMenuTrigger
                 asChild
                 onClick={(e) => e.stopPropagation()}
                 data-tour-id={highlightExport ? 'project-actions-trigger' : undefined}
               >
-                <Button size="icon" variant="ghost" className="h-8 w-8">
-                  <MoreVertical className="h-4 w-4" />
+                <Button size="icon" variant="ghost" height="$6" width="$6">
+                  <MoreVertical size={16} />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -324,7 +325,7 @@ export function ProjectCard({
                   e.stopPropagation();
                   onPreview(project);
                 }}>
-                  <Eye className="mr-2 h-4 w-4" />
+                  <Eye size={16} />
                   Preview
                 </DropdownMenuItem>
                 {onBackend && (
@@ -332,7 +333,7 @@ export function ProjectCard({
                     e.stopPropagation();
                     onBackend(project);
                   }}>
-                    <Server className="mr-2 h-4 w-4" />
+                    <Server size={16} />
                     Backend
                   </DropdownMenuItem>
                 )}
@@ -340,7 +341,7 @@ export function ProjectCard({
                   e.stopPropagation();
                   onDuplicate(project);
                 }}>
-                  <Copy className="mr-2 h-4 w-4" />
+                  <Copy size={16} />
                   Duplicate
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -348,7 +349,7 @@ export function ProjectCard({
                   e.stopPropagation();
                   onExportZip(project);
                 }}>
-                  <Package className="mr-2 h-4 w-4" />
+                  <Package size={16} />
                   Export as ZIP
                 </DropdownMenuItem>
                 <DropdownMenuItem
@@ -358,7 +359,7 @@ export function ProjectCard({
                   }}
                   data-tour-id={highlightExport ? 'project-export-json' : undefined}
                 >
-                  <Download className="mr-2 h-4 w-4" />
+                  <Download size={16} />
                   Export as JSON
                 </DropdownMenuItem>
                 {onExportAsTemplate && (
@@ -366,56 +367,56 @@ export function ProjectCard({
                     e.stopPropagation();
                     onExportAsTemplate(project);
                   }}>
-                    <FileBox className="mr-2 h-4 w-4" />
+                    <FileBox size={16} />
                     Export as Template
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  className="text-destructive"
+                  color="$red9"
                   onClick={(e) => {
                     e.stopPropagation();
                     onDelete(project);
                   }}
                 >
-                  <Trash2 className="mr-2 h-4 w-4" />
+                  <Trash2 size={16} />
                   Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
-        </div>
-      </div>
+          </XStack>
+        </XStack>
+      </YStack>
     );
   }
 
   // Grid view (default)
   return (
-    <div
-      className={`border border-border rounded-lg overflow-hidden hover:shadow-lg transition-all cursor-pointer hover:border-primary/50 group ${highlightExport ? 'ring-2 ring-primary/70 animate-ring-opacity' : ''}`}
+    <YStack
+      borderWidth={1} borderColor="$borderColor" borderRadius="$5" overflow="hidden" cursor="pointer" group hoverStyle={{ elevation: 4, borderColor: "$color12" }}
       style={{ background: `linear-gradient(rgb(var(--tint) / 0.02), rgb(var(--tint) / 0.02)), var(--card)` }}
       onClick={() => onSelect(project)}
       data-tour-id="project-card"
     >
       {/* Preview Thumbnail */}
-      <div className="relative">
+      <YStack position="relative">
         <ThumbnailArea
           image={project.previewImage}
           onCapture={() => captureProjectScreenshot(project.id)}
           onImageChange={(img) => onUpdate({ ...project, previewImage: img, previewUpdatedAt: img ? new Date() : undefined })}
           size="md"
-        />
-        <div className="absolute bottom-2 left-2">
-          <Badge className={`text-xs px-1.5 py-0.5 shadow-sm ${runtimeBadge.className}`}>{runtimeBadge.label}</Badge>
-        </div>
-      </div>
+  />
+        <YStack position="absolute" bottom="$2" left="$2">
+          <Badge fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0.5" elevation={1} className={`${runtimeBadge.className}`}>{runtimeBadge.label}</Badge>
+        </YStack>
+      </YStack>
 
-      <div className="p-4 space-y-3">
+      <YStack padding="$4" rowGap="$3">
         {/* Header with name and actions */}
-        <div className="flex justify-between items-start">
+        <XStack justifyContent="space-between" alignItems="flex-start">
           {isEditing ? (
-            <div className="flex-1" onClick={(e) => e.stopPropagation()}>
-              <div className="flex items-center gap-2">
+            <YStack flex={1} onClick={(e) => e.stopPropagation()}>
+              <XStack alignItems="center" gap="$2">
                 <Input
                   value={editedName}
                   onChange={(e) => setEditedName(e.target.value)}
@@ -426,34 +427,34 @@ export function ProjectCard({
                     }
                     if (e.key === 'Escape') cancelEdit();
                   }}
-                  className="h-8 text-sm font-medium"
+                  height="$6" fontSize="$3" fontWeight="500"
                   autoFocus
                   maxLength={50}
-                />
-                <Button size="icon" variant="ghost" className="h-5 w-5" onClick={saveEdits}>
-                  <Check className="h-3 w-3" />
+  />
+                <Button size="icon" variant="ghost" height="$4.5" width="$4.5" onClick={saveEdits}>
+                  <Check size={12} />
                 </Button>
-                <Button size="icon" variant="ghost" className="h-5 w-5" onClick={cancelEdit}>
-                  <X className="h-3 w-3" />
+                <Button size="icon" variant="ghost" height="$4.5" width="$4.5" onClick={cancelEdit}>
+                  <X size={12} />
                 </Button>
-              </div>
-              <span className="text-xs text-muted-foreground mt-1">{editedName.length}/50</span>
-            </div>
+              </XStack>
+              <SizableText fontSize="$1" color="$color11" marginTop="$1">{editedName.length}/50</SizableText>
+            </YStack>
           ) : (
-            <div className="flex items-center gap-2 flex-1">
-              <h3 className="font-medium text-lg truncate flex-1">{project.name}</h3>
+            <XStack alignItems="center" gap="$2" flex={1}>
+              <H3 fontWeight="500" fontSize="$6" numberOfLines={1} flex={1}>{project.name}</H3>
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
+                height="$4.5" width="$4.5" opacity={0} $group-hover={{ opacity: 1 }}
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsEditing(true);
                 }}
               >
-                <Edit2 className="h-3 w-3" />
+                <Edit2 size={12} />
               </Button>
-            </div>
+            </XStack>
           )}
           
           <DropdownMenu open={forceMenuOpen ? true : menuOpen} onOpenChange={handleMenuOpenChange}>
@@ -462,8 +463,8 @@ export function ProjectCard({
               onClick={(e) => e.stopPropagation()}
               data-tour-id={highlightExport ? 'project-actions-trigger' : undefined}
             >
-              <Button size="icon" variant="ghost" className="h-8 w-8">
-                <MoreVertical className="h-4 w-4" />
+              <Button size="icon" variant="ghost" height="$6" width="$6">
+                <MoreVertical size={16} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -471,7 +472,7 @@ export function ProjectCard({
                 e.stopPropagation();
                 onPreview(project);
               }}>
-                <Eye className="mr-2 h-4 w-4" />
+                <Eye size={16} />
                 Preview
               </DropdownMenuItem>
               {onBackend && (
@@ -479,7 +480,7 @@ export function ProjectCard({
                   e.stopPropagation();
                   onBackend(project);
                 }}>
-                  <Server className="mr-2 h-4 w-4" />
+                  <Server size={16} />
                   Backend
                 </DropdownMenuItem>
               )}
@@ -487,7 +488,7 @@ export function ProjectCard({
                 e.stopPropagation();
                 onDuplicate(project);
               }}>
-                <Copy className="mr-2 h-4 w-4" />
+                <Copy size={16} />
                 Duplicate
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -495,7 +496,7 @@ export function ProjectCard({
                 e.stopPropagation();
                 onExportZip(project);
               }}>
-                <Package className="mr-2 h-4 w-4" />
+                <Package size={16} />
                 Export as ZIP
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -505,7 +506,7 @@ export function ProjectCard({
                 }}
                 data-tour-id={highlightExport ? 'project-export-json' : undefined}
               >
-                <Download className="mr-2 h-4 w-4" />
+                <Download size={16} />
                 Export as JSON
               </DropdownMenuItem>
               {onExportAsTemplate && (
@@ -513,24 +514,24 @@ export function ProjectCard({
                   e.stopPropagation();
                   onExportAsTemplate(project);
                 }}>
-                  <FileBox className="mr-2 h-4 w-4" />
+                  <FileBox size={16} />
                   Export as Template
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                className="text-destructive"
+                color="$red9"
                 onClick={(e) => {
                   e.stopPropagation();
                   onDelete(project);
                 }}
               >
-                <Trash2 className="mr-2 h-4 w-4" />
+                <Trash2 size={16} />
                 Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
+        </XStack>
 
         {/* Description */}
         {isEditing ? (
@@ -542,68 +543,68 @@ export function ProjectCard({
                 if (e.key === 'Escape') cancelEdit();
               }}
               placeholder="Add a description..."
-              className="min-h-[60px] text-sm resize-none"
+              minHeight={60} fontSize="$3" resize="none"
               maxLength={200}
-            />
-            <div className="flex items-center justify-between mt-1">
-              <span className="text-xs text-muted-foreground">{editedDescription.length}/200</span>
-            </div>
+  />
+            <XStack alignItems="center" justifyContent="space-between" marginTop="$1">
+              <SizableText fontSize="$1" color="$color11">{editedDescription.length}/200</SizableText>
+            </XStack>
           </div>
         ) : (
-          <div className="min-h-[40px]">
+          <YStack minHeight={40}>
             {project.description ? (
-              <p className="text-sm text-muted-foreground line-clamp-2">
+              <Paragraph fontSize="$3" color="$color11" numberOfLines={2}>
                 {project.description}
-              </p>
+              </Paragraph>
             ) : (
-              <p className="text-sm text-muted-foreground/50 italic">
+              <Paragraph fontSize="$3" color="$color11" fontStyle="italic">
                 No description
-              </p>
+              </Paragraph>
             )}
-          </div>
+          </YStack>
         )}
 
         {/* Stats */}
         {loadingStats ? (
-          <div className="h-6 bg-muted animate-pulse rounded" />
+          <YStack height="$5" backgroundColor="$color3" borderRadius="$2" />
         ) : stats && (
           <>
-            <div className="flex items-center gap-3 text-sm text-muted-foreground pt-2 border-t">
-              <span className="flex items-center gap-1">
-                <FolderOpen className="h-4 w-4" />
+            <SizableText alignItems="center" gap="$3" fontSize="$3" color="$color11" paddingTop="$2" borderTopWidth={1} display="flex" flexDirection="row">
+              <SizableText alignItems="center" gap="$1">
+                <FolderOpen size={16} />
                 {stats.fileCount} {stats.fileCount === 1 ? 'file' : 'files'}
-              </span>
-              <span className="flex items-center gap-1">
-                <HardDrive className="h-4 w-4" />
+              </SizableText>
+              <SizableText alignItems="center" gap="$1">
+                <HardDrive size={16} />
                 {stats.formattedSize}
-              </span>
+              </SizableText>
               {project.costTracking?.totalCost && project.costTracking.totalCost > 0 && (
-                <span className="flex items-center gap-1">
-                  <DollarSign className="h-4 w-4" />
+                <SizableText alignItems="center" gap="$1">
+                  <DollarSign size={16} />
                   {formatCost(project.costTracking.totalCost)}
-                </span>
+                </SizableText>
               )}
-            </div>
+            </SizableText>
 
             {/* File types */}
             {getMainFileTypes().length > 0 && (
-              <div className="flex items-center gap-3 text-xs">
+              <SizableText alignItems="center" gap="$3" fontSize="$1" display="flex" flexDirection="row">
                 {getMainFileTypes().map(([ext, count]) => (
-                  <div key={ext} className="flex items-center gap-1 text-muted-foreground">
+                  <SizableText key={ext} alignItems="center" gap="$1" color="$color11" display="flex" flexDirection="row">
                     {getFileTypeIcon(ext)}
                     <span>{ext} ({count})</span>
-                  </div>
+                  </SizableText>
                 ))}
-              </div>
+              </SizableText>
             )}
           </>
         )}
 
         {/* Timestamps */}
-        <div className="text-xs text-muted-foreground pt-2 border-t">
+        <SizableText fontSize="$1" color="$color11" paddingTop="$2" borderTopWidth={1} display="flex" flexDirection="column">
           <p>Updated {formatDistanceToNow(project.updatedAt, { addSuffix: true })}</p>
-        </div>
-      </div>
-    </div>
+        </SizableText>
+      </YStack>
+    </YStack>
   );
 }

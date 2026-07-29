@@ -1,4 +1,5 @@
 "use client";
+import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
 import { useState } from "react";
 import { Import } from "lucide-react";
 
@@ -76,19 +77,19 @@ export const LoadProject = ({
           <Button
             variant="outline"
             size="sm"
-            className="!h-7 gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-accent max-lg:hidden"
+            height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1" borderColor="$borderColor" backgroundColor="$color3" color="$color" hoverStyle={{ backgroundColor: "$color3" }} $lg={{ display: "none" }}
             onClick={() => setOpenLoginModal(true)}
           >
-            <Import className="size-3.5" />
+            <Import size={14} />
             Load existing Project
           </Button>
           <Button
             variant="outline"
             size="sm"
-            className="!h-7 gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-accent lg:hidden"
+            height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1" borderColor="$borderColor" backgroundColor="$color3" color="$color" hoverStyle={{ backgroundColor: "$color3" }} $lg={{ display: "none" }}
             onClick={() => setOpenLoginModal(true)}
           >
-            {fullXsBtn && <Import className="size-3.5" />}
+            {fullXsBtn && <Import size={14} />}
             Load
             {fullXsBtn && " existing Project"}
           </Button>
@@ -97,7 +98,7 @@ export const LoadProject = ({
             onClose={setOpenLoginModal}
             title="Log In to load your Project"
             description="Log In to load an existing project and increase your free limit!"
-          />
+  />
         </>
       ) : (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -106,48 +107,48 @@ export const LoadProject = ({
               <Button
                 variant="outline"
                 size="sm"
-                className="!h-7 gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-muted max-lg:hidden"
+                height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1" borderColor="$borderColor" backgroundColor="$color3" color="$color" hoverStyle={{ backgroundColor: "$color3" }} $lg={{ display: "none" }}
               >
-                <Import className="size-3.5" />
+                <Import size={14} />
                 Load
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                className="!h-7 gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-muted lg:hidden"
+                height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1" borderColor="$borderColor" backgroundColor="$color3" color="$color" hoverStyle={{ backgroundColor: "$color3" }} $lg={{ display: "none" }}
               >
-                {fullXsBtn && <Import className="size-3.5" />}
+                {fullXsBtn && <Import size={14} />}
                 Load
               </Button>
             </div>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-md !p-0 !rounded-xl bg-card text-foreground border-border overflow-hidden text-center">
-            <DialogTitle className="hidden" />
-            <header className="bg-muted/40 p-6 border-b border-border">
-              <div className="flex items-center justify-center -space-x-4 mb-3">
-                <div className="size-11 rounded-full bg-muted border border-border shadow-2xs flex items-center justify-center text-2xl">
+          <DialogContent padding="$0" borderRadius="$6" backgroundColor="$background" color="$color" borderColor="$borderColor" overflow="hidden" textAlign="center" $sm={{ maxWidth: 448 }}>
+            <DialogTitle display="none" />
+            <YStack backgroundColor="$color3" padding="$5" borderBottomWidth={1} borderColor="$borderColor">
+              <XStack alignItems="center" justifyContent="center" columnGap="$4" marginBottom="$3">
+                <SizableText width={44} height={44} borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$8" display="flex" flexDirection="row">
                   🎨
-                </div>
-                <div className="size-13 rounded-full bg-secondary border border-border shadow-lg flex items-center justify-center text-3xl z-2">
+                </SizableText>
+                <SizableText borderRadius="$10" backgroundColor="$color4" borderWidth={1} borderColor="$borderColor" elevation={4} alignItems="center" justifyContent="center" fontSize="$10" zIndex={2} display="flex" flexDirection="row" className="size-13">
                   🥳
-                </div>
-                <div className="size-11 rounded-full bg-muted border border-border shadow-2xs flex items-center justify-center text-2xl">
+                </SizableText>
+                <SizableText width={44} height={44} borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$8" display="flex" flexDirection="row">
                   💎
-                </div>
-              </div>
-              <p className="text-2xl font-medium text-foreground">
+                </SizableText>
+              </XStack>
+              <Paragraph fontSize="$8" fontWeight="500" color="$color">
                 Import a Project
-              </p>
-              <p className="text-base text-muted-foreground mt-1.5">
+              </Paragraph>
+              <Paragraph fontSize="$4" color="$color11" marginTop="$1.5">
                 Enter the URL of your Hanzo project to import an existing
                 project.
-              </p>
-            </header>
-            <main className="space-y-4 px-9 pb-9 pt-2">
+              </Paragraph>
+            </YStack>
+            <YStack rowGap="$4" paddingHorizontal={36} paddingBottom={36} paddingTop="$2">
               <div>
-                <p className="text-sm text-muted-foreground mb-2">
+                <Paragraph fontSize="$3" color="$color11" marginBottom="$2">
                   Enter your Hanzo project URL
-                </p>
+                </Paragraph>
                 <Input
                   type="text"
                   placeholder="https://hanzo.ai/projects/username/project"
@@ -165,15 +166,15 @@ export const LoadProject = ({
                     }
                     setUrl(inputUrl);
                   }}
-                  className="text-left"
-                />
+                  textAlign="left"
+  />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground mb-2">
+                <Paragraph fontSize="$3" color="$color11" marginBottom="$2">
                   Then, let&apos;s import it!
-                </p>
+                </Paragraph>
                 <Button
-                  className="relative w-full"
+                  position="relative" width="100%"
                   onClick={handleClick}
                 >
                   {isLoading ? (
@@ -181,7 +182,7 @@ export const LoadProject = ({
                       <Loading
                         overlay={false}
                         className="ml-2 size-4 animate-spin"
-                      />
+  />
                       Fetching your Space...
                     </>
                   ) : (
@@ -189,7 +190,7 @@ export const LoadProject = ({
                   )}
                 </Button>
               </div>
-            </main>
+            </YStack>
           </DialogContent>
         </Dialog>
       )}

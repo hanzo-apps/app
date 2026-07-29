@@ -1,3 +1,6 @@
+'use client';
+
+import { SizableText, YStack, XStack, Paragraph } from '@hanzo/gui';
 import Link from "next/link";
 import { formatDistance } from "date-fns";
 import { EllipsisVertical, Settings } from "lucide-react";
@@ -7,11 +10,10 @@ import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownM
 
 export function ProjectCard({ project }: { project: Project }) {
   return (
-    <div className="text-foreground space-y-4 group cursor-pointer">
+    <SizableText color="$color" rowGap="$4" group cursor="pointer" display="flex" flexDirection="column">
       <Link
         href={`/projects/${project.space_id}`}
-        className="relative bg-card rounded-2xl overflow-hidden h-44 w-full flex items-center justify-end flex-col px-3 border border-border"
-      >
+      ><YStack position="relative" backgroundColor="$background" borderRadius="$8" overflow="hidden" height="$18" width="100%" alignItems="center" justifyContent="flex-end" paddingHorizontal="$3" borderWidth={1} borderColor="$borderColor">
         <iframe
           src={`/api/preview/${project.space_id}`}
           frameBorder="0"
@@ -20,17 +22,17 @@ export function ProjectCard({ project }: { project: Project }) {
 
         <Button
           variant="default"
-          className="w-full transition-all duration-200 translate-y-full group-hover:-translate-y-3"
+          width="100%" y="100%" $group-hover={{ y: "-3" }}
         >
           Open project
         </Button>
-      </Link>
-      <div className="flex items-start justify-between gap-3">
+      </YStack></Link>
+      <XStack alignItems="flex-start" justifyContent="space-between" gap="$3">
         <div>
-          <p className="text-foreground text-base font-medium line-clamp-1">
+          <Paragraph color="$color" fontSize="$4" fontWeight="500" numberOfLines={1}>
             {project.space_id}
-          </p>
-          <p className="text-sm text-muted-foreground">
+          </Paragraph>
+          <Paragraph fontSize="$3" color="$color11">
             Updated{" "}
             {formatDistance(
               new Date(project._updatedAt || Date.now()),
@@ -39,28 +41,28 @@ export function ProjectCard({ project }: { project: Project }) {
                 addSuffix: true,
               }
             )}
-          </p>
+          </Paragraph>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
-              <EllipsisVertical className="text-muted-foreground size-5 hover:text-muted-foreground transition-colors duration-200 cursor-pointer" />
+              <EllipsisVertical size={20} color="$color11" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="start">
+          <DropdownMenuContent width={224} align="start">
             <DropdownMenuGroup>
               <a
                 href={`/projects/${project.space_id}/settings`}
               >
                 <DropdownMenuItem>
-                  <Settings className="size-4 text-foreground" />
+                  <Settings size={16} color="$color" />
                   Project Settings
                 </DropdownMenuItem>
               </a>
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
-    </div>
+      </XStack>
+    </SizableText>
   );
 }

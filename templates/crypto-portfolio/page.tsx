@@ -1,19 +1,8 @@
 "use client";
 
+import { YStack, XStack, H1, Paragraph, SizableText } from '@hanzo/gui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Button, Badge, Progress, Tabs, TabsContent, TabsList, TabsTrigger, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
-import {
-  TrendingUp,
-  TrendingDown,
-  DollarSign,
-  Wallet,
-  ArrowUpRight,
-  ArrowDownRight,
-  PieChart,
-  Activity,
-  Download,
-  Bell,
-  Settings
-} from "lucide-react";
+import { TrendingUp, TrendingDown, DollarSign, Wallet, ArrowUpRight, ArrowDownRight, PieChart, Activity, Bell, Settings } from "lucide-react";
 
 const portfolio = {
   totalValue: 125231.89,
@@ -93,92 +82,92 @@ const priceAlerts = [
 
 export default function CryptoPortfolio() {
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <YStack minHeight="100%" backgroundColor="$background" padding="$5">
+      <YStack maxWidth={1280} alignSelf="center" rowGap="$5">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <XStack alignItems="center" justifyContent="space-between">
           <div>
-            <h1 className="text-3xl font-bold">Crypto Portfolio</h1>
-            <p className="text-muted-foreground">Built with @hanzo/ui components</p>
+            <H1 fontSize="$10" fontWeight="700">Crypto Portfolio</H1>
+            <Paragraph color="$color11">Built with @hanzo/ui components</Paragraph>
           </div>
-          <div className="flex items-center gap-2">
+          <XStack alignItems="center" gap="$2">
             <Button variant="outline" size="icon">
-              <Bell className="w-4 h-4" />
+              <Bell size={16} />
             </Button>
             <Button variant="outline" size="icon">
-              <Settings className="w-4 h-4" />
+              <Settings size={16} />
             </Button>
             <Button>
-              <Wallet className="w-4 h-4 mr-2" />
+              <Wallet size={16} />
               Add Transaction
             </Button>
-          </div>
-        </div>
+          </XStack>
+        </XStack>
 
         {/* Portfolio Overview Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <YStack gap="$4">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Portfolio Value</CardTitle>
-              <DollarSign className="w-4 h-4 text-muted-foreground" />
+            <CardHeader flexDirection="row" alignItems="center" justifyContent="space-between" rowGap="$0" paddingBottom="$2">
+              <CardTitle fontSize="$3" fontWeight="500">Portfolio Value</CardTitle>
+              <DollarSign size={16} color="$color11" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${portfolio.totalValue.toLocaleString()}</div>
-              <div className="flex items-center gap-1 text-xs">
+              <SizableText fontSize="$8" fontWeight="700" display="flex" flexDirection="column">${portfolio.totalValue.toLocaleString()}</SizableText>
+              <SizableText alignItems="center" gap="$1" fontSize="$1" display="flex" flexDirection="row">
                 {portfolio.dailyChangePercent > 0 ? (
-                  <TrendingUp className="w-3 h-3 text-green-600" />
+                  <TrendingUp size={12} color="$green10" />
                 ) : (
-                  <TrendingDown className="w-3 h-3 text-red-600" />
+                  <TrendingDown size={12} color="$red10" />
                 )}
-                <span className={portfolio.dailyChangePercent > 0 ? "text-green-600" : "text-red-600"}>
+                <SizableText {...{ color: portfolio.dailyChangePercent > 0 ? "$green10" : "$red10" }}>
                   ${Math.abs(portfolio.dailyChange).toLocaleString()} ({portfolio.dailyChangePercent}%)
-                </span>
-                <span className="text-muted-foreground">today</span>
-              </div>
+                </SizableText>
+                <SizableText color="$color11">today</SizableText>
+              </SizableText>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Profit</CardTitle>
-              <TrendingUp className="w-4 h-4 text-muted-foreground" />
+            <CardHeader flexDirection="row" alignItems="center" justifyContent="space-between" rowGap="$0" paddingBottom="$2">
+              <CardTitle fontSize="$3" fontWeight="500">Total Profit</CardTitle>
+              <TrendingUp size={16} color="$color11" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">
+              <SizableText fontSize="$8" fontWeight="700" color="$green10" display="flex" flexDirection="column">
                 +${portfolio.totalProfit.toLocaleString()}
-              </div>
-              <div className="text-xs text-muted-foreground">
+              </SizableText>
+              <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
                 +{portfolio.profitPercent}% all time
-              </div>
+              </SizableText>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Invested</CardTitle>
-              <Wallet className="w-4 h-4 text-muted-foreground" />
+            <CardHeader flexDirection="row" alignItems="center" justifyContent="space-between" rowGap="$0" paddingBottom="$2">
+              <CardTitle fontSize="$3" fontWeight="500">Total Invested</CardTitle>
+              <Wallet size={16} color="$color11" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${portfolio.totalInvested.toLocaleString()}</div>
-              <div className="text-xs text-muted-foreground">Principal amount</div>
+              <SizableText fontSize="$8" fontWeight="700" display="flex" flexDirection="column">${portfolio.totalInvested.toLocaleString()}</SizableText>
+              <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">Principal amount</SizableText>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Assets</CardTitle>
-              <PieChart className="w-4 h-4 text-muted-foreground" />
+            <CardHeader flexDirection="row" alignItems="center" justifyContent="space-between" rowGap="$0" paddingBottom="$2">
+              <CardTitle fontSize="$3" fontWeight="500">Assets</CardTitle>
+              <PieChart size={16} color="$color11" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{holdings.length}</div>
-              <div className="text-xs text-muted-foreground">Cryptocurrencies</div>
+              <SizableText fontSize="$8" fontWeight="700" display="flex" flexDirection="column">{holdings.length}</SizableText>
+              <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">Cryptocurrencies</SizableText>
             </CardContent>
           </Card>
-        </div>
+        </YStack>
 
         {/* Main Content Tabs */}
-        <Tabs defaultValue="holdings" className="space-y-4">
-          <div className="flex items-center justify-between">
+        <Tabs defaultValue="holdings" rowGap="$4">
+          <XStack alignItems="center" justifyContent="space-between">
             <TabsList>
               <TabsTrigger value="holdings">Holdings</TabsTrigger>
               <TabsTrigger value="performance">Performance</TabsTrigger>
@@ -186,7 +175,7 @@ export default function CryptoPortfolio() {
               <TabsTrigger value="alerts">Price Alerts</TabsTrigger>
             </TabsList>
             <Select defaultValue="24h">
-              <SelectTrigger className="w-32">
+              <SelectTrigger width="$14">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -196,76 +185,76 @@ export default function CryptoPortfolio() {
                 <SelectItem value="all">All Time</SelectItem>
               </SelectContent>
             </Select>
-          </div>
+          </XStack>
 
-          <TabsContent value="holdings" className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2">
+          <TabsContent value="holdings" rowGap="$4">
+            <YStack gap="$4">
               {/* Holdings List */}
-              <Card className="md:col-span-1">
+              <Card>
                 <CardHeader>
                   <CardTitle>Your Holdings</CardTitle>
                   <CardDescription>Current cryptocurrency positions</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
+                  <YStack rowGap="$4">
                     {holdings.map((coin) => (
-                      <div key={coin.symbol} className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold">
+                      <XStack key={coin.symbol} alignItems="center" justifyContent="space-between">
+                        <XStack alignItems="center" gap="$3">
+                          <SizableText width="$7" height="$7" borderRadius="$10" backgroundColor="$color12" alignItems="center" justifyContent="center" fontWeight="700" display="flex" flexDirection="row">
                             {coin.icon}
-                          </div>
+                          </SizableText>
                           <div>
-                            <p className="font-medium">{coin.name}</p>
-                            <p className="text-sm text-muted-foreground">
+                            <Paragraph fontWeight="500">{coin.name}</Paragraph>
+                            <Paragraph fontSize="$3" color="$color11">
                               {coin.amount} {coin.symbol}
-                            </p>
+                            </Paragraph>
                           </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-medium">${coin.value.toLocaleString()}</p>
-                          <div className="flex items-center justify-end gap-1">
+                        </XStack>
+                        <SizableText textAlign="right" display="flex" flexDirection="column">
+                          <Paragraph fontWeight="500">${coin.value.toLocaleString()}</Paragraph>
+                          <XStack alignItems="center" justifyContent="flex-end" gap="$1">
                             {coin.change24h > 0 ? (
-                              <ArrowUpRight className="w-3 h-3 text-green-600" />
+                              <ArrowUpRight size={12} color="$green10" />
                             ) : (
-                              <ArrowDownRight className="w-3 h-3 text-red-600" />
+                              <ArrowDownRight size={12} color="$red10" />
                             )}
-                            <span className={`text-sm ${coin.change24h > 0 ? "text-green-600" : "text-red-600"}`}>
+                            <SizableText fontSize="$3" {...{ color: coin.change24h > 0 ? "$green10" : "$red10" }}>
                               {Math.abs(coin.change24h)}%
-                            </span>
-                          </div>
-                        </div>
-                      </div>
+                            </SizableText>
+                          </XStack>
+                        </SizableText>
+                      </XStack>
                     ))}
-                  </div>
+                  </YStack>
                 </CardContent>
               </Card>
 
               {/* Allocation Chart */}
-              <Card className="md:col-span-1">
+              <Card>
                 <CardHeader>
                   <CardTitle>Portfolio Allocation</CardTitle>
                   <CardDescription>Asset distribution</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
+                  <YStack rowGap="$4">
                     {holdings.map((coin) => (
                       <div key={coin.symbol}>
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">{coin.symbol}</span>
+                        <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
+                          <XStack alignItems="center" gap="$2">
+                            <SizableText fontWeight="500">{coin.symbol}</SizableText>
                             <Badge variant="outline">{coin.allocation}%</Badge>
-                          </div>
-                          <span className="text-sm text-muted-foreground">
+                          </XStack>
+                          <SizableText fontSize="$3" color="$color11">
                             ${coin.value.toLocaleString()}
-                          </span>
-                        </div>
-                        <Progress value={coin.allocation} className="h-2" />
+                          </SizableText>
+                        </XStack>
+                        <Progress value={coin.allocation} height="$2" />
                       </div>
                     ))}
-                  </div>
+                  </YStack>
                 </CardContent>
               </Card>
-            </div>
+            </YStack>
 
             {/* Performance Chart Placeholder */}
             <Card>
@@ -274,60 +263,53 @@ export default function CryptoPortfolio() {
                 <CardDescription>Value over time</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-[300px] flex items-center justify-center bg-muted rounded">
-                  <div className="text-center">
-                    <Activity className="w-12 h-12 mx-auto mb-2 text-muted-foreground" />
-                    <p className="text-muted-foreground">Performance Chart (@hanzo/ui)</p>
-                  </div>
-                </div>
+                <XStack height={300} alignItems="center" justifyContent="center" backgroundColor="$color3" borderRadius="$2">
+                  <SizableText textAlign="center" display="flex" flexDirection="column">
+                    <Activity size={48} color="$color11" />
+                    <Paragraph color="$color11">Performance Chart (@hanzo/ui)</Paragraph>
+                  </SizableText>
+                </XStack>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="transactions" className="space-y-4">
+          <TabsContent value="transactions" rowGap="$4">
             <Card>
               <CardHeader>
                 <CardTitle>Recent Transactions</CardTitle>
                 <CardDescription>Your latest crypto activity</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
+                <YStack rowGap="$4">
                   {recentTransactions.map((tx, i) => (
-                    <div key={i} className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                          tx.type === "buy" ? "bg-green-100" :
-                          tx.type === "sell" ? "bg-red-100" :
+                    <XStack key={i} alignItems="center" justifyContent="space-between">
+                      <XStack alignItems="center" gap="$3">
+                        <XStack width="$6" height="$6" borderRadius="$10" alignItems="center" justifyContent="center" className={`${tx.type === "buy" ? "bg-green-100" : tx.type === "sell" ? "bg-red-100" :
                           tx.type === "receive" ? "bg-blue-100" :
-                          "bg-orange-100"
-                        }`}>
+                          "bg-orange-100"}`}>
                           {tx.type === "buy" || tx.type === "receive" ? (
-                            <ArrowDownRight className={`w-4 h-4 ${
-                              tx.type === "buy" ? "text-emerald-600" : "text-sky-600"
-                            }`} />
+                            <ArrowDownRight size={16} />
                           ) : (
-                            <ArrowUpRight className={`w-4 h-4 ${
-                              tx.type === "sell" ? "text-rose-600" : "text-amber-600"
-                            }`} />
+                            <ArrowUpRight size={16} />
                           )}
-                        </div>
+                        </XStack>
                         <div>
-                          <p className="font-medium capitalize">{tx.type} {tx.asset}</p>
-                          <p className="text-sm text-muted-foreground">{tx.time}</p>
+                          <Paragraph fontWeight="500" textTransform="capitalize">{tx.type} {tx.asset}</Paragraph>
+                          <Paragraph fontSize="$3" color="$color11">{tx.time}</Paragraph>
                         </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-medium">${tx.value.toLocaleString()}</p>
-                        <p className="text-sm text-muted-foreground">{tx.amount} {tx.asset}</p>
-                      </div>
-                    </div>
+                      </XStack>
+                      <SizableText textAlign="right" display="flex" flexDirection="column">
+                        <Paragraph fontWeight="500">${tx.value.toLocaleString()}</Paragraph>
+                        <Paragraph fontSize="$3" color="$color11">{tx.amount} {tx.asset}</Paragraph>
+                      </SizableText>
+                    </XStack>
                   ))}
-                </div>
+                </YStack>
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }

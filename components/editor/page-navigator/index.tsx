@@ -1,9 +1,9 @@
 "use client";
 
+import { Input, Button } from '@hanzo/ui';
+import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FileCode, Folder, Search } from "lucide-react";
-import classNames from "classnames";
-
 /**
  * PagePanel — the ONE browsable page picker for the builder chrome.
  *
@@ -105,67 +105,61 @@ export function PagePanel({
   };
 
   return (
-    <div className="flex max-h-[min(60vh,24rem)] w-full flex-col">
-      <div className="flex items-center gap-2 border-b border-border px-2.5 pb-2 pt-0.5">
-        <Search className="size-3.5 shrink-0 text-muted-foreground" />
-        <input
+    <YStack maxHeight="min(60vh,24rem)" width="100%">
+      <XStack alignItems="center" gap="$2" borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingBottom="$2" paddingTop="$0.5">
+        <Search size={14} color="$color11" />
+        <Input
           ref={inputRef}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Search pages…"
           aria-label="Search pages"
-          className="w-full bg-transparent py-1 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
-        />
-        <span className="shrink-0 font-mono text-[10px] text-muted-foreground">
+          width="100%" backgroundColor="transparent" paddingVertical="$1" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0 }}
+  />
+        <SizableText flexShrink={0} fontFamily="$mono" fontSize={10} color="$color11">
           {filteredPaths.length}
-        </span>
-      </div>
+        </SizableText>
+      </XStack>
 
-      <div className="min-h-0 flex-1 overflow-y-auto py-1">
+      <YStack minHeight={0} flex={1} paddingVertical="$1" overflow="scroll">
         {groups.length === 0 ? (
-          <p className="px-3 py-6 text-center text-xs text-muted-foreground">
+          <Paragraph paddingHorizontal="$3" paddingVertical="$5" textAlign="center" fontSize="$1" color="$color11">
             No pages match “{query}”.
-          </p>
+          </Paragraph>
         ) : (
           groups.map((group) => (
-            <div key={group.folder || "/"} className="py-0.5">
+            <YStack key={group.folder || "/"} paddingVertical="$0.5">
               {group.folder && (
-                <div className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-                  <Folder className="size-3 shrink-0" />
-                  <span className="truncate">{group.folder}</span>
-                </div>
+                <SizableText alignItems="center" gap="$1.5" paddingHorizontal="$2.5" paddingVertical="$1" fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.4} color="$color11" display="flex" flexDirection="row">
+                  <Folder size={12} />
+                  <SizableText numberOfLines={1}>{group.folder}</SizableText>
+                </SizableText>
               )}
               {group.items.map((item) => {
                 const active = item.path === currentPage;
                 return (
-                  <button
+                  <Button
                     key={item.path}
                     type="button"
                     onClick={() => select(item.path)}
                     title={item.path}
-                    className={classNames(
-                      "flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
-                      group.folder ? "pl-6" : "",
-                      active
-                        ? "bg-muted text-foreground"
-                        : "text-foreground hover:bg-white/[0.06] hover:text-foreground"
-                    )}
+                    width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$1.5" textAlign="left" focusStyle={{ outlineWidth: 0 }} {...{ paddingLeft: group.folder ? "$5" : undefined, backgroundColor: active ? "$color3" : undefined, color: active ? "$color" : "$color", hoverStyle: active ? undefined : {"backgroundColor":"white","color":"$color"} }}
                   >
-                    <FileCode className="size-3.5 shrink-0 text-muted-foreground" />
-                    <span className="truncate font-mono text-xs">
+                    <FileCode size={14} color="$color11" />
+                    <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1">
                       {item.name}
-                    </span>
+                    </SizableText>
                     {active && (
-                      <span className="ml-auto size-1.5 shrink-0 rounded-full bg-white/70" />
+                      <SizableText marginLeft="auto" width="$1.5" height="$1.5" flexShrink={0} borderRadius="$10" backgroundColor="white" />
                     )}
-                  </button>
+                  </Button>
                 );
               })}
-            </div>
+            </YStack>
           ))
         )}
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }

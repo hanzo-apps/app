@@ -21,6 +21,7 @@
  *
  * Strictly monochrome: black / white / neutral, semantic green/red only.
  */
+import { SizableText, XStack, YStack, Paragraph } from '@hanzo/gui';
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast, Avatar, AvatarFallback, AvatarImage, Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Input, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '@hanzo/ui';
@@ -154,67 +155,67 @@ export function WorkspaceMenu({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button
+          <Button
             type="button"
             title="Workspace"
-            className="flex min-w-0 items-center gap-2 rounded-lg border border-border bg-foreground/[0.02] px-2.5 py-1.5 text-sm text-foreground transition-all duration-150 hover:border-border hover:bg-foreground/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring data-[state=open]:border-border data-[state=open]:bg-foreground/[0.06]"
+            minWidth={0} alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$2.5" paddingVertical="$1.5" fontSize="$3" color="$color" hoverStyle={{ borderColor: "$borderColor", backgroundColor: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }} className="data-[state=open]:border-border data-[state=open]:bg-foreground/[0.06]"
           >
             <OrgAvatar name={orgName} logo={activeOrg?.logo} />
-            <span className="max-w-[9rem] truncate font-medium text-foreground">
+            <SizableText maxWidth="9rem" numberOfLines={1} fontWeight="500" color="$color">
               {projectName}
-            </span>
-            <ChevronsUpDown className="size-3.5 shrink-0 text-muted-foreground" />
-          </button>
+            </SizableText>
+            <ChevronsUpDown size={14} color="$color11" />
+          </Button>
         </DropdownMenuTrigger>
 
         <DropdownMenuContent
           side="bottom"
           align="start"
           sideOffset={8}
-          className="w-[19rem] p-1.5"
+          width="19rem" padding="$1.5"
         >
           {/* Back to the dashboard. */}
-          <DropdownMenuItem asChild className={ITEM}>
+          <DropdownMenuItem asChild className={`${ITEM}`}>
             <Link href="/dashboard">
-              <LayoutDashboard className={ICON} />
+              <LayoutDashboard />
               Go to Dashboard
             </Link>
           </DropdownMenuItem>
 
-          <DropdownMenuSeparator className="-mx-1.5 my-1.5 bg-border" />
+          <DropdownMenuSeparator marginHorizontal="-1.5" marginVertical="$1.5" backgroundColor="$borderColor" />
 
           {/* Who you're signed in as. */}
-          <div className="flex items-center gap-2.5 px-2 py-1.5">
-            <Avatar className="size-7">
+          <XStack alignItems="center" gap="$2.5" paddingHorizontal="$2" paddingVertical="$1.5">
+            <Avatar width={28} height={28}>
               <AvatarImage src={avatarSrc} alt={uname} />
-              <AvatarFallback className="bg-muted text-xs text-foreground">
+              <AvatarFallback backgroundColor="$color3" fontSize="$1" color="$color">
                 {initial}
               </AvatarFallback>
             </Avatar>
-            <div className="min-w-0">
-              <p className="truncate text-sm font-medium leading-tight text-foreground">
+            <YStack minWidth={0}>
+              <Paragraph numberOfLines={1} fontSize="$3" fontWeight="500" lineHeight={1.25} color="$color">
                 {uname}
-              </p>
+              </Paragraph>
               {user.email && (
-                <p className="truncate text-xs leading-tight text-muted-foreground">
+                <Paragraph numberOfLines={1} fontSize="$1" lineHeight={1.25} color="$color11">
                   {user.email}
-                </p>
+                </Paragraph>
               )}
-            </div>
-          </div>
+            </YStack>
+          </XStack>
 
           {/* Active workspace + plan badge — a switcher when there's more than one. */}
           {canSwitch ? (
             <DropdownMenuSub>
               <DropdownMenuSubTrigger className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-foreground transition-colors duration-150 focus:bg-foreground/[0.06] focus:text-foreground data-[state=open]:bg-foreground/[0.06]">
                 <OrgAvatar name={orgName} logo={activeOrg?.logo} className="size-7 text-[11px]" />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-medium text-foreground">{orgName}</span>
-                  <span className="block text-[11px] text-muted-foreground">Switch workspace</span>
-                </span>
-                <span className="shrink-0 rounded-md border border-border bg-foreground/[0.03] px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                <SizableText minWidth={0} flex={1}>
+                  <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{orgName}</SizableText>
+                  <SizableText fontSize={11} color="$color11">Switch workspace</SizableText>
+                </SizableText>
+                <SizableText flexShrink={0} borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" color="$color11">
                   {orgKind}
-                </span>
+                </SizableText>
               </DropdownMenuSubTrigger>
               <DropdownMenuSubContent className="max-h-72 w-64">
                 {orgs.map((o) => {
@@ -223,101 +224,100 @@ export function WorkspaceMenu({
                     <DropdownMenuItem
                       key={o.name}
                       onSelect={() => !isCurrent && switchOrg(o.name)}
-                      className="cursor-pointer gap-2 rounded-md px-2 py-2 text-sm text-foreground transition-colors duration-150 focus:bg-foreground/[0.06] focus:text-foreground"
+                      cursor="pointer" gap="$2" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$2" fontSize="$3" color="$color" focusStyle={{ backgroundColor: "$color", color: "$color" }}
                     >
                       <OrgAvatar name={orgDisplayName(orgs, o.name)} logo={o.logo} />
-                      <span className="min-w-0 flex-1 truncate">{orgDisplayName(orgs, o.name)}</span>
-                      {isCurrent && <Check className="size-4 shrink-0 text-foreground" />}
+                      <SizableText minWidth={0} flex={1} numberOfLines={1}>{orgDisplayName(orgs, o.name)}</SizableText>
+                      {isCurrent && <Check size={16} color="$color" />}
                     </DropdownMenuItem>
                   );
                 })}
               </DropdownMenuSubContent>
             </DropdownMenuSub>
           ) : (
-            <div className="flex items-center gap-2.5 px-2 py-1.5">
+            <XStack alignItems="center" gap="$2.5" paddingHorizontal="$2" paddingVertical="$1.5">
               <OrgAvatar name={orgName} logo={activeOrg?.logo} className="size-7 text-[11px]" />
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-medium text-foreground">{orgName}</span>
-                <span className="block text-[11px] text-muted-foreground">Workspace</span>
-              </span>
-              <span className="shrink-0 rounded-md border border-border bg-foreground/[0.03] px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+              <SizableText minWidth={0} flex={1}>
+                <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{orgName}</SizableText>
+                <SizableText fontSize={11} color="$color11">Workspace</SizableText>
+              </SizableText>
+              <SizableText flexShrink={0} borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" color="$color11">
                 {orgKind}
-              </span>
-            </div>
+              </SizableText>
+            </XStack>
           )}
 
           {/* Credits — the balance IS the entry point: the whole card is a link to
               billing/usage (top up + see spend). No separate "Get more credits". */}
-          <DropdownMenuItem asChild className="mx-0.5 mt-1 rounded-lg p-0 focus:bg-transparent">
+          <DropdownMenuItem asChild marginHorizontal="$0.5" marginTop="$1" borderRadius="$5" padding="$0" focusStyle={{ backgroundColor: "transparent" }}>
             <Link
               href="/billing"
-              className="flex w-full flex-col gap-2 rounded-lg border border-border bg-foreground/[0.03] px-3 py-2.5 transition-colors hover:border-border hover:bg-foreground/[0.05] focus-visible:border-border"
-            >
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5 text-xs font-medium text-foreground">
-                  <Wallet className="size-3.5 text-muted-foreground" />
+            ><YStack width="100%" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$3" paddingVertical="$2.5" hoverStyle={{ borderColor: "$borderColor", backgroundColor: "$color" }} focusVisibleStyle={{ borderColor: "$borderColor" }}>
+              <XStack alignItems="center" justifyContent="space-between">
+                <SizableText alignItems="center" gap="$1.5" fontSize="$1" fontWeight="500" color="$color">
+                  <Wallet size={14} color="$color11" />
                   Credits
-                </span>
-                <span className="font-mono text-sm tabular-nums text-foreground">{balanceText}</span>
-              </div>
-              <div
+                </SizableText>
+                <SizableText fontFamily="$mono" fontSize="$3" fontVariant="tabular-nums" color="$color">{balanceText}</SizableText>
+              </XStack>
+              <YStack
                 role="progressbar"
                 aria-valuenow={pct}
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-label="Credits spendable"
-                className="h-1.5 w-full overflow-hidden rounded-full bg-muted"
+                height="$1.5" width="100%" overflow="hidden" borderRadius="$10" backgroundColor="$color3"
               >
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-[var(--brand-accent-muted)] to-[var(--brand-accent)] transition-[width] duration-700 ease-out motion-reduce:transition-none"
+                <YStack
+                  height="100%" borderRadius="$10"
                   style={{ width: `${pct}%` }}
-                />
-              </div>
-              <span className="truncate text-[11px] text-muted-foreground">{creditHint}</span>
-            </Link>
+  />
+              </YStack>
+              <SizableText numberOfLines={1} fontSize={11} color="$color11">{creditHint}</SizableText>
+            </YStack></Link>
           </DropdownMenuItem>
 
           {/* Wallet — the non-custodial injected connector, folded in here. */}
-          <div className="px-1 py-1">
+          <YStack paddingHorizontal="$1" paddingVertical="$1">
             <NetworkWallet />
-          </div>
+          </YStack>
 
-          <DropdownMenuSeparator className="-mx-1.5 my-1.5 bg-border" />
+          <DropdownMenuSeparator marginHorizontal="-1.5" marginVertical="$1.5" backgroundColor="$borderColor" />
 
-          <DropdownMenuItem asChild className={ITEM}>
+          <DropdownMenuItem asChild className={`${ITEM}`}>
             <Link href="/settings">
-              <Settings className={ICON} />
+              <Settings />
               Settings
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild className={ITEM}>
+          <DropdownMenuItem asChild className={`${ITEM}`}>
             <Link href="/connectors">
-              <Plug className={ICON} />
+              <Plug />
               Project connectors
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem className={ITEM} onSelect={() => openRename()}>
-            <Pencil className={ICON} />
+          <DropdownMenuItem className={`${ITEM}`} onSelect={() => openRename()}>
+            <Pencil />
             Rename project
           </DropdownMenuItem>
-          <DropdownMenuItem className={ITEM} onSelect={() => setDetailsOpen(true)}>
-            <Info className={ICON} />
+          <DropdownMenuItem className={`${ITEM}`} onSelect={() => setDetailsOpen(true)}>
+            <Info />
             Project details
           </DropdownMenuItem>
-          <DropdownMenuItem asChild className={ITEM}>
+          <DropdownMenuItem asChild className={`${ITEM}`}>
             <a href="https://hanzo.ai/docs" target="_blank" rel="noopener noreferrer">
-              <LifeBuoy className={ICON} />
+              <LifeBuoy />
               Help
             </a>
           </DropdownMenuItem>
 
-          <DropdownMenuSeparator className="-mx-1.5 my-1.5 bg-border" />
+          <DropdownMenuSeparator marginHorizontal="-1.5" marginVertical="$1.5" backgroundColor="$borderColor" />
 
           <DropdownMenuItem
             onSelect={() => void logout()}
-            className={`${ITEM} text-foreground`}
+            color="$color" className={`${ITEM}`}
           >
-            <LogOut className="size-4 shrink-0" />
+            <LogOut size={16} />
             Sign out
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -325,10 +325,10 @@ export function WorkspaceMenu({
 
       {/* Rename — a small modal so the menu's typeahead never fights the input. */}
       <Dialog open={renameOpen} onOpenChange={setRenameOpen}>
-        <DialogContent className="max-w-sm border-border bg-card text-foreground">
+        <DialogContent maxWidth={384} borderColor="$borderColor" backgroundColor="$background" color="$color">
           <DialogHeader>
             <DialogTitle>Rename project</DialogTitle>
-            <DialogDescription className="text-muted-foreground">
+            <DialogDescription color="$color11">
               {slug
                 ? "Updates the project name across your Hanzo tools."
                 : "Sets the name this project publishes under."}
@@ -345,14 +345,14 @@ export function WorkspaceMenu({
                 if (!renaming) void submitRename();
               }
             }}
-            className="!border-border !bg-foreground/[0.04] !text-foreground selection:bg-[var(--brand-accent-soft)]"
-          />
-          <div className="flex justify-end gap-2">
+            borderColor="$borderColor" backgroundColor="$color" color="$color" className="selection:bg-[var(--brand-accent-soft)]"
+  />
+          <XStack justifyContent="flex-end" gap="$2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setRenameOpen(false)}
-              className="!border-border !bg-transparent !text-foreground hover:!bg-muted"
+              borderColor="$borderColor" backgroundColor="transparent" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
               disabled={renaming}
             >
               Cancel
@@ -361,24 +361,24 @@ export function WorkspaceMenu({
               size="sm"
               onClick={() => void submitRename()}
               disabled={renaming || !renameValue.trim()}
-              className="!bg-primary font-medium !text-primary-foreground hover:!bg-primary/90"
+              backgroundColor="$color12" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
             >
               {renaming ? "Saving…" : "Save"}
             </Button>
-          </div>
+          </XStack>
         </DialogContent>
       </Dialog>
 
       {/* Project details — real known fields only. */}
       <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
-        <DialogContent className="max-w-sm border-border bg-card text-foreground">
+        <DialogContent maxWidth={384} borderColor="$borderColor" backgroundColor="$background" color="$color">
           <DialogHeader>
             <DialogTitle>Project details</DialogTitle>
-            <DialogDescription className="text-muted-foreground">
+            <DialogDescription color="$color11">
               {slug ? "This project is saved to your workspace." : "This project isn’t published yet."}
             </DialogDescription>
           </DialogHeader>
-          <dl className="space-y-2 text-sm">
+          <SizableText rowGap="$2" fontSize="$3" display="flex" flexDirection="column">
             <DetailRow label="Name" value={projectName} />
             <DetailRow label="Workspace" value={orgName} />
             <DetailRow label="Plan" value={orgKind} />
@@ -387,9 +387,9 @@ export function WorkspaceMenu({
               <DetailRow
                 label="Created"
                 value={new Date(project._createdAt).toLocaleDateString()}
-              />
+  />
             )}
-          </dl>
+          </SizableText>
         </DialogContent>
       </Dialog>
     </>
@@ -406,11 +406,11 @@ function DetailRow({
   mono?: boolean;
 }) {
   return (
-    <div className="flex items-center justify-between gap-3">
-      <dt className="text-muted-foreground">{label}</dt>
-      <dd className={`min-w-0 truncate text-foreground ${mono ? "font-mono text-xs" : ""}`}>
+    <XStack alignItems="center" justifyContent="space-between" gap="$3">
+      <SizableText color="$color11">{label}</SizableText>
+      <SizableText minWidth={0} numberOfLines={1} color="$color" {...{ fontFamily: mono ? "$mono" : undefined, fontSize: mono ? "$1" : undefined }}>
         {value}
-      </dd>
-    </div>
+      </SizableText>
+    </XStack>
   );
 }

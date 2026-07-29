@@ -1,5 +1,6 @@
 'use client';
 
+import { SizableText } from '@hanzo/gui';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@hanzo/ui';
 import { DetailedSyncStatus, SyncableItem } from '@/lib/vfs/sync-types';
@@ -145,25 +146,25 @@ export function SyncTabs({
 
   return (
     <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabType)}>
-      <TabsList className="grid w-full grid-cols-3">
-        <TabsTrigger value="projects" className="flex items-center gap-1.5">
-          <FolderGit2 className="h-3.5 w-3.5" />
+      <TabsList width="100%">
+        <TabsTrigger value="projects" alignItems="center" gap="$1.5">
+          <FolderGit2 size={14} />
           <span>Projects</span>
-          <span className="text-xs text-muted-foreground">({projectCount})</span>
+          <SizableText fontSize="$1" color="$color11">({projectCount})</SizableText>
         </TabsTrigger>
-        <TabsTrigger value="skills" className="flex items-center gap-1.5">
-          <BookOpen className="h-3.5 w-3.5" />
+        <TabsTrigger value="skills" alignItems="center" gap="$1.5">
+          <BookOpen size={14} />
           <span>Skills</span>
-          <span className="text-xs text-muted-foreground">({skillCount})</span>
+          <SizableText fontSize="$1" color="$color11">({skillCount})</SizableText>
         </TabsTrigger>
-        <TabsTrigger value="templates" className="flex items-center gap-1.5">
-          <Layout className="h-3.5 w-3.5" />
+        <TabsTrigger value="templates" alignItems="center" gap="$1.5">
+          <Layout size={14} />
           <span>Templates</span>
-          <span className="text-xs text-muted-foreground">({templateCount})</span>
+          <SizableText fontSize="$1" color="$color11">({templateCount})</SizableText>
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="projects" className="mt-4">
+      <TabsContent value="projects" marginTop="$4">
         <ProjectsTab
           items={syncStatus.projects.items}
           selectedIds={projectSelectedIds}
@@ -174,10 +175,10 @@ export function SyncTabs({
           onSyncComplete={onSyncComplete}
           onRegisterPushSelected={registerPushSelected}
           onRegisterPullSelected={registerPullSelected}
-        />
+  />
       </TabsContent>
 
-      <TabsContent value="skills" className="mt-4">
+      <TabsContent value="skills" marginTop="$4">
         <SkillsTab
           items={syncStatus.skills.items}
           selectedIds={skillSelectedIds}
@@ -188,10 +189,10 @@ export function SyncTabs({
           onSyncComplete={onSyncComplete}
           onRegisterPushSelected={registerPushSelected}
           onRegisterPullSelected={registerPullSelected}
-        />
+  />
       </TabsContent>
 
-      <TabsContent value="templates" className="mt-4">
+      <TabsContent value="templates" marginTop="$4">
         <TemplatesTab
           items={syncStatus.templates.items}
           selectedIds={templateSelectedIds}
@@ -202,7 +203,7 @@ export function SyncTabs({
           onSyncComplete={onSyncComplete}
           onRegisterPushSelected={registerPushSelected}
           onRegisterPullSelected={registerPullSelected}
-        />
+  />
       </TabsContent>
     </Tabs>
   );

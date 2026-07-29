@@ -1,5 +1,6 @@
 'use client';
 
+import { XStack, SizableText, Paragraph, YStack } from '@hanzo/gui';
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Button } from '@hanzo/ui';
 import { Cloud, CloudOff, RefreshCw, AlertTriangle, CheckSquare, ArrowUp, ArrowDown } from 'lucide-react';
@@ -49,7 +50,7 @@ export function SyncDialog({ open, onOpenChange, onSyncComplete }: SyncDialogPro
   if (authLoading) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className={dialogContentClass}>
+        <DialogContent className={`${dialogContentClass}`}>
           <DialogHeader>
             <DialogTitle>Server Sync</DialogTitle>
             <DialogDescription>
@@ -65,10 +66,10 @@ export function SyncDialog({ open, onOpenChange, onSyncComplete }: SyncDialogPro
   if (!authenticated) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className={dialogContentClass}>
+        <DialogContent className={`${dialogContentClass}`}>
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <CloudOff className="w-5 h-5" />
+            <DialogTitle alignItems="center" gap="$2">
+              <CloudOff size={20} />
               Not Authenticated
             </DialogTitle>
             <DialogDescription>
@@ -90,10 +91,10 @@ export function SyncDialog({ open, onOpenChange, onSyncComplete }: SyncDialogPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={dialogContentClass}>
+      <DialogContent className={`${dialogContentClass}`}>
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Cloud className="w-5 h-5" />
+          <DialogTitle alignItems="center" gap="$2">
+            <Cloud size={20} />
             Server Sync
           </DialogTitle>
           <DialogDescription>
@@ -104,46 +105,46 @@ export function SyncDialog({ open, onOpenChange, onSyncComplete }: SyncDialogPro
         <div>
           {/* Error Banner */}
           {error && (
-            <div className="flex items-start gap-3 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
-              <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-              <div className="text-sm">
-                <p className="font-medium text-red-600 dark:text-red-400">
+            <XStack alignItems="flex-start" gap="$3" padding="$3" backgroundColor="$red9" borderWidth={1} borderColor="$red9" borderRadius="$5">
+              <AlertTriangle size={20} color="$red9" />
+              <SizableText fontSize="$3" display="flex" flexDirection="column">
+                <Paragraph fontWeight="500" color="$red10" $theme-dark={{ color: "$red8" }}>
                   Error loading sync status
-                </p>
-                <p className="text-muted-foreground mt-1">{error}</p>
-              </div>
-            </div>
+                </Paragraph>
+                <Paragraph color="$color11" marginTop="$1">{error}</Paragraph>
+              </SizableText>
+            </XStack>
           )}
 
           {/* Initial Loading */}
           {loading && (
-            <div className="flex items-center justify-center py-8">
-              <RefreshCw className="w-6 h-6 animate-spin text-muted-foreground" />
-              <span className="ml-2 text-muted-foreground">Loading sync status...</span>
-            </div>
+            <XStack alignItems="center" justifyContent="center" paddingVertical="$6">
+              <RefreshCw size={24} color="$color11" />
+              <SizableText marginLeft="$2" color="$color11">Loading sync status...</SizableText>
+            </XStack>
           )}
 
           {/* Tabbed Content (kept visible during refresh) */}
           {!loading && !error && (
-            <div className="relative">
+            <YStack position="relative">
               {refreshing && (
-                <div className="absolute inset-0 bg-background/60 z-10 flex items-center justify-center rounded-lg">
-                  <RefreshCw className="w-5 h-5 animate-spin text-muted-foreground" />
-                </div>
+                <XStack position="absolute" top={0} right={0} bottom={0} left={0} backgroundColor="$background" zIndex={10} alignItems="center" justifyContent="center" borderRadius="$5">
+                  <RefreshCw size={20} color="$color11" />
+                </XStack>
               )}
               <SyncTabs
                 syncStatus={status}
                 onRefresh={refresh}
                 onSyncComplete={handleSyncComplete}
                 onBulkActionStateChange={setBulkState}
-              />
-            </div>
+  />
+            </YStack>
           )}
         </div>
 
-        <DialogFooter className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+        <DialogFooter flexDirection="column" alignItems="stretch" gap="$2" $sm={{ flexDirection: "row", alignItems: "center" }}>
           {/* Bulk Actions - left side */}
-          <div className="flex items-center gap-2 flex-wrap flex-1">
+          <XStack alignItems="center" gap="$2" flexWrap="wrap" flex={1}>
             {bulkState && bulkState.selectableCount > 0 && (
               <Button
                 variant="outline"
@@ -151,7 +152,7 @@ export function SyncDialog({ open, onOpenChange, onSyncComplete }: SyncDialogPro
                 onClick={bulkState.onSelectAll}
                 disabled={bulkState.isSyncing}
               >
-                <CheckSquare className="h-3.5 w-3.5 mr-1.5" />
+                <CheckSquare size={14} />
                 {bulkState.selectedCount === bulkState.selectableCount ? 'Deselect' : 'Select All'}
               </Button>
             )}
@@ -163,7 +164,7 @@ export function SyncDialog({ open, onOpenChange, onSyncComplete }: SyncDialogPro
                 onClick={bulkState.onPushSelected}
                 disabled={bulkState.isSyncing}
               >
-                <ArrowUp className="h-3.5 w-3.5 mr-1.5" />
+                <ArrowUp size={14} />
                 Push ({bulkState.pushableCount})
               </Button>
             )}
@@ -175,27 +176,27 @@ export function SyncDialog({ open, onOpenChange, onSyncComplete }: SyncDialogPro
                 onClick={bulkState.onPullSelected}
                 disabled={bulkState.isSyncing}
               >
-                <ArrowDown className="h-3.5 w-3.5 mr-1.5" />
+                <ArrowDown size={14} />
                 Pull ({bulkState.pullableCount})
               </Button>
             )}
-          </div>
+          </XStack>
 
           {/* Right side buttons */}
-          <div className="flex items-center gap-2">
+          <XStack alignItems="center" gap="$2">
             <Button
               variant="outline"
               size="sm"
               onClick={refresh}
               disabled={loading || refreshing}
             >
-              <RefreshCw className={`w-4 h-4 mr-2 ${loading || refreshing ? 'animate-spin' : ''}`} />
+              <RefreshCw size={16} />
               Refresh
             </Button>
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Close
             </Button>
-          </div>
+          </XStack>
         </DialogFooter>
       </DialogContent>
     </Dialog>

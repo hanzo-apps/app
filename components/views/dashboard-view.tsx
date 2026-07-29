@@ -1,5 +1,6 @@
 'use client';
 
+import { YStack, XStack, H3, SizableText, Paragraph, H1 } from '@hanzo/gui';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
@@ -284,46 +285,46 @@ function QuickActionsBar({
   };
 
   return (
-    <div className="bg-card rounded-xl border border-border p-4 mb-6">
-      <div className="flex flex-wrap gap-2">
-        <Button variant="default" size="sm" asChild className="gap-1.5">
+    <YStack backgroundColor="$background" borderRadius="$6" borderWidth={1} borderColor="$borderColor" padding="$4" marginBottom="$5">
+      <XStack flexWrap="wrap" gap="$2">
+        <Button variant="default" size="sm" asChild gap="$1.5">
           <Link href={projectsHref} onClick={handleProjectsClick}>
-            <Plus className="w-4 h-4" />
+            <Plus size={16} />
             New Project
           </Link>
         </Button>
-        <Button variant="outline" size="sm" asChild className="gap-1.5">
+        <Button variant="outline" size="sm" asChild gap="$1.5">
           <Link href={projectsListHref} onClick={handleProjectsClick}>
-            <FolderOpen className="w-4 h-4" />
+            <FolderOpen size={16} />
             Projects
           </Link>
         </Button>
         {isServerMode && (
-          <Button variant="outline" size="sm" asChild className="gap-1.5">
+          <Button variant="outline" size="sm" asChild gap="$1.5">
             <Link href="/admin/deployments">
-              <Globe className="w-4 h-4" />
+              <Globe size={16} />
               Deployments
             </Link>
           </Button>
         )}
-        <Button variant="outline" size="sm" onClick={onStartTour} className="gap-1.5">
-          <Sparkles className="w-4 h-4" />
+        <Button variant="outline" size="sm" onClick={onStartTour} gap="$1.5">
+          <Sparkles size={16} />
           Guided Tour
         </Button>
-        <Button variant="outline" size="sm" asChild className="gap-1.5">
+        <Button variant="outline" size="sm" asChild gap="$1.5">
           <a href="https://discord.gg/mAJ8Ss4u" target="_blank" rel="noopener noreferrer">
             <DiscordIcon className="w-4 h-4" />
             Discord
           </a>
         </Button>
-        <Button variant="outline" size="sm" asChild className="gap-1.5">
+        <Button variant="outline" size="sm" asChild gap="$1.5">
           <Link href={docsHref} onClick={handleDocsClick}>
-            <BookOpen className="w-4 h-4" />
+            <BookOpen size={16} />
             Docs
           </Link>
         </Button>
-      </div>
-    </div>
+      </XStack>
+    </YStack>
   );
 }
 
@@ -354,35 +355,34 @@ function WhatsNewCard({
   const docsHref = isServerMode ? '/admin/docs?doc=whats-new' : '#';
 
   return (
-    <div className="bg-card/30 rounded-xl border border-border p-4 flex flex-col">
-      <div className="flex items-start justify-between gap-4 mb-3">
-        <div className="flex items-center gap-2">
-          <Newspaper className="w-4 h-4 text-orange-500" />
-          <h3 className="text-sm font-medium text-foreground">
+    <YStack backgroundColor="$background" borderRadius="$6" borderWidth={1} borderColor="$borderColor" padding="$4">
+      <XStack alignItems="flex-start" justifyContent="space-between" gap="$4" marginBottom="$3">
+        <XStack alignItems="center" gap="$2">
+          <Newspaper size={16} color="$orange9" />
+          <H3 fontSize="$3" fontWeight="500" color="$color">
             What&apos;s New in v{whatsNew.version}
-          </h3>
-        </div>
+          </H3>
+        </XStack>
         <Link
           href={docsHref}
           onClick={handleReadAll}
-          className="text-xs text-orange-500 hover:text-orange-400 flex items-center gap-1"
-        >
+        ><SizableText fontSize="$1" color="$orange9" alignItems="center" gap="$1" hoverStyle={{ color: "$orange8" }}>
           Read all
-          <ExternalLink className="w-3 h-3" />
-        </Link>
-      </div>
-      <p className="text-sm font-medium text-foreground mb-2">{whatsNew.title}</p>
+          <ExternalLink size={12} />
+        </SizableText></Link>
+      </XStack>
+      <Paragraph fontSize="$3" fontWeight="500" color="$color" marginBottom="$2">{whatsNew.title}</Paragraph>
       {whatsNew.highlights && whatsNew.highlights.length > 0 && (
-        <ul className="space-y-1 flex-1">
+        <YStack rowGap="$1" flex={1}>
           {whatsNew.highlights.map((highlight, i) => (
-            <li key={i} className="text-xs text-muted-foreground flex items-start gap-2">
-              <span className="text-orange-500/70 mt-0.5">•</span>
+            <SizableText key={i} fontSize="$1" color="$color11" alignItems="flex-start" gap="$2">
+              <SizableText color="$orange9" marginTop="$0.5">•</SizableText>
               <span>{highlight}</span>
-            </li>
+            </SizableText>
           ))}
-        </ul>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 }
 
@@ -412,42 +412,42 @@ function CompactOverview({
   const rightColumn = stats.slice(half);
 
   return (
-    <div className="bg-card/30 rounded-xl border border-border p-4 flex flex-col">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-medium text-muted-foreground">System Overview</h3>
+    <YStack backgroundColor="$background" borderRadius="$6" borderWidth={1} borderColor="$borderColor" padding="$4">
+      <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+        <H3 fontSize="$3" fontWeight="500" color="$color11">System Overview</H3>
         <Button
           variant="ghost"
           size="sm"
           onClick={onRefresh}
           disabled={loading}
-          className="h-7 px-2"
+          height={28} paddingHorizontal="$2"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw size={14} />
         </Button>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 flex-1 content-start">
-        <div className="space-y-1.5">
+      </XStack>
+      <YStack columnGap="$5" rowGap="$1.5" flex={1} alignContent="flex-start">
+        <YStack rowGap="$1.5">
           {leftColumn.map((stat) => (
-            <div key={stat.label} className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">{stat.label}</span>
-              <span className={`text-sm font-medium ${stat.highlight ? 'text-yellow-500' : 'text-foreground'}`}>
+            <XStack key={stat.label} alignItems="center" justifyContent="space-between">
+              <SizableText fontSize="$1" color="$color11">{stat.label}</SizableText>
+              <SizableText fontSize="$3" fontWeight="500" {...{ color: stat.highlight ? "$yellow9" : "$color" }}>
                 {stat.value}
-              </span>
-            </div>
+              </SizableText>
+            </XStack>
           ))}
-        </div>
-        <div className="space-y-1.5">
+        </YStack>
+        <YStack rowGap="$1.5">
           {rightColumn.map((stat) => (
-            <div key={stat.label} className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">{stat.label}</span>
-              <span className={`text-sm font-medium ${stat.highlight ? 'text-yellow-500' : 'text-foreground'}`}>
+            <XStack key={stat.label} alignItems="center" justifyContent="space-between">
+              <SizableText fontSize="$1" color="$color11">{stat.label}</SizableText>
+              <SizableText fontSize="$3" fontWeight="500" {...{ color: stat.highlight ? "$yellow9" : "$color" }}>
                 {stat.value}
-              </span>
-            </div>
+              </SizableText>
+            </XStack>
           ))}
-        </div>
-      </div>
-    </div>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }
 
@@ -473,38 +473,38 @@ function BrowserOverview({
   const rightColumn = stats.slice(half);
 
   return (
-    <div className="bg-card/30 rounded-xl border border-border p-4 flex flex-col">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-medium text-muted-foreground">Content Overview</h3>
+    <YStack backgroundColor="$background" borderRadius="$6" borderWidth={1} borderColor="$borderColor" padding="$4">
+      <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+        <H3 fontSize="$3" fontWeight="500" color="$color11">Content Overview</H3>
         <Button
           variant="ghost"
           size="sm"
           onClick={onRefresh}
           disabled={loading}
-          className="h-7 px-2"
+          height={28} paddingHorizontal="$2"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw size={14} />
         </Button>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 flex-1 content-start">
-        <div className="space-y-1.5">
+      </XStack>
+      <YStack columnGap="$5" rowGap="$1.5" flex={1} alignContent="flex-start">
+        <YStack rowGap="$1.5">
           {leftColumn.map((stat) => (
-            <div key={stat.label} className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">{stat.label}</span>
-              <span className="text-sm font-medium text-foreground">{stat.value}</span>
-            </div>
+            <XStack key={stat.label} alignItems="center" justifyContent="space-between">
+              <SizableText fontSize="$1" color="$color11">{stat.label}</SizableText>
+              <SizableText fontSize="$3" fontWeight="500" color="$color">{stat.value}</SizableText>
+            </XStack>
           ))}
-        </div>
-        <div className="space-y-1.5">
+        </YStack>
+        <YStack rowGap="$1.5">
           {rightColumn.map((stat) => (
-            <div key={stat.label} className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">{stat.label}</span>
-              <span className="text-sm font-medium text-foreground">{stat.value}</span>
-            </div>
+            <XStack key={stat.label} alignItems="center" justifyContent="space-between">
+              <SizableText fontSize="$1" color="$color11">{stat.label}</SizableText>
+              <SizableText fontSize="$3" fontWeight="500" color="$color">{stat.value}</SizableText>
+            </XStack>
           ))}
-        </div>
-      </div>
-    </div>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }
 
@@ -535,169 +535,159 @@ function RecentProjectsCard({
   const viewAllHref = isServerMode ? '/admin/projects' : '#';
 
   return (
-    <div className="bg-card/30 rounded-xl border border-border p-4 flex flex-col">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <FolderOpen className="w-4 h-4 text-orange-500" />
-          <h3 className="text-sm font-medium text-muted-foreground">Recent Projects</h3>
-        </div>
+    <YStack backgroundColor="$background" borderRadius="$6" borderWidth={1} borderColor="$borderColor" padding="$4">
+      <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+        <XStack alignItems="center" gap="$2">
+          <FolderOpen size={16} color="$orange9" />
+          <H3 fontSize="$3" fontWeight="500" color="$color11">Recent Projects</H3>
+        </XStack>
         <Link
           href={viewAllHref}
           onClick={handleViewAll}
-          className="text-xs text-muted-foreground hover:text-muted-foreground flex items-center gap-0.5"
-        >
+        ><SizableText fontSize="$1" color="$color11" alignItems="center" gap="$0.5" hoverStyle={{ color: "$color11" }}>
           View all
-          <ChevronRight className="w-3 h-3" />
-        </Link>
-      </div>
+          <ChevronRight size={12} />
+        </SizableText></Link>
+      </XStack>
       {projects.length === 0 ? (
-        <p className="text-xs text-muted-foreground text-center py-2 flex-1 flex items-center justify-center">
+        <Paragraph fontSize="$1" color="$color11" textAlign="center" paddingVertical="$2" flex={1} alignItems="center" justifyContent="center">
           No projects yet
-        </p>
+        </Paragraph>
       ) : (
-        <div className="space-y-1.5 flex-1">
+        <YStack rowGap="$1.5" flex={1}>
           {projects.slice(0, 3).map((project) => (
             <Link
               key={project.id}
               href={isServerMode ? `/admin/projects?open=${project.id}` : '#'}
               onClick={(e) => handleProjectClick(e, project.id)}
-              className="flex items-center justify-between text-xs py-1.5 px-2 bg-card/50 rounded hover:bg-muted/50 transition-colors"
-            >
-              <span className="text-muted-foreground truncate flex-1 mr-2">{project.name}</span>
-              <span className="text-muted-foreground shrink-0 flex items-center gap-1">
-                <Clock className="w-3 h-3" />
+            ><SizableText alignItems="center" justifyContent="space-between" fontSize="$1" paddingVertical="$1.5" paddingHorizontal="$2" backgroundColor="$background" borderRadius="$2" hoverStyle={{ backgroundColor: "$color3" }}>
+              <SizableText color="$color11" numberOfLines={1} flex={1} marginRight="$2">{project.name}</SizableText>
+              <SizableText color="$color11" flexShrink={0} alignItems="center" gap="$1">
+                <Clock size={12} />
                 {formatRelativeTime(project.updatedAt)}
-              </span>
-            </Link>
+              </SizableText>
+            </SizableText></Link>
           ))}
-        </div>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 }
 
 // Recent Deployments Card
 function RecentDeploymentsCard({ deployments }: { deployments: DashboardData['recentDeployments'] }) {
   return (
-    <div className="bg-card/30 rounded-xl border border-border p-4 flex flex-col">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <Globe className="w-4 h-4 text-orange-500" />
-          <h3 className="text-sm font-medium text-muted-foreground">Recent Deployments</h3>
-        </div>
+    <YStack backgroundColor="$background" borderRadius="$6" borderWidth={1} borderColor="$borderColor" padding="$4">
+      <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+        <XStack alignItems="center" gap="$2">
+          <Globe size={16} color="$orange9" />
+          <H3 fontSize="$3" fontWeight="500" color="$color11">Recent Deployments</H3>
+        </XStack>
         <Link
           href="/admin/deployments"
-          className="text-xs text-muted-foreground hover:text-muted-foreground flex items-center gap-0.5"
-        >
+        ><SizableText fontSize="$1" color="$color11" alignItems="center" gap="$0.5" hoverStyle={{ color: "$color11" }}>
           View all
-          <ChevronRight className="w-3 h-3" />
-        </Link>
-      </div>
+          <ChevronRight size={12} />
+        </SizableText></Link>
+      </XStack>
       {deployments.length === 0 ? (
-        <p className="text-xs text-muted-foreground text-center py-2 flex-1 flex items-center justify-center">
+        <Paragraph fontSize="$1" color="$color11" textAlign="center" paddingVertical="$2" flex={1} alignItems="center" justifyContent="center">
           No deployments yet
-        </p>
+        </Paragraph>
       ) : (
-        <div className="space-y-1.5 flex-1">
+        <YStack rowGap="$1.5" flex={1}>
           {deployments.slice(0, 3).map((deployment) => (
             <Link
               key={deployment.id}
               href={`/admin/deployments?open=${deployment.id}`}
-              className="flex items-center justify-between text-xs py-1.5 px-2 bg-card/50 rounded hover:bg-muted/50 transition-colors"
-            >
-              <div className="flex items-center gap-2 min-w-0 flex-1">
-                <span
-                  className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                    deployment.enabled ? 'bg-green-500' : 'bg-muted-foreground'
-                  }`}
-                />
-                <span className="text-muted-foreground truncate">{deployment.name}</span>
-              </div>
-              <span className="text-muted-foreground shrink-0 flex items-center gap-1">
-                <Clock className="w-3 h-3" />
+            ><SizableText alignItems="center" justifyContent="space-between" fontSize="$1" paddingVertical="$1.5" paddingHorizontal="$2" backgroundColor="$background" borderRadius="$2" hoverStyle={{ backgroundColor: "$color3" }}>
+              <XStack alignItems="center" gap="$2" minWidth={0} flex={1}>
+                <SizableText
+                  width="$1.5" height="$1.5" borderRadius="$10" flexShrink={0} {...{ backgroundColor: deployment.enabled ? "$green9" : "$color11" }}
+  />
+                <SizableText color="$color11" numberOfLines={1}>{deployment.name}</SizableText>
+              </XStack>
+              <SizableText color="$color11" flexShrink={0} alignItems="center" gap="$1">
+                <Clock size={12} />
                 {formatRelativeTime(deployment.updatedAt)}
-              </span>
-            </Link>
+              </SizableText>
+            </SizableText></Link>
           ))}
-        </div>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 }
 
 // Compact Top Deployments & Errors
 function TrafficLists({ data }: { data: DashboardData }) {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <YStack gap="$4">
       {/* Top Deployments */}
-      <div className="bg-card/30 rounded-xl border border-border p-4 flex flex-col">
-        <div className="flex items-center gap-2 mb-3">
-          <Globe className="w-4 h-4 text-orange-500" />
-          <h3 className="text-sm font-medium text-muted-foreground">Top Deployments (24h)</h3>
-        </div>
+      <YStack backgroundColor="$background" borderRadius="$6" borderWidth={1} borderColor="$borderColor" padding="$4">
+        <XStack alignItems="center" gap="$2" marginBottom="$3">
+          <Globe size={16} color="$orange9" />
+          <H3 fontSize="$3" fontWeight="500" color="$color11">Top Deployments (24h)</H3>
+        </XStack>
         {data.traffic.topDeployments.length === 0 ? (
-          <p className="text-xs text-muted-foreground text-center py-2 flex-1 flex items-center justify-center">
+          <Paragraph fontSize="$1" color="$color11" textAlign="center" paddingVertical="$2" flex={1} alignItems="center" justifyContent="center">
             No traffic recorded yet
-          </p>
+          </Paragraph>
         ) : (
-          <div className="space-y-1.5 flex-1">
+          <YStack rowGap="$1.5" flex={1}>
             {data.traffic.topDeployments.slice(0, 5).map((deployment, i) => (
-              <div
+              <SizableText
                 key={deployment.deploymentId}
-                className="flex items-center justify-between text-xs py-1 px-2 bg-card/50 rounded"
+                alignItems="center" justifyContent="space-between" fontSize="$1" paddingVertical="$1" paddingHorizontal="$2" backgroundColor="$background" borderRadius="$2" display="flex" flexDirection="row"
               >
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-muted-foreground w-4">{i + 1}.</span>
-                  <span className="text-muted-foreground truncate">{deployment.deploymentName}</span>
-                </div>
-                <span className="text-muted-foreground shrink-0">{formatNumber(deployment.count)}</span>
-              </div>
+                <XStack alignItems="center" gap="$2" minWidth={0}>
+                  <SizableText color="$color11" width="$4">{i + 1}.</SizableText>
+                  <SizableText color="$color11" numberOfLines={1}>{deployment.deploymentName}</SizableText>
+                </XStack>
+                <SizableText color="$color11" flexShrink={0}>{formatNumber(deployment.count)}</SizableText>
+              </SizableText>
             ))}
-          </div>
+          </YStack>
         )}
-      </div>
+      </YStack>
 
       {/* Recent Errors */}
-      <div className="bg-card/30 rounded-xl border border-border p-4 flex flex-col">
-        <div className="flex items-center gap-2 mb-3">
-          <AlertTriangle className="w-4 h-4 text-orange-500" />
-          <h3 className="text-sm font-medium text-muted-foreground">Recent Errors</h3>
-        </div>
+      <YStack backgroundColor="$background" borderRadius="$6" borderWidth={1} borderColor="$borderColor" padding="$4">
+        <XStack alignItems="center" gap="$2" marginBottom="$3">
+          <AlertTriangle size={16} color="$orange9" />
+          <H3 fontSize="$3" fontWeight="500" color="$color11">Recent Errors</H3>
+        </XStack>
         {data.traffic.recentErrors.length === 0 ? (
-          <p className="text-xs text-muted-foreground text-center py-2 flex-1 flex items-center justify-center">
+          <Paragraph fontSize="$1" color="$color11" textAlign="center" paddingVertical="$2" flex={1} alignItems="center" justifyContent="center">
             No errors recorded
-          </p>
+          </Paragraph>
         ) : (
-          <div className="space-y-1.5 flex-1">
+          <YStack rowGap="$1.5" flex={1}>
             {data.traffic.recentErrors.slice(0, 5).map((error, i) => (
-              <div
+              <SizableText
                 key={`${error.deploymentId}-${error.path}-${i}`}
-                className="flex items-center justify-between text-xs py-1 px-2 bg-card/50 rounded"
+                alignItems="center" justifyContent="space-between" fontSize="$1" paddingVertical="$1" paddingHorizontal="$2" backgroundColor="$background" borderRadius="$2" display="flex" flexDirection="row"
               >
-                <div className="flex items-center gap-2 min-w-0">
-                  <span
-                    className={`font-mono px-1 py-0.5 rounded text-[10px] ${
-                      error.statusCode >= 500
-                        ? 'bg-red-500/20 text-red-400'
-                        : 'bg-yellow-500/20 text-yellow-400'
-                    }`}
+                <XStack alignItems="center" gap="$2" minWidth={0}>
+                  <SizableText
+                    fontFamily="$mono" paddingHorizontal="$1" paddingVertical="$0.5" borderRadius="$2" fontSize={10} {...{ backgroundColor: error.statusCode >= 500 ? "$red9" : "$yellow9", color: error.statusCode >= 500 ? "$red8" : "$yellow8" }}
                   >
                     {error.statusCode}
-                  </span>
-                  <span className="text-muted-foreground truncate max-w-[140px]">{error.path}</span>
-                </div>
-                <span className="text-muted-foreground shrink-0 text-[10px]">
+                  </SizableText>
+                  <SizableText color="$color11" numberOfLines={1} maxWidth={140}>{error.path}</SizableText>
+                </XStack>
+                <SizableText color="$color11" flexShrink={0} fontSize={10}>
                   {new Date(error.timestamp).toLocaleTimeString([], {
                     hour: '2-digit',
                     minute: '2-digit',
                   })}
-                </span>
-              </div>
+                </SizableText>
+              </SizableText>
             ))}
-          </div>
+          </YStack>
         )}
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }
 
@@ -766,27 +756,27 @@ export function DashboardView({ onNavigate, onProjectSelect, onStartTour }: Dash
   const hasData = isServerMode ? !!serverData : !!browserData;
   if (loading && !hasData) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-3 text-sm text-muted-foreground">Loading dashboard...</p>
-        </div>
-      </div>
+      <XStack height="100%" alignItems="center" justifyContent="center">
+        <SizableText textAlign="center" display="flex" flexDirection="column">
+          <YStack borderRadius="$10" height="$6" width="$6" borderBottomWidth={2} borderColor="$orange9" alignSelf="center"></YStack>
+          <Paragraph marginTop="$3" fontSize="$3" color="$color11">Loading dashboard...</Paragraph>
+        </SizableText>
+      </XStack>
     );
   }
 
   // Error state
   if (error && !hasData) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <div className="text-center">
-          <AlertTriangle className="w-8 h-8 text-red-500 mx-auto mb-2" />
-          <p className="text-muted-foreground text-sm">{error}</p>
-          <Button variant="outline" size="sm" onClick={fetchData} className="mt-4">
+      <XStack height="100%" alignItems="center" justifyContent="center">
+        <SizableText textAlign="center" display="flex" flexDirection="column">
+          <AlertTriangle size={32} color="$red9" />
+          <Paragraph color="$color11" fontSize="$3">{error}</Paragraph>
+          <Button variant="outline" size="sm" onClick={fetchData} marginTop="$4">
             Retry
           </Button>
-        </div>
-      </div>
+        </SizableText>
+      </XStack>
     );
   }
 
@@ -797,39 +787,39 @@ export function DashboardView({ onNavigate, onProjectSelect, onStartTour }: Dash
     const hasWhatsNew = serverData.whatsNew?.highlights?.length > 0;
 
     return (
-      <div className="h-full overflow-y-auto p-6">
+      <YStack height="100%" padding="$5" overflow="scroll">
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
+        <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
           <div>
-            <h1 className="text-xl font-medium text-foreground">Dashboard</h1>
+            <H1 fontSize="$7" fontWeight="500" color="$color">Dashboard</H1>
             {lastUpdated && (
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <Paragraph fontSize="$1" color="$color11" marginTop="$0.5">
                 Updated {lastUpdated.toLocaleTimeString()}
-              </p>
+              </Paragraph>
             )}
           </div>
-        </div>
+        </XStack>
 
         {/* Quick Actions */}
         <QuickActionsBar onStartTour={handleStartTour} />
 
         {/* Row 1: System Overview + What's New */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4 [&>*]:min-h-[160px]">
+        <YStack gap="$4" marginBottom="$4" className="[&>*]:min-h-[160px]">
           <CompactOverview data={serverData} loading={loading} onRefresh={fetchData} />
           {hasWhatsNew && <WhatsNewCard whatsNew={serverData.whatsNew} />}
-        </div>
+        </YStack>
 
         {/* Row 2: Recent Projects + Recent Deployments */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4 [&>*]:min-h-[160px]">
+        <YStack gap="$4" marginBottom="$4" className="[&>*]:min-h-[160px]">
           <RecentProjectsCard projects={serverData.recentProjects} />
           <RecentDeploymentsCard deployments={serverData.recentDeployments} />
-        </div>
+        </YStack>
 
         {/* Row 3: Top Deployments + Recent Errors */}
-        <div className="[&>*>*]:min-h-[140px]">
+        <YStack className="[&>*>*]:min-h-[140px]">
           <TrafficLists data={serverData} />
-        </div>
-      </div>
+        </YStack>
+      </YStack>
     );
   }
 
@@ -838,42 +828,42 @@ export function DashboardView({ onNavigate, onProjectSelect, onStartTour }: Dash
     const hasWhatsNew = browserData.whatsNew !== null;
 
     return (
-      <div className="h-full overflow-y-auto p-6">
+      <YStack height="100%" padding="$5" overflow="scroll">
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
+        <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
           <div>
-            <h1 className="text-xl font-medium text-foreground">Dashboard</h1>
+            <H1 fontSize="$7" fontWeight="500" color="$color">Dashboard</H1>
             {lastUpdated && (
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <Paragraph fontSize="$1" color="$color11" marginTop="$0.5">
                 Updated {lastUpdated.toLocaleTimeString()}
-              </p>
+              </Paragraph>
             )}
           </div>
-        </div>
+        </XStack>
 
         {/* Quick Actions */}
         <QuickActionsBar onStartTour={handleStartTour} onNavigate={onNavigate} />
 
         {/* Row 1: Content Overview + What's New */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4 [&>*]:min-h-[160px]">
+        <YStack gap="$4" marginBottom="$4" className="[&>*]:min-h-[160px]">
           <BrowserOverview data={browserData} loading={loading} onRefresh={fetchData} />
           {hasWhatsNew && (
             <WhatsNewCard
               whatsNew={browserData.whatsNew!}
               onNavigate={onNavigate}
-            />
+  />
           )}
-        </div>
+        </YStack>
 
         {/* Row 2: Recent Projects (no Deployments in browser mode) */}
-        <div className="mb-4">
+        <YStack marginBottom="$4">
           <RecentProjectsCard
             projects={browserData.recentProjects}
             onNavigate={onNavigate}
             onProjectSelect={handleProjectSelect}
-          />
-        </div>
-      </div>
+  />
+        </YStack>
+      </YStack>
     );
   }
 

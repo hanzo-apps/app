@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { YStack, H3, Paragraph, XStack, H4, SizableText } from '@hanzo/gui';
+import { useState, useEffect } from 'react';
 import { configManager, AppSettings, CostSettings } from '@/lib/config/storage';
 import { Button, Input, Label, Switch, toast, Collapsible, CollapsibleContent, CollapsibleTrigger, Tabs, TabsList, TabsTrigger } from '@hanzo/ui';
 import { useTheme } from 'next-themes';
@@ -123,40 +124,38 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
   };
 
   return (
-    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+    <YStack flex={1} minHeight={0} overflow="hidden">
       {/* Header */}
-      <div className="shrink-0 pb-3 mb-1 border-b">
-        <h3 className="font-medium text-base tracking-tight">Settings</h3>
-        <p className="text-muted-foreground text-xs mt-1">
+      <YStack flexShrink={0} paddingBottom="$3" marginBottom="$1" borderBottomWidth={1}>
+        <H3 fontWeight="500" fontSize="$4" letterSpacing={-0.4}>Settings</H3>
+        <Paragraph color="$color11" fontSize="$1" marginTop="$1">
           Application preferences and data management
-        </p>
-      </div>
+        </Paragraph>
+      </YStack>
 
       {/* Scrollable content */}
-      <div className="flex-1 min-h-0 overflow-y-auto">
-      <div className="space-y-3 pb-4">
+      <YStack flex={1} minHeight={0} overflow="scroll">
+      <YStack rowGap="$3" paddingBottom="$4">
 
         {/* Application Settings Section */}
         <Collapsible
           open={openSections.application}
           onOpenChange={() => toggleSection('application')}
         >
-          <CollapsibleTrigger className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-muted/50 transition-colors">
-            <div className="flex items-center gap-2">
-              <Palette className="h-4 w-4" />
-              <h4 className="font-medium text-sm">Application Settings</h4>
-            </div>
+          <CollapsibleTrigger alignItems="center" justifyContent="space-between" width="100%" padding="$3" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}>
+            <XStack alignItems="center" gap="$2">
+              <Palette size={16} />
+              <H4 fontWeight="500" fontSize="$3">Application Settings</H4>
+            </XStack>
             <ChevronDown
-              className={`h-4 w-4 transition-transform duration-200 ${
-                openSections.application ? 'rotate-180' : ''
-              }`}
-            />
+              size={16}
+  />
           </CollapsibleTrigger>
-          <CollapsibleContent className="px-3 pt-2 pb-3">
-            <p className="text-muted-foreground text-xs mb-4">
+          <CollapsibleContent paddingHorizontal="$3" paddingTop="$2" paddingBottom="$3">
+            <Paragraph color="$color11" fontSize="$1" marginBottom="$4">
               Configure your preferences and display options
-            </p>
-            <div className="space-y-4">
+            </Paragraph>
+            <YStack rowGap="$4">
               {/* Theme */}
               <div>
                 <Label htmlFor="theme">Theme</Label>
@@ -178,12 +177,12 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
               </div>
 
               {/* Telemetry */}
-              <div className="flex items-center justify-between">
+              <XStack alignItems="center" justifyContent="space-between">
                 <div>
                   <Label htmlFor="telemetry">Anonymous Usage Analytics</Label>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <Paragraph fontSize="$1" color="$color11" marginTop="$0.5">
                     Help improve Hanzo App by sharing anonymous usage data
-                  </p>
+                  </Paragraph>
                 </div>
                 <Switch
                   id="telemetry"
@@ -192,9 +191,9 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
                     setTelemetryOptInState(checked);
                     setTelemetryOptIn(checked);
                   }}
-                />
-              </div>
-            </div>
+  />
+              </XStack>
+            </YStack>
           </CollapsibleContent>
         </Collapsible>
 
@@ -203,26 +202,24 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
           open={openSections.costTracking}
           onOpenChange={() => toggleSection('costTracking')}
         >
-          <CollapsibleTrigger className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-muted/50 transition-colors">
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4" />
-              <h4 className="font-medium text-sm">Cost Tracking</h4>
-            </div>
+          <CollapsibleTrigger alignItems="center" justifyContent="space-between" width="100%" padding="$3" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}>
+            <XStack alignItems="center" gap="$2">
+              <DollarSign size={16} />
+              <H4 fontWeight="500" fontSize="$3">Cost Tracking</H4>
+            </XStack>
             <ChevronDown
-              className={`h-4 w-4 transition-transform duration-200 ${
-                openSections.costTracking ? 'rotate-180' : ''
-              }`}
-            />
+              size={16}
+  />
           </CollapsibleTrigger>
-          <CollapsibleContent className="px-3 pt-2 pb-3">
-            <div className="space-y-4">
+          <CollapsibleContent paddingHorizontal="$3" paddingTop="$2" paddingBottom="$3">
+            <YStack rowGap="$4">
               {/* Show Costs */}
-              <div className="flex items-center justify-between">
+              <XStack alignItems="center" justifyContent="space-between">
                 <div>
                   <Label htmlFor="show-costs">Display Costs</Label>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <Paragraph fontSize="$1" color="$color11" marginTop="$0.5">
                     Show cost information in messages
-                  </p>
+                  </Paragraph>
                 </div>
                 <Switch
                   id="show-costs"
@@ -232,20 +229,20 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
                     configManager.setCostSettings(newCostSettings);
                     setCostSettings(newCostSettings);
                   }}
-                />
-              </div>
+  />
+              </XStack>
 
               {/* Daily + Project Limits — 2 column grid */}
-              <div className="grid grid-cols-2 gap-3">
+              <YStack gap="$3">
                 <div>
-                  <Label htmlFor="daily-limit" className="text-xs">Daily Limit (USD)</Label>
+                  <Label htmlFor="daily-limit" fontSize="$1">Daily Limit (USD)</Label>
                   <Input
                     id="daily-limit"
                     type="number"
                     min="0"
                     step="0.01"
                     placeholder="No limit"
-                    className="mt-1.5"
+                    marginTop="$1.5"
                     value={costSettings.dailyLimit || ''}
                     onChange={(e) => {
                       const value = e.target.value ? parseFloat(e.target.value) : undefined;
@@ -253,17 +250,17 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
                       configManager.setCostSettings(newCostSettings);
                       setCostSettings(newCostSettings);
                     }}
-                  />
+  />
                 </div>
                 <div>
-                  <Label htmlFor="project-limit" className="text-xs">Project Limit (USD)</Label>
+                  <Label htmlFor="project-limit" fontSize="$1">Project Limit (USD)</Label>
                   <Input
                     id="project-limit"
                     type="number"
                     min="0"
                     step="0.01"
                     placeholder="No limit"
-                    className="mt-1.5"
+                    marginTop="$1.5"
                     value={costSettings.projectLimit || ''}
                     onChange={(e) => {
                       const value = e.target.value ? parseFloat(e.target.value) : undefined;
@@ -271,21 +268,21 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
                       configManager.setCostSettings(newCostSettings);
                       setCostSettings(newCostSettings);
                     }}
-                  />
+  />
                 </div>
-              </div>
+              </YStack>
 
               {/* Warning Threshold */}
               <div>
-                <Label htmlFor="warning-threshold" className="text-xs">Warning Threshold</Label>
-                <div className="flex items-center gap-3 mt-1.5">
+                <Label htmlFor="warning-threshold" fontSize="$1">Warning Threshold</Label>
+                <XStack alignItems="center" gap="$3" marginTop="$1.5">
                   <Input
                     id="warning-threshold"
                     type="number"
                     min="50"
                     max="100"
                     step="5"
-                    className="flex-1"
+                    flex={1}
                     value={costSettings.warningThreshold || 80}
                     onChange={(e) => {
                       const value = parseInt(e.target.value);
@@ -293,21 +290,21 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
                       configManager.setCostSettings(newCostSettings);
                       setCostSettings(newCostSettings);
                     }}
-                  />
-                  <span className="text-xs text-muted-foreground flex items-center gap-1 whitespace-nowrap font-mono">
-                    <AlertTriangle className="h-3 w-3" />
+  />
+                  <SizableText fontSize="$1" color="$color11" alignItems="center" gap="$1" whiteSpace="nowrap" fontFamily="$mono">
+                    <AlertTriangle size={12} />
                     Warn at {costSettings.warningThreshold || 80}%
-                  </span>
-                </div>
+                  </SizableText>
+                </XStack>
               </div>
 
               {/* Lifetime Costs */}
-              <div className="flex items-center justify-between bg-muted/30 border rounded-lg p-3">
+              <XStack alignItems="center" justifyContent="space-between" backgroundColor="$color3" borderWidth={1} borderRadius="$5" padding="$3">
                 <div>
-                  <div className="text-xs text-muted-foreground font-medium">Lifetime Total</div>
-                  <div className="text-lg font-bold font-mono tracking-tight mt-0.5">
+                  <SizableText fontSize="$1" color="$color11" fontWeight="500" display="flex" flexDirection="column">Lifetime Total</SizableText>
+                  <SizableText fontSize="$6" fontWeight="700" fontFamily="$mono" letterSpacing={-0.4} marginTop="$0.5" display="flex" flexDirection="column">
                     {CostCalculator.formatCost(configManager.getLifetimeCosts().total)}
-                  </div>
+                  </SizableText>
                 </div>
                 <Button
                   variant="outline"
@@ -321,8 +318,8 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
                 >
                   Reset Stats
                 </Button>
-              </div>
-            </div>
+              </XStack>
+            </YStack>
           </CollapsibleContent>
         </Collapsible>
 
@@ -331,32 +328,30 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
           open={openSections.dataManagement}
           onOpenChange={() => toggleSection('dataManagement')}
         >
-          <CollapsibleTrigger className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-muted/50 transition-colors">
-            <div className="flex items-center gap-2">
-              <Database className="h-4 w-4" />
-              <h4 className="font-medium text-sm">Data Management</h4>
-            </div>
+          <CollapsibleTrigger alignItems="center" justifyContent="space-between" width="100%" padding="$3" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}>
+            <XStack alignItems="center" gap="$2">
+              <Database size={16} />
+              <H4 fontWeight="500" fontSize="$3">Data Management</H4>
+            </XStack>
             <ChevronDown
-              className={`h-4 w-4 transition-transform duration-200 ${
-                openSections.dataManagement ? 'rotate-180' : ''
-              }`}
-            />
+              size={16}
+  />
           </CollapsibleTrigger>
-          <CollapsibleContent className="px-3 pt-2 pb-3">
-            <p className="text-xs text-muted-foreground mb-4">
+          <CollapsibleContent paddingHorizontal="$3" paddingTop="$2" paddingBottom="$3">
+            <Paragraph fontSize="$1" color="$color11" marginBottom="$4">
               Backup and restore your projects, conversations, and settings.
-            </p>
+            </Paragraph>
 
-            <div className="space-y-2.5">
+            <YStack rowGap="$2.5">
               {/* Export Data */}
-              <div className="flex items-center gap-3 p-3 rounded-lg border">
-                <Download className="h-4 w-4 text-muted-foreground shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium">Export All Data</div>
-                  <div className="text-xs text-muted-foreground">
+              <XStack alignItems="center" gap="$3" padding="$3" borderRadius="$5" borderWidth={1}>
+                <Download size={16} color="$color11" />
+                <YStack flex={1} minWidth={0}>
+                  <SizableText fontSize="$3" fontWeight="500" display="flex" flexDirection="column">Export All Data</SizableText>
+                  <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
                     Download a backup of all projects and data
-                  </div>
-                </div>
+                  </SizableText>
+                </YStack>
                 <Button
                   variant="outline"
                   size="sm"
@@ -365,17 +360,17 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
                 >
                   {isExporting ? 'Exporting...' : 'Export'}
                 </Button>
-              </div>
+              </XStack>
 
               {/* Import Data */}
-              <div className="flex items-center gap-3 p-3 rounded-lg border">
-                <Upload className="h-4 w-4 text-muted-foreground shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium">Import Data</div>
-                  <div className="text-xs text-muted-foreground">
+              <XStack alignItems="center" gap="$3" padding="$3" borderRadius="$5" borderWidth={1}>
+                <Upload size={16} color="$color11" />
+                <YStack flex={1} minWidth={0}>
+                  <SizableText fontSize="$3" fontWeight="500" display="flex" flexDirection="column">Import Data</SizableText>
+                  <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
                     Restore from a Hanzo backup file
-                  </div>
-                </div>
+                  </SizableText>
+                </YStack>
                 <Button
                   variant="outline"
                   size="sm"
@@ -384,35 +379,35 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
                 >
                   {isImporting ? 'Importing...' : 'Import'}
                 </Button>
-              </div>
+              </XStack>
 
               {/* Import Progress */}
               {isImporting && (
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs">
+                <YStack rowGap="$2">
+                  <SizableText justifyContent="space-between" fontSize="$1" display="flex" flexDirection="row">
                     <span>{importMessage}</span>
                     <span>{importProgress}%</span>
-                  </div>
-                  <div className="w-full bg-muted rounded-full h-2">
-                    <div
-                      className="bg-primary h-2 rounded-full transition-all duration-300"
+                  </SizableText>
+                  <YStack width="100%" backgroundColor="$color3" borderRadius="$10" height="$2">
+                    <YStack
+                      backgroundColor="$color12" height="$2" borderRadius="$10"
                       style={{ width: `${importProgress}%` }}
-                    />
-                  </div>
-                </div>
+  />
+                  </YStack>
+                </YStack>
               )}
-            </div>
+            </YStack>
           </CollapsibleContent>
         </Collapsible>
-      </div>
-      </div>{/* end scrollable content */}
+      </YStack>
+      </YStack>{/* end scrollable content */}
 
       {/* Footer */}
-      <div className="shrink-0 flex items-center justify-between pt-4 px-3 border-t">
+      <XStack flexShrink={0} alignItems="center" justifyContent="space-between" paddingTop="$4" paddingHorizontal="$3" borderTopWidth={1}>
         <Button
           variant="ghost"
           size="sm"
-          className="text-destructive hover:text-destructive"
+          color="$red9" hoverStyle={{ color: "$red9" }}
           onClick={clearSettings}
         >
           Clear All Settings
@@ -422,15 +417,15 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
           size="sm"
           onClick={() => setAboutModalOpen(true)}
         >
-          <Info className="mr-1.5 h-3.5 w-3.5" />
+          <Info size={14} />
           About Hanzo App
         </Button>
-      </div>
+      </XStack>
 
       <AboutModal
         open={aboutModalOpen}
         onOpenChange={setAboutModalOpen}
-      />
-    </div>
+  />
+    </YStack>
   );
 }

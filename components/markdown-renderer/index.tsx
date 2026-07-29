@@ -1,9 +1,10 @@
 'use client';
 
+import { Separator } from '@hanzo/ui';
+import { YStack, H1, H2, H3, H4, Paragraph, SizableText, Anchor } from '@hanzo/gui';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { cn } from '@/lib/utils';
 import { normalizeContent } from './content-normalizer';
 import { ExternalLink } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -110,14 +111,14 @@ export function MarkdownRenderer({ content, className, skipNormalization = false
   }, [headingData]);
 
   return (
-    <div className={cn(S.wrap, className)}>
+    <YStack className={`${S.wrap} ${className}`}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
         h1: ({ children }) => {
           const text = children?.toString() || '';
           const id = slugify(text);
-          return <h1 id={id} className={S.h1}>{children}</h1>;
+          return <H1 id={id} className={`${S.h1}`}>{children}</H1>;
         },
         h2: ({ children }) => {
           const text = children?.toString() || '';
@@ -125,9 +126,9 @@ export function MarkdownRenderer({ content, className, skipNormalization = false
           const key = `2-${text}`;
           const index = headingIndexMap.get(key);
           return (
-            <h2 id={id} data-heading-index={index} className={S.h2}>
+            <H2 id={id} data-heading-index={index} className={`${S.h2}`}>
               {children}
-            </h2>
+            </H2>
           );
         },
         h3: ({ children }) => {
@@ -136,9 +137,9 @@ export function MarkdownRenderer({ content, className, skipNormalization = false
           const key = `3-${text}`;
           const index = headingIndexMap.get(key);
           return (
-            <h3 id={id} data-heading-index={index} className={S.h3}>
+            <H3 id={id} data-heading-index={index} className={`${S.h3}`}>
               {children}
-            </h3>
+            </H3>
           );
         },
         h4: ({ children }) => {
@@ -147,17 +148,17 @@ export function MarkdownRenderer({ content, className, skipNormalization = false
           const key = `4-${text}`;
           const index = headingIndexMap.get(key);
           return (
-            <h4 id={id} data-heading-index={index} className={S.h4}>
+            <H4 id={id} data-heading-index={index} className={`${S.h4}`}>
               {children}
-            </h4>
+            </H4>
           );
         },
 
-        p: ({ children }) => <p className={S.p}>{children}</p>,
+        p: ({ children }) => <Paragraph className={`${S.p}`}>{children}</Paragraph>,
 
-        ul: ({ children }) => <ul className={S.ul}>{children}</ul>,
-        ol: ({ children }) => <ol className={S.ol}>{children}</ol>,
-        li: ({ children }) => <li className={S.li}>{children}</li>,
+        ul: ({ children }) => <YStack className={`${S.ul}`}>{children}</YStack>,
+        ol: ({ children }) => <YStack className={`${S.ol}`}>{children}</YStack>,
+        li: ({ children }) => <SizableText className={`${S.li}`}>{children}</SizableText>,
 
         pre: ({ children, ...props }) => {
           // Extract language from code block if present
@@ -170,16 +171,16 @@ export function MarkdownRenderer({ content, className, skipNormalization = false
           const language = match ? match[1] : null;
 
           return (
-            <div className={S.preWrap}>
+            <YStack className={`${S.preWrap}`}>
               {language && (
-                <div className="absolute top-2 right-2 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground bg-background/80 rounded border border-border/50 backdrop-blur-sm">
+                <SizableText position="absolute" top="$2" right="$2" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" color="$color11" backgroundColor="$background" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backdropFilter="blur(4px)" display="flex" flexDirection="column">
                   {language}
-                </div>
+                </SizableText>
               )}
-              <pre className={S.pre} {...props}>
+              <SizableText fontFamily="$mono" whiteSpace="pre" className={`${S.pre}`} {...props}>
                 {children}
-              </pre>
-            </div>
+              </SizableText>
+            </YStack>
           );
         },
 
@@ -189,24 +190,24 @@ export function MarkdownRenderer({ content, className, skipNormalization = false
 
           if (isInline) {
             return (
-              <code className="px-1.5 py-0.5 rounded bg-muted/70 border border-border/30 font-mono text-[0.85em]" {...props}>
+              <SizableText paddingHorizontal="$1.5" paddingVertical="$0.5" borderRadius="$2" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" fontFamily="$mono" color="0.85em" {...props}>
                 {children}
-              </code>
+              </SizableText>
             );
           }
 
           // Fenced code block with language
           return (
-            <code className="font-mono text-[12px] block leading-relaxed" {...props}>
+            <SizableText fontFamily="$mono" fontSize={12} lineHeight={1.625} {...props}>
               {children}
-            </code>
+            </SizableText>
           );
         },
 
         blockquote: ({ children }) => (
-          <blockquote className={cn(S.blockquote, !compact && 'rounded-r')}>
+          <SizableText className={`rounded-r ${S.blockquote}`}>
             {children}
-          </blockquote>
+          </SizableText>
         ),
 
         a: ({ href, children }) => {
@@ -243,42 +244,39 @@ export function MarkdownRenderer({ content, className, skipNormalization = false
           };
 
           return (
-            <a
+            <Anchor
               href={href}
               onClick={handleClick}
-              className={cn(
-                "text-foreground underline underline-offset-2 decoration-border hover:decoration-foreground cursor-pointer",
-                isExternal && "inline-flex items-center gap-1"
-              )}
+              color="$color" textDecorationLine="underline" cursor="pointer" {...{ alignItems: isExternal ? "center" : undefined, gap: isExternal ? "$1" : undefined }}
               target={shouldOpenNewTab ? '_blank' : undefined}
               rel={shouldOpenNewTab ? 'noopener noreferrer' : undefined}
             >
               {children}
-              {isExternal && <ExternalLink className="h-3 w-3 inline" />}
-            </a>
+              {isExternal && <ExternalLink size={12} />}
+            </Anchor>
           );
         },
 
-        strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
+        strong: ({ children }) => <SizableText fontWeight="600" color="$color">{children}</SizableText>,
 
-        em: ({ children }) => <em className="italic">{children}</em>,
+        em: ({ children }) => <SizableText fontStyle="italic">{children}</SizableText>,
 
-        hr: () => <hr className={S.hr} />,
+        hr: () => <Separator className={`${S.hr}`} />,
 
         table: ({ children }) => (
-          <div className={cn("overflow-x-auto rounded-lg border border-border", compact ? "my-2" : "mb-6")}>
-            <table className="min-w-full divide-y divide-border">{children}</table>
-          </div>
+          <YStack borderRadius="$5" borderWidth={1} borderColor="$borderColor" overflow="scroll" {...{ marginVertical: compact ? "$2" : undefined, marginBottom: compact ? undefined : "$5" }}>
+            <YStack minWidth="100%">{children}</YStack>
+          </YStack>
         ),
-        thead: ({ children }) => <thead className="bg-muted/50">{children}</thead>,
-        tbody: ({ children }) => <tbody className="divide-y divide-border bg-background">{children}</tbody>,
-        tr: ({ children }) => <tr className="hover:bg-muted/30 transition-colors">{children}</tr>,
-        th: ({ children }) => <th className={cn("text-left font-medium tracking-wide", compact ? "px-2.5 py-1.5 text-[11px]" : "px-4 py-3 text-xs")}>{children}</th>,
-        td: ({ children }) => <td className={cn(compact ? "px-2.5 py-1.5 text-[12px]" : "px-4 py-3 text-sm")}>{children}</td>,
+        thead: ({ children }) => <YStack backgroundColor="$color3">{children}</YStack>,
+        tbody: ({ children }) => <YStack backgroundColor="$background">{children}</YStack>,
+        tr: ({ children }) => <YStack hoverStyle={{ backgroundColor: "$color3" }}>{children}</YStack>,
+        th: ({ children }) => <SizableText textAlign="left" fontWeight="500" letterSpacing={0.4} {...{ paddingHorizontal: compact ? "$2.5" : "$4", paddingVertical: compact ? "$1.5" : "$3", fontSize: compact ? 11 : "$1" }}>{children}</SizableText>,
+        td: ({ children }) => <SizableText {...{ paddingHorizontal: compact ? "$2.5" : "$4", paddingVertical: compact ? "$1.5" : "$3", fontSize: compact ? 12 : "$3" }}>{children}</SizableText>,
       }}
       >
         {processedContent}
       </ReactMarkdown>
-    </div>
+    </YStack>
   );
 }

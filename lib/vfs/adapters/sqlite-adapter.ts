@@ -18,16 +18,7 @@ import type { Database } from 'better-sqlite3';
 import { StorageAdapter } from './types';
 import { Project, VirtualFile, FileTreeNode, CustomTemplate, Deployment, EdgeFunction, ServerFunction, Secret, ScheduledFunction } from '../types';
 import { Skill } from '../skills/types';
-import {
-  getCoreDatabase,
-  getDeploymentDatabase,
-  closeDeploymentDatabase,
-  deleteDeploymentDatabase,
-  deleteProjectDatabase,
-  listDeploymentIds,
-  deploymentExists,
-  closeAllConnections
-} from './sqlite-connection';
+import { getCoreDatabase, deleteDeploymentDatabase, deleteProjectDatabase, deploymentExists, closeAllConnections } from './sqlite-connection';
 import { DeploymentDatabase } from './deployment-database';
 import { AnalyticsDatabase } from './analytics-database';
 import { ProjectDatabase } from './project-database';

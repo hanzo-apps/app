@@ -10,7 +10,7 @@ import { UsageLimitProvider } from '@/components/usage/usage-limit';
 import { Toaster, TooltipProvider } from '@hanzo/ui';
 import { ReactNode } from 'react';
 
-import guiConfig from '@hanzo/ui/gui-config';
+import guiConfig from '@/lib/gui';
 
 interface ProvidersProps {
   children: ReactNode;

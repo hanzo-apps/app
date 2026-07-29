@@ -15,6 +15,7 @@
  * different submit (e.g. the landing's anon-login bounce) pass `onSubmit`.
  */
 
+import { YStack, H1, XStack, Anchor, SizableText, Paragraph } from '@hanzo/gui';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { EVENTS } from '@hanzo/event';
@@ -30,7 +31,7 @@ import {
   Plus,
   Sparkles,
 } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@hanzo/ui';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Textarea, Button } from '@hanzo/ui';
 import { cn } from '@/lib/utils';
 import { baseEnabled, setBaseEnabled } from '@/lib/base/flag';
 
@@ -185,34 +186,34 @@ export function BuildComposer({
   const CurrentMode = MODES.find((m) => m.value === mode) ?? MODES[0];
 
   return (
-    <div className={cn('mx-auto w-full max-w-2xl', className)}>
+    <YStack alignSelf="center" width="100%" maxWidth={672} className={`${className}`}>
       {greetingName && (
-        <h1 className="mb-2 text-center text-3xl font-medium tracking-tight text-foreground text-balance sm:text-4xl">
+        <H1 marginBottom="$2" textAlign="center" fontSize="$10" fontWeight="500" letterSpacing={-0.4} color="$color" $sm={{ fontSize: "$11" }}>
           Ready to build, {greetingName}?
-        </h1>
+        </H1>
       )}
 
       {showPill && (
-        <div className="mb-6 flex justify-center">
-          <a
+        <XStack marginBottom="$5" justifyContent="center">
+          <Anchor
             href="https://cloud.hanzo.ai"
             target="_blank"
             rel="noopener noreferrer"
-            className="group inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-border hover:text-foreground"
+            group alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$borderColor", color: "$color" }}
           >
-            <span className="rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-foreground">
+            <SizableText borderRadius="$10" backgroundColor="$color3" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.4} color="$color">
               New
-            </span>
+            </SizableText>
             Hanzo apps now run in Hanzo Cloud
-            <span className="transition-transform group-hover:translate-x-0.5">→</span>
-          </a>
-        </div>
+            <SizableText $group-hover={{ x: "$0.5" }}>→</SizableText>
+          </Anchor>
+        </XStack>
       )}
 
       {/* The gradient bubble: padded gradient host + opaque inner panel. */}
-      <div className="hz-composer rounded-2xl shadow-2xl">
-        <div className="rounded-[14px] bg-card">
-          <textarea
+      <YStack borderRadius="$8" elevation={6} className="hz-composer">
+        <YStack borderRadius={14} backgroundColor="$background">
+          <Textarea
             ref={textareaRef}
             value={idea}
             onChange={(e) => setIdea(e.target.value)}
@@ -227,69 +228,64 @@ export function BuildComposer({
             onBlur={() => setFocused(false)}
             placeholder={placeholder}
             aria-label="Ask Hanzo to build"
-            className="w-full resize-none bg-transparent px-4 pb-2 pt-4 text-[15px] leading-relaxed text-foreground placeholder:text-muted-foreground focus:outline-none"
-          />
-          <div className="flex items-center justify-between gap-2 px-2.5 pb-2.5">
-            <div className="flex items-center gap-1">
+            width="100%" resize="none" backgroundColor="transparent" paddingHorizontal="$4" paddingBottom="$2" paddingTop="$4" fontSize={15} lineHeight={1.625} color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0 }}
+  />
+          <XStack alignItems="center" justifyContent="space-between" gap="$2" paddingHorizontal="$2.5" paddingBottom="$2.5">
+            <XStack alignItems="center" gap="$1">
               {/* Build / Plan mode */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button
+                  <Button
                     type="button"
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1.5 text-xs text-foreground transition-colors hover:border-border hover:text-foreground"
+                    alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$1.5" fontSize="$1" color="$color" hoverStyle={{ borderColor: "$borderColor", color: "$color" }}
                   >
                     <CurrentMode.icon className="h-3.5 w-3.5" />
                     {CurrentMode.label}
-                    <ChevronDown className="h-3 w-3 text-muted-foreground" />
-                  </button>
+                    <ChevronDown size={12} color="$color11" />
+                  </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="start"
-                  className="w-56"
+                  width={224}
                 >
                   {MODES.map((m) => (
                     <DropdownMenuItem
                       key={m.value}
                       onClick={() => setMode(m.value)}
-                      className="flex-col items-start gap-0.5"
+                      flexDirection="column" alignItems="flex-start" gap="$0.5"
                     >
-                      <span className="flex items-center gap-2 font-medium">
+                      <SizableText alignItems="center" gap="$2" fontWeight="500">
                         <m.icon className="h-4 w-4" />
                         {m.label}
-                      </span>
-                      <span className="pl-6 text-xs text-muted-foreground">{m.hint}</span>
+                      </SizableText>
+                      <SizableText paddingLeft="$5" fontSize="$1" color="$color11">{m.hint}</SizableText>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
 
               {/* Base backend toggle — spawn a Hanzo Base for this app. */}
-              <button
+              <Button
                 type="button"
                 onClick={toggleBase}
                 aria-pressed={withBase}
                 title="Hanzo Base backend — database, auth, realtime for this app"
-                className={cn(
-                  'inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs transition-colors',
-                  withBase
-                    ? 'border-border bg-accent text-foreground'
-                    : 'border-border text-muted-foreground hover:border-border hover:text-foreground',
-                )}
+                alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} paddingHorizontal="$2.5" paddingVertical="$1.5" fontSize="$1" {...{ borderColor: withBase ? "$borderColor" : "$borderColor", backgroundColor: withBase ? "$color3" : undefined, color: withBase ? "$color" : "$color11", hoverStyle: withBase ? undefined : {"borderColor":"$borderColor","color":"$color"} }}
               >
-                <Database className="h-3.5 w-3.5" />
+                <Database size={14} />
                 Base
-              </button>
+              </Button>
 
-              <button
+              <Button
                 type="button"
                 aria-label="Attach"
-                className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                borderRadius="$5" padding="$2" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
               >
-                <Plus className="h-4 w-4" />
-              </button>
-            </div>
+                <Plus size={16} />
+              </Button>
+            </XStack>
 
-            <div className="flex items-center gap-1">
+            <XStack alignItems="center" gap="$1">
               <Voice
                 voice={voice}
                 className={cn(
@@ -300,52 +296,52 @@ export function BuildComposer({
                 )}
               >
                 {(state) => (
-                  <Mic className={cn('h-4 w-4', state === 'listening' && 'animate-pulse')} />
+                  <Mic size={16} />
                 )}
               </Voice>
-              <button
+              <Button
                 type="button"
                 onClick={() => submit()}
                 disabled={!idea.trim()}
                 aria-label="Start building"
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground transition-all hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
+                height="$6" width="$6" alignItems="center" justifyContent="center" borderRadius="$10" backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }} disabledStyle={{ cursor: "not-allowed", backgroundColor: "$color3", color: "$color11" }}
               >
-                <ArrowUp className="h-4 w-4" strokeWidth={2.5} />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+                <ArrowUp size={16} strokeWidth={2.5} />
+              </Button>
+            </XStack>
+          </XStack>
+        </YStack>
+      </YStack>
 
       {/* Starter prompts — honest app types. Clicking one IS the intent, so it
           submits through the same `submit` the send button and Enter use; the
           draft is set too so it stays visible if submit bounces to login. */}
       {!!starters?.length && (
-        <div className="mt-4 flex flex-wrap justify-center gap-2">
+        <XStack marginTop="$4" flexWrap="wrap" justifyContent="center" gap="$2">
           {starters.map((s) => (
-            <button
+            <Button
               key={s}
               type="button"
               onClick={() => {
                 setIdea(s);
                 submit(s);
               }}
-              className="rounded-full border border-border bg-muted px-3.5 py-1.5 text-xs text-muted-foreground transition-all hover:border-border hover:text-foreground"
+              borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$borderColor", color: "$color" }}
             >
               {s}
-            </button>
+            </Button>
           ))}
-        </div>
+        </XStack>
       )}
 
       {/* Subtle honest sub-line — no fabricated claims. */}
       {subline && (
-        <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
-          <Sparkles className="h-3 w-3 hidden sm:inline-block" />
+        <Paragraph marginTop="$3" alignItems="center" justifyContent="center" gap="$1.5" textAlign="center" fontSize="$1" color="$color11">
+          <Sparkles size={12} />
           UI, database, auth, and 400+ AI models — wired in and deployed to Hanzo Cloud.
-        </p>
+        </Paragraph>
       )}
-    </div>
+    </YStack>
   );
 }
 

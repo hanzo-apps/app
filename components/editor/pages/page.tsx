@@ -1,4 +1,6 @@
-import classNames from "classnames";
+'use client';
+
+import { SizableText } from '@hanzo/gui';
 import { XIcon } from "lucide-react";
 
 import { Button } from '@hanzo/ui';
@@ -18,15 +20,9 @@ export function ListPagesItem({
   index: number;
 }) {
   return (
-    <div
+    <SizableText
       key={index}
-      className={classNames(
-        "pl-6 pr-1 py-3 text-muted-foreground cursor-pointer text-sm hover:bg-card flex items-center justify-center gap-1 group text-nowrap border-r border-border",
-        {
-          "bg-card !text-foreground": currentPage === page.path,
-          "!pr-6": index === 0, // Ensure the first item has padding on the right
-        }
-      )}
+      paddingLeft="$5" paddingVertical="$3" cursor="pointer" fontSize="$3" alignItems="center" justifyContent="center" gap="$1" group whiteSpace="nowrap" borderRightWidth={1} borderColor="$borderColor" display="flex" flexDirection="row" hoverStyle={{ backgroundColor: "$background" }} {...{ backgroundColor: currentPage === page.path ? "$background" : undefined, color: currentPage === page.path ? "$color" : "$color11", paddingRight: index === 0 ? "$5" : "$1" }}
       onClick={() => onSelectPage(page.path)}
       title={page.path}
     >
@@ -62,7 +58,7 @@ export function ListPagesItem({
         <Button
           size="iconXsss"
           variant="ghost"
-          className="group-hover:opacity-100 opacity-0"
+          opacity={0} $group-hover={{ opacity: 1 }}
           onClick={(e: React.MouseEvent) => {
             e.stopPropagation();
             if (
@@ -74,9 +70,9 @@ export function ListPagesItem({
             }
           }}
         >
-          <XIcon className="h-3 text-muted-foreground cursor-pointer hover:text-muted-foreground" />
+          <XIcon size={12} color="$color11" />
         </Button>
       )}
-    </div>
+    </SizableText>
   );
 }

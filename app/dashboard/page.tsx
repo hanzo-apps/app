@@ -1,9 +1,10 @@
 "use client";
 
+import { XStack, SizableText, Paragraph, YStack, Image, H3, Anchor } from '@hanzo/gui';
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@hanzo/ui';
+import { Tabs, TabsList, TabsTrigger, TabsContent, Button } from '@hanzo/ui';
 import {
   FolderOpen,
   Clock,
@@ -84,14 +85,14 @@ export default function DashboardPage() {
 
   if (loading || !user) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="text-center">
+      <XStack minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="$background">
+        <SizableText textAlign="center" display="flex" flexDirection="column">
           <HanzoLogo className="mx-auto mb-4 h-12 w-12 animate-pulse text-foreground" />
-          <p className="text-muted-foreground">
+          <Paragraph color="$color11">
             {loading ? "Loading your workspace…" : "Redirecting to login…"}
-          </p>
-        </div>
-      </div>
+          </Paragraph>
+        </SizableText>
+      </XStack>
     );
   }
 
@@ -99,35 +100,35 @@ export default function DashboardPage() {
 
   return (
     <AppShell currentView="dashboard">
-      <div className="flex-1 overflow-y-auto bg-background">
+      <YStack flex={1} backgroundColor="$background" overflow="scroll">
         {/* ── Hero viewport: ONLY the centered composer until you scroll ── */}
-        <section className="relative flex min-h-[calc(100dvh-4rem)] flex-col justify-start pt-[14vh] md:justify-center md:pt-0 px-4">
+        <YStack position="relative" minHeight="calc(100dvh-4rem)" justifyContent="flex-start" paddingTop="14vh" paddingHorizontal="$4" $md={{ justifyContent: "center", paddingTop: "$0" }}>
           <BuildComposer greetingName={greetingName} showPill />
 
           {/* Scroll invitation — the projects panel waits below the fold. */}
-          <button
+          <Button
             type="button"
             onClick={() =>
               document
                 .getElementById("projects-panel")
                 ?.scrollIntoView({ behavior: "smooth", block: "start" })
             }
-            className="group absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
+            group position="absolute" bottom="$5" left="50%" x="50%" flexDirection="column" alignItems="center" gap="$1" color="$color11" hoverStyle={{ color: "$color" }}
           >
-            <span className="font-mono text-[10px] uppercase tracking-[0.16em]">
+            <SizableText fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={2.56}>
               Your projects
-            </span>
-            <ChevronDown className="h-4 w-4 animate-bounce" />
-          </button>
-        </section>
+            </SizableText>
+            <ChevronDown size={16} />
+          </Button>
+        </YStack>
 
         {/* ── Projects: a rounded panel that slides up as you scroll ── */}
-        <section id="projects-panel" className="mx-auto max-w-6xl scroll-mt-6 px-4 pb-24 sm:px-6">
+        <YStack id="projects-panel" alignSelf="center" maxWidth={1152} paddingHorizontal="$4" paddingBottom="$12" $sm={{ paddingHorizontal: "$5" }}>
           <Reveal>
-            <div className="rounded-[1.75rem] border border-border bg-card p-5 shadow-2xl shadow-black/50 md:p-8">
-              <Tabs value={tab} onValueChange={setTab} className="w-full">
-                <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
-                  <TabsList className="bg-transparent p-0">
+            <YStack borderRadius="1.75rem" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4.5" elevation={6} $md={{ padding: "$6" }}>
+              <Tabs value={tab} onValueChange={setTab} width="100%">
+                <XStack marginBottom="$4.5" flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$3" borderBottomWidth={1} borderColor="$borderColor" paddingBottom="$3">
+                  <TabsList backgroundColor="transparent" padding="$0">
                     <TabsTrigger value="mine" className="data-[state=active]:bg-accent">
                       My projects
                     </TabsTrigger>
@@ -144,11 +145,10 @@ export default function DashboardPage() {
 
                   <Link
                     href={tab === "templates" ? "/resources" : "/projects"}
-                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                  >
+                  ><SizableText fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}>
                     Browse all →
-                  </Link>
-                </div>
+                  </SizableText></Link>
+                </XStack>
 
                 {/* My projects */}
                 <TabsContent value="mine">
@@ -170,7 +170,7 @@ export default function DashboardPage() {
                       icon={Clock}
                       title="No recently viewed projects"
                       body="Projects you open will show up here, most recent first."
-                    />
+  />
                   ) : (
                     <ProjectGrid projects={recentlyViewed} onOpen={openProject} />
                   )}
@@ -184,43 +184,42 @@ export default function DashboardPage() {
                     title="Visitor analytics coming to your dashboard"
                     body="Once your apps are published and receiving traffic, your busiest projects today will rank here. Live traffic is captured per deployment."
                     action={{ label: "View analytics", href: "https://analytics.hanzo.ai" }}
-                  />
+  />
                 </TabsContent>
 
                 {/* Templates — a peek at the gallery; Browse all → /resources. */}
                 <TabsContent value="templates">
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  <YStack gap="$4">
                     {templates.map((t) => (
                       <Link
                         key={t.slug}
                         href="/resources"
-                        className="group overflow-hidden rounded-2xl border border-border bg-card transition-all hover:-translate-y-0.5 hover:border-foreground/30"
-                      >
-                        <div className="relative aspect-[16/10] overflow-hidden bg-card">
+                      ><XStack group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "-0.5", borderColor: "$color" }}>
+                        <YStack position="relative" overflow="hidden" backgroundColor="$background">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
+                          <Image
                             src={t.screenshotUrl}
                             alt={`${t.displayName} preview`}
                             loading="lazy"
-                            className="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.04]"
+                            height="100%" width="100%" objectFit="cover" objectPosition="top" className="group-hover:scale-[1.04]"
                             onError={(e) => {
                               (e.currentTarget as HTMLImageElement).style.opacity = "0";
                             }}
-                          />
-                        </div>
-                        <div className="p-3">
-                          <p className="truncate text-sm font-medium text-foreground">{t.displayName}</p>
-                          <p className="truncate text-xs text-muted-foreground">{t.category}</p>
-                        </div>
-                      </Link>
+  />
+                        </YStack>
+                        <YStack padding="$3">
+                          <Paragraph numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{t.displayName}</Paragraph>
+                          <Paragraph numberOfLines={1} fontSize="$1" color="$color11">{t.category}</Paragraph>
+                        </YStack>
+                      </XStack></Link>
                     ))}
-                  </div>
+                  </YStack>
                 </TabsContent>
               </Tabs>
-            </div>
+            </YStack>
           </Reveal>
-        </section>
-      </div>
+        </YStack>
+      </YStack>
     </AppShell>
   );
 }
@@ -233,57 +232,57 @@ function ProjectGrid({
   onOpen: (p: DashProject) => void;
 }) {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <YStack gap="$4">
       {projects.map((p) => {
         // ONE four-state status map (live/building/error/draft) — a failed deploy
         // never looks like an untouched draft. See lib/project-status.
         const st = statusOf(p.status);
         return (
-          <button
+          <Button
             key={p.id}
             onClick={() => onOpen(p)}
-            className="group overflow-hidden rounded-2xl border border-border bg-card text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-foreground/30 hover:bg-accent"
+            group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" textAlign="left" hoverStyle={{ y: "-0.5", borderColor: "$color", backgroundColor: "$color3" }}
           >
             {/* Real thumbnail: the live site itself (inert); monogram otherwise. */}
-            <div className="relative">
+            <YStack position="relative">
               <ProjectThumb name={p.name} liveUrl={p.liveUrl} />
-              <ArrowUpRight className="absolute right-3 top-3 h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
-            </div>
-            <div className="p-4">
-              <h3 className="truncate text-sm font-medium text-foreground">{p.name}</h3>
-              <div className="mt-1.5 flex items-center gap-3">
-                <span
-                  className={`inline-flex items-center gap-1 text-[11px] uppercase tracking-wide ${st.text}`}
+              <ArrowUpRight size={16} color="$color11" />
+            </YStack>
+            <YStack padding="$4">
+              <H3 numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{p.name}</H3>
+              <XStack marginTop="$1.5" alignItems="center" gap="$3">
+                <SizableText
+                  alignItems="center" gap="$1" fontSize={11} textTransform="uppercase" letterSpacing={0.4} className={`${st.text}`}
                 >
-                  <Circle className={`h-1.5 w-1.5 ${st.dot.replace("bg-", "fill-")}`} />
+                  <Circle size={6} />
                   {st.label}
-                </span>
-                <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
-                  <Clock className="h-3 w-3" />
+                </SizableText>
+                <SizableText alignItems="center" gap="$1" fontSize={11} color="$color11">
+                  <Clock size={12} />
                   {relativeTime(p.updatedAtIso)}
-                </span>
-              </div>
-            </div>
-          </button>
+                </SizableText>
+              </XStack>
+            </YStack>
+          </Button>
         );
       })}
-    </div>
+    </YStack>
   );
 }
 
 function ProjectsSkeleton() {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-hidden>
+    <YStack gap="$4" aria-hidden>
       {[0, 1, 2].map((i) => (
-        <div key={i} className="overflow-hidden rounded-2xl border border-border bg-card">
-          <div className="aspect-video animate-pulse bg-muted" />
-          <div className="space-y-2 p-4">
-            <div className="h-3.5 w-32 animate-pulse rounded bg-muted" />
-            <div className="h-3 w-24 animate-pulse rounded bg-muted" />
-          </div>
-        </div>
+        <YStack key={i} overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background">
+          <YStack backgroundColor="$color3" />
+          <YStack rowGap="$2" padding="$4">
+            <YStack height="$3.5" width="$14" borderRadius="$2" backgroundColor="$color3" />
+            <YStack height="$3" width="$12" borderRadius="$2" backgroundColor="$color3" />
+          </YStack>
+        </YStack>
       ))}
-    </div>
+    </YStack>
   );
 }
 
@@ -293,7 +292,7 @@ function EmptyProjects() {
       icon={FolderOpen}
       title="No projects yet"
       body="Describe what you want to build in the composer above and Hanzo will generate it. Your projects appear here."
-    />
+  />
   );
 }
 
@@ -309,23 +308,23 @@ function EmptyState({
   action?: { label: string; href: string };
 }) {
   return (
-    <div className="rounded-2xl border border-dashed border-border bg-card p-12 text-center">
-      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-muted">
+    <SizableText borderRadius="$8" borderWidth={1} borderStyle="dashed" borderColor="$borderColor" backgroundColor="$background" padding="$8" textAlign="center" display="flex" flexDirection="column">
+      <XStack alignSelf="center" marginBottom="$4" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$6" backgroundColor="$color3">
         <Icon className="h-6 w-6 text-muted-foreground" />
-      </div>
-      <h3 className="font-medium text-foreground">{title}</h3>
-      <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">{body}</p>
+      </XStack>
+      <H3 fontWeight="500" color="$color">{title}</H3>
+      <Paragraph alignSelf="center" marginTop="$1" maxWidth={448} fontSize="$3" color="$color11">{body}</Paragraph>
       {action && (
-        <a
+        <Anchor
           href={action.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          marginTop="$4" alignItems="center" gap="$1.5" fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}
         >
           {action.label}
-          <ArrowUpRight className="h-3.5 w-3.5" />
-        </a>
+          <ArrowUpRight size={14} />
+        </Anchor>
       )}
-    </div>
+    </SizableText>
   );
 }

@@ -1,43 +1,44 @@
 "use client";
 
+import { YStack, XStack } from '@hanzo/gui';
 import { ArrowUp } from "lucide-react";
 import { PiGearSixFill } from "react-icons/pi";
 import { TiUserAdd } from "react-icons/ti";
 
-import { Button } from '@hanzo/ui';
+import { Button, Textarea } from '@hanzo/ui';
 
 export const AskAi = () => {
   return (
     <>
-      <div className="bg-muted border border-border rounded-2xl ring-[4px] focus-within:ring-ring/30 focus-within:border-border ring-transparent group">
-        <textarea
+      <YStack backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" borderRadius="$8" group focusStyle={{ borderColor: "$borderColor" }}>
+        <Textarea
           rows={3}
-          className="w-full bg-transparent text-sm outline-none text-foreground placeholder:text-muted-foreground p-4 resize-none mb-1"
+          width="100%" backgroundColor="transparent" fontSize="$3" outlineWidth={0} color="$color" placeholderTextColor="$color11" padding="$4" resize="none" marginBottom="$1"
           placeholder="Ask Hanzo anything..."
           onChange={() => {}}
           onKeyDown={() => {}}
-        />
-        <div className="flex items-center justify-between gap-2 px-4 pb-3">
-          <div className="flex-1 flex justify-start">
+  />
+        <XStack alignItems="center" justifyContent="space-between" gap="$2" paddingHorizontal="$4" paddingBottom="$3">
+          <XStack flex={1} justifyContent="flex-start">
             <Button
               size="iconXs"
               variant="outline"
-              className="!border-border !text-muted-foreground !hover:!border-foreground/30 hover:!text-foreground"
+              borderColor="$borderColor" color="$color11" hoverStyle={{ borderColor: "$color", color: "$color" }}
             >
-              <TiUserAdd className="size-4" />
+              <TiUserAdd size={16} />
             </Button>
-          </div>
-          <div className="flex items-center justify-end gap-2">
-            <Button className="bg-neutral-950 text-neutral-300 hover:brightness-110" size="sm">
-              <PiGearSixFill className="size-4" />
+          </XStack>
+          <XStack alignItems="center" justifyContent="flex-end" gap="$2">
+            <Button backgroundColor="$color12" color="$color4" size="sm">
+              <PiGearSixFill size={16} />
               Settings
             </Button>
             <Button size="iconXs">
-              <ArrowUp className="size-4" />
+              <ArrowUp size={16} />
             </Button>
-          </div>
-        </div>
-      </div>
+          </XStack>
+        </XStack>
+      </YStack>
     </>
   );
 };

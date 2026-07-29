@@ -1,19 +1,4 @@
-import {
-  BookOpen,
-  Zap,
-  FolderOpen,
-  Sparkles,
-  LayoutTemplate,
-  Globe,
-  Server,
-  Code,
-  Users,
-  HelpCircle,
-  Wrench,
-  Database,
-  Upload,
-  ServerCog,
-} from 'lucide-react';
+import { BookOpen, Zap, FolderOpen, Sparkles, LayoutTemplate, Globe, Server, HelpCircle, Wrench, Database, Upload, ServerCog } from 'lucide-react';
 
 export interface DocItem {
   id: string;

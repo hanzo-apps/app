@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
+import { YStack, XStack, H3, Paragraph, H4, SizableText } from '@hanzo/gui';
 import { PublishSettings, AnalyticsConfig } from '@/lib/vfs/types';
 import { Label, Input, Textarea, Switch, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
-import { BarChart3, Shield, Info } from 'lucide-react';
+import { Shield, Info } from 'lucide-react';
 
 interface AnalyticsTabProps {
   settings: PublishSettings;
@@ -25,44 +25,44 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <YStack rowGap="$5">
+      <XStack alignItems="center" justifyContent="space-between">
         <div>
-          <h3 className="text-lg font-medium">Analytics Configuration</h3>
-          <p className="text-sm text-muted-foreground">
+          <H3 fontSize="$6" fontWeight="500">Analytics Configuration</H3>
+          <Paragraph fontSize="$3" color="$color11">
             Track visitors and site usage
-          </p>
+          </Paragraph>
         </div>
-      </div>
+      </XStack>
 
       {/* Enable Analytics */}
-      <div className="flex items-center justify-between p-4 border rounded-lg">
-        <div className="space-y-1">
-          <Label htmlFor="analytics-enabled" className="text-base">
+      <XStack alignItems="center" justifyContent="space-between" padding="$4" borderWidth={1} borderRadius="$5">
+        <YStack rowGap="$1">
+          <Label htmlFor="analytics-enabled" fontSize="$4">
             Enable Analytics
           </Label>
-          <p className="text-sm text-muted-foreground">
+          <Paragraph fontSize="$3" color="$color11">
             Track page views and visitor statistics
-          </p>
-        </div>
+          </Paragraph>
+        </YStack>
         <Switch
           id="analytics-enabled"
           checked={settings.analytics.enabled}
           onCheckedChange={(checked) =>
             handleAnalyticsChange('enabled', checked)
           }
-        />
-      </div>
+  />
+      </XStack>
 
       {settings.analytics.enabled && (
         <>
           {/* Provider Selection */}
-          <div className="space-y-4">
+          <YStack rowGap="$4">
             <div>
-              <h4 className="font-medium mb-4">Analytics Provider</h4>
+              <H4 fontWeight="500" marginBottom="$4">Analytics Provider</H4>
             </div>
 
-            <div className="space-y-2">
+            <YStack rowGap="$2">
               <Label htmlFor="analytics-provider">Provider</Label>
               <Select
                 value={settings.analytics.provider}
@@ -83,26 +83,26 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
                   <SelectItem value="custom">Custom Script</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+            </YStack>
 
             {/* Built-in Analytics Features */}
             {settings.analytics.provider === 'builtin' && (
               <>
-                <div className="space-y-4">
+                <YStack rowGap="$4">
                   <div>
-                    <h4 className="font-medium mb-2">Analytics Features</h4>
-                    <p className="text-sm text-muted-foreground mb-4">
+                    <H4 fontWeight="500" marginBottom="$2">Analytics Features</H4>
+                    <Paragraph fontSize="$3" color="$color11" marginBottom="$4">
                       Choose which analytics features to enable. Note: Heatmaps and session recording generate more data.
-                    </p>
+                    </Paragraph>
                   </div>
 
                   {/* Feature Toggles */}
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="space-y-1">
-                        <Label htmlFor="feature-basic" className="font-medium">Basic Tracking</Label>
-                        <p className="text-xs text-muted-foreground">Pageviews, referrers, device type</p>
-                      </div>
+                  <YStack rowGap="$3">
+                    <XStack alignItems="center" justifyContent="space-between" padding="$3" borderWidth={1} borderRadius="$5">
+                      <YStack rowGap="$1">
+                        <Label htmlFor="feature-basic" fontWeight="500">Basic Tracking</Label>
+                        <Paragraph fontSize="$1" color="$color11">Pageviews, referrers, device type</Paragraph>
+                      </YStack>
                       <Switch
                         id="feature-basic"
                         checked={settings.analytics.features?.basicTracking !== false}
@@ -112,14 +112,14 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
                             basicTracking: checked
                           })
                         }
-                      />
-                    </div>
+  />
+                    </XStack>
 
-                    <div className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="space-y-1">
-                        <Label htmlFor="feature-heatmaps" className="font-medium">Heatmaps</Label>
-                        <p className="text-xs text-muted-foreground">Click coordinates and scroll tracking</p>
-                      </div>
+                    <XStack alignItems="center" justifyContent="space-between" padding="$3" borderWidth={1} borderRadius="$5">
+                      <YStack rowGap="$1">
+                        <Label htmlFor="feature-heatmaps" fontWeight="500">Heatmaps</Label>
+                        <Paragraph fontSize="$1" color="$color11">Click coordinates and scroll tracking</Paragraph>
+                      </YStack>
                       <Switch
                         id="feature-heatmaps"
                         checked={settings.analytics.features?.heatmaps === true}
@@ -129,14 +129,14 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
                             heatmaps: checked
                           })
                         }
-                      />
-                    </div>
+  />
+                    </XStack>
 
-                    <div className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="space-y-1">
-                        <Label htmlFor="feature-sessions" className="font-medium">Session Recording</Label>
-                        <p className="text-xs text-muted-foreground">Journey paths and page flows</p>
-                      </div>
+                    <XStack alignItems="center" justifyContent="space-between" padding="$3" borderWidth={1} borderRadius="$5">
+                      <YStack rowGap="$1">
+                        <Label htmlFor="feature-sessions" fontWeight="500">Session Recording</Label>
+                        <Paragraph fontSize="$1" color="$color11">Journey paths and page flows</Paragraph>
+                      </YStack>
                       <Switch
                         id="feature-sessions"
                         checked={settings.analytics.features?.sessionRecording === true}
@@ -146,14 +146,14 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
                             sessionRecording: checked
                           })
                         }
-                      />
-                    </div>
+  />
+                    </XStack>
 
-                    <div className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="space-y-1">
-                        <Label htmlFor="feature-performance" className="font-medium">Performance Metrics</Label>
-                        <p className="text-xs text-muted-foreground">Core Web Vitals monitoring</p>
-                      </div>
+                    <XStack alignItems="center" justifyContent="space-between" padding="$3" borderWidth={1} borderRadius="$5">
+                      <YStack rowGap="$1">
+                        <Label htmlFor="feature-performance" fontWeight="500">Performance Metrics</Label>
+                        <Paragraph fontSize="$1" color="$color11">Core Web Vitals monitoring</Paragraph>
+                      </YStack>
                       <Switch
                         id="feature-performance"
                         checked={settings.analytics.features?.performanceMetrics === true}
@@ -163,14 +163,14 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
                             performanceMetrics: checked
                           })
                         }
-                      />
-                    </div>
+  />
+                    </XStack>
 
-                    <div className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="space-y-1">
-                        <Label htmlFor="feature-engagement" className="font-medium">Engagement Tracking</Label>
-                        <p className="text-xs text-muted-foreground">Time on page, scroll depth</p>
-                      </div>
+                    <XStack alignItems="center" justifyContent="space-between" padding="$3" borderWidth={1} borderRadius="$5">
+                      <YStack rowGap="$1">
+                        <Label htmlFor="feature-engagement" fontWeight="500">Engagement Tracking</Label>
+                        <Paragraph fontSize="$1" color="$color11">Time on page, scroll depth</Paragraph>
+                      </YStack>
                       <Switch
                         id="feature-engagement"
                         checked={settings.analytics.features?.engagementTracking === true}
@@ -180,14 +180,14 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
                             engagementTracking: checked
                           })
                         }
-                      />
-                    </div>
+  />
+                    </XStack>
 
-                    <div className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="space-y-1">
-                        <Label htmlFor="feature-custom" className="font-medium">Custom Events</Label>
-                        <p className="text-xs text-muted-foreground">Goal and conversion tracking</p>
-                      </div>
+                    <XStack alignItems="center" justifyContent="space-between" padding="$3" borderWidth={1} borderRadius="$5">
+                      <YStack rowGap="$1">
+                        <Label htmlFor="feature-custom" fontWeight="500">Custom Events</Label>
+                        <Paragraph fontSize="$1" color="$color11">Goal and conversion tracking</Paragraph>
+                      </YStack>
                       <Switch
                         id="feature-custom"
                         checked={settings.analytics.features?.customEvents === true}
@@ -197,39 +197,39 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
                             customEvents: checked
                           })
                         }
-                      />
-                    </div>
-                  </div>
+  />
+                    </XStack>
+                  </YStack>
 
                   {/* Warning about data volume */}
                   {(settings.analytics.features?.heatmaps || settings.analytics.features?.sessionRecording) && (
-                    <div className="p-4 bg-orange-50 dark:bg-orange-950 border border-orange-200 dark:border-orange-800 rounded-lg">
-                      <div className="flex gap-3">
-                        <Info className="h-5 w-5 text-orange-600 dark:text-orange-400 flex-shrink-0 mt-0.5" />
-                        <div className="space-y-1">
-                          <h4 className="font-medium text-orange-900 dark:text-orange-100">
+                    <YStack padding="$4" backgroundColor="$orange1" borderWidth={1} borderColor="$orange3" borderRadius="$5" $theme-dark={{ backgroundColor: "$orange12", borderColor: "$orange11" }}>
+                      <XStack gap="$3">
+                        <Info size={20} color="$orange10" />
+                        <YStack rowGap="$1">
+                          <H4 fontWeight="500" color="$orange12" $theme-dark={{ color: "$orange2" }}>
                             High Data Volume Features Enabled
-                          </h4>
-                          <p className="text-sm text-orange-800 dark:text-orange-200">
+                          </H4>
+                          <Paragraph fontSize="$3" color="$orange11" $theme-dark={{ color: "$orange3" }}>
                             Heatmaps and session recording generate significantly more data. Consider using shorter retention periods to manage storage costs.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+                          </Paragraph>
+                        </YStack>
+                      </XStack>
+                    </YStack>
                   )}
-                </div>
+                </YStack>
 
                 {/* Data Retention */}
-                <div className="space-y-4">
+                <YStack rowGap="$4">
                   <div>
-                    <h4 className="font-medium mb-2">Data Retention</h4>
-                    <p className="text-sm text-muted-foreground mb-4">
+                    <H4 fontWeight="500" marginBottom="$2">Data Retention</H4>
+                    <Paragraph fontSize="$3" color="$color11" marginBottom="$4">
                       How long to keep analytics data (in days)
-                    </p>
+                    </Paragraph>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="space-y-2">
+                  <YStack gap="$4">
+                    <YStack rowGap="$2">
                       <Label htmlFor="retention-pageviews">Pageviews</Label>
                       <Input
                         id="retention-pageviews"
@@ -244,11 +244,11 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
                             pageviews: parseInt(e.target.value, 10) || 90
                           })
                         }
-                      />
-                      <p className="text-xs text-muted-foreground">Default: 90 days</p>
-                    </div>
+  />
+                      <Paragraph fontSize="$1" color="$color11">Default: 90 days</Paragraph>
+                    </YStack>
 
-                    <div className="space-y-2">
+                    <YStack rowGap="$2">
                       <Label htmlFor="retention-interactions">Interactions</Label>
                       <Input
                         id="retention-interactions"
@@ -263,11 +263,11 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
                             interactions: parseInt(e.target.value, 10) || 30
                           })
                         }
-                      />
-                      <p className="text-xs text-muted-foreground">Default: 30 days</p>
-                    </div>
+  />
+                      <Paragraph fontSize="$1" color="$color11">Default: 30 days</Paragraph>
+                    </YStack>
 
-                    <div className="space-y-2">
+                    <YStack rowGap="$2">
                       <Label htmlFor="retention-sessions">Sessions</Label>
                       <Input
                         id="retention-sessions"
@@ -282,11 +282,11 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
                             sessions: parseInt(e.target.value, 10) || 60
                           })
                         }
-                      />
-                      <p className="text-xs text-muted-foreground">Default: 60 days</p>
-                    </div>
-                  </div>
-                </div>
+  />
+                      <Paragraph fontSize="$1" color="$color11">Default: 60 days</Paragraph>
+                    </YStack>
+                  </YStack>
+                </YStack>
               </>
             )}
 
@@ -294,7 +294,7 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
             {(settings.analytics.provider === 'gtm' ||
               settings.analytics.provider === 'ga4' ||
               settings.analytics.provider === 'plausible') && (
-              <div className="space-y-2">
+              <YStack rowGap="$2">
                 <Label htmlFor="tracking-id">
                   {settings.analytics.provider === 'gtm' && 'Container ID'}
                   {settings.analytics.provider === 'ga4' && 'Measurement ID'}
@@ -313,21 +313,21 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
                   onChange={(e) =>
                     handleAnalyticsChange('trackingId', e.target.value)
                   }
-                />
-                <p className="text-xs text-muted-foreground">
+  />
+                <Paragraph fontSize="$1" color="$color11">
                   {settings.analytics.provider === 'gtm' &&
                     'Your Google Tag Manager container ID'}
                   {settings.analytics.provider === 'ga4' &&
                     'Your Google Analytics 4 measurement ID'}
                   {settings.analytics.provider === 'plausible' &&
                     'Your website domain registered in Plausible'}
-                </p>
-              </div>
+                </Paragraph>
+              </YStack>
             )}
 
             {/* Custom Script */}
             {settings.analytics.provider === 'custom' && (
-              <div className="space-y-2">
+              <YStack rowGap="$2">
                 <Label htmlFor="custom-script">Custom Analytics Script</Label>
                 <Textarea
                   id="custom-script"
@@ -337,69 +337,69 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
                   onChange={(e) =>
                     handleAnalyticsChange('customScript', e.target.value)
                   }
-                  className="font-mono text-sm"
-                />
-                <p className="text-xs text-muted-foreground">
+                  fontFamily="$mono" fontSize="$3"
+  />
+                <Paragraph fontSize="$1" color="$color11">
                   Paste your custom analytics tracking code
-                </p>
-              </div>
+                </Paragraph>
+              </YStack>
             )}
-          </div>
+          </YStack>
 
           {/* Privacy Mode */}
-          <div className="space-y-4">
+          <YStack rowGap="$4">
             <div>
-              <h4 className="font-medium mb-4">Privacy Settings</h4>
+              <H4 fontWeight="500" marginBottom="$4">Privacy Settings</H4>
             </div>
 
-            <div className="flex items-center justify-between p-4 border rounded-lg">
-              <div className="space-y-1 flex-1">
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="privacy-mode" className="text-base">
+            <XStack alignItems="center" justifyContent="space-between" padding="$4" borderWidth={1} borderRadius="$5">
+              <YStack rowGap="$1" flex={1}>
+                <XStack alignItems="center" gap="$2">
+                  <Label htmlFor="privacy-mode" fontSize="$4">
                     Privacy Mode
                   </Label>
-                  <Shield className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <p className="text-sm text-muted-foreground">
+                  <Shield size={16} color="$color11" />
+                </XStack>
+                <Paragraph fontSize="$3" color="$color11">
                   Anonymize IPs and disable cookies for GDPR compliance
-                </p>
-              </div>
+                </Paragraph>
+              </YStack>
               <Switch
                 id="privacy-mode"
                 checked={settings.analytics.privacyMode}
                 onCheckedChange={(checked) =>
                   handleAnalyticsChange('privacyMode', checked)
                 }
-              />
-            </div>
+  />
+            </XStack>
 
             {settings.analytics.privacyMode && (
-              <div className="p-4 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
-                <div className="flex gap-3">
-                  <Info className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                  <div className="space-y-1">
-                    <h4 className="font-medium text-green-900 dark:text-green-100">
+              <YStack padding="$4" backgroundColor="$green1" borderWidth={1} borderColor="$green3" borderRadius="$5" $theme-dark={{ backgroundColor: "$green12", borderColor: "$green11" }}>
+                <XStack gap="$3">
+                  <Info size={20} color="$green10" />
+                  <YStack rowGap="$1">
+                    <H4 fontWeight="500" color="$green12" $theme-dark={{ color: "$green2" }}>
                       Privacy Mode Enabled
-                    </h4>
-                    <p className="text-sm text-green-800 dark:text-green-200">
+                    </H4>
+                    <Paragraph fontSize="$3" color="$green11" $theme-dark={{ color: "$green3" }}>
                       Analytics will respect user privacy by anonymizing IP addresses and
                       avoiding cookies where possible. This helps with GDPR compliance.
-                    </p>
-                  </div>
-                </div>
-              </div>
+                    </Paragraph>
+                  </YStack>
+                </XStack>
+              </YStack>
             )}
-          </div>
+          </YStack>
 
           {/* Preview */}
           {settings.analytics.provider !== 'builtin' && (
-            <div className="space-y-4">
+            <YStack rowGap="$4">
               <div>
-                <h4 className="font-medium mb-4">Script Preview</h4>
+                <H4 fontWeight="500" marginBottom="$4">Script Preview</H4>
               </div>
 
-              <div className="p-4 bg-muted rounded-lg">
-                <code className="text-xs">
+              <YStack padding="$4" backgroundColor="$color3" borderRadius="$5">
+                <SizableText fontSize="$1">
                   {settings.analytics.provider === 'gtm' && (
                     <>
                       {`<!-- Google Tag Manager -->`}
@@ -437,15 +437,15 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
                   )}
                   {settings.analytics.provider === 'custom' &&
                     (settings.analytics.customScript || 'No custom script provided')}
-                </code>
-              </div>
-              <p className="text-xs text-muted-foreground">
+                </SizableText>
+              </YStack>
+              <Paragraph fontSize="$1" color="$color11">
                 This script will be injected into the &lt;head&gt; section of your deployment
-              </p>
-            </div>
+              </Paragraph>
+            </YStack>
           )}
         </>
       )}
-    </div>
+    </YStack>
   );
 }

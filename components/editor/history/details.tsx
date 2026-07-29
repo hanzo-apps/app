@@ -1,5 +1,6 @@
 "use client";
 
+import { SizableText, XStack, YStack, Paragraph, Anchor } from '@hanzo/gui';
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   ArrowLeft,
@@ -12,8 +13,7 @@ import {
   Loader2,
   X,
 } from "lucide-react";
-import classNames from "classnames";
-import { toast } from '@hanzo/ui';
+import { toast, Button } from '@hanzo/ui';
 
 import { Page } from "@/types";
 import {
@@ -160,55 +160,50 @@ export function RevisionDetails({
   };
 
   return (
-    <div className="absolute inset-0 z-30 flex flex-col bg-card text-foreground">
+    <SizableText position="absolute" top={0} right={0} bottom={0} left={0} zIndex={30} flexDirection="column" backgroundColor="$background" color="$color" display="flex">
       {/* Header: back · title · Timeline|Changes · close */}
-      <div className="flex items-center gap-2 border-b border-border px-3 py-2">
-        <button
+      <XStack alignItems="center" gap="$2" borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$2">
+        <Button
           type="button"
           onClick={onClose}
-          className="inline-flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          alignItems="center" gap="$1" borderRadius="$3" paddingHorizontal="$1.5" paddingVertical="$1" fontSize="$1" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
         >
-          <ArrowLeft className="size-3.5" />
+          <ArrowLeft size={14} />
           Back to latest
-        </button>
-        <span className="ml-1 truncate text-[13px] font-medium text-foreground">Details</span>
-        <div className="ml-auto flex items-center gap-1.5">
-          <div className="flex items-center gap-0.5 rounded-lg bg-white/[0.03] p-0.5 ring-1 ring-white/10">
+        </Button>
+        <SizableText marginLeft="$1" numberOfLines={1} fontSize={13} fontWeight="500" color="$color">Details</SizableText>
+        <XStack marginLeft="auto" alignItems="center" gap="$1.5">
+          <XStack alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="white" padding="$0.5">
             {(["timeline", "changes"] as const).map((v) => (
-              <button
+              <Button
                 key={v}
                 type="button"
                 onClick={() => setView(v)}
-                className={classNames(
-                  "rounded-md px-2.5 py-1 text-xs font-medium capitalize transition-colors",
-                  view === v
-                    ? "bg-muted text-foreground shadow-sm"
-                    : "text-muted-foreground hover:bg-white/[0.06] hover:text-foreground",
-                )}
+                borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$1" fontSize="$1" fontWeight="500" textTransform="capitalize" {...{ backgroundColor: view === v ? "$color3" : undefined, color: view === v ? "$color" : "$color11", elevation: view === v ? 1 : undefined, hoverStyle: view === v ? undefined : {"backgroundColor":"white","color":"$color"} }}
               >
                 {v}
-              </button>
+              </Button>
             ))}
-          </div>
-          <button
+          </XStack>
+          <Button
             type="button"
             onClick={onClose}
             title="Close details"
-            className="grid size-7 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            width={28} height={28} alignItems="center" justifyContent="center" borderRadius="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
           >
-            <X className="size-4" />
-          </button>
-        </div>
-      </div>
+            <X size={16} />
+          </Button>
+        </XStack>
+      </XStack>
 
-      <div className="min-h-0 flex-1 overflow-y-auto [scrollbar-width:thin]">
+      <YStack minHeight={0} flex={1} overflow="scroll" className="[scrollbar-width:thin]">
         {view === "timeline" ? (
           <Timeline rev={rev} commit={commit} />
         ) : (
           <Changes rev={rev} files={files} onMention={mention} />
         )}
-      </div>
-    </div>
+      </YStack>
+    </SizableText>
   );
 }
 
@@ -224,24 +219,24 @@ function Changes({
 }) {
   if (files === "loading") {
     return (
-      <div className="flex items-center gap-2 px-4 py-8 text-sm text-muted-foreground">
-        <Loader2 className="size-4 animate-spin motion-reduce:animate-none" />
+      <SizableText alignItems="center" gap="$2" paddingHorizontal="$4" paddingVertical="$6" fontSize="$3" color="$color11" display="flex" flexDirection="row">
+        <Loader2 size={16} />
         Loading changes…
-      </div>
+      </SizableText>
     );
   }
   if (files === "error") {
-    return <p className="px-4 py-8 text-sm text-muted-foreground">Couldn&apos;t load the diff for this revision.</p>;
+    return <Paragraph paddingHorizontal="$4" paddingVertical="$6" fontSize="$3" color="$color11">Couldn&apos;t load the diff for this revision.</Paragraph>;
   }
   if (files.length === 0) {
-    return <p className="px-4 py-8 text-sm text-muted-foreground">No file changes in this revision.</p>;
+    return <Paragraph paddingHorizontal="$4" paddingVertical="$6" fontSize="$3" color="$color11">No file changes in this revision.</Paragraph>;
   }
   return (
-    <div className="space-y-2 p-3">
+    <YStack rowGap="$2" padding="$3">
       {files.map((f) => (
         <FileCard key={f.path} file={f} isCommit={rev.kind === "commit"} onMention={onMention} />
       ))}
-    </div>
+    </YStack>
   );
 }
 
@@ -257,37 +252,34 @@ function FileCard({
   const [open, setOpen] = useState(false);
   const stat = useMemo(() => diffStat(file.lines), [file.lines]);
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-white/[0.02]">
-      <div className="flex items-center gap-2 px-3 py-2">
-        <button
+    <YStack overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="white">
+      <XStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$2">
+        <Button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="flex min-w-0 flex-1 items-center gap-2 text-left"
+          minWidth={0} flex={1} alignItems="center" gap="$2" textAlign="left"
         >
           <ChevronRight
-            className={classNames(
-              "size-3.5 shrink-0 text-muted-foreground transition-transform duration-150 motion-reduce:transition-none",
-              open && "rotate-90",
-            )}
-          />
+            size={14} color="$color11"
+  />
           <StatusBadge status={file.status} />
-          <span className="truncate font-mono text-xs text-foreground">{file.path}</span>
-          <span className="ml-1 shrink-0 font-mono text-[10px] text-muted-foreground">
-            <span className="text-emerald-400/80">+{stat.added}</span>{" "}
-            <span className="text-red-400/80">−{stat.removed}</span>
-          </span>
-        </button>
-        <div className="flex shrink-0 items-center gap-0.5">
+          <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">{file.path}</SizableText>
+          <SizableText marginLeft="$1" flexShrink={0} fontFamily="$mono" fontSize={10} color="$color11">
+            <SizableText color="$green8">+{stat.added}</SizableText>{" "}
+            <SizableText color="$red8">−{stat.removed}</SizableText>
+          </SizableText>
+        </Button>
+        <XStack flexShrink={0} alignItems="center" gap="$0.5">
           {isCommit && file.viewUrl && (
             <IconBtn
               title="View file"
               onClick={() => window.open(file.viewUrl, "_blank", "noopener,noreferrer")}
             >
-              <ExternalLink className="size-3.5" />
+              <ExternalLink size={14} />
             </IconBtn>
           )}
           <IconBtn title="Mention in chat" onClick={() => onMention(file.path)}>
-            <AtSign className="size-3.5" />
+            <AtSign size={14} />
           </IconBtn>
           <IconBtn
             title="Copy path"
@@ -296,12 +288,12 @@ function FileCard({
               toast.success("Copied path");
             }}
           >
-            <Copy className="size-3.5" />
+            <Copy size={14} />
           </IconBtn>
-        </div>
-      </div>
+        </XStack>
+      </XStack>
       {open && <DiffView lines={file.lines} />}
-    </div>
+    </YStack>
   );
 }
 
@@ -309,49 +301,39 @@ function FileCard({
 function DiffView({ lines }: { lines: DiffLine[] }) {
   if (lines.length === 0) {
     return (
-      <div className="border-t border-border px-3 py-2 font-mono text-[11px] text-muted-foreground">
+      <SizableText borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$2" fontFamily="$mono" fontSize={11} color="$color11" display="flex" flexDirection="column">
         No inline diff available — view the file to see its contents.
-      </div>
+      </SizableText>
     );
   }
   return (
-    <div className="overflow-x-auto border-t border-border bg-background/30">
-      <table className="w-full border-collapse font-mono text-[11px] leading-relaxed">
+    <YStack borderTopWidth={1} borderColor="$borderColor" backgroundColor="$background" overflow="scroll">
+      <SizableText width="100%" borderCollapse="collapse" fontFamily="$mono" fontSize={11} lineHeight={1.625} display="flex" flexDirection="column">
         <tbody>
           {lines.map((l, i) => (
-            <tr
+            <YStack
               key={i}
-              className={classNames(
-                l.type === "add" && "bg-emerald-500/[0.08]",
-                l.type === "del" && "bg-red-500/[0.08]",
-                l.type === "hunk" && "bg-white/[0.04]",
-              )}
+              {...{ backgroundColor: l.type === "hunk" ? "white" : l.type === "del" ? "$red9" : l.type === "add" ? "$green9" : undefined }}
             >
-              <td className="select-none border-r border-border px-2 text-right text-muted-foreground tabular-nums">
+              <SizableText userSelect="none" borderRightWidth={1} borderColor="$borderColor" paddingHorizontal="$2" textAlign="right" color="$color11" fontVariant="tabular-nums">
                 {l.oldNo ?? ""}
-              </td>
-              <td className="select-none border-r border-border px-2 text-right text-muted-foreground tabular-nums">
+              </SizableText>
+              <SizableText userSelect="none" borderRightWidth={1} borderColor="$borderColor" paddingHorizontal="$2" textAlign="right" color="$color11" fontVariant="tabular-nums">
                 {l.newNo ?? ""}
-              </td>
-              <td
-                className={classNames(
-                  "w-full whitespace-pre px-2",
-                  l.type === "add" && "text-emerald-200/90",
-                  l.type === "del" && "text-red-200/90",
-                  l.type === "hunk" && "text-muted-foreground",
-                  l.type === "ctx" && "text-muted-foreground",
-                )}
+              </SizableText>
+              <SizableText
+                width="100%" whiteSpace="pre" paddingHorizontal="$2" {...{ color: l.type === "ctx" ? "$color11" : l.type === "hunk" ? "$color11" : l.type === "del" ? "$red3" : l.type === "add" ? "$green3" : undefined }}
               >
-                <span className="select-none text-muted-foreground">
+                <SizableText userSelect="none" color="$color11">
                   {l.type === "add" ? "+" : l.type === "del" ? "−" : l.type === "hunk" ? "" : " "}
-                </span>
+                </SizableText>
                 {l.text}
-              </td>
-            </tr>
+              </SizableText>
+            </YStack>
           ))}
         </tbody>
-      </table>
-    </div>
+      </SizableText>
+    </YStack>
   );
 }
 
@@ -359,21 +341,21 @@ function DiffView({ lines }: { lines: DiffLine[] }) {
 function Timeline({ rev, commit }: { rev: DetailsRev; commit: GitCommit | null }) {
   const rows: { label: string; value: ReactNode }[] = [];
   if (rev.kind === "commit") {
-    rows.push({ label: "Commit", value: <span className="font-mono">{rev.shortSha}</span> });
+    rows.push({ label: "Commit", value: <SizableText fontFamily="$mono">{rev.shortSha}</SizableText> });
     rows.push({ label: "Author", value: rev.author });
     rows.push({ label: "When", value: new Date(rev.at).toLocaleString() });
     if (rev.url)
       rows.push({
         label: "Link",
         value: (
-          <a
+          <Anchor
             href={rev.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-foreground hover:text-foreground"
+            alignItems="center" gap="$1" color="$color" hoverStyle={{ color: "$color" }}
           >
-            View on provider <ExternalLink className="size-3" />
-          </a>
+            View on provider <ExternalLink size={12} />
+          </Anchor>
         ),
       });
   } else {
@@ -385,34 +367,34 @@ function Timeline({ rev, commit }: { rev: DetailsRev; commit: GitCommit | null }
   const fullMessage = rev.kind === "commit" ? commit?.rawMessage || rev.message : rev.title;
 
   return (
-    <div className="space-y-4 p-4">
-      <div className="flex items-center gap-2 text-[13px] font-medium text-foreground">
-        <GitCommitHorizontal className="size-4 text-muted-foreground" />
+    <YStack rowGap="$4" padding="$4">
+      <SizableText alignItems="center" gap="$2" fontSize={13} fontWeight="500" color="$color" display="flex" flexDirection="row">
+        <GitCommitHorizontal size={16} color="$color11" />
         {rev.title}
-      </div>
-      <dl className="space-y-1.5">
+      </SizableText>
+      <YStack rowGap="$1.5">
         {rows.map((r) => (
-          <div key={r.label} className="flex gap-3 text-xs">
-            <dt className="w-16 shrink-0 text-muted-foreground">{r.label}</dt>
-            <dd className="min-w-0 flex-1 text-foreground">{r.value}</dd>
-          </div>
+          <SizableText key={r.label} gap="$3" fontSize="$1" display="flex" flexDirection="row">
+            <SizableText width="$10" flexShrink={0} color="$color11">{r.label}</SizableText>
+            <SizableText minWidth={0} flex={1} color="$color">{r.value}</SizableText>
+          </SizableText>
         ))}
-      </dl>
+      </YStack>
       {fullMessage && (
         <div>
-          <div className="mb-1 flex items-center gap-1.5 text-[11px] uppercase tracking-wide text-muted-foreground">
-            <FileText className="size-3" />
+          <SizableText marginBottom="$1" alignItems="center" gap="$1.5" fontSize={11} textTransform="uppercase" letterSpacing={0.4} color="$color11" display="flex" flexDirection="row">
+            <FileText size={12} />
             Message
-          </div>
-          <pre className="whitespace-pre-wrap rounded-lg border border-border bg-white/[0.02] p-3 font-mono text-[11px] leading-relaxed text-foreground">
+          </SizableText>
+          <SizableText whiteSpace="pre" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="white" padding="$3" fontFamily="$mono" fontSize={11} lineHeight={1.625} color="$color">
             {fullMessage}
-          </pre>
+          </SizableText>
         </div>
       )}
-      <p className="text-[11px] text-muted-foreground">
+      <Paragraph fontSize={11} color="$color11">
         Step-by-step agent activity for a revision appears here as the builder records it.
-      </p>
-    </div>
+      </Paragraph>
+    </YStack>
   );
 }
 
@@ -424,14 +406,11 @@ function StatusBadge({ status }: { status: GitCommitFile["status"] }) {
         ? "border-red-400/20 text-red-300/90"
         : "border-border text-muted-foreground";
   return (
-    <span
-      className={classNames(
-        "shrink-0 rounded-md border px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide",
-        tone,
-      )}
+    <SizableText
+      flexShrink={0} borderRadius="$3" borderWidth={1} paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.4} className={`${tone}`}
     >
       {STATUS_LABEL[status]}
-    </span>
+    </SizableText>
   );
 }
 
@@ -445,13 +424,13 @@ function IconBtn({
   children: ReactNode;
 }) {
   return (
-    <button
+    <Button
       type="button"
       title={title}
       onClick={onClick}
-      className="grid size-6 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+      width="$5" height="$5" alignItems="center" justifyContent="center" borderRadius="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
     >
       {children}
-    </button>
+    </Button>
   );
 }

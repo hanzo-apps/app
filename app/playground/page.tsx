@@ -1,40 +1,12 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { YStack, XStack, SizableText, H1, Paragraph } from '@hanzo/gui';
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  ArrowLeft,
-  Play,
-  Copy,
-  Download,
-  Settings,
-  RefreshCw,
-  Loader2,
-  Split,
-  Maximize2,
-  Minimize2,
-  ChevronDown,
-  Sparkles,
-  Zap,
-  Code2,
-  FileText,
-  Hash,
-  Clock,
-  DollarSign,
-  AlertCircle,
-  CheckCircle,
-  Share2,
-  Save,
-  History,
-  BarChart3
-} from "lucide-react";
-import { Button, Textarea, Badge, Card, CardContent, CardDescription, CardHeader, CardTitle, Slider, Switch, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel, Tabs, TabsContent, TabsList, TabsTrigger, ScrollArea, toast } from '@hanzo/ui';
-import { HanzoLogo } from "@/components/HanzoLogo";
+import { ArrowLeft, Copy, Download, Settings, RefreshCw, Loader2, Split, Sparkles, Hash, Clock, DollarSign, Share2, History } from "lucide-react";
+import { Button, Textarea, Badge, Card, CardContent, CardDescription, CardHeader, CardTitle, Slider, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, ScrollArea, toast } from '@hanzo/ui';
 import { DEFAULT_MODEL } from "@/lib/providers";
 import { useModels } from "@/lib/hooks/use-models";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
-
 interface ModelConfig {
   model: string;
   temperature: number;
@@ -181,113 +153,113 @@ export default function PlaygroundPage() {
   };
 
   const ModelConfigPanel = ({ config, setConfig, side }: { config: ModelConfig, setConfig: any, side: "left" | "right" }) => (
-    <div className="space-y-4">
-      <div className="space-y-2">
+    <YStack rowGap="$4">
+      <YStack rowGap="$2">
         <Label>Model</Label>
         <Select value={config.model} onValueChange={(value: string) => setConfig({ ...config, model: value })}>
-          <SelectTrigger className="bg-card border-border">
+          <SelectTrigger backgroundColor="$background" borderColor="$borderColor">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             {models.map(model => (
               <SelectItem key={model.value} value={model.value}>
-                <div className="flex items-center justify-between w-full">
+                <XStack alignItems="center" justifyContent="space-between" width="100%">
                   <span>{model.label}</span>
-                </div>
+                </XStack>
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </YStack>
 
-      <div className="space-y-2">
-        <div className="flex justify-between">
+      <YStack rowGap="$2">
+        <XStack justifyContent="space-between">
           <Label>Temperature</Label>
-          <span className="text-xs text-muted-foreground">{config.temperature}</span>
-        </div>
+          <SizableText fontSize="$1" color="$color11">{config.temperature}</SizableText>
+        </XStack>
         <Slider
           value={[config.temperature]}
           onValueChange={([value]: number[]) => setConfig({ ...config, temperature: value })}
           min={0}
           max={1}
           step={0.1}
-          className="w-full"
-        />
-      </div>
+          width="100%"
+  />
+      </YStack>
 
-      <div className="space-y-2">
-        <div className="flex justify-between">
+      <YStack rowGap="$2">
+        <XStack justifyContent="space-between">
           <Label>Max Tokens</Label>
-          <span className="text-xs text-muted-foreground">{config.maxTokens}</span>
-        </div>
+          <SizableText fontSize="$1" color="$color11">{config.maxTokens}</SizableText>
+        </XStack>
         <Slider
           value={[config.maxTokens]}
           onValueChange={([value]: number[]) => setConfig({ ...config, maxTokens: value })}
           min={256}
           max={8192}
           step={256}
-          className="w-full"
-        />
-      </div>
+          width="100%"
+  />
+      </YStack>
 
-      <div className="space-y-2">
-        <div className="flex justify-between">
+      <YStack rowGap="$2">
+        <XStack justifyContent="space-between">
           <Label>Top P</Label>
-          <span className="text-xs text-muted-foreground">{config.topP}</span>
-        </div>
+          <SizableText fontSize="$1" color="$color11">{config.topP}</SizableText>
+        </XStack>
         <Slider
           value={[config.topP]}
           onValueChange={([value]: number[]) => setConfig({ ...config, topP: value })}
           min={0}
           max={1}
           step={0.05}
-          className="w-full"
-        />
-      </div>
+          width="100%"
+  />
+      </YStack>
 
-      <div className="space-y-2">
+      <YStack rowGap="$2">
         <Label>System Prompt</Label>
         <Textarea
           value={config.systemPrompt}
           onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setConfig({ ...config, systemPrompt: e.target.value })}
-          className="bg-card border-border text-foreground min-h-[80px]"
+          backgroundColor="$background" borderColor="$borderColor" color="$color" minHeight={80}
           placeholder="Enter system prompt..."
-        />
-      </div>
-    </div>
+  />
+      </YStack>
+    </YStack>
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <YStack minHeight="100%" backgroundColor="$background">
       {/* Header */}
-      <header className="border-b border-border px-6 py-4">
-        <div className="container mx-auto">
-          <div className="flex flex-wrap items-center justify-between gap-y-3">
-            <div className="flex items-center gap-4">
+      <YStack borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$5" paddingVertical="$4">
+        <YStack width="100%" maxWidth={1280} alignSelf="center">
+          <XStack flexWrap="wrap" alignItems="center" justifyContent="space-between" rowGap="$3">
+            <XStack alignItems="center" gap="$4">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => router.back()}
-                className="gap-2"
+                gap="$2"
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft size={16} />
                 Back
               </Button>
-              <h1 className="text-2xl font-medium text-foreground">Playground</h1>
+              <H1 fontSize="$8" fontWeight="500" color="$color">Playground</H1>
               <Badge variant="outline">Compare Models</Badge>
-            </div>
+            </XStack>
 
-            <div className="flex flex-wrap items-center gap-2">
+            <XStack flexWrap="wrap" alignItems="center" gap="$2">
               <Select value={selectedPreset} onValueChange={applyPreset}>
-                <SelectTrigger className="w-full sm:w-[180px] bg-card border-border">
+                <SelectTrigger width="100%" backgroundColor="$background" borderColor="$borderColor" $sm={{ width: 180 }}>
                   <SelectValue placeholder="Select preset" />
                 </SelectTrigger>
                 <SelectContent>
                   {presets.map(preset => (
                     <SelectItem key={preset.value} value={preset.value}>
                       <div>
-                        <p className="font-medium">{preset.label}</p>
-                        <p className="text-xs text-muted-foreground">{preset.description}</p>
+                        <Paragraph fontWeight="500">{preset.label}</Paragraph>
+                        <Paragraph fontSize="$1" color="$color11">{preset.description}</Paragraph>
                       </div>
                     </SelectItem>
                   ))}
@@ -298,85 +270,85 @@ export default function PlaygroundPage() {
                 variant={splitView ? "default" : "outline"}
                 size="sm"
                 onClick={() => setSplitView(!splitView)}
-                className="gap-2"
+                gap="$2"
               >
-                <Split className="w-4 h-4" />
+                <Split size={16} />
                 {splitView ? "Split" : "Single"}
               </Button>
 
-              <Button variant="outline" size="sm" className="gap-2">
-                <History className="w-4 h-4" />
+              <Button variant="outline" size="sm" gap="$2">
+                <History size={16} />
                 History
               </Button>
 
-              <Button variant="outline" size="sm" className="gap-2">
-                <Share2 className="w-4 h-4" />
+              <Button variant="outline" size="sm" gap="$2">
+                <Share2 size={16} />
                 Share
               </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+            </XStack>
+          </XStack>
+        </YStack>
+      </YStack>
 
-      <div className="container mx-auto px-6 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-6">
+      <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$5">
+        <YStack gap="$5">
           {/* Left Panel - Prompt Input */}
-          <div className="col-span-full md:col-span-5 lg:col-span-3">
-            <Card className="bg-card border-border">
+          <YStack>
+            <Card backgroundColor="$background" borderColor="$borderColor">
               <CardHeader>
                 <CardTitle>Prompt</CardTitle>
                 <CardDescription>Enter your prompt and configure models</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
+              <CardContent rowGap="$4">
+                <YStack rowGap="$2">
+                  <XStack justifyContent="space-between" alignItems="center">
                     <Label>Quick Templates</Label>
-                    <Button variant="ghost" size="sm" className="h-6 text-xs">
+                    <Button variant="ghost" size="sm" height="$5" fontSize="$1">
                       View All
                     </Button>
-                  </div>
-                  <div className="space-y-1">
+                  </XStack>
+                  <YStack rowGap="$1">
                     {promptTemplates.slice(0, 3).map((template, i) => (
                       <Button
                         key={i}
                         variant="ghost"
                         size="sm"
-                        className="w-full justify-start text-xs h-8"
+                        width="100%" justifyContent="flex-start" fontSize="$1" height="$6"
                         onClick={() => setPrompt(template.prompt)}
                       >
                         {template.label}
                       </Button>
                     ))}
-                  </div>
-                </div>
+                  </YStack>
+                </YStack>
 
-                <div className="space-y-2">
+                <YStack rowGap="$2">
                   <Label>Your Prompt</Label>
                   <Textarea
                     value={prompt}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPrompt(e.target.value)}
                     placeholder="Enter your prompt here..."
-                    className="bg-muted border-border text-foreground min-h-[150px]"
-                  />
-                  <div className="flex justify-between text-xs text-muted-foreground">
+                    backgroundColor="$color3" borderColor="$borderColor" color="$color" minHeight={150}
+  />
+                  <SizableText justifyContent="space-between" fontSize="$1" color="$color11" display="flex" flexDirection="row">
                     <span>{prompt.length} characters</span>
                     <span>~{Math.ceil(prompt.length / 4)} tokens</span>
-                  </div>
-                </div>
+                  </SizableText>
+                </YStack>
 
                 <Button
                   onClick={handleGenerate}
                   disabled={isGenerating || !prompt.trim()}
-                  className="w-full gap-2"
+                  width="100%" gap="$2"
                 >
                   {isGenerating ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 size={16} />
                       Generating...
                     </>
                   ) : (
                     <>
-                      <Sparkles className="w-4 h-4" />
+                      <Sparkles size={16} />
                       Generate
                     </>
                   )}
@@ -384,288 +356,283 @@ export default function PlaygroundPage() {
 
                 {/* Recent Results */}
                 {results.length > 0 && (
-                  <div className="space-y-2 pt-4 border-t border-border">
+                  <YStack rowGap="$2" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
                     <Label>Recent Comparisons</Label>
-                    <ScrollArea className="h-[200px]">
-                      <div className="space-y-2">
+                    <ScrollArea height={200}>
+                      <YStack rowGap="$2">
                         {results.slice(0, 5).map(result => (
-                          <button
+                          <Button
                             key={result.id}
                             onClick={() => setActiveResult(result)}
-                            className={cn(
-                              "w-full text-left p-2 rounded-lg transition-colors",
-                              activeResult?.id === result.id
-                                ? "bg-purple-500/20 border border-purple-500/30"
-                                : "bg-muted hover:bg-accent"
-                            )}
+                            width="100%" textAlign="left" padding="$2" borderRadius="$5" {...{ backgroundColor: activeResult?.id === result.id ? "$purple9" : "$color3", borderWidth: activeResult?.id === result.id ? 1 : undefined, borderColor: activeResult?.id === result.id ? "$purple9" : undefined, hoverStyle: activeResult?.id === result.id ? undefined : {"backgroundColor":"$color3"} }}
                           >
-                            <p className="text-xs text-muted-foreground mb-1">
+                            <Paragraph fontSize="$1" color="$color11" marginBottom="$1">
                               {result.timestamp.toLocaleTimeString()}
-                            </p>
-                            <p className="text-sm text-foreground truncate">
+                            </Paragraph>
+                            <Paragraph fontSize="$3" color="$color" numberOfLines={1}>
                               {result.prompt}
-                            </p>
-                            <div className="flex gap-2 mt-1">
+                            </Paragraph>
+                            <XStack gap="$2" marginTop="$1">
                               {result.models.map(model => (
-                                <Badge key={model.model} variant="outline" className="text-xs">
+                                <Badge key={model.model} variant="outline" fontSize="$1">
                                   {model.model}
                                 </Badge>
                               ))}
-                            </div>
-                          </button>
+                            </XStack>
+                          </Button>
                         ))}
-                      </div>
+                      </YStack>
                     </ScrollArea>
-                  </div>
+                  </YStack>
                 )}
               </CardContent>
             </Card>
-          </div>
+          </YStack>
 
           {/* Main Content - Model Outputs */}
-          <div className="col-span-full md:col-span-7 lg:col-span-9">
-            <div className={cn("grid gap-4", splitView ? "grid-cols-1 xl:grid-cols-2" : "grid-cols-1")}>
+          <YStack>
+            <YStack gap="$4">
               {/* Left Model */}
-              <Card className="bg-card border-border">
+              <Card backgroundColor="$background" borderColor="$borderColor">
                 <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-muted-foreground rounded-full" />
-                      <CardTitle className="text-lg">{leftConfig.model}</CardTitle>
-                    </div>
+                  <XStack alignItems="center" justifyContent="space-between">
+                    <XStack alignItems="center" gap="$2">
+                      <YStack width="$2" height="$2" backgroundColor="$color11" borderRadius="$10" />
+                      <CardTitle fontSize="$6">{leftConfig.model}</CardTitle>
+                    </XStack>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="sm">
-                          <Settings className="w-4 h-4" />
+                          <Settings size={16} />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-80">
-                        <div className="p-4">
+                      <DropdownMenuContent align="end" width={320}>
+                        <YStack padding="$4">
                           <ModelConfigPanel config={leftConfig} setConfig={setLeftConfig} side="left" />
-                        </div>
+                        </YStack>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                  </div>
+                  </XStack>
                 </CardHeader>
                 <CardContent>
                   {activeResult ? (
-                    <div className="space-y-4">
-                      <ScrollArea className="h-[400px]">
-                        <div className="prose prose-invert max-w-none">
-                          <p className="whitespace-pre-wrap text-sm text-muted-foreground">
+                    <YStack rowGap="$4">
+                      <ScrollArea height={400}>
+                        <YStack maxWidth="none" className="prose prose-invert">
+                          <Paragraph whiteSpace="pre-wrap" fontSize="$3" color="$color11">
                             {activeResult.models[0]?.response || "No response"}
-                          </p>
-                        </div>
+                          </Paragraph>
+                        </YStack>
                       </ScrollArea>
 
                       {/* Metrics */}
-                      <div className="flex items-center gap-4 pt-4 border-t border-border">
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-muted-foreground" />
-                          <span className="text-xs text-muted-foreground">
+                      <XStack alignItems="center" gap="$4" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
+                        <XStack alignItems="center" gap="$1">
+                          <Clock size={12} color="$color11" />
+                          <SizableText fontSize="$1" color="$color11">
                             {activeResult.models[0]?.latency.toFixed(0)}ms
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Hash className="w-3 h-3 text-muted-foreground" />
-                          <span className="text-xs text-muted-foreground">
+                          </SizableText>
+                        </XStack>
+                        <XStack alignItems="center" gap="$1">
+                          <Hash size={12} color="$color11" />
+                          <SizableText fontSize="$1" color="$color11">
                             {activeResult.models[0]?.tokens} tokens
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <DollarSign className="w-3 h-3 text-muted-foreground" />
-                          <span className="text-xs text-muted-foreground">
+                          </SizableText>
+                        </XStack>
+                        <XStack alignItems="center" gap="$1">
+                          <DollarSign size={12} color="$color11" />
+                          <SizableText fontSize="$1" color="$color11">
                             ${activeResult.models[0]?.cost.toFixed(4)}
-                          </span>
-                        </div>
-                      </div>
+                          </SizableText>
+                        </XStack>
+                      </XStack>
 
                       {/* Actions */}
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="gap-2">
-                          <Copy className="w-3 h-3" />
+                      <XStack gap="$2">
+                        <Button variant="outline" size="sm" gap="$2">
+                          <Copy size={12} />
                           Copy
                         </Button>
-                        <Button variant="outline" size="sm" className="gap-2">
-                          <RefreshCw className="w-3 h-3" />
+                        <Button variant="outline" size="sm" gap="$2">
+                          <RefreshCw size={12} />
                           Regenerate
                         </Button>
-                        <Button variant="outline" size="sm" className="gap-2">
-                          <Download className="w-3 h-3" />
+                        <Button variant="outline" size="sm" gap="$2">
+                          <Download size={12} />
                           Export
                         </Button>
-                      </div>
-                    </div>
+                      </XStack>
+                    </YStack>
                   ) : (
-                    <div className="h-[400px] flex items-center justify-center">
-                      <div className="text-center">
-                        <Sparkles className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                        <p className="text-muted-foreground">Generate a response to see output</p>
-                      </div>
-                    </div>
+                    <XStack height={400} alignItems="center" justifyContent="center">
+                      <SizableText textAlign="center" display="flex" flexDirection="column">
+                        <Sparkles size={48} color="$color11" />
+                        <Paragraph color="$color11">Generate a response to see output</Paragraph>
+                      </SizableText>
+                    </XStack>
                   )}
                 </CardContent>
               </Card>
 
               {/* Right Model (if split view) */}
               {splitView && (
-                <Card className="bg-card border-border">
+                <Card backgroundColor="$background" borderColor="$borderColor">
                   <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-muted-foreground rounded-full" />
-                        <CardTitle className="text-lg">{rightConfig.model}</CardTitle>
-                      </div>
+                    <XStack alignItems="center" justifyContent="space-between">
+                      <XStack alignItems="center" gap="$2">
+                        <YStack width="$2" height="$2" backgroundColor="$color11" borderRadius="$10" />
+                        <CardTitle fontSize="$6">{rightConfig.model}</CardTitle>
+                      </XStack>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="sm">
-                            <Settings className="w-4 h-4" />
+                            <Settings size={16} />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-80">
-                          <div className="p-4">
+                        <DropdownMenuContent align="end" width={320}>
+                          <YStack padding="$4">
                             <ModelConfigPanel config={rightConfig} setConfig={setRightConfig} side="right" />
-                          </div>
+                          </YStack>
                         </DropdownMenuContent>
                       </DropdownMenu>
-                    </div>
+                    </XStack>
                   </CardHeader>
                   <CardContent>
                     {activeResult && activeResult.models[1] ? (
-                      <div className="space-y-4">
-                        <ScrollArea className="h-[400px]">
-                          <div className="prose prose-invert max-w-none">
-                            <p className="whitespace-pre-wrap text-sm text-muted-foreground">
+                      <YStack rowGap="$4">
+                        <ScrollArea height={400}>
+                          <YStack maxWidth="none" className="prose prose-invert">
+                            <Paragraph whiteSpace="pre-wrap" fontSize="$3" color="$color11">
                               {activeResult.models[1].response}
-                            </p>
-                          </div>
+                            </Paragraph>
+                          </YStack>
                         </ScrollArea>
 
                         {/* Metrics */}
-                        <div className="flex items-center gap-4 pt-4 border-t border-border">
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-3 h-3 text-muted-foreground" />
-                            <span className="text-xs text-muted-foreground">
+                        <XStack alignItems="center" gap="$4" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
+                          <XStack alignItems="center" gap="$1">
+                            <Clock size={12} color="$color11" />
+                            <SizableText fontSize="$1" color="$color11">
                               {activeResult.models[1].latency.toFixed(0)}ms
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Hash className="w-3 h-3 text-muted-foreground" />
-                            <span className="text-xs text-muted-foreground">
+                            </SizableText>
+                          </XStack>
+                          <XStack alignItems="center" gap="$1">
+                            <Hash size={12} color="$color11" />
+                            <SizableText fontSize="$1" color="$color11">
                               {activeResult.models[1].tokens} tokens
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <DollarSign className="w-3 h-3 text-muted-foreground" />
-                            <span className="text-xs text-muted-foreground">
+                            </SizableText>
+                          </XStack>
+                          <XStack alignItems="center" gap="$1">
+                            <DollarSign size={12} color="$color11" />
+                            <SizableText fontSize="$1" color="$color11">
                               ${activeResult.models[1].cost.toFixed(4)}
-                            </span>
-                          </div>
-                        </div>
+                            </SizableText>
+                          </XStack>
+                        </XStack>
 
                         {/* Actions */}
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm" className="gap-2">
-                            <Copy className="w-3 h-3" />
+                        <XStack gap="$2">
+                          <Button variant="outline" size="sm" gap="$2">
+                            <Copy size={12} />
                             Copy
                           </Button>
-                          <Button variant="outline" size="sm" className="gap-2">
-                            <RefreshCw className="w-3 h-3" />
+                          <Button variant="outline" size="sm" gap="$2">
+                            <RefreshCw size={12} />
                             Regenerate
                           </Button>
-                          <Button variant="outline" size="sm" className="gap-2">
-                            <Download className="w-3 h-3" />
+                          <Button variant="outline" size="sm" gap="$2">
+                            <Download size={12} />
                             Export
                           </Button>
-                        </div>
-                      </div>
+                        </XStack>
+                      </YStack>
                     ) : (
-                      <div className="h-[400px] flex items-center justify-center">
-                        <div className="text-center">
-                          <Sparkles className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                          <p className="text-muted-foreground">Generate a response to see output</p>
-                        </div>
-                      </div>
+                      <XStack height={400} alignItems="center" justifyContent="center">
+                        <SizableText textAlign="center" display="flex" flexDirection="column">
+                          <Sparkles size={48} color="$color11" />
+                          <Paragraph color="$color11">Generate a response to see output</Paragraph>
+                        </SizableText>
+                      </XStack>
                     )}
                   </CardContent>
                 </Card>
               )}
-            </div>
+            </YStack>
 
             {/* Comparison Stats */}
             {activeResult && splitView && activeResult.models.length > 1 && (
-              <Card className="mt-4 bg-card border-border">
+              <Card marginTop="$4" backgroundColor="$background" borderColor="$borderColor">
                 <CardHeader>
                   <CardTitle>Comparison Analysis</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-3 gap-4">
+                  <YStack gap="$4">
                     <div>
-                      <p className="text-sm text-muted-foreground mb-2">Speed Comparison</p>
-                      <div className="space-y-2">
+                      <Paragraph fontSize="$3" color="$color11" marginBottom="$2">Speed Comparison</Paragraph>
+                      <YStack rowGap="$2">
                         {activeResult.models.map(model => (
-                          <div key={model.model} className="flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">{model.model}</span>
-                            <span className="text-sm font-medium text-foreground">
+                          <XStack key={model.model} alignItems="center" justifyContent="space-between">
+                            <SizableText fontSize="$1" color="$color11">{model.model}</SizableText>
+                            <SizableText fontSize="$3" fontWeight="500" color="$color">
                               {model.latency.toFixed(0)}ms
-                            </span>
-                          </div>
+                            </SizableText>
+                          </XStack>
                         ))}
-                      </div>
+                      </YStack>
                       {activeResult.models[0].latency < activeResult.models[1].latency ? (
-                        <Badge className="mt-2 text-xs">
+                        <Badge marginTop="$2" fontSize="$1">
                           {leftConfig.model} is {((1 - activeResult.models[0].latency / activeResult.models[1].latency) * 100).toFixed(0)}% faster
                         </Badge>
                       ) : (
-                        <Badge className="mt-2 text-xs">
+                        <Badge marginTop="$2" fontSize="$1">
                           {rightConfig.model} is {((1 - activeResult.models[1].latency / activeResult.models[0].latency) * 100).toFixed(0)}% faster
                         </Badge>
                       )}
                     </div>
 
                     <div>
-                      <p className="text-sm text-muted-foreground mb-2">Token Usage</p>
-                      <div className="space-y-2">
+                      <Paragraph fontSize="$3" color="$color11" marginBottom="$2">Token Usage</Paragraph>
+                      <YStack rowGap="$2">
                         {activeResult.models.map(model => (
-                          <div key={model.model} className="flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">{model.model}</span>
-                            <span className="text-sm font-medium text-foreground">
+                          <XStack key={model.model} alignItems="center" justifyContent="space-between">
+                            <SizableText fontSize="$1" color="$color11">{model.model}</SizableText>
+                            <SizableText fontSize="$3" fontWeight="500" color="$color">
                               {model.tokens}
-                            </span>
-                          </div>
+                            </SizableText>
+                          </XStack>
                         ))}
-                      </div>
+                      </YStack>
                     </div>
 
                     <div>
-                      <p className="text-sm text-muted-foreground mb-2">Cost Analysis</p>
-                      <div className="space-y-2">
+                      <Paragraph fontSize="$3" color="$color11" marginBottom="$2">Cost Analysis</Paragraph>
+                      <YStack rowGap="$2">
                         {activeResult.models.map(model => (
-                          <div key={model.model} className="flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">{model.model}</span>
-                            <span className="text-sm font-medium text-foreground">
+                          <XStack key={model.model} alignItems="center" justifyContent="space-between">
+                            <SizableText fontSize="$1" color="$color11">{model.model}</SizableText>
+                            <SizableText fontSize="$3" fontWeight="500" color="$color">
                               ${model.cost.toFixed(4)}
-                            </span>
-                          </div>
+                            </SizableText>
+                          </XStack>
                         ))}
-                      </div>
+                      </YStack>
                       {activeResult.models[0].cost < activeResult.models[1].cost ? (
-                        <Badge variant="outline" className="mt-2 text-xs border-green-500/50 text-green-400">
+                        <Badge variant="outline" marginTop="$2" fontSize="$1" borderColor="$green9" color="$green8">
                           {leftConfig.model} is {((1 - activeResult.models[0].cost / activeResult.models[1].cost) * 100).toFixed(0)}% cheaper
                         </Badge>
                       ) : (
-                        <Badge variant="outline" className="mt-2 text-xs border-green-500/50 text-green-400">
+                        <Badge variant="outline" marginTop="$2" fontSize="$1" borderColor="$green9" color="$green8">
                           {rightConfig.model} is {((1 - activeResult.models[1].cost / activeResult.models[0].cost) * 100).toFixed(0)}% cheaper
                         </Badge>
                       )}
                     </div>
-                  </div>
+                  </YStack>
                 </CardContent>
               </Card>
             )}
-          </div>
-        </div>
-      </div>
-    </div>
+          </YStack>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }

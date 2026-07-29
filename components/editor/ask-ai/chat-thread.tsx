@@ -1,7 +1,8 @@
 "use client";
 
+import { Button } from '@hanzo/ui';
+import { YStack, XStack, SizableText } from '@hanzo/gui';
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import classNames from "classnames";
 import { Check, ChevronDown } from "lucide-react";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 
@@ -52,11 +53,9 @@ export function ChatThread({
   if (messages.length === 0) return null;
 
   return (
-    <div ref={scrollRef} className={classNames("overflow-y-auto px-3 pt-2", className)}>
-      <div
-        className={classNames("flex flex-col gap-2 pb-2", {
-          "min-h-full justify-center": messages.length <= 1,
-        })}
+    <YStack ref={scrollRef} paddingHorizontal="$3" paddingTop="$2" overflow="scroll" className={`${className}`}>
+      <YStack
+        gap="$2" paddingBottom="$2" {...{ minHeight: messages.length <= 1 ? "100%" : undefined, justifyContent: messages.length <= 1 ? "center" : undefined }}
       >
         {messages.map((m) =>
           m.role === "user" ? (
@@ -67,24 +66,24 @@ export function ChatThread({
             <AssistantMessage key={m.id} message={m} />
           )
         )}
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }
 
 function UserBubble({ text }: { text: string }) {
   return (
-    <div className="flex justify-end">
-      <div className="max-w-[85%] whitespace-pre-wrap break-words rounded-lg rounded-br-sm bg-secondary px-3 py-1.5 text-[13px] text-foreground">
+    <XStack justifyContent="flex-end">
+      <SizableText maxWidth="85%" whiteSpace="pre-wrap" wordBreak="break-word" borderRadius="$5" borderBottomRightRadius="$1" backgroundColor="$color4" paddingHorizontal="$3" paddingVertical="$1.5" fontSize={13} color="$color" display="flex" flexDirection="column">
         {text}
-      </div>
-    </div>
+      </SizableText>
+    </XStack>
   );
 }
 
 function SystemLine({ text }: { text: string }) {
   return (
-    <div className="py-0.5 text-center text-[11.5px] text-muted-foreground">{text}</div>
+    <SizableText paddingVertical="$0.5" textAlign="center" fontSize={11.5} color="$color11" display="flex" flexDirection="column">{text}</SizableText>
   );
 }
 
@@ -100,29 +99,29 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
   if (kind === "chat") {
     if (error) {
       return (
-        <div className="text-[12.5px] text-red-400/90">
+        <SizableText fontSize={12.5} color="$red8" display="flex" flexDirection="column">
           {text || "Something went wrong — please try again."}
-        </div>
+        </SizableText>
       );
     }
     return (
-      <div className="flex w-full justify-start">
-        <div className="max-w-[95%] break-words rounded-lg bg-muted/20 px-3 py-1.5 text-[13px] text-foreground">
+      <XStack width="100%" justifyContent="flex-start">
+        <SizableText maxWidth="95%" wordBreak="break-word" borderRadius="$5" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1.5" fontSize={13} color="$color" display="flex" flexDirection="column">
           {text ? (
-            <div className="flex flex-wrap items-end">
+            <XStack flexWrap="wrap" alignItems="flex-end">
               {/* Render the assistant reply as formatted markdown (headings, lists,
                   bold/italic, hr, links, fenced code) in the tight monochrome
                   register — never raw "## …" / "**…**" text. */}
               <MarkdownRenderer content={text} compact />
               {building && (
-                <span className="ml-0.5 inline-block h-3.5 w-[2px] translate-y-0.5 animate-pulse bg-foreground align-middle motion-reduce:animate-none" />
+                <SizableText marginLeft="$0.5" height="$3.5" width={2} y="$0.5" backgroundColor="$color" verticalAlign="middle" />
               )}
-            </div>
+            </XStack>
           ) : (
-            <span className="thread-shimmer-text text-[13px]">Thinking…</span>
+            <SizableText fontSize={13} className="thread-shimmer-text">Thinking…</SizableText>
           )}
-        </div>
-      </div>
+        </SizableText>
+      </XStack>
     );
   }
 
@@ -134,7 +133,7 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
   const files = activity ?? [];
 
   return (
-    <div className="flex w-full flex-col items-start gap-2">
+    <YStack width="100%" alignItems="flex-start" gap="$2">
       {showPlanCard && (
         <CollapsibleSection
           title={planning ? "Designing…" : "Plan"}
@@ -142,11 +141,11 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
           live={planning}
         >
           {hasPlanBody ? (
-            <div className="max-h-[220px] overflow-y-auto whitespace-pre-line text-[12.5px] leading-relaxed text-muted-foreground">
+            <SizableText maxHeight={220} whiteSpace="pre-line" fontSize={12.5} lineHeight={1.625} color="$color11" overflow="scroll" display="flex" flexDirection="column">
               {plan}
-            </div>
+            </SizableText>
           ) : (
-            <div className="text-[12.5px] text-muted-foreground">Analyzing your request…</div>
+            <SizableText fontSize={12.5} color="$color11" display="flex" flexDirection="column">Analyzing your request…</SizableText>
           )}
         </CollapsibleSection>
       )}
@@ -164,19 +163,19 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
               <ActivityItems labels={files} settled />
             </CollapsibleSection>
           )}
-          <div className="flex items-center gap-1.5 text-[12px] text-muted-foreground">
-            <Check className="size-3.5 text-[var(--brand-accent-muted)]" />
+          <SizableText alignItems="center" gap="$1.5" fontSize={12} color="$color11" display="flex" flexDirection="row">
+            <Check size={14} color="var(--brand-accent-muted)" />
             <span>{text || "Done"}</span>
-          </div>
+          </SizableText>
         </>
       )}
 
       {error && (
-        <div className="text-[12.5px] text-red-400/90">
+        <SizableText fontSize={12.5} color="$red8" display="flex" flexDirection="column">
           {text || "Something went wrong — please try again."}
-        </div>
+        </SizableText>
       )}
-    </div>
+    </YStack>
   );
 }
 
@@ -201,59 +200,53 @@ function CollapsibleSection({
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="w-full overflow-hidden rounded-lg border border-border bg-muted/20">
-      <button
+    <YStack width="100%" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
+      <Button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center justify-between px-3 py-1.5 text-left transition-colors duration-150 hover:bg-accent"
+        width="100%" alignItems="center" justifyContent="space-between" paddingHorizontal="$3" paddingVertical="$1.5" textAlign="left" hoverStyle={{ backgroundColor: "$color3" }}
       >
-        <span
-          className={classNames(
-            "text-[13px] font-medium",
-            live ? "thread-shimmer-text" : "text-muted-foreground"
-          )}
+        <SizableText
+          fontSize={13} fontWeight="500" {...{ color: live ? undefined : "$color11" }} className="thread-shimmer-text"
         >
           {title}
           {typeof count === "number" && !live ? (
-            <span className="text-muted-foreground/60"> · {count}</span>
+            <SizableText color="$color11"> · {count}</SizableText>
           ) : null}
-        </span>
+        </SizableText>
         <ChevronDown
-          className={classNames(
-            "size-3.5 text-muted-foreground transition-transform duration-200",
-            open && "rotate-180"
-          )}
-        />
-      </button>
-      {open && <div className="border-t border-border/70 px-3 py-2">{children}</div>}
-    </div>
+          size={14} color="$color11"
+  />
+      </Button>
+      {open && <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$2">{children}</YStack>}
+    </YStack>
   );
 }
 
 function ActivityItems({ labels, settled = false }: { labels: string[]; settled?: boolean }) {
   const shown = labels.length ? labels : ["Working…"];
   return (
-    <ul className="flex flex-col gap-1">
+    <YStack gap="$1">
       {shown.map((label, i) => {
         // While live, the LAST line is in flight (a pulsing accent dot); once
         // settled every line is a ✓. Concise task states — never a spinner.
         const active = !settled && i === shown.length - 1;
         return (
-          <li key={`${i}-${label}`} className="flex items-center gap-2 text-[12px]">
+          <SizableText key={`${i}-${label}`} alignItems="center" gap="$2" fontSize={12}>
             {active ? (
-              <span className="relative flex size-2 shrink-0 items-center justify-center">
-                <span className="absolute inline-flex size-2 animate-ping rounded-full bg-[var(--brand-accent)] opacity-60 motion-reduce:animate-none" />
-                <span className="relative inline-flex size-1.5 rounded-full bg-[var(--brand-accent)]" />
-              </span>
+              <SizableText position="relative" width="$2" height="$2" flexShrink={0} alignItems="center" justifyContent="center">
+                <SizableText position="absolute" width="$2" height="$2" borderRadius="$10" backgroundColor="var(--brand-accent)" opacity={0.6} />
+                <SizableText position="relative" width="$1.5" height="$1.5" borderRadius="$10" backgroundColor="var(--brand-accent)" />
+              </SizableText>
             ) : (
-              <Check className="size-3 shrink-0 text-muted-foreground" />
+              <Check size={12} color="$color11" />
             )}
-            <span className={active ? "thread-shimmer-text" : "text-muted-foreground"}>
+            <SizableText {...{ color: active ? undefined : "$color11" }} className="thread-shimmer-text">
               {label}
-            </span>
-          </li>
+            </SizableText>
+          </SizableText>
         );
       })}
-    </ul>
+    </YStack>
   );
 }

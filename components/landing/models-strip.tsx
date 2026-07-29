@@ -1,3 +1,6 @@
+'use client';
+
+import { YStack, Paragraph, H2, Anchor, XStack, SizableText, Image } from '@hanzo/gui';
 // "One API, 400+ models" — the real Hanzo AI. Provider logos are the
 // actual model providers Hanzo AI routes to (Zen models are Hanzo's own).
 // Rendered monochrome-white on true-black via CSS filter. The endpoint shown
@@ -22,40 +25,40 @@ const providers = [
 
 export default function ModelsStrip() {
   return (
-    <section className="relative border-t border-border px-4 py-20 md:px-8 md:py-24">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 [&>*]:min-w-0 lg:grid-cols-2 lg:gap-16">
+    <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
+      <YStack alignSelf="center" maxWidth={1152} alignItems="center" gap="$8" $lg={{ gap: "$10" }} className="[&>*]:min-w-0">
         <Reveal>
-          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+          <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
             Hanzo AI
-          </p>
-          <h2 className="mt-4 text-3xl font-medium tracking-tight md:text-4xl">
+          </Paragraph>
+          <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
             One API. 400+ models.
-          </h2>
-          <p className="mt-4 max-w-md text-base text-muted-foreground md:text-lg">
+          </H2>
+          <Paragraph marginTop="$4" maxWidth={448} fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
             Your app calls any frontier model — Hanzo&apos;s own Zen family plus
             Anthropic, OpenAI, Google, Mistral and more — through OpenAI-
             and Anthropic-compatible endpoints. Swap models with one string,
             and connect MCP tool servers the gateway can call mid-completion.
-          </p>
+          </Paragraph>
 
-          <a
+          <Anchor
             href="https://hanzo.ai/llm"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            marginTop="$5" alignItems="center" gap="$1.5" fontSize="$3" fontWeight="500" color="$color11" hoverStyle={{ color: "$color" }}
           >
             Explore the gateway
             <span aria-hidden>→</span>
-          </a>
+          </Anchor>
         </Reveal>
 
         <Reveal delay={100} className="rounded-2xl border border-border bg-card p-5">
-          <div className="mb-4 flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-foreground/15" />
-            <span className="h-2.5 w-2.5 rounded-full bg-foreground/15" />
-            <span className="h-2.5 w-2.5 rounded-full bg-foreground/15" />
-          </div>
-          <pre className="overflow-x-auto font-mono text-[12px] leading-relaxed text-foreground">
+          <XStack marginBottom="$4" alignItems="center" gap="$1.5">
+            <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
+            <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
+            <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
+          </XStack>
+          <SizableText fontFamily="$mono" fontSize={12} lineHeight={1.625} color="$color" overflow="scroll" whiteSpace="pre">
 {`POST https://api.hanzo.ai/v1/chat/completions
 Authorization: Bearer $HANZO_KEY
 
@@ -64,22 +67,22 @@ Authorization: Bearer $HANZO_KEY
   "messages": [{ "role": "user", "content": "…" }],
   "stream": true
 }`}
-          </pre>
+          </SizableText>
 
-          <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-5 border-t border-border pt-6">
+          <XStack marginTop="$5" flexWrap="wrap" alignItems="center" columnGap="$6" rowGap="$4.5" borderTopWidth={1} borderColor="$borderColor" paddingTop="$5">
             {providers.map((p) => (
               // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 key={p.alt}
                 src={p.src}
                 alt={p.alt}
                 style={{ width: p.w }}
-                className="h-4 w-auto object-contain opacity-40 transition-opacity duration-200 [filter:brightness(0)] dark:[filter:brightness(0)_invert(1)] hover:opacity-80 md:h-5"
-              />
+                height="$4" width="auto" objectFit="contain" opacity={0.4} hoverStyle={{ opacity: 0.8 }} $md={{ height: "$4.5" }}
+  />
             ))}
-          </div>
+          </XStack>
         </Reveal>
-      </div>
-    </section>
+      </YStack>
+    </YStack>
   );
 }

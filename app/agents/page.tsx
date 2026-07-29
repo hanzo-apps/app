@@ -9,6 +9,7 @@
  * recorded run output (or the recorded upstream failure).
  */
 
+import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
 import { useCallback, useEffect, useState } from "react";
 import {
   Activity,
@@ -27,10 +28,9 @@ import {
   Bot,
   Plus,
 } from "lucide-react";
-import { toast, Button, Input, Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@hanzo/ui';
+import { toast, Button, Input, Badge, Card, CardContent, CardDescription, CardHeader, CardTitle, Textarea } from '@hanzo/ui';
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { AppShell } from "@/components/app-shell";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 // The canonical cloud agentView shape (cloud/clients/agents/agents.go).
@@ -80,13 +80,13 @@ function statusColor(status: string) {
 function statusIcon(status: string) {
   switch (status) {
     case "ready":
-      return <CheckCircle2 className="w-4 h-4" />;
+      return <CheckCircle2 size={16} />;
     case "running":
-      return <Loader2 className="w-4 h-4 animate-spin" />;
+      return <Loader2 size={16} />;
     case "error":
-      return <XCircle className="w-4 h-4" />;
+      return <XCircle size={16} />;
     default:
-      return <AlertCircle className="w-4 h-4" />;
+      return <AlertCircle size={16} />;
   }
 }
 
@@ -223,35 +223,35 @@ export default function AgentsPage() {
 
   return (
     <AppShell currentView="agents">
-    <div className="flex-1 overflow-y-auto bg-background">
+    <YStack flex={1} backgroundColor="$background" overflow="scroll">
       {/* Header */}
-      <header className="border-b border-border px-4 py-4 sm:px-6">
-        <div className="container mx-auto">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex flex-wrap items-center gap-3">
-              <Link href="/" className="flex items-center gap-2">
+      <YStack borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$4" $sm={{ paddingHorizontal: "$5" }}>
+        <YStack width="100%" maxWidth={1280} alignSelf="center">
+          <YStack gap="$4" $sm={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+            <XStack flexWrap="wrap" alignItems="center" gap="$3">
+              <Link href="/"><XStack alignItems="center" gap="$2">
                 <HanzoLogo className="w-8 h-8 text-purple-500" />
-                <span className="text-xl font-medium text-foreground">Agents</span>
-              </Link>
+                <SizableText fontSize="$7" fontWeight="500" color="$color">Agents</SizableText>
+              </XStack></Link>
               {state.kind === "ready" && (
-                <Badge variant="outline" className="gap-1">
-                  <Activity className="w-3 h-3" />
+                <Badge variant="outline" gap="$1">
+                  <Activity size={12} />
                   {stats.total} {stats.total === 1 ? "agent" : "agents"}
                 </Badge>
               )}
-            </div>
+            </XStack>
 
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:flex lg:w-auto">
+            <YStack gap="$2" $lg={{ width: "auto" }}>
               <Link href="/dev">
-                <Button variant="outline" className="w-full gap-2 lg:w-auto">
-                  <Code2 className="w-4 h-4" />
+                <Button variant="outline" width="100%" gap="$2" $lg={{ width: "auto" }}>
+                  <Code2 size={16} />
                   Dev
                 </Button>
               </Link>
               {state.kind === "ready" && (
                 <Button
                   size="sm"
-                  className="gap-2"
+                  gap="$2"
                   onClick={() => {
                     setForm({
                       name: "",
@@ -261,7 +261,7 @@ export default function AgentsPage() {
                     setCreating(true);
                   }}
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus size={16} />
                   New Agent
                 </Button>
               )}
@@ -270,46 +270,43 @@ export default function AgentsPage() {
                 size="sm"
                 onClick={load}
                 disabled={state.kind === "loading"}
-                className="gap-2"
+                gap="$2"
               >
                 <RefreshCw
-                  className={cn(
-                    "w-4 h-4",
-                    state.kind === "loading" && "animate-spin"
-                  )}
-                />
+                  size={16}
+  />
                 Refresh
               </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+            </YStack>
+          </YStack>
+        </YStack>
+      </YStack>
 
-      <div className="container mx-auto px-4 py-6 sm:px-6">
+      <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$4" paddingVertical="$5" $sm={{ paddingHorizontal: "$5" }}>
         {/* Loading */}
         {state.kind === "loading" && (
-          <div className="flex flex-col items-center justify-center py-24 text-muted-foreground">
-            <Loader2 className="w-8 h-8 animate-spin mb-4" />
+          <SizableText flexDirection="column" alignItems="center" justifyContent="center" paddingVertical="$12" color="$color11" display="flex">
+            <Loader2 size={32} />
             <p>Loading agents…</p>
-          </div>
+          </SizableText>
         )}
 
         {/* Unauthenticated */}
         {state.kind === "unauthenticated" && (
-          <Card className="bg-card border-border mx-auto max-w-lg mt-12">
-            <CardHeader className="text-center">
-              <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-purple-500/10">
-                <Bot className="w-6 h-6 text-purple-400" />
-              </div>
-              <CardTitle className="text-foreground">Sign in to view agents</CardTitle>
+          <Card backgroundColor="$background" borderColor="$borderColor" alignSelf="center" maxWidth={512} marginTop="$8">
+            <CardHeader textAlign="center">
+              <XStack alignSelf="center" marginBottom="$2" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$10" backgroundColor="$purple9">
+                <Bot size={24} color="$purple8" />
+              </XStack>
+              <CardTitle color="$color">Sign in to view agents</CardTitle>
               <CardDescription>
                 Your agents are scoped to your organization. Sign in to see and
                 run them.
               </CardDescription>
             </CardHeader>
-            <CardContent className="flex justify-center">
+            <CardContent justifyContent="center">
               <Link href="/">
-                <Button className="gap-2">Sign in</Button>
+                <Button gap="$2">Sign in</Button>
               </Link>
             </CardContent>
           </Card>
@@ -317,21 +314,21 @@ export default function AgentsPage() {
 
         {/* Error */}
         {state.kind === "error" && (
-          <Card className="bg-red-950/20 border-red-900/50 mx-auto max-w-lg mt-12">
-            <CardHeader className="text-center">
-              <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10">
-                <AlertCircle className="w-6 h-6 text-red-400" />
-              </div>
-              <CardTitle className="text-foreground">
+          <Card backgroundColor="$red12" borderColor="$red12" alignSelf="center" maxWidth={512} marginTop="$8">
+            <CardHeader textAlign="center">
+              <XStack alignSelf="center" marginBottom="$2" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$10" backgroundColor="$red9">
+                <AlertCircle size={24} color="$red8" />
+              </XStack>
+              <CardTitle color="$color">
                 Couldn&apos;t load agents
               </CardTitle>
-              <CardDescription className="text-red-300">
+              <CardDescription color="$red4">
                 {state.message}
               </CardDescription>
             </CardHeader>
-            <CardContent className="flex justify-center">
-              <Button variant="outline" onClick={load} className="gap-2">
-                <RefreshCw className="w-4 h-4" />
+            <CardContent justifyContent="center">
+              <Button variant="outline" onClick={load} gap="$2">
+                <RefreshCw size={16} />
                 Try again
               </Button>
             </CardContent>
@@ -342,9 +339,9 @@ export default function AgentsPage() {
           <>
             {/* Create agent — name + model + instructions */}
             {creating && (
-              <Card className="bg-card border-border mb-6">
+              <Card backgroundColor="$background" borderColor="$borderColor" marginBottom="$5">
                 <CardHeader>
-                  <CardTitle className="text-base text-foreground">
+                  <CardTitle fontSize="$4" color="$color">
                     New agent
                   </CardTitle>
                   <CardDescription>
@@ -352,44 +349,44 @@ export default function AgentsPage() {
                     command.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="flex flex-col gap-3">
+                <CardContent flexDirection="column" gap="$3">
                   <Input
                     placeholder="Name (e.g. release-notes)"
-                    className="bg-card border-border"
+                    backgroundColor="$background" borderColor="$borderColor"
                     value={form.name}
                     disabled={submitting}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       setForm((f) => ({ ...f, name: e.target.value }))
                     }
-                  />
+  />
                   <Input
                     placeholder="Model (e.g. zen5)"
-                    className="bg-card border-border"
+                    backgroundColor="$background" borderColor="$borderColor"
                     value={form.model}
                     disabled={submitting}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       setForm((f) => ({ ...f, model: e.target.value }))
                     }
-                  />
-                  <textarea
+  />
+                  <Textarea
                     placeholder="Instructions — the agent's system prompt (optional)"
-                    className="min-h-24 rounded-md border border-border bg-card p-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+                    minHeight="$12" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$3" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0 }}
                     value={form.instructions}
                     disabled={submitting}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                       setForm((f) => ({ ...f, instructions: e.target.value }))
                     }
-                  />
-                  <div className="flex gap-2">
+  />
+                  <XStack gap="$2">
                     <Button
-                      className="gap-2"
+                      gap="$2"
                       disabled={submitting}
                       onClick={createAgent}
                     >
                       {submitting ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <Loader2 size={16} />
                       ) : (
-                        <Plus className="w-4 h-4" />
+                        <Plus size={16} />
                       )}
                       Create
                     </Button>
@@ -400,55 +397,55 @@ export default function AgentsPage() {
                     >
                       Cancel
                     </Button>
-                  </div>
+                  </XStack>
                 </CardContent>
               </Card>
             )}
 
             {/* Stats — responsive: 2 cols on phones, 4 on larger */}
-            <div className="grid grid-cols-2 gap-3 mb-6 sm:grid-cols-4 sm:gap-4">
+            <YStack gap="$3" marginBottom="$5" $sm={{ gap: "$4" }}>
               {[
                 { label: "Total", value: stats.total, tone: "text-foreground" },
                 { label: "Ready", value: stats.ready, tone: "text-green-400" },
                 { label: "Runs", value: stats.runs, tone: "text-foreground" },
                 { label: "Models", value: stats.models, tone: "text-foreground" },
               ].map((s) => (
-                <Card key={s.label} className="bg-card border-border">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-muted-foreground">
+                <Card key={s.label} backgroundColor="$background" borderColor="$borderColor">
+                  <CardHeader paddingBottom="$2">
+                    <CardTitle fontSize="$3" color="$color11">
                       {s.label}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className={cn("text-2xl font-medium", s.tone)}>{s.value}</p>
+                    <Paragraph fontSize="$8" fontWeight="500" className={`${s.tone}`}>{s.value}</Paragraph>
                   </CardContent>
                 </Card>
               ))}
-            </div>
+            </YStack>
 
             {/* Search */}
             {agents.length > 0 && (
-              <div className="relative mb-6 w-full max-w-md">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <YStack position="relative" marginBottom="$5" width="100%" maxWidth={448}>
+                <Search size={16} color="$color11" />
                 <Input
                   placeholder="Search agents…"
-                  className="pl-10 bg-card border-border"
+                  paddingLeft="$7" backgroundColor="$background" borderColor="$borderColor"
                   value={search}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setSearch(e.target.value)
                   }
-                />
-              </div>
+  />
+              </YStack>
             )}
 
             {/* Empty — no agents at all */}
             {agents.length === 0 && (
-              <Card className="bg-card border-border mx-auto max-w-lg mt-12">
-                <CardHeader className="text-center">
-                  <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-purple-500/10">
-                    <Bot className="w-6 h-6 text-purple-400" />
-                  </div>
-                  <CardTitle className="text-foreground">
+              <Card backgroundColor="$background" borderColor="$borderColor" alignSelf="center" maxWidth={512} marginTop="$8">
+                <CardHeader textAlign="center">
+                  <XStack alignSelf="center" marginBottom="$2" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$10" backgroundColor="$purple9">
+                    <Bot size={24} color="$purple8" />
+                  </XStack>
+                  <CardTitle color="$color">
                     Create your first agent
                   </CardTitle>
                   <CardDescription>
@@ -461,14 +458,14 @@ export default function AgentsPage() {
 
             {/* No search matches */}
             {agents.length > 0 && filtered.length === 0 && (
-              <p className="py-12 text-center text-muted-foreground">
+              <Paragraph paddingVertical="$8" textAlign="center" color="$color11">
                 No agents match “{search}”.
-              </p>
+              </Paragraph>
             )}
 
             {/* Agent grid — 1 col on phones, 2 on tablets, 3 on desktop */}
             {filtered.length > 0 && (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <YStack gap="$4">
                 {filtered.map((agent) => {
                   const isOpen = expanded === agent.name;
                   const result = results[agent.name];
@@ -476,69 +473,66 @@ export default function AgentsPage() {
                   return (
                     <Card
                       key={agent.id}
-                      className="bg-card border-border flex flex-col"
+                      backgroundColor="$background" borderColor="$borderColor" flexDirection="column"
                     >
-                      <CardHeader className="pb-3">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="min-w-0 space-y-1">
-                            <CardTitle className="text-base text-foreground truncate">
+                      <CardHeader paddingBottom="$3">
+                        <XStack alignItems="flex-start" justifyContent="space-between" gap="$2">
+                          <YStack minWidth={0} rowGap="$1">
+                            <CardTitle fontSize="$4" color="$color" ellipse numberOfLines={1}>
                               {agent.name}
                             </CardTitle>
-                            <CardDescription className="flex items-center gap-1 text-xs">
-                              <Terminal className="w-3 h-3 shrink-0" />
-                              <span className="truncate">{agent.model}</span>
+                            <CardDescription alignItems="center" gap="$1" fontSize="$1">
+                              <Terminal size={12} />
+                              <SizableText numberOfLines={1}>{agent.model}</SizableText>
                             </CardDescription>
-                          </div>
-                          <div
-                            className={cn(
-                              "flex items-center gap-1 shrink-0",
-                              statusColor(agent.status)
-                            )}
+                          </YStack>
+                          <XStack
+                            alignItems="center" gap="$1" flexShrink={0} className={`${statusColor(agent.status)}`}
                           >
                             {statusIcon(agent.status)}
-                            <span className="text-xs font-medium capitalize">
+                            <SizableText fontSize="$1" fontWeight="500" textTransform="capitalize">
                               {agent.status}
-                            </span>
-                          </div>
-                        </div>
+                            </SizableText>
+                          </XStack>
+                        </XStack>
                         {agent.description && (
-                          <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+                          <Paragraph marginTop="$2" fontSize="$3" color="$color11" numberOfLines={2}>
                             {agent.description}
-                          </p>
+                          </Paragraph>
                         )}
                       </CardHeader>
 
-                      <CardContent className="flex flex-1 flex-col gap-3 pt-0">
-                        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <Cpu className="w-3 h-3" />
+                      <CardContent flex={1} flexDirection="column" gap="$3" paddingTop="$0">
+                        <SizableText flexWrap="wrap" alignItems="center" gap="$2" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+                          <SizableText alignItems="center" gap="$1">
+                            <Cpu size={12} />
                             {agent.runs} {agent.runs === 1 ? "run" : "runs"}
-                          </span>
+                          </SizableText>
                           {agent.tools.length > 0 && (
-                            <span className="flex flex-wrap gap-1">
+                            <SizableText flexWrap="wrap" gap="$1">
                               {agent.tools.slice(0, 3).map((t) => (
                                 <Badge
                                   key={t}
                                   variant="outline"
-                                  className="text-[10px] py-0"
+                                  fontSize={10} paddingVertical="$0"
                                 >
                                   {t}
                                 </Badge>
                               ))}
                               {agent.tools.length > 3 && (
-                                <span className="text-muted-foreground">
+                                <SizableText color="$color11">
                                   +{agent.tools.length - 3}
-                                </span>
+                                </SizableText>
                               )}
-                            </span>
+                            </SizableText>
                           )}
-                        </div>
+                        </SizableText>
 
                         {/* Run input + action */}
-                        <div className="mt-auto flex flex-col gap-2 lg:flex-row">
+                        <YStack marginTop="auto" gap="$2" $lg={{ flexDirection: "row" }}>
                           <Input
                             placeholder="Message this agent…"
-                            className="bg-card border-border text-sm"
+                            backgroundColor="$background" borderColor="$borderColor" fontSize="$3"
                             value={inputs[agent.name] || ""}
                             disabled={isRunning}
                             onChange={(
@@ -555,60 +549,57 @@ export default function AgentsPage() {
                               if (e.key === "Enter" && !isRunning)
                                 runAgent(agent.name);
                             }}
-                          />
+  />
                           <Button
                             size="sm"
-                            className="gap-2 shrink-0"
+                            gap="$2" flexShrink={0}
                             disabled={isRunning}
                             onClick={() => runAgent(agent.name)}
                           >
                             {isRunning ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
+                              <Loader2 size={16} />
                             ) : (
-                              <Play className="w-4 h-4" />
+                              <Play size={16} />
                             )}
                             Run
                           </Button>
-                        </div>
+                        </YStack>
 
                         {/* View / collapse the latest run output */}
                         {result && (
                           <div>
-                            <button
+                            <Button
                               onClick={() =>
                                 setExpanded(isOpen ? null : agent.name)
                               }
-                              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                              alignItems="center" gap="$1" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}
                             >
                               {isOpen ? (
-                                <ChevronDown className="w-3 h-3" />
+                                <ChevronDown size={12} />
                               ) : (
-                                <ChevronRight className="w-3 h-3" />
+                                <ChevronRight size={12} />
                               )}
                               Latest run
-                              <span
-                                className={cn(
-                                  "ml-1",
-                                  statusColor(
+                              <SizableText
+                                marginLeft="$1" className={`${statusColor(
                                     result.status === "ok" ? "ready" : "error"
-                                  )
-                                )}
+                                  )}`}
                               >
                                 ({result.status}, {result.durationMs}ms)
-                              </span>
-                            </button>
+                              </SizableText>
+                            </Button>
                             {isOpen && (
-                              <div className="mt-2 rounded bg-card p-3">
+                              <YStack marginTop="$2" borderRadius="$2" backgroundColor="$background" padding="$3">
                                 {result.status === "ok" ? (
-                                  <pre className="whitespace-pre-wrap break-words text-xs text-muted-foreground max-h-64 overflow-y-auto">
+                                  <SizableText whiteSpace="pre" wordBreak="break-word" fontSize="$1" color="$color11" maxHeight={256} overflow="scroll" fontFamily="$mono">
                                     {result.output || "(empty response)"}
-                                  </pre>
+                                  </SizableText>
                                 ) : (
-                                  <pre className="whitespace-pre-wrap break-words text-xs text-red-400 max-h-64 overflow-y-auto">
+                                  <SizableText whiteSpace="pre" wordBreak="break-word" fontSize="$1" color="$red8" maxHeight={256} overflow="scroll" fontFamily="$mono">
                                     {result.error || "Run failed"}
-                                  </pre>
+                                  </SizableText>
                                 )}
-                              </div>
+                              </YStack>
                             )}
                           </div>
                         )}
@@ -616,12 +607,12 @@ export default function AgentsPage() {
                     </Card>
                   );
                 })}
-              </div>
+              </YStack>
             )}
           </>
         )}
-      </div>
-    </div>
+      </YStack>
+    </YStack>
     </AppShell>
   );
 }

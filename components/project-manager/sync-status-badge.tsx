@@ -1,5 +1,6 @@
 'use client';
 
+import { SizableText, Paragraph } from '@hanzo/gui';
 import { cn } from '@/lib/utils';
 import { ItemSyncStatus } from '@/lib/vfs/sync-types';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@hanzo/ui';
@@ -103,28 +104,21 @@ export function SyncStatusBadge({
   const padding = size === 'sm' ? 'px-1.5 py-0.5' : 'px-2 py-1';
 
   const badge = (
-    <span
-      className={cn(
-        'inline-flex items-center gap-1 rounded-full font-medium cursor-help',
-        padding,
-        config.bgClass,
-        config.colorClass,
-        textSize,
-        className
-      )}
+    <SizableText
+      alignItems="center" gap="$1" borderRadius="$10" fontWeight="500" cursor="help" className={`${padding} ${config.bgClass} ${config.colorClass} ${textSize} ${className}`}
     >
       <Icon
         className={cn(iconSize, status === 'syncing' && 'animate-spin')}
-      />
+  />
       {showLabel && <span>{config.label}</span>}
-    </span>
+    </SizableText>
   );
 
   return (
     <Tooltip>
       <TooltipTrigger asChild>{badge}</TooltipTrigger>
-      <TooltipContent side="top" className="max-w-xs">
-        <p className="text-sm">{config.description}</p>
+      <TooltipContent side="top" maxWidth={320}>
+        <Paragraph fontSize="$3">{config.description}</Paragraph>
       </TooltipContent>
     </Tooltip>
   );

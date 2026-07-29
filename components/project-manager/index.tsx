@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { XStack, SizableText, YStack, Paragraph, H4, H2 } from '@hanzo/gui';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Project, CustomTemplate, ProjectRuntime } from '@/lib/vfs/types';
 import { getProjectRuntimes } from '@/lib/runtimes/registry';
@@ -506,47 +507,47 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
 
   if (loading && !initialLoadComplete) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4">Loading projects...</p>
-        </div>
-      </div>
+      <XStack alignItems="center" justifyContent="center" height="100%">
+        <SizableText textAlign="center" display="flex" flexDirection="column">
+          <YStack borderRadius="$10" height="$8" width="$8" borderBottomWidth={2} borderColor="$color12" alignSelf="center"></YStack>
+          <Paragraph marginTop="$4">Loading projects...</Paragraph>
+        </SizableText>
+      </XStack>
     );
   }
 
   return (
-    <div className="flex flex-col h-[100dvh]" style={{ background: `linear-gradient(rgb(var(--tint) / 0.015), rgb(var(--tint) / 0.015)), var(--background)` }}>
+    <YStack height="100dvh" style={{ background: `linear-gradient(rgb(var(--tint) / 0.015), rgb(var(--tint) / 0.015)), var(--background)` }}>
       {/* Main Content */}
-      <main className="flex-1 min-h-0 overflow-auto">
-        <div className="h-full flex flex-col">
+      <YStack flex={1} minHeight={0} overflow="scroll">
+        <YStack height="100%">
             {/* Toolbar */}
-            <div className="pt-4 px-4 pb-3 sm:pt-6 sm:px-6 sm:pb-3 shrink-0">
-              <div className="mx-auto max-w-7xl flex flex-col sm:flex-row gap-3" data-tour-id="projects-actions">
+            <YStack paddingTop="$4" paddingHorizontal="$4" paddingBottom="$3" flexShrink={0} $sm={{ paddingTop: "$5", paddingHorizontal: "$5", paddingBottom: "$3" }}>
+              <YStack alignSelf="center" maxWidth={1280} gap="$3" $sm={{ flexDirection: "row" }} data-tour-id="projects-actions">
                 {/* Search */}
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <YStack position="relative" flex={1}>
+                  <Search size={16} color="$color11" />
                   <Input
                     placeholder="Search projects..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9"
-                  />
-                </div>
+                    paddingLeft={36}
+  />
+                </YStack>
 
                 {/* Controls */}
-                <div className="flex items-center gap-2">
+                <XStack alignItems="center" gap="$2">
                   {/* Sort */}
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button variant="outline" size="sm" className="gap-2">
-                        <ArrowUpDown className="h-4 w-4" />
-                        <span className="hidden sm:inline">Sort</span>
+                      <Button variant="outline" size="sm" gap="$2">
+                        <ArrowUpDown size={16} />
+                        <SizableText display="none">Sort</SizableText>
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-48" align="end">
-                      <div className="space-y-2">
-                        <h4 className="font-medium text-sm">Sort by</h4>
+                    <PopoverContent width="$19" align="end">
+                      <YStack rowGap="$2">
+                        <H4 fontWeight="500" fontSize="$3">Sort by</H4>
                         <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
                           <SelectTrigger>
                             <SelectValue />
@@ -557,77 +558,75 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
                             <SelectItem value="name">Name</SelectItem>
                           </SelectContent>
                         </Select>
-                      </div>
+                      </YStack>
                     </PopoverContent>
                   </Popover>
 
                   {/* View Mode */}
-                  <div className="flex border rounded-full">
+                  <XStack borderWidth={1} borderRadius="$10">
                     <Button
                       variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
                       size="sm"
                       onClick={() => setViewMode('grid')}
-                      className="rounded-r-none rounded-l-full"
+                      borderTopRightRadius={0} borderBottomRightRadius={0} borderTopLeftRadius="$10" borderBottomLeftRadius="$10"
                     >
-                      <LayoutGrid className="h-4 w-4" />
+                      <LayoutGrid size={16} />
                     </Button>
                     <Button
                       variant={viewMode === 'list' ? 'secondary' : 'ghost'}
                       size="sm"
                       onClick={() => setViewMode('list')}
-                      className="rounded-l-none rounded-r-full"
+                      borderTopLeftRadius={0} borderBottomLeftRadius={0} borderTopRightRadius="$10" borderBottomRightRadius="$10"
                     >
-                      <List className="h-4 w-4" />
+                      <List size={16} />
                     </Button>
-                  </div>
+                  </XStack>
 
                   {/* New Project */}
-                  <Button onClick={() => setCreateDialogOpen(true)} size="sm" className="gap-2" data-tour-id="new-project-button">
-                    <Plus className="h-4 w-4" />
+                  <Button onClick={() => setCreateDialogOpen(true)} size="sm" gap="$2" data-tour-id="new-project-button">
+                    <Plus size={16} />
                     <span>New</span>
                   </Button>
 
                   {/* Import */}
-                  <Button onClick={importProject} variant="outline" size="sm" className="gap-2">
-                    <Upload className="h-4 w-4" />
+                  <Button onClick={importProject} variant="outline" size="sm" gap="$2">
+                    <Upload size={16} />
                     <span>Import</span>
                   </Button>
-                </div>
-              </div>
-            </div>
+                </XStack>
+              </YStack>
+            </YStack>
 
             {/* Projects Grid/List */}
-            <div className="flex-1 px-4 pt-3 pb-4 sm:px-6 sm:pt-3 sm:pb-6">
-              <div className="mx-auto max-w-7xl">
+            <YStack flex={1} paddingHorizontal="$4" paddingTop="$3" paddingBottom="$4" $sm={{ paddingHorizontal: "$5", paddingTop: "$3", paddingBottom: "$5" }}>
+              <YStack alignSelf="center" maxWidth={1280}>
                 {filteredProjects.length === 0 ? (
-                  <div className="text-center py-12">
-                    <FolderOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h2 className="text-xl font-medium mb-2">
+                  <SizableText textAlign="center" paddingVertical="$8" display="flex" flexDirection="column">
+                    <FolderOpen size={48} color="$color11" />
+                    <H2 fontSize="$7" fontWeight="500" marginBottom="$2">
                       {searchQuery ? 'No projects found' : 'No projects yet'}
-                    </h2>
-                    <p className="text-muted-foreground mb-6">
+                    </H2>
+                    <Paragraph color="$color11" marginBottom="$5">
                       {searchQuery
                         ? 'Try a different search term'
                         : 'Create your first project to get started'}
-                    </p>
+                    </Paragraph>
                     {!searchQuery && (
-                      <div className="flex gap-3 justify-center">
+                      <XStack gap="$3" justifyContent="center">
                         <Button onClick={() => setCreateDialogOpen(true)}>
-                          <Plus className="mr-2 h-4 w-4" />
+                          <Plus size={16} />
                           Create Project
                         </Button>
                         <Button variant="outline" onClick={createDemoProject}>
-                          <FolderOpen className="mr-2 h-4 w-4" />
+                          <FolderOpen size={16} />
                           Create Demo Project
                         </Button>
-                      </div>
+                      </XStack>
                     )}
-                  </div>
+                  </SizableText>
                 ) : (
-                  <div
-                    className={viewMode === 'grid'
-                      ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
-                      : 'space-y-3'}
+                  <YStack
+                    {...{ gap: viewMode === 'grid' ? "$4" : undefined, rowGap: viewMode === 'grid' ? undefined : "$3" }}
                     data-tour-id="projects-list"
                   >
                     {filteredProjects.map(project => {
@@ -660,20 +659,20 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
                           viewMode={viewMode}
                           forceMenuOpen={tourActionProjectId === project.id}
                           highlightExport={tourRunning && tourStep === 'project-controls' && tourActionProjectId === project.id}
-                        />
+  />
                       );
                     })}
-                  </div>
+                  </YStack>
                 )}
-              </div>
-            </div>
-          </div>
-      </main>
+              </YStack>
+            </YStack>
+          </YStack>
+      </YStack>
 
       {/* Footer with Navigation Buttons - Hidden on mobile */}
       {!hideFooter && (
-        <footer className="hidden md:block border-t bg-card/50 py-3 px-6">
-          <div className="flex justify-center gap-2">
+        <YStack display="none" borderTopWidth={1} backgroundColor="$background" paddingVertical="$3" paddingHorizontal="$5">
+          <XStack justifyContent="center" gap="$2">
             <Button
               variant="outline"
               size="sm"
@@ -681,7 +680,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
               disabled={tourRunning}
               data-tour-id="footer-guided-tour"
             >
-              <Info className="mr-2 h-4 w-4" />
+              <Info size={16} />
               Guided Tour
             </Button>
             <Button
@@ -689,7 +688,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
               size="sm"
               onClick={() => router.push('/test-generation')}
             >
-              <TestTube className="mr-2 h-4 w-4" />
+              <TestTube size={16} />
               Benchmark
             </Button>
             <Button
@@ -697,7 +696,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
               size="sm"
               onClick={() => setAboutModalOpen(true)}
             >
-              <Info className="mr-2 h-4 w-4" />
+              <Info size={16} />
               About Hanzo App
             </Button>
             <Button
@@ -710,38 +709,38 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Github className="mr-2 h-4 w-4" />
+                <Github size={16} />
                 GitHub
               </a>
             </Button>
-          </div>
-        </footer>
+          </XStack>
+        </YStack>
       )}
 
       <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent $sm={{ maxWidth: 448 }}>
           <DialogHeader>
             <DialogTitle>Create New Project</DialogTitle>
             <DialogDescription>
               Start a new project
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <YStack rowGap="$4">
             <div>
-              <div className="flex justify-between items-center">
+              <XStack justifyContent="space-between" alignItems="center">
                 <Label htmlFor="name">Project Name</Label>
-                <span className="text-xs text-muted-foreground">
+                <SizableText fontSize="$1" color="$color11">
                   {newProjectName.length}/50
-                </span>
-              </div>
+                </SizableText>
+              </XStack>
               <Input
                 id="name"
                 value={newProjectName}
                 onChange={(e) => setNewProjectName(e.target.value.slice(0, 50))}
                 placeholder="My Awesome Website"
-                className="mt-2"
+                marginTop="$2"
                 maxLength={50}
-              />
+  />
             </div>
             <div>
               <Label htmlFor="runtime">Runtime</Label>
@@ -755,23 +754,23 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
                   setNewProjectTemplate(templates[0]?.id || 'blank');
                 }}
               >
-                <SelectTrigger id="runtime" className="mt-2 w-full">
-                  <div className="truncate flex-1 text-left">
+                <SelectTrigger id="runtime" marginTop="$2" width="100%">
+                  <SizableText numberOfLines={1} flex={1} textAlign="left" display="flex" flexDirection="column">
                     {getProjectRuntimes().find(r => r.value === newProjectRuntime)?.label}
-                  </div>
+                  </SizableText>
                 </SelectTrigger>
                 <SelectContent>
                   {getProjectRuntimes().map(rt => (
                     <SelectItem key={rt.value} value={rt.value}>
-                      <div className="flex flex-col gap-0.5">
-                        <div className="font-medium">{rt.label}</div>
-                        <div className="text-xs text-muted-foreground">{rt.description}</div>
-                      </div>
+                      <YStack gap="$0.5">
+                        <SizableText fontWeight="500" display="flex" flexDirection="column">{rt.label}</SizableText>
+                        <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">{rt.description}</SizableText>
+                      </YStack>
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-muted-foreground mt-1.5">You can change this later in project settings.</p>
+              <Paragraph fontSize="$1" color="$color11" marginTop="$1.5">You can change this later in project settings.</Paragraph>
             </div>
             <div>
               <Label htmlFor="template">Template</Label>
@@ -779,20 +778,20 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
                 value={newProjectTemplate}
                 onValueChange={setNewProjectTemplate}
               >
-                <SelectTrigger id="template" className="mt-2 w-full">
-                  <div className="truncate flex-1 text-left">
+                <SelectTrigger id="template" marginTop="$2" width="100%">
+                  <SizableText numberOfLines={1} flex={1} textAlign="left" display="flex" flexDirection="column">
                     {getTemplateDisplayName(newProjectTemplate)}
-                  </div>
+                  </SizableText>
                 </SelectTrigger>
                 <SelectContent>
                   {filteredBuiltInTemplates.length > 0 && (
                     <SelectGroup>
                       {filteredBuiltInTemplates.map(template => (
                         <SelectItem key={template.id} value={template.id}>
-                          <div className="flex flex-col gap-0.5">
-                            <div className="font-medium">{template.name}</div>
-                            <div className="text-xs text-muted-foreground">{template.description}</div>
-                          </div>
+                          <YStack gap="$0.5">
+                            <SizableText fontWeight="500" display="flex" flexDirection="column">{template.name}</SizableText>
+                            <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">{template.description}</SizableText>
+                          </YStack>
                         </SelectItem>
                       ))}
                     </SelectGroup>
@@ -804,10 +803,10 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
                         <SelectLabel>Custom Templates</SelectLabel>
                         {filtered.map(template => (
                           <SelectItem key={template.id} value={`custom:${template.id}`}>
-                            <div className="flex flex-col gap-0.5">
-                              <div className="font-medium">{template.name}</div>
-                              <div className="text-xs text-muted-foreground">{template.description}</div>
-                            </div>
+                            <YStack gap="$0.5">
+                              <SizableText fontWeight="500" display="flex" flexDirection="column">{template.name}</SizableText>
+                              <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">{template.description}</SizableText>
+                            </YStack>
                           </SelectItem>
                         ))}
                       </SelectGroup>
@@ -817,23 +816,23 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
               </Select>
             </div>
             <div>
-              <div className="flex justify-between items-center">
+              <XStack justifyContent="space-between" alignItems="center">
                 <Label htmlFor="description">Description (optional)</Label>
-                <span className="text-xs text-muted-foreground">
+                <SizableText fontSize="$1" color="$color11">
                   {newProjectDescription.length}/200
-                </span>
-              </div>
+                </SizableText>
+              </XStack>
               <Textarea
                 id="description"
                 value={newProjectDescription}
                 onChange={(e) => setNewProjectDescription(e.target.value.slice(0, 200))}
                 placeholder="A brief description of your project"
-                className="mt-2 resize-none"
+                marginTop="$2" resize="none"
                 rows={3}
                 maxLength={200}
-              />
+  />
             </div>
-          </div>
+          </YStack>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>
               Cancel
@@ -848,15 +847,15 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
       {/* Preview Modal */}
       {previewProject && (
         <Dialog open={!!previewProject} onOpenChange={() => setPreviewProject(null)}>
-          <DialogContent className="max-w-[90vw] sm:max-w-[85vw] lg:max-w-[80vw] 2xl:max-w-[1400px] max-h-[90vh] w-full h-full p-0 flex flex-col">
-            <DialogHeader className="p-4 border-b">
+          <DialogContent maxWidth="90vw" maxHeight="90vh" width="100%" height="100%" padding="$0" flexDirection="column" $sm={{ maxWidth: "85vw" }} $lg={{ maxWidth: "80vw" }} $xl={{ maxWidth: 1400 }}>
+            <DialogHeader padding="$4" borderBottomWidth={1}>
               <DialogTitle>Preview: {previewProject.name}</DialogTitle>
             </DialogHeader>
-            <div className="flex-1 overflow-hidden">
+            <YStack flex={1} overflow="hidden">
               <MultipagePreview
                 projectId={previewProject.id}
-              />
-            </div>
+  />
+            </YStack>
           </DialogContent>
         </Dialog>
       )}
@@ -868,7 +867,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
         onOpenChange={(open) => {
           if (!open) setTemplateExportProject(null);
         }}
-      />
+  />
 
       {/* Project Settings Modal */}
       {backendProject && (
@@ -882,16 +881,16 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
             localStorage.setItem(`osw-backend-${backendProject.id}`, String(enabled));
             setBackendProject({ ...backendProject }); // Force re-derive enabled state
           }}
-        />
+  />
       )}
 
       {/* About Modal */}
       <AboutModal
         open={aboutModalOpen}
         onOpenChange={setAboutModalOpen}
-      />
+  />
 
       <GuidedTourOverlay location="project-manager" />
-    </div>
+    </YStack>
   );
 }

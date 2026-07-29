@@ -1,5 +1,6 @@
 "use client";
 
+import { SizableText, YStack, XStack, H1, Paragraph, H2 } from '@hanzo/gui';
 // Full FAQ for hanzo.app. Monochrome design system (Header + SiteFooter +
 // Reveal). Real, answerable questions only — product + billing groups come from
 // the shared faq-data module (DRY: /pricing renders the billing subset).
@@ -14,47 +15,46 @@ import { productFaq, billingFaq } from "@/components/marketing/faq-data";
 
 export default function FaqPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
       <Header />
 
       <main>
         {/* ── Hero ─────────────────────────────────────────────── */}
-        <section className="relative overflow-hidden px-4 py-20 text-center md:px-8 md:py-28">
-          <div className="pointer-events-none absolute inset-0 overflow-hidden">
-            <div className="absolute left-1/2 top-[-30%] h-[420px] w-[720px] -translate-x-1/2 rounded-full bg-foreground/[0.05] blur-[130px]" />
-          </div>
+        <SizableText position="relative" overflow="hidden" paddingHorizontal="$4" paddingVertical="$11" textAlign="center" display="flex" flexDirection="column" $md={{ paddingHorizontal: "$6", paddingVertical: "$13" }}>
+          <YStack pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} overflow="hidden">
+            <YStack position="absolute" left="50%" top="-30%" height={420} width={720} x="50%" borderRadius="$10" backgroundColor="$color" />
+          </YStack>
 
-          <div className="relative mx-auto max-w-3xl">
+          <YStack position="relative" alignSelf="center" maxWidth={768}>
             <Reveal>
-              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3 py-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-foreground/70" />
-                <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
+              <XStack marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1.5">
+                <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color" />
+                <SizableText fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.4} color="$color11">
                   FAQ
-                </span>
-              </div>
+                </SizableText>
+              </XStack>
             </Reveal>
 
             <Reveal delay={60}>
-              <h1 className="text-balance text-4xl font-medium leading-[1.03] tracking-tight sm:text-5xl md:text-6xl">
+              <H1 fontSize="$11" fontWeight="500" lineHeight={1.03} letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
                 Questions, answered.
-              </h1>
+              </H1>
             </Reveal>
 
             <Reveal delay={120}>
-              <p className="mx-auto mt-5 max-w-xl text-pretty text-base text-muted-foreground md:text-lg">
+              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
                 How hanzo.app works, what powers it, and how billing runs. If your
                 question isn&apos;t here,{" "}
                 <Link
                   href="/help"
-                  className="text-foreground underline underline-offset-4 hover:text-foreground/80"
-                >
+                ><SizableText color="$color" textDecorationLine="underline" hoverStyle={{ color: "$color" }}>
                   reach the team
-                </Link>
+                </SizableText></Link>
                 .
-              </p>
+              </Paragraph>
             </Reveal>
-          </div>
-        </section>
+          </YStack>
+        </SizableText>
 
         {/* ── Product ──────────────────────────────────────────── */}
         <FaqSection
@@ -62,48 +62,46 @@ export default function FaqPage() {
           eyebrow="The product"
           title="Building & shipping"
           items={productFaq}
-        />
+  />
 
         {/* ── Billing ──────────────────────────────────────────── */}
-        <div className="border-t border-border">
+        <YStack borderTopWidth={1} borderColor="$borderColor">
           <FaqSection
             id="billing"
             eyebrow="Billing"
             title="Plans & usage"
             items={billingFaq}
-          />
-        </div>
+  />
+        </YStack>
 
         {/* ── CTA ──────────────────────────────────────────────── */}
-        <section className="border-t border-border px-4 py-20 text-center md:px-8 md:py-24">
+        <SizableText borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" textAlign="center" display="flex" flexDirection="column" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
           <Reveal className="mx-auto max-w-2xl">
-            <h2 className="text-3xl font-medium tracking-tight md:text-4xl">
+            <H2 fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
               Ready to build?
-            </h2>
-            <p className="mx-auto mt-4 max-w-md text-base text-muted-foreground">
+            </H2>
+            <Paragraph alignSelf="center" marginTop="$4" maxWidth={448} fontSize="$4" color="$color11">
               Describe an app and ship it live on Hanzo Cloud — database, auth,
               and AI already wired in.
-            </p>
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            </Paragraph>
+            <YStack marginTop="$6" alignItems="center" justifyContent="center" gap="$3" $sm={{ flexDirection: "row" }}>
               <Link
                 href="/dev"
-                className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90"
-              >
+              ><SizableText alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
                 Start building
-                <ArrowRight className="h-4 w-4" />
-              </Link>
+                <ArrowRight size={16} />
+              </SizableText></Link>
               <Link
                 href="/pricing"
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-6 py-3 text-sm font-medium text-foreground transition-all hover:border-foreground/30 hover:bg-accent"
-              >
+              ><SizableText alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}>
                 See pricing
-              </Link>
-            </div>
+              </SizableText></Link>
+            </YStack>
           </Reveal>
-        </section>
+        </SizableText>
       </main>
 
       <SiteFooter />
-    </div>
+    </SizableText>
   );
 }

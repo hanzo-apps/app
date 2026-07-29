@@ -1,5 +1,6 @@
 "use client";
 
+import { XStack, YStack, Paragraph, SizableText } from '@hanzo/gui';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Button } from '@hanzo/ui';
 import { ExternalLink, AlertTriangle } from "lucide-react";
 import { SITE_URL } from "@/lib/site";
@@ -19,32 +20,32 @@ IframeWarningModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent $sm={{ maxWidth: 448 }}>
         <DialogHeader>
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-red-500" />
+          <XStack alignItems="center" gap="$2">
+            <AlertTriangle size={20} color="$red9" />
             <DialogTitle>Unauthorized Embedding</DialogTitle>
-          </div>
-          <DialogDescription className="text-left">
+          </XStack>
+          <DialogDescription textAlign="left">
             You&apos;re viewing Hanzo AI through an unauthorized iframe. For the
             best experience and security, please visit the official website
             directly.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-          <p className="text-sm font-medium">Why visit the official site?</p>
-          <ul className="text-sm text-muted-foreground space-y-1">
+        <YStack backgroundColor="$color3" borderRadius="$5" padding="$4" rowGap="$2">
+          <Paragraph fontSize="$3" fontWeight="500">Why visit the official site?</Paragraph>
+          <SizableText fontSize="$3" color="$color11" rowGap="$1" display="flex" flexDirection="column">
             <li>• Better performance and security</li>
             <li>• Full functionality access</li>
             <li>• Latest features and updates</li>
             <li>• Proper authentication support</li>
-          </ul>
-        </div>
+          </SizableText>
+        </YStack>
 
-        <DialogFooter className="flex-col sm:flex-row gap-2">
-          <Button onClick={handleVisitSite} className="w-full sm:w-auto">
-            <ExternalLink className="mr-2 h-4 w-4" />
+        <DialogFooter flexDirection="column" gap="$2" $sm={{ flexDirection: "row" }}>
+          <Button onClick={handleVisitSite} width="100%" $sm={{ width: "auto" }}>
+            <ExternalLink size={16} />
             Visit Hanzo.App
           </Button>
         </DialogFooter>

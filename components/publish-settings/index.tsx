@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { YStack, XStack, SizableText } from '@hanzo/gui';
+import { useState, useEffect, useCallback } from 'react';
 import { Project, PublishSettings } from '@/lib/vfs/types';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Button, Tabs, TabsContent, TabsList, TabsTrigger, Dialog as AlertDialog, DialogContent as AlertDialogContent, DialogDescription as AlertDialogDescription, DialogFooter as AlertDialogFooter, DialogHeader as AlertDialogHeader, DialogTitle as AlertDialogTitle, Button as AlertDialogAction, Button as AlertDialogCancel } from '@hanzo/ui';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Button, Tabs, TabsContent, TabsList, TabsTrigger } from '@hanzo/ui';
 import { GeneralTab } from './general-tab';
 import { ScriptsTab } from './scripts-tab';
 import { CdnTab } from './cdn-tab';
@@ -124,7 +125,7 @@ export function PublishSettingsModal({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
+        <DialogContent maxWidth={896} height="80vh" flexDirection="column">
           <DialogHeader>
             <DialogTitle>Publish Settings - {project.name}</DialogTitle>
             <DialogDescription>
@@ -132,8 +133,8 @@ export function PublishSettingsModal({
             </DialogDescription>
           </DialogHeader>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-            <TabsList className="grid w-full grid-cols-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} flex={1} flexDirection="column" overflow="hidden">
+            <TabsList width="100%">
               <TabsTrigger value="general">General</TabsTrigger>
               <TabsTrigger value="scripts">Scripts</TabsTrigger>
               <TabsTrigger value="cdn">CDN</TabsTrigger>
@@ -142,46 +143,46 @@ export function PublishSettingsModal({
               <TabsTrigger value="compliance">Compliance</TabsTrigger>
             </TabsList>
 
-            <div className="flex-1 overflow-y-auto p-4">
-              <TabsContent value="general" className="mt-0">
+            <YStack flex={1} padding="$4" overflow="scroll">
+              <TabsContent value="general" marginTop="$0">
                 <GeneralTab settings={settings} onChange={handleSettingsChange} projectId={project.id} deploymentId={project.id} />
               </TabsContent>
 
-              <TabsContent value="scripts" className="mt-0">
+              <TabsContent value="scripts" marginTop="$0">
                 <ScriptsTab settings={settings} onChange={handleSettingsChange} />
               </TabsContent>
 
-              <TabsContent value="cdn" className="mt-0">
+              <TabsContent value="cdn" marginTop="$0">
                 <CdnTab settings={settings} onChange={handleSettingsChange} />
               </TabsContent>
 
-              <TabsContent value="analytics" className="mt-0">
+              <TabsContent value="analytics" marginTop="$0">
                 <AnalyticsTab settings={settings} onChange={handleSettingsChange} />
               </TabsContent>
 
-              <TabsContent value="seo" className="mt-0">
+              <TabsContent value="seo" marginTop="$0">
                 <SeoTab settings={settings} onChange={handleSettingsChange} />
               </TabsContent>
 
-              <TabsContent value="compliance" className="mt-0">
+              <TabsContent value="compliance" marginTop="$0">
                 <ComplianceTab settings={settings} onChange={handleSettingsChange} />
               </TabsContent>
-            </div>
+            </YStack>
           </Tabs>
 
-          <div className="flex justify-between items-center pt-4 border-t">
-            <div className="text-sm text-muted-foreground">
+          <XStack justifyContent="space-between" alignItems="center" paddingTop="$4" borderTopWidth={1}>
+            <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">
               {isDirty && '• Unsaved changes'}
-            </div>
-            <div className="flex gap-2">
+            </SizableText>
+            <XStack gap="$2">
               <Button variant="outline" onClick={handleClose} disabled={isSaving}>
                 Cancel
               </Button>
               <Button onClick={handleSave} disabled={!isDirty || isSaving}>
                 {isSaving ? 'Saving...' : 'Save Settings'}
               </Button>
-            </div>
-          </div>
+            </XStack>
+          </XStack>
         </DialogContent>
       </Dialog>
 

@@ -10,6 +10,7 @@
  * (the same store console.hanzo.ai uses) so config is consistent everywhere.
  */
 
+import { XStack, SizableText, YStack, H1, Paragraph, Anchor, H2 } from '@hanzo/gui';
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -40,7 +41,7 @@ import {
   type Project,
   type Deployment,
 } from "@/lib/api/projects";
-import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, toast } from '@hanzo/ui';
+import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, toast, Button, Label } from '@hanzo/ui';
 import { statusOf } from "@/lib/project-status";
 import { relativeTime } from "@/lib/projects-view";
 import { currentOrg, setCurrentOrg } from "@/lib/org-scope";
@@ -100,26 +101,26 @@ export default function ProjectSettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
+      <XStack minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="$background">
         <HanzoLogo className="h-10 w-10 animate-pulse text-foreground" />
-      </div>
+      </XStack>
     );
   }
 
   if (!project) {
     return (
       <AppShell currentView="all-projects">
-        <div className="flex flex-1 items-center justify-center bg-background px-6 text-center">
-          <div className="max-w-sm">
-            <h1 className="text-lg font-medium text-foreground">Project not found</h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              <span className="font-mono">{org}/{slug}</span> isn’t available to your account.
-            </p>
-            <Link href="/projects" className="mt-4 inline-block rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+        <SizableText flex={1} alignItems="center" justifyContent="center" backgroundColor="$background" paddingHorizontal="$5" textAlign="center" display="flex" flexDirection="row">
+          <YStack maxWidth={384}>
+            <H1 fontSize="$6" fontWeight="500" color="$color">Project not found</H1>
+            <Paragraph marginTop="$2" fontSize="$3" color="$color11">
+              <SizableText fontFamily="$mono">{org}/{slug}</SizableText> isn’t available to your account.
+            </Paragraph>
+            <Link href="/projects"><SizableText marginTop="$4" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$4.5" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
               Back to projects
-            </Link>
-          </div>
-        </div>
+            </SizableText></Link>
+          </YStack>
+        </SizableText>
       </AppShell>
     );
   }
@@ -130,37 +131,35 @@ export default function ProjectSettingsPage() {
 
   return (
     <AppShell currentView="all-projects">
-      <div className="flex-1 overflow-y-auto bg-background">
-        <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:py-10">
+      <YStack flex={1} backgroundColor="$background" overflow="scroll">
+        <YStack alignSelf="center" maxWidth={768} paddingHorizontal="$4" paddingVertical="$6" $sm={{ paddingHorizontal: "$5" }} $lg={{ paddingVertical: "$7" }}>
           {/* Header */}
-          <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-            <div className="min-w-0">
+          <XStack marginBottom="$6" flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$4">
+            <YStack minWidth={0}>
               <Link
                 href="/projects"
-                className="mb-2 inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
-              >
-                <ArrowLeft className="h-3.5 w-3.5" /> Projects
-              </Link>
-              <div className="flex items-center gap-3">
-                <h1 className="truncate text-2xl font-medium tracking-tight text-foreground">
+              ><SizableText marginBottom="$2" alignItems="center" gap="$1.5" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}>
+                <ArrowLeft size={14} /> Projects
+              </SizableText></Link>
+              <XStack alignItems="center" gap="$3">
+                <H1 numberOfLines={1} fontSize="$8" fontWeight="500" letterSpacing={-0.4} color="$color">
                   {project.name}
-                </h1>
-                <span className={`inline-flex items-center gap-1 text-[11px] uppercase tracking-wide ${st.text}`}>
-                  <Circle className={`h-1.5 w-1.5 ${st.dot.replace("bg-", "fill-")}`} />
+                </H1>
+                <SizableText alignItems="center" gap="$1" fontSize={11} textTransform="uppercase" letterSpacing={0.4} className={`${st.text}`}>
+                  <Circle size={6} />
                   {st.label}
-                </span>
-              </div>
-              <p className="mt-1 font-mono text-xs text-muted-foreground">{org}/{slug}</p>
-            </div>
+                </SizableText>
+              </XStack>
+              <Paragraph marginTop="$1" fontFamily="$mono" fontSize="$1" color="$color11">{org}/{slug}</Paragraph>
+            </YStack>
             <Link
               href={builderLink(slug, org)}
-              className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm text-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
-            >
-              <Pencil className="h-3.5 w-3.5" /> Open in builder
-            </Link>
-          </div>
+            ><SizableText alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$2" fontSize="$3" color="$color" hoverStyle={{ borderColor: "$color", color: "$color" }}>
+              <Pencil size={14} /> Open in builder
+            </SizableText></Link>
+          </XStack>
 
-          <div className="space-y-5">
+          <YStack rowGap="$4.5">
             {/* General */}
             <Section icon={Pencil} title="General">
               <Field label="Project name">
@@ -180,117 +179,115 @@ export default function ProjectSettingsPage() {
                   </SelectContent>
                 </Select>
               </Field>
-              <div className="flex justify-end pt-1">
-                <button
+              <XStack justifyContent="flex-end" paddingTop="$1">
+                <Button
                   type="button"
                   onClick={save}
                   disabled={!dirty || saving}
-                  className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground"
+                  alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$4.5" paddingVertical="$2" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }} disabledStyle={{ cursor: "not-allowed", backgroundColor: "$color3", color: "$color11" }}
                 >
-                  {saving && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                  {saving && <Loader2 size={14} />}
                   Save changes
-                </button>
-              </div>
+                </Button>
+              </XStack>
             </Section>
 
             {/* Domains */}
             <Section icon={Globe} title="Domain">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-sm text-foreground">Live URL</p>
+              <XStack flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$3">
+                <YStack minWidth={0}>
+                  <Paragraph fontSize="$3" color="$color">Live URL</Paragraph>
                   {live ? (
-                    <a href={live} target="_blank" rel="noopener noreferrer" className="mt-0.5 inline-flex items-center gap-1.5 font-mono text-xs text-green-400/90 hover:text-green-400">
+                    <Anchor href={live} target="_blank" rel="noopener noreferrer" marginTop="$0.5" alignItems="center" gap="$1.5" fontFamily="$mono" fontSize="$1" color="$green8" hoverStyle={{ color: "$green8" }}>
                       {live.replace(/^https?:\/\//, "")}
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
+                      <ExternalLink size={12} />
+                    </Anchor>
                   ) : (
-                    <p className="mt-0.5 text-xs text-muted-foreground">Not published yet — publish from the builder to get a live URL.</p>
+                    <Paragraph marginTop="$0.5" fontSize="$1" color="$color11">Not published yet — publish from the builder to get a live URL.</Paragraph>
                   )}
-                </div>
-              </div>
-              <p className="mt-3 border-t border-border pt-3 text-xs text-muted-foreground">
+                </YStack>
+              </XStack>
+              <Paragraph marginTop="$3" borderTopWidth={1} borderColor="$borderColor" paddingTop="$3" fontSize="$1" color="$color11">
                 Custom domains are coming to project settings. For now every published app is served at{" "}
-                <span className="font-mono text-muted-foreground">{slug}.hanzo.app</span>.
-              </p>
+                <SizableText fontFamily="$mono" color="$color11">{slug}.hanzo.app</SizableText>.
+              </Paragraph>
             </Section>
 
             {/* Source (Git) */}
             <Section icon={GitBranch} title="Source repository">
-              <p className="text-sm text-muted-foreground">
+              <Paragraph fontSize="$3" color="$color11">
                 Every published app is versioned in Hanzo Git (S3-backed). Its source is committed and pushed on each publish.
-              </p>
-              <div className="mt-3 flex items-center gap-2 rounded-lg border border-border bg-background/40 px-3 py-2">
-                <GitBranch className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                <code className="min-w-0 flex-1 truncate font-mono text-xs text-foreground">
+              </Paragraph>
+              <XStack marginTop="$3" alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2">
+                <GitBranch size={14} color="$color11" />
+                <SizableText minWidth={0} flex={1} numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">
                   https://git.hanzo.ai/{org}/{slug}.git
-                </code>
-                <button
+                </SizableText>
+                <Button
                   type="button"
                   onClick={() => {
                     navigator.clipboard?.writeText(`https://git.hanzo.ai/${org}/${slug}.git`);
                     toast.success("Clone URL copied.");
                   }}
-                  className="shrink-0 rounded px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                  flexShrink={0} borderRadius="$2" paddingHorizontal="$2" paddingVertical="$1" fontSize="$1" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
                 >
                   Copy
-                </button>
-              </div>
+                </Button>
+              </XStack>
             </Section>
 
             {/* Deployments — the ONE serve (S3 → <slug>.hanzo.app) */}
             <Section icon={Rocket} title="Deployments">
-              <p className="text-sm text-muted-foreground">
+              <Paragraph fontSize="$3" color="$color11">
                 Publishing deploys your site to Hanzo Cloud — live at{" "}
-                <span className="font-mono text-foreground">{slug}.hanzo.app</span> — and
+                <SizableText fontFamily="$mono" color="$color">{slug}.hanzo.app</SizableText> — and
                 commits the source to Hanzo Git. Each publish is a new versioned deployment.
-              </p>
+              </Paragraph>
               <DeploymentStatus slug={slug} />
             </Section>
 
             {/* Integrations */}
             <Section icon={Plug} title="Integrations & connections">
-              <p className="text-sm text-muted-foreground">
+              <Paragraph fontSize="$3" color="$color11">
                 Connect data sources, auth providers, and third-party services your app uses.
-              </p>
+              </Paragraph>
               <Link
                 href="/connectors"
-                className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-border bg-muted px-3.5 py-2 text-sm text-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
-              >
-                <Plug className="h-3.5 w-3.5" /> Manage connectors
-              </Link>
+              ><SizableText marginTop="$3" alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$2" fontSize="$3" color="$color" hoverStyle={{ borderColor: "$color", color: "$color" }}>
+                <Plug size={14} /> Manage connectors
+              </SizableText></Link>
             </Section>
 
             {/* Base backend */}
             <Section icon={Database} title="Base backend">
-              <p className="text-sm text-muted-foreground">
+              <Paragraph fontSize="$3" color="$color11">
                 This app’s data plane — forms, records, and realtime run on its own Hanzo Base. It is provisioned on publish when the Base option is enabled.
-              </p>
+              </Paragraph>
               <Link
                 href={builderLink(slug, org)}
-                className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-border bg-muted px-3.5 py-2 text-sm text-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
-              >
-                <Database className="h-3.5 w-3.5" /> Open data & schema in builder
-              </Link>
+              ><SizableText marginTop="$3" alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$2" fontSize="$3" color="$color" hoverStyle={{ borderColor: "$color", color: "$color" }}>
+                <Database size={14} /> Open data & schema in builder
+              </SizableText></Link>
             </Section>
 
             {/* Danger */}
             <Section icon={Trash2} title="Danger zone" danger>
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-sm text-muted-foreground">
+              <XStack flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$3">
+                <Paragraph fontSize="$3" color="$color11">
                   Delete this project and its live site. This cannot be undone.
-                </p>
-                <button
+                </Paragraph>
+                <Button
                   type="button"
                   onClick={remove}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-red-500/30 px-4 py-2 text-sm text-red-400 transition-colors hover:border-red-500/50 hover:bg-red-500/10"
+                  alignItems="center" gap="$1.5" borderRadius="$10" borderWidth={1} borderColor="$red9" paddingHorizontal="$4" paddingVertical="$2" fontSize="$3" color="$red8" hoverStyle={{ borderColor: "$red9", backgroundColor: "$red9" }}
                 >
-                  <Trash2 className="h-3.5 w-3.5" /> Delete project
-                </button>
-              </div>
+                  <Trash2 size={14} /> Delete project
+                </Button>
+              </XStack>
             </Section>
-          </div>
-        </div>
-      </div>
+          </YStack>
+        </YStack>
+      </YStack>
     </AppShell>
   );
 }
@@ -307,24 +304,24 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section
-      className={`rounded-2xl border p-5 ${danger ? "border-red-500/20 bg-red-500/[0.02]" : "border-border bg-muted"}`}
+    <YStack
+      borderRadius="$8" borderWidth={1} padding="$4.5" {...{ borderColor: danger ? "$red9" : "$borderColor", backgroundColor: danger ? "$red9" : "$color3" }}
     >
-      <div className="mb-4 flex items-center gap-2">
+      <XStack marginBottom="$4" alignItems="center" gap="$2">
         <Icon className={`h-4 w-4 ${danger ? "text-red-400/70" : "text-muted-foreground"}`} />
-        <h2 className="text-sm font-medium text-foreground">{title}</h2>
-      </div>
-      <div className="space-y-3">{children}</div>
-    </section>
+        <H2 fontSize="$3" fontWeight="500" color="$color">{title}</H2>
+      </XStack>
+      <YStack rowGap="$3">{children}</YStack>
+    </YStack>
   );
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <label className="block">
-      <span className="mb-1.5 block text-xs text-muted-foreground">{label}</span>
+    <Label>
+      <SizableText marginBottom="$1.5" fontSize="$1" color="$color11">{label}</SizableText>
       {children}
-    </label>
+    </Label>
   );
 }
 
@@ -359,47 +356,47 @@ function DeploymentStatus({ slug }: { slug: string }) {
 
   if (state.kind === "loading") {
     return (
-      <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
-        <Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading deploy history…
-      </div>
+      <SizableText marginTop="$3" alignItems="center" gap="$2" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+        <Loader2 size={14} /> Loading deploy history…
+      </SizableText>
     );
   }
 
   if (state.kind === "none") {
     return (
-      <p className="mt-3 rounded-lg border border-border bg-background/40 px-3 py-2.5 text-xs text-muted-foreground">
+      <Paragraph marginTop="$3" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2.5" fontSize="$1" color="$color11">
         Not deployed yet. Publish from the builder to go live at{" "}
-        <span className="font-mono text-muted-foreground">{slug}.hanzo.app</span>.
-      </p>
+        <SizableText fontFamily="$mono" color="$color11">{slug}.hanzo.app</SizableText>.
+      </Paragraph>
     );
   }
 
   if (state.kind === "error") {
-    return <p className="mt-3 text-xs text-muted-foreground">Couldn’t load deploy history.</p>;
+    return <Paragraph marginTop="$3" fontSize="$1" color="$color11">Couldn’t load deploy history.</Paragraph>;
   }
 
   const d = state.d;
   const c = deployStatusStyle(d.status);
   const when = d.updatedAt ? relativeTime(new Date(d.updatedAt * 1000).toISOString()) : null;
   return (
-    <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-background/40 px-3 py-2.5">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-        <span className={`inline-flex items-center gap-1.5 text-xs ${c.text}`}>
-          <Circle className={`h-2 w-2 ${c.dot} ${c.pulse ? "animate-pulse" : ""}`} />
+    <XStack marginTop="$3" flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$3" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2.5">
+      <XStack flexWrap="wrap" alignItems="center" columnGap="$3" rowGap="$1">
+        <SizableText alignItems="center" gap="$1.5" fontSize="$1" className={`${c.text}`}>
+          <Circle size={8} />
           {c.label}
-        </span>
-        {d.version > 0 && <span className="font-mono text-[11px] text-muted-foreground">v{d.version}</span>}
-        {when && <span className="text-[11px] text-muted-foreground">{when}</span>}
-      </div>
-      <a
+        </SizableText>
+        {d.version > 0 && <SizableText fontFamily="$mono" fontSize={11} color="$color11">v{d.version}</SizableText>}
+        {when && <SizableText fontSize={11} color="$color11">{when}</SizableText>}
+      </XStack>
+      <Anchor
         href="https://console.hanzo.ai"
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+        alignItems="center" gap="$1.5" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}
       >
-        History in console <ExternalLink className="h-3 w-3" />
-      </a>
-    </div>
+        History in console <ExternalLink size={12} />
+      </Anchor>
+    </XStack>
   );
 }
 

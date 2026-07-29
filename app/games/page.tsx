@@ -1,7 +1,8 @@
 'use client';
 
+import { SizableText, YStack, XStack, H1, Paragraph } from '@hanzo/gui';
 import { useMemo, useState } from 'react';
-import { Badge, Input } from '@hanzo/ui';
+import { Badge, Input, Button } from '@hanzo/ui';
 import { Gamepad2, Search } from 'lucide-react';
 import { AppShell } from '@/components/app-shell';
 import { GameCard } from '@/components/games/game-card';
@@ -29,84 +30,80 @@ export default function GamesCatalog() {
 
   return (
     <AppShell currentView="games">
-      <div className="flex-1 overflow-y-auto bg-background text-foreground">
+      <SizableText flex={1} backgroundColor="$background" color="$color" overflow="scroll" display="flex" flexDirection="column">
         {/* Hero */}
-        <header className="border-b border-border bg-gradient-to-b from-card to-background">
-          <div className="container mx-auto px-6 py-10">
-            <div className="mb-3 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-muted to-card">
-                <Gamepad2 className="h-6 w-6 text-foreground" />
-              </div>
-              <h1 className="text-3xl font-medium">Games</h1>
-              <Badge variant="secondary" className="ml-1">
+        <YStack borderBottomWidth={1} borderColor="$borderColor">
+          <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$7">
+            <XStack marginBottom="$3" alignItems="center" gap="$3">
+              <XStack height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5">
+                <Gamepad2 size={24} color="$color" />
+              </XStack>
+              <H1 fontSize="$10" fontWeight="500">Games</H1>
+              <Badge variant="secondary" marginLeft="$1">
                 {gamesCatalog.length} titles
               </Badge>
-            </div>
-            <p className="mb-6 max-w-2xl text-muted-foreground">
+            </XStack>
+            <Paragraph marginBottom="$5" maxWidth={672} color="$color11">
               Fork a real game, play WebGL builds in the browser, and generate assets with
               the studio pipeline. Every title runs on the same Hanzo gateway and identity as
               the rest of your workspace.
-            </p>
-          </div>
-        </header>
+            </Paragraph>
+          </YStack>
+        </YStack>
 
         {/* Filters */}
-        <div className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
-          <div className="container mx-auto flex flex-wrap items-center gap-3 px-6 py-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <YStack position="sticky" top="$0" zIndex={40} borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" backdropFilter="blur(8px)">
+          <XStack width="100%" maxWidth={1280} alignSelf="center" flexWrap="wrap" alignItems="center" gap="$3" paddingHorizontal="$5" paddingVertical="$3">
+            <YStack position="relative">
+              <Search size={16} color="$color11" />
               <Input
                 placeholder="Search games…"
                 value={query}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
-                className="w-64 border-border bg-card pl-9 text-foreground"
-              />
-            </div>
-            <div className="flex flex-wrap items-center gap-1.5">
+                width={256} borderColor="$borderColor" backgroundColor="$background" paddingLeft={36} color="$color"
+  />
+            </YStack>
+            <XStack flexWrap="wrap" alignItems="center" gap="$1.5">
               {genres.map((g) => (
-                <button
+                <Button
                   key={g}
                   onClick={() => setGenre(g)}
-                  className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                    genre === g
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-card text-muted-foreground hover:bg-muted hover:text-foreground'
-                  }`}
+                  borderRadius="$10" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$1" fontWeight="500" {...{ backgroundColor: genre === g ? "$color12" : "$background", color: genre === g ? "$background" : "$color11", hoverStyle: genre === g ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
                 >
                   {g}
-                </button>
+                </Button>
               ))}
-            </div>
-            <Badge variant="secondary" className="ml-auto">
+            </XStack>
+            <Badge variant="secondary" marginLeft="auto">
               {filtered.length} shown
             </Badge>
-          </div>
-        </div>
+          </XStack>
+        </YStack>
 
         {/* Grid */}
-        <div className="container mx-auto px-6 py-8">
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$6">
+          <YStack gap="$4.5">
             {filtered.map((game) => (
               <GameCard key={game.id} game={game} />
             ))}
-          </div>
+          </YStack>
 
           {filtered.length === 0 && (
-            <div className="py-20 text-center">
-              <p className="text-lg text-muted-foreground">No games match your search.</p>
-              <button
+            <SizableText paddingVertical="$11" textAlign="center" display="flex" flexDirection="column">
+              <Paragraph fontSize="$6" color="$color11">No games match your search.</Paragraph>
+              <Button
                 onClick={() => {
                   setGenre('All');
                   setQuery('');
                 }}
-                className="mt-2 text-foreground underline"
+                marginTop="$2" color="$color" textDecorationLine="underline"
               >
                 Clear filters
-              </button>
-            </div>
+              </Button>
+            </SizableText>
           )}
-        </div>
-      </div>
+        </YStack>
+      </SizableText>
     </AppShell>
   );
 }

@@ -1,9 +1,10 @@
 'use client';
 
+import { SizableText, YStack, XStack, H2, Paragraph, Anchor } from '@hanzo/gui';
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { Project } from '@/lib/vfs/types';
 import { getSyncOverviewStatus, SyncOverviewStatus } from '@/lib/vfs/auto-sync';
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@hanzo/ui';
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Input } from '@hanzo/ui';
 import { HanzoLogo } from '@/components/HanzoLogo';
 import {
   Activity,
@@ -254,22 +255,12 @@ function SidebarContent({
       <Button
         key={item.id}
         variant="ghost"
-        className={cn(
-          'w-full',
-          collapsed ? 'justify-center px-2' : 'justify-start',
-          // v2 converged nav (matches chat + desktop): inactive is muted and
-          // brightens on a hairline hover surface; the ACTIVE item is the ONE
-          // purple accent — soft purple fill + purple-muted label (primary stays
-          // white elsewhere; purple = active/selection).
-          isActive
-            ? 'bg-[var(--brand-accent-soft)] text-[var(--brand-accent-muted)] hover:bg-[var(--brand-accent-soft)] hover:text-[var(--brand-accent-muted)]'
-            : 'text-muted-foreground hover:bg-sidebar-accent hover:text-foreground',
-        )}
+        width="100%" {...{ justifyContent: collapsed ? "center" : "flex-start", paddingHorizontal: collapsed ? "$2" : undefined, backgroundColor: isActive ? "var(--brand-accent-soft)" : undefined, color: isActive ? "var(--brand-accent-muted)" : "$color11", hoverStyle: isActive ? {"backgroundColor":"var(--brand-accent-soft)","color":"var(--brand-accent-muted)"} : {"backgroundColor":"$color3","color":"$color"} }}
         onClick={() => handleItemAction(item)}
         title={collapsed ? item.label : undefined}
       >
         <Icon className={cn('h-4 w-4', !collapsed && 'mr-2')} />
-        {!collapsed && <span className="flex-1 text-left">{item.label}</span>}
+        {!collapsed && <SizableText flex={1} textAlign="left">{item.label}</SizableText>}
         {!collapsed && item.kbd && (
           <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
             {item.kbd}
@@ -279,7 +270,7 @@ function SidebarContent({
     );
   };
 
-  const Divider = () => <div className="my-1 h-px bg-border" />;
+  const Divider = () => <YStack marginVertical="$1" height={1} backgroundColor="$borderColor" />;
 
   const visibleSecondary = SECONDARY_ITEMS.filter((i) => !i.serverModeOnly || isServerMode);
 
@@ -287,84 +278,75 @@ function SidebarContent({
     <>
       {/* Mobile backdrop */}
       {mobileOpen && (
-        <div
-          className="md:hidden fixed inset-0 bg-black/50 z-40"
+        <YStack
+          position="fixed" top={0} right={0} bottom={0} left={0} backgroundColor="black" zIndex={40} $md={{ display: "none" }}
           onClick={() => onMobileOpenChange?.(false)}
-        />
+  />
       )}
 
-      <div
-        className={cn(
-          'flex flex-col h-screen bg-card transition-[width] duration-300',
-          'fixed right-0 top-0 z-50 w-64 border-l',
-          'md:static md:right-auto md:z-auto md:border-l-0 md:border-r',
-          collapsed ? 'md:w-14' : 'md:w-60',
-          mobileOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0',
-        )}
+      <YStack
+        height="100%" backgroundColor="$background" position="fixed" right="$0" top="$0" zIndex={50} width={256} borderLeftWidth={1} {...{ $md: mobileOpen ? collapsed ? {"width":"$9"} : {"width":240} : {"x":"$0"}, x: mobileOpen ? "$0" : "100%" }} className="md:z-auto"
       >
         {/* Top: brand mark + collapse toggle. */}
-        <div
-          className={cn(
-            'flex items-center h-[54px] border-b px-2',
-            collapsed ? 'justify-center' : 'gap-2 justify-between',
-          )}
+        <XStack
+          alignItems="center" height={54} borderBottomWidth={1} paddingHorizontal="$2" {...{ justifyContent: collapsed ? "center" : "space-between", gap: collapsed ? undefined : "$2" }}
         >
           {collapsed ? (
-            <button
+            <Button
               onClick={toggleCollapsed}
               title="Expand sidebar"
               aria-label="Expand sidebar"
-              className="flex h-9 w-9 items-center justify-center rounded-md hover:bg-accent transition-colors"
+              height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$3" hoverStyle={{ backgroundColor: "$color3" }}
             >
               <HanzoLogo className="h-5 w-5 text-foreground" />
-            </button>
+            </Button>
           ) : (
             <>
-              <button
+              <Button
                 onClick={() => (isMobile ? onMobileOpenChange?.(false) : onLogoClick?.())}
-                className="flex min-w-0 items-center gap-2 rounded-md p-1 hover:bg-accent/50 transition-colors"
+                minWidth={0} alignItems="center" gap="$2" borderRadius="$3" padding="$1" hoverStyle={{ backgroundColor: "$color3" }}
                 title="Hanzo App"
               >
                 <HanzoLogo className="h-5 w-5 shrink-0 text-foreground" />
-                <span className="flex min-w-0 flex-col text-left">
-                  <span className="truncate text-sm font-medium leading-none">Hanzo&nbsp;App</span>
-                  <span className="mt-0.5 text-[10px] leading-[10px] text-muted-foreground">
+                <SizableText minWidth={0} flexDirection="column" textAlign="left">
+                  <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" lineHeight={1}>Hanzo&nbsp;App</SizableText>
+                  <SizableText marginTop="$0.5" fontSize={10} lineHeight={10} color="$color11">
                     {isServerMode ? `Server · v${pkg.version}` : `v${pkg.version}`}
-                  </span>
-                </span>
-              </button>
+                  </SizableText>
+                </SizableText>
+              </Button>
 
-              <button
+              <Button
                 onClick={toggleCollapsed}
                 title="Collapse sidebar"
                 aria-label="Collapse sidebar"
-                className="hidden md:flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+                display="none" height="$6" width="$6" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
               >
-                <PanelLeft className="h-4 w-4" />
-              </button>
+                <PanelLeft size={16} />
+              </Button>
 
-              <button
+              <Button
                 onClick={() => onMobileOpenChange?.(false)}
                 title="Close menu"
                 aria-label="Close menu"
-                className="flex md:hidden h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+                height="$6" width="$6" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" color="$color11" $md={{ display: "none" }} hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
               >
-                <X className="h-4 w-4" />
-              </button>
+                <X size={16} />
+              </Button>
             </>
           )}
-        </div>
+        </XStack>
 
         {/* Org selector + nav + wallet all share the OrgProvider scope. */}
         <OrgProvider>
           {!collapsed && (
-            <div className="border-b px-2 py-2">
+            <YStack borderBottomWidth={1} paddingHorizontal="$2" paddingVertical="$2">
               <OrgSwitcher />
-            </div>
+            </YStack>
           )}
 
           {/* Scrollable nav */}
-          <nav className="flex-1 space-y-0.5 overflow-y-auto p-2 pb-4 [mask-image:linear-gradient(to_bottom,#000_calc(100%-1.5rem),transparent)]">
+          <YStack flex={1} rowGap="$0.5" padding="$2" paddingBottom="$4" overflow="scroll" className="[mask-image:linear-gradient(to_bottom,#000_calc(100%-1.5rem),transparent)]">
             {/* Primary */}
             {PRIMARY_ITEMS.map(renderNavButton)}
 
@@ -372,37 +354,37 @@ function SidebarContent({
             {collapsed ? (
               <Divider />
             ) : (
-              <div className="flex items-center justify-between px-3 pb-1 pt-3">
-                <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+              <XStack alignItems="center" justifyContent="space-between" paddingHorizontal="$3" paddingBottom="$1" paddingTop="$3">
+                <SizableText fontSize={11} fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11">
                   Projects
-                </span>
+                </SizableText>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button
+                    <Button
                       aria-label="Project actions"
-                      className="rounded p-0.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                      borderRadius="$2" padding="$0.5" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
                     >
-                      <MoreHorizontal className="h-3.5 w-3.5" />
-                    </button>
+                      <MoreHorizontal size={14} />
+                    </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={() => router.push('/dev')}>
-                      <Plus className="mr-2 h-4 w-4" />
+                      <Plus size={16} />
                       Create project
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => setCreatingFolder(true)}>
-                      <FolderPlus className="mr-2 h-4 w-4" />
+                      <FolderPlus size={16} />
                       Create folder
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </div>
+              </XStack>
             )}
             {PROJECT_ITEMS.map(renderNavButton)}
 
             {/* Folders (app-side grouping — persists locally; see lib/folders) */}
             {!collapsed && creatingFolder && (
-              <input
+              <Input
                 autoFocus
                 value={newFolderName}
                 onChange={(e) => setNewFolderName(e.target.value)}
@@ -415,8 +397,8 @@ function SidebarContent({
                 }}
                 onBlur={submitNewFolder}
                 placeholder="Folder name…"
-                className="mx-1 w-[calc(100%-0.5rem)] rounded-md border border-border bg-background px-2 py-1.5 text-sm outline-none focus:border-ring"
-              />
+                marginHorizontal="$1" width="calc(100%-0.5rem)" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$3" outlineWidth={0} focusStyle={{ borderColor: "$color8" }}
+  />
             )}
             {!collapsed &&
               folders.map((f) => (
@@ -424,15 +406,15 @@ function SidebarContent({
                   key={f.id}
                   variant="ghost"
                   size="sm"
-                  className="w-full justify-start"
+                  width="100%" justifyContent="flex-start"
                   onClick={() => {
                     onMobileOpenChange?.(false);
                     router.push(`/projects?folder=${encodeURIComponent(f.id)}`);
                   }}
                   title={f.name}
                 >
-                  <Folder className="mr-2 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                  <span className="truncate text-sm">{f.name}</span>
+                  <Folder size={14} color="$color11" />
+                  <SizableText numberOfLines={1} fontSize="$3">{f.name}</SizableText>
                 </Button>
               ))}
 
@@ -440,23 +422,23 @@ function SidebarContent({
             {recents.length > 0 && (
               <>
                 {collapsed ? <Divider /> : (
-                  <div className="px-3 pb-1 pt-3 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                  <SizableText paddingHorizontal="$3" paddingBottom="$1" paddingTop="$3" fontSize={11} fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11" display="flex" flexDirection="column">
                     Recents
-                  </div>
+                  </SizableText>
                 )}
                 {recents.map((project) => (
                   <Button
                     key={project.id}
                     variant="ghost"
                     size="sm"
-                    className={cn(collapsed ? 'h-8 w-full justify-center p-0' : 'w-full justify-start')}
+                    {...{ height: collapsed ? "$6" : undefined, width: collapsed ? "100%" : "100%", justifyContent: collapsed ? "center" : "flex-start", padding: collapsed ? "$0" : undefined }}
                     onClick={() => openCloudProject(project.slug || project.id, project.org)}
                     title={project.name}
                   >
                     <FolderOpen
-                      className={cn('h-3.5 w-3.5 shrink-0 text-muted-foreground', !collapsed && 'mr-2')}
-                    />
-                    {!collapsed && <span className="truncate text-sm">{project.name}</span>}
+                      size={14} color="$color11"
+  />
+                    {!collapsed && <SizableText numberOfLines={1} fontSize="$3">{project.name}</SizableText>}
                   </Button>
                 ))}
               </>
@@ -464,16 +446,16 @@ function SidebarContent({
 
             {/* Secondary (kept reachable) */}
             {collapsed ? <Divider /> : (
-              <div className="px-3 pb-1 pt-3 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+              <SizableText paddingHorizontal="$3" paddingBottom="$1" paddingTop="$3" fontSize={11} fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11" display="flex" flexDirection="column">
                 More
-              </div>
+              </SizableText>
             )}
             {visibleSecondary.map(renderNavButton)}
-          </nav>
+          </YStack>
 
           {/* System Actions (Server Mode only) */}
           {isServerMode && (
-            <div className="space-y-1 border-t p-2">
+            <YStack rowGap="$1" borderTopWidth={1} padding="$2">
               {SYSTEM_ACTIONS.map((item) => {
                 const Icon = item.icon;
                 const isLogout = item.id === 'logout';
@@ -484,37 +466,33 @@ function SidebarContent({
                     key={item.id}
                     variant="ghost"
                     size="sm"
-                    className={cn(
-                      'relative w-full',
-                      collapsed ? 'justify-center px-2' : 'justify-start',
-                      isLogout && 'text-destructive hover:bg-destructive/10 hover:text-destructive',
-                    )}
+                    position="relative" width="100%" {...{ justifyContent: collapsed ? "center" : "flex-start", paddingHorizontal: collapsed ? "$2" : undefined, color: isLogout ? "$red9" : undefined, hoverStyle: isLogout ? {"backgroundColor":"$red9","color":"$red9"} : undefined }}
                     onClick={() => handleItemAction(item)}
                     title={collapsed ? item.label : undefined}
                   >
                     <Icon className={cn('h-4 w-4', !collapsed && 'mr-2')} />
                     {!collapsed && item.label}
                     {showSyncIndicator && (
-                      <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-[var(--brand-accent)]" />
+                      <SizableText position="absolute" right="$1" top="$1" height="$2" width="$2" borderRadius="$10" backgroundColor="var(--brand-accent)" />
                     )}
                   </Button>
                 );
               })}
-            </div>
+            </YStack>
           )}
 
           {/* Share + Upgrade cards (expanded only) */}
           {!collapsed && (
-            <div className="space-y-2 border-t p-2">
+            <YStack rowGap="$2" borderTopWidth={1} padding="$2">
               <ShareCard />
               <UpgradeCard onClick={() => router.push('/billing')} />
-            </div>
+            </YStack>
           )}
 
           {/* Per-org identity + credit balance, pinned to the bottom. */}
           <SidebarWallet collapsed={collapsed} />
         </OrgProvider>
-      </div>
+      </YStack>
     </>
   );
 }
@@ -529,14 +507,14 @@ function ShareCard() {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <button
+      <Button
         onClick={() => setOpen(true)}
         title="Share Hanzo, earn free weeks"
-        className="flex w-full items-center gap-2 rounded-md border border-border bg-muted/30 px-2.5 py-1.5 text-left text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+        width="100%" alignItems="center" gap="$2" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1.5" textAlign="left" fontSize="$1" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
       >
-        <Share2 className="h-3.5 w-3.5 shrink-0" />
-        <span className="truncate font-medium">Share app</span>
-      </button>
+        <Share2 size={14} />
+        <SizableText numberOfLines={1} fontWeight="500">Share app</SizableText>
+      </Button>
       {open && <ReferralDialog onClose={() => setOpen(false)} />}
     </>
   );
@@ -587,107 +565,107 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
   const enc = encodeURIComponent(link);
 
   return (
-    <div
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 p-4"
+    <XStack
+      position="fixed" top={0} right={0} bottom={0} left={0} zIndex={70} alignItems="center" justifyContent="center" backgroundColor="black" padding="$4"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-label="Share Hanzo"
     >
-      <div
-        className="relative w-full max-w-md rounded-2xl border border-border bg-popover p-6 text-foreground shadow-2xl"
+      <SizableText
+        position="relative" width="100%" maxWidth={448} borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$5" color="$color" elevation={6} display="flex" flexDirection="column"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
+        <Button
           onClick={onClose}
           aria-label="Close"
-          className="absolute right-4 top-4 rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          position="absolute" right="$4" top="$4" borderRadius="$3" padding="$1" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
         >
-          <X className="h-4 w-4" />
-        </button>
+          <X size={16} />
+        </Button>
 
-        <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-muted">
-          <Gift className="h-5 w-5" strokeWidth={1.5} />
-        </span>
-        <h2 className="mt-4 text-lg font-semibold tracking-tight">
+        <SizableText height={44} width={44} alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
+          <Gift size={20} strokeWidth={1.5} />
+        </SizableText>
+        <H2 marginTop="$4" fontSize="$6" fontWeight="600" letterSpacing={-0.4}>
           Share Hanzo, earn free weeks
-        </h2>
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+        </H2>
+        <Paragraph marginTop="$2" fontSize="$3" lineHeight={1.625} color="$color11">
           For every friend who signs up and subscribes to a paid plan through your
           link, you get{' '}
-          <span className="font-medium text-foreground">1 week free</span> — up to{' '}
-          <span className="font-medium text-foreground">1 year</span> (52 weeks).
-        </p>
+          <SizableText fontWeight="500" color="$color">1 week free</SizableText> — up to{' '}
+          <SizableText fontWeight="500" color="$color">1 year</SizableText> (52 weeks).
+        </Paragraph>
 
-        <div className="mt-5 flex items-center gap-2 rounded-lg border border-border bg-muted p-1.5">
-          <input
+        <XStack marginTop="$4.5" alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$1.5">
+          <Input
             readOnly
             value={link}
             onFocus={(e) => e.currentTarget.select()}
-            className="min-w-0 flex-1 bg-transparent px-2 text-sm text-foreground outline-none"
+            minWidth={0} flex={1} backgroundColor="transparent" paddingHorizontal="$2" fontSize="$3" color="$color" outlineWidth={0}
             aria-label="Your referral link"
-          />
-          <button
+  />
+          <Button
             onClick={copy}
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            flexShrink={0} alignItems="center" gap="$1.5" borderRadius="$3" backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$1" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
           >
-            {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+            {copied ? <Check size={14} /> : <Copy size={14} />}
             {copied ? 'Copied' : 'Copy'}
-          </button>
-        </div>
+          </Button>
+        </XStack>
 
-        <div className="mt-3 flex flex-wrap gap-2">
-          <button
+        <XStack marginTop="$3" flexWrap="wrap" gap="$2">
+          <Button
             onClick={nativeShare}
-            className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-border hover:text-foreground"
+            alignItems="center" gap="$1.5" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$borderColor", color: "$color" }}
           >
-            <Share2 className="h-3.5 w-3.5" /> Share
-          </button>
-          <a
+            <Share2 size={14} /> Share
+          </Button>
+          <Anchor
             href={`https://x.com/intent/post?text=${shareText}&url=${enc}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-border hover:text-foreground"
+            alignItems="center" gap="$1.5" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$borderColor", color: "$color" }}
           >
             Post on X
-          </a>
-          <a
+          </Anchor>
+          <Anchor
             href={`https://www.linkedin.com/sharing/share-offsite/?url=${enc}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-border hover:text-foreground"
+            alignItems="center" gap="$1.5" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$borderColor", color: "$color" }}
           >
             Share on LinkedIn
-          </a>
-        </div>
+          </Anchor>
+        </XStack>
 
-        <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
+        <Paragraph marginTop="$4" fontSize={11} lineHeight={1.625} color="$color11">
           Free weeks are credited when a referred friend&apos;s paid subscription
           starts. Rewards cap at 52 weeks.
-        </p>
-      </div>
-    </div>
+        </Paragraph>
+      </SizableText>
+    </XStack>
   );
 }
 
 /** Upgrade card → billing. */
 function UpgradeCard({ onClick }: { onClick: () => void }) {
   return (
-    <button
+    <Button
       onClick={onClick}
       title="More credits & private apps"
-      className="flex w-full items-center gap-2 rounded-md border border-border bg-gradient-to-br from-white/[0.06] to-transparent px-2.5 py-1.5 text-left text-xs text-foreground transition-colors hover:from-white/[0.1]"
+      width="100%" alignItems="center" gap="$2" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$1.5" textAlign="left" fontSize="$1" color="$color"
     >
-      <Zap className="h-3.5 w-3.5 shrink-0" />
-      <span className="truncate font-medium">Upgrade to Pro</span>
-    </button>
+      <Zap size={14} />
+      <SizableText numberOfLines={1} fontWeight="500">Upgrade to Pro</SizableText>
+    </Button>
   );
 }
 
 // Wrapper with a Suspense boundary (kept for router hooks under Next 15).
 export function Sidebar(props: SidebarProps) {
   return (
-    <Suspense fallback={<div className="h-full w-full bg-card" />}>
+    <Suspense fallback={<YStack height="100%" width="100%" backgroundColor="$background" />}>
       <SidebarContent {...props} />
     </Suspense>
   );

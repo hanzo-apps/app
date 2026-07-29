@@ -1,5 +1,6 @@
 "use client";
 
+import { SizableText, YStack, XStack, H3 } from '@hanzo/gui';
 import { useState, useEffect, useCallback } from "react";
 import {
   Wand2,
@@ -507,22 +508,22 @@ export function VisualEditor({
         <Button
           variant="ghost"
           size="sm"
-          className="size-8 shrink-0 p-0 text-muted-foreground hover:bg-muted hover:text-foreground"
+          width="$6" height="$6" flexShrink={0} padding="$0" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
           title="More"
           aria-label="Visual editor options"
         >
-          <MoreVertical className="size-4" />
+          <MoreVertical size={16} />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         side={menuSide}
         align="end"
         sideOffset={8}
-        className="min-w-56"
+        minWidth={224}
       >
         <DropdownMenuSub>
           <DropdownMenuSubTrigger className={menuItemClass}>
-            <PanelBottom className="size-4" />
+            <PanelBottom size={16} />
             <span>Dock</span>
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent className="min-w-40">
@@ -535,7 +536,7 @@ export function VisualEditor({
                   <Icon className="size-4" />
                   <span>{label}</span>
                   {value === "bottom" && (
-                    <span className="ml-auto text-[10px] text-muted-foreground">Default</span>
+                    <SizableText marginLeft="auto" fontSize={10} color="$color11">Default</SizableText>
                   )}
                 </DropdownMenuRadioItem>
               ))}
@@ -548,7 +549,7 @@ export function VisualEditor({
           onCheckedChange={(c) => setIsMinimized(c === true)}
           className={menuItemClass}
         >
-          <Minimize2 className="size-4" />
+          <Minimize2 size={16} />
           <span>Minimize</span>
         </DropdownMenuCheckboxItem>
 
@@ -557,12 +558,12 @@ export function VisualEditor({
           onCheckedChange={(c) => setIsHidden(c === true)}
           className={menuItemClass}
         >
-          <EyeOff className="size-4" />
+          <EyeOff size={16} />
           <span>Hide</span>
         </DropdownMenuCheckboxItem>
 
-        <DropdownMenuSeparator className="bg-border" />
-        <DropdownMenuLabel className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+        <DropdownMenuSeparator backgroundColor="$borderColor" />
+        <DropdownMenuLabel fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11">
           Theme
         </DropdownMenuLabel>
         <DropdownMenuRadioGroup
@@ -570,30 +571,30 @@ export function VisualEditor({
           onValueChange={(v) => setPreviewTheme(v as PreviewTheme)}
         >
           <DropdownMenuRadioItem value="auto" className={menuItemClass}>
-            <Monitor className="size-4" />
+            <Monitor size={16} />
             <span>Auto</span>
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="light" className={menuItemClass}>
-            <Sun className="size-4" />
+            <Sun size={16} />
             <span>Light</span>
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="dark" className={menuItemClass}>
-            <Moon className="size-4" />
+            <Moon size={16} />
             <span>Dark</span>
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
 
-        <DropdownMenuSeparator className="bg-border" />
-        <div
-          className="flex items-center justify-between gap-4 px-2 py-1.5 text-sm text-foreground"
+        <DropdownMenuSeparator backgroundColor="$borderColor" />
+        <SizableText
+          alignItems="center" justifyContent="space-between" gap="$4" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$3" color="$color" display="flex" flexDirection="row"
           onPointerDown={(e) => e.stopPropagation()}
         >
-          <span className="flex items-center gap-2">
-            <Keyboard className="size-4" />
+          <SizableText alignItems="center" gap="$2">
+            <Keyboard size={16} />
             Keyboard shortcuts
-          </span>
+          </SizableText>
           <Switch checked={shortcutsEnabled} onCheckedChange={setShortcutsEnabled} />
-        </div>
+        </SizableText>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -604,41 +605,35 @@ export function VisualEditor({
           card. Monochrome pill, hairline dividers between tool groups. */}
       {isHidden ? (
         // Always-present affordance so the toolbar is never unrecoverable.
-        <button
+        <Button
           type="button"
           onClick={() => setIsHidden(false)}
           title="Show visual editor"
           aria-label="Show visual editor"
-          className="absolute bottom-3 right-3 z-50 inline-flex size-8 items-center justify-center rounded-full border border-border bg-card/95 text-muted-foreground shadow-lg shadow-black/40 backdrop-blur transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+          position="absolute" bottom="$3" right="$3" zIndex={50} width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" color="$color11" elevation={4} backdropFilter="blur(8px)" hoverStyle={{ backgroundColor: "$color3", color: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
           style={anchorStyle}
         >
-          <Wand2 className="size-4" />
-        </button>
+          <Wand2 size={16} />
+        </Button>
       ) : isMinimized ? (
         // Collapsed to a single grip; click to restore the full dock.
-        <div className={cn("absolute z-50", anchorClass[position])} style={anchorStyle}>
-          <button
+        <YStack position="absolute" zIndex={50} className={`${anchorClass[position]}`} style={anchorStyle}>
+          <Button
             type="button"
             onClick={() => setIsMinimized(false)}
             title="Expand visual editor"
             aria-label="Expand visual editor"
-            className="inline-flex size-8 items-center justify-center rounded-full border border-border bg-card/95 text-muted-foreground shadow-lg shadow-black/40 backdrop-blur transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+            width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" color="$color11" elevation={4} backdropFilter="blur(8px)" hoverStyle={{ backgroundColor: "$color3", color: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
           >
-            {isVertical ? <GripVertical className="size-4" /> : <GripHorizontal className="size-4" />}
-          </button>
-        </div>
+            {isVertical ? <GripVertical size={16} /> : <GripHorizontal size={16} />}
+          </Button>
+        </YStack>
       ) : (
-        <div
+        <XStack
           role="toolbar"
           aria-label="Visual editor"
           aria-orientation={isVertical ? "vertical" : "horizontal"}
-          className={cn(
-            "absolute z-50 flex items-center gap-1 border border-border bg-card/95 p-1 shadow-lg shadow-black/40 backdrop-blur",
-            isVertical
-              ? "max-h-[calc(100%-1.5rem)] flex-col rounded-2xl"
-              : "max-w-[calc(100%-1.5rem)] flex-row rounded-full",
-            anchorClass[position]
-          )}
+          position="absolute" zIndex={50} alignItems="center" gap="$1" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$1" elevation={4} backdropFilter="blur(8px)" {...{ maxHeight: isVertical ? "calc(100%-1.5rem)" : undefined, flexDirection: isVertical ? "column" : "row", borderRadius: isVertical ? "$8" : "$10", maxWidth: isVertical ? undefined : "calc(100%-1.5rem)" }} className={`${anchorClass[position]}`}
           style={anchorStyle}
         >
           {/* Master arm/disarm — turns the visual editor on for the preview. */}
@@ -648,198 +643,181 @@ export function VisualEditor({
             onClick={() => onToggle(!isEnabled)}
             title={isEnabled ? "Disable visual editing" : "Enable visual editing"}
             aria-pressed={isEnabled}
-            className={cn(
-              "size-8 shrink-0 p-0",
-              isEnabled
-                ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground"
-            )}
+            width="$6" height="$6" flexShrink={0} padding="$0" {...{ backgroundColor: isEnabled ? "$color12" : undefined, color: isEnabled ? "$background" : "$color11", hoverStyle: isEnabled ? {"backgroundColor":"$color12"} : {"backgroundColor":"$color3","color":"$color"} }}
           >
-            <Wand2 className="size-4" />
+            <Wand2 size={16} />
           </Button>
 
           {isEnabled && (
             <>
-              <div className={dividerClass} />
+              <YStack className={`${dividerClass}`} />
               <Button
                 variant={editMode === "select" ? "secondary" : "ghost"}
                 size="sm"
-                className={cn(
-                  "size-8 shrink-0 p-0",
-                  editMode !== "select" && "text-muted-foreground hover:bg-muted hover:text-foreground"
-                )}
+                width="$6" height="$6" flexShrink={0} padding="$0" {...{ color: editMode !== "select" ? "$color11" : undefined, hoverStyle: editMode !== "select" ? {"backgroundColor":"$color3","color":"$color"} : undefined }}
                 onClick={() => setEditMode("select")}
                 title="Select (V)"
                 aria-pressed={editMode === "select"}
               >
-                <MousePointer2 className="size-4" />
+                <MousePointer2 size={16} />
               </Button>
               <Button
                 variant={editMode === "edit" ? "secondary" : "ghost"}
                 size="sm"
-                className={cn(
-                  "size-8 shrink-0 p-0",
-                  editMode !== "edit" && "text-muted-foreground hover:bg-muted hover:text-foreground"
-                )}
+                width="$6" height="$6" flexShrink={0} padding="$0" {...{ color: editMode !== "edit" ? "$color11" : undefined, hoverStyle: editMode !== "edit" ? {"backgroundColor":"$color3","color":"$color"} : undefined }}
                 onClick={() => setEditMode("edit")}
                 title="Edit (E)"
                 aria-pressed={editMode === "edit"}
               >
-                <Edit3 className="size-4" />
+                <Edit3 size={16} />
               </Button>
               <Button
                 variant={editMode === "move" ? "secondary" : "ghost"}
                 size="sm"
-                className={cn(
-                  "size-8 shrink-0 p-0",
-                  editMode !== "move" && "text-muted-foreground hover:bg-muted hover:text-foreground"
-                )}
+                width="$6" height="$6" flexShrink={0} padding="$0" {...{ color: editMode !== "move" ? "$color11" : undefined, hoverStyle: editMode !== "move" ? {"backgroundColor":"$color3","color":"$color"} : undefined }}
                 onClick={() => setEditMode("move")}
                 title="Move (M)"
                 aria-pressed={editMode === "move"}
               >
-                <Move className="size-4" />
+                <Move size={16} />
               </Button>
-              <div className={dividerClass} />
+              <YStack className={`${dividerClass}`} />
               <Button
                 variant={showPanel ? "secondary" : "ghost"}
                 size="sm"
-                className={cn(
-                  "size-8 shrink-0 p-0",
-                  !showPanel && "text-muted-foreground hover:bg-muted hover:text-foreground"
-                )}
+                width="$6" height="$6" flexShrink={0} padding="$0" {...{ color: !showPanel ? "$color11" : undefined, hoverStyle: !showPanel ? {"backgroundColor":"$color3","color":"$color"} : undefined }}
                 onClick={() => setShowPanel(!showPanel)}
                 title="Properties panel (P)"
                 aria-pressed={showPanel}
               >
-                <SlidersHorizontal className="size-4" />
+                <SlidersHorizontal size={16} />
               </Button>
             </>
           )}
 
-          <div className={dividerClass} />
+          <YStack className={`${dividerClass}`} />
           {overflowMenu}
-        </div>
+        </XStack>
       )}
 
       {/* Properties Panel */}
       {!isHidden && !isMinimized && isEnabled && showPanel && selectedElement && (
-        <div className="absolute top-20 right-4 z-50 w-80 bg-card/95 backdrop-blur-sm rounded-lg border border-border max-h-[600px] overflow-hidden flex flex-col">
-          <div className="p-4 border-b border-border">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-foreground">Element Properties</h3>
+        <YStack position="absolute" top="$11" right="$4" zIndex={50} width={320} backgroundColor="$background" backdropFilter="blur(4px)" borderRadius="$5" borderWidth={1} borderColor="$borderColor" maxHeight={600} overflow="hidden">
+          <YStack padding="$4" borderBottomWidth={1} borderColor="$borderColor">
+            <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
+              <H3 fontSize="$3" fontWeight="500" color="$color">Element Properties</H3>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setSelectedElement(null)}
-                className="p-1"
+                padding="$1"
               >
-                <X className="w-4 h-4" />
+                <X size={16} />
               </Button>
-            </div>
-            <div className="space-y-1 text-xs text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <Box className="w-3 h-3" />
-                <span className="font-mono">{selectedElement.tagName}</span>
+            </XStack>
+            <SizableText rowGap="$1" fontSize="$1" color="$color11" display="flex" flexDirection="column">
+              <XStack alignItems="center" gap="$2">
+                <Box size={12} />
+                <SizableText fontFamily="$mono">{selectedElement.tagName}</SizableText>
                 {selectedElement.id && (
-                  <span className="text-muted-foreground">#{selectedElement.id}</span>
+                  <SizableText color="$color11">#{selectedElement.id}</SizableText>
                 )}
-              </div>
+              </XStack>
               {selectedElement.className && (
-                <div className="text-xs text-muted-foreground truncate">
+                <SizableText fontSize="$1" color="$color11" numberOfLines={1} display="flex" flexDirection="column">
                   .{selectedElement.className.split(' ').join('.')}
-                </div>
+                </SizableText>
               )}
               {selectedElement.sourceLocation && (
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Code className="w-3 h-3" />
+                <SizableText alignItems="center" gap="$1" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+                  <Code size={12} />
                   Line {selectedElement.sourceLocation.line}
-                </div>
+                </SizableText>
               )}
-            </div>
-          </div>
+            </SizableText>
+          </YStack>
 
-          <Tabs defaultValue="content" className="flex-1 overflow-hidden">
-            <TabsList className="grid w-full grid-cols-3 bg-muted">
+          <Tabs defaultValue="content" flex={1} overflow="hidden">
+            <TabsList width="100%" backgroundColor="$color3">
               <TabsTrigger value="content">Content</TabsTrigger>
               <TabsTrigger value="styles">Styles</TabsTrigger>
               <TabsTrigger value="layout">Layout</TabsTrigger>
             </TabsList>
 
-            <div className="overflow-y-auto max-h-[400px]">
-              <TabsContent value="content" className="p-4 space-y-4">
+            <YStack maxHeight={400} overflow="scroll">
+              <TabsContent value="content" padding="$4" rowGap="$4">
                 <div>
-                  <Label className="text-xs text-muted-foreground">Text Content</Label>
-                  <div className="flex gap-2 mt-1">
+                  <Label fontSize="$1" color="$color11">Text Content</Label>
+                  <XStack gap="$2" marginTop="$1">
                     <Input
                       value={elementText}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setElementText(e.target.value)}
-                      className="flex-1 bg-muted border-border text-foreground text-sm"
-                    />
+                      flex={1} backgroundColor="$color3" borderColor="$borderColor" color="$color" fontSize="$3"
+  />
                     <Button size="sm" onClick={applyTextChange}>
-                      <Check className="w-4 h-4" />
+                      <Check size={16} />
                     </Button>
-                  </div>
+                  </XStack>
                 </div>
 
                 <div>
-                  <Label className="text-xs text-muted-foreground">CSS Selector</Label>
-                  <code className="block mt-1 p-2 bg-muted rounded text-xs text-muted-foreground font-mono">
+                  <Label fontSize="$1" color="$color11">CSS Selector</Label>
+                  <SizableText marginTop="$1" padding="$2" backgroundColor="$color3" borderRadius="$2" fontSize="$1" color="$color11" fontFamily="$mono">
                     {selectedElement.selector}
-                  </code>
+                  </SizableText>
                 </div>
               </TabsContent>
 
-              <TabsContent value="styles" className="p-4 space-y-4">
+              <TabsContent value="styles" padding="$4" rowGap="$4">
                 <div>
-                  <Label className="text-xs text-muted-foreground">Text Color</Label>
-                  <div className="flex gap-2 mt-1">
-                    <div
-                      className="w-10 h-10 rounded border border-border cursor-pointer"
+                  <Label fontSize="$1" color="$color11">Text Color</Label>
+                  <XStack gap="$2" marginTop="$1">
+                    <YStack
+                      width="$7" height="$7" borderRadius="$2" borderWidth={1} borderColor="$borderColor" cursor="pointer"
                       style={{ backgroundColor: elementStyles.color }}
                       onClick={() => {
                         const color = prompt("Enter color (hex, rgb, or name):", elementStyles.color);
                         if (color) applyStyleChange("color", color);
                       }}
-                    />
+  />
                     <Input
                       value={elementStyles.color}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("color", e.target.value)}
-                      className="flex-1 bg-muted border-border text-foreground text-sm"
-                    />
-                  </div>
+                      flex={1} backgroundColor="$color3" borderColor="$borderColor" color="$color" fontSize="$3"
+  />
+                  </XStack>
                 </div>
 
                 <div>
-                  <Label className="text-xs text-muted-foreground">Background</Label>
-                  <div className="flex gap-2 mt-1">
-                    <div
-                      className="w-10 h-10 rounded border border-border cursor-pointer"
+                  <Label fontSize="$1" color="$color11">Background</Label>
+                  <XStack gap="$2" marginTop="$1">
+                    <YStack
+                      width="$7" height="$7" borderRadius="$2" borderWidth={1} borderColor="$borderColor" cursor="pointer"
                       style={{ backgroundColor: elementStyles.backgroundColor }}
                       onClick={() => {
                         const color = prompt("Enter background color:", elementStyles.backgroundColor);
                         if (color) applyStyleChange("backgroundColor", color);
                       }}
-                    />
+  />
                     <Input
                       value={elementStyles.backgroundColor}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("backgroundColor", e.target.value)}
-                      className="flex-1 bg-muted border-border text-foreground text-sm"
-                    />
-                  </div>
+                      flex={1} backgroundColor="$color3" borderColor="$borderColor" color="$color" fontSize="$3"
+  />
+                  </XStack>
                 </div>
 
                 <div>
-                  <Label className="text-xs text-muted-foreground">Font Size</Label>
+                  <Label fontSize="$1" color="$color11">Font Size</Label>
                   <Input
                     value={elementStyles.fontSize}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("fontSize", e.target.value)}
-                    className="bg-muted border-border text-foreground text-sm mt-1"
-                  />
+                    backgroundColor="$color3" borderColor="$borderColor" color="$color" fontSize="$3" marginTop="$1"
+  />
                 </div>
 
                 <div>
-                  <Label className="text-xs text-muted-foreground">Font Weight</Label>
+                  <Label fontSize="$1" color="$color11">Font Weight</Label>
                   <select
                     value={elementStyles.fontWeight}
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => applyStyleChange("fontWeight", e.target.value)}
@@ -860,50 +838,50 @@ export function VisualEditor({
                 </div>
               </TabsContent>
 
-              <TabsContent value="layout" className="p-4 space-y-4">
-                <div className="grid grid-cols-2 gap-2">
+              <TabsContent value="layout" padding="$4" rowGap="$4">
+                <YStack gap="$2">
                   <div>
-                    <Label className="text-xs text-muted-foreground">Width</Label>
+                    <Label fontSize="$1" color="$color11">Width</Label>
                     <Input
                       value={elementStyles.width}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("width", e.target.value)}
                       placeholder="auto"
-                      className="bg-muted border-border text-foreground text-sm mt-1"
-                    />
+                      backgroundColor="$color3" borderColor="$borderColor" color="$color" fontSize="$3" marginTop="$1"
+  />
                   </div>
                   <div>
-                    <Label className="text-xs text-muted-foreground">Height</Label>
+                    <Label fontSize="$1" color="$color11">Height</Label>
                     <Input
                       value={elementStyles.height}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("height", e.target.value)}
                       placeholder="auto"
-                      className="bg-muted border-border text-foreground text-sm mt-1"
-                    />
+                      backgroundColor="$color3" borderColor="$borderColor" color="$color" fontSize="$3" marginTop="$1"
+  />
                   </div>
-                </div>
+                </YStack>
 
                 <div>
-                  <Label className="text-xs text-muted-foreground">Padding</Label>
+                  <Label fontSize="$1" color="$color11">Padding</Label>
                   <Input
                     value={elementStyles.padding}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("padding", e.target.value)}
                     placeholder="0px"
-                    className="bg-muted border-border text-foreground text-sm mt-1"
-                  />
+                    backgroundColor="$color3" borderColor="$borderColor" color="$color" fontSize="$3" marginTop="$1"
+  />
                 </div>
 
                 <div>
-                  <Label className="text-xs text-muted-foreground">Margin</Label>
+                  <Label fontSize="$1" color="$color11">Margin</Label>
                   <Input
                     value={elementStyles.margin}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("margin", e.target.value)}
                     placeholder="0px"
-                    className="bg-muted border-border text-foreground text-sm mt-1"
-                  />
+                    backgroundColor="$color3" borderColor="$borderColor" color="$color" fontSize="$3" marginTop="$1"
+  />
                 </div>
 
                 <div>
-                  <Label className="text-xs text-muted-foreground">Display</Label>
+                  <Label fontSize="$1" color="$color11">Display</Label>
                   <select
                     value={elementStyles.display}
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => applyStyleChange("display", e.target.value)}
@@ -919,7 +897,7 @@ export function VisualEditor({
                 </div>
 
                 <div>
-                  <Label className="text-xs text-muted-foreground">Position</Label>
+                  <Label fontSize="$1" color="$color11">Position</Label>
                   <select
                     value={elementStyles.position}
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => applyStyleChange("position", e.target.value)}
@@ -933,9 +911,9 @@ export function VisualEditor({
                   </select>
                 </div>
               </TabsContent>
-            </div>
+            </YStack>
           </Tabs>
-        </div>
+        </YStack>
       )}
     </>
   );

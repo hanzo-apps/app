@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import { YStack, XStack, H3, SizableText, Paragraph } from '@hanzo/gui';
 import { Deployment, Project } from '@/lib/vfs/types';
 import { Button, Badge, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@hanzo/ui';
 import {
@@ -74,9 +74,9 @@ export function DeploymentCard({
   };
 
   return (
-    <div className="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow bg-card">
+    <YStack borderWidth={1} borderRadius="$5" overflow="hidden" backgroundColor="$background" hoverStyle={{ elevation: 4 }}>
       {/* Preview Image */}
-      <div className="aspect-video bg-muted relative">
+      <YStack backgroundColor="$color3" position="relative">
         <ThumbnailArea
           image={deployment.previewImage || project?.previewImage}
           onCapture={isPublished ? async () => {
@@ -87,75 +87,75 @@ export function DeploymentCard({
           } : undefined}
           onImageChange={(img) => onThumbnailChange?.(deployment.id, img)}
           size="md"
-        />
+  />
 
         {/* Publishing spinner overlay */}
         {isPublishing && (
-          <div className="absolute inset-0 bg-background/60 flex items-center justify-center z-10">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-          </div>
+          <XStack position="absolute" top={0} right={0} bottom={0} left={0} backgroundColor="$background" alignItems="center" justifyContent="center" zIndex={10}>
+            <Loader2 size={24} color="$color11" />
+          </XStack>
         )}
 
         {/* Status Badge Overlay */}
-        <div className="absolute top-2 right-2 flex gap-2">
+        <XStack position="absolute" top="$2" right="$2" gap="$2">
           {!deployment.enabled && (
-            <Badge variant="outline" className="bg-neutral-100 dark:bg-neutral-950 border-neutral-300 dark:border-neutral-800">
-              <EyeOff className="h-3 w-3 mr-1" />
+            <Badge variant="outline" backgroundColor="$color2" borderColor="$color4" $theme-dark={{ backgroundColor: "$color12", borderColor: "$color11" }}>
+              <EyeOff size={12} />
               Disabled
             </Badge>
           )}
           {deployment.underConstruction && deployment.enabled && (
-            <Badge variant="outline" className="bg-orange-100 dark:bg-orange-950 border-orange-300 dark:border-orange-800">
-              <Construction className="h-3 w-3 mr-1" />
+            <Badge variant="outline" backgroundColor="$orange2" borderColor="$orange4" $theme-dark={{ backgroundColor: "$orange12", borderColor: "$orange11" }}>
+              <Construction size={12} />
               Under Construction
             </Badge>
           )}
           {hasPendingChanges && deployment.enabled && (
-            <Badge variant="outline" className="bg-yellow-100 dark:bg-yellow-950 border-yellow-300 dark:border-yellow-800">
-              <AlertCircle className="h-3 w-3 mr-1" />
+            <Badge variant="outline" backgroundColor="$yellow2" borderColor="$yellow4" $theme-dark={{ backgroundColor: "$yellow12", borderColor: "$yellow11" }}>
+              <AlertCircle size={12} />
               Pending Changes
             </Badge>
           )}
-        </div>
-      </div>
+        </XStack>
+      </YStack>
 
       {/* Content */}
-      <div className="p-4">
+      <YStack padding="$4">
         {/* Title and Description */}
-        <div className="mb-3">
-          <h3 className="font-medium text-lg truncate mb-1">{deployment.name}</h3>
+        <YStack marginBottom="$3">
+          <H3 fontWeight="500" fontSize="$6" numberOfLines={1} marginBottom="$1">{deployment.name}</H3>
           {project && (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Folder className="h-3 w-3" />
-              <span className="truncate">{project.name}</span>
-            </div>
+            <SizableText alignItems="center" gap="$1" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+              <Folder size={12} />
+              <SizableText numberOfLines={1}>{project.name}</SizableText>
+            </SizableText>
           )}
           {deployment.slug && (
-            <p className="text-xs text-muted-foreground mt-1">
+            <Paragraph fontSize="$1" color="$color11" marginTop="$1">
               Slug: {deployment.slug}
-            </p>
+            </Paragraph>
           )}
-        </div>
+        </YStack>
 
         {/* URL */}
         {deployment.enabled && (
-          <div className="flex items-center gap-2 mb-3 p-2 bg-muted rounded text-xs">
-            <Globe className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-            <span className="flex-1 truncate">{publicUrl}</span>
+          <SizableText alignItems="center" gap="$2" marginBottom="$3" padding="$2" backgroundColor="$color3" borderRadius="$2" fontSize="$1" display="flex" flexDirection="row">
+            <Globe size={12} color="$color11" />
+            <SizableText flex={1} numberOfLines={1}>{publicUrl}</SizableText>
             <Button
               variant="ghost"
               size="sm"
-              className="h-6 w-6 p-0"
+              height="$5" width="$5" padding="$0"
               onClick={handleCopyUrl}
               title="Copy URL"
             >
-              <Copy className="h-3 w-3" />
+              <Copy size={12} />
             </Button>
-          </div>
+          </SizableText>
         )}
 
         {/* Metadata */}
-        <div className="flex items-center gap-4 mb-3 text-xs text-muted-foreground">
+        <SizableText alignItems="center" gap="$4" marginBottom="$3" fontSize="$1" color="$color11" display="flex" flexDirection="row">
           <div>
             Version: {deployment.settingsVersion}
             {deployment.lastPublishedVersion && (
@@ -167,14 +167,14 @@ export function DeploymentCard({
               Published {formatDistanceToNow(new Date(deployment.publishedAt), { addSuffix: true })}
             </div>
           )}
-        </div>
+        </SizableText>
 
         {/* Stats Badges */}
-        <div className="flex flex-wrap gap-2 mb-4">
+        <XStack flexWrap="wrap" gap="$2" marginBottom="$4">
           {deployment.headScripts.filter(s => s.enabled).length +
             deployment.bodyScripts.filter(s => s.enabled).length >
             0 && (
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant="secondary" fontSize="$1">
               {deployment.headScripts.filter(s => s.enabled).length +
                 deployment.bodyScripts.filter(s => s.enabled).length}{' '}
               Script
@@ -184,44 +184,40 @@ export function DeploymentCard({
             </Badge>
           )}
           {deployment.cdnLinks.filter(c => c.enabled).length > 0 && (
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant="secondary" fontSize="$1">
               {deployment.cdnLinks.filter(c => c.enabled).length} CDN Resource
               {deployment.cdnLinks.filter(c => c.enabled).length !== 1 && 's'}
             </Badge>
           )}
           {deployment.analytics.enabled && (
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant="secondary" fontSize="$1">
               Analytics
             </Badge>
           )}
           {(deployment.seo.title || deployment.seo.description) && (
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant="secondary" fontSize="$1">
               SEO Configured
             </Badge>
           )}
           {deployment.compliance.enabled && (
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant="secondary" fontSize="$1">
               Compliance
             </Badge>
           )}
-        </div>
+        </XStack>
 
         {/* Actions */}
-        <div className="flex gap-2">
+        <XStack gap="$2">
           {deployment.enabled ? (
             <>
               <Button
                 variant={hasPendingChanges ? undefined : 'outline'}
                 size="sm"
-                className={
-                  hasPendingChanges
-                    ? 'flex-1 !bg-orange-500 hover:!bg-orange-600 !text-white'
-                    : 'flex-1'
-                }
+                {...{ flex: hasPendingChanges ? 1 : 1, backgroundColor: hasPendingChanges ? "$orange9" : undefined, color: hasPendingChanges ? "white" : undefined, hoverStyle: hasPendingChanges ? {"backgroundColor":"$orange10"} : undefined }}
                 onClick={() => onPublish(deployment.id)}
                 disabled={isPublishing}
               >
-                <RefreshCw className={`h-4 w-4 mr-2 ${isPublishing ? 'animate-spin' : ''}`} />
+                <RefreshCw size={16} />
                 {isPublishing
                   ? 'Publishing...'
                   : hasPendingChanges
@@ -236,17 +232,17 @@ export function DeploymentCard({
                 onClick={handleViewLive}
                 title="View Live"
               >
-                <ExternalLink className="h-4 w-4" />
+                <ExternalLink size={16} />
               </Button>
             </>
           ) : (
             <Button
               variant="outline"
               size="sm"
-              className="flex-1"
+              flex={1}
               onClick={() => onEnable(deployment.id)}
             >
-              <Eye className="h-4 w-4 mr-2" />
+              <Eye size={16} />
               Enable
             </Button>
           )}
@@ -254,66 +250,66 @@ export function DeploymentCard({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
-                <MoreVertical className="h-4 w-4" />
+                <MoreVertical size={16} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => onEditProject(deployment)}>
-                <Pencil className="h-4 w-4 mr-2" />
+                <Pencil size={16} />
                 Edit Project
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => onOpenSettings(deployment)}>
-                <Settings className="h-4 w-4 mr-2" />
+                <Settings size={16} />
                 Deployment Settings
               </DropdownMenuItem>
               {deployment.databaseEnabled && (
                 <DropdownMenuItem onClick={() => onOpenServerSettings?.(deployment)}>
-                  <Server className="h-4 w-4 mr-2" />
+                  <Server size={16} />
                   Server Settings
                 </DropdownMenuItem>
               )}
               {deployment.analytics.enabled && deployment.analytics.provider === 'builtin' && (
                 <DropdownMenuItem onClick={() => onViewAnalytics(deployment)}>
-                  <BarChart3 className="h-4 w-4 mr-2" />
+                  <BarChart3 size={16} />
                   View Analytics
                 </DropdownMenuItem>
               )}
               {deployment.enabled && (
                 <DropdownMenuItem onClick={handleCopyUrl}>
-                  <Copy className="h-4 w-4 mr-2" />
+                  <Copy size={16} />
                   Copy URL
                 </DropdownMenuItem>
               )}
               {onExportAsTemplate && (
                 <DropdownMenuItem onClick={() => onExportAsTemplate(deployment)}>
-                  <FileBox className="h-4 w-4 mr-2" />
+                  <FileBox size={16} />
                   Export as Deployment Template
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
               {deployment.enabled ? (
                 <DropdownMenuItem onClick={() => onDisable(deployment.id)}>
-                  <EyeOff className="h-4 w-4 mr-2" />
+                  <EyeOff size={16} />
                   Disable Deployment
                 </DropdownMenuItem>
               ) : (
                 <DropdownMenuItem onClick={() => onEnable(deployment.id)}>
-                  <Eye className="h-4 w-4 mr-2" />
+                  <Eye size={16} />
                   Enable Deployment
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem
                 onClick={() => onDelete(deployment.id)}
-                className="text-destructive focus:text-destructive"
+                color="$red9" focusStyle={{ color: "$red9" }}
               >
-                <Trash2 className="h-4 w-4 mr-2" />
+                <Trash2 size={16} />
                 Delete Deployment
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
-      </div>
-    </div>
+        </XStack>
+      </YStack>
+    </YStack>
   );
 }

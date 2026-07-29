@@ -15,7 +15,7 @@ import { getSQLiteAdapter } from '@/lib/vfs/adapters/server';
 import { RuntimeDatabase } from '@/lib/vfs/adapters/runtime-database';
 import { ProjectDatabase } from '@/lib/vfs/adapters/project-database';
 import { projectDatabaseExists, getProjectDatabasePath } from '@/lib/vfs/adapters/sqlite-connection';
-import { encryptSecret, isEncryptionConfigured } from '@/lib/edge-functions/secrets-crypto';
+import { isEncryptionConfigured } from '@/lib/edge-functions/secrets-crypto';
 
 export interface ExtractionSummary {
   edgeFunctions: number;

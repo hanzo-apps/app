@@ -1,5 +1,6 @@
 "use client";
 
+import { SizableText, YStack, XStack, H1, Paragraph, Anchor, H2, H3 } from '@hanzo/gui';
 // Docs hub for hanzo.app. Monochrome design system (Header + SiteFooter + Reveal,
 // true-black, Geist). Links REAL destinations only — no fabricated view counts,
 // no invented "most viewed" cards. The builder quick-start is written inline
@@ -32,7 +33,7 @@ interface Dest {
 // Real, resolvable destinations only.
 const destinations: Dest[] = [
   {
-    icon: <BookOpen className="h-5 w-5" />,
+    icon: <BookOpen size={20} />,
     title: "Full documentation",
     description:
       "The complete Hanzo docs — Cloud, Base, IAM, KMS, and the AI API, with guides and references.",
@@ -41,7 +42,7 @@ const destinations: Dest[] = [
     cta: "Read the docs",
   },
   {
-    icon: <Terminal className="h-5 w-5" />,
+    icon: <Terminal size={20} />,
     title: "AI API",
     description:
       "One OpenAI-compatible endpoint to Hanzo's Zen and Enso models plus 400+ frontier models at api.hanzo.ai.",
@@ -50,7 +51,7 @@ const destinations: Dest[] = [
     cta: "Explore the gateway",
   },
   {
-    icon: <LayoutGrid className="h-5 w-5" />,
+    icon: <LayoutGrid size={20} />,
     title: "Templates gallery",
     description:
       "Production-grade, open-source apps you can fork into the builder and deploy live in one click.",
@@ -58,7 +59,7 @@ const destinations: Dest[] = [
     cta: "Browse templates",
   },
   {
-    icon: <Github className="h-5 w-5" />,
+    icon: <Github size={20} />,
     title: "Import from GitHub",
     description:
       "Bring an existing repository into the builder, or push any project out to your own repo. All Hanzo code is open on GitHub.",
@@ -67,7 +68,7 @@ const destinations: Dest[] = [
     cta: "View on GitHub",
   },
   {
-    icon: <GraduationCap className="h-5 w-5" />,
+    icon: <GraduationCap size={20} />,
     title: "Learn",
     description:
       "Walk-throughs and concepts for getting the most out of the builder and Hanzo Cloud.",
@@ -75,7 +76,7 @@ const destinations: Dest[] = [
     cta: "Start learning",
   },
   {
-    icon: <Wand2 className="h-5 w-5" />,
+    icon: <Wand2 size={20} />,
     title: "Open the builder",
     description:
       "The fastest way to learn is to build. Describe an app and watch it come together, wired to a database, auth, and AI.",
@@ -104,134 +105,133 @@ const steps = [
 
 export default function DocsPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
       <Header />
 
       <main>
         {/* ── Hero ─────────────────────────────────────────────── */}
-        <section className="relative overflow-hidden px-4 py-12 text-center sm:py-16 md:px-8 md:py-24">
-          <div className="pointer-events-none absolute inset-0 overflow-hidden">
-            <div className="absolute left-1/2 top-[-30%] h-[420px] w-[720px] -translate-x-1/2 rounded-full bg-foreground/[0.05] blur-[130px]" />
-          </div>
+        <SizableText position="relative" overflow="hidden" paddingHorizontal="$4" paddingVertical="$8" textAlign="center" display="flex" flexDirection="column" $sm={{ paddingVertical: "$10" }} $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
+          <YStack pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} overflow="hidden">
+            <YStack position="absolute" left="50%" top="-30%" height={420} width={720} x="50%" borderRadius="$10" backgroundColor="$color" />
+          </YStack>
 
-          <div className="relative mx-auto max-w-3xl">
+          <YStack position="relative" alignSelf="center" maxWidth={768}>
             <Reveal>
-              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3 py-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-foreground/70" />
-                <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
+              <XStack marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1.5">
+                <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color" />
+                <SizableText fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.4} color="$color11">
                   Documentation
-                </span>
-              </div>
+                </SizableText>
+              </XStack>
             </Reveal>
 
             <Reveal delay={60}>
-              <h1 className="text-balance text-4xl font-medium leading-[1.03] tracking-tight sm:text-5xl md:text-6xl">
+              <H1 fontSize="$11" fontWeight="500" lineHeight={1.03} letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
                 Everything you need
                 <br />
                 to build with Hanzo.
-              </h1>
+              </H1>
             </Reveal>
 
             <Reveal delay={120}>
-              <p className="mx-auto mt-5 max-w-xl text-pretty text-base text-muted-foreground md:text-lg">
+              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
                 Start in the builder, then reach for the full docs, the API, and
                 the template gallery when you need them. Real destinations, no
                 dead ends.
-              </p>
+              </Paragraph>
             </Reveal>
 
             <Reveal delay={180}>
-              <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <YStack marginTop="$6" alignItems="center" justifyContent="center" gap="$3" $sm={{ flexDirection: "row" }}>
                 <Link
                   href="/dev"
-                  className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90"
-                >
+                ><SizableText alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
                   Start building
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-                <a
+                  <ArrowRight size={16} />
+                </SizableText></Link>
+                <Anchor
                   href="https://docs.hanzo.ai"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-6 py-3 text-sm font-medium text-foreground transition-all hover:border-foreground/30 hover:bg-accent"
+                  alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}
                 >
                   Full documentation
-                  <ArrowUpRight className="h-4 w-4" />
-                </a>
-              </div>
+                  <ArrowUpRight size={16} />
+                </Anchor>
+              </YStack>
             </Reveal>
-          </div>
-        </section>
+          </YStack>
+        </SizableText>
 
         {/* ── Quick start (inline, real) ───────────────────────── */}
-        <section className="border-y border-border px-4 py-16 md:px-8 md:py-24">
-          <div className="mx-auto max-w-6xl">
+        <YStack borderTopWidth={1} borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
+          <YStack alignSelf="center" maxWidth={1152}>
             <Reveal>
-              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+              <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
                 Quick start
-              </p>
-              <h2 className="mt-3 text-3xl font-medium tracking-tight md:text-4xl">
+              </Paragraph>
+              <H2 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
                 From a sentence to a live app.
-              </h2>
-              <p className="mt-3 max-w-xl text-base text-muted-foreground">
+              </H2>
+              <Paragraph marginTop="$3" maxWidth={576} fontSize="$4" color="$color11">
                 Three steps, no setup. This is the whole loop.
-              </p>
+              </Paragraph>
             </Reveal>
 
-            <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-3">
+            <YStack marginTop="$7" gap="$4.5">
               {steps.map((s, i) => (
                 <Reveal key={s.n} delay={i * 80}>
-                  <div className="flex h-full flex-col rounded-2xl border border-border bg-muted p-6">
-                    <span className="font-mono text-sm text-muted-foreground">{s.n}</span>
-                    <h3 className="mt-4 text-lg font-medium text-foreground">
+                  <YStack height="100%" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$5">
+                    <SizableText fontFamily="$mono" fontSize="$3" color="$color11">{s.n}</SizableText>
+                    <H3 marginTop="$4" fontSize="$6" fontWeight="500" color="$color">
                       {s.title}
-                    </h3>
-                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    </H3>
+                    <Paragraph marginTop="$2" fontSize="$3" lineHeight={1.625} color="$color11">
                       {s.body}
-                    </p>
-                  </div>
+                    </Paragraph>
+                  </YStack>
                 </Reveal>
               ))}
-            </div>
-          </div>
-        </section>
+            </YStack>
+          </YStack>
+        </YStack>
 
         {/* ── Explore ──────────────────────────────────────────── */}
-        <section className="px-4 py-16 md:px-8 md:py-24">
-          <div className="mx-auto max-w-6xl">
+        <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
+          <YStack alignSelf="center" maxWidth={1152}>
             <Reveal>
-              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+              <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
                 Explore
-              </p>
-              <h2 className="mt-3 text-3xl font-medium tracking-tight md:text-4xl">
+              </Paragraph>
+              <H2 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
                 Where to go next.
-              </h2>
+              </H2>
             </Reveal>
 
-            <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <YStack marginTop="$7" gap="$4.5">
               {destinations.map((d, i) => {
                 const inner = (
-                  <div className="group flex h-full flex-col rounded-2xl border border-border bg-muted p-6 transition-colors hover:border-foreground/30 hover:bg-accent">
-                    <div className="flex items-center justify-between">
-                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-muted text-foreground">
+                  <YStack group height="100%" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$5" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}>
+                    <XStack alignItems="center" justifyContent="space-between">
+                      <SizableText height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" color="$color">
                         {d.icon}
-                      </span>
+                      </SizableText>
                       {d.external ? (
-                        <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
+                        <ArrowUpRight size={16} color="$color11" />
                       ) : (
-                        <ArrowRight className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
+                        <ArrowRight size={16} color="$color11" />
                       )}
-                    </div>
-                    <h3 className="mt-5 text-base font-medium text-foreground">
+                    </XStack>
+                    <H3 marginTop="$4.5" fontSize="$4" fontWeight="500" color="$color">
                       {d.title}
-                    </h3>
-                    <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+                    </H3>
+                    <Paragraph marginTop="$2" flex={1} fontSize="$3" lineHeight={1.625} color="$color11">
                       {d.description}
-                    </p>
-                    <span className="mt-4 text-sm font-medium text-foreground transition-colors group-hover:text-foreground">
+                    </Paragraph>
+                    <SizableText marginTop="$4" fontSize="$3" fontWeight="500" color="$color" $group-hover={{ color: "$color" }}>
                       {d.cta} →
-                    </span>
-                  </div>
+                    </SizableText>
+                  </YStack>
                 );
                 return (
                   <Reveal key={d.title} delay={i * 60}>
@@ -245,43 +245,43 @@ export default function DocsPage() {
                   </Reveal>
                 );
               })}
-            </div>
-          </div>
-        </section>
+            </YStack>
+          </YStack>
+        </YStack>
 
         {/* ── API ──────────────────────────────────────────────── */}
-        <section className="border-t border-border px-4 py-16 md:px-8 md:py-24">
-          <div className="mx-auto grid max-w-6xl items-center gap-12 [&>*]:min-w-0 lg:grid-cols-2 lg:gap-16">
+        <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
+          <YStack alignSelf="center" maxWidth={1152} alignItems="center" gap="$8" $lg={{ gap: "$10" }} className="[&>*]:min-w-0">
             <Reveal>
-              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+              <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
                 API
-              </p>
-              <h2 className="mt-3 text-3xl font-medium tracking-tight md:text-4xl">
+              </Paragraph>
+              <H2 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
                 One endpoint. 400+ models.
-              </h2>
-              <p className="mt-4 max-w-md text-base text-muted-foreground">
+              </H2>
+              <Paragraph marginTop="$4" maxWidth={448} fontSize="$4" color="$color11">
                 Every app you build can call any frontier model — Hanzo&apos;s own
                 Zen and Enso families included — through a single OpenAI-compatible
                 endpoint. Swap models with one string.
-              </p>
-              <a
+              </Paragraph>
+              <Anchor
                 href="https://hanzo.ai/llm"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                marginTop="$5" alignItems="center" gap="$1.5" fontSize="$3" fontWeight="500" color="$color11" hoverStyle={{ color: "$color" }}
               >
                 Explore the gateway
-                <ArrowUpRight className="h-4 w-4" />
-              </a>
+                <ArrowUpRight size={16} />
+              </Anchor>
             </Reveal>
 
             <Reveal delay={100} className="rounded-2xl border border-border bg-card p-5">
-              <div className="mb-4 flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-foreground/15" />
-                <span className="h-2.5 w-2.5 rounded-full bg-foreground/15" />
-                <span className="h-2.5 w-2.5 rounded-full bg-foreground/15" />
-              </div>
-              <pre className="overflow-x-auto font-mono text-[12px] leading-relaxed text-foreground">
+              <XStack marginBottom="$4" alignItems="center" gap="$1.5">
+                <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
+                <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
+                <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
+              </XStack>
+              <SizableText fontFamily="$mono" fontSize={12} lineHeight={1.625} color="$color" overflow="scroll" whiteSpace="pre">
 {`POST https://api.hanzo.ai/v1/chat/completions
 Authorization: Bearer $HANZO_KEY
 
@@ -290,40 +290,38 @@ Authorization: Bearer $HANZO_KEY
   "messages": [{ "role": "user", "content": "…" }],
   "stream": true
 }`}
-              </pre>
+              </SizableText>
             </Reveal>
-          </div>
-        </section>
+          </YStack>
+        </YStack>
 
         {/* ── Help CTA ─────────────────────────────────────────── */}
-        <section className="border-t border-border px-4 py-20 text-center md:px-8 md:py-24">
+        <SizableText borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" textAlign="center" display="flex" flexDirection="column" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
           <Reveal className="mx-auto max-w-2xl">
-            <h2 className="text-3xl font-medium tracking-tight md:text-4xl">
+            <H2 fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
               Still stuck?
-            </h2>
-            <p className="mx-auto mt-4 max-w-md text-base text-muted-foreground">
+            </H2>
+            <Paragraph alignSelf="center" marginTop="$4" maxWidth={448} fontSize="$4" color="$color11">
               Check the FAQ for quick answers, or reach the team directly.
-            </p>
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            </Paragraph>
+            <YStack marginTop="$6" alignItems="center" justifyContent="center" gap="$3" $sm={{ flexDirection: "row" }}>
               <Link
                 href="/faq"
-                className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90"
-              >
+              ><SizableText alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
                 Read the FAQ
-                <ArrowRight className="h-4 w-4" />
-              </Link>
+                <ArrowRight size={16} />
+              </SizableText></Link>
               <Link
                 href="/help"
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-6 py-3 text-sm font-medium text-foreground transition-all hover:border-foreground/30 hover:bg-accent"
-              >
+              ><SizableText alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}>
                 Get help
-              </Link>
-            </div>
+              </SizableText></Link>
+            </YStack>
           </Reveal>
-        </section>
+        </SizableText>
       </main>
 
       <SiteFooter />
-    </div>
+    </SizableText>
   );
 }

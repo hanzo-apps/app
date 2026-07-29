@@ -1,5 +1,6 @@
 'use client';
 
+import { XStack, YStack } from '@hanzo/gui';
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 
 interface SplitLayoutProps {
@@ -64,39 +65,37 @@ export function SplitLayout({
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
   return (
-    <div
+    <XStack
       ref={containerRef}
-      className={`flex h-full w-full ${className}`}
+      height="100%" width="100%" className={`${className}`}
     >
       {/* Left pane */}
-      <div
-        className="h-full overflow-hidden"
+      <YStack
+        height="100%" overflow="hidden"
         style={{ width: `${split}%` }}
       >
         {left}
-      </div>
+      </YStack>
 
       {/* Resizer */}
-      <div
-        className={`relative w-1 cursor-col-resize group hover:bg-primary/20 ${
-          isDragging ? 'bg-primary/40' : 'bg-border'
-        }`}
+      <YStack
+        position="relative" width="$1" cursor="col-resize" group hoverStyle={{ backgroundColor: "$color12" }} {...{ backgroundColor: isDragging ? "$color12" : "$borderColor" }}
         onMouseDown={handleMouseDown}
       >
         {/* Visual indicator */}
-        <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-1 group-hover:w-1.5 transition-all">
-          <div className="h-full w-full bg-transparent group-hover:bg-primary/50 transition-colors" />
-        </div>
-      </div>
+        <YStack position="absolute" top="$0" bottom="$0" left="50%" x="50%" width="$1" $group-hover={{ width: "$1.5" }}>
+          <YStack height="100%" width="100%" backgroundColor="transparent" $group-hover={{ backgroundColor: "$color12" }} />
+        </YStack>
+      </YStack>
 
       {/* Right pane */}
-      <div
-        className="h-full overflow-hidden flex-1"
+      <YStack
+        height="100%" overflow="hidden" flex={1}
         style={{ width: `${100 - split}%` }}
       >
         {right}
-      </div>
-    </div>
+      </YStack>
+    </XStack>
   );
 }
 
@@ -116,7 +115,7 @@ export function WorkspaceLayout({
   className = ''
 }: WorkspaceLayoutProps) {
   if (!showPreview) {
-    return <div className={`h-full w-full ${className}`}>{editor}</div>;
+    return <YStack height="100%" width="100%" className={`${className}`}>{editor}</YStack>;
   }
 
   return (
@@ -127,6 +126,6 @@ export function WorkspaceLayout({
       minSize={30}
       maxSize={70}
       className={className}
-    />
+  />
   );
 }

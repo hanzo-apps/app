@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import { YStack, H3, Paragraph, H4, SizableText, XStack, Image } from '@hanzo/gui';
+import { useState } from 'react';
 import { PublishSettings, SeoConfig } from '@/lib/vfs/types';
 import { Label, Input, Textarea, Button, Badge, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
-import { Search, Image as ImageIcon, X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 
 interface SeoTabProps {
   settings: PublishSettings;
@@ -47,39 +48,39 @@ export function SeoTab({ settings, onChange }: SeoTabProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <YStack rowGap="$5">
       <div>
-        <h3 className="text-lg font-medium">SEO Configuration</h3>
-        <p className="text-sm text-muted-foreground">
+        <H3 fontSize="$6" fontWeight="500">SEO Configuration</H3>
+        <Paragraph fontSize="$3" color="$color11">
           Optimize your deployment for search engines and social sharing
-        </p>
+        </Paragraph>
       </div>
 
       {/* Basic Meta Tags */}
-      <div className="space-y-4">
+      <YStack rowGap="$4">
         <div>
-          <h4 className="font-medium mb-4">Basic Meta Tags</h4>
+          <H4 fontWeight="500" marginBottom="$4">Basic Meta Tags</H4>
         </div>
 
-        <div className="space-y-2">
+        <YStack rowGap="$2">
           <Label htmlFor="seo-title">Meta Title</Label>
           <Input
             id="seo-title"
             placeholder="Your Deployment Title"
             value={settings.seo.title || ''}
             onChange={(e) => handleSeoChange('title', e.target.value || undefined)}
-          />
-          <p className="text-xs text-muted-foreground">
+  />
+          <Paragraph fontSize="$1" color="$color11">
             Recommended: 50-60 characters
             {settings.seo.title && (
-              <span className="ml-2">
+              <SizableText marginLeft="$2">
                 ({settings.seo.title.length} characters)
-              </span>
+              </SizableText>
             )}
-          </p>
-        </div>
+          </Paragraph>
+        </YStack>
 
-        <div className="space-y-2">
+        <YStack rowGap="$2">
           <Label htmlFor="seo-description">Meta Description</Label>
           <Textarea
             id="seo-description"
@@ -89,20 +90,20 @@ export function SeoTab({ settings, onChange }: SeoTabProps) {
             onChange={(e) =>
               handleSeoChange('description', e.target.value || undefined)
             }
-          />
-          <p className="text-xs text-muted-foreground">
+  />
+          <Paragraph fontSize="$1" color="$color11">
             Recommended: 150-160 characters
             {settings.seo.description && (
-              <span className="ml-2">
+              <SizableText marginLeft="$2">
                 ({settings.seo.description.length} characters)
-              </span>
+              </SizableText>
             )}
-          </p>
-        </div>
+          </Paragraph>
+        </YStack>
 
-        <div className="space-y-2">
+        <YStack rowGap="$2">
           <Label htmlFor="seo-keywords">Keywords</Label>
-          <div className="flex gap-2">
+          <XStack gap="$2">
             <Input
               id="seo-keywords"
               placeholder="Enter keywords (comma-separated)"
@@ -114,29 +115,29 @@ export function SeoTab({ settings, onChange }: SeoTabProps) {
                   handleAddKeyword();
                 }
               }}
-            />
+  />
             <Button type="button" onClick={handleAddKeyword} variant="outline">
               Add
             </Button>
-          </div>
+          </XStack>
           {settings.seo.keywords && settings.seo.keywords.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2">
+            <XStack flexWrap="wrap" gap="$2" marginTop="$2">
               {settings.seo.keywords.map((keyword) => (
-                <Badge key={keyword} variant="secondary" className="gap-1">
+                <Badge key={keyword} variant="secondary" gap="$1">
                   {keyword}
-                  <button
+                  <Button
                     onClick={() => handleRemoveKeyword(keyword)}
-                    className="ml-1 hover:text-destructive"
+                    marginLeft="$1" hoverStyle={{ color: "$red9" }}
                   >
-                    <X className="h-3 w-3" />
-                  </button>
+                    <X size={12} />
+                  </Button>
                 </Badge>
               ))}
-            </div>
+            </XStack>
           )}
-        </div>
+        </YStack>
 
-        <div className="space-y-2">
+        <YStack rowGap="$2">
           <Label htmlFor="seo-canonical">Canonical URL</Label>
           <Input
             id="seo-canonical"
@@ -146,30 +147,30 @@ export function SeoTab({ settings, onChange }: SeoTabProps) {
             onChange={(e) =>
               handleSeoChange('canonical', e.target.value || undefined)
             }
-          />
-          <p className="text-xs text-muted-foreground">
+  />
+          <Paragraph fontSize="$1" color="$color11">
             Prevent duplicate content issues by specifying the primary URL
-          </p>
-        </div>
-      </div>
+          </Paragraph>
+        </YStack>
+      </YStack>
 
       {/* Open Graph */}
-      <div className="space-y-4">
+      <YStack rowGap="$4">
         <div>
-          <h4 className="font-medium mb-4">Open Graph (Facebook, LinkedIn)</h4>
+          <H4 fontWeight="500" marginBottom="$4">Open Graph (Facebook, LinkedIn)</H4>
         </div>
 
-        <div className="space-y-2">
+        <YStack rowGap="$2">
           <Label htmlFor="og-title">OG Title</Label>
           <Input
             id="og-title"
             placeholder="Title for social media sharing"
             value={settings.seo.ogTitle || ''}
             onChange={(e) => handleSeoChange('ogTitle', e.target.value || undefined)}
-          />
-        </div>
+  />
+        </YStack>
 
-        <div className="space-y-2">
+        <YStack rowGap="$2">
           <Label htmlFor="og-description">OG Description</Label>
           <Textarea
             id="og-description"
@@ -179,10 +180,10 @@ export function SeoTab({ settings, onChange }: SeoTabProps) {
             onChange={(e) =>
               handleSeoChange('ogDescription', e.target.value || undefined)
             }
-          />
-        </div>
+  />
+        </YStack>
 
-        <div className="space-y-2">
+        <YStack rowGap="$2">
           <Label htmlFor="og-image">OG Image URL</Label>
           <Input
             id="og-image"
@@ -190,38 +191,38 @@ export function SeoTab({ settings, onChange }: SeoTabProps) {
             placeholder="https://example.com/image.jpg"
             value={settings.seo.ogImage || ''}
             onChange={(e) => handleSeoChange('ogImage', e.target.value || undefined)}
-          />
-          <p className="text-xs text-muted-foreground">
+  />
+          <Paragraph fontSize="$1" color="$color11">
             Recommended: 1200x630px for best results
-          </p>
-        </div>
+          </Paragraph>
+        </YStack>
 
         {settings.seo.ogImage && (
-          <div className="p-4 border rounded-lg">
-            <p className="text-sm font-medium mb-2">Image Preview</p>
-            <div className="relative aspect-video bg-muted rounded flex items-center justify-center overflow-hidden">
-              <img
+          <YStack padding="$4" borderWidth={1} borderRadius="$5">
+            <Paragraph fontSize="$3" fontWeight="500" marginBottom="$2">Image Preview</Paragraph>
+            <XStack position="relative" backgroundColor="$color3" borderRadius="$2" alignItems="center" justifyContent="center" overflow="hidden">
+              <Image
                 src={settings.seo.ogImage}
                 alt="OG Image preview"
-                className="object-cover w-full h-full"
+                objectFit="cover" width="100%" height="100%"
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = 'none';
                   (e.target as HTMLImageElement).parentElement!.innerHTML =
                     '<div class="flex items-center gap-2 text-muted-foreground"><svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg><span>Unable to load image</span></div>';
                 }}
-              />
-            </div>
-          </div>
+  />
+            </XStack>
+          </YStack>
         )}
-      </div>
+      </YStack>
 
       {/* Twitter Card */}
-      <div className="space-y-4">
+      <YStack rowGap="$4">
         <div>
-          <h4 className="font-medium mb-4">Twitter Card</h4>
+          <H4 fontWeight="500" marginBottom="$4">Twitter Card</H4>
         </div>
 
-        <div className="space-y-2">
+        <YStack rowGap="$2">
           <Label htmlFor="twitter-card">Card Type</Label>
           <Select
             value={settings.seo.twitterCard || 'summary'}
@@ -239,76 +240,76 @@ export function SeoTab({ settings, onChange }: SeoTabProps) {
               </SelectItem>
             </SelectContent>
           </Select>
-          <p className="text-xs text-muted-foreground">
+          <Paragraph fontSize="$1" color="$color11">
             How your deployment appears when shared on Twitter/X
-          </p>
-        </div>
-      </div>
+          </Paragraph>
+        </YStack>
+      </YStack>
 
       {/* Preview */}
-      <div className="space-y-4">
+      <YStack rowGap="$4">
         <div>
-          <h4 className="font-medium mb-4">Search Result Preview</h4>
+          <H4 fontWeight="500" marginBottom="$4">Search Result Preview</H4>
         </div>
 
-        <div className="p-4 border rounded-lg bg-muted/50">
-          <div className="flex gap-2 mb-2">
-            <Search className="h-5 w-5 text-blue-600" />
-            <div className="flex-1">
-              <div className="text-sm text-blue-600 mb-1">
+        <YStack padding="$4" borderWidth={1} borderRadius="$5" backgroundColor="$color3">
+          <XStack gap="$2" marginBottom="$2">
+            <Search size={20} color="$blue10" />
+            <YStack flex={1}>
+              <SizableText fontSize="$3" color="$blue10" marginBottom="$1" display="flex" flexDirection="column">
                 https://your-domain.com
-              </div>
-              <h3 className="text-lg text-blue-800 dark:text-blue-400 font-medium mb-1">
+              </SizableText>
+              <H3 fontSize="$6" color="$blue11" fontWeight="500" marginBottom="$1" $theme-dark={{ color: "$blue8" }}>
                 {settings.seo.title || settings.seo.ogTitle || 'Your Deployment Title'}
-              </h3>
-              <p className="text-sm text-muted-foreground">
+              </H3>
+              <Paragraph fontSize="$3" color="$color11">
                 {settings.seo.description ||
                   settings.seo.ogDescription ||
                   'Your deployment description will appear here in search results.'}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+              </Paragraph>
+            </YStack>
+          </XStack>
+        </YStack>
+      </YStack>
 
       {/* Social Share Preview */}
       {(settings.seo.ogTitle || settings.seo.ogImage) && (
-        <div className="space-y-4">
+        <YStack rowGap="$4">
           <div>
-            <h4 className="font-medium mb-4">Social Share Preview</h4>
+            <H4 fontWeight="500" marginBottom="$4">Social Share Preview</H4>
           </div>
 
-          <div className="p-4 border rounded-lg bg-muted/50">
-            <div className="space-y-2">
+          <YStack padding="$4" borderWidth={1} borderRadius="$5" backgroundColor="$color3">
+            <YStack rowGap="$2">
               {settings.seo.ogImage && (
-                <div className="aspect-video bg-muted rounded overflow-hidden">
-                  <img
+                <YStack backgroundColor="$color3" borderRadius="$2" overflow="hidden">
+                  <Image
                     src={settings.seo.ogImage}
                     alt="Social preview"
-                    className="object-cover w-full h-full"
+                    objectFit="cover" width="100%" height="100%"
                     onError={(e) => {
                       (e.target as HTMLImageElement).style.display = 'none';
                     }}
-                  />
-                </div>
+  />
+                </YStack>
               )}
-              <div className="space-y-1">
-                <div className="text-xs text-muted-foreground">
+              <YStack rowGap="$1">
+                <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
                   your-domain.com
-                </div>
-                <h4 className="font-medium">
+                </SizableText>
+                <H4 fontWeight="500">
                   {settings.seo.ogTitle || settings.seo.title || 'Your Deployment Title'}
-                </h4>
-                <p className="text-sm text-muted-foreground">
+                </H4>
+                <Paragraph fontSize="$3" color="$color11">
                   {settings.seo.ogDescription ||
                     settings.seo.description ||
                     'Your deployment description'}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+                </Paragraph>
+              </YStack>
+            </YStack>
+          </YStack>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 }

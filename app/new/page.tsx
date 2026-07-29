@@ -1,8 +1,9 @@
 "use client";
 
+import { SizableText, YStack, XStack, H1, Paragraph, H2 } from '@hanzo/gui';
 import { Suspense, useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button, toast } from '@hanzo/ui';
+import { Button, toast, Textarea, Input } from '@hanzo/ui';
 import {
   ArrowRight,
   ArrowUp,
@@ -191,15 +192,15 @@ function NewProjectInner() {
   );
 
   return (
-    <div className="min-h-screen bg-background text-foreground antialiased">
+    <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
       {/* Header */}
-      <header className="sticky top-0 z-20 border-b border-border bg-background/70 backdrop-blur-xl">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
-          <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-2">
+      <YStack position="sticky" top="$0" zIndex={20} borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" backdropFilter="blur(24px)">
+        <XStack alignSelf="center" height="$9" maxWidth={1152} alignItems="center" justifyContent="space-between" paddingHorizontal="$4" $sm={{ paddingHorizontal: "$5" }}>
+          <XStack alignItems="center" gap="$5">
+            <Link href="/"><XStack alignItems="center" gap="$2">
               <HanzoBrand markClassName="h-7 w-7" wordmarkClassName="hidden sm:inline" />
-            </Link>
-            <nav className="hidden items-center gap-1 md:flex">
+            </XStack></Link>
+            <YStack display="none" alignItems="center" gap="$1">
               {[
                 { href: "/dashboard", label: "Dashboard" },
                 { href: "/projects", label: "Projects" },
@@ -208,68 +209,65 @@ function NewProjectInner() {
                 <Link
                   key={l.href}
                   href={l.href}
-                  className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                >
+                ><SizableText borderRadius="$3" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}>
                   {l.label}
-                </Link>
+                </SizableText></Link>
               ))}
-            </nav>
-          </div>
+            </YStack>
+          </XStack>
 
-          <div className="flex items-center gap-3">
+          <XStack alignItems="center" gap="$3">
             {user ? (
               <>
                 <OrgSwitcher />
                 <UserMenu />
               </>
             ) : (
-              <div className="flex items-center gap-2">
+              <XStack alignItems="center" gap="$2">
                 <Button variant="ghost" onClick={() => router.push("/login")}>
                   Log In
                 </Button>
                 <Button onClick={() => router.push("/login")}>Sign Up</Button>
-              </div>
+              </XStack>
             )}
-          </div>
-        </div>
-      </header>
+          </XStack>
+        </XStack>
+      </YStack>
 
       {/* Hero + composer */}
-      <main className="relative mx-auto max-w-6xl px-4 pb-24 sm:px-6">
+      <YStack position="relative" alignSelf="center" maxWidth={1152} paddingHorizontal="$4" paddingBottom="$12" $sm={{ paddingHorizontal: "$5" }}>
         {/* ambient glow behind the composer */}
-        <div
+        <YStack
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 mx-auto h-[420px] max-w-3xl bg-[radial-gradient(60%_60%_at_50%_0%,rgba(255,255,255,0.08),transparent_70%)]"
-        />
+          pointerEvents="none" position="absolute" left="$0" right="$0" top="$0" alignSelf="center" height={420} maxWidth={768} backgroundColor="radial-gradient(60% 60% at 50% 0%,rgba(255,255,255,0.08),transparent 70%)"
+  />
 
-        <section className="relative pt-16 text-center sm:pt-20">
-          <h1 className="text-balance text-4xl font-medium tracking-[-0.02em] sm:text-5xl">
+        <SizableText position="relative" paddingTop="$10" textAlign="center" display="flex" flexDirection="column" $sm={{ paddingTop: "$11" }}>
+          <H1 fontSize="$11" fontWeight="500" letterSpacing={-0.32} $sm={{ fontSize: "$12" }}>
             Let&rsquo;s build something new
-          </h1>
-          <p className="mx-auto mt-4 max-w-xl text-pretty text-base text-muted-foreground sm:text-lg">
+          </H1>
+          <Paragraph alignSelf="center" marginTop="$4" maxWidth={576} fontSize="$4" color="$color11" $sm={{ fontSize: "$6" }}>
             Describe an app to build, or paste a Git repository to deploy as a
             service. Hanzo builds, ships, and manages it.
-          </p>
+          </Paragraph>
 
           {/* Composer */}
-          <div className="mx-auto mt-8 max-w-2xl text-left">
-            <div
+          <SizableText alignSelf="center" marginTop="$6" maxWidth={672} textAlign="left" display="flex" flexDirection="column">
+            <YStack
               onDrop={onComposerDrop}
               onDragOver={onComposerDragOver}
               onDragLeave={onComposerDragLeave}
-              className={`group relative rounded-2xl border bg-muted p-2 shadow-2xl shadow-black/40 transition-colors focus-within:border-foreground/25 ${
-                dragActive ? "border-foreground/40 bg-accent" : "border-border"
-              }`}
+              group position="relative" borderRadius="$8" borderWidth={1} padding="$2" elevation={6} focusStyle={{ borderColor: "$color" }} {...{ borderColor: dragActive ? "$color" : "$borderColor", backgroundColor: dragActive ? "$color3" : "$color3" }}
             >
               {dragActive && (
-                <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-2xl border-2 border-dashed border-foreground/40 bg-background/50 backdrop-blur-sm">
-                  <span className="flex items-center gap-2 text-sm font-medium text-foreground">
-                    <FolderUp className="h-5 w-5" />
+                <XStack pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} zIndex={10} alignItems="center" justifyContent="center" borderRadius="$8" borderWidth={2} borderStyle="dashed" borderColor="$color" backgroundColor="$background" backdropFilter="blur(4px)">
+                  <SizableText alignItems="center" gap="$2" fontSize="$3" fontWeight="500" color="$color">
+                    <FolderUp size={20} />
                     Drop your project folder or .zip to import
-                  </span>
-                </div>
+                  </SizableText>
+                </XStack>
               )}
-              <textarea
+              <Textarea
                 ref={taRef}
                 rows={2}
                 value={value}
@@ -281,84 +279,84 @@ function NewProjectInner() {
                   }
                 }}
                 placeholder="Describe the app you want, or paste a GitHub / GitLab repository URL…"
-                className="max-h-40 min-h-[52px] w-full resize-none bg-transparent px-3 pt-2 text-[15px] leading-relaxed text-foreground placeholder:text-muted-foreground focus:outline-none"
-              />
-              <div className="flex items-center justify-between px-2 pb-1 pt-1">
-                <div className="flex items-center gap-1">
-                  <button
+                maxHeight="$17" minHeight={52} width="100%" resize="none" backgroundColor="transparent" paddingHorizontal="$3" paddingTop="$2" fontSize={15} lineHeight={1.625} color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0 }}
+  />
+              <XStack alignItems="center" justifyContent="space-between" paddingHorizontal="$2" paddingBottom="$1" paddingTop="$1">
+                <XStack alignItems="center" gap="$1">
+                  <Button
                     type="button"
                     title="Import a project — .zip or files"
                     onClick={() => fileInputRef.current?.click()}
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    height="$6" width="$6" alignItems="center" justifyContent="center" borderRadius="$5" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
                   >
-                    <Paperclip className="h-[18px] w-[18px]" />
-                  </button>
-                  <span className="ml-1 hidden text-xs text-muted-foreground sm:inline">
+                    <Paperclip size={18} />
+                  </Button>
+                  <SizableText marginLeft="$1" display="none" fontSize="$1" color="$color11">
                     {looksLikeRepo
                       ? "Deploys this repository as a service"
                       : "Press ⏎ to build · ⇧⏎ for a new line"}
-                  </span>
-                </div>
+                  </SizableText>
+                </XStack>
                 <Button
                   onClick={() => submit()}
                   disabled={loading || !value.trim()}
-                  className="h-9 gap-1.5 rounded-xl px-4"
+                  height={36} gap="$1.5" borderRadius="$6" paddingHorizontal="$4"
                 >
                   {loading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 size={16} />
                   ) : (
                     <>
                       {looksLikeRepo ? "Deploy" : "Build"}
-                      <ArrowUp className="h-4 w-4" />
+                      <ArrowUp size={16} />
                     </>
                   )}
                 </Button>
-              </div>
-            </div>
+              </XStack>
+            </YStack>
 
             {/* Import affordance — drag & drop, or pick a folder / .zip. */}
-            <div className="mt-2.5 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground">
+            <SizableText marginTop="$2.5" flexWrap="wrap" alignItems="center" justifyContent="center" columnGap="$1.5" rowGap="$1" fontSize="$1" color="$color11" display="flex" flexDirection="row">
               {importing ? (
-                <span className="inline-flex items-center gap-1.5 text-muted-foreground">
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                <SizableText alignItems="center" gap="$1.5" color="$color11">
+                  <Loader2 size={14} />
                   Importing your project…
-                </span>
+                </SizableText>
               ) : (
                 <>
-                  <FolderUp className="h-3.5 w-3.5 text-muted-foreground" />
+                  <FolderUp size={14} color="$color11" />
                   <span>Drag &amp; drop your project, or</span>
-                  <button
+                  <Button
                     type="button"
                     onClick={() => folderInputRef.current?.click()}
-                    className="rounded text-foreground underline decoration-foreground/20 underline-offset-2 transition-colors hover:text-foreground hover:decoration-foreground/40"
+                    borderRadius="$2" color="$color" textDecorationLine="underline" hoverStyle={{ color: "$color" }}
                   >
                     choose a folder
-                  </button>
-                  <span className="text-muted-foreground">·</span>
-                  <button
+                  </Button>
+                  <SizableText color="$color11">·</SizableText>
+                  <Button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="rounded text-foreground underline decoration-foreground/20 underline-offset-2 transition-colors hover:text-foreground hover:decoration-foreground/40"
+                    borderRadius="$2" color="$color" textDecorationLine="underline" hoverStyle={{ color: "$color" }}
                   >
                     .zip or files
-                  </button>
+                  </Button>
                 </>
               )}
-            </div>
+            </SizableText>
 
             {/* Hidden pickers — a .zip / loose files, or a whole directory. */}
-            <input
+            <Input
               ref={fileInputRef}
               type="file"
               multiple
               accept=".zip,text/*,.html,.htm,.css,.js,.jsx,.ts,.tsx,.json,.md,.svg,.xml,.yml,.yaml,.vue,.svelte,.astro"
-              className="hidden"
+              display="none"
               onChange={(e) => {
                 if (e.target.files?.length) importFiles(e.target.files);
                 e.target.value = "";
               }}
-            />
-            <input
+  />
+            <Input
               // `webkitdirectory`/`directory` aren't in React's input types, so
               // set them imperatively — one honest cast-free path to a folder picker.
               ref={(el) => {
@@ -370,90 +368,90 @@ function NewProjectInner() {
               }}
               type="file"
               multiple
-              className="hidden"
+              display="none"
               onChange={(e) => {
                 if (e.target.files?.length) importFiles(e.target.files);
                 e.target.value = "";
               }}
-            />
+  />
 
             {/* Quick starts */}
-            <div className="mt-3 flex flex-wrap justify-center gap-2">
+            <XStack marginTop="$3" flexWrap="wrap" justifyContent="center" gap="$2">
               {QUICK_STARTS.map((q) => {
                 const Icon = q.icon;
                 return (
-                  <button
+                  <Button
                     key={q.label}
                     type="button"
                     onClick={() => {
                       setValue(q.prompt);
                       taRef.current?.focus();
                     }}
-                    className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3.5 py-1.5 text-sm text-foreground transition-all hover:-translate-y-px hover:border-foreground/20 hover:bg-accent hover:text-foreground"
+                    alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$1.5" fontSize="$3" color="$color" hoverStyle={{ y: -1, borderColor: "$color", backgroundColor: "$color3", color: "$color" }}
                   >
                     <Icon className="h-4 w-4 text-muted-foreground" />
                     {q.label}
-                  </button>
+                  </Button>
                 );
               })}
-            </div>
-          </div>
-        </section>
+            </XStack>
+          </SizableText>
+        </SizableText>
 
         {/* Import / Templates */}
         {/* [&>*]:min-w-0 lets each grid item shrink below its content's
             min-content (long repo/template strings) so the track can't blow the
             column past the viewport — otherwise mobile gets a horizontal scroll. */}
-        <section className="relative mt-16 grid gap-6 [&>*]:min-w-0 lg:mt-20 lg:grid-cols-2">
+        <YStack position="relative" marginTop="$10" gap="$5" $lg={{ marginTop: "$11" }} className="[&>*]:min-w-0">
           {/* Import Git Repository — real connected-account import */}
           <ImportGitPanel />
 
           {/* Clone Template */}
-          <div className="rounded-2xl border border-border bg-muted p-5 sm:p-6">
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <Boxes className="h-[18px] w-[18px] text-foreground" />
-                <h2 className="text-[15px] font-medium">Clone a Template</h2>
-              </div>
-              <div className="relative hidden w-40 sm:block">
-                <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-                <input
+          <YStack borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$4.5" $sm={{ padding: "$5" }}>
+            <XStack marginBottom="$4" alignItems="center" justifyContent="space-between" gap="$3">
+              <XStack alignItems="center" gap="$2">
+                <Boxes size={18} color="$color" />
+                <H2 fontSize={15} fontWeight="500">Clone a Template</H2>
+              </XStack>
+              <YStack position="relative" display="none" width="$17">
+                <Search size={14} color="$color11" />
+                <Input
                   value={repoFilter}
                   onChange={(e) => setRepoFilter(e.target.value)}
                   placeholder="Filter"
-                  className="h-8 w-full rounded-lg border border-border bg-background/40 pl-8 pr-2 text-xs text-foreground placeholder:text-muted-foreground focus:border-foreground/25 focus:outline-none"
-                />
-              </div>
-            </div>
+                  height="$6" width="100%" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingLeft="$6" paddingRight="$2" fontSize="$1" color="$color" placeholderTextColor="$color11" focusStyle={{ borderColor: "$color", outlineWidth: 0 }}
+  />
+              </YStack>
+            </XStack>
 
             {!galleryLoading && !galleryLive && (
-              <div className="mb-4 flex items-start gap-2 rounded-lg border border-amber-500/25 bg-amber-500/10 px-3 py-2.5 text-xs text-amber-300/90">
-                <CloudOff className="mt-0.5 h-4 w-4 shrink-0" />
+              <SizableText marginBottom="$4" alignItems="flex-start" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$yellow9" backgroundColor="$yellow9" paddingHorizontal="$3" paddingVertical="$2.5" fontSize="$1" color="$yellow4" display="flex" flexDirection="row">
+                <CloudOff size={16} />
                 <span>Showing built-in starters — the live gallery is unreachable right now.</span>
-              </div>
+              </SizableText>
             )}
 
-            <div className="custom-scrollbar -mr-2 max-h-[420px] space-y-2 overflow-y-auto pr-2">
+            <YStack marginRight="-2" maxHeight={420} rowGap="$2" paddingRight="$2" overflow="scroll" className="custom-scrollbar">
               {galleryLoading
                 ? Array.from({ length: 5 }).map((_, i) => (
-                    <div
+                    <YStack
                       key={i}
-                      className="h-[68px] animate-pulse rounded-xl border border-border bg-muted"
-                    />
+                      height={68} borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3"
+  />
                   ))
                 : filteredTemplates.map((t) => (
-                    <button
+                    <Button
                       key={t.slug}
                       type="button"
                       onClick={() => handleTemplate(t.source)}
-                      className="group flex w-full items-center gap-3 rounded-xl border border-border bg-muted px-3.5 py-3 text-left transition-all hover:-translate-y-px hover:border-foreground/20 hover:bg-accent"
+                      group width="100%" alignItems="center" gap="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$3" textAlign="left" hoverStyle={{ y: -1, borderColor: "$color", backgroundColor: "$color3" }}
                     >
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted text-muted-foreground">
-                        <FileCode2 className="h-[18px] w-[18px]" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="truncate text-sm font-medium text-foreground">{t.title}</div>
-                        <div className="truncate text-xs text-muted-foreground">
+                      <SizableText height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" color="$color11" display="flex" flexDirection="row">
+                        <FileCode2 size={18} />
+                      </SizableText>
+                      <YStack minWidth={0} flex={1}>
+                        <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" color="$color" display="flex" flexDirection="column">{t.title}</SizableText>
+                        <SizableText numberOfLines={1} fontSize="$1" color="$color11" display="flex" flexDirection="column">
                           {[
                             t.framework,
                             t.category,
@@ -462,28 +460,27 @@ function NewProjectInner() {
                           ]
                             .filter(Boolean)
                             .join(" · ") || "Starter"}
-                        </div>
-                      </div>
-                      <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground" />
-                    </button>
+                        </SizableText>
+                      </YStack>
+                      <ArrowRight size={16} color="$color11" />
+                    </Button>
                   ))}
               {!galleryLoading && filteredTemplates.length === 0 && (
-                <div className="py-10 text-center text-sm text-muted-foreground">
+                <SizableText paddingVertical="$7" textAlign="center" fontSize="$3" color="$color11" display="flex" flexDirection="column">
                   No templates match &ldquo;{repoFilter}&rdquo;.
-                </div>
+                </SizableText>
               )}
-            </div>
+            </YStack>
 
             <Link
               href="/gallery"
-              className="mt-4 inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
+            ><SizableText marginTop="$4" alignItems="center" gap="$1" fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}>
               Browse all templates
-              <ChevronRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </section>
-      </main>
+              <ChevronRight size={16} />
+            </SizableText></Link>
+          </YStack>
+        </YStack>
+      </YStack>
 
       <style jsx>{`
         .custom-scrollbar::-webkit-scrollbar {
@@ -500,7 +497,7 @@ function NewProjectInner() {
           background: rgba(255, 255, 255, 0.22);
         }
       `}</style>
-    </div>
+    </SizableText>
   );
 }
 

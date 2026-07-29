@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Label, Badge, Button, Input, Switch, Popover, PopoverContent, PopoverTrigger, toast } from '@hanzo/ui';
-import { logger, cn } from '@/lib/utils';
+import { logger } from '@/lib/utils';
 import {
   Loader2,
   Sparkles,
@@ -340,12 +341,12 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
 
   const getModelIcon = (model: ProviderModel) => {
     const id = model.id.toLowerCase();
-    if (id.includes('deepseek')) return <Brain className="h-3 w-3" />;
-    if (id.includes('claude')) return <Sparkles className="h-3 w-3" />;
-    if (id.includes('gpt')) return <Zap className="h-3 w-3" />;
-    if (id.includes('gemini')) return <Cloud className="h-3 w-3" />;
-    if (id.includes('llama')) return <Server className="h-3 w-3" />;
-    if (id.includes('qwen')) return <Cpu className="h-3 w-3" />;
+    if (id.includes('deepseek')) return <Brain size={12} />;
+    if (id.includes('claude')) return <Sparkles size={12} />;
+    if (id.includes('gpt')) return <Zap size={12} />;
+    if (id.includes('gemini')) return <Cloud size={12} />;
+    if (id.includes('llama')) return <Server size={12} />;
+    if (id.includes('qwen')) return <Cpu size={12} />;
     return null;
   };
 
@@ -382,60 +383,55 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
 
   if (loading) {
     return (
-      <div className={className}>
+      <YStack className={`${className}`}>
         <Label>AI Model</Label>
-        <div className="flex items-center gap-2 h-10 px-3 border rounded-md bg-muted">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          <span className="text-sm text-muted-foreground">Loading models...</span>
-        </div>
-      </div>
+        <XStack alignItems="center" gap="$2" height="$7" paddingHorizontal="$3" borderWidth={1} borderRadius="$3" backgroundColor="$color3">
+          <Loader2 size={16} />
+          <SizableText fontSize="$3" color="$color11">Loading models...</SizableText>
+        </XStack>
+      </YStack>
     );
   }
 
   if (needsApiKey) {
     return (
-      <div className={className}>
+      <YStack className={`${className}`}>
         <Label>AI Model</Label>
-        <div className="flex items-center gap-2 h-10 px-3 border rounded-md bg-muted/50 border-orange-200 dark:border-orange-800">
-          <span className="text-sm text-orange-600 dark:text-orange-400">
+        <XStack alignItems="center" gap="$2" height="$7" paddingHorizontal="$3" borderWidth={1} borderRadius="$3" backgroundColor="$color3" borderColor="$orange3" $theme-dark={{ borderColor: "$orange11" }}>
+          <SizableText fontSize="$3" color="$orange10" $theme-dark={{ color: "$orange8" }}>
             API key required for {providerConfig.name}
-          </span>
-        </div>
-        <p className="text-xs text-muted-foreground mt-1">
+          </SizableText>
+        </XStack>
+        <Paragraph fontSize="$1" color="$color11" marginTop="$1">
           Set your API key in settings to load available models
-        </p>
-      </div>
+        </Paragraph>
+      </YStack>
     );
   }
 
   const renderModelItem = (model: ProviderModel) => (
-    <button
+    <Button
       key={model.id}
       onClick={() => handleModelSelect(model.id)}
-      className={cn(
-        "w-full text-left px-3 py-2 transition-colors rounded-lg",
-        mode === 'inline'
-          ? selectedModel === model.id
+      width="100%" textAlign="left" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$5" className={`${mode === 'inline' ? selectedModel === model.id
             ? "bg-primary/10 border border-primary/30"
-            : "hover:bg-accent border border-transparent"
-          : selectedModel === model.id
+            : "hover:bg-accent border border-transparent" : selectedModel === model.id
             ? "bg-accent"
-            : "hover:bg-accent hover:text-accent-foreground"
-      )}
+            : "hover:bg-accent hover:text-accent-foreground"}`}
     >
-      <div className="flex flex-col gap-0.5">
-        <div className="flex items-center gap-2">
+      <YStack gap="$0.5">
+        <XStack alignItems="center" gap="$2">
           {getModelIcon(model)}
-          <span className={cn("font-medium text-sm", selectedModel === model.id && mode === 'inline' && "text-primary")}>
+          <SizableText fontWeight="500" fontSize="$3" {...{ color: selectedModel === model.id && mode === 'inline' ? "$color12" : undefined }}>
             {getModelName(model)}
-          </span>
+          </SizableText>
           {currentProvider === 'openrouter' && (
-            <Badge variant="secondary" className={`text-xs ${getProviderColor(model.id)}`}>
+            <Badge variant="secondary" fontSize="$1" className={`${getProviderColor(model.id)}`}>
               {model.id.split('/')[0]}
             </Badge>
           )}
-        </div>
-        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+        </XStack>
+        <SizableText alignItems="center" gap="$3" fontSize="$1" color="$color11" display="flex" flexDirection="row">
           <span>Context: {Math.round(model.contextLength / 1000)}K</span>
           {model.pricing && (
             model.pricing.input === 0 && model.pricing.output === 0 ? (
@@ -458,14 +454,14 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
               <span>Pricing varies</span>
             </>
           )}
-        </div>
-      </div>
-    </button>
+        </SizableText>
+      </YStack>
+    </Button>
   );
 
   const modelDetailsSection = !hideModelDetails && selectedModelData && (
-    <div className="mt-1 text-xs text-muted-foreground max-h-[150px] overflow-y-auto pr-2">
-      <div className="font-medium mb-1">
+    <SizableText marginTop="$1" fontSize="$1" color="$color11" maxHeight={150} paddingRight="$2" overflow="scroll" display="flex" flexDirection="column">
+      <SizableText fontWeight="500" marginBottom="$1" display="flex" flexDirection="column">
         {selectedModelData.pricing ? (
           selectedModelData.pricing.input === 0 && selectedModelData.pricing.output === 0 ?
             'Free' :
@@ -473,79 +469,79 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
         ) : (
           'Pricing varies by provider'
         )}
-      </div>
+      </SizableText>
       {selectedModelData.description && (
         <div>{selectedModelData.description}</div>
       )}
-    </div>
+    </SizableText>
   );
 
   const reasoningSection = selectedModelData?.supportsReasoning && (
-    <div className="mt-3 flex items-center justify-between gap-2 p-2 rounded-md bg-muted/50 border">
-      <div className="flex items-center gap-2">
-        <Lightbulb className="h-4 w-4 text-amber-500" />
+    <XStack marginTop="$3" alignItems="center" justifyContent="space-between" gap="$2" padding="$2" borderRadius="$3" backgroundColor="$color3" borderWidth={1}>
+      <XStack alignItems="center" gap="$2">
+        <Lightbulb size={16} color="$yellow9" />
         <div>
-          <Label htmlFor="reasoning-toggle" className="text-sm font-medium cursor-pointer">
+          <Label htmlFor="reasoning-toggle" fontSize="$3" fontWeight="500" cursor="pointer">
             Enable Reasoning
           </Label>
-          <p className="text-xs text-muted-foreground">
+          <Paragraph fontSize="$1" color="$color11">
             Show step-by-step thinking process
-          </p>
+          </Paragraph>
         </div>
-      </div>
+      </XStack>
       <Switch
         id="reasoning-toggle"
         checked={reasoningEnabled}
         onCheckedChange={handleReasoningToggle}
-      />
-    </div>
+  />
+    </XStack>
   );
 
   // --- Inline mode ---
   if (mode === 'inline') {
     return (
-      <div className={className}>
-        <div className="border rounded-lg overflow-hidden">
+      <YStack className={`${className}`}>
+        <YStack borderWidth={1} borderRadius="$5" overflow="hidden">
           {/* Search bar */}
-          <div className="flex items-center border-b px-3">
-            <Search className="h-3.5 w-3.5 shrink-0 opacity-50" />
+          <XStack alignItems="center" borderBottomWidth={1} paddingHorizontal="$3">
+            <Search size={14} />
             <Input
               placeholder="Search models..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-9 border-0 bg-transparent dark:bg-transparent shadow-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-sm"
-            />
+              height={36} borderWidth={0} backgroundColor="transparent" fontSize="$3" $theme-dark={{ backgroundColor: "transparent" }}
+  />
             {searchQuery && (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setSearchQuery('')}
-                className="h-5 w-5 p-0"
+                height="$4.5" width="$4.5" padding="$0"
               >
-                <X className="h-3 w-3" />
+                <X size={12} />
               </Button>
             )}
-          </div>
+          </XStack>
           {/* Model list */}
-          <div className="max-h-[240px] overflow-y-auto p-1">
+          <YStack maxHeight={240} padding="$1" overflow="scroll">
             {filteredModels.length === 0 ? (
-              <div className="py-5 text-center text-sm text-muted-foreground">
+              <SizableText paddingVertical="$4.5" textAlign="center" fontSize="$3" color="$color11" display="flex" flexDirection="column">
                 No models found
-              </div>
+              </SizableText>
             ) : (
               filteredModels.map(renderModelItem)
             )}
-          </div>
-        </div>
+          </YStack>
+        </YStack>
         {modelDetailsSection}
         {reasoningSection}
-      </div>
+      </YStack>
     );
   }
 
   // --- Popover mode (default) ---
   return (
-    <div className={className}>
+    <YStack className={`${className}`}>
       <Label htmlFor="model-select">AI Model</Label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
@@ -553,70 +549,67 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="justify-between font-normal min-w-[200px]"
+            justifyContent="space-between" fontWeight="400" minWidth={200}
           >
             {selectedModelData ? (
-              <div className="flex items-center gap-2 truncate">
+              <SizableText alignItems="center" gap="$2" numberOfLines={1} display="flex" flexDirection="row">
                 {getModelIcon(selectedModelData)}
-                <span className="truncate">{getModelName(selectedModelData)}</span>
-              </div>
+                <SizableText numberOfLines={1}>{getModelName(selectedModelData)}</SizableText>
+              </SizableText>
             ) : (
-              <span className="text-muted-foreground">Select a model...</span>
+              <SizableText color="$color11">Select a model...</SizableText>
             )}
-            <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <ChevronDown size={16} />
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="w-[32rem] p-0"
+          width="32rem" padding="$0"
           align="start"
           side="bottom"
           sideOffset={5}
         >
-          <div className="flex items-center border-b px-3">
-            <Search className="h-4 w-4 shrink-0 opacity-50" />
+          <XStack alignItems="center" borderBottomWidth={1} paddingHorizontal="$3">
+            <Search size={16} />
             <Input
               placeholder="Search models..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-10 border-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-            />
+              height="$7" borderWidth={0}
+  />
             {searchQuery && (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setSearchQuery('')}
-                className="h-5 w-5 p-0"
+                height="$4.5" width="$4.5" padding="$0"
               >
-                <X className="h-3 w-3" />
+                <X size={12} />
               </Button>
             )}
-          </div>
-          <div className="max-h-[400px] min-h-[300px] overflow-y-auto">
+          </XStack>
+          <YStack maxHeight={400} minHeight={300} overflow="scroll">
             {filteredModels.length === 0 ? (
-              <div className="py-6 text-center text-sm text-muted-foreground">
+              <SizableText paddingVertical="$5" textAlign="center" fontSize="$3" color="$color11" display="flex" flexDirection="column">
                 No models found
-              </div>
+              </SizableText>
             ) : (
               filteredModels.map((model) => (
-                <button
+                <Button
                   key={model.id}
                   onClick={() => handleModelSelect(model.id)}
-                  className={cn(
-                    "w-full text-left px-3 py-3 hover:bg-accent hover:text-accent-foreground transition-colors",
-                    selectedModel === model.id && "bg-accent"
-                  )}
+                  width="100%" textAlign="left" paddingHorizontal="$3" paddingVertical="$3" hoverStyle={{ backgroundColor: "$color3", color: "$color" }} {...{ backgroundColor: selectedModel === model.id ? "$color3" : undefined }}
                 >
-                  <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-2">
+                  <YStack gap="$1">
+                    <XStack alignItems="center" gap="$2">
                       {getModelIcon(model)}
-                      <span className="font-medium">{getModelName(model)}</span>
+                      <SizableText fontWeight="500">{getModelName(model)}</SizableText>
                       {currentProvider === 'openrouter' && (
-                        <Badge variant="secondary" className={`text-xs ${getProviderColor(model.id)}`}>
+                        <Badge variant="secondary" fontSize="$1" className={`${getProviderColor(model.id)}`}>
                           {model.id.split('/')[0]}
                         </Badge>
                       )}
-                    </div>
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                    </XStack>
+                    <SizableText alignItems="center" gap="$3" fontSize="$1" color="$color11" display="flex" flexDirection="row">
                       <span>Context: {Math.round(model.contextLength / 1000)}K</span>
                       {model.pricing && (
                         model.pricing.input === 0 && model.pricing.output === 0 ? (
@@ -639,16 +632,16 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
                           <span>Pricing varies</span>
                         </>
                       )}
-                    </div>
-                  </div>
-                </button>
+                    </SizableText>
+                  </YStack>
+                </Button>
               ))
             )}
-          </div>
+          </YStack>
         </PopoverContent>
       </Popover>
       {modelDetailsSection}
       {reasoningSection}
-    </div>
+    </YStack>
   );
 }

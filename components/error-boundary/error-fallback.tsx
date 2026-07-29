@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import { Button } from '@hanzo/ui';
+import { XStack, YStack, H3, Paragraph, H1, H2, SizableText } from '@hanzo/gui';
 import { AlertCircle, RefreshCw, Home, Bug } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -35,141 +36,141 @@ export function ErrorFallback({
   // Component-level error - small inline error
   if (level === 'component' && !isPermanent) {
     return (
-      <div className={`${isolate ? 'absolute inset-0' : ''} flex items-center justify-center p-4`}>
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 max-w-md">
-          <div className="flex items-start space-x-3">
-            <AlertCircle className="w-5 h-5 text-red-500 mt-0.5" />
-            <div className="flex-1">
-              <h3 className="text-sm font-medium text-red-800 dark:text-red-200">
+      <XStack alignItems="center" justifyContent="center" padding="$4" {...{ position: isolate ? "absolute" : undefined, top: isolate ? 0 : undefined, right: isolate ? 0 : undefined, bottom: isolate ? 0 : undefined, left: isolate ? 0 : undefined }}>
+        <YStack backgroundColor="$red1" borderWidth={1} borderColor="$red3" borderRadius="$5" padding="$4" maxWidth={448} $theme-dark={{ backgroundColor: "$red12", borderColor: "$red11" }}>
+          <XStack alignItems="flex-start" columnGap="$3">
+            <AlertCircle size={20} color="$red9" />
+            <YStack flex={1}>
+              <H3 fontSize="$3" fontWeight="500" color="$red11" $theme-dark={{ color: "$red3" }}>
                 Component Error
-              </h3>
-              <p className="text-sm text-red-600 dark:text-red-300 mt-1">
+              </H3>
+              <Paragraph fontSize="$3" color="$red10" marginTop="$1" $theme-dark={{ color: "$red4" }}>
                 {isDevelopment ? error.message : 'Something went wrong with this component.'}
-              </p>
-              <button
+              </Paragraph>
+              <Button
                 onClick={resetErrorBoundary}
-                className="mt-3 text-sm text-red-600 dark:text-red-300 hover:text-red-500 underline"
+                marginTop="$3" fontSize="$3" color="$red10" textDecorationLine="underline" $theme-dark={{ color: "$red4" }} hoverStyle={{ color: "$red9" }}
               >
                 Try again
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+              </Button>
+            </YStack>
+          </XStack>
+        </YStack>
+      </XStack>
     );
   }
 
   // Page or App level error - full page error
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        <div className="bg-card border border-border rounded-2xl shadow-xl overflow-hidden">
-          <div className="border-b border-red-500/20 bg-red-500/[0.07] p-6">
-            <div className="flex items-center space-x-3">
-              <div className="bg-red-500/15 rounded-full p-3">
-                <AlertCircle className="w-8 h-8 text-red-400" />
-              </div>
+    <XStack minHeight="100%" backgroundColor="$background" alignItems="center" justifyContent="center" padding="$4">
+      <YStack maxWidth={448} width="100%">
+        <YStack backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$8" elevation={5} overflow="hidden">
+          <YStack borderBottomWidth={1} borderColor="$red9" backgroundColor="$red9" padding="$5">
+            <XStack alignItems="center" columnGap="$3">
+              <YStack backgroundColor="$red9" borderRadius="$10" padding="$3">
+                <AlertCircle size={32} color="$red8" />
+              </YStack>
               <div>
-                <h1 className="text-2xl font-medium text-foreground">
+                <H1 fontSize="$8" fontWeight="500" color="$color">
                   {level === 'app' ? 'Application Error' : 'Page Error'}
-                </h1>
-                <p className="text-muted-foreground text-sm mt-1">
+                </H1>
+                <Paragraph color="$color11" fontSize="$3" marginTop="$1">
                   {isPermanent
                     ? 'Multiple errors detected. Please refresh the page.'
                     : 'An unexpected error occurred.'}
-                </p>
+                </Paragraph>
               </div>
-            </div>
-          </div>
+            </XStack>
+          </YStack>
 
-          <div className="p-6">
+          <YStack padding="$5">
             {isDevelopment && (
-              <div className="mb-6">
-                <div className="bg-muted rounded-lg p-4 mb-4">
-                  <h2 className="text-sm font-medium text-muted-foreground mb-2">
+              <YStack marginBottom="$5">
+                <YStack backgroundColor="$color3" borderRadius="$5" padding="$4" marginBottom="$4">
+                  <H2 fontSize="$3" fontWeight="500" color="$color11" marginBottom="$2">
                     Error Details (Development Only)
-                  </h2>
-                  <p className="text-sm text-foreground font-mono break-all">
+                  </H2>
+                  <Paragraph fontSize="$3" color="$color" fontFamily="$mono" wordBreak="break-all">
                     {error.message}
-                  </p>
-                </div>
+                  </Paragraph>
+                </YStack>
 
                 {error.stack && (
                   <details className="text-xs">
                     <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
                       View Stack Trace
                     </summary>
-                    <pre className="mt-2 bg-muted rounded p-3 overflow-x-auto text-muted-foreground">
+                    <SizableText marginTop="$2" backgroundColor="$color3" borderRadius="$2" padding="$3" color="$color11" overflow="scroll" fontFamily="$mono" whiteSpace="pre">
                       {error.stack}
-                    </pre>
+                    </SizableText>
                   </details>
                 )}
-              </div>
+              </YStack>
             )}
 
             {!isDevelopment && (
-              <div className="mb-6">
-                <p className="text-muted-foreground">
+              <YStack marginBottom="$5">
+                <Paragraph color="$color11">
                   We apologize for the inconvenience. The error has been logged and our team will
                   investigate the issue.
-                </p>
-                <div className="mt-4 p-3 bg-muted border border-border rounded-lg">
-                  <p className="text-sm text-foreground">
+                </Paragraph>
+                <YStack marginTop="$4" padding="$3" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" borderRadius="$5">
+                  <Paragraph fontSize="$3" color="$color">
                     <strong>Error ID:</strong> {generateErrorId()}
-                  </p>
-                </div>
-              </div>
+                  </Paragraph>
+                </YStack>
+              </YStack>
             )}
 
-            <div className="space-y-3">
+            <YStack rowGap="$3">
               {!isPermanent && (
-                <button
+                <Button
                   onClick={resetErrorBoundary}
-                  className="w-full flex items-center justify-center space-x-2 bg-primary hover:bg-primary/90 text-primary-foreground py-3 px-4 rounded-lg font-medium transition-colors"
+                  width="100%" alignItems="center" justifyContent="center" columnGap="$2" backgroundColor="$color12" color="$background" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" fontWeight="500" hoverStyle={{ backgroundColor: "$color12" }}
                 >
-                  <RefreshCw className="w-4 h-4" />
+                  <RefreshCw size={16} />
                   <span>Try Again</span>
-                </button>
+                </Button>
               )}
 
               {isPermanent && (
-                <button
+                <Button
                   onClick={() => window.location.reload()}
-                  className="w-full flex items-center justify-center space-x-2 bg-primary hover:bg-primary/90 text-primary-foreground py-3 px-4 rounded-lg font-medium transition-colors"
+                  width="100%" alignItems="center" justifyContent="center" columnGap="$2" backgroundColor="$color12" color="$background" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" fontWeight="500" hoverStyle={{ backgroundColor: "$color12" }}
                 >
-                  <RefreshCw className="w-4 h-4" />
+                  <RefreshCw size={16} />
                   <span>Refresh Page</span>
-                </button>
+                </Button>
               )}
 
-              <button
+              <Button
                 onClick={handleGoHome}
-                className="w-full flex items-center justify-center space-x-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground py-3 px-4 rounded-lg transition-colors"
+                width="100%" alignItems="center" justifyContent="center" columnGap="$2" backgroundColor="$color4" color="$color" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$color4" }}
               >
-                <Home className="w-4 h-4" />
+                <Home size={16} />
                 <span>Go to Homepage</span>
-              </button>
+              </Button>
 
               {!isDevelopment && (
-                <button
+                <Button
                   onClick={handleReportBug}
-                  className="w-full flex items-center justify-center space-x-2 border border-border hover:bg-accent text-foreground py-3 px-4 rounded-lg transition-colors"
+                  width="100%" alignItems="center" justifyContent="center" columnGap="$2" borderWidth={1} borderColor="$borderColor" color="$color" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
                 >
-                  <Bug className="w-4 h-4" />
+                  <Bug size={16} />
                   <span>Report This Issue</span>
-                </button>
+                </Button>
               )}
-            </div>
-          </div>
-        </div>
+            </YStack>
+          </YStack>
+        </YStack>
 
         {isDevelopment && (
-          <div className="mt-4 text-center text-xs text-muted-foreground">
+          <SizableText marginTop="$4" textAlign="center" fontSize="$1" color="$color11" display="flex" flexDirection="column">
             This detailed error view is only shown in development mode.
-          </div>
+          </SizableText>
         )}
-      </div>
-    </div>
+      </YStack>
+    </XStack>
   );
 }
 

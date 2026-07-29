@@ -1,5 +1,6 @@
 'use client';
 
+import { SizableText } from '@hanzo/gui';
 import { SyncableItem } from '@/lib/vfs/sync-types';
 
 interface SummaryBarProps {
@@ -23,8 +24,8 @@ export function SummaryBar({ items }: SummaryBarProps) {
   if (serverOnly > 0) parts.push(`${serverOnly} server only`);
 
   return (
-    <div className="text-sm text-muted-foreground">
+    <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">
       {parts.join(', ')}
-    </div>
+    </SizableText>
   );
 }

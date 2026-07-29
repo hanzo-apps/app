@@ -1,9 +1,10 @@
 'use client';
 
+import { SizableText, YStack, XStack, H3, Paragraph } from '@hanzo/gui';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { VirtualFile, isFileSupported, FILE_SIZE_LIMITS, getFileTypeFromPath } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';
-import { logger, cn } from '@/lib/utils';
+import { logger } from '@/lib/utils';
 import {
   ChevronRight,
   ChevronDown,
@@ -22,7 +23,7 @@ import {
   Home,
   ScrollText
 } from 'lucide-react';
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Input, toast } from '@hanzo/ui';
+import { Button, Input, toast } from '@hanzo/ui';
 
 interface FileExplorerProps {
   projectId: string;
@@ -475,15 +476,15 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
     // Get the appropriate folder icon for special directories
     const getFolderIcon = (expanded: boolean) => {
       if (isServerContext) {
-        return <Server className="w-4 h-4 text-orange-500" />;
+        return <Server size={16} color="$orange9" />;
       }
       if (isSkills) {
-        return <BookOpen className="w-4 h-4 text-purple-500" />;
+        return <BookOpen size={16} color="$purple9" />;
       }
       return expanded ? (
-        <FolderOpen className="w-4 h-4 text-blue-500" />
+        <FolderOpen size={16} color="$blue9" />
       ) : (
-        <Folder className="w-4 h-4 text-blue-500" />
+        <Folder size={16} color="$blue9" />
       );
     };
 
@@ -498,45 +499,38 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
       >
         <ContextMenu>
           <ContextMenuTrigger>
-            <div
-            className={cn(
-              'flex items-center gap-2 px-2 py-1.5 hover:bg-accent hover:text-accent-foreground cursor-pointer rounded-md transition-colors',
-              isSelected && 'bg-accent text-accent-foreground',
-              isDropTarget && item.type === 'directory' && 'bg-blue-500/20 border border-blue-500',
-              draggedItem?.path === item.path && 'opacity-50',
-              (isTransient || isHiddenDotFile) && 'opacity-75',
-              'group'
-            )}
+            <SizableText
+            alignItems="center" gap="$2" paddingHorizontal="$2" paddingVertical="$1.5" cursor="pointer" borderRadius="$3" group display="flex" flexDirection="row" hoverStyle={{ backgroundColor: "$color3", color: "$color" }} {...{ backgroundColor: isDropTarget && item.type === 'directory' ? "$blue9" : isSelected ? "$color3" : undefined, color: isSelected ? "$color" : undefined, borderWidth: isDropTarget && item.type === 'directory' ? 1 : undefined, borderColor: isDropTarget && item.type === 'directory' ? "$blue9" : undefined, opacity: (isTransient || isHiddenDotFile) ? 0.75 : draggedItem?.path === item.path ? 0.5 : undefined }}
             style={{ paddingLeft: `${level * 16 + 8}px` }}
             onClick={() => handleFileClick(item)}
           >
             {item.type === 'directory' ? (
               <>
                 {isExpanded ? (
-                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                  <ChevronDown size={16} color="$color11" />
                 ) : (
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  <ChevronRight size={16} color="$color11" />
                 )}
                 {getFolderIcon(isExpanded)}
               </>
             ) : (
               <>
-                <span className="w-4" />
+                <SizableText width="$4" />
                 {(() => {
                   const effectiveEntryPoint = entryPoint || '/index.html';
                   if (item.path === effectiveEntryPoint) {
-                    return <Home className="w-4 h-4 text-emerald-500" />;
+                    return <Home size={16} color="$green9" />;
                   }
                   if (item.name === '.PROMPT.md') {
-                    return <ScrollText className="w-4 h-4 text-amber-500" />;
+                    return <ScrollText size={16} color="$yellow9" />;
                   }
                   const fileType = getFileTypeFromPath(item.path);
                   if (fileType === 'image') {
-                    return <Image className="w-4 h-4 text-green-500" />;
+                    return <Image size={16} color="$green9" />;
                   } else if (fileType === 'video') {
-                    return <Video className="w-4 h-4 text-purple-500" />;
+                    return <Video size={16} color="$purple9" />;
                   } else {
-                    return <File className="w-4 h-4 text-muted-foreground" />;
+                    return <File size={16} color="$color11" />;
                   }
                 })()}
               </>
@@ -554,19 +548,19 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
                     setNewName('');
                   }
                 }}
-                className="h-5 text-sm"
+                height="$4.5" fontSize="$3"
                 autoFocus
                 onClick={(e) => e.stopPropagation()}
-              />
+  />
             ) : (
-              <span className={cn("text-sm flex-1", (isTransient || isHiddenDotFile) && "italic text-muted-foreground")}>
+              <SizableText fontSize="$3" flex={1} {...{ fontStyle: (isTransient || isHiddenDotFile) ? "italic" : undefined, color: (isTransient || isHiddenDotFile) ? "$color11" : undefined }}>
                 {item.name}
-                {isTransient && <span className="text-xs text-muted-foreground ml-1">(read-only)</span>}
-                {item.path === (entryPoint || '/index.html') && <span className="text-xs text-emerald-500 ml-1">(entry)</span>}
-                {item.name === '.PROMPT.md' && <span className="text-xs text-amber-500 ml-1">(AI prompt)</span>}
-              </span>
+                {isTransient && <SizableText fontSize="$1" color="$color11" marginLeft="$1">(read-only)</SizableText>}
+                {item.path === (entryPoint || '/index.html') && <SizableText fontSize="$1" color="$green9" marginLeft="$1">(entry)</SizableText>}
+                {item.name === '.PROMPT.md' && <SizableText fontSize="$1" color="$yellow9" marginLeft="$1">(AI prompt)</SizableText>}
+              </SizableText>
             )}
-            </div>
+            </SizableText>
           </ContextMenuTrigger>
           <ContextMenuContent>
           {/* Only show edit options for non-transient paths */}
@@ -575,22 +569,22 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
               {item.type === 'directory' && (
                 <>
                   <ContextMenuItem onClick={() => handleCreateFile(item.path)}>
-                    <File className="mr-2 h-4 w-4" />
+                    <File size={16} />
                     New File
                   </ContextMenuItem>
                   <ContextMenuItem onClick={() => handleCreateDirectory(item.path)}>
-                    <Folder className="mr-2 h-4 w-4" />
+                    <Folder size={16} />
                     New Folder
                   </ContextMenuItem>
                   <ContextMenuItem onClick={() => fileInputRef.current?.click()}>
-                    <Upload className="mr-2 h-4 w-4" />
+                    <Upload size={16} />
                     Upload Files
                   </ContextMenuItem>
                 </>
               )}
               {item.type === 'file' && onSetEntryPoint && item.path !== (entryPoint || '/index.html') && (
                 <ContextMenuItem onClick={() => onSetEntryPoint(item.path)}>
-                  <Home className="mr-2 h-4 w-4" />
+                  <Home size={16} />
                   Set as Entry Point
                 </ContextMenuItem>
               )}
@@ -611,7 +605,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
           {/* For transient files, just show a read-only indicator */}
           {isTransient && (
             <ContextMenuItem disabled>
-              <Eye className="mr-2 h-4 w-4" />
+              <Eye size={16} />
               Read-only {isServerContext ? 'server context' : 'skill'}
             </ContextMenuItem>
           )}
@@ -627,17 +621,17 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
   };
 
   return (
-    <div 
-      className="h-full flex flex-col"
+    <YStack 
+      height="100%"
       onDrop={handleFileDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
     >
-      <input
+      <Input
         ref={fileInputRef}
         type="file"
         multiple
-        className="hidden"
+        display="none"
         onChange={async (e) => {
           const files = Array.from(e.target.files || []);
           for (const file of files) {
@@ -647,71 +641,68 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
             fileInputRef.current.value = '';
           }
         }}
-      />
-      <div className="p-3 border-b bg-muted/70 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+  />
+      <XStack padding="$3" borderBottomWidth={1} backgroundColor="$color3" alignItems="center" justifyContent="space-between">
+        <XStack alignItems="center" gap="$2">
           <FolderTree 
-            className="h-4 w-4 md:hidden" 
+            size={16} 
             style={{ color: 'var(--brand-accent)' }} 
-          />
+  />
           {onClose ? (
-            <button
+            <Button
               type="button"
               onClick={onClose}
               aria-label="Hide file explorer"
-              className="relative hidden h-6 w-6 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-destructive md:flex group"
+              position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" color="$color11" group hoverStyle={{ color: "$red9" }}
             >
               <FolderTree 
-                className="h-4 w-4 transition-opacity group-hover:opacity-0" 
+                size={16} 
                 style={{ color: 'var(--brand-accent)' }} 
-              />
-              <X className="absolute h-3 w-3 opacity-0 transition-opacity group-hover:opacity-100" />
-            </button>
+  />
+              <X size={12} />
+            </Button>
           ) : (
             <FolderTree 
-              className="hidden h-4 w-4 md:inline-flex" 
+              size={16} 
               style={{ color: 'var(--brand-accent)' }} 
-            />
+  />
           )}
-          <h3 className="text-sm font-medium">File Explorer</h3>
-        </div>
-        <div className="flex gap-1">
+          <H3 fontSize="$3" fontWeight="500">File Explorer</H3>
+        </XStack>
+        <XStack gap="$1">
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
+            height="$4.5" width="$4.5"
             onClick={() => fileInputRef.current?.click()}
             title="Upload files"
           >
-            <Upload className="h-3 w-3" />
+            <Upload size={12} />
           </Button>
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
+            height="$4.5" width="$4.5"
             onClick={() => handleCreateFile('/')}
             title="New file"
           >
-            <File className="h-3 w-3" />
+            <File size={12} />
           </Button>
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
+            height="$4.5" width="$4.5"
             onClick={() => handleCreateDirectory('/')}
             title="New folder"
           >
-            <Folder className="h-3 w-3" />
+            <Folder size={12} />
           </Button>
-        </div>
-      </div>
+        </XStack>
+      </XStack>
       <ContextMenu>
         <ContextMenuTrigger asChild>
-          <div 
-            className={cn(
-              "flex-1 overflow-y-auto p-3 space-y-0.5 relative",
-              isDraggingOver && "bg-blue-500/10"
-            )}
+          <YStack 
+            flex={1} padding="$3" rowGap="$0.5" position="relative" overflow="scroll" {...{ backgroundColor: isDraggingOver ? "$blue9" : undefined }}
             onDragOver={(e) => {
               if (draggedItem) {
                 e.preventDefault();
@@ -726,59 +717,59 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
             }}
           >
             {isDraggingOver && (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="bg-blue-500/20 border-2 border-dashed border-blue-500 rounded-lg p-8">
-                  <Upload className="h-12 w-12 text-blue-500 mx-auto mb-2" />
-                  <p className="text-sm text-blue-600">Drop files here to upload</p>
-                </div>
-              </div>
+              <XStack position="absolute" top={0} right={0} bottom={0} left={0} alignItems="center" justifyContent="center" pointerEvents="none">
+                <YStack backgroundColor="$blue9" borderWidth={2} borderStyle="dashed" borderColor="$blue9" borderRadius="$5" padding="$6">
+                  <Upload size={48} color="$blue9" />
+                  <Paragraph fontSize="$3" color="$blue10">Drop files here to upload</Paragraph>
+                </YStack>
+              </XStack>
             )}
             {fileTree.length === 0 ? (
-              <div className="flex-1 flex items-center justify-center py-8">
-                <div className="text-center space-y-3">
-                  <Folder className="h-12 w-12 mx-auto opacity-50 text-muted-foreground" />
-                  <div className="space-y-1">
-                    <p className="text-base font-medium text-foreground">No files yet</p>
-                    <p className="text-sm text-muted-foreground">Create your first file to get started</p>
-                  </div>
-                </div>
-              </div>
+              <XStack flex={1} alignItems="center" justifyContent="center" paddingVertical="$6">
+                <SizableText textAlign="center" rowGap="$3" display="flex" flexDirection="column">
+                  <Folder size={48} color="$color11" />
+                  <YStack rowGap="$1">
+                    <Paragraph fontSize="$4" fontWeight="500" color="$color">No files yet</Paragraph>
+                    <Paragraph fontSize="$3" color="$color11">Create your first file to get started</Paragraph>
+                  </YStack>
+                </SizableText>
+              </XStack>
             ) : (
-              <div className="contents">
+              <YStack>
                 {fileTree.map(item => renderTreeItem(item))}
-              </div>
+              </YStack>
             )}
-          </div>
+          </YStack>
         </ContextMenuTrigger>
         <ContextMenuContent>
           <ContextMenuItem onClick={() => handleCreateFile('/')}>
-            <File className="mr-2 h-4 w-4" />
+            <File size={16} />
             New File
           </ContextMenuItem>
           <ContextMenuItem onClick={() => handleCreateDirectory('/')}>
-            <Folder className="mr-2 h-4 w-4" />
+            <Folder size={16} />
             New Folder
           </ContextMenuItem>
           <ContextMenuItem onClick={() => fileInputRef.current?.click()}>
-            <Upload className="mr-2 h-4 w-4" />
+            <Upload size={16} />
             Upload Files
           </ContextMenuItem>
           <ContextMenuItem onClick={() => setShowHidden(!showHidden)}>
-            {showHidden ? <EyeOff className="mr-2 h-4 w-4" /> : <Eye className="mr-2 h-4 w-4" />}
+            {showHidden ? <EyeOff size={16} /> : <Eye size={16} />}
             {showHidden ? 'Hide Hidden Files' : 'Show Hidden Files'}
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
       {/* Missing .PROMPT.md notification */}
       {onAddPromptFile && !promptDismissed && files.length > 0 && !files.some(f => f.path === '/.PROMPT.md') && (
-        <div className="mx-2 mb-2 p-2 rounded-md border border-amber-500/30 bg-amber-500/5 text-xs">
-          <p className="text-amber-600 dark:text-amber-400 mb-1.5">No .PROMPT.md found</p>
-          <p className="text-muted-foreground mb-2">Add the default website prompt?</p>
-          <div className="flex gap-2">
+        <SizableText marginHorizontal="$2" marginBottom="$2" padding="$2" borderRadius="$3" borderWidth={1} borderColor="$yellow9" backgroundColor="$yellow9" fontSize="$1" display="flex" flexDirection="column">
+          <Paragraph color="$yellow10" marginBottom="$1.5" $theme-dark={{ color: "$yellow8" }}>No .PROMPT.md found</Paragraph>
+          <Paragraph color="$color11" marginBottom="$2">Add the default website prompt?</Paragraph>
+          <XStack gap="$2">
             <Button
               size="sm"
               variant="outline"
-              className="h-6 text-xs px-2"
+              height="$5" fontSize="$1" paddingHorizontal="$2"
               onClick={onAddPromptFile}
             >
               Add
@@ -786,7 +777,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
             <Button
               size="sm"
               variant="ghost"
-              className="h-6 text-xs px-2"
+              height="$5" fontSize="$1" paddingHorizontal="$2"
               onClick={() => {
                 setPromptDismissed(true);
                 localStorage.setItem(`osw-prompt-dismissed-${projectId}`, 'true');
@@ -794,9 +785,9 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
             >
               Dismiss
             </Button>
-          </div>
-        </div>
+          </XStack>
+        </SizableText>
       )}
-    </div>
+    </YStack>
   );
 }

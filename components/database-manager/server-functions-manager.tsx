@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { XStack, YStack, Paragraph, H3, SizableText } from '@hanzo/gui';
+import { useState, useEffect } from 'react';
 import { toast, Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@hanzo/ui';
 import { ServerFunction } from '@/lib/vfs/types';
 import {
@@ -8,7 +9,6 @@ import {
   ToggleLeft, ToggleRight
 } from 'lucide-react';
 import { ServerFunctionEditor } from './server-function-editor';
-import { cn } from '@/lib/utils';
 import type { ServerFunctionsDataProvider } from './data-providers';
 
 interface ServerFunctionsManagerProps {
@@ -129,115 +129,112 @@ export function ServerFunctionsManager({ deploymentId, dataProvider }: ServerFun
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
+      <XStack alignItems="center" justifyContent="center" height="100%">
+        <Loader2 size={24} color="$color11" />
+      </XStack>
     );
   }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-4">
-        <AlertCircle className="h-8 w-8 text-destructive" />
-        <p className="text-sm text-muted-foreground">{error}</p>
+      <YStack alignItems="center" justifyContent="center" height="100%" gap="$4">
+        <AlertCircle size={32} color="$red9" />
+        <Paragraph fontSize="$3" color="$color11">{error}</Paragraph>
         <Button variant="outline" onClick={loadFunctions}>
           Retry
         </Button>
-      </div>
+      </YStack>
     );
   }
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium">Server Functions (Helpers)</h3>
+    <YStack height="100%">
+      <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+        <H3 fontSize="$3" fontWeight="500">Server Functions (Helpers)</H3>
         <Button size="sm" onClick={() => setIsCreating(true)}>
-          <Plus className="h-4 w-4 mr-1" />
+          <Plus size={16} />
           New Helper
         </Button>
-      </div>
+      </XStack>
 
-      <div className="flex-1 overflow-auto">
+      <YStack flex={1} overflow="scroll">
         {functions.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full p-8 text-center border rounded-lg">
-            <Wrench className="h-8 w-8 text-muted-foreground mb-2" />
-            <p className="text-sm text-muted-foreground">No server functions yet</p>
-            <p className="text-xs text-muted-foreground mt-1 mb-4">
+          <SizableText flexDirection="column" alignItems="center" justifyContent="center" height="100%" padding="$6" textAlign="center" borderWidth={1} borderRadius="$5" display="flex">
+            <Wrench size={32} color="$color11" />
+            <Paragraph fontSize="$3" color="$color11">No server functions yet</Paragraph>
+            <Paragraph fontSize="$1" color="$color11" marginTop="$1" marginBottom="$4">
               Create reusable helpers for your edge functions
-            </p>
+            </Paragraph>
             <Button size="sm" onClick={() => setIsCreating(true)}>
-              <Plus className="h-4 w-4 mr-1" />
+              <Plus size={16} />
               Create Helper
             </Button>
-          </div>
+          </SizableText>
         ) : (
-          <div className="grid gap-3">
+          <YStack gap="$3">
             {functions.map(fn => (
-              <div
+              <YStack
                 key={fn.id}
-                className={cn(
-                  "border rounded-lg p-4 transition-colors",
-                  !fn.enabled && "opacity-60 bg-muted/30"
-                )}
+                borderWidth={1} borderRadius="$5" padding="$4" {...{ opacity: !fn.enabled ? 0.6 : undefined, backgroundColor: !fn.enabled ? "$color3" : undefined }}
               >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0 overflow-hidden">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Wrench className="h-4 w-4 text-orange-500 shrink-0" />
-                      <span className="font-mono font-medium truncate">{fn.name}</span>
+                <XStack alignItems="flex-start" justifyContent="space-between" gap="$2">
+                  <YStack flex={1} minWidth={0} overflow="hidden">
+                    <XStack alignItems="center" gap="$2" flexWrap="wrap">
+                      <Wrench size={16} color="$orange9" />
+                      <SizableText fontFamily="$mono" fontWeight="500" numberOfLines={1}>{fn.name}</SizableText>
                       {!fn.enabled && (
-                        <span className="text-xs bg-muted px-1.5 py-0.5 rounded shrink-0">disabled</span>
+                        <SizableText fontSize="$1" backgroundColor="$color3" paddingHorizontal="$1.5" paddingVertical="$0.5" borderRadius="$2" flexShrink={0}>disabled</SizableText>
                       )}
-                    </div>
+                    </XStack>
                     {fn.description && (
-                      <p className="text-sm text-muted-foreground mt-1 truncate">
+                      <Paragraph fontSize="$3" color="$color11" marginTop="$1" numberOfLines={1}>
                         {fn.description}
-                      </p>
+                      </Paragraph>
                     )}
-                    <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                      <span className="font-mono truncate">server.{fn.name}(args)</span>
-                    </div>
-                  </div>
+                    <SizableText alignItems="center" gap="$4" marginTop="$2" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+                      <SizableText fontFamily="$mono" numberOfLines={1}>server.{fn.name}(args)</SizableText>
+                    </SizableText>
+                  </YStack>
 
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="sm">
-                        <MoreVertical className="h-4 w-4" />
+                        <MoreVertical size={16} />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => setEditingFunction(fn)}>
-                        <Pencil className="h-4 w-4 mr-2" />
+                        <Pencil size={16} />
                         Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => toggleEnabled(fn)}>
                         {fn.enabled ? (
                           <>
-                            <ToggleLeft className="h-4 w-4 mr-2" />
+                            <ToggleLeft size={16} />
                             Disable
                           </>
                         ) : (
                           <>
-                            <ToggleRight className="h-4 w-4 mr-2" />
+                            <ToggleRight size={16} />
                             Enable
                           </>
                         )}
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => deleteFunction(fn)}
-                        className="text-destructive"
+                        color="$red9"
                       >
-                        <Trash2 className="h-4 w-4 mr-2" />
+                        <Trash2 size={16} />
                         Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
-                </div>
-              </div>
+                </XStack>
+              </YStack>
             ))}
-          </div>
+          </YStack>
         )}
-      </div>
+      </YStack>
 
       {/* Server Function Editor Dialog */}
       {(isCreating || editingFunction) && (
@@ -249,8 +246,8 @@ export function ServerFunctionsManager({ deploymentId, dataProvider }: ServerFun
             setEditingFunction(null);
           }}
           onSave={handleSave}
-        />
+  />
       )}
-    </div>
+    </YStack>
   );
 }

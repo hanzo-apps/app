@@ -1,5 +1,6 @@
 'use client';
 
+import { YStack, Image, Paragraph, XStack, SizableText } from '@hanzo/gui';
 import React, { useState } from 'react';
 import { Project, LICENSE_OPTIONS } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';
@@ -126,7 +127,7 @@ export function TemplateExportDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent maxWidth={672} maxHeight="90vh" overflow="scroll">
         <DialogHeader>
           <DialogTitle>Export as Template</DialogTitle>
           <DialogDescription>
@@ -134,47 +135,47 @@ export function TemplateExportDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <YStack rowGap="$4" paddingVertical="$4">
           {/* Preview Thumbnail */}
           {metadata.thumbnail && (
-            <div className="space-y-2">
+            <YStack rowGap="$2">
               <Label>Preview Thumbnail</Label>
-              <div className="w-full rounded-lg overflow-hidden bg-muted border">
-                <img
+              <YStack width="100%" borderRadius="$5" overflow="hidden" backgroundColor="$color3" borderWidth={1}>
+                <Image
                   src={metadata.thumbnail}
                   alt="Template preview"
-                  className="w-full h-auto"
-                />
-              </div>
-              <p className="text-xs text-muted-foreground">
+                  width="100%" height="auto"
+  />
+              </YStack>
+              <Paragraph fontSize="$1" color="$color11">
                 This preview was captured when you saved the project
-              </p>
-            </div>
+              </Paragraph>
+            </YStack>
           )}
 
           {!metadata.thumbnail && (
-            <div className="space-y-2">
+            <YStack rowGap="$2">
               <Label>Preview Thumbnail</Label>
-              <div className="w-full h-48 rounded-lg bg-muted flex items-center justify-center border">
-                <div className="text-center text-muted-foreground">
-                  <FileBox className="h-12 w-12 mx-auto mb-2" />
-                  <p className="text-sm">No preview available</p>
-                  <p className="text-xs">Save your project to capture a preview</p>
-                </div>
-              </div>
-            </div>
+              <XStack width="100%" height="$19" borderRadius="$5" backgroundColor="$color3" alignItems="center" justifyContent="center" borderWidth={1}>
+                <SizableText textAlign="center" color="$color11" display="flex" flexDirection="column">
+                  <FileBox size={48} />
+                  <Paragraph fontSize="$3">No preview available</Paragraph>
+                  <Paragraph fontSize="$1">Save your project to capture a preview</Paragraph>
+                </SizableText>
+              </XStack>
+            </YStack>
           )}
 
           {/* Name */}
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
+          <YStack rowGap="$2">
+            <XStack justifyContent="space-between" alignItems="center">
               <Label htmlFor="template-name">
-                Template Name <span className="text-destructive">*</span>
+                Template Name <SizableText color="$red9">*</SizableText>
               </Label>
-              <span className="text-xs text-muted-foreground">
+              <SizableText fontSize="$1" color="$color11">
                 {metadata.name.length}/50
-              </span>
-            </div>
+              </SizableText>
+            </XStack>
             <Input
               id="template-name"
               value={metadata.name}
@@ -182,35 +183,35 @@ export function TemplateExportDialog({
               placeholder="My Awesome Template"
               maxLength={50}
               required
-            />
-          </div>
+  />
+          </YStack>
 
           {/* Description */}
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
+          <YStack rowGap="$2">
+            <XStack justifyContent="space-between" alignItems="center">
               <Label htmlFor="template-description">
-                Description <span className="text-destructive">*</span>
+                Description <SizableText color="$red9">*</SizableText>
               </Label>
-              <span className="text-xs text-muted-foreground">
+              <SizableText fontSize="$1" color="$color11">
                 {metadata.description.length}/500
-              </span>
-            </div>
+              </SizableText>
+            </XStack>
             <Textarea
               id="template-description"
               value={metadata.description}
               onChange={(e) => setMetadata({ ...metadata, description: e.target.value.slice(0, 500) })}
               placeholder="A complete multi-page template with..."
-              className="resize-none"
+              resize="none"
               rows={3}
               maxLength={500}
               required
-            />
-          </div>
+  />
+          </YStack>
 
           {/* Version */}
-          <div className="space-y-2">
+          <YStack rowGap="$2">
             <Label htmlFor="template-version">
-              Version <span className="text-destructive">*</span>
+              Version <SizableText color="$red9">*</SizableText>
             </Label>
             <Input
               id="template-version"
@@ -219,14 +220,14 @@ export function TemplateExportDialog({
               placeholder="1.0.0"
               pattern="^\d+\.\d+\.\d+$"
               required
-            />
-            <p className="text-xs text-muted-foreground">
+  />
+            <Paragraph fontSize="$1" color="$color11">
               Semantic version format (e.g., 1.0.0)
-            </p>
-          </div>
+            </Paragraph>
+          </YStack>
 
           {/* Author */}
-          <div className="space-y-2">
+          <YStack rowGap="$2">
             <Label htmlFor="template-author">Author</Label>
             <Input
               id="template-author"
@@ -234,11 +235,11 @@ export function TemplateExportDialog({
               onChange={(e) => setMetadata({ ...metadata, author: e.target.value.slice(0, 50) })}
               placeholder="Your Name"
               maxLength={50}
-            />
-          </div>
+  />
+          </YStack>
 
           {/* Author URL */}
-          <div className="space-y-2">
+          <YStack rowGap="$2">
             <Label htmlFor="template-author-url">Author URL</Label>
             <Input
               id="template-author-url"
@@ -246,13 +247,13 @@ export function TemplateExportDialog({
               value={metadata.authorUrl}
               onChange={(e) => setMetadata({ ...metadata, authorUrl: e.target.value })}
               placeholder="https://yourwebsite.com"
-            />
-          </div>
+  />
+          </YStack>
 
           {/* License */}
-          <div className="space-y-2">
+          <YStack rowGap="$2">
             <Label htmlFor="template-license">
-              License <span className="text-destructive">*</span>
+              License <SizableText color="$red9">*</SizableText>
             </Label>
             <Select
               value={metadata.license}
@@ -270,29 +271,29 @@ export function TemplateExportDialog({
               </SelectContent>
             </Select>
             {selectedLicense && (
-              <div className="flex items-start gap-2 p-2 rounded-md bg-muted text-xs">
-                <Info className="h-3 w-3 mt-0.5 shrink-0 text-muted-foreground" />
-                <p className="text-muted-foreground">{selectedLicense.description}</p>
-              </div>
+              <SizableText alignItems="flex-start" gap="$2" padding="$2" borderRadius="$3" backgroundColor="$color3" fontSize="$1" display="flex" flexDirection="row">
+                <Info size={12} color="$color11" />
+                <Paragraph color="$color11">{selectedLicense.description}</Paragraph>
+              </SizableText>
             )}
-          </div>
+          </YStack>
 
           {/* Tags */}
-          <div className="space-y-2">
+          <YStack rowGap="$2">
             <Label htmlFor="template-tags">Tags</Label>
             <Input
               id="template-tags"
               value={tagsInput}
               onChange={(e) => setTagsInput(e.target.value)}
               placeholder="saas, marketing, landing (comma-separated)"
-            />
-            <p className="text-xs text-muted-foreground">
+  />
+            <Paragraph fontSize="$1" color="$color11">
               Add up to 10 tags, separated by commas
-            </p>
-          </div>
+            </Paragraph>
+          </YStack>
 
           {/* Marketplace URL */}
-          <div className="space-y-2">
+          <YStack rowGap="$2">
             <Label htmlFor="template-download-url">Marketplace URL</Label>
             <Input
               id="template-download-url"
@@ -300,12 +301,12 @@ export function TemplateExportDialog({
               value={metadata.downloadUrl}
               onChange={(e) => setMetadata({ ...metadata, downloadUrl: e.target.value })}
               placeholder="https://example.com/templates/..."
-            />
-            <p className="text-xs text-muted-foreground">
+  />
+            <Paragraph fontSize="$1" color="$color11">
               Where users can find this template
-            </p>
-          </div>
-        </div>
+            </Paragraph>
+          </YStack>
+        </YStack>
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={exporting}>

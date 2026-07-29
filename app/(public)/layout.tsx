@@ -1,3 +1,6 @@
+'use client';
+
+import { YStack } from '@hanzo/gui';
 import Navigation from "@/components/public/navigation";
 
 export default async function PublicLayout({
@@ -6,10 +9,10 @@ export default async function PublicLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="min-h-screen bg-black z-1 relative">
-      <div className="background__noisy" />
+    <YStack minHeight="100%" backgroundColor="black" zIndex={1} position="relative">
+      <YStack className="background__noisy" />
       <Navigation />
       {children}
-    </div>
+    </YStack>
   );
 }

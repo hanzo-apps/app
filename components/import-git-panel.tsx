@@ -1,5 +1,6 @@
 "use client";
 
+import { YStack, XStack, H2, Paragraph, Image, SizableText, H3 } from '@hanzo/gui';
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useIam } from "@hanzo/iam/react";
@@ -28,7 +29,7 @@ import {
 } from "@/lib/api/git";
 import { linkProvider } from "@/lib/hanzo/iam";
 import { isGitUrl, gitUrlGateMessage } from "@/lib/git/url";
-import { toast } from '@hanzo/ui';
+import { toast, Button, Input, Label } from '@hanzo/ui';
 
 /**
  * Provider display metadata — the ONE place icon/label per provider lives.
@@ -242,41 +243,41 @@ export function ImportGitPanel() {
   }, [repos, search]);
 
   return (
-    <div className="rounded-2xl border border-border bg-muted p-5 sm:p-6">
-      <div className="mb-1 flex items-center gap-2">
-        <Github className="h-[18px] w-[18px] text-foreground" />
-        <h2 className="text-[15px] font-medium">Import Git Repository</h2>
-      </div>
-      <p className="mb-5 text-sm text-muted-foreground">
+    <YStack borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$4.5" $sm={{ padding: "$5" }}>
+      <XStack marginBottom="$1" alignItems="center" gap="$2">
+        <Github size={18} color="$color" />
+        <H2 fontSize={15} fontWeight="500">Import Git Repository</H2>
+      </XStack>
+      <Paragraph marginBottom="$4.5" fontSize="$3" color="$color11">
         Connect a repository and deploy it as a service, container, or site —
         with automatic builds on every push.
-      </p>
+      </Paragraph>
 
       {loadingAccounts ? (
-        <div className="space-y-2">
-          <div className="h-10 animate-pulse rounded-xl border border-border bg-muted" />
+        <YStack rowGap="$2">
+          <YStack height="$7" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" />
           {Array.from({ length: 3 }).map((_, i) => (
-            <div
+            <YStack
               key={i}
-              className="h-[60px] animate-pulse rounded-xl border border-border bg-muted"
-            />
+              height={60} borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3"
+  />
           ))}
-        </div>
+        </YStack>
       ) : !connected ? (
         <ConnectCta
           onConnect={connectGithub}
           onConnectGitlab={connectGitlab}
           gitlabConnectable={gitlabConnectable}
-        />
+  />
       ) : (
         <>
           {/* Account dropdown + repo search */}
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <div ref={menuRef} className="relative sm:w-[46%]">
-              <button
+          <YStack gap="$2" $sm={{ flexDirection: "row", alignItems: "center" }}>
+            <YStack ref={menuRef} position="relative" $sm={{ width: "46%" }}>
+              <Button
                 type="button"
                 onClick={() => setMenuOpen((o) => !o)}
-                className="flex h-10 w-full items-center gap-2 rounded-lg border border-border bg-background px-3 text-sm text-foreground transition-colors hover:border-foreground/30"
+                height="$7" width="100%" alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" fontSize="$3" color="$color" hoverStyle={{ borderColor: "$color" }}
               >
                 {(() => {
                   const Icon =
@@ -285,23 +286,23 @@ export function ImportGitPanel() {
                 })()}
                 {activeAccount?.avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={activeAccount.avatarUrl}
                     alt=""
-                    className="h-5 w-5 shrink-0 rounded-full"
-                  />
+                    height="$4.5" width="$4.5" flexShrink={0} borderRadius="$10"
+  />
                 ) : null}
-                <span className="truncate">{active || "Select account"}</span>
-                <ChevronDown className="ml-auto h-4 w-4 shrink-0 text-muted-foreground" />
-              </button>
+                <SizableText numberOfLines={1}>{active || "Select account"}</SizableText>
+                <ChevronDown size={16} color="$color11" />
+              </Button>
 
               {menuOpen && (
-                <div className="absolute z-30 mt-1.5 w-full min-w-[240px] overflow-hidden rounded-xl border border-border bg-card shadow-2xl shadow-black/60">
-                  <div className="max-h-64 overflow-y-auto py-1">
+                <YStack position="absolute" zIndex={30} marginTop="$1.5" width="100%" minWidth={240} overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" elevation={6}>
+                  <YStack maxHeight={256} paddingVertical="$1" overflow="scroll">
                     {accounts.map((a) => {
                       const Icon = PROVIDER_META[a.provider]?.Icon ?? Github;
                       return (
-                        <button
+                        <Button
                           key={`${a.provider}:${a.login}`}
                           type="button"
                           onClick={() => {
@@ -309,177 +310,175 @@ export function ImportGitPanel() {
                             setSearch("");
                             setMenuOpen(false);
                           }}
-                          className={`flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm transition-colors hover:bg-muted ${
-                            a.login === active ? "text-foreground" : "text-muted-foreground"
-                          }`}
+                          width="100%" alignItems="center" gap="$2.5" paddingHorizontal="$3" paddingVertical="$2" textAlign="left" fontSize="$3" hoverStyle={{ backgroundColor: "$color3" }} {...{ color: a.login === active ? "$color" : "$color11" }}
                         >
                           {a.avatarUrl ? (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img src={a.avatarUrl} alt="" className="h-5 w-5 rounded-full" />
+                            <Image src={a.avatarUrl} alt="" height="$4.5" width="$4.5" borderRadius="$10" />
                           ) : (
                             <Icon className="h-4 w-4 text-muted-foreground" />
                           )}
-                          <span className="truncate">{a.login}</span>
-                          <span className="ml-auto text-[11px] text-muted-foreground">
+                          <SizableText numberOfLines={1}>{a.login}</SizableText>
+                          <SizableText marginLeft="auto" fontSize={11} color="$color11">
                             {a.provider === "gitlab"
                               ? "GitLab"
                               : a.type === "org"
                                 ? "Org"
                                 : "Personal"}
-                          </span>
-                        </button>
+                          </SizableText>
+                        </Button>
                       );
                     })}
-                  </div>
-                  <div className="border-t border-border">
-                    <button
+                  </YStack>
+                  <YStack borderTopWidth={1} borderColor="$borderColor">
+                    <Button
                       type="button"
                       onClick={connectGithub}
-                      className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      width="100%" alignItems="center" gap="$2.5" paddingHorizontal="$3" paddingVertical="$2.5" textAlign="left" fontSize="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
                     >
-                      <Plus className="h-4 w-4" />
+                      <Plus size={16} />
                       Add GitHub Account
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="button"
                       onClick={connectGitlab}
-                      className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      width="100%" alignItems="center" gap="$2.5" paddingHorizontal="$3" paddingVertical="$2.5" textAlign="left" fontSize="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
                     >
-                      <GitlabIcon className="h-4 w-4" />
+                      <GitlabIcon size={16} />
                       Add GitLab Account
                       {!gitlabConnectable && (
-                        <span className="ml-auto rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-300/90">
+                        <SizableText marginLeft="auto" borderRadius="$10" borderWidth={1} borderColor="$yellow9" backgroundColor="$yellow9" paddingHorizontal="$2" paddingVertical="$0.5" fontSize={10} fontWeight="500" color="$yellow4">
                           Needs setup
-                        </span>
+                        </SizableText>
                       )}
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="button"
                       onClick={() => setShowProviders((s) => !s)}
-                      className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      width="100%" alignItems="center" gap="$2.5" paddingHorizontal="$3" paddingVertical="$2.5" textAlign="left" fontSize="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
                     >
-                      <RefreshCw className="h-4 w-4" />
+                      <RefreshCw size={16} />
                       Providers
-                    </button>
+                    </Button>
                     {showProviders && (
-                      <div className="grid grid-cols-2 gap-1.5 border-t border-border px-2 py-2">
-                        <span className="col-span-2 px-1 text-[11px] uppercase tracking-wide text-muted-foreground">
+                      <YStack gap="$1.5" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$2">
+                        <SizableText paddingHorizontal="$1" fontSize={11} textTransform="uppercase" letterSpacing={0.4} color="$color11">
                           Providers
-                        </span>
-                        <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-muted px-2 py-1.5 text-xs text-foreground">
-                          <Github className="h-3.5 w-3.5" /> GitHub
-                        </span>
+                        </SizableText>
+                        <SizableText alignItems="center" gap="$1.5" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$1" color="$color">
+                          <Github size={14} /> GitHub
+                        </SizableText>
                         {gitlabConnectable ? (
-                          <button
+                          <Button
                             type="button"
                             onClick={connectGitlab}
-                            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-muted px-2 py-1.5 text-xs text-foreground transition-colors hover:border-foreground/30"
+                            alignItems="center" gap="$1.5" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$1" color="$color" hoverStyle={{ borderColor: "$color" }}
                           >
-                            <GitlabIcon className="h-3.5 w-3.5" /> GitLab
-                          </button>
+                            <GitlabIcon size={14} /> GitLab
+                          </Button>
                         ) : (
-                          <span
-                            className="inline-flex items-center gap-1.5 rounded-md border border-border px-2 py-1.5 text-xs text-muted-foreground"
+                          <SizableText
+                            alignItems="center" gap="$1.5" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$1" color="$color11"
                             title="GitLab connect is being set up"
                           >
-                            <GitlabIcon className="h-3.5 w-3.5" /> GitLab · Setup
-                          </span>
+                            <GitlabIcon size={14} /> GitLab · Setup
+                          </SizableText>
                         )}
-                        <span className="inline-flex items-center gap-1.5 rounded-md border border-border px-2 py-1.5 text-xs text-muted-foreground">
-                          <Globe className="h-3.5 w-3.5" /> Bitbucket · Soon
-                        </span>
-                      </div>
+                        <SizableText alignItems="center" gap="$1.5" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$1" color="$color11">
+                          <Globe size={14} /> Bitbucket · Soon
+                        </SizableText>
+                      </YStack>
                     )}
-                  </div>
-                </div>
+                  </YStack>
+                </YStack>
               )}
-            </div>
+            </YStack>
 
-            <div className="relative flex-1">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <input
+            <YStack position="relative" flex={1}>
+              <Search size={16} color="$color11" />
+              <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search repositories…"
-                className="h-10 w-full rounded-lg border border-border bg-background pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground/30 focus:outline-none"
-              />
-            </div>
-          </div>
+                height="$7" width="100%" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingLeft={36} paddingRight="$3" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ borderColor: "$color", outlineWidth: 0 }}
+  />
+            </YStack>
+          </YStack>
 
           {/* Repo list */}
-          <div className="custom-scrollbar -mr-2 mt-3 max-h-[300px] space-y-2 overflow-y-auto pr-2">
+          <YStack marginRight="-2" marginTop="$3" maxHeight={300} rowGap="$2" paddingRight="$2" overflow="scroll" className="custom-scrollbar">
             {loadingRepos ? (
               Array.from({ length: 4 }).map((_, i) => (
-                <div
+                <YStack
                   key={i}
-                  className="h-[60px] animate-pulse rounded-xl border border-border bg-muted"
-                />
+                  height={60} borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3"
+  />
               ))
             ) : filteredRepos.length === 0 ? (
-              <div className="py-8 text-center text-sm text-muted-foreground">
+              <SizableText paddingVertical="$6" textAlign="center" fontSize="$3" color="$color11" display="flex" flexDirection="column">
                 {repos.length === 0
                   ? `No repositories found for ${active}.`
                   : `No repositories match “${search}”.`}
-              </div>
+              </SizableText>
             ) : (
               filteredRepos.map((r) => (
-                <div
+                <XStack
                   key={r.fullName}
-                  className="group flex items-center gap-3 rounded-xl border border-border bg-muted px-3.5 py-2.5 transition-all hover:border-foreground/30 hover:bg-muted"
+                  group alignItems="center" gap="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$2.5" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}
                 >
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-muted text-muted-foreground">
+                  <SizableText height="$6" width="$6" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" color="$color11" display="flex" flexDirection="row">
                     {(() => {
                       const Icon = PROVIDER_META[r.provider]?.Icon ?? Github;
                       return <Icon className="h-4 w-4" />;
                     })()}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5">
-                      <span className="truncate text-sm font-medium text-foreground">
+                  </SizableText>
+                  <YStack minWidth={0} flex={1}>
+                    <XStack alignItems="center" gap="$1.5">
+                      <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">
                         {r.fullName}
-                      </span>
+                      </SizableText>
                       {r.private && (
-                        <Lock className="h-3 w-3 shrink-0 text-muted-foreground" />
+                        <Lock size={12} color="$color11" />
                       )}
-                    </div>
-                    <div className="truncate text-xs text-muted-foreground">
+                    </XStack>
+                    <SizableText numberOfLines={1} fontSize="$1" color="$color11" display="flex" flexDirection="column">
                       {[r.language, relativeTime(r.pushedAt)]
                         .filter(Boolean)
                         .join(" · ") || "Repository"}
-                    </div>
-                  </div>
-                  <button
+                    </SizableText>
+                  </YStack>
+                  <Button
                     type="button"
                     onClick={() => importRepo(r.cloneUrl)}
                     disabled={Boolean(importing)}
-                    className="inline-flex h-8 shrink-0 items-center gap-1 rounded-lg border border-border bg-muted px-3 text-xs font-medium text-foreground transition-colors hover:border-foreground/30 hover:bg-accent disabled:opacity-50"
+                    height="$6" flexShrink={0} alignItems="center" gap="$1" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" fontSize="$1" fontWeight="500" color="$color" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }} disabledStyle={{ opacity: 0.5 }}
                   >
                     {importing === r.cloneUrl ? (
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <Loader2 size={14} />
                     ) : (
                       <>
                         Import
-                        <ArrowRight className="h-3.5 w-3.5" />
+                        <ArrowRight size={14} />
                       </>
                     )}
-                  </button>
-                </div>
+                  </Button>
+                </XStack>
               ))
             )}
-          </div>
+          </YStack>
         </>
       )}
 
       {/* Always-available fallback: paste a repository URL. */}
-      <div className="mt-5 border-t border-border pt-4">
-        <label className="mb-1.5 block text-xs text-muted-foreground">
+      <YStack marginTop="$4.5" borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
+        <Label marginBottom="$1.5" fontSize="$1" color="$color11">
           Paste any repository URL
-        </label>
-        <p className="mb-2 text-xs text-muted-foreground/80">
-          Your <span className="font-medium text-foreground">git.hanzo.ai</span> repos, GitHub, GitLab, or any git remote — clone, edit, and Push to Git.
-        </p>
-        <div className="flex items-center gap-2">
-          <input
+        </Label>
+        <Paragraph marginBottom="$2" fontSize="$1" color="$color11">
+          Your <SizableText fontWeight="500" color="$color">git.hanzo.ai</SizableText> repos, GitHub, GitLab, or any git remote — clone, edit, and Push to Git.
+        </Paragraph>
+        <XStack alignItems="center" gap="$2">
+          <Input
             type="url"
             value={pasteUrl}
             onChange={(e) => setPasteUrl(e.target.value)}
@@ -487,19 +486,19 @@ export function ImportGitPanel() {
               if (e.key === "Enter") submitPaste();
             }}
             placeholder="git.hanzo.ai/hanzoai/app  ·  github.com/org/repo  ·  git@…"
-            className="h-9 flex-1 rounded-lg border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground/30 focus:outline-none"
-          />
-          <button
+            height={36} flex={1} borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ borderColor: "$color", outlineWidth: 0 }}
+  />
+          <Button
             type="button"
             onClick={submitPaste}
             disabled={!isGitUrl(pasteUrl) || Boolean(importing)}
-            className="inline-flex h-9 shrink-0 items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-40"
+            height={36} flexShrink={0} alignItems="center" borderRadius="$5" backgroundColor="$color12" paddingHorizontal="$4" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }} disabledStyle={{ opacity: 0.4 }}
           >
             Import
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </XStack>
+      </YStack>
+    </YStack>
   );
 }
 
@@ -513,38 +512,38 @@ function ConnectCta({
   gitlabConnectable: boolean;
 }) {
   return (
-    <div className="mx-auto flex max-w-md flex-col items-center rounded-xl border border-dashed border-border bg-muted px-6 py-10 text-center">
-      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-border bg-muted">
-        <Github className="h-6 w-6 text-foreground" />
-      </div>
-      <h3 className="text-sm font-medium text-foreground">Connect a Git provider</h3>
-      <p className="mx-auto mt-1.5 max-w-xs text-sm text-muted-foreground">
+    <SizableText alignSelf="center" maxWidth={448} flexDirection="column" alignItems="center" borderRadius="$6" borderWidth={1} borderStyle="dashed" borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$5" paddingVertical="$7" textAlign="center" display="flex">
+      <XStack marginBottom="$4" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
+        <Github size={24} color="$color" />
+      </XStack>
+      <H3 fontSize="$3" fontWeight="500" color="$color">Connect a Git provider</H3>
+      <Paragraph alignSelf="center" marginTop="$1.5" maxWidth={320} fontSize="$3" color="$color11">
         Sign in with GitHub or GitLab to import your repositories and deploy them
         with automatic builds on every push.
-      </p>
-      <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
-        <button
+      </Paragraph>
+      <XStack marginTop="$4.5" flexWrap="wrap" alignItems="center" justifyContent="center" gap="$2">
+        <Button
           type="button"
           onClick={onConnect}
-          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          alignItems="center" gap="$2" borderRadius="$5" backgroundColor="$color12" paddingHorizontal="$4" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
         >
-          <Github className="h-4 w-4" />
+          <Github size={16} />
           Connect GitHub
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={onConnectGitlab}
-          className="inline-flex items-center gap-2 rounded-lg border border-border bg-muted px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:border-foreground/30 hover:bg-accent"
+          alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$4" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}
         >
-          <GitlabIcon className="h-4 w-4" />
+          <GitlabIcon size={16} />
           Connect GitLab
           {!gitlabConnectable && (
-            <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-300/90">
+            <SizableText borderRadius="$10" borderWidth={1} borderColor="$yellow9" backgroundColor="$yellow9" paddingHorizontal="$2" paddingVertical="$0.5" fontSize={10} fontWeight="500" color="$yellow4">
               Needs setup
-            </span>
+            </SizableText>
           )}
-        </button>
-      </div>
-    </div>
+        </Button>
+      </XStack>
+    </SizableText>
   );
 }

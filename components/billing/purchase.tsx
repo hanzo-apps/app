@@ -28,6 +28,7 @@
  * the current scope differs. Fail closed beats a confident guess about money.
  */
 
+import { Paragraph, YStack, SizableText } from '@hanzo/gui';
 import { useOrg } from '@/lib/org/client';
 import { currentOrg, titleCase } from '@/lib/org-scope';
 import { goToCheckout, billingReturnUrl } from '@/lib/pay';
@@ -50,7 +51,7 @@ const TOPUP_AMOUNTS = [10, 25, 50, 100] as const;
 
 /** Copy shared by both refusal states, so the reason is always visible. */
 function Unavailable({ reason }: { reason: string }) {
-  return <p className="text-sm text-muted-foreground">{reason}</p>;
+  return <Paragraph fontSize="$3" color="$color11">{reason}</Paragraph>;
 }
 
 /**
@@ -76,18 +77,18 @@ function usePayer(): { org: string | null; scopedAway: boolean; loading: boolean
 /** Always name the wallet before the card form appears. */
 function PayerNote({ org, scopedAway }: { org: string; scopedAway: boolean }) {
   return (
-    <div className="space-y-1">
-      <p className="text-xs text-muted-foreground">
-        Payment is credited to <span className="text-foreground">{titleCase(org)}</span> — the
+    <YStack rowGap="$1">
+      <Paragraph fontSize="$1" color="$color11">
+        Payment is credited to <SizableText color="$color">{titleCase(org)}</SizableText> — the
         organization your account belongs to.
-      </p>
+      </Paragraph>
       {scopedAway && (
-        <p className="text-xs text-yellow-500">
+        <Paragraph fontSize="$1" color="$yellow9">
           You are currently viewing a different organization. Payment still credits{' '}
           {titleCase(org)}, because checkout bills the account you signed in as.
-        </p>
+        </Paragraph>
       )}
-    </div>
+    </YStack>
   );
 }
 
@@ -97,7 +98,7 @@ export function TopUp() {
   const returnUrl = billingReturnUrl();
 
   return (
-    <Card className="bg-card border-border">
+    <Card backgroundColor="$background" borderColor="$borderColor">
       <CardHeader>
         <CardTitle>Add credit with a card</CardTitle>
         <CardDescription>
@@ -105,36 +106,36 @@ export function TopUp() {
           expiry.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent rowGap="$4">
         {loading ? (
           <Unavailable reason="Checking which organization to credit…" />
         ) : !org ? (
           <Unavailable reason="No organization resolved for your account, so there is no balance to credit. Reload or contact support — we will not guess." />
         ) : (
           <>
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <YStack gap="$4">
               {TOPUP_AMOUNTS.map((amount) => (
-                <div
+                <YStack
                   key={amount}
-                  className="rounded-xl border border-border bg-card p-5 transition-colors hover:border-foreground/30"
+                  borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4.5" hoverStyle={{ borderColor: "$color" }}
                 >
-                  <div className="mb-4 text-center">
-                    <div className="text-3xl font-medium">${amount}</div>
-                    <div className="mt-1 text-sm text-muted-foreground">
+                  <SizableText marginBottom="$4" textAlign="center" display="flex" flexDirection="column">
+                    <SizableText fontSize="$10" fontWeight="500" display="flex" flexDirection="column">${amount}</SizableText>
+                    <SizableText marginTop="$1" fontSize="$3" color="$color11" display="flex" flexDirection="column">
                       {amount}.00 of credit
-                    </div>
-                  </div>
+                    </SizableText>
+                  </SizableText>
                   <Button
                     onClick={() => goToCheckout({ amountUsd: amount, returnUrl })}
-                    className="w-full bg-accent hover:bg-foreground/20"
+                    width="100%" backgroundColor="$color3" hoverStyle={{ backgroundColor: "$color" }}
                     size="sm"
                   >
-                    <CreditCard className="mr-2 h-4 w-4" />
+                    <CreditCard size={16} />
                     Add ${amount}
                   </Button>
-                </div>
+                </YStack>
               ))}
-            </div>
+            </YStack>
             <PayerNote org={org} scopedAway={scopedAway} />
           </>
         )}
@@ -155,7 +156,7 @@ export function Subscribe({ slug, label }: { slug: string; label?: string }) {
 
   if (orgLoading || plansLoading) {
     return (
-      <Button disabled size="sm" className="w-full">
+      <Button disabled size="sm" width="100%">
         Loading…
       </Button>
     );
@@ -164,7 +165,7 @@ export function Subscribe({ slug, label }: { slug: string; label?: string }) {
   // No org, no catalog, an unpriced plan, or a contact-sales plan ⇒ do not sell.
   if (!org || error || !plan || plan.contactSales || plan.price <= 0) {
     return (
-      <Button disabled size="sm" className="w-full" title={error ?? 'Not available'}>
+      <Button disabled size="sm" width="100%" title={error ?? 'Not available'}>
         Not available
       </Button>
     );
@@ -176,10 +177,10 @@ export function Subscribe({ slug, label }: { slug: string; label?: string }) {
         goToCheckout({ amountUsd: plan.price / 100, plan: plan.slug, returnUrl })
       }
       title={`Billed to ${titleCase(org)}`}
-      className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+      width="100%" backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
       size="sm"
     >
-      <Sparkles className="mr-2 h-4 w-4" />
+      <Sparkles size={16} />
       {label ?? `Upgrade to ${plan.name}`} — {usd(plan.price)}
       {plan.perSeat ? '/seat' : ''}/mo
     </Button>

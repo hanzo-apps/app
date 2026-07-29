@@ -1,8 +1,9 @@
 'use client';
 
+import { XStack, YStack, Anchor, SizableText, H2, Paragraph } from '@hanzo/gui';
 import { useState, useEffect } from 'react';
 import { Button, Card, CardContent, CardHeader, CardTitle, CardDescription, Input, Label, Badge, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Tabs, TabsContent, TabsList, TabsTrigger, toast } from '@hanzo/ui';
-import { Loader2, CheckCircle, XCircle, ExternalLink, Key, Trash2 } from 'lucide-react';
+import { CheckCircle, ExternalLink, Key, Trash2 } from 'lucide-react';
 
 import {
   ProviderId,
@@ -66,48 +67,48 @@ function ProviderCard({ provider, onValidate, onRemove, isValidating }: Provider
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-start justify-between">
+        <XStack alignItems="flex-start" justifyContent="space-between">
           <div>
-            <CardTitle className="text-lg">{provider.name}</CardTitle>
-            <CardDescription className="text-sm mt-1">
+            <CardTitle fontSize="$6">{provider.name}</CardTitle>
+            <CardDescription fontSize="$3" marginTop="$1">
               {provider.description}
             </CardDescription>
           </div>
           {hasKey && (
-            <Badge className="bg-green-500/10 text-green-500">
-              <CheckCircle className="w-3 h-3 mr-1" />
+            <Badge backgroundColor="$green9" color="$green9">
+              <CheckCircle size={12} />
               Configured
             </Badge>
           )}
-        </div>
+        </XStack>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent rowGap="$4">
         {provider.apiKeyRequired && (
           <>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
+            <YStack rowGap="$2">
+              <XStack alignItems="center" justifyContent="space-between">
                 <Label htmlFor={`${provider.id}-key`}>API Key</Label>
                 {provider.apiKeyHelpUrl && (
-                  <a
+                  <Anchor
                     href={provider.apiKeyHelpUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-blue-500 hover:text-blue-600 flex items-center gap-1"
+                    fontSize="$1" color="$blue9" alignItems="center" gap="$1" hoverStyle={{ color: "$blue10" }}
                   >
                     Get API Key
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
+                    <ExternalLink size={12} />
+                  </Anchor>
                 )}
-              </div>
-              <div className="flex gap-2">
+              </XStack>
+              <XStack gap="$2">
                 <Input
                   id={`${provider.id}-key`}
                   type={showKey ? 'text' : 'password'}
                   value={apiKey}
                   onChange={(e) => setApiKeyValue(e.target.value)}
                   placeholder={provider.apiKeyPlaceholder || 'Enter API key'}
-                  className="flex-1"
-                />
+                  flex={1}
+  />
                 <Button
                   size="sm"
                   variant="outline"
@@ -115,16 +116,16 @@ function ProviderCard({ provider, onValidate, onRemove, isValidating }: Provider
                 >
                   {showKey ? 'Hide' : 'Show'}
                 </Button>
-              </div>
-            </div>
+              </XStack>
+            </YStack>
 
-            <div className="flex gap-2">
+            <XStack gap="$2">
               <Button
-                className="flex-1"
+                flex={1}
                 onClick={handleSave}
                 disabled={!apiKey.trim()}
               >
-                <Key className="w-4 h-4 mr-2" />
+                <Key size={16} />
                 Save API Key
               </Button>
               {hasKey && (
@@ -132,42 +133,42 @@ function ProviderCard({ provider, onValidate, onRemove, isValidating }: Provider
                   variant="outline"
                   onClick={handleRemove}
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 size={16} />
                 </Button>
               )}
-            </div>
+            </XStack>
           </>
         )}
 
         {!provider.apiKeyRequired && (
-          <div className="text-sm text-muted-foreground p-3 bg-muted/50 rounded-lg">
+          <SizableText fontSize="$3" color="$color11" padding="$3" backgroundColor="$color3" borderRadius="$5" display="flex" flexDirection="column">
             <p>
               {provider.isLocal
                 ? `This provider runs locally. Make sure ${provider.name} is running at ${provider.baseUrl}`
                 : 'No API key required for this provider'}
             </p>
-          </div>
+          </SizableText>
         )}
 
-        <div className="text-xs text-muted-foreground space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="font-medium">Base URL:</span>
-            <code className="px-1.5 py-0.5 bg-background rounded text-xs">
+        <SizableText fontSize="$1" color="$color11" rowGap="$1" display="flex" flexDirection="column">
+          <XStack alignItems="center" gap="$2">
+            <SizableText fontWeight="500">Base URL:</SizableText>
+            <SizableText paddingHorizontal="$1.5" paddingVertical="$0.5" backgroundColor="$background" borderRadius="$2" fontSize="$1">
               {provider.baseUrl}
-            </code>
-          </div>
-          <div className="flex flex-wrap gap-2 mt-2">
+            </SizableText>
+          </XStack>
+          <XStack flexWrap="wrap" gap="$2" marginTop="$2">
             {provider.supportsFunctions && (
-              <Badge variant="outline" className="text-xs">Functions</Badge>
+              <Badge variant="outline" fontSize="$1">Functions</Badge>
             )}
             {provider.supportsStreaming && (
-              <Badge variant="outline" className="text-xs">Streaming</Badge>
+              <Badge variant="outline" fontSize="$1">Streaming</Badge>
             )}
             {provider.supportsModelDiscovery && (
-              <Badge variant="outline" className="text-xs">Auto-discovery</Badge>
+              <Badge variant="outline" fontSize="$1">Auto-discovery</Badge>
             )}
-          </div>
-        </div>
+          </XStack>
+        </SizableText>
       </CardContent>
     </Card>
   );
@@ -241,12 +242,12 @@ export function ProviderSettings() {
   const localProviders = getLocalProviders();
 
   return (
-    <div className="space-y-6">
+    <YStack rowGap="$5">
       <div>
-        <h2 className="text-2xl font-medium mb-2">Provider Settings</h2>
-        <p className="text-muted-foreground">
+        <H2 fontSize="$8" fontWeight="500" marginBottom="$2">Provider Settings</H2>
+        <Paragraph color="$color11">
           Configure your AI provider API keys and settings. All keys are stored locally in your browser.
-        </p>
+        </Paragraph>
       </div>
 
       {/* Active Provider Selection */}
@@ -265,12 +266,12 @@ export function ProviderSettings() {
             <SelectContent>
               {getAllProviders().map(provider => (
                 <SelectItem key={provider.id} value={provider.id}>
-                  <div className="flex items-center gap-2">
+                  <XStack alignItems="center" gap="$2">
                     {provider.name}
                     {hasApiKey(provider.id) && (
-                      <CheckCircle className="w-3 h-3 text-green-500" />
+                      <CheckCircle size={12} color="$green9" />
                     )}
-                  </div>
+                  </XStack>
                 </SelectItem>
               ))}
             </SelectContent>
@@ -279,13 +280,13 @@ export function ProviderSettings() {
       </Card>
 
       {/* Provider Configuration */}
-      <Tabs defaultValue="cloud" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+      <Tabs defaultValue="cloud" width="100%">
+        <TabsList width="100%">
           <TabsTrigger value="cloud">Cloud Providers ({cloudProviders.length})</TabsTrigger>
           <TabsTrigger value="local">Local Providers ({localProviders.length})</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="cloud" className="space-y-4 mt-4">
+        <TabsContent value="cloud" rowGap="$4" marginTop="$4">
           {cloudProviders.map(provider => (
             <ProviderCard
               key={provider.id}
@@ -293,11 +294,11 @@ export function ProviderSettings() {
               onValidate={handleValidate}
               onRemove={handleRemove}
               isValidating={validatingProvider === provider.id}
-            />
+  />
           ))}
         </TabsContent>
 
-        <TabsContent value="local" className="space-y-4 mt-4">
+        <TabsContent value="local" rowGap="$4" marginTop="$4">
           {localProviders.map(provider => (
             <ProviderCard
               key={provider.id}
@@ -305,28 +306,28 @@ export function ProviderSettings() {
               onValidate={handleValidate}
               onRemove={handleRemove}
               isValidating={validatingProvider === provider.id}
-            />
+  />
           ))}
         </TabsContent>
       </Tabs>
 
       {/* Security Notice */}
-      <Card className="bg-yellow-500/5 border-yellow-500/20">
-        <CardContent className="pt-6">
-          <div className="flex gap-3">
-            <Key className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
-            <div className="text-sm space-y-2">
-              <p className="font-medium text-yellow-600">Security Notice</p>
-              <ul className="text-muted-foreground space-y-1 list-disc list-inside">
+      <Card backgroundColor="$yellow9" borderColor="$yellow9">
+        <CardContent paddingTop="$5">
+          <XStack gap="$3">
+            <Key size={20} color="$yellow10" />
+            <SizableText fontSize="$3" rowGap="$2" display="flex" flexDirection="column">
+              <Paragraph fontWeight="500" color="$yellow10">Security Notice</Paragraph>
+              <SizableText color="$color11" rowGap="$1" display="flex" flexDirection="column">
                 <li>API keys are stored locally in your browser's localStorage</li>
                 <li>Keys are never sent to Hanzo servers</li>
                 <li>Clear your browser data to remove stored keys</li>
                 <li>Use dedicated API keys with usage limits when possible</li>
-              </ul>
-            </div>
-          </div>
+              </SizableText>
+            </SizableText>
+          </XStack>
         </CardContent>
       </Card>
-    </div>
+    </YStack>
   );
 }

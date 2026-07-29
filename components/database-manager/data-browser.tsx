@@ -1,7 +1,8 @@
 'use client';
 
+import { XStack, YStack, SizableText, Paragraph, H3 } from '@hanzo/gui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Button, Input } from '@hanzo/ui';
+import { Button, Input, Label } from '@hanzo/ui';
 import {
   Database, Plus, RefreshCw, Trash2, Pencil, X, Loader2, Search, TableProperties,
 } from 'lucide-react';
@@ -145,148 +146,144 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
   };
 
   return (
-    <div className="flex h-full min-h-0">
+    <XStack height="100%" minHeight={0}>
       {/* Collections list */}
-      <div className="w-52 shrink-0 border-r border-border overflow-y-auto p-2">
-        <div className="flex items-center justify-between px-2 py-1.5">
-          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Collections</span>
-          <button onClick={loadSchema} title="Refresh" className="text-muted-foreground hover:text-foreground">
-            <RefreshCw className="h-3.5 w-3.5" />
-          </button>
-        </div>
+      <YStack width="$20" flexShrink={0} borderRightWidth={1} borderColor="$borderColor" padding="$2" overflow="scroll">
+        <XStack alignItems="center" justifyContent="space-between" paddingHorizontal="$2" paddingVertical="$1.5">
+          <SizableText fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.4}>Collections</SizableText>
+          <Button onClick={loadSchema} title="Refresh" color="$color11" hoverStyle={{ color: "$color" }}>
+            <RefreshCw size={14} />
+          </Button>
+        </XStack>
         {tables.length === 0 && (
-          <p className="px-2 py-2 text-xs text-muted-foreground">No collections yet.</p>
+          <Paragraph paddingHorizontal="$2" paddingVertical="$2" fontSize="$1" color="$color11">No collections yet.</Paragraph>
         )}
         {tables.map((t) => (
-          <button
+          <Button
             key={t.name}
             onClick={() => setSelected(t.name)}
-            className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors ${
-              selected === t.name
-                ? 'bg-accent text-foreground'
-                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-            }`}
+            width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$3" {...{ backgroundColor: selected === t.name ? "$color3" : undefined, color: selected === t.name ? "$color" : "$color11", hoverStyle: selected === t.name ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
           >
-            <TableProperties className="h-3.5 w-3.5 shrink-0" />
-            <span className="truncate">{t.name}</span>
-          </button>
+            <TableProperties size={14} />
+            <SizableText numberOfLines={1}>{t.name}</SizableText>
+          </Button>
         ))}
-      </div>
+      </YStack>
 
       {/* Records */}
-      <div className="flex min-w-0 flex-1 flex-col">
-        <div className="flex items-center gap-2 border-b border-border px-3 py-2">
-          <Database className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-medium text-foreground">{selected || '—'}</span>
-          <span className="text-xs text-muted-foreground">{filtered.length} record{filtered.length === 1 ? '' : 's'}</span>
-          <div className="relative ml-auto">
-            <Search className="absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+      <YStack minWidth={0} flex={1}>
+        <XStack alignItems="center" gap="$2" borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$2">
+          <Database size={16} color="$color11" />
+          <SizableText fontSize="$3" fontWeight="500" color="$color">{selected || '—'}</SizableText>
+          <SizableText fontSize="$1" color="$color11">{filtered.length} record{filtered.length === 1 ? '' : 's'}</SizableText>
+          <YStack position="relative" marginLeft="auto">
+            <Search size={14} color="$color11" />
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Filter…"
-              className="h-8 w-40 pl-7 text-sm"
-            />
-          </div>
+              height="$6" width="$17" paddingLeft={28} fontSize="$3"
+  />
+          </YStack>
           <Button size="sm" variant="outline" onClick={() => selected && loadRows(selected)} disabled={!selected}>
-            <RefreshCw className="mr-1.5 h-3.5 w-3.5" /> Refresh
+            <RefreshCw size={14} /> Refresh
           </Button>
           <Button size="sm" onClick={openNew} disabled={!selected || cols.length === 0}>
-            <Plus className="mr-1.5 h-3.5 w-3.5" /> New record
+            <Plus size={14} /> New record
           </Button>
-        </div>
+        </XStack>
 
-        {error && <p className="border-b border-border bg-destructive/10 px-3 py-2 text-xs text-destructive">{error}</p>}
+        {error && <Paragraph borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$red9" paddingHorizontal="$3" paddingVertical="$2" fontSize="$1" color="$red9">{error}</Paragraph>}
 
-        <div className="min-h-0 flex-1 overflow-auto">
+        <YStack minHeight={0} flex={1} overflow="scroll">
           {loading ? (
-            <div className="flex h-full items-center justify-center text-muted-foreground">
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading records…
-            </div>
+            <SizableText height="100%" alignItems="center" justifyContent="center" color="$color11" display="flex" flexDirection="row">
+              <Loader2 size={16} /> Loading records…
+            </SizableText>
           ) : filtered.length === 0 ? (
-            <div className="flex h-full flex-col items-center justify-center gap-2 text-muted-foreground">
-              <Database className="h-8 w-8" />
-              <p className="text-sm">No records{search ? ' match your filter' : ' yet'}.</p>
+            <SizableText height="100%" flexDirection="column" alignItems="center" justifyContent="center" gap="$2" color="$color11" display="flex">
+              <Database size={32} />
+              <Paragraph fontSize="$3">No records{search ? ' match your filter' : ' yet'}.</Paragraph>
               {!search && selected && (
-                <Button size="sm" variant="outline" onClick={openNew}><Plus className="mr-1.5 h-3.5 w-3.5" />Add the first record</Button>
+                <Button size="sm" variant="outline" onClick={openNew}><Plus size={14} />Add the first record</Button>
               )}
-            </div>
+            </SizableText>
           ) : (
-            <table className="w-full text-left text-sm">
-              <thead className="sticky top-0 bg-card">
-                <tr className="border-b border-border">
+            <SizableText width="100%" textAlign="left" fontSize="$3" display="flex" flexDirection="column">
+              <YStack position="sticky" top="$0" backgroundColor="$background">
+                <YStack borderBottomWidth={1} borderColor="$borderColor">
                   {cols.map((c) => (
-                    <th key={c} className="whitespace-nowrap px-3 py-2 font-medium text-muted-foreground">
+                    <SizableText key={c} whiteSpace="nowrap" paddingHorizontal="$3" paddingVertical="$2" fontWeight="500" color="$color11">
                       {c}{c === pkCol ? ' 🔑' : ''}
-                    </th>
+                    </SizableText>
                   ))}
-                  <th className="w-20 px-3 py-2" />
-                </tr>
-              </thead>
+                  <SizableText width="$11" paddingHorizontal="$3" paddingVertical="$2" />
+                </YStack>
+              </YStack>
               <tbody>
                 {filtered.map((row, ri) => (
-                  <tr key={ri} className="group border-b border-border/60 hover:bg-muted/50">
+                  <YStack key={ri} group borderBottomWidth={1} borderColor="$borderColor" hoverStyle={{ backgroundColor: "$color3" }}>
                     {row.map((cell, ci) => (
-                      <td key={ci} className="max-w-xs truncate px-3 py-1.5 text-foreground/90" title={String(cell ?? '')}>
-                        {cell == null ? <span className="text-muted-foreground/60">null</span> : String(cell)}
-                      </td>
+                      <SizableText key={ci} maxWidth={320} numberOfLines={1} paddingHorizontal="$3" paddingVertical="$1.5" color="$color" title={String(cell ?? '')}>
+                        {cell == null ? <SizableText color="$color11">null</SizableText> : String(cell)}
+                      </SizableText>
                     ))}
-                    <td className="px-3 py-1.5">
-                      <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                        <button onClick={() => openEdit(row)} title="Edit" className="text-muted-foreground hover:text-foreground">
-                          <Pencil className="h-3.5 w-3.5" />
-                        </button>
-                        <button onClick={() => del(row)} title="Delete" className="text-muted-foreground hover:text-destructive">
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                    <SizableText paddingHorizontal="$3" paddingVertical="$1.5">
+                      <XStack alignItems="center" gap="$1" opacity={0} $group-hover={{ opacity: 1 }}>
+                        <Button onClick={() => openEdit(row)} title="Edit" color="$color11" hoverStyle={{ color: "$color" }}>
+                          <Pencil size={14} />
+                        </Button>
+                        <Button onClick={() => del(row)} title="Delete" color="$color11" hoverStyle={{ color: "$red9" }}>
+                          <Trash2 size={14} />
+                        </Button>
+                      </XStack>
+                    </SizableText>
+                  </YStack>
                 ))}
               </tbody>
-            </table>
+            </SizableText>
           )}
-        </div>
-      </div>
+        </YStack>
+      </YStack>
 
       {/* New / edit record drawer */}
       {editing && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/50" onClick={() => !saving && setEditing(null)}>
-          <div className="h-full w-full max-w-md overflow-y-auto bg-card p-5 shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-medium text-foreground">
-                {editing.mode === 'new' ? 'New record' : 'Edit record'} · <span className="text-muted-foreground">{selected}</span>
-              </h3>
-              <button onClick={() => !saving && setEditing(null)} className="text-muted-foreground hover:text-foreground">
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <div className="space-y-3">
+        <XStack position="fixed" top={0} right={0} bottom={0} left={0} zIndex={50} justifyContent="flex-end" backgroundColor="black" onClick={() => !saving && setEditing(null)}>
+          <YStack height="100%" width="100%" maxWidth={448} backgroundColor="$background" padding="$4.5" elevation={6} overflow="scroll" onClick={(e) => e.stopPropagation()}>
+            <XStack marginBottom="$4" alignItems="center" justifyContent="space-between">
+              <H3 fontSize="$6" fontWeight="500" color="$color">
+                {editing.mode === 'new' ? 'New record' : 'Edit record'} · <SizableText color="$color11">{selected}</SizableText>
+              </H3>
+              <Button onClick={() => !saving && setEditing(null)} color="$color11" hoverStyle={{ color: "$color" }}>
+                <X size={20} />
+              </Button>
+            </XStack>
+            <YStack rowGap="$3">
               {cols.map((c) => (
                 <div key={c}>
-                  <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                  <Label marginBottom="$1" fontSize="$1" fontWeight="500" color="$color11">
                     {c}{c === pkCol ? ' (key)' : ''}{table?.columns.find((x) => x.name === c)?.type ? ` · ${table.columns.find((x) => x.name === c)!.type}` : ''}
-                  </label>
+                  </Label>
                   <Input
                     value={editing.values[c] ?? ''}
                     onChange={(e) => setEditing((s) => (s ? { ...s, values: { ...s.values, [c]: e.target.value } } : s))}
                     disabled={editing.mode === 'edit' && c === pkCol}
                     placeholder={editing.mode === 'new' && c === pkCol ? 'auto' : ''}
-                    className="text-sm"
-                  />
+                    fontSize="$3"
+  />
                 </div>
               ))}
-            </div>
-            <div className="mt-5 flex items-center justify-end gap-2">
+            </YStack>
+            <XStack marginTop="$4.5" alignItems="center" justifyContent="flex-end" gap="$2">
               <Button variant="outline" onClick={() => setEditing(null)} disabled={saving}>Cancel</Button>
               <Button onClick={save} disabled={saving}>
-                {saving ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : null}
+                {saving ? <Loader2 size={16} /> : null}
                 {editing.mode === 'new' ? 'Create' : 'Save'}
               </Button>
-            </div>
-          </div>
-        </div>
+            </XStack>
+          </YStack>
+        </XStack>
       )}
-    </div>
+    </XStack>
   );
 }

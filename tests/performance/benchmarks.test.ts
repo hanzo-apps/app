@@ -1,6 +1,4 @@
 import { cn } from '@/lib/utils';
-import { performance } from 'perf_hooks';
-
 describe('Performance Benchmarks', () => {
   // Helper to measure function execution time
   const measurePerformance = <T>(

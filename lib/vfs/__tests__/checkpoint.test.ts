@@ -5,7 +5,7 @@
  * Note: These tests require a browser environment with IndexedDB.
  */
 
-import { checkpointManager, Checkpoint } from '../checkpoint';
+import { checkpointManager } from '../checkpoint';
 import { saveManager } from '../save-manager';
 import { vfs } from '../index';
 

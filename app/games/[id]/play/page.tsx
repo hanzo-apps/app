@@ -1,5 +1,6 @@
 'use client';
 
+import { SizableText, Paragraph, XStack, YStack } from '@hanzo/gui';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
@@ -14,39 +15,38 @@ export default function GamePlay() {
   if (!game || !isPlayable(game)) {
     return (
       <AppShell currentView="games">
-        <div className="flex flex-1 flex-col items-center justify-center gap-4 bg-background text-foreground">
-          <p className="text-lg text-muted-foreground">
+        <SizableText flex={1} flexDirection="column" alignItems="center" justifyContent="center" gap="$4" backgroundColor="$background" color="$color" display="flex">
+          <Paragraph fontSize="$6" color="$color11">
             {game ? `${game.name} has no in-browser build.` : 'Game not found.'}
-          </p>
-          <Link href={game ? `/games/${game.id}` : '/games'} className="text-foreground underline">
+          </Paragraph>
+          <Link href={game ? `/games/${game.id}` : '/games'}><SizableText color="$color" textDecorationLine="underline">
             Back
-          </Link>
-        </div>
+          </SizableText></Link>
+        </SizableText>
       </AppShell>
     );
   }
 
   return (
     <AppShell currentView="games">
-      <div className="flex flex-1 flex-col bg-background text-foreground">
-        <div className="flex items-center gap-4 border-b border-border px-6 py-3">
+      <SizableText flex={1} flexDirection="column" backgroundColor="$background" color="$color" display="flex">
+        <XStack alignItems="center" gap="$4" borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$5" paddingVertical="$3">
           <Link
             href={`/games/${game.id}`}
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="h-4 w-4" />
+          ><SizableText alignItems="center" gap="$1.5" fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}>
+            <ArrowLeft size={16} />
             {game.name}
-          </Link>
+          </SizableText></Link>
           {isPlaceholderBuild(game) && (
-            <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">
+            <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$0.5" fontSize={11} color="$color11">
               placeholder build
-            </span>
+            </SizableText>
           )}
-        </div>
-        <div className="min-h-0 flex-1 p-4">
+        </XStack>
+        <YStack minHeight={0} flex={1} padding="$4">
           <GamePlayer gameId={game.id} title={game.name} />
-        </div>
-      </div>
+        </YStack>
+      </SizableText>
     </AppShell>
   );
 }

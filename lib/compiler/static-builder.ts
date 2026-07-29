@@ -9,7 +9,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { createServerAdapter } from '@/lib/vfs/adapters/server';
 import { VirtualServer } from '@/lib/preview/virtual-server';
-import { VirtualFile, FileTreeNode, Deployment } from '@/lib/vfs/types';
+import { VirtualFile, Deployment } from '@/lib/vfs/types';
 import { logger } from '@/lib/utils';
 import { processHtml } from '@/lib/publishing/html-processor';
 import { generateSitemap, generateRobotsTxt } from '@/lib/publishing/seo-generator';

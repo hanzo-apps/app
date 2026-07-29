@@ -1,5 +1,6 @@
-import classNames from "classnames";
+'use client';
 
+import { YStack } from '@hanzo/gui';
 function Loading({
   overlay = true,
   className,
@@ -8,11 +9,8 @@ function Loading({
   className?: string;
 }) {
   return (
-    <div
-      className={classNames("", {
-        "absolute left-0 top-0 h-full w-full flex items-center justify-center z-20 bg-black/50 rounded-full":
-          overlay,
-      })}
+    <YStack
+      {...{ position: overlay ? "absolute" : undefined, left: overlay ? "$0" : undefined, top: overlay ? "$0" : undefined, height: overlay ? "100%" : undefined, width: overlay ? "100%" : undefined, alignItems: overlay ? "center" : undefined, justifyContent: overlay ? "center" : undefined, zIndex: overlay ? 20 : undefined, backgroundColor: overlay ? "black" : undefined, borderRadius: overlay ? "$10" : undefined }}
     >
       <svg
         className={`size-5 animate-spin text-white ${className}`}
@@ -34,7 +32,7 @@ function Loading({
           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
         ></path>
       </svg>
-    </div>
+    </YStack>
   );
 }
 

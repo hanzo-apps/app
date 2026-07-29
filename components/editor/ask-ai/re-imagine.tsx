@@ -1,3 +1,6 @@
+'use client';
+
+import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
 import { useState } from "react";
 import { Paintbrush } from "lucide-react";
 import { toast, Button, Popover, PopoverContent, PopoverTrigger, Input } from '@hanzo/ui';
@@ -56,41 +59,41 @@ export function ReImagine({
             variant="ghost"
             aria-label="Redesign from a URL"
             title="Redesign: recreate an existing site's look from its URL"
-            className="rounded-full text-muted-foreground hover:bg-accent hover:text-foreground"
+            borderRadius="$10" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
           >
-            <Paintbrush className="size-4" />
+            <Paintbrush size={16} />
           </Button>
         </PopoverTrigger>
         <PopoverContent
           side="top"
           align="start"
           sideOffset={8}
-          className="min-w-xs overflow-hidden p-0 text-center"
+          overflow="hidden" padding="$0" textAlign="center" className="min-w-xs"
         >
-          <header className="bg-muted/40 p-6 border-b border-border">
-            <div className="flex items-center justify-center -space-x-4 mb-3">
-              <div className="size-9 rounded-full bg-muted border border-border shadow-2xs flex items-center justify-center text-xl">
+          <YStack backgroundColor="$color3" padding="$5" borderBottomWidth={1} borderColor="$borderColor">
+            <XStack alignItems="center" justifyContent="center" columnGap="$4" marginBottom="$3">
+              <SizableText width={36} height={36} borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$7" display="flex" flexDirection="row">
                 🎨
-              </div>
-              <div className="size-11 rounded-full bg-secondary border border-border shadow-lg flex items-center justify-center text-2xl z-2">
+              </SizableText>
+              <SizableText width={44} height={44} borderRadius="$10" backgroundColor="$color4" borderWidth={1} borderColor="$borderColor" elevation={4} alignItems="center" justifyContent="center" fontSize="$8" zIndex={2} display="flex" flexDirection="row">
                 🥳
-              </div>
-              <div className="size-9 rounded-full bg-muted border border-border shadow-2xs flex items-center justify-center text-xl">
+              </SizableText>
+              <SizableText width={36} height={36} borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$7" display="flex" flexDirection="row">
                 💎
-              </div>
-            </div>
-            <p className="text-xl font-medium text-foreground">
+              </SizableText>
+            </XStack>
+            <Paragraph fontSize="$7" fontWeight="500" color="$color">
               Redesign your Site!
-            </p>
-            <p className="text-sm text-muted-foreground mt-1.5">
+            </Paragraph>
+            <Paragraph fontSize="$3" color="$color11" marginTop="$1.5">
               Try our new Redesign feature to give your site a fresh look.
-            </p>
-          </header>
-          <main className="space-y-4 p-6">
+            </Paragraph>
+          </YStack>
+          <YStack rowGap="$4" padding="$5">
             <div>
-              <p className="text-sm text-muted-foreground mb-2">
+              <Paragraph fontSize="$3" color="$color11" marginBottom="$2">
                 Enter your website URL to get started:
-              </p>
+              </Paragraph>
               <Input
                 type="text"
                 placeholder="https://example.com"
@@ -108,15 +111,15 @@ export function ReImagine({
                   }
                   setUrl(inputUrl);
                 }}
-                className="text-left"
-              />
+                textAlign="left"
+  />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground mb-2">
+              <Paragraph fontSize="$3" color="$color11" marginBottom="$2">
                 Then, let&apos;s redesign it!
-              </p>
+              </Paragraph>
               <Button
-                className="relative w-full"
+                position="relative" width="100%"
                 onClick={handleClick}
               >
                 {isLoading ? (
@@ -124,17 +127,17 @@ export function ReImagine({
                     <Loading
                       overlay={false}
                       className="ml-2 size-4 animate-spin"
-                    />
+  />
                     Fetching your site...
                   </>
                 ) : (
                   <>
-                    Redesign <Paintbrush className="size-4" />
+                    Redesign <Paintbrush size={16} />
                   </>
                 )}
               </Button>
             </div>
-          </main>
+          </YStack>
         </PopoverContent>
       </form>
     </Popover>

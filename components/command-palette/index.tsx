@@ -18,6 +18,7 @@
  * to drive the preview panel from the highlighted row).
  */
 
+import { XStack, SizableText, YStack, H3, Anchor } from '@hanzo/gui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, Dialog, DialogContent, DialogTitle } from '@hanzo/ui';
@@ -159,23 +160,23 @@ export function CommandPalette({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="max-w-2xl overflow-hidden border-border bg-card p-0 text-foreground gap-0"
+        maxWidth={672} overflow="hidden" borderColor="$borderColor" backgroundColor="$background" padding="$0" color="$color" gap="$0"
       >
-        <DialogTitle className="sr-only">Search projects and commands</DialogTitle>
+        <DialogTitle position="absolute" width={1} height={1} overflow="hidden">Search projects and commands</DialogTitle>
         <Command
           value={activeValue}
           onValueChange={setActiveValue}
           onKeyDown={handleKeyDown}
-          className="bg-transparent [&_[cmdk-group-heading]]:text-muted-foreground"
+          backgroundColor="transparent" className="[&_[cmdk-group-heading]]:text-muted-foreground"
         >
           <CommandInput
             placeholder="Search projects and commands…"
-            className="text-foreground placeholder:text-muted-foreground"
-          />
-          <div className="flex min-h-[320px]">
+            color="$color" placeholderTextColor="$color11"
+  />
+          <XStack minHeight={320}>
             {/* Left: results */}
-            <CommandList className="max-h-[320px] w-1/2 border-r border-border py-1">
-              <CommandEmpty className="text-muted-foreground">No results found.</CommandEmpty>
+            <CommandList maxHeight={320} width="50%" borderRightWidth={1} borderColor="$borderColor" paddingVertical="$1">
+              <CommandEmpty color="$color11">No results found.</CommandEmpty>
 
               {projects.length > 0 && (
                 <CommandGroup heading="Recent projects">
@@ -184,10 +185,10 @@ export function CommandPalette({
                       key={p.slug}
                       value={`project:${p.slug}`}
                       onSelect={() => openProject(p)}
-                      className="gap-2 text-foreground data-[selected=true]:bg-accent data-[selected=true]:text-foreground"
+                      gap="$2" color="$color" className="data-[selected=true]:bg-accent data-[selected=true]:text-foreground"
                     >
-                      <FolderOpen className="h-4 w-4 text-muted-foreground" />
-                      <span className="truncate">{p.name}</span>
+                      <FolderOpen size={16} color="$color11" />
+                      <SizableText numberOfLines={1}>{p.name}</SizableText>
                       <StatusDot status={p.status} className="ml-auto" />
                     </CommandItem>
                   ))}
@@ -203,7 +204,7 @@ export function CommandPalette({
                       onOpenChange(false);
                       router.push(c.route);
                     }}
-                    className="gap-2 text-foreground data-[selected=true]:bg-accent data-[selected=true]:text-foreground"
+                    gap="$2" color="$color" className="data-[selected=true]:bg-accent data-[selected=true]:text-foreground"
                   >
                     <c.icon className="h-4 w-4 text-muted-foreground" />
                     <span>{c.label}</span>
@@ -213,27 +214,27 @@ export function CommandPalette({
             </CommandList>
 
             {/* Right: live preview of the highlighted project */}
-            <div className="w-1/2">
+            <YStack width="50%">
               <PreviewPanel project={activeProject} authorName={user?.name || user?.fullname || '—'} />
-            </div>
-          </div>
+            </YStack>
+          </XStack>
 
           {/* Footer hints */}
-          <div className="flex items-center gap-4 border-t border-border px-3 py-2 text-[11px] text-muted-foreground">
-            <span className="flex items-center gap-1.5">
+          <SizableText alignItems="center" gap="$4" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$2" fontSize={11} color="$color11" display="flex" flexDirection="row">
+            <SizableText alignItems="center" gap="$1.5">
               Open published project
               <kbd className="inline-flex items-center gap-0.5 rounded border border-border bg-muted px-1 py-0.5">
-                <CommandIcon className="h-3 w-3" />
-                <CornerDownLeft className="h-3 w-3" />
+                <CommandIcon size={12} />
+                <CornerDownLeft size={12} />
               </kbd>
-            </span>
-            <span className="flex items-center gap-1.5">
+            </SizableText>
+            <SizableText alignItems="center" gap="$1.5">
               Open project
               <kbd className="inline-flex items-center rounded border border-border bg-muted px-1 py-0.5">
-                <CornerDownLeft className="h-3 w-3" />
+                <CornerDownLeft size={12} />
               </kbd>
-            </span>
-          </div>
+            </SizableText>
+          </SizableText>
         </Command>
       </DialogContent>
     </Dialog>
@@ -243,21 +244,21 @@ export function CommandPalette({
 function StatusDot({ status, className }: { status: string; className?: string }) {
   const st = statusOf(status);
   return (
-    <span
-      className={`inline-flex items-center gap-1 text-[10px] uppercase tracking-wide ${st.text} ${className ?? ''}`}
+    <SizableText
+      alignItems="center" gap="$1" fontSize={10} textTransform="uppercase" letterSpacing={0.4} className={`${st.text} ${className ?? ''}`}
     >
-      <Circle className={`h-1.5 w-1.5 ${st.dot.replace('bg-', 'fill-')}`} />
+      <Circle size={6} />
       {st.label}
-    </span>
+    </SizableText>
   );
 }
 
 function PreviewPanel({ project, authorName }: { project: PaletteProject | null; authorName: string }) {
   if (!project) {
     return (
-      <div className="flex h-full items-center justify-center p-6 text-center text-sm text-muted-foreground">
+      <SizableText height="100%" alignItems="center" justifyContent="center" padding="$5" textAlign="center" fontSize="$3" color="$color11" display="flex" flexDirection="row">
         Highlight a project to preview it.
-      </div>
+      </SizableText>
     );
   }
   const opened = lastOpenedAt(project.slug || project.id);
@@ -269,34 +270,34 @@ function PreviewPanel({ project, authorName }: { project: PaletteProject | null;
     ['Last opened', opened ? relativeTime(new Date(opened).toISOString()) : '—'],
   ];
   return (
-    <div className="flex h-full flex-col p-4">
+    <YStack height="100%" padding="$4">
       {/* Thumbnail — the REAL live site (inert, sandboxed) for a published
           project; an honest monogram tile otherwise. */}
-      <div className="relative mb-3 overflow-hidden rounded-lg border border-border">
+      <YStack position="relative" marginBottom="$3" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$borderColor">
         <ProjectThumb name={project.name} liveUrl={project.liveUrl} />
-        <span className="absolute bottom-2 left-2 truncate rounded bg-black/60 px-1.5 py-0.5 font-mono text-[10px] text-white/60 backdrop-blur-sm">
+        <SizableText position="absolute" bottom="$2" left="$2" numberOfLines={1} borderRadius="$2" backgroundColor="black" paddingHorizontal="$1.5" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} color="white" backdropFilter="blur(4px)">
           {project.slug}
-        </span>
-      </div>
-      <h3 className="truncate text-sm font-medium text-foreground">{project.name}</h3>
-      <dl className="mt-3 space-y-1.5">
+        </SizableText>
+      </YStack>
+      <H3 numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{project.name}</H3>
+      <YStack marginTop="$3" rowGap="$1.5">
         {rows.map(([k, v]) => (
-          <div key={k} className="flex items-center justify-between gap-2 text-xs">
-            <dt className="text-muted-foreground">{k}</dt>
-            <dd className="truncate text-foreground">{v}</dd>
-          </div>
+          <SizableText key={k} alignItems="center" justifyContent="space-between" gap="$2" fontSize="$1" display="flex" flexDirection="row">
+            <SizableText color="$color11">{k}</SizableText>
+            <SizableText numberOfLines={1} color="$color">{v}</SizableText>
+          </SizableText>
         ))}
-      </dl>
-      <a
+      </YStack>
+      <Anchor
         href={publishedUrl(project.slug)}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-auto inline-flex items-center gap-1 pt-3 font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+        marginTop="auto" alignItems="center" gap="$1" paddingTop="$3" fontFamily="$mono" fontSize={11} color="$color11" hoverStyle={{ color: "$color" }}
       >
         {project.slug}.hanzo.app
-        <ArrowUpRight className="h-3 w-3" />
-      </a>
-    </div>
+        <ArrowUpRight size={12} />
+      </Anchor>
+    </YStack>
   );
 }
 

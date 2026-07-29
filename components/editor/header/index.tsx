@@ -1,3 +1,6 @@
+'use client';
+
+import { XStack, SizableText, YStack } from '@hanzo/gui';
 import { Children, ReactNode, useState } from "react";
 import Link from "next/link";
 import {
@@ -12,13 +15,11 @@ import {
   Smartphone,
 } from "lucide-react";
 
-import { Popover, PopoverContent, PopoverTrigger } from '@hanzo/ui';
+import { Popover, PopoverContent, PopoverTrigger, Button } from '@hanzo/ui';
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { PagePanel } from "@/components/editor/page-navigator";
 import { WorkspaceMenu } from "@/components/editor/workspace-menu";
 import type { Page, Project } from "@/types";
-import classNames from "classnames";
-
 // The ONE view switcher (Lovable's grouped segmented control). "Chat" only means
 // anything on mobile, where a single pane shows at a time — on desktop the chat
 // pane is always docked on the left, so Preview/Code drive the RIGHT pane and
@@ -105,136 +106,119 @@ export function Header({
   const secondary = actions.slice(0, -1);
 
   return (
-    <header className="z-20 flex items-center gap-2 bg-card px-3 py-2 sm:gap-3 lg:grid lg:grid-cols-[auto_1fr_auto] lg:px-4">
+    <XStack zIndex={20} alignItems="center" gap="$2" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" $sm={{ gap: "$3" }} $lg={{ paddingHorizontal: "$4" }}>
       {/* LEFT — the workspace menu (identity/home anchor) + version history.
           Everything about who/where you are lives in the menu. */}
-      <div className="flex shrink-0 items-center gap-1.5">
+      <XStack flexShrink={0} alignItems="center" gap="$1.5">
         {/* The ONE Hanzo block-H (mark from @hanzo/logo MARK_PATHS, via the
             shared HanzoLogo). Home anchor, top-left — the IDE's brand corner. */}
         <Link
           href="/"
           aria-label="Hanzo home"
-          className="mr-0.5 flex size-8 items-center justify-center rounded-lg text-foreground transition-colors duration-150 hover:bg-foreground/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
+        ><SizableText marginRight="$0.5" width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" color="$color" hoverStyle={{ backgroundColor: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}>
           <HanzoLogo className="size-5" />
-        </Link>
-        <div className="min-w-0">
+        </SizableText></Link>
+        <YStack minWidth={0}>
           <WorkspaceMenu project={project} onRenamed={onRenamed} />
-        </div>
+        </YStack>
         {/* History / rollback — toggles the version-history panel over the chat
             pane (item 10). Chat is the default; this flips to the git timeline. */}
         {onToggleHistory && (
-          <button
+          <Button
             type="button"
             onClick={onToggleHistory}
             title={historyOpen ? "Back to chat" : "Version history"}
             aria-label={historyOpen ? "Back to chat" : "Version history"}
             aria-pressed={Boolean(historyOpen)}
-            className={classNames(
-              "hidden size-8 items-center justify-center rounded-lg ring-1 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:flex",
-              historyOpen
-                ? "bg-muted text-foreground ring-foreground/25"
-                : "text-muted-foreground ring-border hover:bg-foreground/[0.08] hover:text-foreground",
-            )}
+            display="none" width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" focusVisibleStyle={{ outlineWidth: 0 }} {...{ backgroundColor: historyOpen ? "$color3" : undefined, color: historyOpen ? "$color" : "$color11", hoverStyle: historyOpen ? undefined : {"backgroundColor":"$color","color":"$color"} }}
           >
-            <History className="size-4" />
-          </button>
+            <History size={16} />
+          </Button>
         )}
-      </div>
+      </XStack>
 
       {/* CENTER — view switcher + device switcher + refresh + page selector +
           open-in-new-tab, one control cluster. */}
-      <div className="flex items-center gap-2 lg:justify-self-center">
-        <div
+      <XStack alignItems="center" gap="$2" className="lg:justify-self-center">
+        <XStack
           role="tablist"
           aria-label="Editor view"
-          className="flex shrink-0 items-center gap-0.5 rounded-lg bg-foreground/[0.04] p-0.5 ring-1 ring-border"
+          flexShrink={0} alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color" padding="$0.5"
         >
           {TABS.map((item) => {
             const active = tab === item.value;
             return (
-              <button
+              <Button
                 key={item.value}
                 type="button"
                 role="tab"
                 aria-selected={active}
                 title={item.label}
                 onClick={() => onNewTab(item.value)}
-                className={classNames(
-                  "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                  "mobileOnly" in item && item.mobileOnly ? "lg:hidden" : "",
-                  active
-                    ? "bg-muted text-foreground shadow-sm"
-                    : "text-muted-foreground hover:bg-foreground/[0.08] hover:text-foreground"
-                )}
+                alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$1.5" fontSize="$3" fontWeight="500" focusVisibleStyle={{ outlineWidth: 0 }} {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, backgroundColor: active ? "$color3" : undefined, color: active ? "$color" : "$color11", elevation: active ? 1 : undefined, hoverStyle: active ? undefined : {"backgroundColor":"$color","color":"$color"} }}
               >
                 <item.icon className="size-4 shrink-0" />
-                <span className="hidden sm:inline">{item.label}</span>
-              </button>
+                <SizableText display="none">{item.label}</SizableText>
+              </Button>
             );
           })}
-        </div>
+        </XStack>
 
         {/* Preview-frame controls — device, refresh, page selector, external.
             Hidden below `md` where there's no room. */}
-        <div className="hidden items-center gap-2 md:flex">
-          <div
+        <YStack display="none" alignItems="center" gap="$2">
+          <XStack
             role="tablist"
             aria-label="Preview device"
-            className="flex items-center gap-0.5 rounded-lg bg-foreground/[0.04] p-0.5 ring-1 ring-border"
+            alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color" padding="$0.5"
           >
             {DEVICES.map((d) => {
               const active = device === d.name;
               return (
-                <button
+                <Button
                   key={d.name}
                   type="button"
                   role="tab"
                   aria-selected={active}
                   title={`${d.name[0].toUpperCase()}${d.name.slice(1)} preview`}
                   onClick={() => setDevice(d.name as "desktop" | "mobile")}
-                  className={classNames(
-                    "flex size-7 items-center justify-center rounded-md text-sm transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                    active
-                      ? "bg-muted text-foreground shadow-sm"
-                      : "text-muted-foreground hover:bg-foreground/[0.08] hover:text-foreground"
-                  )}
+                  width={28} height={28} alignItems="center" justifyContent="center" borderRadius="$3" fontSize="$3" focusVisibleStyle={{ outlineWidth: 0 }} {...{ backgroundColor: active ? "$color3" : undefined, color: active ? "$color" : "$color11", elevation: active ? 1 : undefined, hoverStyle: active ? undefined : {"backgroundColor":"$color","color":"$color"} }}
                 >
                   <d.icon className="size-4" />
-                </button>
+                </Button>
               );
             })}
-          </div>
-          <button
+          </XStack>
+          <Button
             type="button"
             onClick={handleRefreshIframe}
             title="Refresh preview"
-            className="flex size-8 items-center justify-center rounded-lg text-muted-foreground ring-1 ring-border transition-colors duration-150 hover:bg-foreground/[0.08] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" color="$color11" hoverStyle={{ backgroundColor: "$color", color: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
           >
-            <RefreshCcw className="size-3.5" />
-          </button>
+            <RefreshCcw size={14} />
+          </Button>
 
           {/* Page browser — search + folder-grouped list of every page in the
               project (not just index.html). The working page is highlighted. */}
           {pages.length > 0 && (
             <Popover open={pageMenuOpen} onOpenChange={setPageMenuOpen}>
               <PopoverTrigger asChild>
-                <button
+                <Button
                   type="button"
                   title="Browse pages"
                   aria-label="Browse pages"
-                  className="flex max-w-[12rem] items-center gap-1.5 rounded-lg bg-foreground/[0.04] px-2.5 py-1.5 text-sm text-foreground ring-1 ring-border transition-colors duration-150 hover:bg-foreground/[0.08] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  maxWidth="12rem" alignItems="center" gap="$1.5" borderRadius="$5" backgroundColor="$color" paddingHorizontal="$2.5" paddingVertical="$1.5" fontSize="$3" color="$color" hoverStyle={{ backgroundColor: "$color", color: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
                 >
-                  <span className="truncate font-mono text-xs">
+                  <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1">
                     {currentPage}
-                  </span>
-                  <ChevronDown className="size-3.5 shrink-0 text-muted-foreground" />
-                </button>
+                  </SizableText>
+                  <ChevronDown size={14} color="$color11" />
+                </Button>
               </PopoverTrigger>
               <PopoverContent
                 align="center"
                 sideOffset={6}
-                className="w-64 overflow-hidden p-0"
+                width={256} overflow="hidden" padding="$0"
               >
                 <PagePanel
                   pages={pages}
@@ -242,34 +226,34 @@ export function Header({
                   onSelectPage={onSelectPage}
                   onClose={() => setPageMenuOpen(false)}
                   autoFocus
-                />
+  />
               </PopoverContent>
             </Popover>
           )}
 
-          <button
+          <Button
             type="button"
             onClick={onOpenExternal}
             title="Open preview in a new tab"
             aria-label="Open preview in a new tab"
-            className="flex size-8 items-center justify-center rounded-lg text-muted-foreground ring-1 ring-border transition-colors duration-150 hover:bg-foreground/[0.08] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" color="$color11" hoverStyle={{ backgroundColor: "$color", color: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
           >
-            <ExternalLink className="size-3.5" />
-          </button>
-        </div>
-      </div>
+            <ExternalLink size={14} />
+          </Button>
+        </YStack>
+      </XStack>
 
       {/* RIGHT — the solid Publish primary is pinned `shrink-0` OUTSIDE the
           scroll track so it always paints fully; the secondary actions
           (Share · Load · Push) scroll within their own track on tight widths. */}
-      <div className="flex min-w-0 flex-1 items-center justify-end gap-1.5 lg:flex-none lg:gap-2">
+      <XStack minWidth={0} flex={1} alignItems="center" justifyContent="flex-end" gap="$1.5" $lg={{ flex: 0, gap: "$2" }}>
         {secondary.length > 0 && (
-          <div className="flex min-w-0 items-center gap-1.5 overflow-x-auto lg:gap-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <XStack minWidth={0} alignItems="center" gap="$1.5" overflow="scroll" $lg={{ gap: "$2" }} className="[scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {secondary}
-          </div>
+          </XStack>
         )}
-        {primary && <div className="shrink-0">{primary}</div>}
-      </div>
-    </header>
+        {primary && <YStack flexShrink={0}>{primary}</YStack>}
+      </XStack>
+    </XStack>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { SizableText, XStack, YStack } from '@hanzo/gui';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { Project, VirtualFile } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';
 import { logger } from '@/lib/utils';
@@ -337,38 +338,38 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
   const trimmedSnippet = focusPreviewSnippet?.trim() ?? '';
 
   const focusContextHint = focusContext ? (
-    <div
+    <SizableText
       id="focus-context-hint"
-      className="rounded-md border border-dashed border-primary/40 bg-primary/5 px-3 py-2 text-xs text-muted-foreground shadow-sm"
+      borderRadius="$3" borderWidth={1} borderStyle="dashed" borderColor="$color12" backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$2" fontSize="$1" color="$color11" elevation={1} display="flex" flexDirection="column"
     >
-        <div className="flex flex-wrap items-center justify-between gap-2 text-foreground">
-          <div className="flex items-center gap-2">
-            <span className="font-medium text-xs uppercase tracking-wide text-primary">context</span>
-            <span className="text-[10px] uppercase tracking-wide text-muted-foreground">included in next message</span>
-          </div>
+        <SizableText flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$2" color="$color" display="flex" flexDirection="row">
+          <XStack alignItems="center" gap="$2">
+            <SizableText fontWeight="500" fontSize="$1" textTransform="uppercase" letterSpacing={0.4} color="$color12">context</SizableText>
+            <SizableText fontSize={10} textTransform="uppercase" letterSpacing={0.4} color="$color11">included in next message</SizableText>
+          </XStack>
           <Button
             size="sm"
             variant="ghost"
-            className="h-6 px-2 text-xs"
+            height="$5" paddingHorizontal="$2" fontSize="$1"
             onClick={() => setFocusContext(null)}
             title="Clear focus context"
           >
             Clear
           </Button>
-        </div>
-        <div className="mt-2 space-y-2">
+        </SizableText>
+        <YStack marginTop="$2" rowGap="$2">
         {focusContext.domPath && (
-          <div className="text-[11px] font-mono text-muted-foreground/80 break-all leading-snug">
+          <SizableText fontSize={11} fontFamily="$mono" color="$color11" wordBreak="break-all" lineHeight={1.375} display="flex" flexDirection="column">
             {focusContext.domPath}
-          </div>
+          </SizableText>
         )}
         {trimmedSnippet && (
-          <pre className="max-h-24 overflow-auto rounded border border-border/50 bg-background/90 px-2 py-1 text-[11px] text-foreground leading-relaxed">
+          <SizableText maxHeight="$12" overflow="scroll" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2" paddingVertical="$1" fontSize={11} color="$color" lineHeight={1.625} fontFamily="$mono" whiteSpace="pre">
             <code>{trimmedSnippet}</code>
-          </pre>
+          </SizableText>
         )}
-      </div>
-    </div>
+      </YStack>
+    </SizableText>
   ) : null;
 
   useEffect(() => {
@@ -1154,24 +1155,24 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
 
   // Desktop header content: Deployment selector + Settings
   const desktopHeaderContent = (
-    <div className="flex items-center gap-3">
+    <XStack alignItems="center" gap="$3">
       {/* Deployment selector for backend context */}
       <DeploymentSelector
         projectId={project.id}
         selectedDeploymentId={selectedDeploymentId}
         onDeploymentChange={handleDeploymentChange}
-      />
+  />
 
       {/* Project settings button */}
       <Button
         variant="outline"
         size="sm"
-        className="h-8 px-3 flex items-center gap-2"
+        height="$6" paddingHorizontal="$3" alignItems="center" gap="$2"
         onClick={() => setShowProjectSettingsModal(true)}
         title="Project Settings"
       >
-        <Settings2 className="h-4 w-4" />
-        <span className="text-sm hidden lg:inline">Project</span>
+        <Settings2 size={16} />
+        <SizableText fontSize="$3" display="none">Project</SizableText>
       </Button>
 
       {/* Settings popover */}
@@ -1180,40 +1181,40 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
           <Button
             variant="outline"
             size="sm"
-            className="h-8 px-3 flex items-center gap-2"
+            height="$6" paddingHorizontal="$3" alignItems="center" gap="$2"
             title="Project cost and settings"
           >
             {shouldShowCosts && (
-              <span className="text-sm font-medium">
+              <SizableText fontSize="$3" fontWeight="500">
                 ${projectCost.toFixed(3)}
-              </span>
+              </SizableText>
             )}
-            <Settings className="h-4 w-4" />
+            <Settings size={16} />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[460px] max-h-[min(720px,calc(100vh-5rem))] overflow-hidden flex flex-col" align="end">
+        <PopoverContent width={460} maxHeight="min(720px,calc(100vh-5rem))" overflow="hidden" flexDirection="column" align="end">
           <SettingsPanel />
         </PopoverContent>
       </Popover>
-    </div>
+    </XStack>
   );
 
   const mobileMenuContent = (
-    <div className="space-y-2">
+    <YStack rowGap="$2">
       {shouldShowCosts && (
-        <div className="pb-2 border-b border-border/50">
-          <span className="text-sm font-medium">
+        <YStack paddingBottom="$2" borderBottomWidth={1} borderColor="$borderColor">
+          <SizableText fontSize="$3" fontWeight="500">
             Project cost: ${projectCost.toFixed(projectCost >= 10 ? 2 : 3)}
-          </span>
-        </div>
+          </SizableText>
+        </YStack>
       )}
       <Button
         variant="outline"
         size="sm"
-        className="w-full justify-start"
+        width="100%" justifyContent="flex-start"
         onClick={() => setShowProjectSettingsModal(true)}
       >
-        <Settings2 className="h-4 w-4 mr-2" />
+        <Settings2 size={16} />
         Project Settings
       </Button>
       <Popover>
@@ -1221,22 +1222,22 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
           <Button
             variant="outline"
             size="sm"
-            className="w-full justify-start"
+            width="100%" justifyContent="flex-start"
           >
-            <Settings className="h-4 w-4 mr-2" />
+            <Settings size={16} />
             Settings
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[460px] max-w-[calc(100vw-2rem)] max-h-[min(720px,calc(100vh-5rem))] overflow-hidden flex flex-col" align="start">
+        <PopoverContent width={460} maxWidth="calc(100vw-2rem)" maxHeight="min(720px,calc(100vh-5rem))" overflow="hidden" flexDirection="column" align="start">
           <SettingsPanel />
         </PopoverContent>
       </Popover>
-    </div>
+    </YStack>
   );
 
   return (
     <>
-      <div className="h-screen flex flex-col">
+      <YStack height="100%">
         {/* Header */}
         <AppHeader
           leftText={project.name}
@@ -1245,28 +1246,24 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
           mobileMenuContent={mobileMenuContent}
           desktopOnlyContent={desktopHeaderContent}
           mobileVisibleActions={isDirty ? ['save'] : []}
-        />
+  />
 
         {/* Desktop Workspace */}
-        <div className="hidden md:flex flex-1 overflow-hidden bg-background">
+        <YStack display="none" flex={1} overflow="hidden" backgroundColor="$background">
           {/* Left sidebar for panel toggles */}
-          <div className="w-10 bg-muted/70 border-r border-border flex flex-col items-center py-3 gap-1.5">
+          <YStack width="$7" backgroundColor="$color3" borderRightWidth={1} borderColor="$borderColor" alignItems="center" paddingVertical="$3" gap="$1.5">
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
-                  className={`h-5 w-5 px-1 rounded-sm flex items-center justify-center transition-all ${
-                    showChat
-                      ? 'shadow-sm'
-                      : 'bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                  }`}
+                <Button
+                  height="$4.5" width="$4.5" paddingHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ elevation: showChat ? 1 : undefined, backgroundColor: showChat ? undefined : "transparent", color: showChat ? undefined : "$color11", hoverStyle: showChat ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
                   style={{
                     backgroundColor: showChat ? 'var(--brand-accent)' : undefined,
                     color: showChat ? 'white' : undefined
                   }}
                   onClick={() => setShowChat(!showChat)}
                 >
-                  <MessageSquare className="h-3.5 w-3.5" />
-                </button>
+                  <MessageSquare size={14} />
+                </Button>
               </TooltipTrigger>
               <TooltipContent side="right">
                 <p>Chat</p>
@@ -1275,20 +1272,16 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
-                  className={`h-5 w-5 px-1 rounded-sm flex items-center justify-center transition-all ${
-                    showFiles
-                      ? 'shadow-sm'
-                      : 'bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                  }`}
+                <Button
+                  height="$4.5" width="$4.5" paddingHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ elevation: showFiles ? 1 : undefined, backgroundColor: showFiles ? undefined : "transparent", color: showFiles ? undefined : "$color11", hoverStyle: showFiles ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
                   style={{
                     backgroundColor: showFiles ? 'var(--brand-accent)' : undefined,
                     color: showFiles ? 'white' : undefined
                   }}
                   onClick={() => setShowFiles(!showFiles)}
                 >
-                  <FolderTree className="h-3.5 w-3.5" />
-                </button>
+                  <FolderTree size={14} />
+                </Button>
               </TooltipTrigger>
               <TooltipContent side="right">
                 <p>File Explorer</p>
@@ -1297,20 +1290,16 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
           
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
-                  className={`h-5 w-5 px-1 rounded-sm flex items-center justify-center transition-all ${
-                    showEditor 
-                      ? 'shadow-sm' 
-                      : 'bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                  }`}
+                <Button
+                  height="$4.5" width="$4.5" paddingHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ elevation: showEditor ? 1 : undefined, backgroundColor: showEditor ? undefined : "transparent", color: showEditor ? undefined : "$color11", hoverStyle: showEditor ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
                   style={{
                     backgroundColor: showEditor ? 'var(--brand-accent)' : undefined,
                     color: showEditor ? 'white' : undefined
                   }}
                   onClick={() => setShowEditor(!showEditor)}
                 >
-                  <Code2 className="h-3.5 w-3.5" />
-                </button>
+                  <Code2 size={14} />
+                </Button>
               </TooltipTrigger>
               <TooltipContent side="right">
                 <p>Code Editor</p>
@@ -1319,20 +1308,16 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
           
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
-                  className={`h-5 w-5 mx-1 rounded-sm flex items-center justify-center transition-all ${
-                    showPreview
-                      ? 'shadow-sm'
-                      : 'bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                  }`}
+                <Button
+                  height="$4.5" width="$4.5" marginHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ elevation: showPreview ? 1 : undefined, backgroundColor: showPreview ? undefined : "transparent", color: showPreview ? undefined : "$color11", hoverStyle: showPreview ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
                   style={{
                     backgroundColor: showPreview ? 'var(--brand-accent)' : undefined,
                     color: showPreview ? 'white' : undefined
                   }}
                   onClick={() => setShowPreview(!showPreview)}
                 >
-                  <Eye className="h-3.5 w-3.5" />
-                </button>
+                  <Eye size={14} />
+                </Button>
               </TooltipTrigger>
               <TooltipContent side="right">
                 <p>Preview</p>
@@ -1341,20 +1326,16 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
-                  className={`h-5 w-5 px-1 rounded-sm flex items-center justify-center transition-all ${
-                    showCheckpoints
-                      ? 'shadow-sm'
-                      : 'bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                  }`}
+                <Button
+                  height="$4.5" width="$4.5" paddingHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ elevation: showCheckpoints ? 1 : undefined, backgroundColor: showCheckpoints ? undefined : "transparent", color: showCheckpoints ? undefined : "$color11", hoverStyle: showCheckpoints ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
                   style={{
                     backgroundColor: showCheckpoints ? 'var(--brand-accent)' : undefined,
                     color: showCheckpoints ? 'white' : undefined
                   }}
                   onClick={() => setShowCheckpoints(!showCheckpoints)}
                 >
-                  <History className="h-3.5 w-3.5" />
-                </button>
+                  <History size={14} />
+                </Button>
               </TooltipTrigger>
               <TooltipContent side="right">
                 <p>Checkpoints</p>
@@ -1363,29 +1344,25 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
-                  className={`h-5 w-5 px-1 rounded-sm flex items-center justify-center transition-all ${
-                    showDebugPanel
-                      ? 'bg-foreground shadow-sm'
-                      : 'bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                  }`}
+                <Button
+                  height="$4.5" width="$4.5" paddingHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ backgroundColor: showDebugPanel ? "$color" : "transparent", elevation: showDebugPanel ? 1 : undefined, color: showDebugPanel ? undefined : "$color11", hoverStyle: showDebugPanel ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
                   style={{
                     color: showDebugPanel ? 'var(--background)' : undefined
                   }}
                   onClick={() => setShowDebugPanel(!showDebugPanel)}
                 >
-                  <Bug className="h-3.5 w-3.5" />
-                </button>
+                  <Bug size={14} />
+                </Button>
               </TooltipTrigger>
               <TooltipContent side="right">
                 <p>Debug Events</p>
               </TooltipContent>
             </Tooltip>
 
-          </div>
+          </YStack>
         
           {/* Main content area */}
-          <div className="flex-1 p-2 overflow-hidden" data-tour-id="workspace-panels">
+          <YStack flex={1} padding="$2" overflow="hidden" data-tour-id="workspace-panels">
           <ResizablePanelGroup direction="horizontal" autoSaveId="workspace-layout">
             {/* Column 1: Chat Panel */}
             {showChat && (
@@ -1417,7 +1394,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   onClose={() => setShowChat(false)}
                   supportsVision={supportsVision}
                   providerReady={providerReady}
-                />
+  />
               </ResizablePanel>
             )}
             {showChat && (showFiles || showEditor || showPreview || showCheckpoints || showDebugPanel) && (
@@ -1432,7 +1409,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                 defaultSize={defaultSizes.files}
                 minSize={14}
               >
-                <div className="h-full border border-border rounded-lg shadow-sm overflow-hidden relative" style={{ background: `linear-gradient(0deg, rgb(var(--tint) / 0.01), rgb(var(--tint) / 0.01)), var(--card)`, minWidth: '240px' }}>
+                <YStack height="100%" borderWidth={1} borderColor="$borderColor" borderRadius="$5" elevation={1} overflow="hidden" position="relative" style={{ background: `linear-gradient(0deg, rgb(var(--tint) / 0.01), rgb(var(--tint) / 0.01)), var(--card)`, minWidth: '240px' }}>
                       <FileExplorer
                         projectId={project.id}
                         onFileSelect={handleFileSelect}
@@ -1440,8 +1417,8 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                         entryPoint={entryPoint}
                         onSetEntryPoint={handleSetEntryPoint}
                         onAddPromptFile={handleAddPromptFile}
-                      />
-                    </div>
+  />
+                    </YStack>
                 </ResizablePanel>
             )}
             {showFiles && (showEditor || showPreview || showCheckpoints || showDebugPanel) && (
@@ -1456,14 +1433,14 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                 defaultSize={defaultSizes.editor}
                 minSize={20}
               >
-                <div className="h-full border border-border rounded-lg shadow-sm overflow-hidden relative" style={{ background: `linear-gradient(0deg, rgb(var(--tint) / 0.01), rgb(var(--tint) / 0.01)), var(--card)`, minWidth: '240px' }}>
+                <YStack height="100%" borderWidth={1} borderColor="$borderColor" borderRadius="$5" elevation={1} overflow="hidden" position="relative" style={{ background: `linear-gradient(0deg, rgb(var(--tint) / 0.01), rgb(var(--tint) / 0.01)), var(--card)`, minWidth: '240px' }}>
                       <MultiTabEditor
                         projectId={project.id}
                         runtime={project.settings?.runtime}
                         onFilesChange={handleFilesChange}
                         onClose={() => setShowEditor(false)}
-                      />
-                    </div>
+  />
+                    </YStack>
                 </ResizablePanel>
             )}
             {showEditor && (showPreview || showCheckpoints || showDebugPanel) && (
@@ -1478,7 +1455,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                 defaultSize={defaultSizes.preview}
                 minSize={20}
               >
-                <div className="h-full border border-border rounded-lg shadow-sm overflow-hidden relative" style={{ background: `linear-gradient(0deg, rgb(var(--tint) / 0.01), rgb(var(--tint) / 0.01)), var(--card)`, minWidth: '240px' }}>
+                <YStack height="100%" borderWidth={1} borderColor="$borderColor" borderRadius="$5" elevation={1} overflow="hidden" position="relative" style={{ background: `linear-gradient(0deg, rgb(var(--tint) / 0.01), rgb(var(--tint) / 0.01)), var(--card)`, minWidth: '240px' }}>
                       <MultipagePreview
                         ref={previewRef}
                         projectId={project.id}
@@ -1490,8 +1467,8 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                         onCaptureScreenshot={handleCaptureScreenshot}
                         entryPoint={entryPoint}
                         runtime={project.settings?.runtime}
-                      />
-                    </div>
+  />
+                    </YStack>
                 </ResizablePanel>
             )}
 
@@ -1513,7 +1490,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   onScrollToTurn={handleScrollToCheckpoint}
                   onClose={() => setShowCheckpoints(false)}
                   refreshKey={checkpointRefreshKey}
-                />
+  />
               </ResizablePanel>
             )}
 
@@ -1532,13 +1509,13 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
             )}
 
           </ResizablePanelGroup>
-          </div>
-        </div>
+          </YStack>
+        </YStack>
 
         {/* Mobile Workspace */}
-        <div className="flex md:hidden flex-1 overflow-hidden bg-background flex-col">
+        <YStack flex={1} overflow="hidden" backgroundColor="$background" $md={{ display: "none" }}>
           {/* Single active panel */}
-          <div className="flex-1 p-2 pb-16 overflow-hidden">
+          <YStack flex={1} padding="$2" paddingBottom="$10" overflow="hidden">
             {activeMobilePanel === 'chat' && (
               <ChatPanel
                 events={debugEvents}
@@ -1561,11 +1538,11 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                 onClearChat={clearDebugEvents}
                 supportsVision={supportsVision}
                 providerReady={providerReady}
-              />
+  />
             )}
 
             {activeMobilePanel === 'files' && (
-              <div className="h-full border border-border rounded-lg shadow-sm overflow-hidden relative" style={{ background: `linear-gradient(0deg, rgb(var(--tint) / 0.01), rgb(var(--tint) / 0.01)), var(--card)` }}>
+              <YStack height="100%" borderWidth={1} borderColor="$borderColor" borderRadius="$5" elevation={1} overflow="hidden" position="relative" style={{ background: `linear-gradient(0deg, rgb(var(--tint) / 0.01), rgb(var(--tint) / 0.01)), var(--card)` }}>
                 <FileExplorer
                   projectId={project.id}
                   onFileSelect={handleFileSelect}
@@ -1573,23 +1550,23 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   entryPoint={entryPoint}
                   onSetEntryPoint={handleSetEntryPoint}
                   onAddPromptFile={handleAddPromptFile}
-                />
-              </div>
+  />
+              </YStack>
             )}
 
             {activeMobilePanel === 'editor' && (
-              <div className="h-full border border-border rounded-lg shadow-sm overflow-hidden relative" style={{ background: `linear-gradient(0deg, rgb(var(--tint) / 0.01), rgb(var(--tint) / 0.01)), var(--card)` }}>
+              <YStack height="100%" borderWidth={1} borderColor="$borderColor" borderRadius="$5" elevation={1} overflow="hidden" position="relative" style={{ background: `linear-gradient(0deg, rgb(var(--tint) / 0.01), rgb(var(--tint) / 0.01)), var(--card)` }}>
                 <MultiTabEditor
                   projectId={project.id}
                   runtime={project.settings?.runtime}
                   onFilesChange={handleFilesChange}
                   onClose={() => setShowEditor(false)}
-                />
-              </div>
+  />
+              </YStack>
             )}
 
             {activeMobilePanel === 'preview' && (
-              <div className="h-full border border-border rounded-lg shadow-sm overflow-hidden relative" style={{ background: `linear-gradient(0deg, rgb(var(--tint) / 0.01), rgb(var(--tint) / 0.01)), var(--card)` }}>
+              <YStack height="100%" borderWidth={1} borderColor="$borderColor" borderRadius="$5" elevation={1} overflow="hidden" position="relative" style={{ background: `linear-gradient(0deg, rgb(var(--tint) / 0.01), rgb(var(--tint) / 0.01)), var(--card)` }}>
                 <MultipagePreview
                   ref={previewRef}
                   projectId={project.id}
@@ -1601,73 +1578,57 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   onCaptureScreenshot={handleCaptureScreenshot}
                   entryPoint={entryPoint}
                   runtime={project.settings?.runtime}
-                />
-              </div>
+  />
+              </YStack>
             )}
-          </div>
+          </YStack>
 
           {/* Bottom Navigation Bar */}
-          <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border">
-            <div className="flex justify-center items-center p-2 gap-2">
-              <button
-                className={`flex items-center justify-center py-2 px-2 rounded-lg transition-all shadow-sm ${
-                  activeMobilePanel === 'chat'
-                    ? 'text-white'
-                    : 'bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                }`}
+          <YStack position="fixed" bottom="$0" left="$0" right="$0" backgroundColor="$background" borderTopWidth={1} borderColor="$borderColor">
+            <XStack justifyContent="center" alignItems="center" padding="$2" gap="$2">
+              <Button
+                alignItems="center" justifyContent="center" paddingVertical="$2" paddingHorizontal="$2" borderRadius="$5" elevation={1} {...{ color: activeMobilePanel === 'chat' ? "white" : "$color11", backgroundColor: activeMobilePanel === 'chat' ? undefined : "transparent", hoverStyle: activeMobilePanel === 'chat' ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
                 style={{
                   backgroundColor: activeMobilePanel === 'chat' ? 'var(--brand-accent)' : undefined,
                 }}
                 onClick={() => setActiveMobilePanel('chat')}
               >
-                <MessageSquare className="h-4 w-4" />
-              </button>
+                <MessageSquare size={16} />
+              </Button>
             
-              <button
-                className={`flex items-center justify-center py-2 px-2 rounded-lg transition-all shadow-sm ${
-                  activeMobilePanel === 'files'
-                    ? 'text-white'
-                    : 'bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                }`}
+              <Button
+                alignItems="center" justifyContent="center" paddingVertical="$2" paddingHorizontal="$2" borderRadius="$5" elevation={1} {...{ color: activeMobilePanel === 'files' ? "white" : "$color11", backgroundColor: activeMobilePanel === 'files' ? undefined : "transparent", hoverStyle: activeMobilePanel === 'files' ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
                 style={{
                   backgroundColor: activeMobilePanel === 'files' ? 'var(--brand-accent)' : undefined,
                 }}
                 onClick={() => setActiveMobilePanel('files')}
               >
-                <FolderTree className="h-4 w-4" />
-              </button>
+                <FolderTree size={16} />
+              </Button>
             
-              <button
-                className={`flex items-center justify-center py-2 px-2 rounded-lg transition-all shadow-sm ${
-                  activeMobilePanel === 'editor'
-                    ? 'text-white'
-                    : 'bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                }`}
+              <Button
+                alignItems="center" justifyContent="center" paddingVertical="$2" paddingHorizontal="$2" borderRadius="$5" elevation={1} {...{ color: activeMobilePanel === 'editor' ? "white" : "$color11", backgroundColor: activeMobilePanel === 'editor' ? undefined : "transparent", hoverStyle: activeMobilePanel === 'editor' ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
                 style={{
                   backgroundColor: activeMobilePanel === 'editor' ? 'var(--brand-accent)' : undefined,
                 }}
                 onClick={() => setActiveMobilePanel('editor')}
               >
-                <Code2 className="h-4 w-4" />
-              </button>
+                <Code2 size={16} />
+              </Button>
             
-              <button
-                className={`flex items-center justify-center py-2 px-2 rounded-lg transition-all shadow-sm ${
-                  activeMobilePanel === 'preview'
-                    ? 'text-white'
-                    : 'bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                }`}
+              <Button
+                alignItems="center" justifyContent="center" paddingVertical="$2" paddingHorizontal="$2" borderRadius="$5" elevation={1} {...{ color: activeMobilePanel === 'preview' ? "white" : "$color11", backgroundColor: activeMobilePanel === 'preview' ? undefined : "transparent", hoverStyle: activeMobilePanel === 'preview' ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
                 style={{
                   backgroundColor: activeMobilePanel === 'preview' ? 'var(--brand-accent)' : undefined,
                 }}
                 onClick={() => setActiveMobilePanel('preview')}
               >
-                <Eye className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+                <Eye size={16} />
+              </Button>
+            </XStack>
+          </YStack>
+        </YStack>
+      </YStack>
 
       <GuidedTourOverlay location="workspace" />
       <GuidedTourOverlay location="settings" />
@@ -1679,7 +1640,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
         onProjectUpdate={handleProjectSettingsUpdate}
         enabled={backendEnabled}
         onToggleEnabled={handleBackendToggle}
-      />
+  />
     </>
   );
 }

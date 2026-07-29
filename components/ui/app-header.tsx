@@ -1,5 +1,6 @@
 'use client';
 
+import { YStack, XStack, SizableText, H1, Paragraph } from '@hanzo/gui';
 import React, { useState } from 'react';
 import { Button, Badge } from '@hanzo/ui';
 import { Logo } from '@/components/ui/logo';
@@ -72,72 +73,69 @@ export function AppHeader({
   const dropdownOnlyActions = hideActionsOnMobile ? [] : actions.filter(a => !mobileVisibleActionsSet.has(a.id));
 
   return (
-    <div className={`border-b bg-card shadow-sm relative z-20 ${className}`}>
-      <div className="px-3 py-2 flex items-center justify-between">
+    <YStack borderBottomWidth={1} backgroundColor="$background" elevation={1} position="relative" zIndex={20} className={`${className}`}>
+      <XStack paddingHorizontal="$3" paddingVertical="$2" alignItems="center" justifyContent="space-between">
         {/* Left side - Logo + pageName (mobile when showMobileMenu is true) */}
         {showMobileMenu && (
-          <div className="md:hidden flex items-center gap-3">
+          <XStack alignItems="center" gap="$3" $md={{ display: "none" }}>
             <Logo width={24} height={24} />
-            {pageName && <span className="text-sm font-medium">{pageName}</span>}
-          </div>
+            {pageName && <SizableText fontSize="$3" fontWeight="500">{pageName}</SizableText>}
+          </XStack>
         )}
 
         {/* Left side - Logo + text (desktop), empty (mobile with sidebar) */}
         {!hideLogo && !showMobileMenu && (
-          <button
+          <Button
             onClick={onLogoClick}
-            className="flex items-center gap-2 p-1 pr-2 hover:ring-1 hover:ring-border rounded-sm transition-all"
+            alignItems="center" gap="$2" padding="$1" paddingRight="$2" borderRadius="$1"
           >
             <Logo width={24} height={24} />
             {/* Show leftText next to logo on desktop only */}
-            {leftText && <span className="font-medium text-lg hidden md:inline">{leftText}</span>}
-          </button>
+            {leftText && <SizableText fontWeight="500" fontSize="$6" display="none">{leftText}</SizableText>}
+          </Button>
         )}
 
         {/* Center - View tabs or leftText/title (desktop only now) */}
-        <div className="flex items-center gap-2 flex-1 justify-center md:justify-start md:ml-6">
+        <XStack alignItems="center" gap="$2" flex={1} justifyContent="center" $md={{ justifyContent: "flex-start", marginLeft: "$5" }}>
           {viewTabs && viewTabs.length > 0 ? (
             /* Show view tabs as pill toggle */
-            <div className="flex border rounded-full">
+            <XStack borderWidth={1} borderRadius="$10">
               {viewTabs.map((tab, index) => (
                 <Button
                   key={tab.id}
                   variant={activeViewTab === tab.id ? 'secondary' : 'ghost'}
                   size="sm"
                   onClick={() => onViewTabChange?.(tab.id)}
-                  className={`gap-2 ${
-                    index === 0 ? 'rounded-r-none rounded-l-full' :
-                    index === viewTabs.length - 1 ? 'rounded-l-none rounded-r-full' :
-                    'rounded-none'
-                  }`}
+                  gap="$2" className={`${index === 0 ? 'rounded-r-none rounded-l-full' : index === viewTabs.length - 1 ? 'rounded-l-none rounded-r-full' :
+                    'rounded-none'}`}
                 >
                   {tab.icon && <tab.icon className="h-4 w-4" />}
                   {tab.label}
                 </Button>
               ))}
-            </div>
+            </XStack>
           ) : leftText && !showMobileMenu ? (
             /* Show leftText in center on mobile (only when not using sidebar) */
-            <h1 className="text-lg font-medium md:hidden">{leftText}</h1>
+            <H1 fontSize="$6" fontWeight="500" $md={{ display: "none" }}>{leftText}</H1>
           ) : title ? (
             <>
-              {title && <h1 className="text-lg md:text-xl font-medium">{title}</h1>}
+              {title && <H1 fontSize="$6" fontWeight="500" $md={{ fontSize: "$7" }}>{title}</H1>}
               {badge && <Badge variant="secondary">{badge}</Badge>}
             </>
           ) : null}
-        </div>
+        </XStack>
 
         {/* Desktop - Show subtitle only if no leftText and no center title */}
         {!leftText && !title && subtitle && (
-          <div className="hidden md:flex items-center flex-1 ml-6">
-            <span className="text-sm text-muted-foreground">{subtitle}</span>
-          </div>
+          <YStack display="none" alignItems="center" flex={1} marginLeft="$5">
+            <SizableText fontSize="$3" color="$color11">{subtitle}</SizableText>
+          </YStack>
         )}
 
         {/* Right side controls */}
-        <div className="flex items-center gap-2">
+        <XStack alignItems="center" gap="$2">
           {/* Desktop actions */}
-          <div className="hidden md:flex items-center gap-2">
+          <YStack display="none" alignItems="center" gap="$2">
             {actions.map((action) => (
               action.content ? (
                 <div key={action.id}>{action.content}</div>
@@ -148,7 +146,7 @@ export function AppHeader({
                   size={action.size || 'sm'}
                   onClick={action.onClick}
                   disabled={action.disabled}
-                  className="justify-start"
+                  justifyContent="flex-start"
                   data-tour-id={action.dataTourId}
                 >
                   {action.icon && <action.icon className="h-4 w-4 mr-2" />}
@@ -157,10 +155,10 @@ export function AppHeader({
               )
             ))}
             {desktopOnlyContent}
-          </div>
+          </YStack>
 
           {/* Mobile visible actions */}
-          <div className="md:hidden flex items-center gap-2">
+          <XStack alignItems="center" gap="$2" $md={{ display: "none" }}>
             {visibleOnMobile.map((action) => (
               action.content ? (
                 <div key={action.id}>{action.content}</div>
@@ -171,7 +169,7 @@ export function AppHeader({
                   size={action.size || 'sm'}
                   onClick={action.onClick}
                   disabled={action.disabled}
-                  className="h-8 px-3"
+                  height="$6" paddingHorizontal="$3"
                   data-tour-id={action.dataTourId}
                 >
                   {action.icon && <action.icon className="h-4 w-4 mr-2" />}
@@ -179,7 +177,7 @@ export function AppHeader({
                 </Button>
               )
             ))}
-          </div>
+          </XStack>
 
           {/* Mobile menu toggle */}
           {(dropdownOnlyActions.length > 0 || mobileMenuContent) && (
@@ -187,12 +185,12 @@ export function AppHeader({
               variant="ghost"
               size="icon"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="h-8 w-8 md:hidden"
+              height="$6" width="$6" $md={{ display: "none" }}
             >
               {mobileMenuOpen ? (
-                <ChevronUp className="h-4 w-4" />
+                <ChevronUp size={16} />
               ) : (
-                <ChevronDown className="h-4 w-4" />
+                <ChevronDown size={16} />
               )}
             </Button>
           )}
@@ -203,27 +201,27 @@ export function AppHeader({
               variant="ghost"
               size="icon"
               onClick={onMobileMenuClick}
-              className="md:hidden h-8 w-8"
+              height="$6" width="$6" $md={{ display: "none" }}
             >
-              <Menu className="h-5 w-5" />
+              <Menu size={20} />
             </Button>
           )}
-        </div>
-      </div>
+        </XStack>
+      </XStack>
       
       {/* Mobile dropdown menu */}
       {mobileMenuOpen && (dropdownOnlyActions.length > 0 || mobileMenuContent) && (
-        <div className="md:hidden border-t bg-muted/30 px-4 py-4 space-y-3">
+        <YStack borderTopWidth={1} backgroundColor="$color3" paddingHorizontal="$4" paddingVertical="$4" rowGap="$3" $md={{ display: "none" }}>
           {/* Show subtitle on mobile if no leftText and no center title */}
           {!leftText && !title && subtitle && (
-            <div className="pb-2 border-b border-border/50">
-              <p className="text-sm text-muted-foreground">{subtitle}</p>
-            </div>
+            <YStack paddingBottom="$2" borderBottomWidth={1} borderColor="$borderColor">
+              <Paragraph fontSize="$3" color="$color11">{subtitle}</Paragraph>
+            </YStack>
           )}
 
           {/* Mobile dropdown-only actions */}
           {dropdownOnlyActions.length > 0 && (
-            <div className="space-y-2">
+            <YStack rowGap="$2">
               {dropdownOnlyActions.map((action) => (
                 action.content ? (
                   <div key={action.id}>{action.content}</div>
@@ -237,7 +235,7 @@ export function AppHeader({
                       setMobileMenuOpen(false);
                     }}
                     disabled={action.disabled}
-                    className="w-full justify-start"
+                    width="100%" justifyContent="flex-start"
                     data-tour-id={action.dataTourId}
                   >
                     {action.icon && <action.icon className="h-4 w-4 mr-2" />}
@@ -245,17 +243,17 @@ export function AppHeader({
                   </Button>
                 )
               ))}
-            </div>
+            </YStack>
           )}
 
           {/* Custom mobile menu content */}
           {mobileMenuContent && (
-            <div className="pt-2 border-t border-border/50">
+            <YStack paddingTop="$2" borderTopWidth={1} borderColor="$borderColor">
               {mobileMenuContent}
-            </div>
+            </YStack>
           )}
-        </div>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 }

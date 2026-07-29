@@ -1,5 +1,6 @@
 "use client";
 
+import { SizableText, XStack, YStack, H1, Paragraph } from '@hanzo/gui';
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -80,42 +81,41 @@ export default function AuthCallback() {
   }, [completeLogin, isAuthenticated, router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background text-foreground px-6">
-      <div className="w-full max-w-sm text-center">
-        <div className="flex justify-center mb-10">
+    <SizableText minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="$background" color="$color" paddingHorizontal="$5" display="flex" flexDirection="row">
+      <SizableText width="100%" maxWidth={384} textAlign="center" display="flex" flexDirection="column">
+        <XStack justifyContent="center" marginBottom="$7">
           <HanzoLogo className="w-11 h-11 text-foreground" />
-        </div>
+        </XStack>
 
         {error ? (
-          <div className="space-y-5">
+          <YStack rowGap="$4.5">
             <div>
-              <h1 className="text-xl font-medium tracking-tight">
+              <H1 fontSize="$7" fontWeight="500" letterSpacing={-0.4}>
                 Sign-in didn&apos;t complete
-              </h1>
-              <p className="mt-2 text-sm text-muted-foreground">
+              </H1>
+              <Paragraph marginTop="$2" fontSize="$3" color="$color11">
                 Your session couldn&apos;t be established. Please try signing in
                 again.
-              </p>
+              </Paragraph>
             </div>
             <Link
               href="/login"
-              className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-            >
+            ><SizableText width="100%" alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color12" paddingHorizontal="$4.5" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
               Back to sign in
-            </Link>
-          </div>
+            </SizableText></Link>
+          </YStack>
         ) : (
-          <div className="space-y-3">
-            <div className="flex items-center justify-center gap-2.5 text-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm">Signing you in…</span>
-            </div>
-            <p className="text-xs text-muted-foreground">
+          <YStack rowGap="$3">
+            <SizableText alignItems="center" justifyContent="center" gap="$2.5" color="$color" display="flex" flexDirection="row">
+              <Loader2 size={16} />
+              <SizableText fontSize="$3">Signing you in…</SizableText>
+            </SizableText>
+            <Paragraph fontSize="$1" color="$color11">
               Completing secure sign-in with Hanzo
-            </p>
-          </div>
+            </Paragraph>
+          </YStack>
         )}
-      </div>
-    </div>
+      </SizableText>
+    </SizableText>
   );
 }

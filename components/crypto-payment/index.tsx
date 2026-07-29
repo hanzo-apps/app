@@ -1,5 +1,6 @@
 'use client'
 
+import { SizableText, XStack, Paragraph, Anchor, YStack } from '@hanzo/gui';
 import { useState } from 'react'
 import { useAccount, useConnect, useDisconnect, useWriteContract, useWaitForTransactionReceipt, useSwitchChain } from 'wagmi'
 import { parseUnits } from 'viem'
@@ -119,13 +120,13 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-lg bg-popover border-border text-foreground">
+      <DialogContent maxWidth={512} backgroundColor="$background" borderColor="$borderColor" color="$color">
         <DialogHeader>
-          <DialogTitle className="flex items-center text-xl">
-            <Wallet className="w-5 h-5 mr-2" />
+          <DialogTitle alignItems="center" fontSize="$7">
+            <Wallet size={20} />
             {step === 'success' ? 'Payment Complete!' : 'Purchase Credits with USDC'}
           </DialogTitle>
-          <DialogDescription className="text-muted-foreground">
+          <DialogDescription color="$color11">
             {step === 'success'
               ? 'Your credits have been added to your account'
               : 'Pay with USDC on Base, Ethereum, or Arbitrum'}
@@ -133,169 +134,163 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
         </DialogHeader>
 
         {step === 'success' ? (
-          <div className="py-8 text-center">
-            <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
-              <Check className="w-8 h-8 text-green-500" />
-            </div>
-            <p className="text-lg font-medium mb-2">
+          <SizableText paddingVertical="$6" textAlign="center" display="flex" flexDirection="column">
+            <XStack width="$10" height="$10" borderRadius="$10" backgroundColor="$green9" alignItems="center" justifyContent="center" alignSelf="center" marginBottom="$4">
+              <Check size={32} color="$green9" />
+            </XStack>
+            <Paragraph fontSize="$6" fontWeight="500" marginBottom="$2">
               +{CREDIT_PRICING[selectedAmount as keyof typeof CREDIT_PRICING]?.credits.toLocaleString()} credits added!
-            </p>
+            </Paragraph>
             {hash && (
-              <a
+              <Anchor
                 href={`${explorerUrl}/tx/${hash}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-muted-foreground hover:text-foreground flex items-center justify-center gap-1"
+                fontSize="$3" color="$color11" alignItems="center" justifyContent="center" gap="$1" hoverStyle={{ color: "$color" }}
               >
-                View on {selectedChainInfo?.name} <ExternalLink className="w-3 h-3" />
-              </a>
+                View on {selectedChainInfo?.name} <ExternalLink size={12} />
+              </Anchor>
             )}
-            <Button onClick={handleClose} className="mt-6">
+            <Button onClick={handleClose} marginTop="$5">
               Done
             </Button>
-          </div>
+          </SizableText>
         ) : !isConnected ? (
-          <div className="py-6 space-y-3">
-            <p className="text-sm text-muted-foreground text-center mb-4">Connect your wallet to continue</p>
+          <YStack paddingVertical="$5" rowGap="$3">
+            <Paragraph fontSize="$3" color="$color11" textAlign="center" marginBottom="$4">Connect your wallet to continue</Paragraph>
             {connectors.map((connector) => (
               <Button
                 key={connector.uid}
                 onClick={() => connect({ connector })}
                 variant="outline"
-                className="w-full border-border text-foreground hover:bg-accent"
+                width="100%" borderColor="$borderColor" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
               >
-                <Wallet className="w-4 h-4 mr-2" />
+                <Wallet size={16} />
                 {connector.name}
               </Button>
             ))}
-          </div>
+          </YStack>
         ) : step === 'select' ? (
-          <div className="py-4 space-y-4">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Connected: {address?.slice(0, 6)}...{address?.slice(-4)}</span>
-              <Button variant="ghost" size="sm" onClick={() => disconnect()} className="text-muted-foreground hover:text-foreground">
+          <YStack paddingVertical="$4" rowGap="$4">
+            <SizableText alignItems="center" justifyContent="space-between" fontSize="$3" display="flex" flexDirection="row">
+              <SizableText color="$color11">Connected: {address?.slice(0, 6)}...{address?.slice(-4)}</SizableText>
+              <Button variant="ghost" size="sm" onClick={() => disconnect()} color="$color11" hoverStyle={{ color: "$color" }}>
                 Disconnect
               </Button>
-            </div>
+            </SizableText>
 
             {/* Chain selector */}
-            <div className="relative">
-              <button
+            <YStack position="relative">
+              <Button
                 onClick={() => setChainMenuOpen(!chainMenuOpen)}
-                className="w-full flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:border-foreground/30 transition-colors"
+                width="100%" alignItems="center" justifyContent="space-between" padding="$3" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ borderColor: "$color" }}
               >
-                <span className="text-sm">
-                  Network: <span className="font-medium">{SUPPORTED_CHAINS.find(c => c.id === selectedChainId)?.name}</span>
-                </span>
-                <ChevronDown className="w-4 h-4 text-muted-foreground" />
-              </button>
+                <SizableText fontSize="$3">
+                  Network: <SizableText fontWeight="500">{SUPPORTED_CHAINS.find(c => c.id === selectedChainId)?.name}</SizableText>
+                </SizableText>
+                <ChevronDown size={16} color="$color11" />
+              </Button>
               {chainMenuOpen && (
-                <div className="absolute top-full left-0 right-0 mt-1 rounded-lg border border-border bg-popover overflow-hidden z-10">
+                <YStack position="absolute" top="100%" left="$0" right="$0" marginTop="$1" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" overflow="hidden" zIndex={10}>
                   {SUPPORTED_CHAINS.map((c) => (
-                    <button
+                    <Button
                       key={c.id}
                       onClick={() => { setSelectedChainId(c.id); setChainMenuOpen(false) }}
-                      className={`w-full text-left px-4 py-3 text-sm hover:bg-accent transition-colors ${
-                        selectedChainId === c.id ? 'bg-accent text-foreground' : 'text-foreground'
-                      }`}
+                      width="100%" textAlign="left" paddingHorizontal="$4" paddingVertical="$3" fontSize="$3" hoverStyle={{ backgroundColor: "$color3" }} {...{ backgroundColor: selectedChainId === c.id ? "$color3" : undefined, color: selectedChainId === c.id ? "$color" : "$color" }}
                     >
                       {c.name}
-                    </button>
+                    </Button>
                   ))}
-                </div>
+                </YStack>
               )}
-            </div>
+            </YStack>
 
-            <div className="grid grid-cols-2 gap-3">
+            <YStack gap="$3">
               {creditOptions.map((option) => (
-                <div
+                <YStack
                   key={option.amount}
                   onClick={() => setSelectedAmount(option.amount)}
-                  className={`relative p-4 rounded-lg cursor-pointer transition-all border ${
-                    selectedAmount === option.amount
-                      ? 'border-violet-500 bg-violet-500/10'
-                      : 'border-border hover:border-foreground/30 bg-card'
-                  }`}
+                  position="relative" padding="$4" borderRadius="$5" cursor="pointer" borderWidth={1} {...{ borderColor: selectedAmount === option.amount ? "$purple9" : "$borderColor", backgroundColor: selectedAmount === option.amount ? "$purple9" : "$background", hoverStyle: selectedAmount === option.amount ? undefined : {"borderColor":"$color"} }}
                 >
                   {option.popular && (
-                    <Badge className="absolute -top-2 -right-2 bg-gradient-to-r from-violet-500 to-purple-500 text-foreground text-xs">
+                    <Badge position="absolute" top="-2" right="-2" color="$color" fontSize="$1">
                       Popular
                     </Badge>
                   )}
-                  <div className="text-xl font-medium">${option.amount}</div>
-                  <div className="flex items-center text-sm text-muted-foreground mt-1">
-                    <Zap className="w-3 h-3 mr-1" />
+                  <SizableText fontSize="$7" fontWeight="500" display="flex" flexDirection="column">${option.amount}</SizableText>
+                  <SizableText alignItems="center" fontSize="$3" color="$color11" marginTop="$1" display="flex" flexDirection="row">
+                    <Zap size={12} />
                     {option.credits.toLocaleString()} credits
-                  </div>
+                  </SizableText>
                   {option.bonus > 0 && (
-                    <Badge variant="secondary" className="mt-2 text-xs bg-accent">
+                    <Badge variant="secondary" marginTop="$2" fontSize="$1" backgroundColor="$color3">
                       +{option.bonus.toLocaleString()} bonus
                     </Badge>
                   )}
-                </div>
+                </YStack>
               ))}
-            </div>
+            </YStack>
 
             <Button
               onClick={() => setStep('confirm')}
               disabled={!selectedAmount}
-              className="w-full bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600"
+              width="100%"
             >
               Continue
             </Button>
-          </div>
+          </YStack>
         ) : step === 'confirm' ? (
-          <div className="py-4 space-y-4">
-            <div className="p-4 rounded-lg bg-card border border-border">
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Amount</span>
-                <span className="font-medium">${selectedAmount} USDC</span>
-              </div>
-              <div className="flex justify-between items-center mt-2">
-                <span className="text-muted-foreground">Credits</span>
-                <span className="font-medium text-green-500">
+          <YStack paddingVertical="$4" rowGap="$4">
+            <YStack padding="$4" borderRadius="$5" backgroundColor="$background" borderWidth={1} borderColor="$borderColor">
+              <XStack justifyContent="space-between" alignItems="center">
+                <SizableText color="$color11">Amount</SizableText>
+                <SizableText fontWeight="500">${selectedAmount} USDC</SizableText>
+              </XStack>
+              <XStack justifyContent="space-between" alignItems="center" marginTop="$2">
+                <SizableText color="$color11">Credits</SizableText>
+                <SizableText fontWeight="500" color="$green9">
                   +{CREDIT_PRICING[selectedAmount as keyof typeof CREDIT_PRICING]?.credits.toLocaleString()}
-                </span>
-              </div>
-              <div className="flex justify-between items-center mt-2">
-                <span className="text-muted-foreground">Network</span>
-                <span className="text-sm">{SUPPORTED_CHAINS.find(c => c.id === selectedChainId)?.name}</span>
-              </div>
-              <div className="flex justify-between items-center mt-2">
-                <span className="text-muted-foreground">Treasury</span>
-                <span className="text-xs font-mono text-muted-foreground">
+                </SizableText>
+              </XStack>
+              <XStack justifyContent="space-between" alignItems="center" marginTop="$2">
+                <SizableText color="$color11">Network</SizableText>
+                <SizableText fontSize="$3">{SUPPORTED_CHAINS.find(c => c.id === selectedChainId)?.name}</SizableText>
+              </XStack>
+              <XStack justifyContent="space-between" alignItems="center" marginTop="$2">
+                <SizableText color="$color11">Treasury</SizableText>
+                <SizableText fontSize="$1" fontFamily="$mono" color="$color11">
                   {TREASURY_ADDRESS.slice(0, 6)}...{TREASURY_ADDRESS.slice(-4)}
-                </span>
-              </div>
-            </div>
+                </SizableText>
+              </XStack>
+            </YStack>
 
-            <div className="flex gap-3">
+            <XStack gap="$3">
               <Button
                 variant="outline"
                 onClick={() => setStep('select')}
-                className="flex-1 border-border text-foreground hover:bg-accent"
+                flex={1} borderColor="$borderColor" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
               >
                 Back
               </Button>
               <Button
                 onClick={handlePayment}
                 disabled={isPending}
-                className="flex-1 bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600"
+                flex={1}
               >
-                {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Pay Now'}
+                {isPending ? <Loader2 size={16} /> : 'Pay Now'}
               </Button>
-            </div>
-          </div>
+            </XStack>
+          </YStack>
         ) : (
-          <div className="py-8 text-center">
-            <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-violet-500" />
-            <p className="text-lg font-medium">
+          <SizableText paddingVertical="$6" textAlign="center" display="flex" flexDirection="column">
+            <Loader2 size={48} color="$purple9" />
+            <Paragraph fontSize="$6" fontWeight="500">
               {isConfirming ? 'Confirming transaction...' : 'Waiting for wallet...'}
-            </p>
-            <p className="text-sm text-muted-foreground mt-2">
+            </Paragraph>
+            <Paragraph fontSize="$3" color="$color11" marginTop="$2">
               Please confirm the transaction in your wallet
-            </p>
-          </div>
+            </Paragraph>
+          </SizableText>
         )}
       </DialogContent>
     </Dialog>

@@ -20,10 +20,11 @@
  * hard-pinned to their home org (a stale switched scope is reset), matching the
  * server which pins them to their bearer owner.
  */
+import { Image, SizableText, YStack, Paragraph, XStack, H1 } from '@hanzo/gui';
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Building2, Check, ChevronsUpDown, Loader2, Plus, Search, Settings, Sparkles } from 'lucide-react';
-import { Button } from '@hanzo/ui';
+import { Button, Input } from '@hanzo/ui';
 
 import { useOrg } from '@/lib/org/client';
 import { currentOrg, switchOrg, filterOrgs, isScopedAway, setCurrentOrg, getHomeOrg, orgDisplayName, titleCase } from '@/lib/org-scope';
@@ -56,37 +57,37 @@ export function OrgAvatar({
   if (resolved && isImageUrl(resolved) && !imgError) {
     return (
       // eslint-disable-next-line @next/next/no-img-element -- arbitrary remote org logo, not a bundled asset
-      <img
+      <Image
         src={resolved}
         alt=""
         aria-hidden="true"
         onError={() => setImgError(true)}
-        className={`shrink-0 rounded-md border border-border object-cover ${className}`}
-      />
+        flexShrink={0} borderRadius="$3" borderWidth={1} borderColor="$borderColor" objectFit="cover" className={`${className}`}
+  />
     );
   }
   // (b) emoji logo — centered + a touch larger, in full color. The glyph carries
   //     the color; the box stays borderless here (inline size beats the class).
   if (resolved && isEmoji(resolved)) {
     return (
-      <span
-        className={`flex shrink-0 items-center justify-center leading-none ${className}`}
+      <SizableText
+        flexShrink={0} alignItems="center" justifyContent="center" lineHeight={1} className={`${className}`}
         style={{ fontSize: "1.05rem" }}
         aria-hidden="true"
       >
         {resolved}
-      </span>
+      </SizableText>
     );
   }
   // (c) fallback — the org's initial in a neutral rounded square (monochrome).
   const initial = (name || "").trim().charAt(0).toUpperCase() || "•";
   return (
-    <span
-      className={`flex shrink-0 items-center justify-center rounded-md border border-border bg-muted font-semibold text-foreground ${className}`}
+    <SizableText
+      flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" fontWeight="600" color="$color" className={`${className}`}
       aria-hidden="true"
     >
       {initial}
-    </span>
+    </SizableText>
   );
 }
 
@@ -137,121 +138,116 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 rounded-lg border border-border px-3 py-1.5 text-sm text-muted-foreground">
-        <Building2 className="h-4 w-4" />
-        <span className="hidden sm:inline">…</span>
-      </div>
+      <SizableText alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$3" color="$color11" display="flex" flexDirection="row">
+        <Building2 size={16} />
+        <SizableText display="none">…</SizableText>
+      </SizableText>
     );
   }
   if (!ctx) return null; // signed out — no org chrome
 
   return (
-    <div className="relative">
-      <button
+    <YStack position="relative">
+      <Button
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 rounded-lg border border-border px-3 py-1.5 text-sm text-foreground hover:bg-muted transition-colors"
+        alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$3" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
         title="Active organization"
       >
         <OrgAvatar name={currentName} logo={currentLogo} />
-        <span className="inline max-w-[7.5rem] truncate font-medium text-foreground">{currentName}</span>
-        {isScopedAway() && <span className="rounded border border-border px-1 text-[10px] text-muted-foreground">scoped</span>}
-        <ChevronsUpDown className="h-3.5 w-3.5 text-muted-foreground" />
-      </button>
+        <SizableText maxWidth="7.5rem" numberOfLines={1} fontWeight="500" color="$color">{currentName}</SizableText>
+        {isScopedAway() && <SizableText borderRadius="$2" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$1" fontSize={10} color="$color11">scoped</SizableText>}
+        <ChevronsUpDown size={14} color="$color11" />
+      </Button>
 
       {open && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div
-            className={`absolute left-0 z-50 w-72 rounded-xl border border-border bg-popover p-2 shadow-2xl ${
-              direction === "up" ? "bottom-full mb-2" : "mt-2"
-            }`}
+          <YStack position="fixed" top={0} right={0} bottom={0} left={0} zIndex={40} onClick={() => setOpen(false)} />
+          <YStack
+            position="absolute" left="$0" zIndex={50} width={288} borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$2" elevation={6} {...{ bottom: direction === "up" ? "100%" : undefined, marginBottom: direction === "up" ? "$2" : undefined, marginTop: direction === "up" ? undefined : "$2" }}
           >
             {creating ? (
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-foreground">Create organization</p>
-                <input
+              <YStack rowGap="$2">
+                <Paragraph fontSize="$3" fontWeight="500" color="$color">Create organization</Paragraph>
+                <Input
                   value={newName}
                   onChange={(e) => setNewName(e.target.value.slice(0, 60))}
                   placeholder="Organization name"
-                  className="w-full rounded-md border border-border bg-transparent px-2 py-1.5 text-sm outline-none focus:border-ring"
+                  width="100%" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="transparent" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$3" outlineWidth={0} focusStyle={{ borderColor: "$color8" }}
                   onKeyDown={(e) => e.key === 'Enter' && void create()}
                   disabled={busy}
-                />
-                {err && <p className="text-xs text-red-400">{err}</p>}
-                <div className="flex justify-end gap-2">
+  />
+                {err && <Paragraph fontSize="$1" color="$red8">{err}</Paragraph>}
+                <XStack justifyContent="flex-end" gap="$2">
                   <Button size="sm" variant="ghost" onClick={() => { setCreating(false); setErr(null); }} disabled={busy}>
                     Cancel
                   </Button>
                   <Button size="sm" onClick={() => void create()} disabled={busy || !newName.trim()}>
-                    {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Create'}
+                    {busy ? <Loader2 size={16} /> : 'Create'}
                   </Button>
-                </div>
-              </div>
+                </XStack>
+              </YStack>
             ) : (
-              <div className="space-y-1">
-                <div className="flex items-center gap-2 rounded-md border border-border px-2 py-1">
-                  <Search className="h-3.5 w-3.5 text-muted-foreground" />
-                  <input
+              <YStack rowGap="$1">
+                <XStack alignItems="center" gap="$2" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$1">
+                  <Search size={14} color="$color11" />
+                  <Input
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Filter organizations…"
-                    className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-                  />
-                </div>
-                <p className="px-2 py-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                    flex={1} backgroundColor="transparent" fontSize="$3" outlineWidth={0} placeholderTextColor="$color11"
+  />
+                </XStack>
+                <Paragraph paddingHorizontal="$2" paddingVertical="$1" fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.4} color="$color11">
                   Organizations · {allOrgs.length}
-                </p>
-                <div className="max-h-64 overflow-y-auto">
+                </Paragraph>
+                <YStack maxHeight={256} overflow="scroll">
                   {filtered.length === 0 ? (
-                    <p className="px-2 py-2 text-sm text-muted-foreground">No organizations match &quot;{query}&quot;.</p>
+                    <Paragraph paddingHorizontal="$2" paddingVertical="$2" fontSize="$3" color="$color11">No organizations match &quot;{query}&quot;.</Paragraph>
                   ) : (
                     filtered.map((org) => {
                       const isCurrent = org.name === currentId;
                       return (
-                        <button
+                        <Button
                           key={org.name}
                           onClick={() => select(org)}
-                          className={`flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm ${
-                            isCurrent ? 'bg-muted' : 'hover:bg-muted'
-                          }`}
+                          width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$2" fontSize="$3" {...{ backgroundColor: isCurrent ? "$color3" : undefined, hoverStyle: isCurrent ? undefined : {"backgroundColor":"$color3"} }}
                         >
                           <OrgAvatar name={orgDisplayName(allOrgs, org.name)} logo={org.logo} />
-                          <span className="flex-1 truncate text-left text-foreground">
+                          <SizableText flex={1} numberOfLines={1} textAlign="left" color="$color">
                             {orgDisplayName(allOrgs, org.name)}
-                          </span>
+                          </SizableText>
                           {org.isPersonal && (
-                            <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">personal</span>
+                            <SizableText borderRadius="$2" backgroundColor="$color3" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} color="$color11">personal</SizableText>
                           )}
-                          {isCurrent && <Check className="h-4 w-4 text-foreground" />}
-                        </button>
+                          {isCurrent && <Check size={16} color="$color" />}
+                        </Button>
                       );
                     })
                   )}
-                </div>
+                </YStack>
                 {/* The org's avatar/emoji picker lives on its own settings page
                     now (the switcher stays a switcher). */}
                 <Link
                   href="/settings/organization"
                   onClick={() => setOpen(false)}
-                  className="mt-1 flex w-full items-center gap-2 rounded-md border-t border-border px-2 py-2 text-sm text-foreground hover:bg-muted"
-                >
-                  <Settings className="h-4 w-4" />
+                ><SizableText marginTop="$1" width="100%" alignItems="center" gap="$2" borderRadius="$3" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$2" fontSize="$3" color="$color" hoverStyle={{ backgroundColor: "$color3" }}>
+                  <Settings size={16} />
                   Organization settings
-                  <span className="ml-auto text-muted-foreground">→</span>
-                </Link>
-                <button
+                  <SizableText marginLeft="auto" color="$color11">→</SizableText>
+                </SizableText></Link>
+                <Button
                   onClick={() => { setCreating(true); setErr(null); }}
-                  className="mt-1 flex w-full items-center gap-2 rounded-md border-t border-border px-2 py-2 text-sm text-foreground hover:bg-muted"
+                  marginTop="$1" width="100%" alignItems="center" gap="$2" borderRadius="$3" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$2" fontSize="$3" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus size={16} />
                   Create organization
-                </button>
-              </div>
+                </Button>
+              </YStack>
             )}
-          </div>
+          </YStack>
         </>
       )}
-    </div>
+    </YStack>
   );
 }
 
@@ -277,9 +273,9 @@ export function OrgGate({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-24">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
+      <XStack alignItems="center" justifyContent="center" paddingVertical="$12">
+        <Loader2 size={32} color="$color11" />
+      </XStack>
     );
   }
 
@@ -307,39 +303,39 @@ function OnboardingPanel() {
   };
 
   return (
-    <div className="mx-auto max-w-md px-4 py-16 text-center">
-      <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-muted">
-        <Sparkles className="h-7 w-7 text-foreground" />
-      </div>
-      <h1 className="mb-2 text-2xl font-medium">Set up your workspace</h1>
-      <p className="mb-8 text-sm text-muted-foreground">
+    <SizableText alignSelf="center" maxWidth={448} paddingHorizontal="$4" paddingVertical="$10" textAlign="center" display="flex" flexDirection="column">
+      <XStack alignSelf="center" marginBottom="$5" height="$9" width="$9" alignItems="center" justifyContent="center" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
+        <Sparkles size={28} color="$color" />
+      </XStack>
+      <H1 marginBottom="$2" fontSize="$8" fontWeight="500">Set up your workspace</H1>
+      <Paragraph marginBottom="$6" fontSize="$3" color="$color11">
         Every project belongs to an organization — that&apos;s where it&apos;s billed and
         shared. Start with a personal workspace, or name a team organization.
-      </p>
+      </Paragraph>
 
-      <Button className="w-full" onClick={() => run({ personal: true })} disabled={busy !== null}>
-        {busy === 'personal' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Continue with a personal workspace'}
+      <Button width="100%" onClick={() => run({ personal: true })} disabled={busy !== null}>
+        {busy === 'personal' ? <Loader2 size={16} /> : 'Continue with a personal workspace'}
       </Button>
 
-      <div className="my-4 text-xs uppercase tracking-wide text-muted-foreground">or</div>
+      <SizableText marginVertical="$4" fontSize="$1" textTransform="uppercase" letterSpacing={0.4} color="$color11" display="flex" flexDirection="column">or</SizableText>
 
-      <input
+      <Input
         value={name}
         onChange={(e) => setName(e.target.value.slice(0, 60))}
         placeholder="Team organization name"
-        className="mb-2 w-full rounded-lg border border-border bg-transparent px-3 py-2 text-sm outline-none focus:border-ring"
+        marginBottom="$2" width="100%" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="transparent" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3" outlineWidth={0} focusStyle={{ borderColor: "$color8" }}
         disabled={busy !== null}
-      />
+  />
       <Button
         variant="outline"
-        className="w-full"
+        width="100%"
         onClick={() => run({ name: name.trim() })}
         disabled={busy !== null || name.trim().length < 2}
       >
-        {busy === 'named' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Create team organization'}
+        {busy === 'named' ? <Loader2 size={16} /> : 'Create team organization'}
       </Button>
 
-      {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
-    </div>
+      {error && <Paragraph marginTop="$4" fontSize="$3" color="$red8">{error}</Paragraph>}
+    </SizableText>
   );
 }

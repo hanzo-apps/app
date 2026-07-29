@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from '@hanzo/ui';
+import { YStack, SizableText, H3, Paragraph, XStack, H1, H2 } from '@hanzo/gui';
 // The browsable templates gallery — ONE component over the SEO catalog SOT
 // (lib/templates-catalog): a category rail + a responsive card grid with instant,
 // client-side filtering. Mounted by BOTH `/gallery` (app/gallery/page.tsx) and the
@@ -39,80 +41,75 @@ function RailPill({
   onClick: () => void;
 }) {
   return (
-    <button
+    <Button
       onClick={onClick}
-      className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
-        active
-          ? "bg-primary text-primary-foreground"
-          : "border border-border bg-muted text-muted-foreground hover:border-foreground/30 hover:text-foreground"
-      }`}
+      flexShrink={0} whiteSpace="nowrap" borderRadius="$10" paddingHorizontal="$3.5" paddingVertical="$1.5" fontSize="$1" fontWeight="500" {...{ backgroundColor: active ? "$color12" : "$color3", color: active ? "$background" : "$color11", borderWidth: active ? undefined : 1, borderColor: active ? undefined : "$borderColor", hoverStyle: active ? undefined : {"borderColor":"$color","color":"$color"} }}
     >
       {label}
-    </button>
+    </Button>
   );
 }
 
 function TemplateCard({ t, showAuthor = false }: { t: TemplateEntry; showAuthor?: boolean }) {
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-muted transition-all duration-200 hover:-translate-y-1 hover:border-foreground/30 hover:bg-muted">
+    <YStack group position="relative" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" hoverStyle={{ y: "-1", borderColor: "$color", backgroundColor: "$color3" }}>
       {/* Preview — image-first via TemplateThumb; on-brand tile when no real shot. */}
-      <div className="relative aspect-[16/10] overflow-hidden bg-card">
+      <YStack position="relative" overflow="hidden" backgroundColor="$background">
         <TemplateThumb
           name={t.name}
           category={t.category}
           slug={t.slug}
           className="transition-transform duration-500 group-hover:scale-[1.03]"
-        />
+  />
         {/* Left rail: what this is, and who published it. The "Hanzo Example" badge
             rides beside the category rather than opposite it, because top-right is
             the live-demo slot. Every catalog template is published by Hanzo itself,
             and a reader must not have to infer that from the author handle. */}
-        <span className="absolute left-3 top-3 flex flex-wrap items-center gap-1.5">
-          <span className="rounded-full border border-white/10 bg-black/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/70 backdrop-blur">
+        <SizableText position="absolute" left="$3" top="$3" flexWrap="wrap" alignItems="center" gap="$1.5">
+          <SizableText borderRadius="$10" borderWidth={1} borderColor="white" backgroundColor="black" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="white" backdropFilter="blur(8px)">
             {t.category}
-          </span>
-          <span
+          </SizableText>
+          <SizableText
             data-official="true"
-            className="rounded-full border border-white/10 bg-black/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/70 backdrop-blur"
+            borderRadius="$10" borderWidth={1} borderColor="white" backgroundColor="black" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="white" backdropFilter="blur(8px)"
           >
             {OFFICIAL_LABEL}
-          </span>
-        </span>
+          </SizableText>
+        </SizableText>
         {/* The grid keeps the (fast) screenshot — 105 iframes would be a page of
             them — but says which cards open on a template you can actually use. */}
         {t.demo && (
-          <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-black/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/70 backdrop-blur">
-            <span className="h-1.5 w-1.5 rounded-full bg-white" />
+          <SizableText position="absolute" right="$3" top="$3" alignItems="center" gap="$1.5" borderRadius="$10" borderWidth={1} borderColor="white" backgroundColor="black" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="white" backdropFilter="blur(8px)">
+            <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="white" />
             Live
-          </span>
+          </SizableText>
         )}
-      </div>
+      </YStack>
 
-      <div className="flex flex-1 flex-col p-4 sm:p-5">
-        <h3 className="flex items-start gap-1.5 text-[15px] font-medium leading-snug tracking-tight text-foreground">
-          <span className="line-clamp-1">{t.name}</span>
+      <YStack flex={1} padding="$4" $sm={{ padding: "$4.5" }}>
+        <H3 alignItems="flex-start" gap="$1.5" fontSize={15} fontWeight="500" lineHeight={1.375} letterSpacing={-0.4} color="$color">
+          <SizableText numberOfLines={1}>{t.name}</SizableText>
           <ArrowUpRight
-            className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground"
+            size={16} color="$color11"
             strokeWidth={1.6}
-          />
-        </h3>
-        <p className="mt-1.5 line-clamp-2 min-h-[2.5rem] text-[13px] leading-relaxed text-muted-foreground">
+  />
+        </H3>
+        <Paragraph marginTop="$1.5" numberOfLines={2} minHeight="2.5rem" fontSize={13} lineHeight={1.625} color="$color11">
           {t.tagline}
-        </p>
+        </Paragraph>
 
-        <div className="mt-auto flex items-center justify-between gap-3 pt-4">
-          <span className="truncate font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+        <XStack marginTop="auto" alignItems="center" justifyContent="space-between" gap="$3" paddingTop="$4">
+          <SizableText numberOfLines={1} fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color11">
             {showAuthor ? `by ${authorOf(t.slug)}` : t.framework}
-          </span>
+          </SizableText>
           <Link
             href={t.fork}
-            className="relative z-10 inline-flex shrink-0 items-center gap-1 rounded-full bg-primary px-3.5 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
+          ><SizableText position="relative" zIndex={10} flexShrink={0} alignItems="center" gap="$1" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$3.5" paddingVertical="$1.5" fontSize="$1" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
             Use template
-            <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} />
-          </Link>
-        </div>
-      </div>
+            <ArrowRight size={14} strokeWidth={2} />
+          </SizableText></Link>
+        </XStack>
+      </YStack>
 
       {/* Whole card → detail page. The stretched overlay sits BELOW the fork button
           (z-0 vs z-10), so a click anywhere opens the detail while "Use template"
@@ -121,8 +118,8 @@ function TemplateCard({ t, showAuthor = false }: { t: TemplateEntry; showAuthor?
         href={`/templates/${t.slug}`}
         aria-label={`View ${t.name}`}
         className="absolute inset-0 z-0"
-      />
-    </div>
+  />
+    </YStack>
   );
 }
 
@@ -158,20 +155,20 @@ export function TemplateGallery({
   }, [active]);
 
   return (
-    <div className={`mx-auto w-full max-w-7xl px-5 py-10 sm:px-8 sm:py-14 ${className}`}>
+    <YStack alignSelf="center" width="100%" maxWidth={1280} paddingHorizontal="$4.5" paddingVertical="$7" $sm={{ paddingHorizontal: "$6", paddingVertical: "$9" }} className={`${className}`}>
       {/* Header — true-black monochrome, landing aesthetic. */}
-      <header className="max-w-2xl">
-        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+      <YStack maxWidth={672}>
+        <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
           {eyebrow}
-        </p>
-        <h1 className="mt-3 text-3xl font-medium tracking-tight text-foreground sm:text-4xl md:text-[2.75rem] md:leading-[1.05]">
+        </Paragraph>
+        <H1 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} color="$color" $sm={{ fontSize: "$11" }} $md={{ color: "2.75rem", lineHeight: 1.05 }}>
           {heading}
-        </h1>
-        <p className="mt-4 text-base text-muted-foreground sm:text-lg">{lead}</p>
-      </header>
+        </H1>
+        <Paragraph marginTop="$4" fontSize="$4" color="$color11" $sm={{ fontSize: "$6" }}>{lead}</Paragraph>
+      </YStack>
 
       {/* Category rail — instant client-side filtering. */}
-      <div className="mt-8 flex flex-nowrap items-center gap-2 overflow-x-auto pb-1 sm:flex-wrap [scrollbar-width:none]">
+      <XStack marginTop="$6" flexWrap="nowrap" alignItems="center" gap="$2" paddingBottom="$1" overflow="scroll" $sm={{ flexWrap: "wrap" }} className="[scrollbar-width:none]">
         <RailPill label="All templates" active={active === ALL} onClick={() => setActive(ALL)} />
         {rail.map((c) => (
           <RailPill
@@ -179,45 +176,44 @@ export function TemplateGallery({
             label={c.label}
             active={active === c.slug}
             onClick={() => setActive(c.slug)}
-          />
+  />
         ))}
-      </div>
-      <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+      </XStack>
+      <Paragraph marginTop="$3" fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.24} color="$color11">
         {shown.length} template{shown.length === 1 ? "" : "s"}
-      </p>
+      </Paragraph>
 
       {/* Grid — reflows 1 → 2 (sm) → 3 (lg) → 4 (xl). */}
       {shown.length > 0 ? (
-        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
+        <YStack marginTop="$5" gap="$4" $sm={{ gap: "$4.5" }}>
           {shown.map((t) => (
             <TemplateCard key={t.slug} t={t} showAuthor={showAuthor} />
           ))}
-        </div>
+        </YStack>
       ) : (
-        <p className="mt-16 text-center text-sm text-muted-foreground">
+        <Paragraph marginTop="$10" textAlign="center" fontSize="$3" color="$color11">
           No templates in this category yet.
-        </p>
+        </Paragraph>
       )}
 
       {/* Footer CTA — the honest build path (no fabricated metrics). */}
-      <div className="mt-14 flex flex-col items-start gap-4 rounded-2xl border border-border bg-muted p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+      <YStack marginTop="$9" alignItems="flex-start" gap="$4" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$5" $sm={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: "$6" }}>
         <div>
-          <h2 className="text-lg font-medium tracking-tight text-foreground">
+          <H2 fontSize="$6" fontWeight="500" letterSpacing={-0.4} color="$color">
             Don&apos;t see the right fit?
-          </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
+          </H2>
+          <Paragraph marginTop="$1" fontSize="$3" color="$color11">
             Describe your app and Hanzo builds it from scratch — deployed live in minutes.
-          </p>
+          </Paragraph>
         </div>
         <Link
           href="/dev"
-          className="inline-flex shrink-0 items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-        >
-          <Sparkles className="h-4 w-4" strokeWidth={1.8} />
+        ><SizableText flexShrink={0} alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$4.5" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
+          <Sparkles size={16} strokeWidth={1.8} />
           Start building
-        </Link>
-      </div>
-    </div>
+        </SizableText></Link>
+      </YStack>
+    </YStack>
   );
 }
 

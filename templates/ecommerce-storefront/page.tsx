@@ -1,7 +1,8 @@
 "use client";
 
+import { YStack, XStack, H1, SizableText, H2, Paragraph, Image, H3 } from '@hanzo/gui';
 import { useState } from "react";
-import { Card, CardContent, CardFooter, Button, Badge, Input, AspectRatio, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Tabs, TabsContent, TabsList, TabsTrigger } from '@hanzo/ui';
+import { Card, CardContent, CardFooter, Button, Badge, Input, AspectRatio, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import { ShoppingCart, Search, Star, Filter, Heart, Share2 } from "lucide-react";
 
 const products = [
@@ -70,80 +71,76 @@ export default function EcommerceStorefront() {
   const cartItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div className="min-h-screen bg-background">
+    <YStack minHeight="100%" backgroundColor="$background">
       {/* Header */}
-      <header className="border-b sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-8">
-              <h1 className="text-2xl font-bold">Store</h1>
-              <nav className="hidden md:flex items-center gap-6">
+      <YStack borderBottomWidth={1} position="sticky" top="$0" backgroundColor="$background" backdropFilter="blur(8px)" zIndex={50} className="supports-[backdrop-filter]:bg-background/60">
+        <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$4">
+          <XStack alignItems="center" justifyContent="space-between">
+            <XStack alignItems="center" gap="$6">
+              <H1 fontSize="$8" fontWeight="700">Store</H1>
+              <YStack display="none" alignItems="center" gap="$5">
                 {categories.map(category => (
-                  <button
+                  <Button
                     key={category}
                     onClick={() => setSelectedCategory(category)}
-                    className={`text-sm font-medium transition-colors hover:text-primary ${
-                      selectedCategory === category
-                        ? "text-primary"
-                        : "text-muted-foreground"
-                    }`}
+                    fontSize="$3" fontWeight="500" hoverStyle={{ color: "$color12" }} {...{ color: selectedCategory === category ? "$color12" : "$color11" }}
                   >
                     {category}
-                  </button>
+                  </Button>
                 ))}
-              </nav>
-            </div>
+              </YStack>
+            </XStack>
 
-            <div className="flex items-center gap-4">
-              <div className="relative hidden md:block">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <XStack alignItems="center" gap="$4">
+              <YStack position="relative" display="none">
+                <Search size={16} color="$color11" />
                 <Input
                   placeholder="Search products..."
-                  className="pl-9 w-[200px] lg:w-[300px]"
-                />
-              </div>
+                  paddingLeft={36} width={200} $lg={{ width: 300 }}
+  />
+              </YStack>
 
-              <Button variant="ghost" size="icon" className="relative">
-                <ShoppingCart className="w-5 h-5" />
+              <Button variant="ghost" size="icon" position="relative">
+                <ShoppingCart size={20} />
                 {cartItemsCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center">
+                  <Badge position="absolute" top="-1" right="-1" height="$4.5" width="$4.5" borderRadius="$10" padding="$0" alignItems="center" justifyContent="center">
                     {cartItemsCount}
                   </Badge>
                 )}
               </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+            </XStack>
+          </XStack>
+        </YStack>
+      </YStack>
 
       {/* Hero Section - Orange/Pink Gradient Theme */}
-      <section className="bg-gradient-to-r from-orange-500 to-pink-500 text-white py-16">
-        <div className="container mx-auto px-6">
-          <div className="max-w-3xl">
-            <h2 className="text-4xl font-bold mb-4">
+      <SizableText color="white" paddingVertical="$10" display="flex" flexDirection="column">
+        <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5">
+          <YStack maxWidth={768}>
+            <H2 fontSize="$11" fontWeight="700" marginBottom="$4">
               Summer Collection
-            </h2>
-            <p className="text-xl mb-6 opacity-90">
+            </H2>
+            <Paragraph fontSize="$7" marginBottom="$5" opacity={0.9}>
               Discover our latest products built with @hanzo/ui components
-            </p>
+            </Paragraph>
             <Button size="lg" variant="secondary">
               Shop Now
             </Button>
-          </div>
-        </div>
-      </section>
+          </YStack>
+        </YStack>
+      </SizableText>
 
       {/* Filters Bar */}
-      <div className="border-b">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="outline" className="gap-2">
-                <Filter className="w-4 h-4" />
+      <YStack borderBottomWidth={1}>
+        <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$4">
+          <XStack alignItems="center" justifyContent="space-between">
+            <XStack alignItems="center" gap="$4">
+              <Button variant="outline" gap="$2">
+                <Filter size={16} />
                 Filters
               </Button>
               <Select defaultValue="featured">
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger width={180}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -154,72 +151,68 @@ export default function EcommerceStorefront() {
                   <SelectItem value="newest">Newest</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-            <p className="text-sm text-muted-foreground">
+            </XStack>
+            <Paragraph fontSize="$3" color="$color11">
               Showing {products.length} products
-            </p>
-          </div>
-        </div>
-      </div>
+            </Paragraph>
+          </XStack>
+        </YStack>
+      </YStack>
 
       {/* Products Grid */}
-      <section className="py-12">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <YStack paddingVertical="$8">
+        <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5">
+          <YStack gap="$5">
             {products.map(product => (
-              <Card key={product.id} className="overflow-hidden group">
-                <div className="relative">
+              <Card key={product.id} overflow="hidden" group>
+                <YStack position="relative">
                   <AspectRatio ratio={1}>
-                    <img
+                    <Image
                       src={product.image}
                       alt={product.name}
-                      className="object-cover w-full h-full group-hover:scale-105 transition-transform"
-                    />
+                      objectFit="cover" width="100%" height="100%" $group-hover={{ scale: 1.05 }}
+  />
                   </AspectRatio>
                   {product.badge && (
-                    <Badge className="absolute top-2 left-2">
+                    <Badge position="absolute" top="$2" left="$2">
                       {product.badge}
                     </Badge>
                   )}
-                  <div className="absolute top-2 right-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button size="icon" variant="secondary" className="h-8 w-8">
-                      <Heart className="w-4 h-4" />
+                  <YStack position="absolute" top="$2" right="$2" gap="$1" opacity={0} $group-hover={{ opacity: 1 }}>
+                    <Button size="icon" variant="secondary" height="$6" width="$6">
+                      <Heart size={16} />
                     </Button>
-                    <Button size="icon" variant="secondary" className="h-8 w-8">
-                      <Share2 className="w-4 h-4" />
+                    <Button size="icon" variant="secondary" height="$6" width="$6">
+                      <Share2 size={16} />
                     </Button>
-                  </div>
-                </div>
+                  </YStack>
+                </YStack>
 
-                <CardContent className="p-4">
-                  <h3 className="font-semibold mb-2">{product.name}</h3>
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="flex items-center">
+                <CardContent padding="$4">
+                  <H3 fontWeight="600" marginBottom="$2">{product.name}</H3>
+                  <XStack alignItems="center" gap="$2" marginBottom="$2">
+                    <XStack alignItems="center">
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`w-4 h-4 ${
-                            i < Math.floor(product.rating)
-                              ? "fill-yellow-400 text-yellow-400"
-                              : "text-muted-foreground"
-                          }`}
-                        />
+                          size={16}
+  />
                       ))}
-                    </div>
-                    <span className="text-sm text-muted-foreground">
+                    </XStack>
+                    <SizableText fontSize="$3" color="$color11">
                       ({product.reviews})
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-2xl font-bold">
+                    </SizableText>
+                  </XStack>
+                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+                    <SizableText fontSize="$8" fontWeight="700">
                       ${product.price}
-                    </span>
-                  </div>
+                    </SizableText>
+                  </XStack>
 
                   {/* Variant Selector */}
-                  <div className="mb-3">
+                  <YStack marginBottom="$3">
                     <Select defaultValue={product.variants[0]}>
-                      <SelectTrigger className="w-full h-8 text-sm">
+                      <SelectTrigger width="100%" height="$6" fontSize="$3">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -230,58 +223,58 @@ export default function EcommerceStorefront() {
                         ))}
                       </SelectContent>
                     </Select>
-                  </div>
+                  </YStack>
                 </CardContent>
 
-                <CardFooter className="p-4 pt-0">
+                <CardFooter padding="$4" paddingTop="$0">
                   <Button
-                    className="w-full"
+                    width="100%"
                     onClick={() => addToCart(product.id)}
                   >
-                    <ShoppingCart className="w-4 h-4 mr-2" />
+                    <ShoppingCart size={16} />
                     Add to Cart
                   </Button>
                 </CardFooter>
               </Card>
             ))}
-          </div>
-        </div>
-      </section>
+          </YStack>
+        </YStack>
+      </YStack>
 
       {/* Features */}
-      <section className="py-12 bg-muted">
-        <div className="container mx-auto px-6">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center mx-auto mb-3">
-                <ShoppingCart className="w-6 h-6 text-orange-500" />
-              </div>
-              <h3 className="font-semibold mb-1">Free Shipping</h3>
-              <p className="text-sm text-muted-foreground">
+      <YStack paddingVertical="$8" backgroundColor="$color3">
+        <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5">
+          <YStack gap="$6">
+            <SizableText textAlign="center" display="flex" flexDirection="column">
+              <XStack width="$8" height="$8" borderRadius="$10" backgroundColor="$orange9" alignItems="center" justifyContent="center" alignSelf="center" marginBottom="$3">
+                <ShoppingCart size={24} color="$orange9" />
+              </XStack>
+              <H3 fontWeight="600" marginBottom="$1">Free Shipping</H3>
+              <Paragraph fontSize="$3" color="$color11">
                 On orders over $100
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 rounded-full bg-pink-500/10 flex items-center justify-center mx-auto mb-3">
-                <Star className="w-6 h-6 text-pink-500" />
-              </div>
-              <h3 className="font-semibold mb-1">Quality Products</h3>
-              <p className="text-sm text-muted-foreground">
+              </Paragraph>
+            </SizableText>
+            <SizableText textAlign="center" display="flex" flexDirection="column">
+              <XStack width="$8" height="$8" borderRadius="$10" backgroundColor="$pink9" alignItems="center" justifyContent="center" alignSelf="center" marginBottom="$3">
+                <Star size={24} color="$pink9" />
+              </XStack>
+              <H3 fontWeight="600" marginBottom="$1">Quality Products</H3>
+              <Paragraph fontSize="$3" color="$color11">
                 100% authentic brands
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 rounded-full bg-rose-500/10 flex items-center justify-center mx-auto mb-3">
-                <Heart className="w-6 h-6 text-rose-500" />
-              </div>
-              <h3 className="font-semibold mb-1">24/7 Support</h3>
-              <p className="text-sm text-muted-foreground">
+              </Paragraph>
+            </SizableText>
+            <SizableText textAlign="center" display="flex" flexDirection="column">
+              <XStack width="$8" height="$8" borderRadius="$10" backgroundColor="$red9" alignItems="center" justifyContent="center" alignSelf="center" marginBottom="$3">
+                <Heart size={24} color="$red9" />
+              </XStack>
+              <H3 fontWeight="600" marginBottom="$1">24/7 Support</H3>
+              <Paragraph fontSize="$3" color="$color11">
                 Dedicated customer service
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
+              </Paragraph>
+            </SizableText>
+          </YStack>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }

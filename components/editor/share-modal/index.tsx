@@ -1,5 +1,6 @@
 "use client";
 
+import { SizableText, XStack, YStack, H3, Paragraph } from '@hanzo/gui';
 import { useState } from "react";
 import {
   Users,
@@ -32,18 +33,18 @@ interface Collaborator {
 /** One neutral, monochrome avatar — a single soft-rounded initial chip. No hue. */
 function Avatar({ name }: { name: string }) {
   return (
-    <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-[11px] font-medium text-foreground">
+    <SizableText width={28} height={28} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$10" backgroundColor="$color3" fontSize={11} fontWeight="500" color="$color" display="flex" flexDirection="row">
       {name.charAt(0).toUpperCase()}
-    </div>
+    </SizableText>
   );
 }
 
 /** One consistent card row — the shared shell for every access/link row. */
 function Row({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-lg border border-border bg-muted/40 px-3 py-2">
+    <XStack alignItems="center" justifyContent="space-between" gap="$3" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2">
       {children}
-    </div>
+    </XStack>
   );
 }
 
@@ -102,58 +103,58 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg bg-card text-foreground border-border">
-        <DialogHeader className="space-y-1">
-          <DialogTitle className="text-base font-medium">Invite</DialogTitle>
-          <DialogDescription className="text-xs text-muted-foreground">
+      <DialogContent maxWidth={512} backgroundColor="$background" color="$color" borderColor="$borderColor">
+        <DialogHeader rowGap="$1">
+          <DialogTitle fontSize="$4" fontWeight="500">Invite</DialogTitle>
+          <DialogDescription fontSize="$1" color="$color11">
             Collaborators use credits from the project owner&apos;s workspace ({user?.name || "Your Workspace"}).
           </DialogDescription>
         </DialogHeader>
 
-        <div className="mt-1 space-y-4">
+        <YStack marginTop="$1" rowGap="$4">
           {/* Invite by email — one compact input + one matching button (equal height + radius). */}
-          <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">Invite by email</Label>
-            <div className="flex items-stretch gap-2">
+          <YStack rowGap="$1.5">
+            <Label fontSize="$1" color="$color11">Invite by email</Label>
+            <XStack alignItems="stretch" gap="$2">
               <Input
                 type="email"
                 placeholder="name@company.com"
                 value={email}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                 onKeyDown={(e: React.KeyboardEvent) => e.key === "Enter" && handleInvite()}
-                className="flex-1"
-              />
-              <Button onClick={handleInvite} className="gap-1.5">
-                <UserPlus className="size-3.5" />
+                flex={1}
+  />
+              <Button onClick={handleInvite} gap="$1.5">
+                <UserPlus size={14} />
                 Invite
               </Button>
-            </div>
-          </div>
+            </XStack>
+          </YStack>
 
           {/* Edit access — collaborators list. */}
-          <div className="space-y-1.5">
-            <h3 className="text-xs font-medium text-muted-foreground">Edit access</h3>
-            <div className="space-y-1.5">
+          <YStack rowGap="$1.5">
+            <H3 fontSize="$1" fontWeight="500" color="$color11">Edit access</H3>
+            <YStack rowGap="$1.5">
               {collaborators.map((collaborator) => (
-                <div key={collaborator.id} className="flex items-center justify-between gap-3 px-1 py-1">
-                  <div className="flex min-w-0 items-center gap-2.5">
+                <XStack key={collaborator.id} alignItems="center" justifyContent="space-between" gap="$3" paddingHorizontal="$1" paddingVertical="$1">
+                  <XStack minWidth={0} alignItems="center" gap="$2.5">
                     <Avatar name={collaborator.name} />
-                    <div className="min-w-0">
-                      <p className="truncate text-[13px] font-medium">
+                    <YStack minWidth={0}>
+                      <Paragraph numberOfLines={1} fontSize={13} fontWeight="500">
                         {collaborator.name}{collaborator.role === "owner" && " (you)"}
-                      </p>
-                      <p className="truncate text-[11px] text-muted-foreground">{collaborator.email}</p>
-                    </div>
-                  </div>
+                      </Paragraph>
+                      <Paragraph numberOfLines={1} fontSize={11} color="$color11">{collaborator.email}</Paragraph>
+                    </YStack>
+                  </XStack>
                   {collaborator.role === "owner" ? (
-                    <span className="text-[11px] text-muted-foreground">Owner</span>
+                    <SizableText fontSize={11} color="$color11">Owner</SizableText>
                   ) : (
-                    <div className="flex items-center gap-1.5">
+                    <XStack alignItems="center" gap="$1.5">
                       <Select
                         value={collaborator.role}
                         onValueChange={(value: string) => updateCollaboratorRole(collaborator.id, value as "editor" | "viewer")}
                       >
-                        <SelectTrigger className="w-[104px]">
+                        <SelectTrigger width={104}>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -167,82 +168,82 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
                         onClick={() => removeCollaborator(collaborator.id)}
                         aria-label="Remove collaborator"
                       >
-                        <X className="size-3.5" />
+                        <X size={14} />
                       </Button>
-                    </div>
+                    </XStack>
                   )}
-                </div>
+                </XStack>
               ))}
-            </div>
-          </div>
+            </YStack>
+          </YStack>
 
           {/* Project access — visibility. */}
-          <div className="space-y-1.5">
-            <h3 className="text-xs font-medium text-muted-foreground">Project access</h3>
+          <YStack rowGap="$1.5">
+            <H3 fontSize="$1" fontWeight="500" color="$color11">Project access</H3>
             <Row>
-              <div className="flex min-w-0 items-center gap-2.5">
-                <Users className="size-4 shrink-0 text-muted-foreground" />
-                <div className="min-w-0">
-                  <p className="text-[13px]">Visible to your workspace</p>
-                  <p className="text-[11px] text-muted-foreground">Anyone in your workspace can view this project</p>
-                </div>
-              </div>
+              <XStack minWidth={0} alignItems="center" gap="$2.5">
+                <Users size={16} color="$color11" />
+                <YStack minWidth={0}>
+                  <Paragraph fontSize={13}>Visible to your workspace</Paragraph>
+                  <Paragraph fontSize={11} color="$color11">Anyone in your workspace can view this project</Paragraph>
+                </YStack>
+              </XStack>
               <Select value={visibility} onValueChange={(v: string) => setVisibility(v as typeof visibility)}>
-                <SelectTrigger className="w-[128px]">
+                <SelectTrigger width={128}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="public">
-                    <span className="flex items-center gap-2"><Globe className="size-3.5" />Public</span>
+                    <SizableText alignItems="center" gap="$2"><Globe size={14} />Public</SizableText>
                   </SelectItem>
                   <SelectItem value="workspace">
-                    <span className="flex items-center gap-2"><Users className="size-3.5" />Workspace</span>
+                    <SizableText alignItems="center" gap="$2"><Users size={14} />Workspace</SizableText>
                   </SelectItem>
                   <SelectItem value="private">
-                    <span className="flex items-center gap-2"><Lock className="size-3.5" />Private</span>
+                    <SizableText alignItems="center" gap="$2"><Lock size={14} />Private</SizableText>
                   </SelectItem>
                 </SelectContent>
               </Select>
             </Row>
-          </div>
+          </YStack>
 
           {/* Create invite link. */}
           <Row>
-            <div className="flex min-w-0 items-center gap-2.5">
-              <Link2 className="size-4 shrink-0 text-muted-foreground" />
-              <div className="min-w-0">
-                <p className="text-[13px]">Create invite link</p>
-                <p className="text-[11px] text-muted-foreground">Anyone with this link can join</p>
-              </div>
-            </div>
-            <Button variant="outline" onClick={handleCopyInviteLink} className="gap-1.5">
-              {inviteLinkCopied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+            <XStack minWidth={0} alignItems="center" gap="$2.5">
+              <Link2 size={16} color="$color11" />
+              <YStack minWidth={0}>
+                <Paragraph fontSize={13}>Create invite link</Paragraph>
+                <Paragraph fontSize={11} color="$color11">Anyone with this link can join</Paragraph>
+              </YStack>
+            </XStack>
+            <Button variant="outline" onClick={handleCopyInviteLink} gap="$1.5">
+              {inviteLinkCopied ? <Check size={14} /> : <Copy size={14} />}
               {inviteLinkCopied ? "Copied" : "Create"}
             </Button>
           </Row>
 
           {/* Share + upgrade — footer actions, consistent buttons. */}
-          <div className="flex items-center justify-between border-t border-border pt-3">
+          <XStack alignItems="center" justifyContent="space-between" borderTopWidth={1} borderColor="$borderColor" paddingTop="$3">
             <div>
-              <p className="text-[13px] font-medium">Share project</p>
-              <p className="text-[11px] text-muted-foreground">
+              <Paragraph fontSize={13} fontWeight="500">Share project</Paragraph>
+              <Paragraph fontSize={11} color="$color11">
                 {visibility === "public" ? "Anyone with the link can view" : "Restricted to invited members"}
-              </p>
+              </Paragraph>
             </div>
-            <Button onClick={handleCopyLink} className="gap-1.5">
-              {linkCopied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+            <Button onClick={handleCopyLink} gap="$1.5">
+              {linkCopied ? <Check size={14} /> : <Copy size={14} />}
               {linkCopied ? "Copied" : "Copy link"}
             </Button>
-          </div>
+          </XStack>
 
-          <div className="flex items-center justify-between border-t border-border pt-3">
+          <XStack alignItems="center" justifyContent="space-between" borderTopWidth={1} borderColor="$borderColor" paddingTop="$3">
             <div>
-              <p className="text-[13px] font-medium">Upgrade to Enterprise</p>
-              <p className="text-[11px] text-muted-foreground">Advanced features &amp; enterprise support</p>
+              <Paragraph fontSize={13} fontWeight="500">Upgrade to Enterprise</Paragraph>
+              <Paragraph fontSize={11} color="$color11">Advanced features &amp; enterprise support</Paragraph>
             </div>
             <Button variant="outline">Contact us</Button>
-          </div>
-        </div>
+          </XStack>
+        </YStack>
       </DialogContent>
     </Dialog>
   );

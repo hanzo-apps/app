@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from '@hanzo/ui';
+import { Anchor, XStack, SizableText, Paragraph, YStack, H1, H2 } from '@hanzo/gui';
 // /apps — the Hanzo apps & integrations catalog. True-black monochrome to match
 // the rest of the site. The surfaces are laid out as a horizontal filmstrip that
 // is PINNED while you scroll: scrolling the page down pans left→right through
@@ -34,31 +36,31 @@ const CATEGORIES: { label: string; cats: string[] }[] = [
 function AppCell({ app }: { app: AppEntry }) {
   const Icon = app.icon;
   return (
-    <a
+    <Anchor
       href={appUrl(app)}
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`${ACTION_LABEL[app.action]} ${app.name}`}
-      className="group block focus-visible:outline-none"
+      group focusVisibleStyle={{ outlineWidth: 0 }}
     >
-      <div className="flex items-center gap-2.5">
+      <XStack alignItems="center" gap="$2.5">
         <Icon
           className="h-6 w-6 flex-shrink-0 text-foreground"
           strokeWidth={1.5}
           aria-hidden
-        />
-        <span className="text-lg font-semibold tracking-tight text-foreground group-hover:underline md:text-xl">
+  />
+        <SizableText fontSize="$6" fontWeight="600" letterSpacing={-0.4} color="$color" $group-hover={{ textDecorationLine: "underline" }} $md={{ fontSize: "$7" }}>
           {app.name}
-        </span>
-      </div>
-      <p className="mt-4 max-w-[30ch] text-[15px] leading-relaxed text-muted-foreground">
+        </SizableText>
+      </XStack>
+      <Paragraph marginTop="$4" maxWidth="30ch" fontSize={15} lineHeight={1.625} color="$color11">
         {app.blurb}
-      </p>
-      <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors group-hover:text-foreground">
+      </Paragraph>
+      <SizableText marginTop="$4" alignItems="center" gap="$1" fontSize="$3" fontWeight="500" color="$color11" $group-hover={{ color: "$color" }}>
         {ACTION_LABEL[app.action]}
-        <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
-      </span>
-    </a>
+        <ArrowUpRight size={14} aria-hidden />
+      </SizableText>
+    </Anchor>
   );
 }
 
@@ -110,129 +112,127 @@ export default function AppsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background font-sans text-foreground">
+    <SizableText minHeight="100%" backgroundColor="$background" fontFamily="$body" color="$color" display="flex" flexDirection="column">
       {/* Shared site header — same menu as the rest of hanzo.app. */}
       <Header />
 
       {/* ── Intro: editorial title + surface nav (jumps into the pinned strip) ── */}
-      <section className="px-4 pt-10 md:px-8 md:pt-16">
-        <div className="mx-auto max-w-6xl">
-          <h1 className="text-5xl font-medium leading-[1.02] tracking-tight md:text-[64px]">
+      <YStack paddingHorizontal="$4" paddingTop="$7" $md={{ paddingHorizontal: "$6", paddingTop: "$10" }}>
+        <YStack alignSelf="center" maxWidth={1152}>
+          <H1 fontSize="$12" fontWeight="500" lineHeight={1.02} letterSpacing={-0.4} $md={{ fontSize: 64 }}>
             Runs
-          </h1>
-          <p className="mt-1 text-5xl font-medium leading-[1.02] tracking-tight text-muted-foreground md:text-[64px]">
+          </H1>
+          <Paragraph marginTop="$1" fontSize="$12" fontWeight="500" lineHeight={1.02} letterSpacing={-0.4} color="$color11" $md={{ fontSize: 64 }}>
             Everywhere.
-          </p>
-          <p className="mt-6 max-w-xl text-base text-muted-foreground md:text-lg">
+          </Paragraph>
+          <Paragraph marginTop="$5" maxWidth={576} fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
             One key, every surface. Install Hanzo in your browser, editor,
             desktop, and office — or connect the tools your team already runs.
-          </p>
+          </Paragraph>
 
-          <div
+          <XStack
             role="group"
             aria-label="Jump to a surface"
-            className="mt-10 flex flex-wrap items-center gap-x-1 gap-y-3"
+            marginTop="$7" flexWrap="wrap" alignItems="center" columnGap="$1" rowGap="$3"
           >
             {CATEGORIES.map((c, i) => {
               const on = active === i;
               return (
-                <button
+                <Button
                   key={c.label}
                   type="button"
                   onClick={() => jumpTo(i)}
                   aria-pressed={on}
-                  className={[
+                  className={`${[
                     "rounded-full px-5 py-2 text-lg transition-colors",
                     on
                       ? "border border-foreground text-foreground"
                       : "border border-transparent text-muted-foreground hover:text-foreground",
-                  ].join(" ")}
+                  ].join(" ")}`}
                 >
                   {c.label}
-                </button>
+                </Button>
               );
             })}
-          </div>
-        </div>
-      </section>
+          </XStack>
+        </YStack>
+      </YStack>
 
       {/* ── The pinned filmstrip: N screens tall; scrolling pans through all N ── */}
-      <div ref={wrapRef} className="relative" style={{ height: `${N * 90}vh` }}>
-        <div className="sticky top-0 flex h-screen items-center overflow-hidden">
-          <div
+      <YStack ref={wrapRef} position="relative" style={{ height: `${N * 90}vh` }}>
+        <XStack position="sticky" top="$0" height="100%" alignItems="center" overflow="hidden">
+          <XStack
             ref={trackRef}
-            className="flex will-change-transform motion-reduce:transform-none"
           >
             {CATEGORIES.map((c, i) => {
               const apps = appCatalog.filter((a) => c.cats.includes(a.category));
               const on = active === i;
               return (
-                <section
+                <YStack
                   key={c.label}
                   data-panel
                   aria-label={c.label}
-                  className={[
+                  className={`${[
                     "flex h-screen w-screen shrink-0 flex-col justify-center px-4 transition-opacity duration-500 md:px-8",
                     on ? "opacity-100" : "opacity-40",
-                  ].join(" ")}
+                  ].join(" ")}`}
                 >
-                  <div className="mx-auto w-full max-w-6xl">
-                    <div className="mb-2 flex items-baseline gap-3">
-                      <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                  <YStack alignSelf="center" width="100%" maxWidth={1152}>
+                    <XStack marginBottom="$2" alignItems="baseline" gap="$3">
+                      <SizableText fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.88} color="$color11">
                         {c.label}
-                      </span>
-                      <span className="font-mono text-[11px] text-muted-foreground">
+                      </SizableText>
+                      <SizableText fontFamily="$mono" fontSize={11} color="$color11">
                         {String(i + 1).padStart(2, "0")} / {String(N).padStart(2, "0")}
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+                      </SizableText>
+                    </XStack>
+                    <YStack columnGap="$6" rowGap="$7">
                       {apps.map((app) => (
                         <AppCell key={app.name} app={app} />
                       ))}
-                    </div>
-                  </div>
-                </section>
+                    </YStack>
+                  </YStack>
+                </YStack>
               );
             })}
-          </div>
+          </XStack>
 
           {/* progress rail — fills as you pan through the surfaces */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-6 mx-auto flex max-w-6xl items-center gap-3 px-4 md:px-8">
-            <div className="h-px flex-1 bg-border">
-              <div
-                className="h-px bg-foreground/60 transition-[width] duration-300"
+          <XStack pointerEvents="none" position="absolute" left="$0" right="$0" bottom="$5" alignSelf="center" maxWidth={1152} alignItems="center" gap="$3" paddingHorizontal="$4" $md={{ paddingHorizontal: "$6" }}>
+            <YStack height={1} flex={1} backgroundColor="$borderColor">
+              <YStack
+                height={1} backgroundColor="$color"
                 style={{ width: `${(active / Math.max(N - 1, 1)) * 100}%` }}
-              />
-            </div>
-            <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+  />
+            </YStack>
+            <SizableText fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.24} color="$color11">
               Scroll →
-            </span>
-          </div>
-        </div>
-      </div>
+            </SizableText>
+          </XStack>
+        </XStack>
+      </YStack>
 
       {/* ── CTA — the page's real conversion ────────────────────────────────── */}
-      <section className="border-t border-border px-4 py-24 md:px-8">
-        <div className="mx-auto max-w-6xl">
-          <h2 className="text-3xl font-medium tracking-tight md:text-4xl">
+      <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$12" $md={{ paddingHorizontal: "$6" }}>
+        <YStack alignSelf="center" maxWidth={1152}>
+          <H2 fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
             Start with one key.
-          </h2>
-          <p className="mt-3 max-w-md text-[15px] leading-relaxed text-muted-foreground">
+          </H2>
+          <Paragraph marginTop="$3" maxWidth={448} fontSize={15} lineHeight={1.625} color="$color11">
             Sign in with Hanzo, mint one{" "}
-            <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-sm text-foreground">
+            <SizableText borderRadius="$2" backgroundColor="$color3" paddingHorizontal="$1.5" paddingVertical="$0.5" fontFamily="$mono" fontSize="$3" color="$color">
               hk-
-            </code>{" "}
+            </SizableText>{" "}
             key, and every app above is authenticated — no per-app credentials.
-          </p>
+          </Paragraph>
           <Link
             href="/dashboard"
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
+          ><SizableText marginTop="$5" alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
             Get your key
-            <ArrowRight className="h-4 w-4" aria-hidden />
-          </Link>
-        </div>
-      </section>
-    </div>
+            <ArrowRight size={16} aria-hidden />
+          </SizableText></Link>
+        </YStack>
+      </YStack>
+    </SizableText>
   );
 }

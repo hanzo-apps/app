@@ -1,5 +1,7 @@
 'use client';
 
+import { Button } from '@hanzo/ui';
+import { SizableText, YStack, XStack } from '@hanzo/gui';
 import React from 'react';
 import { RotateCcw } from 'lucide-react';
 import { checkpointManager, CheckpointMetadata } from '@/lib/vfs/checkpoint';
@@ -40,19 +42,15 @@ export function RollbackButton({
   };
 
   return (
-    <button
+    <Button
       onClick={handleRestore}
       disabled={isRestoring}
-      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-        isRestoring
-          ? 'bg-muted text-muted-foreground cursor-not-allowed'
-          : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-      } ${className}`}
+      alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$1.5" borderRadius="$3" fontSize="$3" fontWeight="500" {...{ backgroundColor: isRestoring ? "$color3" : "$color4", color: isRestoring ? "$color11" : "$color", cursor: isRestoring ? "not-allowed" : undefined, hoverStyle: isRestoring ? undefined : {"backgroundColor":"$color4"} }} className={`${className}`}
       title={description || 'Restore to this checkpoint'}
     >
-      <RotateCcw className={`h-3.5 w-3.5 ${isRestoring ? 'animate-spin' : ''}`} />
+      <RotateCcw size={14} />
       {isRestoring ? 'Restoring...' : 'Rollback'}
-    </button>
+    </Button>
   );
 }
 
@@ -95,36 +93,36 @@ export function CheckpointList({
   };
 
   if (loading) {
-    return <div className={`text-sm text-muted-foreground ${className}`}>Loading checkpoints...</div>;
+    return <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column" className={`${className}`}>Loading checkpoints...</SizableText>;
   }
 
   if (checkpoints.length === 0) {
-    return <div className={`text-sm text-muted-foreground ${className}`}>No checkpoints available</div>;
+    return <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column" className={`${className}`}>No checkpoints available</SizableText>;
   }
 
   return (
-    <div className={`space-y-2 ${className}`}>
+    <YStack rowGap="$2" className={`${className}`}>
       {checkpoints.map((checkpoint) => (
-        <div
+        <XStack
           key={checkpoint.id}
-          className="flex items-center justify-between p-3 rounded-lg border bg-card"
+          alignItems="center" justifyContent="space-between" padding="$3" borderRadius="$5" borderWidth={1} backgroundColor="$background"
         >
-          <div className="flex-1 min-w-0">
-            <div className="text-sm font-medium truncate">{checkpoint.description}</div>
-            <div className="text-xs text-muted-foreground mt-0.5">
+          <YStack flex={1} minWidth={0}>
+            <SizableText fontSize="$3" fontWeight="500" numberOfLines={1} display="flex" flexDirection="column">{checkpoint.description}</SizableText>
+            <SizableText fontSize="$1" color="$color11" marginTop="$0.5" display="flex" flexDirection="column">
               {new Date(checkpoint.timestamp).toLocaleString()}
               {' · '}
-              <span className="capitalize">{checkpoint.kind}</span>
-            </div>
-          </div>
+              <SizableText textTransform="capitalize">{checkpoint.kind}</SizableText>
+            </SizableText>
+          </YStack>
           <RollbackButton
             checkpointId={checkpoint.id}
             description={checkpoint.description}
             onRestore={(success) => handleRestore(checkpoint.id, success)}
             className="ml-2 flex-shrink-0"
-          />
-        </div>
+  />
+        </XStack>
       ))}
-    </div>
+    </YStack>
   );
 }

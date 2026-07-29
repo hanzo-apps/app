@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { Button, toast } from '@hanzo/ui';
+import { YStack, XStack, H4, Paragraph } from '@hanzo/gui';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { Button, toast, Textarea } from '@hanzo/ui';
 import { Play, Loader2 } from 'lucide-react';
 import { SchemaViewer } from '@/components/database-manager/schema-viewer';
 import { SqlEditor } from '@/components/database-manager/sql-editor';
@@ -142,32 +143,28 @@ export function SchemaEditor({ projectId, enabled, onSchemaChange }: SchemaEdito
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <YStack height="100%">
       {/* Sub-tab buttons */}
-      <div className="flex items-center gap-1 mb-3 border-b pb-2">
+      <XStack alignItems="center" gap="$1" marginBottom="$3" borderBottomWidth={1} paddingBottom="$2">
         {(['tables', 'sql', 'ddl'] as const).map(tab => (
-          <button
+          <Button
             key={tab}
             onClick={() => setActiveSubTab(tab)}
-            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-              activeSubTab === tab
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-            }`}
+            paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$1" fontWeight="500" borderRadius="$3" {...{ backgroundColor: activeSubTab === tab ? "$color12" : undefined, color: activeSubTab === tab ? "$background" : "$color11", hoverStyle: activeSubTab === tab ? undefined : {"color":"$color","backgroundColor":"$color3"} }}
           >
             {tab === 'tables' ? 'Tables' : tab === 'sql' ? 'SQL' : 'DDL'}
-          </button>
+          </Button>
         ))}
-      </div>
+      </XStack>
 
       {/* Sub-tab content */}
-      <div className="flex-1 min-h-0">
+      <YStack flex={1} minHeight={0}>
         {activeSubTab === 'tables' && (
           <SchemaViewer
             key={schemaKey}
             schemaEndpoint={schemaEndpoint}
             showSystemTablesToggle={false}
-          />
+  />
         )}
 
         {activeSubTab === 'sql' && (
@@ -175,39 +172,39 @@ export function SchemaEditor({ projectId, enabled, onSchemaChange }: SchemaEdito
         )}
 
         {activeSubTab === 'ddl' && (
-          <div className="h-full flex flex-col gap-3">
-            <div className="flex items-center justify-between">
+          <YStack height="100%" gap="$3">
+            <XStack alignItems="center" justifyContent="space-between">
               <div>
-                <h4 className="text-sm font-medium">Apply DDL</h4>
-                <p className="text-xs text-muted-foreground mt-0.5">
+                <H4 fontSize="$3" fontWeight="500">Apply DDL</H4>
+                <Paragraph fontSize="$1" color="$color11" marginTop="$0.5">
                   CREATE TABLE, ALTER TABLE, and other DDL statements
-                </p>
+                </Paragraph>
               </div>
               <Button
                 size="sm"
-                className="h-7 px-2 text-xs"
+                height={28} paddingHorizontal="$2" fontSize="$1"
                 onClick={applyDDL}
                 disabled={applying || !ddl.trim()}
               >
                 {applying ? (
-                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                  <Loader2 size={12} />
                 ) : (
-                  <Play className="h-3 w-3 mr-1" />
+                  <Play size={12} />
                 )}
                 Apply
               </Button>
-            </div>
-            <textarea
+            </XStack>
+            <Textarea
               data-schema-editor
-              className="flex-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono resize-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring placeholder:text-muted-foreground"
+              flex={1} width="100%" borderRadius="$3" borderWidth={1} borderColor="$color2" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3" fontFamily="$mono" resize="none" placeholderTextColor="$color11" focusVisibleStyle={{ outlineWidth: 0 }}
               placeholder={`-- Create or modify tables\nCREATE TABLE IF NOT EXISTS example (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  name TEXT NOT NULL,\n  created_at DATETIME DEFAULT CURRENT_TIMESTAMP\n);`}
               value={ddl}
               onChange={(e) => setDdl(e.target.value)}
               spellCheck={false}
-            />
-          </div>
+  />
+          </YStack>
         )}
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }

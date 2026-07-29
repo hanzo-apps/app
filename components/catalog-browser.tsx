@@ -1,5 +1,7 @@
 "use client";
 
+import { Button, Input } from '@hanzo/ui';
+import { SizableText, YStack, XStack, H3, Anchor, Paragraph, H1 } from '@hanzo/gui';
 // The cross-org catalog browser — everything the fleet has built, in one place:
 // hanzo, lux and zoo repos plus every site this platform is serving. ONE component
 // over ONE surface (/v1/catalog); search and browse are the same request, so the
@@ -43,19 +45,15 @@ function Pill({
   onClick: () => void;
 }) {
   return (
-    <button
+    <Button
       onClick={onClick}
-      className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
-        active
-          ? "bg-primary text-primary-foreground"
-          : "border border-border bg-muted text-muted-foreground hover:border-foreground/30 hover:text-foreground"
-      }`}
+      flexShrink={0} whiteSpace="nowrap" borderRadius="$10" paddingHorizontal="$3.5" paddingVertical="$1.5" fontSize="$1" fontWeight="500" {...{ backgroundColor: active ? "$color12" : "$color3", color: active ? "$background" : "$color11", borderWidth: active ? undefined : 1, borderColor: active ? undefined : "$borderColor", hoverStyle: active ? undefined : {"borderColor":"$color","color":"$color"} }}
     >
       {label}
       {count !== undefined && (
-        <span className="ml-1.5 font-mono text-[10px] opacity-60">{count}</span>
+        <SizableText marginLeft="$1.5" fontFamily="$mono" fontSize={10} opacity={0.6}>{count}</SizableText>
       )}
-    </button>
+    </Button>
   );
 }
 
@@ -77,72 +75,72 @@ function Card({
 }) {
   const href = e.url || e.repo;
   return (
-    <div className="group relative flex flex-col gap-2 rounded-2xl border border-border bg-muted p-4 transition-all duration-200 hover:-translate-y-1 hover:border-foreground/30 sm:p-5">
-      <div className="flex items-center gap-2">
-        <span className="rounded-full border border-border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+    <YStack group position="relative" gap="$2" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$4" hoverStyle={{ y: "-1", borderColor: "$color" }} $sm={{ padding: "$4.5" }}>
+      <XStack alignItems="center" gap="$2">
+        <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color11">
           {e.org}
-        </span>
+        </SizableText>
         {/* The lane, on the card, because "what IS this" is the question the flat
             list could not answer: a curated starter, a stranger's remix and a
             bought UI kit all rendered identically here. */}
         {showOrigin && e.origin && (
-          <span className="rounded-full border border-border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+          <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color11">
             {ORIGIN_LABELS[e.origin] ?? e.origin}
-          </span>
+          </SizableText>
         )}
         {e.archetype && (
-          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground/70">
+          <SizableText fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color11">
             {e.archetype}
-          </span>
+          </SizableText>
         )}
         {/* Provenance, never decoration: a row only this org can see says so. */}
         {e.scope === "org" && (
-          <span className="rounded-full border border-foreground/20 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-foreground/70">
+          <SizableText borderRadius="$10" borderWidth={1} borderColor="$color" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color">
             private
-          </span>
+          </SizableText>
         )}
         {/* Authorship, and it only ever appears when it was EARNED: the API sets
             official from a marker no tenant can raise. The same label the
             template gallery uses, so a reader meets one word, not two. */}
         {e.official && (
-          <span className="rounded-full border border-foreground/30 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-foreground">
+          <SizableText borderRadius="$10" borderWidth={1} borderColor="$color" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color">
             {OFFICIAL_LABEL}
-          </span>
+          </SizableText>
         )}
-      </div>
+      </XStack>
 
-      <h3 className="flex items-start gap-1.5 text-[15px] font-medium leading-snug tracking-tight text-foreground">
-        <a href={href} target="_blank" rel="noreferrer" className="after:absolute after:inset-0">
-          <span className="line-clamp-1">{e.title || e.name}</span>
-        </a>
+      <H3 alignItems="flex-start" gap="$1.5" fontSize={15} fontWeight="500" lineHeight={1.375} letterSpacing={-0.4} color="$color">
+        <Anchor href={href} target="_blank" rel="noreferrer" className="after:absolute after:inset-0">
+          <SizableText numberOfLines={1}>{e.title || e.name}</SizableText>
+        </Anchor>
         <ArrowUpRight
-          className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground"
+          size={16} color="$color11"
           strokeWidth={1.6}
-        />
-      </h3>
+  />
+      </H3>
 
-      <p className="line-clamp-2 min-h-[2.5rem] text-[13px] leading-relaxed text-muted-foreground">
+      <Paragraph numberOfLines={2} minHeight="2.5rem" fontSize={13} lineHeight={1.625} color="$color11">
         {e.description || (e.url ? e.url.replace(/^https?:\/\//, "") : "")}
-      </p>
+      </Paragraph>
 
       {/* Lineage, and it is the whole reason a community lane is browsable rather
           than a pile: what this was forked FROM, and who built it. The parent is
           a filter, so "everything built from folio" is one click, not a search. */}
       {e.template && (
-        <p className="text-[11px] leading-relaxed text-muted-foreground/80">
+        <Paragraph fontSize={11} lineHeight={1.625} color="$color11">
           Forked from{" "}
           {onParent ? (
-            <button
+            <Button
               onClick={() => onParent(e.template!)}
-              className="relative z-10 underline underline-offset-4 hover:text-foreground"
+              position="relative" zIndex={10} textDecorationLine="underline" hoverStyle={{ color: "$color" }}
             >
               {e.template}
-            </button>
+            </Button>
           ) : (
-            <span className="text-foreground/80">{e.template}</span>
+            <SizableText color="$color">{e.template}</SizableText>
           )}{" "}
           · by {e.org}
-        </p>
+        </Paragraph>
       )}
 
       {/* The credit line. It sits ABOVE the fold of the footer rather than in it,
@@ -150,41 +148,41 @@ function Card({
           count — it is the first thing a reader needs in order to read the rest
           of the card correctly. */}
       {e.upstream && (
-        <p className="text-[11px] leading-relaxed text-muted-foreground/80">
+        <Paragraph fontSize={11} lineHeight={1.625} color="$color11">
           Third-party work, shown with credit: {e.upstream}
           {e.license ? ` · ${e.license}` : ""}
-        </p>
+        </Paragraph>
       )}
 
-      <div className="mt-auto flex items-center gap-3 pt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground/70">
+      <SizableText marginTop="auto" alignItems="center" gap="$3" paddingTop="$1" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color11" display="flex" flexDirection="row">
         {e.language && <span>{e.language}</span>}
         {!!e.stars && (
-          <span className="inline-flex items-center gap-1">
-            <Star className="h-3 w-3" strokeWidth={1.6} />
+          <SizableText alignItems="center" gap="$1">
+            <Star size={12} strokeWidth={1.6} />
             {e.stars}
-          </span>
+          </SizableText>
         )}
         {e.forkable && (
-          <span className="inline-flex items-center gap-1">
-            <GitFork className="h-3 w-3" strokeWidth={1.6} />
+          <SizableText alignItems="center" gap="$1">
+            <GitFork size={12} strokeWidth={1.6} />
             forkable
-          </span>
+          </SizableText>
         )}
         {e.url && e.kind === "site" && <span>live</span>}
         {/* The trace out of a demo. z-10 puts it above the title's stretched
             hit area, so clicking "source" goes to the source. */}
         {e.repo && e.repo !== href && (
-          <a
+          <Anchor
             href={e.repo}
             target="_blank"
             rel="noreferrer"
-            className="relative z-10 underline-offset-4 hover:text-foreground hover:underline"
+            position="relative" zIndex={10} hoverStyle={{ color: "$color", textDecorationLine: "underline" }}
           >
             source
-          </a>
+          </Anchor>
         )}
-      </div>
-    </div>
+      </SizableText>
+    </YStack>
   );
 }
 
@@ -262,11 +260,11 @@ export function CatalogBrowser({
   }, [facets]);
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
-      <h1 className="text-2xl font-medium tracking-tight text-foreground sm:text-3xl">
+    <YStack alignSelf="center" width="100%" maxWidth={1280} paddingHorizontal="$4" paddingVertical="$7" $sm={{ paddingHorizontal: "$5", paddingVertical: "$9" }}>
+      <H1 fontSize="$8" fontWeight="500" letterSpacing={-0.4} color="$color" $sm={{ fontSize: "$10" }}>
         {title}
-      </h1>
-      <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-muted-foreground">
+      </H1>
+      <Paragraph marginTop="$2" maxWidth={672} fontSize={14} lineHeight={1.625} color="$color11">
         {blurb ?? (
           <>
             Every project, app and site across Hanzo, Lux and Zoo — searchable in
@@ -276,26 +274,26 @@ export function CatalogBrowser({
             badge. Sign in to see your own projects here too.
           </>
         )}
-      </p>
+      </Paragraph>
 
-      <div className="relative mt-6">
+      <YStack position="relative" marginTop="$5">
         <Search
-          className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+          size={16} color="$color11"
           strokeWidth={1.6}
-        />
-        <input
+  />
+        <Input
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search across every org…"
-          className="w-full rounded-full border border-border bg-muted py-2.5 pl-10 pr-4 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-foreground/30"
-        />
-      </div>
+          width="100%" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingVertical="$2.5" paddingLeft="$7" paddingRight="$4" fontSize="$3" color="$color" outlineWidth={0} placeholderTextColor="$color11" focusStyle={{ borderColor: "$color" }}
+  />
+      </YStack>
 
       {/* The lane rail comes FIRST, because it is the question that has to be
           answered before any of the others mean anything. It is absent inside a
           pinned lane, where it could only ever say "yes, still here". */}
       {!pinned && (
-        <div className="mt-4 flex flex-wrap gap-2">
+        <XStack marginTop="$4" flexWrap="wrap" gap="$2">
           <Pill label="Everything" active={lane === ALL} onClick={() => setLane(ALL)} />
           {ORIGIN_ORDER.filter((o) => facets.origin?.[o]).map((o) => (
             <Pill
@@ -304,16 +302,16 @@ export function CatalogBrowser({
               count={facets.origin?.[o]}
               active={lane === o}
               onClick={() => setLane(lane === o ? ALL : o)}
-            />
+  />
           ))}
-        </div>
+        </XStack>
       )}
 
       {/* Lineage as a rail: the parents this lane's apps were built from, biggest
           family first. This is what turns "a pile of forks" into something a
           person can read. */}
       {buckets(facets, "template").length > 1 && (
-        <div className="mt-2 flex flex-wrap gap-2">
+        <XStack marginTop="$2" flexWrap="wrap" gap="$2">
           <Pill label="Any parent" active={parent === ALL} onClick={() => setParent(ALL)} />
           {buckets(facets, "template")
             .slice(0, 10)
@@ -324,17 +322,17 @@ export function CatalogBrowser({
                 count={n}
                 active={parent === tmpl}
                 onClick={() => setParent(parent === tmpl ? ALL : tmpl)}
-              />
+  />
             ))}
-        </div>
+        </XStack>
       )}
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      <XStack marginTop="$4" flexWrap="wrap" gap="$2">
         <Pill label="All orgs" active={org === ALL} onClick={() => setOrg(ALL)} />
         {orgs.map(([o, n]) => (
           <Pill key={o} label={o} count={n} active={org === o} onClick={() => setOrg(o)} />
         ))}
-        <span className="mx-1 self-center text-border">|</span>
+        <SizableText marginHorizontal="$1" alignSelf="center" color="$borderColor">|</SizableText>
         {buckets(facets, "kind").map(([k, n]) => (
           <Pill
             key={k}
@@ -342,7 +340,7 @@ export function CatalogBrowser({
             count={n}
             active={kind === k}
             onClick={() => setKind(kind === k ? ALL : k)}
-          />
+  />
         ))}
         {/* forkable is a rail, not a toggle: the server counts both sides, so
             "what can I NOT fork" is as clickable as "what can I". */}
@@ -353,7 +351,7 @@ export function CatalogBrowser({
             count={n}
             active={forkable === f}
             onClick={() => setForkable(forkable === f ? ALL : f)}
-          />
+  />
         ))}
         {/* Authorship is a rail for the same reason: once a reader knows the
             catalog carries other people's work, "show me what is NOT ours" is
@@ -368,11 +366,11 @@ export function CatalogBrowser({
             count={n}
             active={official === f}
             onClick={() => setOfficial(official === f ? ALL : f)}
-          />
+  />
         ))}
-      </div>
+      </XStack>
 
-      <div className="mt-2 flex flex-wrap gap-2">
+      <XStack marginTop="$2" flexWrap="wrap" gap="$2">
         <Pill label="Any kind" active={archetype === ALL} onClick={() => setArchetype(ALL)} />
         {buckets(facets, "archetype").map(([a, n]) => (
           <Pill
@@ -381,11 +379,11 @@ export function CatalogBrowser({
             count={n}
             active={archetype === a}
             onClick={() => setArchetype(a)}
-          />
+  />
         ))}
-      </div>
+      </XStack>
 
-      <div className="mt-2 flex flex-wrap gap-2">
+      <XStack marginTop="$2" flexWrap="wrap" gap="$2">
         <Pill label="Any language" active={language === ALL} onClick={() => setLanguage(ALL)} />
         {buckets(facets, "language")
           .slice(0, 12)
@@ -396,25 +394,25 @@ export function CatalogBrowser({
               count={n}
               active={language === l}
               onClick={() => setLanguage(l)}
-            />
+  />
           ))}
-      </div>
+      </XStack>
 
-      <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+      <Paragraph marginTop="$5" fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={1.92} color="$color11">
         {err ? `error: ${err}` : loading ? "searching…" : `${total} results`}
-      </p>
+      </Paragraph>
 
-      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <YStack marginTop="$4" gap="$4">
         {rows.map((e) => (
           <Card key={`${e.scope}:${e.id}`} e={e} showOrigin={!pinned} onParent={setParent} />
         ))}
-      </div>
+      </YStack>
 
       {!loading && !err && rows.length === 0 && (
-        <p className="mt-10 text-sm text-muted-foreground">
+        <Paragraph marginTop="$7" fontSize="$3" color="$color11">
           Nothing matches that yet.
-        </p>
+        </Paragraph>
       )}
-    </div>
+    </YStack>
   );
 }

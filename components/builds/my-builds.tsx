@@ -1,5 +1,6 @@
 "use client";
 
+import { YStack, XStack, H3, Paragraph, SizableText } from '@hanzo/gui';
 // "Your builds" — the account surface: the agent sessions behind your projects,
 // with the chat each one is, and whether the world can read it.
 //
@@ -54,72 +55,71 @@ export function MyBuilds() {
   }, []);
 
   return (
-    <div className="mt-8 pt-6 border-t border-border">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h3 className="text-lg font-medium text-foreground">Your builds</h3>
-        <p className="text-sm text-muted-foreground">
+    <YStack marginTop="$6" paddingTop="$5" borderTopWidth={1} borderColor="$borderColor">
+      <XStack flexWrap="wrap" alignItems="baseline" justifyContent="space-between" gap="$2">
+        <H3 fontSize="$6" fontWeight="500" color="$color">Your builds</H3>
+        <Paragraph fontSize="$3" color="$color11">
           The agent session behind each project — the whole chat, and the commits it made.
-        </p>
-      </div>
+        </Paragraph>
+      </XStack>
 
       {state.kind === "loading" ? (
-        <p className="mt-4 text-sm text-muted-foreground">Loading…</p>
+        <Paragraph marginTop="$4" fontSize="$3" color="$color11">Loading…</Paragraph>
       ) : state.kind === "signedOut" ? (
-        <p className="mt-4 text-sm text-muted-foreground">
-          <Link href="/login" className="underline hover:text-foreground">
+        <Paragraph marginTop="$4" fontSize="$3" color="$color11">
+          <Link href="/login"><SizableText textDecorationLine="underline" hoverStyle={{ color: "$color" }}>
             Sign in
-          </Link>{" "}
+          </SizableText></Link>{" "}
           to see the sessions behind your projects.
-        </p>
+        </Paragraph>
       ) : state.kind === "error" ? (
         // Say what went wrong rather than rendering an empty list that reads as
         // "you have none" — a wrong zero is worse than a visible failure.
-        <p className="mt-4 text-sm text-muted-foreground">
+        <Paragraph marginTop="$4" fontSize="$3" color="$color11">
           Could not load your builds ({state.message}).
-        </p>
+        </Paragraph>
       ) : state.sessions.length === 0 ? (
-        <div className="mt-4 rounded-lg border border-border bg-muted/40 p-4">
-          <p className="text-sm text-muted-foreground">
+        <YStack marginTop="$4" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$4">
+          <Paragraph fontSize="$3" color="$color11">
             No sessions yet. Publish the session that built a repo:
-          </p>
-          <pre className="mt-3 overflow-x-auto rounded border border-border bg-background p-2.5 font-mono text-[11px] text-muted-foreground">
+          </Paragraph>
+          <SizableText marginTop="$3" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$2.5" fontFamily="$mono" fontSize={11} color="$color11" overflow="scroll" whiteSpace="pre">
             hanzo agent publish &lt;project&gt; --bind
-          </pre>
-        </div>
+          </SizableText>
+        </YStack>
       ) : (
-        <ul className="mt-4 divide-y divide-border border-y border-border">
+        <YStack marginTop="$4" borderTopWidth={1} borderBottomWidth={1} borderColor="$borderColor">
           {state.sessions.map((s) => (
-            <li key={s.id} className="flex flex-wrap items-center justify-between gap-3 py-4">
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <MessageSquare className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                  <span className="truncate text-sm font-medium text-foreground">
+            <SizableText key={s.id} flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$3" paddingVertical="$4">
+              <YStack minWidth={0}>
+                <XStack alignItems="center" gap="$2">
+                  <MessageSquare size={14} color="$color11" />
+                  <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">
                     {s.title || s.project || s.id}
-                  </span>
+                  </SizableText>
                   {s.published ? (
-                    <Globe className="h-3 w-3 shrink-0 text-muted-foreground" aria-label="public" />
+                    <Globe size={12} color="$color11" aria-label="public" />
                   ) : (
-                    <Lock className="h-3 w-3 shrink-0 text-muted-foreground" aria-label="private" />
+                    <Lock size={12} color="$color11" aria-label="private" />
                   )}
-                </div>
-                <span className="mt-1 block font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+                </XStack>
+                <SizableText marginTop="$1" fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={1.92} color="$color11">
                   {s.project ? `${s.project} · ` : ""}
                   {s.agent} · {s.events} turns · {s.status}
-                </span>
-              </div>
+                </SizableText>
+              </YStack>
               {s.published && s.project && s.org ? (
                 <Link
                   href={`/builds/${s.org}/${s.project}`}
-                  className="inline-flex shrink-0 items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:text-foreground"
-                >
+                ><SizableText flexShrink={0} alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={1.92} color="$color11" hoverStyle={{ color: "$color" }}>
                   Read
-                  <ArrowUpRight className="h-3 w-3" />
-                </Link>
+                  <ArrowUpRight size={12} />
+                </SizableText></Link>
               ) : null}
-            </li>
+            </SizableText>
           ))}
-        </ul>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 }

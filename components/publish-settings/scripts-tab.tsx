@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import { YStack, XStack, H3, Paragraph, SizableText, H4 } from '@hanzo/gui';
+import { useState } from 'react';
 import { PublishSettings, ScriptConfig } from '@/lib/vfs/types';
 import { Button, Input, Label, Textarea, Switch, Badge, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import { Plus, Edit, Trash2, Code } from 'lucide-react';
@@ -108,42 +109,42 @@ export function ScriptsTab({ settings, onChange }: ScriptsTabProps) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <YStack rowGap="$5">
+      <XStack alignItems="center" justifyContent="space-between">
         <div>
-          <h3 className="text-lg font-medium">Script Management</h3>
-          <p className="text-sm text-muted-foreground">
+          <H3 fontSize="$6" fontWeight="500">Script Management</H3>
+          <Paragraph fontSize="$3" color="$color11">
             Add custom scripts to your published deployment
-          </p>
+          </Paragraph>
         </div>
         <Button onClick={handleAddScript} size="sm">
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus size={16} />
           Add Script
         </Button>
-      </div>
+      </XStack>
 
       {allScripts.length === 0 ? (
-        <div className="text-center p-8 border-2 border-dashed rounded-lg">
-          <Code className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
-          <h3 className="text-lg font-medium mb-2">No Scripts Added</h3>
-          <p className="text-sm text-muted-foreground mb-4">
+        <SizableText textAlign="center" padding="$6" borderWidth={2} borderStyle="dashed" borderRadius="$5" display="flex" flexDirection="column">
+          <Code size={48} color="$color11" />
+          <H3 fontSize="$6" fontWeight="500" marginBottom="$2">No Scripts Added</H3>
+          <Paragraph fontSize="$3" color="$color11" marginBottom="$4">
             Add tracking scripts, analytics, or custom code to your deployment
-          </p>
+          </Paragraph>
           <Button onClick={handleAddScript} variant="outline">
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus size={16} />
             Add Your First Script
           </Button>
-        </div>
+        </SizableText>
       ) : (
-        <div className="space-y-4">
+        <YStack rowGap="$4">
           {allScripts.map((script) => (
-            <div
+            <XStack
               key={script.id}
-              className="flex items-start gap-4 p-4 border rounded-lg hover:bg-accent/50 transition-colors"
+              alignItems="flex-start" gap="$4" padding="$4" borderWidth={1} borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
             >
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-2">
-                  <h4 className="font-medium truncate">{script.name}</h4>
+              <YStack flex={1} minWidth={0}>
+                <XStack alignItems="center" gap="$2" marginBottom="$2">
+                  <H4 fontWeight="500" numberOfLines={1}>{script.name}</H4>
                   <Badge variant={script.position === 'head' ? 'default' : 'secondary'}>
                     {script.position === 'head' ? '<head>' : 'before </body>'}
                   </Badge>
@@ -152,41 +153,41 @@ export function ScriptsTab({ settings, onChange }: ScriptsTabProps) {
                   </Badge>
                   {script.async && <Badge variant="outline">async</Badge>}
                   {script.defer && <Badge variant="outline">defer</Badge>}
-                </div>
-                <p className="text-sm text-muted-foreground truncate">
+                </XStack>
+                <Paragraph fontSize="$3" color="$color11" numberOfLines={1}>
                   {script.type === 'inline'
                     ? `${script.content.length} characters`
                     : script.content}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
+                </Paragraph>
+              </YStack>
+              <XStack alignItems="center" gap="$2">
                 <Switch
                   checked={script.enabled}
                   onCheckedChange={() => handleToggleScript(script.id, script.position)}
-                />
+  />
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => handleEditScript(script, script.position)}
                 >
-                  <Edit className="h-4 w-4" />
+                  <Edit size={16} />
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => handleDeleteScript(script.id)}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 size={16} />
                 </Button>
-              </div>
-            </div>
+              </XStack>
+            </XStack>
           ))}
-        </div>
+        </YStack>
       )}
 
       {/* Script Editor Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent maxWidth={672}>
           <DialogHeader>
             <DialogTitle>
               {editingScript?.name ? 'Edit Script' : 'Add Script'}
@@ -197,8 +198,8 @@ export function ScriptsTab({ settings, onChange }: ScriptsTabProps) {
           </DialogHeader>
 
           {editingScript && (
-            <div className="space-y-4">
-              <div className="space-y-2">
+            <YStack rowGap="$4">
+              <YStack rowGap="$2">
                 <Label htmlFor="script-name">Script Name</Label>
                 <Input
                   id="script-name"
@@ -207,11 +208,11 @@ export function ScriptsTab({ settings, onChange }: ScriptsTabProps) {
                   onChange={(e) =>
                     setEditingScript({ ...editingScript, name: e.target.value })
                   }
-                />
-              </div>
+  />
+              </YStack>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
+              <YStack gap="$4">
+                <YStack rowGap="$2">
                   <Label htmlFor="script-position">Position</Label>
                   <Select
                     value={scriptPosition}
@@ -225,9 +226,9 @@ export function ScriptsTab({ settings, onChange }: ScriptsTabProps) {
                       <SelectItem value="body">Before &lt;/body&gt;</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
+                </YStack>
 
-                <div className="space-y-2">
+                <YStack rowGap="$2">
                   <Label htmlFor="script-type">Type</Label>
                   <Select
                     value={editingScript.type}
@@ -243,10 +244,10 @@ export function ScriptsTab({ settings, onChange }: ScriptsTabProps) {
                       <SelectItem value="external">External URL</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-              </div>
+                </YStack>
+              </YStack>
 
-              <div className="space-y-2">
+              <YStack rowGap="$2">
                 <Label htmlFor="script-content">
                   {editingScript.type === 'inline' ? 'Script Code' : 'Script URL'}
                 </Label>
@@ -259,8 +260,8 @@ export function ScriptsTab({ settings, onChange }: ScriptsTabProps) {
                     onChange={(e) =>
                       setEditingScript({ ...editingScript, content: e.target.value })
                     }
-                    className="font-mono text-sm"
-                  />
+                    fontFamily="$mono" fontSize="$3"
+  />
                 ) : (
                   <Input
                     id="script-content"
@@ -270,35 +271,35 @@ export function ScriptsTab({ settings, onChange }: ScriptsTabProps) {
                     onChange={(e) =>
                       setEditingScript({ ...editingScript, content: e.target.value })
                     }
-                  />
+  />
                 )}
-              </div>
+              </YStack>
 
               {editingScript.type === 'external' && (
-                <div className="flex gap-4">
-                  <div className="flex items-center space-x-2">
+                <XStack gap="$4">
+                  <XStack alignItems="center" columnGap="$2">
                     <Switch
                       id="script-async"
                       checked={editingScript.async || false}
                       onCheckedChange={(checked) =>
                         setEditingScript({ ...editingScript, async: checked })
                       }
-                    />
+  />
                     <Label htmlFor="script-async">Async</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
+                  </XStack>
+                  <XStack alignItems="center" columnGap="$2">
                     <Switch
                       id="script-defer"
                       checked={editingScript.defer || false}
                       onCheckedChange={(checked) =>
                         setEditingScript({ ...editingScript, defer: checked })
                       }
-                    />
+  />
                     <Label htmlFor="script-defer">Defer</Label>
-                  </div>
-                </div>
+                  </XStack>
+                </XStack>
               )}
-            </div>
+            </YStack>
           )}
 
           <DialogFooter>
@@ -309,6 +310,6 @@ export function ScriptsTab({ settings, onChange }: ScriptsTabProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </YStack>
   );
 }

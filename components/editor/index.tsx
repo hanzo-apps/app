@@ -1,4 +1,5 @@
 "use client";
+import { SizableText, YStack, XStack } from '@hanzo/gui';
 import { useMemo, useRef, useState } from "react";
 import { toast, Button } from '@hanzo/ui';
 import type { CodeEditorHandle } from "@/components/code-editor";
@@ -13,9 +14,9 @@ const CodeEditor = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-full w-full bg-card flex items-center justify-center text-muted-foreground text-xs absolute left-0 top-0">
+      <SizableText height="100%" width="100%" backgroundColor="$background" alignItems="center" justifyContent="center" color="$color11" fontSize="$1" position="absolute" left="$0" top="$0" display="flex" flexDirection="row">
         Loading editor…
-      </div>
+      </SizableText>
     ),
   }
 );
@@ -27,7 +28,6 @@ import {
   useUnmount,
   useUpdateEffect,
 } from "react-use";
-import classNames from "classnames";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { Header } from "@/components/editor/header";
@@ -245,7 +245,7 @@ export const AppEditor = ({
 
   return (
     <OrgProvider>
-    <section className="h-[100dvh] bg-card flex flex-col">
+    <YStack height="100dvh" backgroundColor="$background">
       <Header
         tab={currentTab}
         onNewTab={setCurrentTab}
@@ -271,16 +271,16 @@ export const AppEditor = ({
           variant="outline"
           size="sm"
           onClick={() => setIsShareModalOpen(true)}
-          className="!h-7 gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-muted"
+          height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1" borderColor="$borderColor" backgroundColor="$color3" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
         >
-          <Share2 className="size-3.5" />
-          <span className="hidden md:inline">Share</span>
+          <Share2 size={14} />
+          <SizableText display="none">Share</SizableText>
         </Button>
         <LoadProject
           onSuccess={(project: Project) => {
             router.push(`/projects/${project.space_id}`);
           }}
-        />
+  />
         {/* for these buttons pass the whole pages */}
         <GitSyncButton pages={pages} prompts={prompts} disabled={isAiWorking} />
         {project?._id ? (
@@ -289,26 +289,18 @@ export const AppEditor = ({
           <DeployButton pages={pages} prompts={prompts} disabled={isAiWorking} />
         )}
       </Header>
-      <main className="bg-card flex-1 max-lg:flex-col flex w-full max-lg:h-[calc(100%-82px)] relative">
+      <XStack backgroundColor="$background" flex={1} width="100%" position="relative" $lg={{ flexDirection: "column", height: "calc(100%-82px)" }}>
         {/* LEFT — the chat pane, ALWAYS chat (never code). The composer is pinned
             to the bottom of this flex-col (AskAI is `mt-auto`), so messages scroll
             above it. Desktop: docked left unless collapsed; mobile: shown only on
             the Chat tab. Kept mounted so generation state persists across views. */}
-        <div
+        <YStack
           ref={editor}
-          className={classNames(
-            // ONE flat black chrome — the left pane shares the workspace field
-            // (no card/border/distinct bg); only the RIGHT preview card lifts off
-            // it. Desktop: a fixed, resizable width (shrink-0 so the inline width
-            // is authoritative). Mobile: fills the column.
-            "relative overflow-hidden h-full flex flex-col max-lg:flex-1 lg:shrink-0",
-            currentTab === "chat" ? "flex" : "hidden",
-            sidebarCollapsed ? "lg:hidden" : "lg:flex"
-          )}
+          position="relative" overflow="hidden" height="100%" $lg={{ flex: 1 }} {...{ display: currentTab === "chat" ? undefined : "none", $lg: sidebarCollapsed ? {"display":"none"} : { flexShrink: 0 } }}
         >
           {/* Chat — ALWAYS the left pane (composer/thread live here permanently);
               the history panel OVERLAYS it when toggled from the header icon. */}
-          <div className="min-h-0 flex-1 flex flex-col">
+          <YStack minHeight={0} flex={1}>
             <AskAI
               isNew={isNew}
               project={project}
@@ -354,8 +346,8 @@ export const AppEditor = ({
               setSelectedElement={setSelectedElement}
               setSelectedFiles={setSelectedFiles}
               selectedFiles={selectedFiles}
-            />
-          </div>
+  />
+          </YStack>
 
           {/* History overlay — the git changeset timeline (commits + working
               changes), toggled by the header history icon. Absolute-fills the
@@ -368,42 +360,36 @@ export const AppEditor = ({
               pages={pages}
               onClose={() => setHistoryOpen(false)}
               onOpenDetails={setDetailsRev}
-            />
+  />
           )}
-        </div>
+        </YStack>
         {/* Resizer — desktop only, and only while the chat pane is docked. A
             transparent hit-target with a hairline that lifts on hover, so there
             is no hard border seam between the panel and the preview card. */}
-        <div
+        <XStack
           ref={resizer}
           role="separator"
           aria-orientation="vertical"
           aria-label="Resize chat and preview panes"
-          className={classNames(
-            "group/resizer relative flex w-2 h-full max-lg:hidden shrink-0 cursor-col-resize items-center justify-center",
-            sidebarCollapsed && "lg:hidden"
-          )}
+          position="relative" width="$2" height="100%" flexShrink={0} cursor="col-resize" alignItems="center" justifyContent="center" $lg={{ display: "none" }} {...{ $lg: sidebarCollapsed ? {"display":"none"} : undefined }} className="group/resizer"
         >
           {/* No static bar — the two panes share one flat field. A hairline seam
               plus a small centered grip pill fade in ONLY on hover/drag, so the
               resize target is discoverable and grabbable without ever drawing a
               permanent divider or a middle scrollbar. */}
-          <div className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-transparent transition-colors duration-150 group-hover/resizer:bg-foreground/20 group-active/resizer:bg-foreground/30" />
-          <div className="pointer-events-none relative h-8 w-1 rounded-full bg-transparent transition-colors duration-150 group-hover/resizer:bg-foreground/30 group-active/resizer:bg-foreground/45" />
-        </div>
+          <YStack pointerEvents="none" position="absolute" top="$0" bottom="$0" left="50%" width={1} x="50%" backgroundColor="transparent" $group-resizer-hover={{ backgroundColor: "$color" }} $group-resizer-press={{ backgroundColor: "$color" }} />
+          <YStack pointerEvents="none" position="relative" height="$6" width="$1" borderRadius="$10" backgroundColor="transparent" $group-resizer-hover={{ backgroundColor: "$color" }} $group-resizer-press={{ backgroundColor: "$color" }} />
+        </XStack>
         {/* RIGHT — Preview OR Code as a RAISED, rounded card that fills the whole
             remaining width to the viewport's right edge (flex-1, min-w-0). The
             card is the only element that lifts off the flat workspace. Preview
             stays mounted (iframe warm, iframeRef valid); Code overlays it. */}
-        <div
-          className={classNames(
-            "relative flex-1 min-w-0 h-full p-2 lg:p-3",
-            currentTab === "chat" ? "hidden lg:block" : "block"
-          )}
+        <YStack
+          position="relative" flex={1} minWidth={0} height="100%" padding="$2" $lg={{ padding: "$3" }} {...{ display: currentTab === "chat" ? "none" : undefined }}
         >
-          <div className="preview-stage relative h-full w-full overflow-hidden rounded-xl border border-border bg-background shadow-xl shadow-black/30 ring-1 ring-border">
+          <YStack position="relative" height="100%" width="100%" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" elevation={5} className="preview-stage">
             {/* Faint top highlight — a crisp edge that reads as raised glass. */}
-            <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-px bg-gradient-to-r from-transparent via-foreground/10 to-transparent" />
+            <YStack pointerEvents="none" position="absolute" left="$0" right="$0" top="$0" zIndex={20} height={1} />
             <Preview
               html={currentPageData?.html}
               isResizing={isResizing}
@@ -420,7 +406,7 @@ export const AppEditor = ({
                 setSelectedElement(element);
                 setCurrentTab("chat");
               }}
-            />
+  />
             {currentTab === "preview" && (
               <VisualEditor
                 iframeRef={iframeRef}
@@ -438,12 +424,12 @@ export const AppEditor = ({
                     )
                   );
                 }}
-              />
+  />
             )}
             {/* CODE view — the CodeMirror editor overlaid inside the card when the
                 header switches to Code. The left panel stays chat; code lives here. */}
             {currentTab === "code" && (
-              <div className="absolute inset-0 z-10 flex bg-card">
+              <XStack position="absolute" top={0} right={0} bottom={0} left={0} zIndex={10} backgroundColor="$background">
                 {/* File browser rail — see + navigate every project file. */}
                 <FileTree
                   pages={pages}
@@ -477,23 +463,27 @@ export const AppEditor = ({
                     ]);
                     setCurrentPage(`page-${pages.length + 1}.html`);
                   }}
-                />
-                <div className="relative min-w-0 flex-1 overflow-hidden">
+  />
+                <YStack position="relative" minWidth={0} flex={1} overflow="hidden">
                   <CopyIcon
-                    className="size-4 absolute top-3 right-5 text-muted-foreground hover:text-muted-foreground z-20 cursor-pointer"
+                    size={16} color="$color11"
                     onClick={() => {
                       copyToClipboard(currentPageData.html);
                       toast.success("HTML copied to clipboard!");
                     }}
-                  />
+  />
+                  <YStack
+                    position="absolute"
+                    top="$0"
+                    left="$0"
+                    width="100%"
+                    height="100%"
+                    backgroundColor="$background"
+                    pointerEvents={isAiWorking ? 'none' : 'auto'}
+                  >
                   <CodeEditor
                     language="html"
-                    className={classNames(
-                      "h-full w-full bg-card transition-all duration-200 absolute left-0 top-0",
-                      {
-                        "pointer-events-none": isAiWorking,
-                      }
-                    )}
+                    className="code-surface"
                     value={currentPageData.html}
                     onChange={(value) => {
                       setPages((prev) =>
@@ -508,17 +498,18 @@ export const AppEditor = ({
                       editorRef.current = handle;
                     }}
                   />
-                </div>
-              </div>
+                  </YStack>
+                </YStack>
+              </XStack>
             )}
             {/* Revision Details (Timeline | Changes) — overlays the preview card
                 when a History revision's "Details" is opened (item 12). */}
             {detailsRev && (
               <RevisionDetails rev={detailsRev} onClose={() => setDetailsRev(null)} />
             )}
-          </div>
-        </div>
-      </main>
+          </YStack>
+        </YStack>
+      </XStack>
 
       {/* The developer console — the status strip IS the dock's handle: hover
           it to resize, drag it up, click it open. The chat/AI panel toggle and
@@ -528,15 +519,15 @@ export const AppEditor = ({
         pageCount={pages.length}
         sidebarCollapsed={sidebarCollapsed}
         onToggleSidebar={() => setSidebarCollapsed((v) => !v)}
-      />
+  />
 
       <ShareModal
         isOpen={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}
         projectId={project?._id}
         projectName={project?.title || "Untitled Project"}
-      />
-    </section>
+  />
+    </YStack>
     </OrgProvider>
   );
 };

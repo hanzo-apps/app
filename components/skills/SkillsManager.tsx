@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { XStack, SizableText, YStack, Paragraph, H3, H2 } from '@hanzo/gui';
+import { useState, useEffect } from 'react';
 import { Skill } from '@/lib/vfs/skills/types';
 import { skillsService } from '@/lib/vfs/skills';
 import { logger } from '@/lib/utils';
@@ -216,115 +217,115 @@ export function SkillsManager() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4">Loading skills...</p>
-        </div>
-      </div>
+      <XStack alignItems="center" justifyContent="center" height="100%">
+        <SizableText textAlign="center" display="flex" flexDirection="column">
+          <YStack borderRadius="$10" height="$8" width="$8" borderBottomWidth={2} borderColor="$color12" alignSelf="center"></YStack>
+          <Paragraph marginTop="$4">Loading skills...</Paragraph>
+        </SizableText>
+      </XStack>
     );
   }
 
   return (
     <>
-      <div className="h-full flex flex-col">
+      <YStack height="100%">
         {/* Toolbar */}
-        <div className="pt-4 px-4 pb-3 sm:pt-6 sm:px-6 sm:pb-3 shrink-0">
-          <div className="mx-auto max-w-4xl flex flex-col gap-3">
-            <div className="flex flex-col sm:flex-row gap-3">
+        <YStack paddingTop="$4" paddingHorizontal="$4" paddingBottom="$3" flexShrink={0} $sm={{ paddingTop: "$5", paddingHorizontal: "$5", paddingBottom: "$3" }}>
+          <YStack alignSelf="center" maxWidth={896} gap="$3">
+            <YStack gap="$3" $sm={{ flexDirection: "row" }}>
               {/* Search */}
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <YStack position="relative" flex={1}>
+                <Search size={16} color="$color11" />
                 <Input
                   placeholder="Search skills..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9"
-                />
-              </div>
+                  paddingLeft={36}
+  />
+              </YStack>
 
               {/* Actions */}
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={handleImport} className="h-10 sm:h-9">
-                  <Upload className="w-4 h-4 mr-2" />
+              <XStack alignItems="center" gap="$2">
+                <Button variant="outline" size="sm" onClick={handleImport} height="$7" $sm={{ height: 36 }}>
+                  <Upload size={16} />
                   Import
                 </Button>
-                <Button variant="outline" size="sm" onClick={handleExportAll} className="h-10 sm:h-9">
-                  <Download className="w-4 h-4 mr-2" />
+                <Button variant="outline" size="sm" onClick={handleExportAll} height="$7" $sm={{ height: 36 }}>
+                  <Download size={16} />
                   Export
                 </Button>
-                <Button onClick={handleCreateNew} size="sm" className="h-10 sm:h-9">
-                  <Plus className="w-4 h-4 mr-2" />
+                <Button onClick={handleCreateNew} size="sm" height="$7" $sm={{ height: 36 }}>
+                  <Plus size={16} />
                   New
                 </Button>
-              </div>
-            </div>
+              </XStack>
+            </YStack>
 
             {/* Global Enable/Disable Toggle */}
-            <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg border border-border">
-              <div className="flex items-center gap-2">
-                <Power className="w-4 h-4" />
-                <Label htmlFor="global-toggle" className="text-sm font-medium cursor-pointer">
+            <XStack alignItems="center" justifyContent="space-between" padding="$3" backgroundColor="$color3" borderRadius="$5" borderWidth={1} borderColor="$borderColor">
+              <XStack alignItems="center" gap="$2">
+                <Power size={16} />
+                <Label htmlFor="global-toggle" fontSize="$3" fontWeight="500" cursor="pointer">
                   Enable Skills System
                 </Label>
-              </div>
+              </XStack>
               <Switch
                 id="global-toggle"
                 checked={globalEnabled}
                 onCheckedChange={handleGlobalToggle}
-              />
-            </div>
+  />
+            </XStack>
 
             {/* Skill Evaluation Toggle */}
-            <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg border border-border">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4" />
+            <XStack alignItems="center" justifyContent="space-between" padding="$3" backgroundColor="$color3" borderRadius="$5" borderWidth={1} borderColor="$borderColor">
+              <XStack alignItems="center" gap="$2">
+                <Sparkles size={16} />
                 <div>
-                  <Label htmlFor="eval-toggle" className="text-sm font-medium cursor-pointer">
+                  <Label htmlFor="eval-toggle" fontSize="$3" fontWeight="500" cursor="pointer">
                     Skill Evaluation
                   </Label>
-                  <p className="text-xs text-muted-foreground">
+                  <Paragraph fontSize="$1" color="$color11">
                     Pre-check which skills are relevant before each message. Increases initial token usage per message.
-                  </p>
+                  </Paragraph>
                 </div>
-              </div>
+              </XStack>
               <Switch
                 id="eval-toggle"
                 checked={evaluationEnabled}
                 disabled={!globalEnabled}
                 onCheckedChange={handleEvaluationToggle}
-              />
-            </div>
-          </div>
-        </div>
+  />
+            </XStack>
+          </YStack>
+        </YStack>
 
         {/* Skills List */}
-        <div className="flex-1 px-4 pt-3 pb-4 sm:px-6 sm:pt-3 sm:pb-6 overflow-auto">
-          <div className="mx-auto max-w-4xl">
+        <YStack flex={1} paddingHorizontal="$4" paddingTop="$3" paddingBottom="$4" overflow="scroll" $sm={{ paddingHorizontal: "$5", paddingTop: "$3", paddingBottom: "$5" }}>
+          <YStack alignSelf="center" maxWidth={896}>
             {filteredSkills.length === 0 ? (
-              <div className="text-center py-12">
-                <Sparkles className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-lg font-medium mb-2">No skills found</h3>
-                <p className="text-muted-foreground mb-4">
+              <SizableText textAlign="center" paddingVertical="$8" display="flex" flexDirection="column">
+                <Sparkles size={48} color="$color11" />
+                <H3 fontSize="$6" fontWeight="500" marginBottom="$2">No skills found</H3>
+                <Paragraph color="$color11" marginBottom="$4">
                   {searchQuery ? 'Try a different search query' : 'Create your first custom skill'}
-                </p>
+                </Paragraph>
                 {!searchQuery && (
                   <Button onClick={handleCreateNew}>
-                    <Plus className="w-4 h-4 mr-2" />
+                    <Plus size={16} />
                     Create Skill
                   </Button>
                 )}
-              </div>
+              </SizableText>
             ) : (
-              <div className="space-y-6">
+              <YStack rowGap="$5">
                 {/* Built-in Skills */}
                 {builtInSkills.length > 0 && (
                   <div>
-                    <h2 className="text-lg font-medium mb-3 flex items-center gap-2">
-                      <FileText className="w-5 h-5" />
+                    <H2 fontSize="$6" fontWeight="500" marginBottom="$3" alignItems="center" gap="$2">
+                      <FileText size={20} />
                       Built-in Skills ({builtInSkills.length})
-                    </h2>
-                    <div className="grid gap-3">
+                    </H2>
+                    <YStack gap="$3">
                       {builtInSkills.map(skill => (
                         <SkillCard
                           key={skill.id}
@@ -334,20 +335,20 @@ export function SkillsManager() {
                           onToggle={handleSkillToggle}
                           onEdit={handleEdit}
                           onDelete={handleDelete}
-                        />
+  />
                       ))}
-                    </div>
+                    </YStack>
                   </div>
                 )}
 
                 {/* Custom Skills */}
                 {customSkills.length > 0 && (
                   <div>
-                    <h2 className="text-lg font-medium mb-3 flex items-center gap-2">
-                      <Sparkles className="w-5 h-5" />
+                    <H2 fontSize="$6" fontWeight="500" marginBottom="$3" alignItems="center" gap="$2">
+                      <Sparkles size={20} />
                       Custom Skills ({customSkills.length})
-                    </h2>
-                    <div className="grid gap-3">
+                    </H2>
+                    <YStack gap="$3">
                       {customSkills.map(skill => (
                         <SkillCard
                           key={skill.id}
@@ -357,27 +358,27 @@ export function SkillsManager() {
                           onToggle={handleSkillToggle}
                           onEdit={handleEdit}
                           onDelete={handleDelete}
-                        />
+  />
                       ))}
-                    </div>
+                    </YStack>
                   </div>
                 )}
-              </div>
+              </YStack>
             )}
-          </div>
-        </div>
-      </div>
+          </YStack>
+        </YStack>
+      </YStack>
 
       {/* Editor Dialog */}
       <Dialog open={!!editorMode} onOpenChange={(open) => !open && handleEditorCancel()}>
-        <DialogContent className="max-w-[90vw] sm:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[1200px] h-[90vh] p-0 overflow-hidden">
+        <DialogContent maxWidth="90vw" height="90vh" padding="$0" overflow="hidden" $sm={{ maxWidth: "85vw" }} $lg={{ maxWidth: "75vw" }} $xl={{ maxWidth: 1200 }}>
           {editorMode && (
             <SkillEditor
               skill={selectedSkill}
               mode={editorMode}
               onSave={handleEditorSave}
               onCancel={handleEditorCancel}
-            />
+  />
           )}
         </DialogContent>
       </Dialog>
@@ -420,40 +421,40 @@ function SkillCard({ skill, isEnabled, globalEnabled, onToggle, onEdit, onDelete
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <div className={`border rounded-lg transition-colors ${effectiveEnabled ? 'border-primary/30 bg-primary/5' : 'border-border'}`}>
-        <div className="p-4">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-2">
-                <CollapsibleTrigger className="flex items-center gap-2 hover:text-primary transition-colors">
+      <YStack borderWidth={1} borderRadius="$5" {...{ borderColor: effectiveEnabled ? "$color12" : "$borderColor", backgroundColor: effectiveEnabled ? "$color12" : undefined }}>
+        <YStack padding="$4">
+          <XStack alignItems="flex-start" justifyContent="space-between" gap="$4">
+            <YStack flex={1} minWidth={0}>
+              <XStack alignItems="center" gap="$2" marginBottom="$2">
+                <CollapsibleTrigger alignItems="center" gap="$2" hoverStyle={{ color: "$color12" }}>
                   {isOpen ? (
-                    <ChevronDown className="w-4 h-4 shrink-0" />
+                    <ChevronDown size={16} />
                   ) : (
-                    <ChevronRight className="w-4 h-4 shrink-0" />
+                    <ChevronRight size={16} />
                   )}
-                  <h3 className="font-medium truncate">{skill.name}</h3>
+                  <H3 fontWeight="500" numberOfLines={1}>{skill.name}</H3>
                 </CollapsibleTrigger>
                 {skill.isBuiltIn && (
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge variant="secondary" fontSize="$1">
                     Built-in
                   </Badge>
                 )}
                 {!effectiveEnabled && (
-                  <Badge variant="outline" className="text-xs text-muted-foreground">
+                  <Badge variant="outline" fontSize="$1" color="$color11">
                     Disabled
                   </Badge>
                 )}
-              </div>
-              <p className="text-sm text-muted-foreground line-clamp-2">
+              </XStack>
+              <Paragraph fontSize="$3" color="$color11" numberOfLines={2}>
                 {skill.description}
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
+              </Paragraph>
+            </YStack>
+            <XStack alignItems="center" gap="$2">
               <Switch
                 checked={isEnabled}
                 onCheckedChange={(checked) => onToggle(skill.id, checked)}
                 disabled={!globalEnabled}
-              />
+  />
               {!skill.isBuiltIn && (
                 <>
                   <Button
@@ -461,42 +462,42 @@ function SkillCard({ skill, isEnabled, globalEnabled, onToggle, onEdit, onDelete
                     size="sm"
                     onClick={() => onEdit(skill)}
                   >
-                    <Edit className="w-4 h-4" />
+                    <Edit size={16} />
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => onDelete(skill)}
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 size={16} />
                   </Button>
                 </>
               )}
-            </div>
-          </div>
-        </div>
+            </XStack>
+          </XStack>
+        </YStack>
 
         <CollapsibleContent>
-          <div className="border-t px-4 py-3 bg-muted/30">
-            <div className="text-sm space-y-2">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <span className="font-medium">Updated:</span>
+          <YStack borderTopWidth={1} paddingHorizontal="$4" paddingVertical="$3" backgroundColor="$color3">
+            <SizableText fontSize="$3" rowGap="$2" display="flex" flexDirection="column">
+              <SizableText alignItems="center" gap="$2" color="$color11" display="flex" flexDirection="row">
+                <SizableText fontWeight="500">Updated:</SizableText>
                 <span>{skill.updatedAt.toLocaleDateString()}</span>
+              </SizableText>
+              <div>
+                <SizableText fontWeight="500" color="$color11">Description:</SizableText>
+                <Paragraph marginTop="$1">{skill.description}</Paragraph>
               </div>
               <div>
-                <span className="font-medium text-muted-foreground">Description:</span>
-                <p className="mt-1">{skill.description}</p>
-              </div>
-              <div>
-                <span className="font-medium text-muted-foreground">Content:</span>
-                <pre className="mt-1 text-xs bg-background p-3 rounded border overflow-auto max-h-96 whitespace-pre-wrap">
+                <SizableText fontWeight="500" color="$color11">Content:</SizableText>
+                <SizableText marginTop="$1" fontSize="$1" backgroundColor="$background" padding="$3" borderRadius="$2" borderWidth={1} overflow="scroll" maxHeight={384} whiteSpace="pre" fontFamily="$mono">
                   {skill.markdown}
-                </pre>
+                </SizableText>
               </div>
-            </div>
-          </div>
+            </SizableText>
+          </YStack>
         </CollapsibleContent>
-      </div>
+      </YStack>
     </Collapsible>
   );
 }

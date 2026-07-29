@@ -1,3 +1,6 @@
+'use client';
+
+import { SizableText, XStack, Paragraph } from '@hanzo/gui';
 import { useLocalStorage } from "react-use";
 import { Button, Dialog, DialogContent, DialogTitle } from '@hanzo/ui';
 import { useUser } from "@/hooks/useUser";
@@ -28,32 +31,32 @@ export const LoginModal = ({
   };
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg lg:!p-8 !rounded-xl bg-card text-foreground border-border">
-        <DialogTitle className="hidden" />
-        <main className="flex flex-col items-start text-left relative pt-2">
-          <div className="flex items-center justify-start -space-x-4 mb-5">
-            <div className="size-14 rounded-full bg-muted border border-border shadow-2xs flex items-center justify-center text-3xl">
+      <DialogContent borderRadius="$6" backgroundColor="$background" color="$color" borderColor="$borderColor" $sm={{ maxWidth: 512 }} $lg={{ padding: "$6" }}>
+        <DialogTitle display="none" />
+        <SizableText flexDirection="column" alignItems="flex-start" textAlign="left" position="relative" paddingTop="$2" display="flex">
+          <XStack alignItems="center" justifyContent="flex-start" columnGap="$4" marginBottom="$4.5">
+            <SizableText width="$9" height="$9" borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$10" display="flex" flexDirection="row">
               💪
-            </div>
-            <div className="size-16 rounded-full bg-secondary border border-border shadow-lg flex items-center justify-center text-4xl z-2">
+            </SizableText>
+            <SizableText width="$10" height="$10" borderRadius="$10" backgroundColor="$color4" borderWidth={1} borderColor="$borderColor" elevation={4} alignItems="center" justifyContent="center" fontSize="$11" zIndex={2} display="flex" flexDirection="row">
               😎
-            </div>
-            <div className="size-14 rounded-full bg-muted border border-border shadow-2xs flex items-center justify-center text-3xl">
+            </SizableText>
+            <SizableText width="$9" height="$9" borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$10" display="flex" flexDirection="row">
               🙌
-            </div>
-          </div>
-          <p className="text-2xl font-medium text-foreground">{title}</p>
-          <p className="text-muted-foreground text-base mt-2 max-w-sm">
+            </SizableText>
+          </XStack>
+          <Paragraph fontSize="$8" fontWeight="500" color="$color">{title}</Paragraph>
+          <Paragraph color="$color11" fontSize="$4" marginTop="$2" maxWidth={384}>
             {description}
-          </p>
+          </Paragraph>
           <Button
             size="lg"
-            className="w-full !text-base !h-11 mt-8"
+            width="100%" fontSize="$4" height={44} marginTop="$6"
             onClick={handleClick}
           >
             Log In to Continue
           </Button>
-        </main>
+        </SizableText>
       </DialogContent>
     </Dialog>
   );

@@ -15,6 +15,7 @@
  * resolves (app/dev/page.tsx). Auth: middleware already gates the /dev prefix.
  */
 
+import { SizableText, YStack, XStack, H1, Paragraph } from '@hanzo/gui';
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -102,30 +103,30 @@ export default function ProjectDevPage() {
 
   if (phase === "loading") {
     return (
-      <div className="h-[100dvh] bg-background flex items-center justify-center text-muted-foreground text-sm">
+      <SizableText height="100dvh" backgroundColor="$background" alignItems="center" justifyContent="center" color="$color11" fontSize="$3" display="flex" flexDirection="row">
         Opening {slug}…
-      </div>
+      </SizableText>
     );
   }
 
   if (phase === "denied") {
     const wrongOrg = !!signedInOrg && !!org && signedInOrg !== org;
     return (
-      <div className="flex h-[100dvh] items-center justify-center bg-background px-6 text-center">
-        <div className="max-w-md">
-          <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-muted">
-            <LockKeyhole className="h-6 w-6 text-muted-foreground" />
-          </div>
-          <h1 className="text-lg font-medium text-foreground">
-            Can’t open <span className="font-mono">{org}/{slug}</span>
-          </h1>
-          <p className="mx-auto mt-2 text-sm leading-relaxed text-muted-foreground">
+      <SizableText height="100dvh" alignItems="center" justifyContent="center" backgroundColor="$background" paddingHorizontal="$5" textAlign="center" display="flex" flexDirection="row">
+        <YStack maxWidth={448}>
+          <XStack alignSelf="center" marginBottom="$4.5" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$6" backgroundColor="$color3">
+            <LockKeyhole size={24} color="$color11" />
+          </XStack>
+          <H1 fontSize="$6" fontWeight="500" color="$color">
+            Can’t open <SizableText fontFamily="$mono">{org}/{slug}</SizableText>
+          </H1>
+          <Paragraph alignSelf="center" marginTop="$2" fontSize="$3" lineHeight={1.625} color="$color11">
             {wrongOrg ? (
               <>
-                This project is in the <span className="text-foreground/80">{org}</span> organization,
-                but you’re signed in under <span className="text-foreground/80">{signedInOrg}</span>.
+                This project is in the <SizableText color="$color">{org}</SizableText> organization,
+                but you’re signed in under <SizableText color="$color">{signedInOrg}</SizableText>.
                 Its files and history are safe — sign in with an account in{" "}
-                <span className="text-foreground/80">{org}</span> to open it, with its full
+                <SizableText color="$color">{org}</SizableText> to open it, with its full
                 version history.
               </>
             ) : (
@@ -135,23 +136,21 @@ export default function ProjectDevPage() {
                 they’re scoped to the owning account.
               </>
             )}
-          </p>
-          <div className="mt-6 flex items-center justify-center gap-3">
+          </Paragraph>
+          <XStack marginTop="$5" alignItems="center" justifyContent="center" gap="$3">
             <Link
               href="/dashboard"
-              className="rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-            >
+            ><SizableText borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$4.5" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
               Go to your dashboard
-            </Link>
+            </SizableText></Link>
             <Link
               href="/login"
-              className="rounded-full border border-border px-5 py-2.5 text-sm text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground"
-            >
+            ><SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$4.5" paddingVertical="$2.5" fontSize="$3" color="$color11" hoverStyle={{ borderColor: "$color", color: "$color" }}>
               Switch account
-            </Link>
-          </div>
-        </div>
-      </div>
+            </SizableText></Link>
+          </XStack>
+        </YStack>
+      </SizableText>
     );
   }
 

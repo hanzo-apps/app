@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { XStack, YStack, Paragraph, H3, SizableText } from '@hanzo/gui';
+import { useState, useEffect } from 'react';
 import { TableInfo } from '@/lib/vfs/types';
 import { ChevronRight, ChevronDown, Table2, KeyRound, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { Button } from '@hanzo/ui';
 
 interface SchemaViewerProps {
@@ -61,125 +61,122 @@ export function SchemaViewer({ deploymentId, schemaEndpoint, showSystemTablesTog
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
+      <XStack alignItems="center" justifyContent="center" height="100%">
+        <Loader2 size={24} color="$color11" />
+      </XStack>
     );
   }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-4">
-        <AlertCircle className="h-8 w-8 text-destructive" />
-        <p className="text-sm text-muted-foreground">{error}</p>
+      <YStack alignItems="center" justifyContent="center" height="100%" gap="$4">
+        <AlertCircle size={32} color="$red9" />
+        <Paragraph fontSize="$3" color="$color11">{error}</Paragraph>
         <Button variant="outline" onClick={loadSchema}>
           Retry
         </Button>
-      </div>
+      </YStack>
     );
   }
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium">Database Tables</h3>
+    <YStack height="100%">
+      <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+        <H3 fontSize="$3" fontWeight="500">Database Tables</H3>
         {showSystemTablesToggle && (
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setShowSystemTables(!showSystemTables)}
-            className="text-xs"
+            fontSize="$1"
           >
             {showSystemTables ? (
               <>
-                <EyeOff className="h-3.5 w-3.5 mr-1" />
+                <EyeOff size={14} />
                 Hide System Tables
               </>
             ) : (
               <>
-                <Eye className="h-3.5 w-3.5 mr-1" />
+                <Eye size={14} />
                 Show System Tables
               </>
             )}
           </Button>
         )}
-      </div>
+      </XStack>
 
-      <div className="flex-1 overflow-auto border rounded-lg">
+      <YStack flex={1} overflow="scroll" borderWidth={1} borderRadius="$5">
         {filteredTables.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-            <Table2 className="h-8 w-8 text-muted-foreground mb-2" />
-            <p className="text-sm text-muted-foreground">No user tables found</p>
-            <p className="text-xs text-muted-foreground mt-1">
+          <SizableText flexDirection="column" alignItems="center" justifyContent="center" height="100%" padding="$6" textAlign="center" display="flex">
+            <Table2 size={32} color="$color11" />
+            <Paragraph fontSize="$3" color="$color11">No user tables found</Paragraph>
+            <Paragraph fontSize="$1" color="$color11" marginTop="$1">
               Create tables using the SQL editor
-            </p>
-          </div>
+            </Paragraph>
+          </SizableText>
         ) : (
-          <div className="divide-y">
+          <YStack>
             {filteredTables.map(table => (
-              <div key={table.name} className={cn(
-                "transition-colors",
-                table.isSystemTable && "bg-muted/30"
-              )}>
-                <button
+              <YStack key={table.name} {...{ backgroundColor: table.isSystemTable ? "$color3" : undefined }}>
+                <Button
                   onClick={() => toggleTable(table.name)}
-                  className="w-full flex items-center gap-2 p-3 text-left hover:bg-muted/50 transition-colors"
+                  width="100%" alignItems="center" gap="$2" padding="$3" textAlign="left" hoverStyle={{ backgroundColor: "$color3" }}
                 >
                   {expandedTables.has(table.name) ? (
-                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                    <ChevronDown size={16} color="$color11" />
                   ) : (
-                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                    <ChevronRight size={16} color="$color11" />
                   )}
-                  <Table2 className="h-4 w-4 text-blue-500" />
-                  <span className="flex-1 font-mono text-sm">{table.name}</span>
-                  <span className="text-xs text-muted-foreground">
+                  <Table2 size={16} color="$blue9" />
+                  <SizableText flex={1} fontFamily="$mono" fontSize="$3">{table.name}</SizableText>
+                  <SizableText fontSize="$1" color="$color11">
                     {table.rowCount} row{table.rowCount !== 1 ? 's' : ''}
-                  </span>
+                  </SizableText>
                   {table.isSystemTable && (
-                    <span className="text-xs bg-muted px-1.5 py-0.5 rounded">system</span>
+                    <SizableText fontSize="$1" backgroundColor="$color3" paddingHorizontal="$1.5" paddingVertical="$0.5" borderRadius="$2">system</SizableText>
                   )}
-                </button>
+                </Button>
 
                 {expandedTables.has(table.name) && (
-                  <div className="bg-muted/20 border-t">
-                    <table className="w-full text-sm">
+                  <YStack backgroundColor="$color3" borderTopWidth={1}>
+                    <SizableText width="100%" fontSize="$3" display="flex" flexDirection="column">
                       <thead>
-                        <tr className="border-b bg-muted/30">
-                          <th className="text-left p-2 font-medium">Column</th>
-                          <th className="text-left p-2 font-medium">Type</th>
-                          <th className="text-left p-2 font-medium">Nullable</th>
-                          <th className="text-left p-2 font-medium">Default</th>
-                        </tr>
+                        <YStack borderBottomWidth={1} backgroundColor="$color3">
+                          <SizableText textAlign="left" padding="$2" fontWeight="500">Column</SizableText>
+                          <SizableText textAlign="left" padding="$2" fontWeight="500">Type</SizableText>
+                          <SizableText textAlign="left" padding="$2" fontWeight="500">Nullable</SizableText>
+                          <SizableText textAlign="left" padding="$2" fontWeight="500">Default</SizableText>
+                        </YStack>
                       </thead>
                       <tbody>
                         {table.columns.map(col => (
-                          <tr key={col.name} className="border-b last:border-0">
-                            <td className="p-2 font-mono flex items-center gap-1.5">
+                          <YStack key={col.name} borderBottomWidth={1} className="last:border-0">
+                            <SizableText padding="$2" fontFamily="$mono" alignItems="center" gap="$1.5">
                               {col.primaryKey && (
-                                <KeyRound className="h-3 w-3 text-yellow-500" />
+                                <KeyRound size={12} color="$yellow9" />
                               )}
                               {col.name}
-                            </td>
-                            <td className="p-2 font-mono text-muted-foreground">
+                            </SizableText>
+                            <SizableText padding="$2" fontFamily="$mono" color="$color11">
                               {col.type || 'TEXT'}
-                            </td>
-                            <td className="p-2 text-muted-foreground">
+                            </SizableText>
+                            <SizableText padding="$2" color="$color11">
                               {col.nullable ? 'Yes' : 'No'}
-                            </td>
-                            <td className="p-2 font-mono text-muted-foreground text-xs">
+                            </SizableText>
+                            <SizableText padding="$2" fontFamily="$mono" color="$color11" fontSize="$1">
                               {col.defaultValue || '-'}
-                            </td>
-                          </tr>
+                            </SizableText>
+                          </YStack>
                         ))}
                       </tbody>
-                    </table>
-                  </div>
+                    </SizableText>
+                  </YStack>
                 )}
-              </div>
+              </YStack>
             ))}
-          </div>
+          </YStack>
         )}
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }

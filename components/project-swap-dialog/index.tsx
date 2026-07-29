@@ -1,7 +1,8 @@
 'use client';
 
+import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, Button, Switch, Label } from '@hanzo/ui';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, Button } from '@hanzo/ui';
 import {
   Loader2, AlertTriangle, Plus, Minus, RefreshCw, Key,
   Code2, Wrench, Clock,
@@ -97,7 +98,7 @@ export function ProjectSwapDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent $sm={{ maxWidth: 512 }}>
         <DialogHeader>
           <DialogTitle>Swap Source Project</DialogTitle>
           <DialogDescription>
@@ -106,94 +107,94 @@ export function ProjectSwapDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="py-4">
+        <YStack paddingVertical="$4">
           {loading && (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-              <span className="ml-2 text-sm text-muted-foreground">Analyzing changes...</span>
-            </div>
+            <XStack alignItems="center" justifyContent="center" paddingVertical="$6">
+              <Loader2 size={24} color="$color11" />
+              <SizableText marginLeft="$2" fontSize="$3" color="$color11">Analyzing changes...</SizableText>
+            </XStack>
           )}
 
           {error && (
-            <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/30 rounded-lg">
-              <AlertTriangle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
-              <p className="text-sm text-destructive">{error}</p>
-            </div>
+            <XStack alignItems="flex-start" gap="$2" padding="$3" backgroundColor="$red9" borderWidth={1} borderColor="$red9" borderRadius="$5">
+              <AlertTriangle size={16} color="$red9" />
+              <Paragraph fontSize="$3" color="$red9">{error}</Paragraph>
+            </XStack>
           )}
 
           {diff && !loading && (
-            <div className="space-y-4">
+            <YStack rowGap="$4">
               {isEmpty && (
-                <p className="text-sm text-muted-foreground">
+                <Paragraph fontSize="$3" color="$color11">
                   No backend feature changes detected. The deployment will be rebuilt with the new project&apos;s files.
-                </p>
+                </Paragraph>
               )}
 
               {/* Edge Functions diff */}
               <DiffSection
-                icon={<Code2 className="h-4 w-4" />}
+                icon={<Code2 size={16} />}
                 title="Edge Functions"
                 added={diff.edgeFunctions.added}
                 removed={diff.edgeFunctions.removed}
                 changed={diff.edgeFunctions.changed}
-              />
+  />
 
               {/* Server Functions diff */}
               <DiffSection
-                icon={<Wrench className="h-4 w-4" />}
+                icon={<Wrench size={16} />}
                 title="Server Functions"
                 added={diff.serverFunctions.added}
                 removed={diff.serverFunctions.removed}
                 changed={diff.serverFunctions.changed}
-              />
+  />
 
               {/* Secrets diff */}
               {(diff.secrets.added.length > 0 || diff.secrets.removed.length > 0 || diff.secrets.overlapping.length > 0) && (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm font-medium">
-                    <Key className="h-4 w-4" />
+                <YStack rowGap="$2">
+                  <SizableText alignItems="center" gap="$2" fontSize="$3" fontWeight="500" display="flex" flexDirection="row">
+                    <Key size={16} />
                     Secrets
-                  </div>
-                  <div className="pl-6 space-y-1 text-sm">
+                  </SizableText>
+                  <SizableText paddingLeft="$5" rowGap="$1" fontSize="$3" display="flex" flexDirection="column">
                     {diff.secrets.added.map(name => (
-                      <div key={name} className="flex items-center gap-1 text-green-600">
-                        <Plus className="h-3 w-3" /> {name}
-                      </div>
+                      <SizableText key={name} alignItems="center" gap="$1" color="$green10" display="flex" flexDirection="row">
+                        <Plus size={12} /> {name}
+                      </SizableText>
                     ))}
                     {diff.secrets.removed.map(name => (
-                      <div key={name} className="flex items-center gap-1 text-red-600">
-                        <Minus className="h-3 w-3" /> {name}
-                      </div>
+                      <SizableText key={name} alignItems="center" gap="$1" color="$red10" display="flex" flexDirection="row">
+                        <Minus size={12} /> {name}
+                      </SizableText>
                     ))}
                     {diff.secrets.overlapping.map(name => (
-                      <div key={name} className="flex items-center gap-1 text-yellow-600">
-                        <RefreshCw className="h-3 w-3" /> {name} (values will be replaced)
-                      </div>
+                      <SizableText key={name} alignItems="center" gap="$1" color="$yellow10" display="flex" flexDirection="row">
+                        <RefreshCw size={12} /> {name} (values will be replaced)
+                      </SizableText>
                     ))}
-                  </div>
-                </div>
+                  </SizableText>
+                </YStack>
               )}
 
               {/* Scheduled Functions diff */}
               <DiffSection
-                icon={<Clock className="h-4 w-4" />}
+                icon={<Clock size={16} />}
                 title="Scheduled Functions"
                 added={diff.scheduledFunctions.added}
                 removed={diff.scheduledFunctions.removed}
                 changed={diff.scheduledFunctions.changed}
-              />
+  />
 
               {diff.hasConflicts && (
-                <div className="flex items-start gap-2 p-3 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-                  <AlertTriangle className="h-4 w-4 text-yellow-600 dark:text-yellow-400 mt-0.5 shrink-0" />
-                  <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                <XStack alignItems="flex-start" gap="$2" padding="$3" backgroundColor="$yellow1" borderWidth={1} borderColor="$yellow3" borderRadius="$5" $theme-dark={{ backgroundColor: "$yellow12", borderColor: "$yellow11" }}>
+                  <AlertTriangle size={16} color="$yellow10" />
+                  <Paragraph fontSize="$3" color="$yellow11" $theme-dark={{ color: "$yellow3" }}>
                     Some backend features will be removed or replaced. Analytics data will be preserved.
-                  </p>
-                </div>
+                  </Paragraph>
+                </XStack>
               )}
-            </div>
+            </YStack>
           )}
-        </div>
+        </YStack>
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose} disabled={swapping}>
@@ -206,7 +207,7 @@ export function ProjectSwapDialog({
           >
             {swapping ? (
               <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                <Loader2 size={16} />
                 Swapping...
               </>
             ) : (
@@ -235,28 +236,28 @@ function DiffSection({
   if (added.length === 0 && removed.length === 0 && changed.length === 0) return null;
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2 text-sm font-medium">
+    <YStack rowGap="$2">
+      <SizableText alignItems="center" gap="$2" fontSize="$3" fontWeight="500" display="flex" flexDirection="row">
         {icon}
         {title}
-      </div>
-      <div className="pl-6 space-y-1 text-sm">
+      </SizableText>
+      <SizableText paddingLeft="$5" rowGap="$1" fontSize="$3" display="flex" flexDirection="column">
         {added.map(name => (
-          <div key={name} className="flex items-center gap-1 text-green-600">
-            <Plus className="h-3 w-3" /> {name}
-          </div>
+          <SizableText key={name} alignItems="center" gap="$1" color="$green10" display="flex" flexDirection="row">
+            <Plus size={12} /> {name}
+          </SizableText>
         ))}
         {removed.map(name => (
-          <div key={name} className="flex items-center gap-1 text-red-600">
-            <Minus className="h-3 w-3" /> {name}
-          </div>
+          <SizableText key={name} alignItems="center" gap="$1" color="$red10" display="flex" flexDirection="row">
+            <Minus size={12} /> {name}
+          </SizableText>
         ))}
         {changed.map(name => (
-          <div key={name} className="flex items-center gap-1 text-yellow-600">
-            <RefreshCw className="h-3 w-3" /> {name}
-          </div>
+          <SizableText key={name} alignItems="center" gap="$1" color="$yellow10" display="flex" flexDirection="row">
+            <RefreshCw size={12} /> {name}
+          </SizableText>
         ))}
-      </div>
-    </div>
+      </SizableText>
+    </YStack>
   );
 }

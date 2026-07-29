@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import { SizableText, Paragraph, Anchor, YStack } from '@hanzo/gui';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, Button, Collapsible, CollapsibleContent, CollapsibleTrigger } from '@hanzo/ui';
 import { ChevronDown } from 'lucide-react';
 import { setTelemetryOptIn, track } from '@/lib/telemetry';
@@ -18,7 +18,7 @@ export function TelemetryDisclosure({ open, onDismiss }: TelemetryDisclosureProp
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) onDismiss(); }}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent $sm={{ maxWidth: 448 }}>
         <DialogHeader>
           <DialogTitle>Anonymous Usage Analytics</DialogTitle>
           <DialogDescription>
@@ -26,43 +26,43 @@ export function TelemetryDisclosure({ open, onDismiss }: TelemetryDisclosureProp
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 text-sm text-muted-foreground leading-relaxed">
-          <p className="text-sm">
+        <SizableText rowGap="$4" fontSize="$3" color="$color11" lineHeight={1.625} display="flex" flexDirection="column">
+          <Paragraph fontSize="$3">
             Built with{' '}
-            <a
+            <Anchor
               href="https://github.com/o-stahl/osw-analytics"
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-orange-500/20 text-orange-400 hover:text-orange-300 px-1 py-0.5 rounded no-underline"
+              backgroundColor="$orange9" color="$orange8" paddingHorizontal="$1" paddingVertical="$0.5" borderRadius="$2" textDecorationLine="none" hoverStyle={{ color: "$orange4" }}
             >
               osw-analytics
-            </a>
+            </Anchor>
             , an open-source approach to analytics.
-          </p>
+          </Paragraph>
 
           <Collapsible>
-            <div className="rounded-lg bg-muted/50">
-              <CollapsibleTrigger className="flex items-center gap-1.5 w-full p-3 text-xs text-foreground hover:text-foreground transition-colors group">
-                <ChevronDown className="h-3.5 w-3.5 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+            <YStack borderRadius="$5" backgroundColor="$color3">
+              <CollapsibleTrigger alignItems="center" gap="$1.5" width="100%" padding="$3" fontSize="$1" color="$color" group hoverStyle={{ color: "$color" }}>
+                <ChevronDown size={14} />
                 Details
               </CollapsibleTrigger>
               <CollapsibleContent>
-                <div className="px-4 pb-4 space-y-3 text-sm text-muted-foreground">
+                <SizableText paddingHorizontal="$4" paddingBottom="$4" rowGap="$3" fontSize="$3" color="$color11" display="flex" flexDirection="column">
                   <div>
-                    <p className="font-medium text-foreground mb-1.5">What will <span className="text-orange-400 uppercase">not</span> be collected:</p>
-                    <ul className="list-disc pl-5 space-y-0.5">
+                    <Paragraph fontWeight="500" color="$color" marginBottom="$1.5">What will <SizableText color="$orange8" textTransform="uppercase">not</SizableText> be collected:</Paragraph>
+                    <YStack paddingLeft="$4.5" rowGap="$0.5">
                       <li>Your prompts or messages</li>
                       <li>Code, file names, or file contents</li>
                       <li>API keys or credentials</li>
                       <li>Inference completions</li>
                       <li>Error messages</li>
                       <li>Anything that could identify you</li>
-                    </ul>
+                    </YStack>
                   </div>
 
                   <div>
-                    <p className="font-medium text-foreground mb-1.5">What will be collected:</p>
-                    <ul className="list-disc pl-5 space-y-0.5">
+                    <Paragraph fontWeight="500" color="$color" marginBottom="$1.5">What will be collected:</Paragraph>
+                    <YStack paddingLeft="$4.5" rowGap="$0.5">
                       <li>Which views are visited (e.g. dashboard, workspace, settings)</li>
                       <li>Which AI providers and models are selected</li>
                       <li>Whether tasks succeed or fail (not what was asked)</li>
@@ -70,22 +70,22 @@ export function TelemetryDisclosure({ open, onDismiss }: TelemetryDisclosureProp
                       <li>API error types (not error messages)</li>
                       <li>Session heartbeats (how long the app is open)</li>
                       <li>A randomly generated ID stored in your browser to count unique visitors</li>
-                    </ul>
+                    </YStack>
                   </div>
-                </div>
+                </SizableText>
               </CollapsibleContent>
-            </div>
+            </YStack>
           </Collapsible>
-        </div>
+        </SizableText>
 
-        <DialogFooter className="flex items-center justify-between sm:justify-between gap-2">
-          <button
+        <DialogFooter alignItems="center" justifyContent="space-between" gap="$2" $sm={{ justifyContent: "space-between" }}>
+          <Button
             type="button"
-            className="text-xs text-muted-foreground underline hover:text-foreground"
+            fontSize="$1" color="$color11" textDecorationLine="underline" hoverStyle={{ color: "$color" }}
             onClick={handleDisable}
           >
             Disable analytics
-          </button>
+          </Button>
           <Button onClick={() => { track('telemetry_accepted'); onDismiss(); }}>
             Got it
           </Button>

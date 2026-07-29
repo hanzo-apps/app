@@ -17,6 +17,7 @@
  * preview fills any aspect the caller sizes it to (16/9 cards, 16/10 heroes).
  */
 
+import { YStack, XStack, SizableText } from '@hanzo/gui';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 // The logical viewport the site is rendered at before scaling — a desktop width
@@ -58,9 +59,9 @@ export function ProjectThumb({
   const showLive = !!liveUrl && !failed;
 
   return (
-    <div
+    <YStack
       ref={hostRef}
-      className={`relative ${aspect} h-full w-full overflow-hidden bg-gradient-to-br from-foreground/[0.07] to-transparent ${className}`}
+      position="relative" height="100%" width="100%" overflow="hidden" className={`${aspect} ${className}`}
     >
       {showLive ? (
         <iframe
@@ -90,19 +91,19 @@ export function ProjectThumb({
             transform: `scale(${box.scale})`,
             transformOrigin: 'top left',
           }}
-        />
+  />
       ) : (
         fallback ?? (
-          <div className="flex h-full items-center justify-center">
-            <span className="text-4xl font-medium text-muted-foreground">
+          <XStack height="100%" alignItems="center" justifyContent="center">
+            <SizableText fontSize="$11" fontWeight="500" color="$color11">
               {(name || '?').charAt(0).toUpperCase()}
-            </span>
-          </div>
+            </SizableText>
+          </XStack>
         )
       )}
       {/* Click shield — the card owns every interaction. */}
-      <div className="absolute inset-0" />
-    </div>
+      <YStack position="absolute" top={0} right={0} bottom={0} left={0} />
+    </YStack>
   );
 }
 

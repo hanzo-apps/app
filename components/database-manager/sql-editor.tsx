@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { XStack, YStack, SizableText, Paragraph } from '@hanzo/gui';
+import { useState, useEffect, useCallback } from 'react';
 import { CodeEditor } from '@/components/code-editor';
-import { Play, Loader2, AlertCircle, CheckCircle2, History, X } from 'lucide-react';
+import { Play, Loader2, AlertCircle, CheckCircle2, History } from 'lucide-react';
 import { Button } from '@hanzo/ui';
-import { cn } from '@/lib/utils';
-
 interface SqlEditorProps {
   deploymentId?: string;
   queryEndpoint?: string;
@@ -98,63 +97,63 @@ export function SqlEditor({ deploymentId, queryEndpoint }: SqlEditorProps) {
   }, [sql, deploymentId, saveToHistory]);
 
   if (!mounted) {
-    return <div className="h-full flex items-center justify-center">
-      <Loader2 className="h-6 w-6 animate-spin" />
-    </div>;
+    return <XStack height="100%" alignItems="center" justifyContent="center">
+      <Loader2 size={24} />
+    </XStack>;
   }
 
   return (
-    <div className="h-full flex flex-col gap-4">
+    <YStack height="100%" gap="$4">
       {/* Editor Section */}
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+      <YStack gap="$2">
+        <XStack alignItems="center" justifyContent="space-between">
+          <XStack alignItems="center" gap="$2">
             <Button
               onClick={executeQuery}
               disabled={executing || !sql.trim()}
               size="sm"
             >
               {executing ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                <Loader2 size={16} />
               ) : (
-                <Play className="h-4 w-4 mr-1" />
+                <Play size={16} />
               )}
               Execute
             </Button>
-            <span className="text-xs text-muted-foreground">
+            <SizableText fontSize="$1" color="$color11">
               Ctrl/Cmd + Enter
-            </span>
-          </div>
+            </SizableText>
+          </XStack>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setShowHistory(!showHistory)}
           >
-            <History className="h-4 w-4 mr-1" />
+            <History size={16} />
             History
           </Button>
-        </div>
+        </XStack>
 
         {/* History dropdown */}
         {showHistory && history.length > 0 && (
-          <div className="border rounded-lg bg-background shadow-lg max-h-40 overflow-auto">
+          <YStack borderWidth={1} borderRadius="$5" backgroundColor="$background" elevation={4} maxHeight="$17" overflow="scroll">
             {history.map((query, i) => (
-              <button
+              <Button
                 key={i}
                 onClick={() => {
                   setSql(query);
                   setShowHistory(false);
                 }}
-                className="w-full text-left px-3 py-2 text-sm font-mono hover:bg-muted border-b last:border-0 truncate"
+                width="100%" textAlign="left" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3" fontFamily="$mono" borderBottomWidth={1} numberOfLines={1} hoverStyle={{ backgroundColor: "$color3" }} className="last:border-0"
               >
                 {query}
-              </button>
+              </Button>
             ))}
-          </div>
+          </YStack>
         )}
 
-        <div
-          className="h-32 border rounded-lg overflow-hidden"
+        <YStack
+          height="$14" borderWidth={1} borderRadius="$5" overflow="hidden"
           onKeyDown={(e) => {
             // Cmd/Ctrl + Enter to execute (CodeMirror leaves this combo unbound)
             if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
@@ -167,21 +166,21 @@ export function SqlEditor({ deploymentId, queryEndpoint }: SqlEditorProps) {
             language="sql"
             value={sql}
             onChange={(value) => setSql(value)}
-          />
-        </div>
-      </div>
+  />
+        </YStack>
+      </YStack>
 
       {/* Results Section */}
-      <div className="flex-1 overflow-hidden border rounded-lg">
+      <YStack flex={1} overflow="hidden" borderWidth={1} borderRadius="$5">
         {result === null ? (
-          <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
+          <SizableText height="100%" alignItems="center" justifyContent="center" color="$color11" fontSize="$3" display="flex" flexDirection="row">
             Execute a query to see results
-          </div>
+          </SizableText>
         ) : result.success ? (
-          <div className="h-full flex flex-col">
+          <YStack height="100%">
             {/* Status bar */}
-            <div className="flex items-center gap-2 px-3 py-2 bg-muted/30 border-b text-sm">
-              <CheckCircle2 className="h-4 w-4 text-green-500" />
+            <SizableText alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$2" backgroundColor="$color3" borderBottomWidth={1} fontSize="$3" display="flex" flexDirection="row">
+              <CheckCircle2 size={16} color="$green9" />
               {result.rows && result.rows.length > 0 ? (
                 <span>{result.rows.length} row{result.rows.length !== 1 ? 's' : ''}</span>
               ) : result.rowsAffected !== undefined && result.rowsAffected > 0 ? (
@@ -189,53 +188,53 @@ export function SqlEditor({ deploymentId, queryEndpoint }: SqlEditorProps) {
               ) : (
                 <span>Query executed successfully</span>
               )}
-              <span className="text-muted-foreground">({result.executionTime}ms)</span>
-            </div>
+              <SizableText color="$color11">({result.executionTime}ms)</SizableText>
+            </SizableText>
 
             {/* Results table */}
             {result.columns && result.columns.length > 0 && result.rows ? (
-              <div className="flex-1 overflow-auto">
-                <table className="w-full text-sm">
-                  <thead className="sticky top-0 bg-muted">
+              <YStack flex={1} overflow="scroll">
+                <SizableText width="100%" fontSize="$3" display="flex" flexDirection="column">
+                  <YStack position="sticky" top="$0" backgroundColor="$color3">
                     <tr>
                       {result.columns.map((col, i) => (
-                        <th key={i} className="text-left p-2 font-medium border-r last:border-0">
+                        <SizableText key={i} textAlign="left" padding="$2" fontWeight="500" borderRightWidth={1} className="last:border-0">
                           {col}
-                        </th>
+                        </SizableText>
                       ))}
                     </tr>
-                  </thead>
+                  </YStack>
                   <tbody>
                     {result.rows.map((row, i) => (
-                      <tr key={i} className="border-t hover:bg-muted/30">
+                      <YStack key={i} borderTopWidth={1} hoverStyle={{ backgroundColor: "$color3" }}>
                         {row.map((cell, j) => (
-                          <td key={j} className="p-2 font-mono text-xs border-r last:border-0 max-w-xs truncate">
+                          <SizableText key={j} padding="$2" fontFamily="$mono" fontSize="$1" borderRightWidth={1} maxWidth={320} numberOfLines={1} className="last:border-0">
                             {cell === null ? (
-                              <span className="text-muted-foreground italic">NULL</span>
+                              <SizableText color="$color11" fontStyle="italic">NULL</SizableText>
                             ) : typeof cell === 'object' ? (
                               JSON.stringify(cell)
                             ) : (
                               String(cell)
                             )}
-                          </td>
+                          </SizableText>
                         ))}
-                      </tr>
+                      </YStack>
                     ))}
                   </tbody>
-                </table>
-              </div>
+                </SizableText>
+              </YStack>
             ) : null}
-          </div>
+          </YStack>
         ) : (
-          <div className="h-full flex flex-col items-center justify-center gap-2 p-4">
-            <AlertCircle className="h-6 w-6 text-destructive" />
-            <p className="text-sm text-destructive font-medium">Query Error</p>
-            <p className="text-sm text-muted-foreground text-center max-w-md">
+          <YStack height="100%" alignItems="center" justifyContent="center" gap="$2" padding="$4">
+            <AlertCircle size={24} color="$red9" />
+            <Paragraph fontSize="$3" color="$red9" fontWeight="500">Query Error</Paragraph>
+            <Paragraph fontSize="$3" color="$color11" textAlign="center" maxWidth={448}>
               {result.error}
-            </p>
-          </div>
+            </Paragraph>
+          </YStack>
         )}
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }

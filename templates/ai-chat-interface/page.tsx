@@ -1,20 +1,9 @@
 "use client";
 
+import { YStack, XStack, Paragraph, SizableText } from '@hanzo/gui';
 import { useState, useRef, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Button, Input, ScrollArea, Avatar, AvatarFallback, AvatarImage, Badge, Textarea } from '@hanzo/ui';
-import {
-  Send,
-  Bot,
-  User,
-  Copy,
-  Download,
-  RefreshCw,
-  Loader2,
-  Sparkles,
-  Settings
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Button, ScrollArea, Avatar, AvatarFallback, Badge, Textarea } from '@hanzo/ui';
+import { Send, Bot, User, Copy, RefreshCw, Loader2, Sparkles, Settings } from "lucide-react";
 interface Message {
   id: string;
   role: "user" | "assistant";
@@ -102,93 +91,85 @@ The UI is built entirely with @hanzo/ui primitives like Card, Button, ScrollArea
   };
 
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="max-w-4xl mx-auto">
-        <Card className="h-[80vh] flex flex-col">
-          <CardHeader className="border-b">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center">
-                  <Sparkles className="w-6 h-6 text-white" />
-                </div>
+    <YStack minHeight="100%" backgroundColor="$background" padding="$4">
+      <YStack maxWidth={896} alignSelf="center">
+        <Card height="80vh" flexDirection="column">
+          <CardHeader borderBottomWidth={1}>
+            <XStack alignItems="center" justifyContent="space-between">
+              <XStack alignItems="center" gap="$2">
+                <XStack width="$7" height="$7" borderRadius="$5" alignItems="center" justifyContent="center">
+                  <Sparkles size={24} color="white" />
+                </XStack>
                 <div>
                   <CardTitle>AI Chat Interface</CardTitle>
                   <CardDescription>Powered by @hanzo/ui components</CardDescription>
                 </div>
-              </div>
-              <div className="flex items-center gap-2">
+              </XStack>
+              <XStack alignItems="center" gap="$2">
                 <Badge variant="outline">GPT-4</Badge>
                 <Button variant="ghost" size="icon">
-                  <Settings className="w-4 h-4" />
+                  <Settings size={16} />
                 </Button>
-              </div>
-            </div>
+              </XStack>
+            </XStack>
           </CardHeader>
 
-          <ScrollArea className="flex-1 p-4">
-            <div className="space-y-4">
+          <ScrollArea flex={1} padding="$4">
+            <YStack rowGap="$4">
               {messages.map((message) => (
-                <div
+                <XStack
                   key={message.id}
-                  className={cn(
-                    "flex gap-3",
-                    message.role === "user" ? "justify-end" : "justify-start"
-                  )}
+                  gap="$3" {...{ justifyContent: message.role === "user" ? "flex-end" : "flex-start" }}
                 >
                   {message.role === "assistant" && (
                     <Avatar>
-                      <AvatarFallback className="bg-violet-100">
-                        <Bot className="w-5 h-5 text-violet-600" />
+                      <AvatarFallback backgroundColor="$purple2">
+                        <Bot size={20} color="$purple10" />
                       </AvatarFallback>
                     </Avatar>
                   )}
 
-                  <Card className={cn(
-                    "max-w-[70%]",
-                    message.role === "user"
-                      ? "bg-gradient-to-r from-violet-500 to-purple-600 text-white"
-                      : "bg-muted"
-                  )}>
-                    <CardContent className="p-3">
-                      <p className="whitespace-pre-wrap">
+                  <Card maxWidth="70%" {...{ color: message.role === "user" ? "white" : undefined, backgroundColor: message.role === "user" ? undefined : "$color3" }}>
+                    <CardContent padding="$3">
+                      <Paragraph whiteSpace="pre-wrap">
                         {message.content}
                         {message.isStreaming && (
-                          <span className="inline-block w-2 h-4 ml-1 bg-violet-500 animate-pulse" />
+                          <SizableText width="$2" height="$4" marginLeft="$1" backgroundColor="$purple9" />
                         )}
-                      </p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <span className="text-xs opacity-60">
+                      </Paragraph>
+                      <XStack alignItems="center" gap="$2" marginTop="$2">
+                        <SizableText fontSize="$1" opacity={0.6}>
                           {message.timestamp.toLocaleTimeString()}
-                        </span>
+                        </SizableText>
                         {message.role === "assistant" && !message.isStreaming && (
-                          <div className="flex gap-1">
-                            <Button variant="ghost" size="icon" className="h-6 w-6">
-                              <Copy className="w-3 h-3" />
+                          <XStack gap="$1">
+                            <Button variant="ghost" size="icon" height="$5" width="$5">
+                              <Copy size={12} />
                             </Button>
-                            <Button variant="ghost" size="icon" className="h-6 w-6">
-                              <RefreshCw className="w-3 h-3" />
+                            <Button variant="ghost" size="icon" height="$5" width="$5">
+                              <RefreshCw size={12} />
                             </Button>
-                          </div>
+                          </XStack>
                         )}
-                      </div>
+                      </XStack>
                     </CardContent>
                   </Card>
 
                   {message.role === "user" && (
                     <Avatar>
                       <AvatarFallback>
-                        <User className="w-5 h-5" />
+                        <User size={20} />
                       </AvatarFallback>
                     </Avatar>
                   )}
-                </div>
+                </XStack>
               ))}
               <div ref={scrollRef} />
-            </div>
+            </YStack>
           </ScrollArea>
 
-          <CardFooter className="border-t p-4">
-            <div className="flex gap-2 w-full">
+          <CardFooter borderTopWidth={1} padding="$4">
+            <XStack gap="$2" width="100%">
               <Textarea
                 placeholder="Type your message..."
                 value={input}
@@ -199,23 +180,23 @@ The UI is built entirely with @hanzo/ui primitives like Card, Button, ScrollArea
                     handleSend();
                   }
                 }}
-                className="min-h-[50px] max-h-[150px]"
-              />
+                minHeight={50} maxHeight={150}
+  />
               <Button
                 onClick={handleSend}
                 disabled={isLoading || !input.trim()}
-                className="px-4"
+                paddingHorizontal="$4"
               >
                 {isLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 size={16} />
                 ) : (
-                  <Send className="w-4 h-4" />
+                  <Send size={16} />
                 )}
               </Button>
-            </div>
+            </XStack>
           </CardFooter>
         </Card>
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }

@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { SizableText, XStack, Paragraph } from '@hanzo/gui';
+import { useEffect, useState } from 'react';
 import { Deployment } from '@/lib/vfs/types';
-import { Server, Database, ChevronDown, Loader2, X } from 'lucide-react';
+import { Server, Database, Loader2, X } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Tooltip, TooltipContent, TooltipTrigger, Button } from '@hanzo/ui';
-import { cn } from '@/lib/utils';
-
 interface DeploymentSelectorProps {
   projectId: string;
   selectedDeploymentId: string | null;
@@ -75,37 +74,37 @@ export function DeploymentSelector({
 
   if (loading) {
     return (
-      <div className={cn('flex items-center gap-2 text-sm text-muted-foreground', className)}>
-        <Loader2 className="h-4 w-4 animate-spin" />
+      <SizableText alignItems="center" gap="$2" fontSize="$3" color="$color11" display="flex" flexDirection="row" className={`${className}`}>
+        <Loader2 size={16} />
         <span>Loading deployments...</span>
-      </div>
+      </SizableText>
     );
   }
 
   if (error) {
     return (
-      <div className={cn('flex items-center gap-2 text-sm text-destructive', className)}>
-        <Server className="h-4 w-4" />
+      <SizableText alignItems="center" gap="$2" fontSize="$3" color="$red9" display="flex" flexDirection="row" className={`${className}`}>
+        <Server size={16} />
         <span>{error}</span>
-      </div>
+      </SizableText>
     );
   }
 
   const selectedDeployment = deployments.find(s => s.id === selectedDeploymentId);
 
   return (
-    <div className={cn('flex items-center gap-2', className)}>
+    <XStack alignItems="center" gap="$2" className={`${className}`}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="flex items-center gap-1.5 text-muted-foreground">
-            <Database className="h-4 w-4" />
-          </div>
+          <SizableText alignItems="center" gap="$1.5" color="$color11" display="flex" flexDirection="row">
+            <Database size={16} />
+          </SizableText>
         </TooltipTrigger>
         <TooltipContent side="bottom">
           <p>Backend</p>
-          <p className="text-xs text-muted-foreground">
+          <Paragraph fontSize="$1" color="$color11">
             Connect to a deployment for database, edge functions, and secrets
-          </p>
+          </Paragraph>
         </TooltipContent>
       </Tooltip>
 
@@ -120,19 +119,19 @@ export function DeploymentSelector({
           }
         }}
       >
-        <SelectTrigger className="h-8 w-[180px]">
+        <SelectTrigger height="$6" width={180}>
           <SelectValue placeholder="No deployment connected" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="none">
-            <span className="text-muted-foreground">No deployment</span>
+            <SizableText color="$color11">No deployment</SizableText>
           </SelectItem>
           {databaseEnabledDeployments.map((deployment) => (
             <SelectItem key={deployment.id} value={deployment.id}>
-              <div className="flex items-center gap-2">
-                <Server className="h-3.5 w-3.5" />
+              <XStack alignItems="center" gap="$2">
+                <Server size={14} />
                 <span>{deployment.name}</span>
-              </div>
+              </XStack>
             </SelectItem>
           ))}
         </SelectContent>
@@ -144,15 +143,15 @@ export function DeploymentSelector({
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8"
+              height="$6" width="$6"
               onClick={() => onDeploymentChange(null, null)}
             >
-              <X className="h-4 w-4" />
+              <X size={16} />
             </Button>
           </TooltipTrigger>
           <TooltipContent>Disconnect deployment</TooltipContent>
         </Tooltip>
       )}
-    </div>
+    </XStack>
   );
 }

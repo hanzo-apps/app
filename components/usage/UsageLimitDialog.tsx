@@ -14,8 +14,9 @@
  * raise the same modal. Accessibility (focus trap, Esc, aria-labelled title +
  * description) comes from the @hanzo/ui Dialog (Radix).
  */
+import { YStack, SizableText } from '@hanzo/gui';
 import { useRouter } from 'next/navigation';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@hanzo/ui';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Button } from '@hanzo/ui';
 import { Wallet, Sparkles, ArrowRight, type LucideIcon } from 'lucide-react';
 
 import { useCloudBalance, spendableCents } from '@/lib/billing/live-balance';
@@ -37,10 +38,10 @@ export function UsageLimitDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border-border bg-card text-foreground sm:max-w-md">
+      <DialogContent borderColor="$borderColor" backgroundColor="$background" color="$color" $sm={{ maxWidth: 448 }}>
         <DialogHeader>
-          <DialogTitle className="text-xl font-medium tracking-tight">Need more usage?</DialogTitle>
-          <DialogDescription className="text-muted-foreground">
+          <DialogTitle fontSize="$7" fontWeight="500" letterSpacing={-0.4}>Need more usage?</DialogTitle>
+          <DialogDescription color="$color11">
             You&apos;ve reached your limit. To keep going:
           </DialogDescription>
         </DialogHeader>
@@ -48,20 +49,20 @@ export function UsageLimitDialog({
         {/* Honest live balance — only mounted while the dialog is open. */}
         {open ? <BalanceLine /> : null}
 
-        <div className="mt-1 flex flex-col gap-2">
+        <YStack marginTop="$1" gap="$2">
           <OptionCard
             icon={Wallet}
             title="Add credits"
             desc="Top up your balance and keep building — pay only for what you use."
             onClick={() => go('/billing')}
-          />
+  />
           <OptionCard
             icon={Sparkles}
             title="Upgrade your plan"
             desc="Move to a plan with more included usage, higher limits, and premium models."
             onClick={() => go('/pricing')}
-          />
-        </div>
+  />
+        </YStack>
       </DialogContent>
     </Dialog>
   );
@@ -79,22 +80,22 @@ function OptionCard({
   onClick: () => void;
 }) {
   return (
-    <button
+    <Button
       type="button"
       onClick={onClick}
-      className="group flex w-full items-start gap-3 rounded-xl border border-border bg-background/40 p-4 text-left outline-none transition-colors hover:border-foreground/25 hover:bg-accent focus-visible:ring-2 focus-visible:ring-foreground/30"
+      group width="100%" alignItems="flex-start" gap="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4" textAlign="left" outlineWidth={0} hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}
     >
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-foreground/10 text-foreground">
+      <SizableText height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color" color="$color">
         <Icon className="h-5 w-5" />
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="flex items-center justify-between gap-2">
-          <span className="text-sm font-medium text-foreground">{title}</span>
-          <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />
-        </span>
-        <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground">{desc}</span>
-      </span>
-    </button>
+      </SizableText>
+      <SizableText minWidth={0} flex={1}>
+        <SizableText alignItems="center" justifyContent="space-between" gap="$2">
+          <SizableText fontSize="$3" fontWeight="500" color="$color">{title}</SizableText>
+          <ArrowRight size={16} color="$color11" />
+        </SizableText>
+        <SizableText marginTop="$0.5" fontSize="$1" lineHeight={1.625} color="$color11">{desc}</SizableText>
+      </SizableText>
+    </Button>
   );
 }
 
@@ -106,11 +107,11 @@ function BalanceLine() {
   const cents = spendableCents(balance);
   if (phase !== 'ready' || cents === null) return null;
   return (
-    <div className="flex items-center gap-2 rounded-lg border border-border bg-background/40 px-3 py-2 text-xs text-muted-foreground">
-      <Wallet className="h-3.5 w-3.5" />
+    <SizableText alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+      <Wallet size={14} />
       <span>Current balance</span>
-      <span className="ml-auto font-mono text-foreground">{fmtUsd(cents)}</span>
-    </div>
+      <SizableText marginLeft="auto" fontFamily="$mono" color="$color">{fmtUsd(cents)}</SizableText>
+    </SizableText>
   );
 }
 

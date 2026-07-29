@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import { YStack, XStack, H3, SizableText } from '@hanzo/gui';
+import { useEffect, useMemo, useState } from 'react';
 import { useGuidedTour } from './context';
 import { Button } from '@hanzo/ui';
 import { Loader2 } from 'lucide-react';
@@ -95,38 +96,38 @@ export function GuidedTourOverlay({ location }: GuidedTourOverlayProps) {
   const primaryLabel = currentStep.primaryLabel ?? 'Next';
   const secondaryLabel = currentStep.secondaryLabel ?? 'Skip';
   return (
-    <div className="fixed inset-0 z-[2000] pointer-events-auto">
-      <div className="absolute inset-0 bg-background/30" />
+    <YStack position="fixed" top={0} right={0} bottom={0} left={0} zIndex={2000} pointerEvents="auto">
+      <YStack position="absolute" top={0} right={0} bottom={0} left={0} backgroundColor="$background" />
       {rect && (
-        <div
-          className="pointer-events-none fixed rounded-xl border-2 border-primary ring-4 ring-primary/30 transition-all animate-ring-opacity"
+        <YStack
+          pointerEvents="none" position="fixed" borderRadius="$6" borderWidth={2} borderColor="$color12"
           style={{
             top: rect.top,
             left: rect.left,
             width: rect.width,
             height: rect.height,
           }}
-        />
+  />
       )}
 
-      <div className="absolute bottom-10 left-1/2 flex w-full max-w-xl -translate-x-1/2 flex-col gap-4 px-4">
-        <div className="pointer-events-auto rounded-2xl border bg-background/95 p-6 shadow-2xl">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <div className="flex items-center justify-between gap-4">
-                <h3 className="text-lg font-medium text-foreground">{currentStep.title}</h3>
-                <span className="text-sm text-muted-foreground font-medium">{currentStepNumber}/{totalSteps}</span>
-              </div>
-              <div className="mt-2 text-sm leading-relaxed text-muted-foreground">
+      <YStack position="absolute" bottom="$7" left="50%" width="100%" maxWidth={576} x="50%" gap="$4" paddingHorizontal="$4">
+        <YStack pointerEvents="auto" borderRadius="$8" borderWidth={1} backgroundColor="$background" padding="$5" elevation={6}>
+          <XStack alignItems="flex-start" justifyContent="space-between" gap="$4">
+            <YStack flex={1}>
+              <XStack alignItems="center" justifyContent="space-between" gap="$4">
+                <H3 fontSize="$6" fontWeight="500" color="$color">{currentStep.title}</H3>
+                <SizableText fontSize="$3" color="$color11" fontWeight="500">{currentStepNumber}/{totalSteps}</SizableText>
+              </XStack>
+              <SizableText marginTop="$2" fontSize="$3" lineHeight={1.625} color="$color11" display="flex" flexDirection="column">
                 {currentStep.body}
-              </div>
-            </div>
+              </SizableText>
+            </YStack>
             {isBusy && (
-              <Loader2 className="h-5 w-5 animate-spin text-primary" />
+              <Loader2 size={20} color="$color12" />
             )}
-          </div>
+          </XStack>
 
-          <div className="mt-6 flex items-center justify-between">
+          <XStack marginTop="$5" alignItems="center" justifyContent="space-between">
             {currentStep.showBack ? (
               <Button variant="ghost" onClick={previous} disabled={isBusy}>
                 Back
@@ -134,17 +135,17 @@ export function GuidedTourOverlay({ location }: GuidedTourOverlayProps) {
             ) : (
               <div />
             )}
-            <div className="flex items-center gap-2">
+            <XStack alignItems="center" gap="$2">
               <Button variant="ghost" onClick={skip}>
                 {secondaryLabel}
               </Button>
               <Button onClick={next} disabled={disableNext}>
                 {primaryLabel}
               </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+            </XStack>
+          </XStack>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }

@@ -1,7 +1,8 @@
 "use client";
 
+import { YStack, XStack, Paragraph } from '@hanzo/gui';
 import { useState } from "react";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, Button, Avatar, AvatarFallback, AvatarImage, Textarea, Badge, Tabs, TabsContent, TabsList, TabsTrigger, ScrollArea } from '@hanzo/ui';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, Button, Avatar, AvatarFallback, AvatarImage, Textarea, Badge, Tabs, TabsList, TabsTrigger, ScrollArea } from '@hanzo/ui';
 import {
   Heart,
   MessageCircle,
@@ -82,75 +83,75 @@ export default function SocialFeed() {
   const [selectedTab, setSelectedTab] = useState("for-you");
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto flex">
+    <YStack minHeight="100%" backgroundColor="$background">
+      <XStack maxWidth={1280} alignSelf="center">
         {/* Left Sidebar */}
-        <div className="w-64 border-r min-h-screen p-6">
-          <div className="space-y-2">
-            <Button variant="ghost" className="w-full justify-start gap-3">
-              <Hash className="w-5 h-5" />
+        <YStack width={256} borderRightWidth={1} minHeight="100%" padding="$5">
+          <YStack rowGap="$2">
+            <Button variant="ghost" width="100%" justifyContent="flex-start" gap="$3">
+              <Hash size={20} />
               Explore
             </Button>
-            <Button variant="ghost" className="w-full justify-start gap-3">
-              <Users className="w-5 h-5" />
+            <Button variant="ghost" width="100%" justifyContent="flex-start" gap="$3">
+              <Users size={20} />
               Communities
             </Button>
-            <Button variant="ghost" className="w-full justify-start gap-3">
-              <Bookmark className="w-5 h-5" />
+            <Button variant="ghost" width="100%" justifyContent="flex-start" gap="$3">
+              <Bookmark size={20} />
               Bookmarks
             </Button>
-          </div>
-        </div>
+          </YStack>
+        </YStack>
 
         {/* Main Feed */}
-        <div className="flex-1 border-r">
+        <YStack flex={1} borderRightWidth={1}>
           {/* Header */}
-          <div className="border-b sticky top-0 bg-background/95 backdrop-blur">
+          <YStack borderBottomWidth={1} position="sticky" top="$0" backgroundColor="$background" backdropFilter="blur(8px)">
             <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-              <TabsList className="w-full justify-start rounded-none h-12">
-                <TabsTrigger value="for-you" className="flex-1">For You</TabsTrigger>
-                <TabsTrigger value="following" className="flex-1">Following</TabsTrigger>
-                <TabsTrigger value="trending" className="flex-1">Trending</TabsTrigger>
+              <TabsList width="100%" justifyContent="flex-start" borderRadius={0} height="$8">
+                <TabsTrigger value="for-you" flex={1}>For You</TabsTrigger>
+                <TabsTrigger value="following" flex={1}>Following</TabsTrigger>
+                <TabsTrigger value="trending" flex={1}>Trending</TabsTrigger>
               </TabsList>
             </Tabs>
-          </div>
+          </YStack>
 
           {/* Create Post */}
-          <Card className="rounded-none border-b border-x-0">
-            <CardContent className="p-4">
-              <div className="flex gap-3">
+          <Card borderRadius={0} borderBottomWidth={1} borderLeftWidth={0} borderRightWidth={0}>
+            <CardContent padding="$4">
+              <XStack gap="$3">
                 <Avatar>
                   <AvatarFallback>U</AvatarFallback>
                 </Avatar>
-                <div className="flex-1">
+                <YStack flex={1}>
                   <Textarea
                     placeholder="What's happening?"
                     value={newPost}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNewPost(e.target.value)}
-                    className="border-0 p-0 resize-none focus-visible:ring-0"
-                  />
-                  <div className="flex items-center justify-between mt-4">
-                    <div className="flex gap-2">
+                    borderWidth={0} padding="$0" resize="none"
+  />
+                  <XStack alignItems="center" justifyContent="space-between" marginTop="$4">
+                    <XStack gap="$2">
                       <Button variant="ghost" size="icon">
-                        <Image className="w-4 h-4" />
+                        <Image size={16} />
                       </Button>
-                    </div>
+                    </XStack>
                     <Button disabled={!newPost.trim()}>
-                      <Send className="w-4 h-4 mr-2" />
+                      <Send size={16} />
                       Post
                     </Button>
-                  </div>
-                </div>
-              </div>
+                  </XStack>
+                </YStack>
+              </XStack>
             </CardContent>
           </Card>
 
           {/* Feed */}
-          <ScrollArea className="h-[calc(100vh-8rem)]">
+          <ScrollArea height="calc(100vh-8rem)">
             {posts.map(post => (
-              <Card key={post.id} className="rounded-none border-b border-x-0">
-                <CardHeader className="flex flex-row items-start justify-between pb-3">
-                  <div className="flex items-center gap-3">
+              <Card key={post.id} borderRadius={0} borderBottomWidth={1} borderLeftWidth={0} borderRightWidth={0}>
+                <CardHeader flexDirection="row" alignItems="flex-start" justifyContent="space-between" paddingBottom="$3">
+                  <XStack alignItems="center" gap="$3">
                     <Avatar>
                       <AvatarImage src={post.author.avatar} />
                       <AvatarFallback>
@@ -158,76 +159,76 @@ export default function SocialFeed() {
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <div className="flex items-center gap-1">
-                        <p className="font-semibold">{post.author.name}</p>
+                      <XStack alignItems="center" gap="$1">
+                        <Paragraph fontWeight="600">{post.author.name}</Paragraph>
                         {post.author.verified && (
-                          <Badge variant="outline" className="h-5 px-1">✓</Badge>
+                          <Badge variant="outline" height="$4.5" paddingHorizontal="$1">✓</Badge>
                         )}
-                      </div>
-                      <p className="text-sm text-muted-foreground">
+                      </XStack>
+                      <Paragraph fontSize="$3" color="$color11">
                         {post.author.username} · {post.timestamp}
-                      </p>
+                      </Paragraph>
                     </div>
-                  </div>
+                  </XStack>
                   <Button variant="ghost" size="icon">
-                    <MoreHorizontal className="w-4 h-4" />
+                    <MoreHorizontal size={16} />
                   </Button>
                 </CardHeader>
 
-                <CardContent className="pb-3">
+                <CardContent paddingBottom="$3">
                   <p>{post.content}</p>
                   {post.hasImage && (
                     <img
                       src={post.image}
                       alt="Post content"
                       className="mt-3 rounded-lg w-full"
-                    />
+  />
                   )}
                 </CardContent>
 
-                <CardFooter className="justify-between">
-                  <Button variant="ghost" size="sm" className="gap-2">
-                    <MessageCircle className="w-4 h-4" />
+                <CardFooter justifyContent="space-between">
+                  <Button variant="ghost" size="sm" gap="$2">
+                    <MessageCircle size={16} />
                     {post.comments}
                   </Button>
-                  <Button variant="ghost" size="sm" className="gap-2">
-                    <Heart className="w-4 h-4" />
+                  <Button variant="ghost" size="sm" gap="$2">
+                    <Heart size={16} />
                     {post.likes}
                   </Button>
-                  <Button variant="ghost" size="sm" className="gap-2">
-                    <Share2 className="w-4 h-4" />
+                  <Button variant="ghost" size="sm" gap="$2">
+                    <Share2 size={16} />
                     {post.shares}
                   </Button>
                   <Button variant="ghost" size="icon">
-                    <Bookmark className="w-4 h-4" />
+                    <Bookmark size={16} />
                   </Button>
                 </CardFooter>
               </Card>
             ))}
           </ScrollArea>
-        </div>
+        </YStack>
 
         {/* Right Sidebar */}
-        <div className="w-80 p-6 space-y-6">
+        <YStack width={320} padding="$5" rowGap="$5">
           {/* Trending */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-cyan-600" />
+              <CardTitle alignItems="center" gap="$2">
+                <TrendingUp size={20} color="$blue10" />
                 Trending Now
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
+              <YStack rowGap="$3">
                 {trending.map((item, i) => (
-                  <div key={i} className="flex items-center justify-between">
+                  <XStack key={i} alignItems="center" justifyContent="space-between">
                     <div>
-                      <p className="font-medium">{item.tag}</p>
-                      <p className="text-sm text-muted-foreground">{item.posts} posts</p>
+                      <Paragraph fontWeight="500">{item.tag}</Paragraph>
+                      <Paragraph fontSize="$3" color="$color11">{item.posts} posts</Paragraph>
                     </div>
-                  </div>
+                  </XStack>
                 ))}
-              </div>
+              </YStack>
             </CardContent>
           </Card>
 
@@ -237,33 +238,33 @@ export default function SocialFeed() {
               <CardTitle>Who to Follow</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <YStack rowGap="$4">
                 {suggestions.map(user => (
-                  <div key={user.username} className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
+                  <XStack key={user.username} alignItems="center" justifyContent="space-between">
+                    <XStack alignItems="center" gap="$3">
                       <Avatar>
                         <AvatarFallback>
                           {user.name.split(" ").map(n => n[0]).join("")}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <div className="flex items-center gap-1">
-                          <p className="font-medium text-sm">{user.name}</p>
+                        <XStack alignItems="center" gap="$1">
+                          <Paragraph fontWeight="500" fontSize="$3">{user.name}</Paragraph>
                           {user.verified && (
-                            <Badge variant="outline" className="h-4 px-1 text-xs border-cyan-500 text-cyan-600">✓</Badge>
+                            <Badge variant="outline" height="$4" paddingHorizontal="$1" fontSize="$1" borderColor="$blue9" color="$blue10">✓</Badge>
                           )}
-                        </div>
-                        <p className="text-xs text-muted-foreground">{user.username}</p>
+                        </XStack>
+                        <Paragraph fontSize="$1" color="$color11">{user.username}</Paragraph>
                       </div>
-                    </div>
-                    <Button size="sm" className="bg-cyan-600 hover:bg-cyan-700">Follow</Button>
-                  </div>
+                    </XStack>
+                    <Button size="sm" backgroundColor="$blue10" hoverStyle={{ backgroundColor: "$blue11" }}>Follow</Button>
+                  </XStack>
                 ))}
-              </div>
+              </YStack>
             </CardContent>
           </Card>
-        </div>
-      </div>
-    </div>
+        </YStack>
+      </XStack>
+    </YStack>
   );
 }

@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Button } from '@hanzo/ui';
+import { XStack, H3, YStack, SizableText, Paragraph } from '@hanzo/gui';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { VirtualServer } from '@/lib/preview/virtual-server';
 import {
   CompiledProject,
@@ -71,32 +73,32 @@ export function LivePreview({
   const pendingCompileOptionsRef = useRef<{ preserve: boolean; showLoading: boolean } | null>(null);
 
   const Header = () => (
-    <div className="p-3 border-b bg-muted/70 flex items-center gap-2">
+    <XStack padding="$3" borderBottomWidth={1} backgroundColor="$color3" alignItems="center" gap="$2">
       <Eye
-        className="h-4 w-4 md:hidden"
+        size={16}
         style={{ color: 'var(--primary)' }}
-      />
+  />
       {onClose ? (
-        <button
+        <Button
           type="button"
           onClick={onClose}
           aria-label="Hide preview"
-          className="relative hidden h-6 w-6 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-destructive md:flex group"
+          position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" color="$color11" group hoverStyle={{ color: "$red9" }}
         >
           <Eye
-            className="h-4 w-4 transition-opacity group-hover:opacity-0"
+            size={16}
             style={{ color: 'var(--primary)' }}
-          />
-          <X className="absolute h-3 w-3 opacity-0 transition-opacity group-hover:opacity-100" />
-        </button>
+  />
+          <X size={12} />
+        </Button>
       ) : (
         <Eye
-          className="hidden h-4 w-4 md:inline-flex"
+          size={16}
           style={{ color: 'var(--primary)' }}
-        />
+  />
       )}
-      <h3 className="text-sm font-medium">Live Preview</h3>
-    </div>
+      <H3 fontSize="$3" fontWeight="500">Live Preview</H3>
+    </XStack>
   );
 
   useEffect(() => {
@@ -403,108 +405,108 @@ export function LivePreview({
 
   if (loading) {
     return (
-      <div className="h-full flex flex-col">
+      <YStack height="100%">
         <Header />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center space-y-2">
-            <RefreshCw className="w-8 h-8 animate-spin mx-auto text-primary" />
-            <p className="text-muted-foreground">Compiling project...</p>
-          </div>
-        </div>
-      </div>
+        <XStack flex={1} alignItems="center" justifyContent="center">
+          <SizableText textAlign="center" rowGap="$2" display="flex" flexDirection="column">
+            <RefreshCw size={32} color="$color12" />
+            <Paragraph color="$color11">Compiling project...</Paragraph>
+          </SizableText>
+        </XStack>
+      </YStack>
     );
   }
 
   if (error) {
     return (
-      <div className="h-full flex flex-col">
+      <YStack height="100%">
         <Header />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center text-destructive space-y-2">
-            <p className="font-medium">Error</p>
-            <p className="text-sm mt-2">{error}</p>
-            <button onClick={handleRefresh} className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md">
+        <XStack flex={1} alignItems="center" justifyContent="center">
+          <SizableText textAlign="center" color="$red9" rowGap="$2" display="flex" flexDirection="column">
+            <Paragraph fontWeight="500">Error</Paragraph>
+            <Paragraph fontSize="$3" marginTop="$2">{error}</Paragraph>
+            <Button onClick={handleRefresh} marginTop="$4" paddingHorizontal="$4" paddingVertical="$2" backgroundColor="$color12" color="$background" borderRadius="$3">
               Try Again
-            </button>
-          </div>
-        </div>
-      </div>
+            </Button>
+          </SizableText>
+        </XStack>
+      </YStack>
     );
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <YStack height="100%">
       <Header />
 
       {/* Controls */}
-      <div className="border-b p-2 flex items-center gap-2">
-        <div className="flex items-center gap-1">
-          <button
+      <XStack borderBottomWidth={1} padding="$2" alignItems="center" gap="$2">
+        <XStack alignItems="center" gap="$1">
+          <Button
             onClick={handleBack}
             disabled={historyIndex === 0}
-            className="h-8 w-8 flex items-center justify-center rounded hover:bg-muted disabled:opacity-50"
+            height="$6" width="$6" alignItems="center" justifyContent="center" borderRadius="$2" hoverStyle={{ backgroundColor: "$color3" }} disabledStyle={{ opacity: 0.5 }}
             title="Back"
           >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-          <button
+            <ChevronLeft size={16} />
+          </Button>
+          <Button
             onClick={handleForward}
             disabled={historyIndex >= navigationHistory.length - 1}
-            className="h-8 w-8 flex items-center justify-center rounded hover:bg-muted disabled:opacity-50"
+            height="$6" width="$6" alignItems="center" justifyContent="center" borderRadius="$2" hoverStyle={{ backgroundColor: "$color3" }} disabledStyle={{ opacity: 0.5 }}
             title="Forward"
           >
-            <ChevronRight className="h-4 w-4" />
-          </button>
-          <button
+            <ChevronRight size={16} />
+          </Button>
+          <Button
             onClick={handleHome}
-            className="h-8 w-8 flex items-center justify-center rounded hover:bg-muted"
+            height="$6" width="$6" alignItems="center" justifyContent="center" borderRadius="$2" hoverStyle={{ backgroundColor: "$color3" }}
             title="Home"
           >
-            <Home className="h-4 w-4" />
-          </button>
-          <button
+            <Home size={16} />
+          </Button>
+          <Button
             onClick={handleRefresh}
-            className="h-8 w-8 flex items-center justify-center rounded hover:bg-muted"
+            height="$6" width="$6" alignItems="center" justifyContent="center" borderRadius="$2" hoverStyle={{ backgroundColor: "$color3" }}
             title="Refresh"
           >
-            <RefreshCw className="h-4 w-4" />
-          </button>
-        </div>
+            <RefreshCw size={16} />
+          </Button>
+        </XStack>
 
-        <div className="flex-1 px-3 py-1 bg-muted rounded text-sm">
+        <SizableText flex={1} paddingHorizontal="$3" paddingVertical="$1" backgroundColor="$color3" borderRadius="$2" fontSize="$3" display="flex" flexDirection="column">
           {activePath}
-        </div>
+        </SizableText>
 
         {/* Device size controls */}
-        <div className="flex items-center gap-1 border-l pl-2">
-          <button
+        <XStack alignItems="center" gap="$1" borderLeftWidth={1} paddingLeft="$2">
+          <Button
             onClick={() => setDeviceSize('mobile')}
-            className={`h-8 w-8 flex items-center justify-center rounded ${deviceSize === 'mobile' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}`}
+            height="$6" width="$6" alignItems="center" justifyContent="center" borderRadius="$2" {...{ backgroundColor: deviceSize === 'mobile' ? "$color12" : undefined, color: deviceSize === 'mobile' ? "$background" : undefined, hoverStyle: deviceSize === 'mobile' ? undefined : {"backgroundColor":"$color3"} }}
             title="Mobile view"
           >
-            <Smartphone className="h-4 w-4" />
-          </button>
-          <button
+            <Smartphone size={16} />
+          </Button>
+          <Button
             onClick={() => setDeviceSize('tablet')}
-            className={`h-8 w-8 flex items-center justify-center rounded ${deviceSize === 'tablet' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}`}
+            height="$6" width="$6" alignItems="center" justifyContent="center" borderRadius="$2" {...{ backgroundColor: deviceSize === 'tablet' ? "$color12" : undefined, color: deviceSize === 'tablet' ? "$background" : undefined, hoverStyle: deviceSize === 'tablet' ? undefined : {"backgroundColor":"$color3"} }}
             title="Tablet view"
           >
-            <Tablet className="h-4 w-4" />
-          </button>
-          <button
+            <Tablet size={16} />
+          </Button>
+          <Button
             onClick={() => setDeviceSize('desktop')}
-            className={`h-8 w-8 flex items-center justify-center rounded ${deviceSize === 'desktop' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}`}
+            height="$6" width="$6" alignItems="center" justifyContent="center" borderRadius="$2" {...{ backgroundColor: deviceSize === 'desktop' ? "$color12" : undefined, color: deviceSize === 'desktop' ? "$background" : undefined, hoverStyle: deviceSize === 'desktop' ? undefined : {"backgroundColor":"$color3"} }}
             title="Desktop view"
           >
-            <Monitor className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
+            <Monitor size={16} />
+          </Button>
+        </XStack>
+      </XStack>
 
       {/* Preview Frame */}
-      <div className="flex-1 bg-muted/20 dark:bg-muted/10 p-4 overflow-auto min-h-0">
-        <div
-          className="bg-white mx-auto shadow-2xl rounded-lg transition-all duration-300"
+      <YStack flex={1} backgroundColor="$color3" padding="$4" overflow="scroll" minHeight={0} $theme-dark={{ backgroundColor: "$color3" }}>
+        <YStack
+          backgroundColor="white" alignSelf="center" elevation={6} borderRadius="$5"
           style={{
             width: DEVICE_SIZES[deviceSize].width || '100%',
             height: DEVICE_SIZES[deviceSize].height || '100%',
@@ -526,9 +528,9 @@ export function LivePreview({
             className="w-full h-full rounded-lg"
             sandbox="allow-scripts allow-same-origin allow-forms"
             title="Preview"
-          />
-        </div>
-      </div>
-    </div>
+  />
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }

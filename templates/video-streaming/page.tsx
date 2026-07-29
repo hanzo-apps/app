@@ -1,23 +1,9 @@
 "use client";
 
+import { YStack, XStack, Image, SizableText, Paragraph, H4 } from '@hanzo/gui';
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Button, Badge, Avatar, AvatarFallback, AvatarImage, AspectRatio, ScrollArea, Tabs, TabsContent, TabsList, TabsTrigger, Textarea, Progress } from '@hanzo/ui';
-import {
-  Play,
-  Pause,
-  SkipForward,
-  SkipBack,
-  Volume2,
-  Maximize,
-  ThumbsUp,
-  ThumbsDown,
-  Share2,
-  Download,
-  Bell,
-  MoreVertical,
-  Eye,
-  Clock
-} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, Button, Badge, Avatar, AvatarFallback, AvatarImage, AspectRatio, ScrollArea, Tabs, TabsContent, TabsList, TabsTrigger, Textarea, Progress } from '@hanzo/ui';
+import { Play, Pause, SkipForward, SkipBack, Volume2, Maximize, ThumbsUp, ThumbsDown, Share2, Download, Bell, MoreVertical, Eye } from "lucide-react";
 
 const currentVideo = {
   id: "1",
@@ -138,259 +124,259 @@ export default function VideoStreaming() {
   const [comment, setComment] = useState("");
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-6 py-6">
-        <div className="grid grid-cols-12 gap-6">
+    <YStack minHeight="100%" backgroundColor="$background">
+      <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$5">
+        <YStack gap="$5">
           {/* Main Content */}
-          <div className="col-span-12 lg:col-span-8">
+          <YStack>
             {/* Video Player */}
-            <Card className="overflow-hidden">
+            <Card overflow="hidden">
               <AspectRatio ratio={16/9}>
-                <div className="relative w-full h-full bg-black">
+                <YStack position="relative" width="100%" height="100%" backgroundColor="black">
                   {/* Video Placeholder */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <img
+                  <XStack position="absolute" top={0} right={0} bottom={0} left={0} alignItems="center" justifyContent="center">
+                    <Image
                       src="/api/placeholder/1280/720"
                       alt="Video thumbnail"
-                      className="w-full h-full object-cover"
-                    />
+                      width="100%" height="100%" objectFit="cover"
+  />
                     {!isPlaying && (
-                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                      <XStack position="absolute" top={0} right={0} bottom={0} left={0} backgroundColor="black" alignItems="center" justifyContent="center">
                         <Button
                           size="icon"
-                          className="h-16 w-16 rounded-full bg-red-600 hover:bg-red-700"
+                          height="$10" width="$10" borderRadius="$10" backgroundColor="$red10" hoverStyle={{ backgroundColor: "$red11" }}
                           onClick={() => setIsPlaying(true)}
                         >
-                          <Play className="w-8 h-8 ml-1" />
+                          <Play size={32} />
                         </Button>
-                      </div>
+                      </XStack>
                     )}
-                  </div>
+                  </XStack>
 
                   {/* Video Controls */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                  <YStack position="absolute" bottom="$0" left="$0" right="$0" padding="$4">
                     {/* Progress Bar */}
-                    <div className="mb-4">
-                      <Progress value={progress} className="h-1 bg-white/30" />
-                      <div className="flex items-center justify-between mt-1 text-xs text-white">
+                    <YStack marginBottom="$4">
+                      <Progress value={progress} height="$1" backgroundColor="white" />
+                      <SizableText alignItems="center" justifyContent="space-between" marginTop="$1" fontSize="$1" color="white" display="flex" flexDirection="row">
                         <span>5:32</span>
                         <span>15:42</span>
-                      </div>
-                    </div>
+                      </SizableText>
+                    </YStack>
 
                     {/* Controls */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
+                    <XStack alignItems="center" justifyContent="space-between">
+                      <XStack alignItems="center" gap="$2">
                         <Button
                           size="icon"
                           variant="ghost"
-                          className="text-white hover:bg-white/20"
+                          color="white" hoverStyle={{ backgroundColor: "white" }}
                           onClick={() => setIsPlaying(!isPlaying)}
                         >
-                          {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                          {isPlaying ? <Pause size={20} /> : <Play size={20} />}
                         </Button>
-                        <Button size="icon" variant="ghost" className="text-white hover:bg-white/20">
-                          <SkipBack className="w-5 h-5" />
+                        <Button size="icon" variant="ghost" color="white" hoverStyle={{ backgroundColor: "white" }}>
+                          <SkipBack size={20} />
                         </Button>
-                        <Button size="icon" variant="ghost" className="text-white hover:bg-white/20">
-                          <SkipForward className="w-5 h-5" />
+                        <Button size="icon" variant="ghost" color="white" hoverStyle={{ backgroundColor: "white" }}>
+                          <SkipForward size={20} />
                         </Button>
-                        <Button size="icon" variant="ghost" className="text-white hover:bg-white/20">
-                          <Volume2 className="w-5 h-5" />
+                        <Button size="icon" variant="ghost" color="white" hoverStyle={{ backgroundColor: "white" }}>
+                          <Volume2 size={20} />
                         </Button>
-                      </div>
-                      <Button size="icon" variant="ghost" className="text-white hover:bg-white/20">
-                        <Maximize className="w-5 h-5" />
+                      </XStack>
+                      <Button size="icon" variant="ghost" color="white" hoverStyle={{ backgroundColor: "white" }}>
+                        <Maximize size={20} />
                       </Button>
-                    </div>
-                  </div>
-                </div>
+                    </XStack>
+                  </YStack>
+                </YStack>
               </AspectRatio>
             </Card>
 
             {/* Video Info */}
-            <Card className="mt-4">
+            <Card marginTop="$4">
               <CardHeader>
                 <CardTitle>{currentVideo.title}</CardTitle>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <Eye className="w-4 h-4" />
+                <XStack alignItems="center" justifyContent="space-between">
+                  <SizableText alignItems="center" gap="$4" fontSize="$3" color="$color11" display="flex" flexDirection="row">
+                    <SizableText alignItems="center" gap="$1">
+                      <Eye size={16} />
                       {currentVideo.views.toLocaleString()} views
-                    </span>
+                    </SizableText>
                     <span>{currentVideo.publishedAt}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" className="gap-2">
-                      <ThumbsUp className="w-4 h-4" />
+                  </SizableText>
+                  <XStack alignItems="center" gap="$2">
+                    <Button variant="ghost" gap="$2">
+                      <ThumbsUp size={16} />
                       {currentVideo.likes.toLocaleString()}
                     </Button>
-                    <Button variant="ghost" className="gap-2">
-                      <ThumbsDown className="w-4 h-4" />
+                    <Button variant="ghost" gap="$2">
+                      <ThumbsDown size={16} />
                     </Button>
-                    <Button variant="ghost" className="gap-2">
-                      <Share2 className="w-4 h-4" />
+                    <Button variant="ghost" gap="$2">
+                      <Share2 size={16} />
                       Share
                     </Button>
-                    <Button variant="ghost" className="gap-2">
-                      <Download className="w-4 h-4" />
+                    <Button variant="ghost" gap="$2">
+                      <Download size={16} />
                       Download
                     </Button>
-                  </div>
-                </div>
+                  </XStack>
+                </XStack>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-4">
+                <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+                  <XStack alignItems="center" gap="$4">
                     <Avatar>
                       <AvatarImage src={currentVideo.channel.avatar} />
                       <AvatarFallback>HD</AvatarFallback>
                     </Avatar>
                     <div>
-                      <div className="flex items-center gap-2">
-                        <p className="font-semibold">{currentVideo.channel.name}</p>
+                      <XStack alignItems="center" gap="$2">
+                        <Paragraph fontWeight="600">{currentVideo.channel.name}</Paragraph>
                         {currentVideo.channel.verified && (
-                          <Badge variant="outline" className="h-5 px-1 border-red-400 text-red-600">✓</Badge>
+                          <Badge variant="outline" height="$4.5" paddingHorizontal="$1" borderColor="$red8" color="$red10">✓</Badge>
                         )}
-                      </div>
-                      <p className="text-sm text-muted-foreground">
+                      </XStack>
+                      <Paragraph fontSize="$3" color="$color11">
                         {currentVideo.channel.subscribers} subscribers
-                      </p>
+                      </Paragraph>
                     </div>
-                    <Button className="bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600">
-                      <Bell className="w-4 h-4 mr-2" />
+                    <Button>
+                      <Bell size={16} />
                       Subscribe
                     </Button>
-                  </div>
-                </div>
+                  </XStack>
+                </XStack>
 
-                <Tabs defaultValue="description" className="mt-4">
+                <Tabs defaultValue="description" marginTop="$4">
                   <TabsList>
                     <TabsTrigger value="description">Description</TabsTrigger>
                     <TabsTrigger value="transcript">Transcript</TabsTrigger>
                     <TabsTrigger value="chapters">Chapters</TabsTrigger>
                   </TabsList>
-                  <TabsContent value="description" className="mt-4">
-                    <div className="whitespace-pre-wrap text-sm">
+                  <TabsContent value="description" marginTop="$4">
+                    <SizableText whiteSpace="pre-wrap" fontSize="$3" display="flex" flexDirection="column">
                       {currentVideo.description}
-                    </div>
+                    </SizableText>
                   </TabsContent>
                 </Tabs>
               </CardContent>
             </Card>
 
             {/* Comments Section */}
-            <Card className="mt-4">
+            <Card marginTop="$4">
               <CardHeader>
                 <CardTitle>{comments.length} Comments</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex gap-3 mb-6">
+                <XStack gap="$3" marginBottom="$5">
                   <Avatar>
                     <AvatarFallback>U</AvatarFallback>
                   </Avatar>
-                  <div className="flex-1">
+                  <YStack flex={1}>
                     <Textarea
                       placeholder="Add a comment..."
                       value={comment}
                       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setComment(e.target.value)}
-                      className="min-h-[80px]"
-                    />
-                    <div className="flex justify-end gap-2 mt-2">
+                      minHeight={80}
+  />
+                    <XStack justifyContent="flex-end" gap="$2" marginTop="$2">
                       <Button variant="ghost" onClick={() => setComment("")}>Cancel</Button>
-                      <Button disabled={!comment.trim()} className="bg-red-600 hover:bg-red-700">Comment</Button>
-                    </div>
-                  </div>
-                </div>
+                      <Button disabled={!comment.trim()} backgroundColor="$red10" hoverStyle={{ backgroundColor: "$red11" }}>Comment</Button>
+                    </XStack>
+                  </YStack>
+                </XStack>
 
-                <div className="space-y-4">
+                <YStack rowGap="$4">
                   {comments.map(comment => (
-                    <div key={comment.id} className="flex gap-3">
-                      <Avatar className="h-8 w-8">
+                    <XStack key={comment.id} gap="$3">
+                      <Avatar height="$6" width="$6">
                         <AvatarImage src={comment.author.avatar} />
                         <AvatarFallback>
                           {comment.author.name.split(" ").map(n => n[0]).join("")}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <p className="font-medium text-sm">{comment.author.name}</p>
-                          <span className="text-xs text-muted-foreground">{comment.timestamp}</span>
-                        </div>
-                        <p className="text-sm mb-2">{comment.content}</p>
-                        <div className="flex items-center gap-4">
-                          <Button variant="ghost" size="sm" className="h-auto p-0 gap-1">
-                            <ThumbsUp className="w-3 h-3" />
+                      <YStack flex={1}>
+                        <XStack alignItems="center" gap="$2" marginBottom="$1">
+                          <Paragraph fontWeight="500" fontSize="$3">{comment.author.name}</Paragraph>
+                          <SizableText fontSize="$1" color="$color11">{comment.timestamp}</SizableText>
+                        </XStack>
+                        <Paragraph fontSize="$3" marginBottom="$2">{comment.content}</Paragraph>
+                        <XStack alignItems="center" gap="$4">
+                          <Button variant="ghost" size="sm" height="auto" padding="$0" gap="$1">
+                            <ThumbsUp size={12} />
                             {comment.likes}
                           </Button>
-                          <Button variant="ghost" size="sm" className="h-auto p-0">
-                            <ThumbsDown className="w-3 h-3" />
+                          <Button variant="ghost" size="sm" height="auto" padding="$0">
+                            <ThumbsDown size={12} />
                           </Button>
-                          <Button variant="ghost" size="sm" className="h-auto p-0">
+                          <Button variant="ghost" size="sm" height="auto" padding="$0">
                             Reply
                           </Button>
-                        </div>
+                        </XStack>
                         {comment.replies > 0 && (
-                          <Button variant="ghost" size="sm" className="mt-2 p-0 text-red-600">
+                          <Button variant="ghost" size="sm" marginTop="$2" padding="$0" color="$red10">
                             View {comment.replies} replies
                           </Button>
                         )}
-                      </div>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreVertical className="w-4 h-4" />
+                      </YStack>
+                      <Button variant="ghost" size="icon" height="$6" width="$6">
+                        <MoreVertical size={16} />
                       </Button>
-                    </div>
+                    </XStack>
                   ))}
-                </div>
+                </YStack>
               </CardContent>
             </Card>
-          </div>
+          </YStack>
 
           {/* Sidebar - Related Videos */}
-          <div className="col-span-12 lg:col-span-4">
+          <YStack>
             <Card>
               <CardHeader>
                 <CardTitle>Related Videos</CardTitle>
               </CardHeader>
               <CardContent>
-                <ScrollArea className="h-[800px]">
-                  <div className="space-y-4">
+                <ScrollArea height={800}>
+                  <YStack rowGap="$4">
                     {relatedVideos.map(video => (
-                      <div key={video.id} className="flex gap-3 cursor-pointer group">
-                        <div className="relative">
-                          <AspectRatio ratio={16/9} className="w-40">
-                            <img
+                      <XStack key={video.id} gap="$3" cursor="pointer" group>
+                        <YStack position="relative">
+                          <AspectRatio ratio={16/9} width="$17">
+                            <Image
                               src={video.thumbnail}
                               alt={video.title}
-                              className="object-cover w-full h-full rounded"
-                            />
+                              objectFit="cover" width="100%" height="100%" borderRadius="$2"
+  />
                           </AspectRatio>
-                          <div className="absolute bottom-1 right-1 bg-black/80 text-white text-xs px-1 rounded">
+                          <SizableText position="absolute" bottom="$1" right="$1" backgroundColor="black" color="white" fontSize="$1" paddingHorizontal="$1" borderRadius="$2" display="flex" flexDirection="column">
                             {video.duration}
-                          </div>
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-medium text-sm line-clamp-2 group-hover:text-primary">
+                          </SizableText>
+                        </YStack>
+                        <YStack flex={1}>
+                          <H4 fontWeight="500" fontSize="$3" numberOfLines={2} $group-hover={{ color: "$color12" }}>
                             {video.title}
-                          </h4>
-                          <p className="text-xs text-muted-foreground mt-1">
+                          </H4>
+                          <Paragraph fontSize="$1" color="$color11" marginTop="$1">
                             {video.channel}
-                          </p>
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                          </Paragraph>
+                          <SizableText alignItems="center" gap="$2" fontSize="$1" color="$color11" marginTop="$1" display="flex" flexDirection="row">
                             <span>{video.views} views</span>
                             <span>•</span>
                             <span>{video.publishedAt}</span>
-                          </div>
-                        </div>
-                      </div>
+                          </SizableText>
+                        </YStack>
+                      </XStack>
                     ))}
-                  </div>
+                  </YStack>
                 </ScrollArea>
               </CardContent>
             </Card>
-          </div>
-        </div>
-      </div>
-    </div>
+          </YStack>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }

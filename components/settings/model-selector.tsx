@@ -1,5 +1,6 @@
 'use client';
 
+import { YStack, XStack, SizableText } from '@hanzo/gui';
 import { useState, useEffect } from 'react';
 import { Button, Label, Badge, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, toast } from '@hanzo/ui';
 import { Loader2, RefreshCw, Info } from 'lucide-react';
@@ -107,19 +108,19 @@ export function ModelSelector({
   const selectedModelInfo = models.find(m => m.id === selectedModel);
 
   return (
-    <div className={`space-y-3 ${className || ''}`}>
-      <div className="flex items-center justify-between">
+    <YStack rowGap="$3" className={`${className || ''}`}>
+      <XStack alignItems="center" justifyContent="space-between">
         <Label>Model</Label>
         <Button
           size="sm"
           variant="ghost"
           onClick={handleRefresh}
           disabled={loading}
-          className="h-8 px-2"
+          height="$6" paddingHorizontal="$2"
         >
-          <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw size={12} />
         </Button>
-      </div>
+      </XStack>
 
       <Select
         value={selectedModel}
@@ -132,78 +133,78 @@ export function ModelSelector({
         <SelectContent>
           {models.map(model => (
             <SelectItem key={model.id} value={model.id}>
-              <div className="flex flex-col">
-                <span className="font-medium">{model.name}</span>
+              <YStack>
+                <SizableText fontWeight="500">{model.name}</SizableText>
                 {model.description && (
-                  <span className="text-xs text-muted-foreground">
+                  <SizableText fontSize="$1" color="$color11">
                     {model.description}
-                  </span>
+                  </SizableText>
                 )}
-              </div>
+              </YStack>
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
 
       {error && (
-        <div className="text-xs text-red-500 flex items-start gap-2 p-2 bg-red-500/5 rounded">
-          <Info className="w-3 h-3 mt-0.5 flex-shrink-0" />
+        <SizableText fontSize="$1" color="$red9" alignItems="flex-start" gap="$2" padding="$2" backgroundColor="$red9" borderRadius="$2" display="flex" flexDirection="row">
+          <Info size={12} />
           <span>{error}</span>
-        </div>
+        </SizableText>
       )}
 
       {/* Model Info */}
       {selectedModelInfo && (
-        <div className="text-xs text-muted-foreground space-y-2 p-3 bg-muted/50 rounded-lg">
-          <div className="font-medium">Model Information</div>
+        <SizableText fontSize="$1" color="$color11" rowGap="$2" padding="$3" backgroundColor="$color3" borderRadius="$5" display="flex" flexDirection="column">
+          <SizableText fontWeight="500" display="flex" flexDirection="column">Model Information</SizableText>
 
-          <div className="grid grid-cols-2 gap-2">
+          <YStack gap="$2">
             <div>
-              <span className="text-muted-foreground">Context Length:</span>
-              <div className="font-mono">
+              <SizableText color="$color11">Context Length:</SizableText>
+              <SizableText fontFamily="$mono" display="flex" flexDirection="column">
                 {(selectedModelInfo.contextLength / 1000).toFixed(0)}K tokens
-              </div>
+              </SizableText>
             </div>
             {selectedModelInfo.maxTokens && (
               <div>
-                <span className="text-muted-foreground">Max Output:</span>
-                <div className="font-mono">
+                <SizableText color="$color11">Max Output:</SizableText>
+                <SizableText fontFamily="$mono" display="flex" flexDirection="column">
                   {(selectedModelInfo.maxTokens / 1000).toFixed(0)}K tokens
-                </div>
+                </SizableText>
               </div>
             )}
-          </div>
+          </YStack>
 
           {selectedModelInfo.pricing && (
             <div>
-              <span className="text-muted-foreground">Pricing (per 1M tokens):</span>
-              <div className="flex gap-3 mt-1">
-                <span className="text-xs">
+              <SizableText color="$color11">Pricing (per 1M tokens):</SizableText>
+              <XStack gap="$3" marginTop="$1">
+                <SizableText fontSize="$1">
                   Input: ${selectedModelInfo.pricing.input}
-                </span>
-                <span className="text-xs">
+                </SizableText>
+                <SizableText fontSize="$1">
                   Output: ${selectedModelInfo.pricing.output}
-                </span>
-              </div>
+                </SizableText>
+              </XStack>
             </div>
           )}
 
-          <div className="flex flex-wrap gap-1 mt-2">
+          <XStack flexWrap="wrap" gap="$1" marginTop="$2">
             {selectedModelInfo.supportsFunctions && (
-              <Badge variant="outline" className="text-xs">Functions</Badge>
+              <Badge variant="outline" fontSize="$1">Functions</Badge>
             )}
             {selectedModelInfo.supportsVision && (
-              <Badge variant="outline" className="text-xs">Vision</Badge>
+              <Badge variant="outline" fontSize="$1">Vision</Badge>
             )}
-          </div>
-        </div>
+          </XStack>
+        </SizableText>
       )}
 
       {loading && (
-        <div className="flex items-center justify-center p-4">
-          <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
-        </div>
+        <XStack alignItems="center" justifyContent="center" padding="$4">
+          <Loader2 size={20} color="$color11" />
+        </XStack>
       )}
-    </div>
+    </YStack>
   );
 }

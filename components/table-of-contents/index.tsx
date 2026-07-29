@@ -1,7 +1,7 @@
 'use client';
 
+import { YStack, Paragraph, SizableText, Anchor } from '@hanzo/gui';
 import React, { useEffect } from 'react';
-import { cn } from '@/lib/utils';
 import type { TocItem } from '@/lib/hooks/use-table-of-contents';
 
 interface TableOfContentsProps {
@@ -43,55 +43,43 @@ export function TableOfContents({ items, activeId, visibleIds = [], onItemClick 
   };
 
   return (
-    <nav className="space-y-1">
-      <p className="text-sm font-medium mb-3 text-foreground">On This Page</p>
-      <ul className="text-sm">
+    <YStack rowGap="$1">
+      <Paragraph fontSize="$3" fontWeight="500" marginBottom="$3" color="$color">On This Page</Paragraph>
+      <SizableText fontSize="$3" display="flex" flexDirection="column">
         {items.map((item) => (
           <li key={`${item.id}-${item.index}`}>
-            <a
+            <Anchor
               href={`#${item.id}`}
               data-toc-id={item.index}
               onClick={(e) => handleClick(e, item)}
-              className={cn(
-                'block py-1 text-muted-foreground hover:text-foreground transition-colors',
-                'border-l-2 pl-3',
-                activeId === item.index.toString()
-                  ? 'border-primary text-foreground font-medium'
-                  : visibleIds.includes(item.index.toString())
+              paddingVertical="$1" color="$color11" borderLeftWidth={2} paddingLeft="$3" hoverStyle={{ color: "$color" }} className={`${activeId === item.index.toString() ? 'border-primary text-foreground font-medium' : visibleIds.includes(item.index.toString())
                   ? 'border-blue-400/50 text-foreground/80'
-                  : 'border-transparent'
-              )}
+                  : 'border-transparent'}`}
             >
               {item.text}
-            </a>
+            </Anchor>
             {item.children && item.children.length > 0 && (
               <ul>
                 {item.children.map((child) => (
                   <li key={`${child.id}-${child.index}`}>
-                    <a
+                    <Anchor
                       href={`#${child.id}`}
                       data-toc-id={child.index}
                       onClick={(e) => handleClick(e, child)}
-                      className={cn(
-                        'block py-1 text-xs text-muted-foreground hover:text-foreground transition-colors',
-                        'border-l-2',
-                        activeId === child.index.toString()
-                          ? 'border-primary text-foreground font-medium'
-                          : visibleIds.includes(child.index.toString())
+                      paddingVertical="$1" fontSize="$1" color="$color11" borderLeftWidth={2} hoverStyle={{ color: "$color" }} className={`${activeId === child.index.toString() ? 'border-primary text-foreground font-medium' : visibleIds.includes(child.index.toString())
                           ? 'border-blue-400/50 text-foreground/80'
-                          : 'border-transparent'
-                      )}
+                          : 'border-transparent'}`}
                       style={{ paddingLeft: 'calc(0.75rem * 1.67)' }}
                     >
                       {child.text}
-                    </a>
+                    </Anchor>
                   </li>
                 ))}
               </ul>
             )}
           </li>
         ))}
-      </ul>
-    </nav>
+      </SizableText>
+    </YStack>
   );
 }

@@ -1,21 +1,22 @@
 "use client";
 
+import { YStack, SizableText, H1, Paragraph, XStack, H2 } from '@hanzo/gui';
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Badge, Input } from '@hanzo/ui';
-import { CheckCircle, ArrowRight, Star, Zap, Shield, Globe } from "lucide-react";
+import { CheckCircle, ArrowRight, Zap, Shield, Globe } from "lucide-react";
 
 const features = [
   {
-    icon: <Zap className="w-6 h-6" />,
+    icon: <Zap size={24} />,
     title: "Lightning Fast",
     description: "Built with performance in mind using @hanzo/ui components"
   },
   {
-    icon: <Shield className="w-6 h-6" />,
+    icon: <Shield size={24} />,
     title: "Secure by Default",
     description: "Enterprise-grade security with end-to-end encryption"
   },
   {
-    icon: <Globe className="w-6 h-6" />,
+    icon: <Globe size={24} />,
     title: "Global Scale",
     description: "Deploy worldwide with edge computing capabilities"
   }
@@ -47,61 +48,61 @@ const pricing = [
 
 export default function SaaSLandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted">
+    <YStack minHeight="100%">
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-grid-pattern opacity-5" />
-        <div className="container mx-auto px-6 py-24 relative">
-          <div className="text-center max-w-4xl mx-auto">
-            <Badge className="mb-4" variant="outline">
+      <YStack position="relative" overflow="hidden">
+        <YStack position="absolute" top={0} right={0} bottom={0} left={0} opacity={0.05} className="bg-grid-pattern" />
+        <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$12" position="relative">
+          <SizableText textAlign="center" maxWidth={896} alignSelf="center" display="flex" flexDirection="column">
+            <Badge marginBottom="$4" variant="outline">
               Built with @hanzo/ui
             </Badge>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+            <H1 fontSize="$12" fontWeight="700" marginBottom="$5" backgroundClip="text" color="transparent" $md={{ fontSize: "$13" }}>
               Build Better Products Faster
-            </h1>
-            <p className="text-xl text-muted-foreground mb-8">
+            </H1>
+            <Paragraph fontSize="$7" color="$color11" marginBottom="$6">
               The modern SaaS platform powered by @hanzo/ui components.
               Ship features faster with our comprehensive UI system.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="gap-2">
+            </Paragraph>
+            <YStack gap="$4" justifyContent="center" $sm={{ flexDirection: "row" }}>
+              <Button size="lg" gap="$2">
                 Get Started Free
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight size={16} />
               </Button>
               <Button size="lg" variant="outline">
                 View Demo
               </Button>
-            </div>
+            </YStack>
 
             {/* Trust Badges */}
-            <div className="mt-12 flex items-center justify-center gap-8 opacity-60">
-              <p className="text-sm">Trusted by</p>
-              <div className="flex gap-8">
+            <XStack marginTop="$8" alignItems="center" justifyContent="center" gap="$6" opacity={0.6}>
+              <Paragraph fontSize="$3">Trusted by</Paragraph>
+              <XStack gap="$6">
                 {["Company A", "Company B", "Company C"].map((company) => (
-                  <div key={company} className="text-sm font-medium">
+                  <SizableText key={company} fontSize="$3" fontWeight="500" display="flex" flexDirection="column">
                     {company}
-                  </div>
+                  </SizableText>
                 ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+              </XStack>
+            </XStack>
+          </SizableText>
+        </YStack>
+      </YStack>
 
       {/* Features Section */}
-      <section className="py-24 bg-muted/50">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Why Choose Our Platform</h2>
-            <p className="text-muted-foreground">Everything you need to succeed</p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
+      <YStack paddingVertical="$12" backgroundColor="$color3">
+        <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5">
+          <SizableText textAlign="center" marginBottom="$8" display="flex" flexDirection="column">
+            <H2 fontSize="$10" fontWeight="700" marginBottom="$4">Why Choose Our Platform</H2>
+            <Paragraph color="$color11">Everything you need to succeed</Paragraph>
+          </SizableText>
+          <YStack gap="$6">
             {features.map((feature, i) => (
-              <Card key={i} className="border-2 hover:border-emerald-500 transition-colors">
+              <Card key={i} borderWidth={2} hoverStyle={{ borderColor: "$green9" }}>
                 <CardHeader>
-                  <div className="w-12 h-12 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600 mb-4">
+                  <SizableText width="$8" height="$8" borderRadius="$5" backgroundColor="$green9" alignItems="center" justifyContent="center" color="$green10" marginBottom="$4" display="flex" flexDirection="row">
                     {feature.icon}
-                  </div>
+                  </SizableText>
                   <CardTitle>{feature.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -109,73 +110,73 @@ export default function SaaSLandingPage() {
                 </CardContent>
               </Card>
             ))}
-          </div>
-        </div>
-      </section>
+          </YStack>
+        </YStack>
+      </YStack>
 
       {/* Pricing Section */}
-      <section className="py-24">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Simple, Transparent Pricing</h2>
-            <p className="text-muted-foreground">Choose the plan that fits your needs</p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      <YStack paddingVertical="$12">
+        <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5">
+          <SizableText textAlign="center" marginBottom="$8" display="flex" flexDirection="column">
+            <H2 fontSize="$10" fontWeight="700" marginBottom="$4">Simple, Transparent Pricing</H2>
+            <Paragraph color="$color11">Choose the plan that fits your needs</Paragraph>
+          </SizableText>
+          <YStack gap="$6" maxWidth={1024} alignSelf="center">
             {pricing.map((plan) => (
               <Card
                 key={plan.name}
-                className={plan.popular ? "border-emerald-500 shadow-lg scale-105" : ""}
+                {...{ borderColor: plan.popular ? "$green9" : undefined, elevation: plan.popular ? 4 : undefined, scale: plan.popular ? 1.05 : undefined }}
               >
                 <CardHeader>
                   {plan.popular && (
-                    <Badge className="w-fit mb-2">Most Popular</Badge>
+                    <Badge width="fit-content" marginBottom="$2">Most Popular</Badge>
                   )}
                   <CardTitle>{plan.name}</CardTitle>
-                  <div className="mt-4">
-                    <span className="text-4xl font-bold">{plan.price}</span>
-                    {plan.price !== "Custom" && <span className="text-muted-foreground">/month</span>}
-                  </div>
+                  <YStack marginTop="$4">
+                    <SizableText fontSize="$11" fontWeight="700">{plan.price}</SizableText>
+                    {plan.price !== "Custom" && <SizableText color="$color11">/month</SizableText>}
+                  </YStack>
                   <CardDescription>{plan.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-2">
+                  <YStack rowGap="$2">
                     {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                        <span className="text-sm">{feature}</span>
-                      </li>
+                      <SizableText key={feature} alignItems="center" gap="$2">
+                        <CheckCircle size={16} color="$green10" />
+                        <SizableText fontSize="$3">{feature}</SizableText>
+                      </SizableText>
                     ))}
-                  </ul>
+                  </YStack>
                 </CardContent>
                 <CardFooter>
-                  <Button className="w-full" variant={plan.popular ? "default" : "outline"}>
+                  <Button width="100%" variant={plan.popular ? "default" : "outline"}>
                     {plan.price === "Custom" ? "Contact Sales" : "Start Free Trial"}
                   </Button>
                 </CardFooter>
               </Card>
             ))}
-          </div>
-        </div>
-      </section>
+          </YStack>
+        </YStack>
+      </YStack>
 
       {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
-          <p className="mb-8 opacity-90">
+      <SizableText paddingVertical="$12" color="white" display="flex" flexDirection="column">
+        <SizableText width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" textAlign="center" display="flex" flexDirection="column">
+          <H2 fontSize="$10" fontWeight="700" marginBottom="$4">Ready to Get Started?</H2>
+          <Paragraph marginBottom="$6" opacity={0.9}>
             Join thousands of teams already using our platform
-          </p>
-          <div className="max-w-md mx-auto flex gap-2">
+          </Paragraph>
+          <XStack maxWidth={448} alignSelf="center" gap="$2">
             <Input
               placeholder="Enter your email"
-              className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/60"
-            />
+              backgroundColor="$background" borderColor="$background" color="$background" placeholderTextColor="$background"
+  />
             <Button variant="secondary">
               Get Started
             </Button>
-          </div>
-        </div>
-      </section>
-    </div>
+          </XStack>
+        </SizableText>
+      </SizableText>
+    </YStack>
   );
 }

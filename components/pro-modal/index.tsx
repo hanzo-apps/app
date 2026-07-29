@@ -1,5 +1,8 @@
+'use client';
+
+import { SizableText, XStack, H2, Paragraph } from '@hanzo/gui';
 import { useLocalStorage } from "react-use";
-import { Button, Dialog, DialogContent, DialogTitle } from '@hanzo/ui';
+import { Button, Dialog, DialogContent, DialogTitle, Separator } from '@hanzo/ui';
 import { CheckCheck } from "lucide-react";
 import { isTheSameHtml } from "@/lib/compare-html-diff";
 import { Page } from "@/types";
@@ -23,69 +26,69 @@ export const ProModal = ({
   };
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg lg:!p-8 !rounded-xl bg-card text-foreground border-border">
-        <DialogTitle className="hidden" />
-        <main className="flex flex-col items-start text-left relative pt-2">
-          <div className="flex items-center justify-start -space-x-4 mb-5">
-            <div className="size-14 rounded-full bg-muted border border-border shadow-2xs flex items-center justify-center text-3xl">
+      <DialogContent borderRadius="$6" backgroundColor="$background" color="$color" borderColor="$borderColor" $sm={{ maxWidth: 512 }} $lg={{ padding: "$6" }}>
+        <DialogTitle display="none" />
+        <SizableText flexDirection="column" alignItems="flex-start" textAlign="left" position="relative" paddingTop="$2" display="flex">
+          <XStack alignItems="center" justifyContent="flex-start" columnGap="$4" marginBottom="$4.5">
+            <SizableText width="$9" height="$9" borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$10" display="flex" flexDirection="row">
               🚀
-            </div>
-            <div className="size-16 rounded-full bg-secondary border border-border shadow-lg flex items-center justify-center text-4xl z-2">
+            </SizableText>
+            <SizableText width="$10" height="$10" borderRadius="$10" backgroundColor="$color4" borderWidth={1} borderColor="$borderColor" elevation={4} alignItems="center" justifyContent="center" fontSize="$11" zIndex={2} display="flex" flexDirection="row">
               🤩
-            </div>
-            <div className="size-14 rounded-full bg-muted border border-border shadow-2xs flex items-center justify-center text-3xl">
+            </SizableText>
+            <SizableText width="$9" height="$9" borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$10" display="flex" flexDirection="row">
               🥳
-            </div>
-          </div>
-          <h2 className="text-2xl font-medium text-foreground">
+            </SizableText>
+          </XStack>
+          <H2 fontSize="$8" fontWeight="500" color="$color">
             Only $9 to enhance your possibilities
-          </h2>
-          <p className="text-muted-foreground text-base mt-2 max-w-sm">
+          </H2>
+          <Paragraph color="$color11" fontSize="$4" marginTop="$2" maxWidth={384}>
             It seems like you have reached the monthly free limit of Hanzo.
-          </p>
-          <hr className="border-border w-full max-w-[150px] my-6" />
-          <p className="text-lg mt-3 text-foreground font-medium">
+          </Paragraph>
+          <Separator borderColor="$borderColor" width="100%" maxWidth={150} marginVertical="$5" />
+          <Paragraph fontSize="$6" marginTop="$3" color="$color" fontWeight="500">
             Upgrade to a <ProTag className="mx-1" /> Account, and unlock your
             Hanzo high quota access ⚡
-          </p>
-          <ul className="mt-3 space-y-1 text-muted-foreground">
-            <li className="text-sm text-muted-foreground space-x-2 flex items-center justify-start gap-2 mb-3">
+          </Paragraph>
+          <SizableText marginTop="$3" rowGap="$1" color="$color11" display="flex" flexDirection="column">
+            <SizableText fontSize="$3" color="$color11" columnGap="$2" alignItems="center" justifyContent="flex-start" gap="$2" marginBottom="$3">
               You&apos;ll also unlock PRO features, like:
-            </li>
-            <li className="text-sm space-x-2 flex items-center justify-start gap-2">
-              <CheckCheck className="text-[var(--brand-accent-muted)] size-4" />
+            </SizableText>
+            <SizableText fontSize="$3" columnGap="$2" alignItems="center" justifyContent="flex-start" gap="$2">
+              <CheckCheck size={16} color="var(--brand-accent-muted)" />
               Get acces to thousands of AI app (ZeroGPU) with high quota
-            </li>
-            <li className="text-sm space-x-2 flex items-center justify-start gap-2">
-              <CheckCheck className="text-[var(--brand-accent-muted)] size-4" />
+            </SizableText>
+            <SizableText fontSize="$3" columnGap="$2" alignItems="center" justifyContent="flex-start" gap="$2">
+              <CheckCheck size={16} color="var(--brand-accent-muted)" />
               Get exclusive early access to new features and updates
-            </li>
-            <li className="text-sm space-x-2 flex items-center justify-start gap-2">
-              <CheckCheck className="text-[var(--brand-accent-muted)] size-4" />
+            </SizableText>
+            <SizableText fontSize="$3" columnGap="$2" alignItems="center" justifyContent="flex-start" gap="$2">
+              <CheckCheck size={16} color="var(--brand-accent-muted)" />
               Get free credits across all Inference Providers
-            </li>
-            <li className="text-sm text-muted-foreground space-x-2 flex items-center justify-start gap-2 mt-3">
+            </SizableText>
+            <SizableText fontSize="$3" color="$color11" columnGap="$2" alignItems="center" justifyContent="flex-start" gap="$2" marginTop="$3">
               ... and lots more!
-            </li>
-          </ul>
+            </SizableText>
+          </SizableText>
           <Button
             size="lg"
-            className="w-full !text-base !h-11 mt-8"
+            width="100%" fontSize="$4" height={44} marginTop="$6"
             onClick={handleProClick}
           >
             Subscribe to PRO ($9/month)
           </Button>
-        </main>
+        </SizableText>
       </DialogContent>
     </Dialog>
   );
 };
 
 const ProTag = ({ className }: { className?: string }) => (
-  <span
-    className={`${className} inline-block -skew-x-12 rounded-md border border-border bg-[var(--brand-accent-soft)] px-2.5 py-0.5 text-xs font-medium text-[var(--brand-accent-muted)]`}
+  <SizableText
+    borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="var(--brand-accent-soft)" paddingHorizontal="$2.5" paddingVertical="$0.5" fontSize="$1" fontWeight="500" color="var(--brand-accent-muted)" className={`${className}`}
   >
     PRO
-  </span>
+  </SizableText>
 );
 export default ProModal;
