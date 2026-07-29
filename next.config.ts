@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { readdirSync } from "node:fs";
 import path from "path";
 import withBundleAnalyzer from "@next/bundle-analyzer";
 
@@ -7,144 +8,45 @@ const bundleAnalyzer = withBundleAnalyzer({
   openAnalyzer: false,
 });
 
+// @hanzo/gui ships per-package uncompiled ESM, so every @hanzogui/* it pulls has to be
+// transpiled too. Reading the directory keeps this honest: the list runs to ~113 packages
+// and grows with the design system, and a hand-maintained copy rots into build errors that
+// look like the app's fault. See gui/MIGRATION.md.
+const guiPackages = (() => {
+  try {
+    return readdirSync('node_modules/@hanzogui').map((n) => `@hanzogui/${n}`)
+  } catch {
+    return []
+  }
+})()
+
 const nextConfig: NextConfig = {
-  /* config options here */
-  transpilePackages: ["@hanzo/ui"],
+  transpilePackages: ['@hanzo/ui', '@hanzo/gui', 'react-native-web', ...guiPackages],
   typescript: {
+    // Suppressed, and left suppressed deliberately: turning this off is not a config change,
+    // it is however many real type errors are hiding behind it. Separate piece of work.
     ignoreBuildErrors: true,
   },
-  // (Next 16 removed the `eslint` config key — linting is no longer part of
-  // `next build`, so the old ignoreDuringBuilds block is gone.)
-  modularizeImports: {
-    '@hanzo/ui': {
-      transform: '@hanzo/ui/primitives/{{member}}',
-      skipDefaultConversion: true,
-    },
-  },
-  // Bundle optimization settings
   experimental: {
-    // optimizeCss inlines "critical" CSS into every HTML response. Measured on
-    // hanzo.app it inlined 350,715 B - larger than the entire 216 KB external
-    // stylesheet - uncacheable, render-blocking, and re-sent on every navigation.
-    // An external stylesheet is cached once; that is strictly faster after the
-    // first paint of the first page.
-    optimizePackageImports: [
-      "@hanzo/ui",
-      "lucide-react",
-      "@radix-ui",
-      "framer-motion"
-    ],
+    // optimizeCss is deliberately absent. It inlined 350,715 B of "critical" CSS into every
+    // HTML response here - larger than the whole 216 KB external stylesheet - uncacheable,
+    // render-blocking, and re-sent on every navigation.
+    optimizePackageImports: ['@hanzo/ui', 'lucide-react', 'framer-motion'],
   },
-  webpack(config, options) {
-    const { isServer, dev } = options;
-
-    // Production optimizations
-    if (!dev && !isServer) {
-      config.optimization = {
-        ...config.optimization,
-        splitChunks: {
-          chunks: 'all',
-          cacheGroups: {
-            default: false,
-            vendors: false,
-            // Vendor chunk for node_modules
-            vendor: {
-              name: 'vendor',
-              chunks: 'all',
-              test: /node_modules/,
-              priority: 20,
-              reuseExistingChunk: true,
-            },
-            // Common chunk for shared code
-            common: {
-              name: 'common',
-              minChunks: 2,
-              chunks: 'all',
-              priority: 10,
-              reuseExistingChunk: true,
-              enforce: true,
-            },
-            // Separate chunk for @hanzo/ui
-            hanzoui: {
-              name: 'hanzo-ui',
-              test: /[\\/]node_modules[\\/]@hanzo[\\/]ui/,
-              chunks: 'all',
-              priority: 30,
-              reuseExistingChunk: true,
-            },
-          },
-        },
-      };
-    }
-
-    // Fix utils import issue
+  webpack(config) {
+    // Tamagui, which @hanzo/gui forks, compiles a .native version of every file and rewrites
+    // react-native to react-native-web in the web build. Without this alias the bare
+    // `react-native` specifier reaches the bundler and fails to resolve.
     config.resolve.alias = {
       ...config.resolve.alias,
+      'react-native$': 'react-native-web',
       '../../../app/lib/utils': path.resolve(__dirname, 'lib/utils.ts'),
     };
 
-    // Add a custom rule to handle TypeScript files in @hanzo/ui using swc-loader
-    config.module.rules.unshift({
-      test: /\.(tsx?|jsx?)$/,
-      include: /node_modules[\\/]@hanzo[\\/]ui/,
-      use: [
-        {
-          loader: 'swc-loader',
-          options: {
-            jsc: {
-              parser: {
-                syntax: 'typescript',
-                tsx: true,
-                decorators: false,
-                dynamicImport: true,
-              },
-              transform: {
-                react: {
-                  runtime: 'automatic',
-                  pragmaFrag: 'React.Fragment',
-                  throwIfNamespace: true,
-                  development: dev,
-                  useBuiltins: true,
-                },
-              },
-              target: 'es2020',
-            },
-            module: {
-              type: isServer ? 'commonjs' : 'es6',
-            },
-          },
-        },
-      ],
-    });
-
-    // Ensure other rules don't process @hanzo/ui
-    config.module.rules.forEach((rule: any, index: number) => {
-      if (index === 0) return; // Skip our custom rule
-
-      if (rule.oneOf) {
-        rule.oneOf = rule.oneOf.map((oneOfRule: any) => {
-          if (oneOfRule.test && oneOfRule.test.toString().includes('tsx')) {
-            if (!oneOfRule.exclude) {
-              oneOfRule.exclude = [];
-            }
-            if (Array.isArray(oneOfRule.exclude)) {
-              oneOfRule.exclude.push(/node_modules[\\/]@hanzo[\\/]ui/);
-            } else {
-              oneOfRule.exclude = [oneOfRule.exclude, /node_modules[\\/]@hanzo[\\/]ui/];
-            }
-          }
-          return oneOfRule;
-        });
-      }
-    });
-
-    // Audio files loader
     config.module.rules.push({
       test: /\.(ogg|mp3|wav|mpe?g)$/i,
       type: 'asset/resource',
-      generator: {
-        filename: 'static/media/[name].[hash][ext]',
-      },
+      generator: { filename: 'static/media/[name].[hash][ext]' },
     });
 
     return config;
@@ -159,7 +61,6 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        // Allow CORS for Hanzo IAM SSO callbacks and API
         source: '/api/auth/:path*',
         headers: [
           { key: 'Access-Control-Allow-Origin', value: 'https://hanzo.id' },
@@ -173,7 +74,6 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        // Proxy IAM well-known endpoints to avoid mixed-content issues
         source: '/.well-known/openid-configuration',
         destination: `${process.env.IAM_ENDPOINT || 'https://hanzo.id'}/.well-known/openid-configuration`,
       },
