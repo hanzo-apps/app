@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@hanzo/ui-shadcn";
-import { Badge } from "@hanzo/ui-shadcn";
+import { Button } from "@hanzo/ui";
+import { Badge } from "@hanzo/ui";
 import { BookOpen, Video, FileCode, Users, Trophy, Clock, ArrowRight, PlayCircle, Code2, Bot, Rocket } from "lucide-react";
 import { useState } from "react";
 import Header from "@/components/layout/header";

@@ -8,9 +8,9 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@hanzo/ui-shadcn';
-import { Button } from '@hanzo/ui-shadcn';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@hanzo/ui-shadcn';
+} from '@hanzo/ui';
+import { Button } from '@hanzo/ui';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@hanzo/ui';
 import { ChevronDown } from 'lucide-react';
 import { setTelemetryOptIn, track } from '@/lib/telemetry';
 

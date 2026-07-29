@@ -2,7 +2,7 @@ import { Rocket, Check, Copy, ExternalLink } from "lucide-react";
 import Image from "next/image";
 
 import Loading from "@/components/loading";
-import { Button } from "@hanzo/ui-shadcn";
+import { Button } from "@hanzo/ui";
 import { Input } from "@/components/control";
 import SpaceIcon from "@/assets/space.svg";
 import { Page } from "@/types";
@@ -10,7 +10,7 @@ import { builderLink } from "@/lib/api/projects";
 import { baseEnabled } from "@/lib/base/flag";
 import { syncToGit } from "@/lib/api/git";
 import { currentOrg } from "@/lib/org-scope";
-import { toast } from "@hanzo/ui-shadcn";
+import { toast } from "@hanzo/ui";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { EVENTS } from "@hanzo/event";

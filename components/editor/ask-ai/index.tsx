@@ -2,14 +2,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useMemo, useRef, useEffect } from "react";
 import classNames from "classnames";
-import { toast } from "@hanzo/ui-shadcn";
+import { toast } from "@hanzo/ui";
 import { useLocalStorage } from "react-use";
 import { ArrowUp, ImagePlus, MoreHorizontal, X } from "lucide-react";
 import { FaStopCircle } from "react-icons/fa";
 
 import ProModal from "@/components/pro-modal";
 import { useUsageLimit } from "@/components/usage/usage-limit";
-import { Button } from "@hanzo/ui-shadcn";
+import { Button } from "@hanzo/ui";
 import { useModels } from "@/lib/hooks/use-models";
 import { useRoutingDefaults } from "@/lib/hooks/use-routing-defaults";
 import { AUTO_MODEL, isDeadModelId, isSmartRouting, resolveSmartRouting } from "@/lib/providers";

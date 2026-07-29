@@ -4,7 +4,7 @@
  * OrgSwitcher + OrgGate — this app's render of the shared org-switcher contract.
  * The CANONICAL component is `OrgSwitcher` in `@hanzo/ui@8` (`@hanzo/gui`-based,
  * hoisted per hanzoai/ui#36); this stays a LOCAL Tailwind/Radix render (recorded
- * debt) because `@hanzo/ui` here is aliased to `@hanzo/ui-shadcn` and the
+ * debt) because `@hanzo/ui` here is aliased to `@hanzo/ui` and the
  * identity bar needs `direction="up"` + the personal badge/settings affordances
  * the hoisted popover doesn't carry. The LOGIC (`lib/org-scope.ts`) matches the
  * hoisted `orgScope` contract.
@@ -23,7 +23,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Building2, Check, ChevronsUpDown, Loader2, Plus, Search, Settings, Sparkles } from 'lucide-react';
-import { Button } from '@hanzo/ui-shadcn';
+import { Button } from '@hanzo/ui';
 
 import { useOrg } from '@/lib/org/client';
 import { currentOrg, switchOrg, filterOrgs, isScopedAway, setCurrentOrg, getHomeOrg, orgDisplayName, titleCase } from '@/lib/org-scope';

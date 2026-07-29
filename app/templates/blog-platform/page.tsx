@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@hanzo/ui-shadcn";
-import { Button } from "@hanzo/ui-shadcn";
-import { Badge } from "@hanzo/ui-shadcn";
-import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui-shadcn";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@hanzo/ui";
+import { Button } from "@hanzo/ui";
+import { Badge } from "@hanzo/ui";
+import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
 import { Input } from "@/components/control";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui-shadcn";
-import { AspectRatio } from "@hanzo/ui-shadcn";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
+import { AspectRatio } from "@hanzo/ui";
 import {
   Bookmark,
   Heart,

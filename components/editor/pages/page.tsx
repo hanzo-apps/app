@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { XIcon } from "lucide-react";
 
-import { Button } from "@hanzo/ui-shadcn";
+import { Button } from "@hanzo/ui";
 import { Page } from "@/types";
 
 export function ListPagesItem({

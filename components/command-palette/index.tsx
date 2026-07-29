@@ -30,7 +30,7 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-} from '@hanzo/ui-shadcn';
+} from '@hanzo/ui';
 import {
   LayoutDashboard,
   Plus,

@@ -4,10 +4,9 @@ import { useState, useEffect, useRef, useMemo, useCallback, DragEvent, Clipboard
 import { MessageSquare, Loader2, CheckCircle, XCircle, ChevronRight, FileCode, ClipboardList, Bot, RotateCcw, RefreshCw, Send, ChevronUp, ChevronDown, Code, Trash2, X, Brain, Image as ImageIcon } from 'lucide-react';
 import { DebugEvent } from '@/components/debug-panel';
 import { MarkdownRenderer } from '@/components/markdown-renderer';
-import { Button } from '@hanzo/ui-shadcn';
+import { Button, Tabs, TabsList, TabsTrigger } from '@hanzo/ui';
 import { Textarea } from '@/components/control';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/overlay';
-import { ToggleGroup, ToggleGroupItem } from '@hanzo/ui-shadcn';
 import { ModelSettingsPanel } from '@/components/settings/model-settings';
 import { FocusContextPayload } from '@/lib/preview/types';
 import { PendingImage } from '@/lib/llm/multi-agent-orchestrator';
@@ -903,23 +902,23 @@ export function ChatPanel({
                 </PopoverContent>
               </Popover>
 
-              <ToggleGroup
-                type="single"
+              <Tabs
                 value={chatMode ? 'chat' : 'code'}
-                onValueChange={(value) => {
+                onValueChange={(value: string) => {
                   if (value) setChatMode(value === 'chat');
                 }}
-                className="gap-1"
               >
-                <ToggleGroupItem value="chat" className="h-7 text-xs px-2">
-                  <MessageSquare className="h-3 w-3 mr-1" />
-                  Chat
-                </ToggleGroupItem>
-                <ToggleGroupItem value="code" className="h-7 text-xs px-2">
-                  <Code className="h-3 w-3 mr-1" />
-                  Code
-                </ToggleGroupItem>
-              </ToggleGroup>
+                <TabsList className="gap-1">
+                  <TabsTrigger value="chat" className="h-7 text-xs px-2">
+                    <MessageSquare className="h-3 w-3 mr-1" />
+                    Chat
+                  </TabsTrigger>
+                  <TabsTrigger value="code" className="h-7 text-xs px-2">
+                    <Code className="h-3 w-3 mr-1" />
+                    Code
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
             </div>
           </div>
         </div>

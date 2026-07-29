@@ -5,7 +5,7 @@ import { Deployment } from '@/lib/vfs/types';
 import { Server, Database, ChevronDown, Loader2, X } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/overlay';
-import { Button } from '@hanzo/ui-shadcn';
+import { Button } from '@hanzo/ui';
 import { cn } from '@/lib/utils';
 
 interface DeploymentSelectorProps {

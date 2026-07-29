@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Key, Bell, Palette, Shield, CreditCard } from "lucide-react";
-import { Button } from "@hanzo/ui-shadcn";
+import { Button } from "@hanzo/ui";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";
 import { useUser } from "@/hooks/useUser";
 import { AppShell } from "@/components/app-shell";

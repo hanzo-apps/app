@@ -98,7 +98,7 @@ describe("the names the shim promises actually exist", () => {
   });
 
   it("is still load-bearing: @hanzo/ui imports the v2 names v4 does not export", () => {
-    const consumer = read(`node_modules/@hanzo/ui-shadcn/dist/resizable.mjs`);
+    const consumer = read(`node_modules/@hanzo/ui/dist/resizable.mjs`);
     expect(consumer).toContain("PanelGroup");
     expect(consumer).toContain("PanelResizeHandle");
     const dist = read(`node_modules/${PKG}/dist/${PKG}.d.ts`);

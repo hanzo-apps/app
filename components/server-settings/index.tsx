@@ -8,7 +8,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@hanzo/ui-shadcn';
+} from '@hanzo/ui';
 import { DatabaseManager } from '@/components/database-manager';
 
 interface ServerSettingsModalProps {

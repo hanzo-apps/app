@@ -7,7 +7,7 @@ import { join } from "node:path";
  * In-flow components — buttons, inputs, badges, dialogs, toasts — come from
  * `@hanzo/ui`: they are the shared design system, and re-inventing them per app
  * forks the look and the fixes (the Button asChild crash was fixed ONCE, in
- * @hanzo/ui-shadcn 5.7.5).
+ * @hanzo/ui 5.7.5).
  *
  * Anything that FLOATS — menu, select, popover, context menu, tooltip — comes
  * from `@/components/overlay`. Not taste: a floating panel needs a surface and an

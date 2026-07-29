@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@hanzo/ui-shadcn';
+import { Button } from '@hanzo/ui';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/overlay';
 import { Pencil, Trash2, MoreVertical, ExternalLink, Globe, Settings } from 'lucide-react';
-import { buttonVariants } from '@hanzo/ui-shadcn';
+import { buttonVariants } from '@hanzo/ui';
 import { cn } from '@/lib/utils';
 import { builderLink, configLink, liveUrlOf, type Project } from '@/lib/api/projects';
 import { statusOf } from '@/lib/project-status';

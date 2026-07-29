@@ -33,8 +33,8 @@ import { currentOrg, titleCase } from '@/lib/org-scope';
 import { goToCheckout, billingReturnUrl } from '@/lib/pay';
 import { usePlans, usd } from '@/lib/plans';
 
-import { Button } from '@hanzo/ui-shadcn';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@hanzo/ui-shadcn';
+import { Button } from '@hanzo/ui';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@hanzo/ui';
 import { CreditCard, Sparkles } from 'lucide-react';
 
 /**

@@ -9,8 +9,8 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@hanzo/ui-shadcn';
-import { Button } from '@hanzo/ui-shadcn';
+} from '@hanzo/ui';
+import { Button } from '@hanzo/ui';
 import { Input } from '@/components/control';
 import { Label } from '@/components/control';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';

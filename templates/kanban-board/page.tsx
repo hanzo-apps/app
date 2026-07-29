@@ -202,7 +202,7 @@ export default function KanbanBoard() {
                     <Input
                       placeholder="Task title"
                       value={newTaskTitle}
-                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNewTaskTitle(e.target.value)}
+                      onChangeText={(text: string) => setNewTaskTitle(text)}
                     />
                   </div>
                   <div>

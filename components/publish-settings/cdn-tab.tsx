@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 import { PublishSettings, CdnConfig } from '@/lib/vfs/types';
-import { Button } from '@hanzo/ui-shadcn';
+import { Button } from '@hanzo/ui';
 import { Input } from '@/components/control';
 import { Label } from '@/components/control';
 import { Switch } from '@/components/control';
-import { Badge } from '@hanzo/ui-shadcn';
+import { Badge } from '@hanzo/ui';
 import {
   Dialog,
   DialogContent,
@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@hanzo/ui-shadcn';
+} from '@hanzo/ui';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
 import { Plus, Edit, Trash2, Link2 } from 'lucide-react';
 

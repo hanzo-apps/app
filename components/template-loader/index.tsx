@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@hanzo/ui-shadcn";
+import { Button } from "@hanzo/ui";
 import {
   Sparkles,
   Code,

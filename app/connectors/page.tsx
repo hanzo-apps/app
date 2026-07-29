@@ -42,9 +42,9 @@ import {
   Cloud,
   Mail,
 } from "lucide-react";
-import { Button, Badge } from "@hanzo/ui-shadcn";
+import { Button, Badge } from "@hanzo/ui";
 import { Input } from "@/components/control";
-import { toast } from "@hanzo/ui-shadcn";
+import { toast } from "@hanzo/ui";
 
 import { useUser } from "@/hooks/useUser";
 import { useOrg } from "@/lib/org/client";

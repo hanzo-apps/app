@@ -1,10 +1,10 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@hanzo/ui-shadcn";
-import { Button } from "@hanzo/ui-shadcn";
-import { Badge } from "@hanzo/ui-shadcn";
-import { Progress } from "@hanzo/ui-shadcn";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui-shadcn";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@hanzo/ui";
+import { Button } from "@hanzo/ui";
+import { Badge } from "@hanzo/ui";
+import { Progress } from "@hanzo/ui";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";
 import {
   TrendingUp,

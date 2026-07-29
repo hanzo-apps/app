@@ -8,7 +8,7 @@
  */
 
 import Link from 'next/link';
-import { Badge } from '@hanzo/ui-shadcn';
+import { Badge } from '@hanzo/ui';
 import { Gamepad2, Monitor, Smartphone, Globe, Play } from 'lucide-react';
 import type { GameEntry, GameEngine } from '@/data/games-catalog';
 import { isPlayable } from '@/data/games-catalog';

@@ -4,7 +4,7 @@ import { ArrowUp } from "lucide-react";
 import { PiGearSixFill } from "react-icons/pi";
 import { TiUserAdd } from "react-icons/ti";
 
-import { Button } from "@hanzo/ui-shadcn";
+import { Button } from "@hanzo/ui";
 
 export const AskAi = () => {
   return (

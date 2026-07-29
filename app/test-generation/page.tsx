@@ -1,13 +1,13 @@
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { Button } from '@hanzo/ui-shadcn';
+import { Button } from '@hanzo/ui';
 import { MultiAgentOrchestrator } from '@/lib/llm/multi-agent-orchestrator';
 import { testScenarios, testTracks } from '@/lib/testing/test-scenarios';
 import type { AssertionResult } from '@/lib/testing/types';
 import { ArrowLeft, Play, CheckCircle, XCircle, Clock, RefreshCw, ChevronDown, ChevronUp, Square, Download, Minus, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { toast } from '@hanzo/ui-shadcn';
+import { toast } from '@hanzo/ui';
 import { AlertCircle } from 'lucide-react';
 import { ModelSettingsPanel } from '@/components/settings/model-settings';
 import { configManager } from '@/lib/config/storage';

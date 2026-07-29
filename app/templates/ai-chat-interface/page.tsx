@@ -8,12 +8,12 @@ import {
   CardFooter,
   CardHeader,
   CardTitle
-} from "@hanzo/ui-shadcn";
-import { Button } from "@hanzo/ui-shadcn";
+} from "@hanzo/ui";
+import { Button } from "@hanzo/ui";
 import { Input } from "@/components/control";
-import { ScrollArea } from "@hanzo/ui-shadcn";
-import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui-shadcn";
-import { Badge } from "@hanzo/ui-shadcn";
+import { ScrollArea } from "@hanzo/ui";
+import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
+import { Badge } from "@hanzo/ui";
 import { Textarea } from "@/components/control";
 import {
   Send,

@@ -12,15 +12,16 @@ const nextConfig: NextConfig = {
 
   transpilePackages: transpiled(),
 
+  // Next 16 reduced devIndicators to one key. appIsrStatus and buildActivity
+  // were the toggles that hid the overlay and no longer exist; only where it
+  // sits is still configurable, so the position carries over and the rest goes.
   devIndicators: {
-    appIsrStatus: false,
-    buildActivity: false,
-    buildActivityPosition: 'bottom-right',
+    position: 'bottom-right',
   },
 
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // No eslint key: Next 16 removed the build-time ESLint integration, so
+  // ignoreDuringBuilds suppressed a step that no longer runs. Linting is its
+  // own script and its own CI job, which is where it belonged anyway.
 
   typescript: {
     // Suppressed, and left suppressed deliberately: turning this off is not a
@@ -57,8 +58,9 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  generateStaticParams: false,
-  dynamicParams: true,
+  // generateStaticParams and dynamicParams used to sit here. They are route
+  // SEGMENT exports, not config keys, so at this level they were read by
+  // nothing and had never done anything. Set them in the route that needs them.
 
   webpack(config) {
     config.resolve.fallback = {

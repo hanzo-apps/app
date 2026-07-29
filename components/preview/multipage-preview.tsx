@@ -9,7 +9,7 @@ import {
   PreviewHostMessage
 } from '@/lib/preview/types';
 import { vfs } from '@/lib/vfs';
-import { Button } from '@hanzo/ui-shadcn';
+import { Button } from '@hanzo/ui';
 import {
   RefreshCw,
   Smartphone,

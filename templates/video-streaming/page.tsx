@@ -301,7 +301,7 @@ export default function VideoStreaming() {
                     <Textarea
                       placeholder="Add a comment..."
                       value={comment}
-                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setComment(e.target.value)}
+                      onChangeText={(text: string) => setComment(text)}
                       className="min-h-[80px]"
                     />
                     <div className="flex justify-end gap-2 mt-2">
