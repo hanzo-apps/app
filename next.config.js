@@ -1,9 +1,11 @@
-const fs = require('fs');
 const path = require('path');
 
 // The cloud <UsagePanel> (@hanzo/usage/panel) is a @hanzo/gui (Tamagui) component
 // shipped as SOURCE, so Next must transpile it and the whole @hanzogui/* graph +
-// react-native-web (discovered, not hardcoded — the set moves with the gui version).
+// react-native-web. That set is READ FROM @hanzo/gui's own dependencies, which is
+// where it is actually declared — a scan of node_modules/@hanzogui would only see
+// what pnpm hoists to this app's root, i.e. what we happen to depend on directly,
+// which is why the app used to carry five @hanzogui/* deps it never imported.
 // Same recipe console uses; @hanzogui/next-plugin has a broken dep so we lean on
 // Next's built-in transpilePackages + a react-native→react-native-web alias instead.
 //
@@ -12,29 +14,49 @@ const path = require('path');
 // handed a bare `export {}` unless they are transpiled. ONE list, so the build
 // and the tests can never disagree about what needs transforming.
 function transpiled() {
-  let scoped = [];
-  try {
-    const dir = path.join(__dirname, 'node_modules', '@hanzogui');
-    scoped = fs.readdirSync(dir).map((name) => `@hanzogui/${name}`);
-  } catch {
-    scoped = [];
-  }
+  const gui = Object.keys(require('@hanzo/gui/package.json').dependencies || {});
   // @hanzogui/shell ships compiled dist, but transpile it (+ @hanzo/brand) so
   // Next handles any raw pieces uniformly — harmless with dist, required if the
-  // shell ever ships source. @hanzogui/shell is also picked up by the scoped
-  // scan above; listing it here keeps the intent explicit and fs-independent.
+  // shell ever ships source.
   return [
     '@hanzo/gui',
     '@hanzo/usage',
     '@hanzogui/shell',
     '@hanzo/brand',
-    'react-native-web',
-    ...scoped,
+    ...gui,
     // ESM-only
     'jose',
-    'uuid',
   ];
 }
+
+// The ONE react-native-web copy, resolved through @hanzo/gui (which declares it).
+// An absolute path, not a bare specifier: under pnpm a bare alias resolves from
+// each importer's own directory, so half the @hanzogui/* graph would miss it.
+const guiPkg = require.resolve('@hanzo/gui/package.json');
+const reactNativeWeb = path.dirname(
+  require.resolve('react-native-web/package.json', { paths: [guiPkg] }),
+);
+
+// ONE instance of every gui package, resolved through @hanzo/gui.
+//
+// pnpm keys a package directory by its PEER set, so @hanzogui/web installed under
+// a react-native peer and the same version installed under a react-native-web peer
+// are two physical copies — and therefore two module registries. gui keeps the
+// theme name and the media table in module state, so a second copy means
+// `GuiProvider` fills registry A while `Toaster` reads registry B and throws
+// "Missing theme." Aliasing each package to one absolute path collapses them.
+const guiAliases = Object.fromEntries(
+  Object.keys(require('@hanzo/gui/package.json').dependencies || {})
+    .filter((name) => name.startsWith('@hanzogui/'))
+    .map((name) => {
+      try {
+        return [`${name}$`, path.dirname(require.resolve(`${name}/package.json`, { paths: [guiPkg] }))];
+      } catch {
+        return null;
+      }
+    })
+    .filter(Boolean),
+);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -49,10 +71,6 @@ const nextConfig = {
     appIsrStatus: false,
     buildActivity: false,
     buildActivityPosition: 'bottom-right',
-  },
-
-  eslint: {
-    ignoreDuringBuilds: true,
   },
 
   typescript: {
@@ -100,10 +118,6 @@ const nextConfig = {
     ];
   },
 
-  // Disable static generation for problematic pages
-  generateStaticParams: false,
-  dynamicParams: true,
-
   webpack: (config, { isServer }) => {
     // Fix for build issues
     config.resolve.fallback = {
@@ -119,7 +133,8 @@ const nextConfig = {
       'react-resizable-panels$': path.resolve(__dirname, 'lib/shims/react-resizable-panels.js'),
       // @hanzo/gui (Tamagui) targets react-native; on web the bare specifier maps
       // to react-native-web (exact-match so subpath imports hit the real package).
-      'react-native$': 'react-native-web',
+      'react-native$': reactNativeWeb,
+      ...guiAliases,
     };
     // PREPEND the web extensions so react-native packages resolve their `.web.js`
     // siblings over the native/fabric files. Without this, @hanzogui/lucide-icons-2

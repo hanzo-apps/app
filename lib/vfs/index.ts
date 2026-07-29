@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import JSZip from 'jszip';
 import { logger } from '@/lib/utils';
 import {
@@ -535,7 +534,6 @@ export class VirtualFileSystem {
    */
   private async upsertEdgeFunctionFromFile(path: string, content: string): Promise<VirtualFile> {
     const { validateEdgeFunctionData, generateEdgeFunctionFile } = await import('./server-context');
-    const { v4: uuidv4Gen } = await import('uuid');
 
     let data: unknown;
     try { data = JSON.parse(content); } catch (e: unknown) {
@@ -571,7 +569,7 @@ export class VirtualFileSystem {
 
       this.mountTransientFile(path, generateEdgeFunctionFile(updated), false);
     } else if (adapter.createEdgeFunction) {
-      const newFn = { id: uuidv4Gen(), projectId, name: fnData.name, code: fnData.code, method: fnData.method as any, description: fnData.description, enabled: fnData.enabled ?? true, timeoutMs: fnData.timeoutMs ?? 5000, createdAt: now, updatedAt: now };
+      const newFn = { id: crypto.randomUUID(), projectId, name: fnData.name, code: fnData.code, method: fnData.method as any, description: fnData.description, enabled: fnData.enabled ?? true, timeoutMs: fnData.timeoutMs ?? 5000, createdAt: now, updatedAt: now };
       await adapter.createEdgeFunction(newFn);
       this.mountTransientFile(path, generateEdgeFunctionFile(newFn), false);
     }
@@ -589,7 +587,6 @@ export class VirtualFileSystem {
    */
   private async upsertServerFunctionFromFile(path: string, content: string): Promise<VirtualFile> {
     const { validateServerFunctionData, generateServerFunctionFile } = await import('./server-context');
-    const { v4: uuidv4Gen } = await import('uuid');
 
     let data: unknown;
     try { data = JSON.parse(content); } catch (e: unknown) {
@@ -624,7 +621,7 @@ export class VirtualFileSystem {
 
       this.mountTransientFile(path, generateServerFunctionFile(updated), false);
     } else if (adapter.createServerFunction) {
-      const newFn = { id: uuidv4Gen(), projectId, name: fnData.name, code: fnData.code, description: fnData.description, enabled: fnData.enabled ?? true, createdAt: now, updatedAt: now };
+      const newFn = { id: crypto.randomUUID(), projectId, name: fnData.name, code: fnData.code, description: fnData.description, enabled: fnData.enabled ?? true, createdAt: now, updatedAt: now };
       await adapter.createServerFunction(newFn);
       this.mountTransientFile(path, generateServerFunctionFile(newFn), false);
     }
@@ -642,7 +639,6 @@ export class VirtualFileSystem {
    */
   private async upsertSecretFromFile(path: string, content: string): Promise<VirtualFile> {
     const { validateSecretData, generateSecretFile } = await import('./server-context');
-    const { v4: uuidv4Gen } = await import('uuid');
 
     let data: unknown;
     try { data = JSON.parse(content); } catch (e: unknown) {
@@ -677,7 +673,7 @@ export class VirtualFileSystem {
 
       this.mountTransientFile(path, generateSecretFile(updated), false);
     } else if (adapter.createSecret) {
-      const newSecret = { id: uuidv4Gen(), projectId, name: secretData.name, description: secretData.description, hasValue: false, createdAt: now, updatedAt: now };
+      const newSecret = { id: crypto.randomUUID(), projectId, name: secretData.name, description: secretData.description, hasValue: false, createdAt: now, updatedAt: now };
       await adapter.createSecret(newSecret);
       this.mountTransientFile(path, generateSecretFile(newSecret), false);
     }
@@ -695,7 +691,6 @@ export class VirtualFileSystem {
    */
   private async upsertScheduledFunctionFromFile(path: string, content: string): Promise<VirtualFile> {
     const { validateScheduledFunctionData, generateScheduledFunctionFile } = await import('./server-context');
-    const { v4: uuidv4Gen } = await import('uuid');
 
     let data: unknown;
     try { data = JSON.parse(content); } catch (e: unknown) {
@@ -737,7 +732,7 @@ export class VirtualFileSystem {
 
       this.mountTransientFile(path, generateScheduledFunctionFile(updated, fnData.functionName), false);
     } else if (adapter.createScheduledFunction) {
-      const newFn = { id: uuidv4Gen(), projectId, name: fnData.name, functionId: edgeFn.id, cronExpression: fnData.cronExpression, timezone: fnData.timezone || 'UTC', description: fnData.description, enabled: fnData.enabled ?? true, config: fnData.config || {}, createdAt: now, updatedAt: now };
+      const newFn = { id: crypto.randomUUID(), projectId, name: fnData.name, functionId: edgeFn.id, cronExpression: fnData.cronExpression, timezone: fnData.timezone || 'UTC', description: fnData.description, enabled: fnData.enabled ?? true, config: fnData.config || {}, createdAt: now, updatedAt: now };
       await adapter.createScheduledFunction(newFn);
       this.mountTransientFile(path, generateScheduledFunctionFile(newFn, fnData.functionName), false);
     }
@@ -946,7 +941,7 @@ export class VirtualFileSystem {
       }
 
       const file: VirtualFile = {
-        id: uuidv4(),
+        id: crypto.randomUUID(),
         projectId,
         path,
         name: path.split('/').pop() || '',
@@ -1127,7 +1122,7 @@ export class VirtualFileSystem {
     
     const name = path.split('/').pop() || path;
     const node: FileTreeNode = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       projectId,
       path,
       name,
@@ -1266,7 +1261,7 @@ export class VirtualFileSystem {
       await this.adapter.deleteTreeNode(projectId, oldPath);
       
       const newNode: FileTreeNode = {
-        id: uuidv4(),
+        id: crypto.randomUUID(),
         projectId,
         path: newPath,
         name: newPath.split('/').pop() || newPath,
@@ -1303,7 +1298,7 @@ export class VirtualFileSystem {
       
       await this.adapter.deleteTreeNode(projectId, node.path);
       const newNode: FileTreeNode = {
-        id: uuidv4(),
+        id: crypto.randomUUID(),
         projectId,
         path: newSubdirPath,
         name: newSubdirPath.split('/').pop() || newSubdirPath,
@@ -1359,7 +1354,7 @@ export class VirtualFileSystem {
 
     try {
       const project: Project = {
-        id: id || uuidv4(),
+        id: id || crypto.randomUUID(),
         name,
         description,
         createdAt: new Date(),
@@ -1377,7 +1372,7 @@ export class VirtualFileSystem {
       await this.adapter.createProject(project);
       
       const rootNode: FileTreeNode = {
-        id: uuidv4(),
+        id: crypto.randomUUID(),
         projectId: project.id,
         path: '/',
         name: '/',

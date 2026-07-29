@@ -4,8 +4,7 @@ import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
 import { useState, useMemo, useRef, useEffect } from "react";
 import { toast, Button, Tooltip, TooltipTrigger, TooltipContent, Textarea } from '@hanzo/ui';
 import { useLocalStorage } from "react-use";
-import { ArrowUp, Crosshair, ImagePlus, X } from "lucide-react";
-import { FaStopCircle } from "react-icons/fa";
+import { ArrowUp, CircleStop, Crosshair, ImagePlus, X } from "lucide-react";
 
 import ProModal from "@/components/pro-modal";
 import { useUsageLimit } from "@/components/usage/usage-limit";
@@ -1277,7 +1276,7 @@ export function AskAI({
                 onClick={stopController}
                 gap="$1" borderRadius="$10"
               >
-                <FaStopCircle size={16} />
+                <CircleStop size={16} />
               </Button>
             ) : (
               <Button

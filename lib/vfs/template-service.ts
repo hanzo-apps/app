@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import JSZip from 'jszip';
 import { CustomTemplate, BackendFeatures, EdgeFunction, ServerFunction, Secret } from './types';
 import { StorageAdapter } from './adapters/types';
@@ -191,7 +190,7 @@ export class TemplateService {
 
       // Create CustomTemplate object
       const template: CustomTemplate = {
-        id: uuidv4(),
+        id: crypto.randomUUID(),
         name: templateData.name,
         description: templateData.description,
         version: templateData.templateVersion || '1.0.0',

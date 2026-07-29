@@ -48,7 +48,7 @@ cp -r components $TEMP_DIR/ 2>/dev/null || true
 cp -r lib $TEMP_DIR/ 2>/dev/null || true
 cp -r public $TEMP_DIR/ 2>/dev/null || true
 cp package.json $TEMP_DIR/
-cp next.config.js $TEMP_DIR/ 2>/dev/null || cp next.config.ts $TEMP_DIR/next.config.js 2>/dev/null || true
+cp next.config.js $TEMP_DIR/ 2>/dev/null || true
 cp tsconfig.json $TEMP_DIR/
 cp tailwind.config.* $TEMP_DIR/ 2>/dev/null || true
 cp postcss.config.* $TEMP_DIR/ 2>/dev/null || true

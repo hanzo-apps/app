@@ -3,13 +3,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { XStack } from '@hanzo/gui';
 import { useState } from "react";
-import { MdSave } from "react-icons/md";
 
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@hanzo/ui';
 import { LoginModal } from "@/components/login-modal";
 import { useUser } from "@/hooks/useUser";
 import { Page } from "@/types";
 import { DeployButtonContent } from "./content";
+import { Save } from "lucide-react";
 
 export function DeployButton({
   pages,
@@ -41,7 +41,7 @@ export function DeployButton({
                   height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1" $lg={{ display: "none" }}
                   disabled={disabled}
                 >
-                  <MdSave size={14} />
+                  <Save size={14} />
                   {disabled ? "Building…" : "Publish"}
                 </Button>
                 <Button
@@ -71,7 +71,7 @@ export function DeployButton({
               onClick={() => setOpen(true)}
               disabled={disabled}
             >
-              <MdSave size={14} />
+              <Save size={14} />
               {disabled ? "Building…" : "Publish"}
             </Button>
             <Button

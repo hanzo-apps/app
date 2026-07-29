@@ -12,7 +12,6 @@ import { SITE_URL } from "@/lib/site";
 import AppContext from "@/components/contexts/app-context";
 import IframeDetector from "@/components/iframe-detector";
 import { ChunkReloader } from "@/components/chunk-reloader";
-import { PointerEventsGuard } from "@/components/pointer-events-guard";
 import { Providers } from "./providers";
 import { ErrorBoundary } from "@/components/error-boundary/error-boundary";
 import { errorLogger } from "@/lib/error-handling/error-logger";
@@ -109,16 +108,19 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body>
-        <IframeDetector />
-        <ChunkReloader />
-        <PointerEventsGuard />
-        <ErrorBoundary level="app">
-          <Providers>
+        {/* Providers is OUTERMOST. It owns createGui(), which registers the
+            token and media tables in module-global state; anything rendered
+            above it reaches `useMedia()` before that state exists and the first
+            responsive prop ($sm/$md/$lg) throws on `new Proxy(undefined)`. */}
+        <Providers>
+          <IframeDetector />
+          <ChunkReloader />
+          <ErrorBoundary level="app">
             <TanstackProvider>
               <AppContext>{children}</AppContext>
             </TanstackProvider>
-          </Providers>
-        </ErrorBoundary>
+          </ErrorBoundary>
+        </Providers>
         {/* Hanzo Edit — the ever-present "contribute to this page" widget. Reads
             the hanzo:repo/path/branch/provider metas above, then offers Suggest
             (anyone) or a real fork→edit→PR (admin free, credit-holders debited).

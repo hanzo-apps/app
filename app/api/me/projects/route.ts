@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { v4 as uuidv4 } from "uuid";
 
 import { session } from "@/lib/iam";
 import { listProjects, createProject } from "@/lib/db/projects";
@@ -66,7 +65,7 @@ export async function POST(request: NextRequest) {
     await adapter.init();
 
     const now = new Date();
-    const projectId = uuidv4();
+    const projectId = crypto.randomUUID();
 
     const project: VfsProject = {
       id: projectId,
@@ -82,7 +81,7 @@ export async function POST(request: NextRequest) {
 
     for (const [path, html] of byPath) {
       const file: VirtualFile = {
-        id: uuidv4(),
+        id: crypto.randomUUID(),
         projectId,
         path,
         name: path.split("/").pop() || "index.html",
@@ -98,7 +97,7 @@ export async function POST(request: NextRequest) {
     }
 
     const deployment: Deployment = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       projectId,
       name: title,
       enabled: true,

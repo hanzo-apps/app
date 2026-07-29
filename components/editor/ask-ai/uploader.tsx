@@ -2,13 +2,12 @@
 
 import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
 import { useRef, useState } from "react";
-import { Plus, Upload, Sparkles } from "lucide-react";
+import { CircleCheck, Plus, Sparkles, Upload } from "lucide-react";
 import Image from "next/image";
 
 import { Popover, PopoverContent, PopoverTrigger, Button, Input } from '@hanzo/ui';
 import { Page, Project } from "@/types";
 import Loading from "@/components/loading";
-import { RiCheckboxCircleFill } from "react-icons/ri";
 import { useUser } from "@/hooks/useUser";
 import { LoginModal } from "@/components/login-modal";
 import { DeployButtonContent } from "../deploy-button/content";
@@ -153,7 +152,7 @@ export const Uploader = ({
   />
                         {selectedFiles.includes(file) && (
                           <XStack position="absolute" top="$0" right="$0" height="100%" width="100%" alignItems="center" justifyContent="center" backgroundColor="black" borderRadius="$3">
-                            <RiCheckboxCircleFill size={24} color="var(--brand-accent-muted)" />
+                            <CircleCheck size={24} color="var(--brand-accent-muted)" />
                           </XStack>
                         )}
                       </YStack>

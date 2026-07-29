@@ -1,8 +1,7 @@
 'use client';
 
 import { SizableText, YStack, Paragraph } from '@hanzo/gui';
-import { PiGearSixFill } from "react-icons/pi";
-import { Check } from "lucide-react";
+import { Check, Settings } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger, Button } from '@hanzo/ui';
 import { ModelSelector, type ModelCatalogEntry } from '@hanzo/ui/models';
@@ -111,7 +110,7 @@ export function Settings({
           aria-label="Settings"
           borderRadius="$10" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
         >
-          <PiGearSixFill size={16} />
+          <Settings size={16} />
         </Button>
       </PopoverTrigger>
       {/* ONE popover surface: solid bg-card, a single hairline border, high
