@@ -19,12 +19,15 @@ import type { Metadata } from "next";
  * changing what you are looking at, and it is the composer.
  *
  * Turning it off needs no flag and no env var, because the widget already has a
- * declarative contract: with no `hanzo:repo` it does nothing (edit.js:52). Next
- * merges metadata shallowly, so this `other` replaces the root layout's and the
- * meta the widget looks for is simply not on this page.
+ * declarative contract: with no `hanzo:repo` it does nothing (edit.js:52).
+ *
+ * The repo is BLANKED rather than the `other` object replaced. Measured on the
+ * live route: an empty `other: {}` changed nothing and `hanzo:repo` still read
+ * `hanzoai/app`, because Next merges `other` BY KEY into the parent's — an empty
+ * object overrides nothing. Only naming the key overrides it.
  */
 export const metadata: Metadata = {
-  other: {},
+  other: { "hanzo:repo": "" },
 };
 
 export default function DevLayout({ children }: { children: React.ReactNode }) {

@@ -34,11 +34,13 @@ describe("the contribute widget cannot mount on the builder", () => {
     expect(read("app/layout.tsx")).toContain('"hanzo:repo": "hanzoai/app"');
   });
 
-  it("/dev overrides that declaration with an empty `other`", () => {
+  it("/dev blanks that declaration by NAMING the key", () => {
     const path = "app/dev/layout.tsx";
     expect(existsSync(join(ROOT, path))).toBe(true);
     const src = read(path);
-    expect(src).toMatch(/export const metadata: Metadata = \{\s*other: \{\},?\s*\}/);
+    // Measured live: an empty `other: {}` changed nothing, because Next merges
+    // `other` BY KEY into the parent's. The key has to be named to override it.
+    expect(src).toMatch(/other:\s*\{\s*"hanzo:repo":\s*""\s*\}/);
     // It must stay a pass-through: this layout exists for the metadata alone and
     // may never become a place that renders chrome.
     expect(src).toMatch(/return children;/);
