@@ -24,7 +24,7 @@
  * behaviour a caller actually gets — not just the helper in isolation.
  */
 import { NextRequest } from 'next/server';
-import { http, HttpResponse } from 'msw';
+import { http, HttpResponse, delay } from 'msw';
 import { clearJwksCache } from '@hanzo/iam/auth';
 
 import { server } from '../../jest.setup';
@@ -96,6 +96,7 @@ beforeAll(async () => {
   process.env.IAM_CLIENT_ID = CLIENT_ID;
   process.env.IAM_MINT_CLIENT_ID = 'hanzo-app-mint';
   process.env.IAM_MINT_CLIENT_SECRET = 'test-secret';
+  process.env.IAM_TIMEOUT_MS = '200'; // bound the silent-IAM case without a slow test
   route = (await import('@/app/onboard/route')) as unknown as OnboardRoute;
   onboard = await import('@/lib/org/onboard');
 });
@@ -139,6 +140,16 @@ describe('getOrganization — three answers, not one', () => {
   it('an unreadable envelope is not an absence', async () => {
     await withIam(() => HttpResponse.json({ status: 'error', msg: 'id (owner/name) or name is required' }));
     await expect(onboard.getOrganization('acme')).rejects.toThrow(/is required/);
+  });
+
+  it('a SILENT IAM is bounded, and is not an absence', async () => {
+    // Reachable but never answering: without a timeout this wedges the route
+    // until the caller gives up. It must end as a throw, never as "no such org".
+    await withIam((async () => {
+      await delay(1_000); // >> the 200ms bound, without leaving a long handle
+      return HttpResponse.json(ABSENT);
+    }) as unknown as OrgAnswer);
+    await expect(onboard.getOrganization('acme')).rejects.toThrow(/unreachable/);
   });
 });
 
