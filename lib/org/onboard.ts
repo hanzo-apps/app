@@ -64,6 +64,14 @@ interface IamOrganization {
  */
 const ABSENT = 'the entity does not exist';
 
+/**
+ * Upstream timeout. The console's twin of this client bounds every request-time
+ * fetch; this one did not, so a reachable-but-silent IAM would wedge the
+ * onboarding route until the caller gave up. A timeout surfaces as an
+ * unreachable IAM — which is a throw, never an absence. Non-positive opts out.
+ */
+const TIMEOUT_MS = Number(process.env.IAM_TIMEOUT_MS || 10_000);
+
 /** An IAM answer we could not act on. `absent` marks the ONE benign kind. */
 class IamError extends Error {
   constructor(
@@ -108,6 +116,7 @@ async function iam<T>(path: string, query: Record<string, string>, body?: unknow
         ...(write ? { 'Content-Type': 'application/json' } : {}),
       },
       cache: 'no-store',
+      signal: TIMEOUT_MS > 0 ? AbortSignal.timeout(TIMEOUT_MS) : undefined,
     });
   } catch (e) {
     throw new IamError(`IAM ${path} unreachable: ${e instanceof Error ? e.message : String(e)}`);
