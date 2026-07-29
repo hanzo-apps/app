@@ -50,7 +50,12 @@ function humanize(username: string): string {
   return base ? base.replace(/\b\w/g, (c) => c.toUpperCase()) : 'Personal';
 }
 
-/** First free slug at/after `base` (`base`, `base-2`, …); null if all taken. */
+/**
+ * First free slug at/after `base` (`base`, `base-2`, …); null if all taken.
+ * Only a GENUINE absence counts as free — `getOrganization` throws on anything
+ * it could not determine, so this can never hand back a slug that is merely
+ * unreadable to us.
+ */
 async function freeSlug(base: string): Promise<string | null> {
   for (let i = 1; i <= 20; i++) {
     const candidate =
@@ -105,22 +110,28 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     displayName = (body.name ?? '').trim();
   }
 
-  let slug = baseSlug;
-  if (await getOrganization(slug)) {
-    if (!personal) {
-      return NextResponse.json(
-        { error: `"${slug}" is taken. Choose a different name.` },
-        { status: 409 },
-      );
-    }
-    const free = await freeSlug(baseSlug);
-    if (!free) {
-      return NextResponse.json({ error: 'Could not find an available name.' }, { status: 409 });
-    }
-    slug = free;
-  }
-
+  // ONE fallible section: resolving the slug is as much an IAM call as creating
+  // the org, and it is the one whose answer decides whether we write. Any IAM
+  // answer we cannot act on — a refusal, an unreachable IAM, a malformed
+  // envelope — lands in the catch as an honest 502 carrying what IAM said. Only
+  // a GENUINE absence returns null from getOrganization and lets us proceed, so
+  // a slug is never created on the strength of a question we were refused.
   try {
+    let slug = baseSlug;
+    if (await getOrganization(slug)) {
+      if (!personal) {
+        return NextResponse.json(
+          { error: `"${slug}" is taken. Choose a different name.` },
+          { status: 409 },
+        );
+      }
+      const free = await freeSlug(baseSlug);
+      if (!free) {
+        return NextResponse.json({ error: 'Could not find an available name.' }, { status: 409 });
+      }
+      slug = free;
+    }
+
     await createOrganization({
       name: slug,
       displayName,
@@ -132,12 +143,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       const id = user.org ? `${user.org}/${user.name}` : user.name;
       await moveUserToOrg(id, slug);
     }
+
+    return NextResponse.json({ org: slug, displayName, additional });
   } catch (e) {
     return NextResponse.json(
       { error: `Could not create the organization: ${e instanceof Error ? e.message : String(e)}` },
       { status: 502 },
     );
   }
-
-  return NextResponse.json({ org: slug, displayName, additional });
 }
