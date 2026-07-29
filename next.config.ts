@@ -23,7 +23,11 @@ const nextConfig: NextConfig = {
   },
   // Bundle optimization settings
   experimental: {
-    optimizeCss: true,
+    // optimizeCss inlines "critical" CSS into every HTML response. Measured on
+    // hanzo.app it inlined 350,715 B - larger than the entire 216 KB external
+    // stylesheet - uncacheable, render-blocking, and re-sent on every navigation.
+    // An external stylesheet is cached once; that is strictly faster after the
+    // first paint of the first page.
     optimizePackageImports: [
       "@hanzo/ui",
       "lucide-react",
