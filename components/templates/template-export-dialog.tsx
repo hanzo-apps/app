@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Project, LICENSE_OPTIONS } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';
 import { templateService, TemplateMetadata } from '@/lib/vfs/template-service';
-import { Button } from '@hanzo/ui';
+import { Button } from '@hanzo/ui-shadcn';
 import { Input } from '@/components/control';
 import { Label } from '@/components/control';
 import { Textarea } from '@/components/control';
@@ -16,8 +16,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@hanzo/ui';
-import { toast } from '@hanzo/ui';
+} from '@hanzo/ui-shadcn';
+import { toast } from '@hanzo/ui-shadcn';
 import { logger } from '@/lib/utils';
 import { Info, FileBox } from 'lucide-react';
 

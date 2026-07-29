@@ -3,7 +3,7 @@ import { formatDistance } from "date-fns";
 import { EllipsisVertical, Settings } from "lucide-react";
 
 import { Project } from "@/types";
-import { Button } from "@hanzo/ui";
+import { Button } from "@hanzo/ui-shadcn";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/overlay";
 
 export function ProjectCard({ project }: { project: Project }) {

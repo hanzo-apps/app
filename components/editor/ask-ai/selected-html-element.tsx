@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { Code, XCircle } from "lucide-react";
 
-import { Collapsible, CollapsibleTrigger } from "@hanzo/ui";
+import { Collapsible, CollapsibleTrigger } from "@hanzo/ui-shadcn";
 import { htmlTagToText } from "@/lib/html-tag-to-text";
 
 export const SelectedHtmlElement = ({

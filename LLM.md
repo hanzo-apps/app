@@ -16,16 +16,37 @@ Directory notes load on demand: `components/landing/CLAUDE.md` for the
 marketing landing, `components/editor/CLAUDE.md` for the `/dev` builder chrome
 and the design-token convergence.
 
+### Two packages, two names
+
+`@hanzo/ui-shadcn@5.9.x` is the Radix/Tailwind library this app's chrome is
+built from. It used to be installed under the alias `"@hanzo/ui":
+"npm:@hanzo/ui-shadcn@^5.9.0"`, which spent the name that belongs to the real
+`@hanzo/ui@8+` — the one canonical library, built on `@hanzo/gui`, where the
+chat shell lives. The alias is gone; each package now goes by its own name, so
+an app file can import BOTH.
+
+`@hanzo/gui` is already mounted app-wide (`app/providers.tsx` wraps the tree in
+`GuiProvider`), so a `@hanzo/ui@8` component costs only its own bytes — the
+Tamagui runtime is already paid for on every route.
+
+### ONE next config
+
+`next.config.ts` is the only config. Next resolves `['next.config.js',
+'next.config.mjs', 'next.config.ts']` in that order, so a `next.config.js`
+silently wins and any edit to the `.ts` is a no-op — that happened, and it cost
+a release. The transpile list lives in `./transpile.js` because `jest.config.js`
+needs the same array; one list, so build and tests cannot disagree.
+
 ### The `react-resizable-panels` shim (fixed — keep it, keep it exact-match)
 
-`next.config.js` aliases the bare specifier `react-resizable-panels$` →
-`lib/shims/react-resizable-panels.js`. The shim exists because `@hanzo/ui`'s
-`resizable` module imports the **v2** names `{ Panel, PanelGroup,
-PanelResizeHandle }` while the installed package is **v4.7.4**, which exports
-`{ Panel, Group, Separator }`. Nothing in the app imports the package directly,
-but the `@hanzo/ui` barrel pulls that module in — so the bare specifier must
-resolve to something carrying BOTH name sets. **The shim is load-bearing; do
-not delete it.**
+`next.config.ts` aliases the bare specifier `react-resizable-panels$` →
+`lib/shims/react-resizable-panels.js`. The shim exists because
+`@hanzo/ui-shadcn`'s `resizable` module imports the **v2** names `{ Panel,
+PanelGroup, PanelResizeHandle }` while the installed package is **v4.7.4**,
+which exports `{ Panel, Group, Separator }`. Nothing in the app imports the
+package directly, but the `@hanzo/ui-shadcn` barrel pulls that module in — so
+the bare specifier must resolve to something carrying BOTH name sets. **The
+shim is load-bearing; do not delete it.**
 
 It used to re-export from the bare specifier, which the alias caught again and
 pointed back at the shim — it re-exported *itself*: infinite recursion in

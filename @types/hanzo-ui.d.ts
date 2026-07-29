@@ -1,5 +1,5 @@
-declare module '@hanzo/ui' {
-  export * from '@hanzo/ui/components';
+declare module '@hanzo/ui-shadcn' {
+  export * from '@hanzo/ui-shadcn/components';
 
   // Re-export common UI components
   export const Button: any;

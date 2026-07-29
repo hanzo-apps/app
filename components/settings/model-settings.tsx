@@ -3,12 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import { configManager } from '@/lib/config/storage';
 import { validateApiKey as checkApiKey } from '@/lib/llm/llm-client';
-import { Button } from '@hanzo/ui';
+import { Button } from '@hanzo/ui-shadcn';
 import { Input } from '@/components/control';
 import { Label } from '@/components/control';
 import { Switch } from '@/components/control';
 import { Eye, EyeOff, Check, X, ExternalLink, Loader2 } from 'lucide-react';
-import { toast } from '@hanzo/ui';
+import { toast } from '@hanzo/ui-shadcn';
 import { ModelSelector } from '@/components/model-selector';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
 import { ProviderId } from '@/lib/llm/providers/types';

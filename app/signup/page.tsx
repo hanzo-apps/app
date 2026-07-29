@@ -6,9 +6,9 @@ import { useIam } from '@hanzo/iam/react';
 import { EVENTS } from '@hanzo/event';
 import { useAnalytics } from '@hanzo/event/react';
 import { HanzoLogo } from '@/components/HanzoLogo';
-import { Button } from '@hanzo/ui';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@hanzo/ui';
-import { Badge } from '@hanzo/ui';
+import { Button } from '@hanzo/ui-shadcn';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@hanzo/ui-shadcn';
+import { Badge } from '@hanzo/ui-shadcn';
 import { Loader2, Sparkles, Zap, Shield, Rocket } from 'lucide-react';
 
 /**

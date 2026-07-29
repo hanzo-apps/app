@@ -156,7 +156,7 @@ describe("every family renders one surface, portaled, above the page", () => {
     // Not a lament: this is why the app forked the surface. If a future @hanzo/ui
     // ships resolved styles instead of class names, this test goes red and the
     // fork can be reconsidered on evidence.
-    const lib = await import("@hanzo/ui/dropdown-menu");
+    const lib = await import("@hanzo/ui-shadcn/dropdown-menu");
     render(
       <lib.DropdownMenu defaultOpen>
         <lib.DropdownMenuTrigger>Build</lib.DropdownMenuTrigger>

@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { toast } from '@hanzo/ui';
+import { toast } from '@hanzo/ui-shadcn';
 import { EdgeFunction } from '@/lib/vfs/types';
 import {
   Plus, Loader2, AlertCircle, Code2, MoreVertical, Pencil, Trash2,
   ToggleLeft, ToggleRight, Copy, ExternalLink, CheckCircle2
 } from 'lucide-react';
-import { Button } from '@hanzo/ui';
+import { Button } from '@hanzo/ui-shadcn';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/overlay';
 import { FunctionEditor } from './function-editor';
 import { cn } from '@/lib/utils';

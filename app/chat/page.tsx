@@ -31,10 +31,10 @@ import {
   MoreHorizontal,
   Users
 } from "lucide-react";
-import { Button } from "@hanzo/ui";
+import { Button } from "@hanzo/ui-shadcn";
 import { Input } from "@/components/control";
-import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
-import { ScrollArea } from "@hanzo/ui";
+import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui-shadcn";
+import { ScrollArea } from "@hanzo/ui-shadcn";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/overlay";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";
 import { Textarea } from "@/components/control";

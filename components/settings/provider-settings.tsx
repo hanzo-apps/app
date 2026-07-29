@@ -1,15 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Button } from "@hanzo/ui";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@hanzo/ui";
+import { Button } from "@hanzo/ui-shadcn";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@hanzo/ui-shadcn";
 import { Input } from "@/components/control";
 import { Label } from "@/components/control";
-import { Badge } from "@hanzo/ui";
+import { Badge } from "@hanzo/ui-shadcn";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui-shadcn";
 import { Loader2, CheckCircle, XCircle, ExternalLink, Key, Trash2 } from 'lucide-react';
-import { toast } from '@hanzo/ui';
+import { toast } from '@hanzo/ui-shadcn';
 
 import {
   ProviderId,

@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Button } from '@hanzo/ui';
-import { toast } from '@hanzo/ui';
+import { Button } from '@hanzo/ui-shadcn';
+import { toast } from '@hanzo/ui-shadcn';
 
 interface EngagementMetrics {
   timeOnPage: {

@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Label } from '@/components/control';
-import { Badge } from '@hanzo/ui';
+import { Badge } from '@hanzo/ui-shadcn';
 import { logger, cn } from '@/lib/utils';
-import { Button } from '@hanzo/ui';
+import { Button } from '@hanzo/ui-shadcn';
 import { Input } from '@/components/control';
 import { Switch } from '@/components/control';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/overlay';
@@ -30,7 +30,7 @@ import {
   formatModelPrice
 } from '@/lib/llm/models-api';
 import { registerOpenRouterPricingFromApi, registerPricingFromProviderModels } from '@/lib/llm/pricing-cache';
-import { toast } from '@hanzo/ui';
+import { toast } from '@hanzo/ui-shadcn';
 import { track } from '@/lib/telemetry';
 
 interface ModelSelectorProps {

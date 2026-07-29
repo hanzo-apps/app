@@ -48,7 +48,7 @@ const rel = (f: string) => f.replace(ROOT + "/", "");
  */
 const SIZES: string[] = (() => {
   const dts = readFileSync(
-    join(ROOT, "node_modules/@hanzo/ui/dist/primitives/button.d.ts"),
+    join(ROOT, "node_modules/@hanzo/ui-shadcn/dist/primitives/button.d.ts"),
     "utf8",
   );
   const line = dts.match(/size\?:\s*([^;]+);/);

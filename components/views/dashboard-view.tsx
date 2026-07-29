@@ -16,7 +16,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { DiscordIcon } from '@/components/ui/discord-icon';
-import { Button } from '@hanzo/ui';
+import { Button } from '@hanzo/ui-shadcn';
 import Link from 'next/link';
 import { vfs } from '@/lib/vfs';
 import { templateService } from '@/lib/vfs/template-service';

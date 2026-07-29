@@ -2,15 +2,15 @@ import { TiUserAdd } from "react-icons/ti";
 import { Link } from "lucide-react";
 import { FaXTwitter } from "react-icons/fa6";
 import { useCopyToClipboard } from "react-use";
-import { toast } from "@hanzo/ui";
+import { toast } from "@hanzo/ui-shadcn";
 
-import { Button } from "@hanzo/ui";
+import { Button } from "@hanzo/ui-shadcn";
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   DialogTrigger,
-} from "@hanzo/ui";
+} from "@hanzo/ui-shadcn";
 
 export function InviteFriends() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
