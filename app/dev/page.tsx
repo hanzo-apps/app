@@ -1,5 +1,6 @@
 "use client";
 
+import { SizableText } from '@hanzo/gui';
 import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AppEditor } from "@/components/editor";
@@ -52,9 +53,9 @@ function Shell({ children }: { children: React.ReactNode }) {
 function Splash({ children }: { children: React.ReactNode }) {
   return (
     <Shell>
-      <div className="flex flex-1 items-center justify-center bg-neutral-950 text-neutral-400 text-sm">
+      <SizableText flex={1} alignItems="center" justifyContent="center" backgroundColor="$color12" color="$color8" fontSize="$3" display="flex" flexDirection="row">
         {children}
-      </div>
+      </SizableText>
     </Shell>
   );
 }
@@ -373,7 +374,7 @@ function Dev() {
           templateRepo={repoData}
           action={action as "edit" | "deploy"}
           onProceed={handleTemplateAction}
-        />
+  />
       </Shell>
     );
   }
@@ -384,7 +385,7 @@ function Dev() {
         <DevOnboarding
           initialPrompt={initialPrompt}
           onComplete={handleOnboardingComplete}
-        />
+  />
       </Shell>
     );
   }
@@ -429,7 +430,7 @@ function Dev() {
     <AppEditor
       isNew
       pages={templatePages ?? importedPages ?? undefined}
-    />
+  />
   );
 }
 

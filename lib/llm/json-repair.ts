@@ -3,8 +3,6 @@
  * Attempts to repair truncated JSON from LLM responses that hit max_tokens
  */
 
-import { logger } from '../utils';
-
 export interface JSONRepairResult {
   success: boolean;
   repaired?: any;

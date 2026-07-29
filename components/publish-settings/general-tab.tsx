@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import { YStack, H3, XStack, Paragraph, SizableText } from '@hanzo/gui';
+import { useState } from 'react';
 import { PublishSettings, Project } from '@/lib/vfs/types';
 import { Label, Input, Switch, Badge, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import { Globe, AlertTriangle } from 'lucide-react';
@@ -32,54 +33,54 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
   const appUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/deployments/${deploymentId}`;
 
   return (
-    <div className="space-y-6">
+    <YStack rowGap="$5">
       {/* Publishing Status */}
-      <div className="space-y-4">
+      <YStack rowGap="$4">
         <div>
-          <h3 className="text-lg font-medium mb-4">Publishing Status</h3>
+          <H3 fontSize="$6" fontWeight="500" marginBottom="$4">Publishing Status</H3>
         </div>
 
-        <div className="flex items-center justify-between p-4 border rounded-lg">
-          <div className="space-y-1">
-            <Label htmlFor="enabled" className="text-base">
+        <XStack alignItems="center" justifyContent="space-between" padding="$4" borderWidth={1} borderRadius="$5">
+          <YStack rowGap="$1">
+            <Label htmlFor="enabled" fontSize="$4">
               Published
             </Label>
-            <p className="text-sm text-muted-foreground">
+            <Paragraph fontSize="$3" color="$color11">
               Make this deployment publicly accessible
-            </p>
-          </div>
+            </Paragraph>
+          </YStack>
           <Switch
             id="enabled"
             checked={settings.enabled}
             onCheckedChange={(checked) => handleChange('enabled', checked)}
-          />
-        </div>
+  />
+        </XStack>
 
-        <div className="flex items-center justify-between p-4 border rounded-lg">
-          <div className="space-y-1">
-            <Label htmlFor="under-construction" className="text-base">
+        <XStack alignItems="center" justifyContent="space-between" padding="$4" borderWidth={1} borderRadius="$5">
+          <YStack rowGap="$1">
+            <Label htmlFor="under-construction" fontSize="$4">
               Under Construction
             </Label>
-            <p className="text-sm text-muted-foreground">
+            <Paragraph fontSize="$3" color="$color11">
               Show maintenance overlay on live deployment
-            </p>
-          </div>
+            </Paragraph>
+          </YStack>
           <Switch
             id="under-construction"
             checked={settings.underConstruction}
             onCheckedChange={(checked) => handleChange('underConstruction', checked)}
-          />
-        </div>
-      </div>
+  />
+        </XStack>
+      </YStack>
 
       {/* Source Project */}
       {projects && projects.length > 0 && onProjectChange && (
-        <div className="space-y-4">
+        <YStack rowGap="$4">
           <div>
-            <h3 className="text-lg font-medium mb-4">Source Project</h3>
+            <H3 fontSize="$6" fontWeight="500" marginBottom="$4">Source Project</H3>
           </div>
 
-          <div className="space-y-2">
+          <YStack rowGap="$2">
             <Label htmlFor="project-select">Project</Label>
             <Select value={projectId} onValueChange={onProjectChange}>
               <SelectTrigger id="project-select">
@@ -93,76 +94,76 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-xs text-muted-foreground">
+            <Paragraph fontSize="$1" color="$color11">
               The project whose files are published to this deployment.
-            </p>
-          </div>
+            </Paragraph>
+          </YStack>
 
           {projectId !== originalProjectId && (
-            <div className="flex items-start gap-3 p-3 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-              <AlertTriangle className="h-4 w-4 text-yellow-600 dark:text-yellow-400 mt-0.5 shrink-0" />
-              <div className="text-sm text-yellow-800 dark:text-yellow-200">
-                <p className="font-medium">Changing the source project may break the published deployment.</p>
-                <p className="mt-1 text-yellow-700 dark:text-yellow-300">
+            <XStack alignItems="flex-start" gap="$3" padding="$3" backgroundColor="$yellow1" borderWidth={1} borderColor="$yellow3" borderRadius="$5" $theme-dark={{ backgroundColor: "$yellow12", borderColor: "$yellow11" }}>
+              <AlertTriangle size={16} color="$yellow10" />
+              <SizableText fontSize="$3" color="$yellow11" display="flex" flexDirection="column" $theme-dark={{ color: "$yellow3" }}>
+                <Paragraph fontWeight="500">Changing the source project may break the published deployment.</Paragraph>
+                <Paragraph marginTop="$1" color="$yellow11" $theme-dark={{ color: "$yellow4" }}>
                   The new project may have different files and structure. You will need to republish after saving.
-                </p>
-              </div>
-            </div>
+                </Paragraph>
+              </SizableText>
+            </XStack>
           )}
-        </div>
+        </YStack>
       )}
 
       {/* Public URL */}
-      <div className="space-y-4">
+      <YStack rowGap="$4">
         <div>
-          <h3 className="text-lg font-medium mb-4">Public URL</h3>
+          <H3 fontSize="$6" fontWeight="500" marginBottom="$4">Public URL</H3>
         </div>
 
-        <div className="space-y-3">
-          <div className="space-y-2">
-            <Label className="text-xs text-muted-foreground">Public URL</Label>
-            <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-              <Globe className="h-4 w-4 text-muted-foreground" />
-              <code className="text-sm flex-1">{publicUrl}</code>
+        <YStack rowGap="$3">
+          <YStack rowGap="$2">
+            <Label fontSize="$1" color="$color11">Public URL</Label>
+            <XStack alignItems="center" gap="$2" padding="$3" backgroundColor="$color3" borderRadius="$5">
+              <Globe size={16} color="$color11" />
+              <SizableText fontSize="$3" flex={1}>{publicUrl}</SizableText>
               {settings.enabled && (
-                <Badge variant="default" className="ml-2">
+                <Badge variant="default" marginLeft="$2">
                   Live
                 </Badge>
               )}
               {!settings.enabled && (
-                <Badge variant="secondary" className="ml-2">
+                <Badge variant="secondary" marginLeft="$2">
                   Not Published
                 </Badge>
               )}
-            </div>
-            <p className="text-xs text-muted-foreground">
+            </XStack>
+            <Paragraph fontSize="$1" color="$color11">
               This is the public URL where your deployment will be accessible
-            </p>
-          </div>
+            </Paragraph>
+          </YStack>
 
           {/* Show Hanzo App path if custom domain is set */}
           {settings.customDomain && (
-            <div className="space-y-2">
-              <Label className="text-xs text-muted-foreground">Hanzo App Path (Debug)</Label>
-              <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg border border-dashed">
-                <Globe className="h-4 w-4 text-muted-foreground" />
-                <code className="text-xs flex-1 text-muted-foreground">{appUrl}</code>
-              </div>
-              <p className="text-xs text-muted-foreground">
+            <YStack rowGap="$2">
+              <Label fontSize="$1" color="$color11">Hanzo App Path (Debug)</Label>
+              <XStack alignItems="center" gap="$2" padding="$3" backgroundColor="$color3" borderRadius="$5" borderWidth={1} borderStyle="dashed">
+                <Globe size={16} color="$color11" />
+                <SizableText fontSize="$1" flex={1} color="$color11">{appUrl}</SizableText>
+              </XStack>
+              <Paragraph fontSize="$1" color="$color11">
                 Internal path used by reverse proxy. Map your custom domain to this URL.
-              </p>
-            </div>
+              </Paragraph>
+            </YStack>
           )}
-        </div>
-      </div>
+        </YStack>
+      </YStack>
 
       {/* Custom Domain */}
-      <div className="space-y-4">
+      <YStack rowGap="$4">
         <div>
-          <h3 className="text-lg font-medium mb-4">Custom Domain (Advanced)</h3>
+          <H3 fontSize="$6" fontWeight="500" marginBottom="$4">Custom Domain (Advanced)</H3>
         </div>
 
-        <div className="space-y-2">
+        <YStack rowGap="$2">
           <Label htmlFor="custom-domain">Domain Name (Optional)</Label>
           <Input
             id="custom-domain"
@@ -170,48 +171,48 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
             placeholder="example.com"
             value={settings.customDomain || ''}
             onChange={(e) => handleChange('customDomain', e.target.value || undefined)}
-          />
-          <p className="text-xs text-muted-foreground">
+  />
+          <Paragraph fontSize="$1" color="$color11">
             Enter your custom domain if you've configured a reverse proxy to point it to this deployment. This is used for SEO meta tags and sitemaps. See documentation for setup instructions.
-          </p>
-        </div>
-      </div>
+          </Paragraph>
+        </YStack>
+      </YStack>
 
       {/* Version Info */}
-      <div className="space-y-4">
+      <YStack rowGap="$4">
         <div>
-          <h3 className="text-lg font-medium mb-4">Version Information</h3>
+          <H3 fontSize="$6" fontWeight="500" marginBottom="$4">Version Information</H3>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="p-3 border rounded-lg">
-            <div className="text-sm text-muted-foreground mb-1">Current Version</div>
-            <div className="text-2xl font-medium">{settings.settingsVersion}</div>
-          </div>
-          <div className="p-3 border rounded-lg">
-            <div className="text-sm text-muted-foreground mb-1">Published Version</div>
-            <div className="text-2xl font-medium">
+        <YStack gap="$4">
+          <YStack padding="$3" borderWidth={1} borderRadius="$5">
+            <SizableText fontSize="$3" color="$color11" marginBottom="$1" display="flex" flexDirection="column">Current Version</SizableText>
+            <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{settings.settingsVersion}</SizableText>
+          </YStack>
+          <YStack padding="$3" borderWidth={1} borderRadius="$5">
+            <SizableText fontSize="$3" color="$color11" marginBottom="$1" display="flex" flexDirection="column">Published Version</SizableText>
+            <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">
               {settings.lastPublishedVersion !== null && settings.lastPublishedVersion !== undefined
                 ? settings.lastPublishedVersion
                 : '-'}
-            </div>
-          </div>
-        </div>
+            </SizableText>
+          </YStack>
+        </YStack>
 
         {settings.lastPublishedVersion !== undefined &&
           settings.settingsVersion > settings.lastPublishedVersion && (
-            <div className="p-3 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="bg-yellow-100 dark:bg-yellow-900">
+            <YStack padding="$3" backgroundColor="$yellow1" borderWidth={1} borderColor="$yellow3" borderRadius="$5" $theme-dark={{ backgroundColor: "$yellow12", borderColor: "$yellow11" }}>
+              <XStack alignItems="center" gap="$2">
+                <Badge variant="outline" backgroundColor="$yellow2" $theme-dark={{ backgroundColor: "$yellow12" }}>
                   Pending Changes
                 </Badge>
-                <span className="text-sm">
+                <SizableText fontSize="$3">
                   You have unpublished changes. Republish to apply them.
-                </span>
-              </div>
-            </div>
+                </SizableText>
+              </XStack>
+            </YStack>
           )}
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }

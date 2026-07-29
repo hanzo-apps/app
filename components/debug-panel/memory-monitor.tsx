@@ -1,5 +1,6 @@
 'use client';
 
+import { SizableText } from '@hanzo/gui';
 import { useState, useEffect } from 'react';
 
 interface MemoryInfo {
@@ -60,15 +61,15 @@ export function MemoryMonitor() {
   };
 
   return (
-    <div
-      className={`text-xs font-mono ${getColor()} flex items-center gap-1`}
+    <SizableText
+      fontSize="$1" fontFamily="$mono" alignItems="center" gap="$1" display="flex" flexDirection="row" className={`${getColor()}`}
       title={`JS Heap: ${memory.usedMB}MB used / ${memory.totalMB}MB limit (${memory.percent}%)`}
     >
-      <span className="opacity-60">MEM:</span>
+      <SizableText opacity={0.6}>MEM:</SizableText>
       <span>{memory.usedMB}MB</span>
       {memory.percent > 60 && (
-        <span className="opacity-60">({memory.percent}%)</span>
+        <SizableText opacity={0.6}>({memory.percent}%)</SizableText>
       )}
-    </div>
+    </SizableText>
   );
 }

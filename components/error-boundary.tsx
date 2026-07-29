@@ -1,5 +1,7 @@
 'use client';
 
+import { Button } from '@hanzo/ui';
+import { SizableText, H2, Paragraph } from '@hanzo/gui';
 import React, { Component, ReactNode } from 'react';
 import { AlertCircle } from 'lucide-react';
 
@@ -32,19 +34,19 @@ export class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return this.props.fallback || (
-        <div className="flex flex-col items-center justify-center min-h-[400px] p-8 text-center">
-          <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
-          <h2 className="text-xl font-medium mb-2">Something went wrong</h2>
-          <p className="text-muted-foreground mb-4">
+        <SizableText flexDirection="column" alignItems="center" justifyContent="center" minHeight={400} padding="$6" textAlign="center" display="flex">
+          <AlertCircle size={48} color="$red9" />
+          <H2 fontSize="$7" fontWeight="500" marginBottom="$2">Something went wrong</H2>
+          <Paragraph color="$color11" marginBottom="$4">
             {this.state.error?.message || 'An unexpected error occurred'}
-          </p>
-          <button
+          </Paragraph>
+          <Button
             onClick={() => this.setState({ hasError: false, error: null })}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+            paddingHorizontal="$4" paddingVertical="$2" backgroundColor="$color12" color="$background" borderRadius="$3" hoverStyle={{ backgroundColor: "$color12" }}
           >
             Try again
-          </button>
-        </div>
+          </Button>
+        </SizableText>
       );
     }
 

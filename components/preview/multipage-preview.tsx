@@ -1,5 +1,6 @@
 'use client';
 
+import { XStack, H3, YStack, SizableText, Paragraph } from '@hanzo/gui';
 import React, { useState, useEffect, useRef, useCallback, useMemo, forwardRef, useImperativeHandle } from 'react';
 import { VirtualServer } from '@/lib/preview/virtual-server';
 import {
@@ -24,7 +25,7 @@ import {
   Loader2,
   X
 } from 'lucide-react';
-import { cn, logger } from '@/lib/utils';
+import { logger } from '@/lib/utils';
 import { captureIframeScreenshot } from '@/lib/utils/screenshot';
 import type { ProjectRuntime } from '@/lib/vfs/types';
 
@@ -144,32 +145,32 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
   const scheduledCompileOptionsRef = useRef<{ preserve: boolean; showLoading: boolean } | null>(null);
 
   const Header = () => (
-    <div className="p-3 border-b bg-muted/70 flex items-center gap-2">
+    <XStack padding="$3" borderBottomWidth={1} backgroundColor="$color3" alignItems="center" gap="$2">
       <Eye 
-        className="h-4 w-4 md:hidden" 
+        size={16} 
         style={{ color: 'var(--brand-accent)' }} 
-      />
+  />
       {onClose ? (
-        <button
+        <Button
           type="button"
           onClick={onClose}
           aria-label="Hide preview"
-          className="relative hidden h-6 w-6 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-destructive md:flex group"
+          position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" color="$color11" group hoverStyle={{ color: "$red9" }}
         >
           <Eye 
-            className="h-4 w-4 transition-opacity group-hover:opacity-0" 
+            size={16} 
             style={{ color: 'var(--brand-accent)' }} 
-          />
-          <X className="absolute h-3 w-3 opacity-0 transition-opacity group-hover:opacity-100" />
-        </button>
+  />
+          <X size={12} />
+        </Button>
       ) : (
         <Eye 
-          className="hidden h-4 w-4 md:inline-flex" 
+          size={16} 
           style={{ color: 'var(--brand-accent)' }} 
-        />
+  />
       )}
-      <h3 className="text-sm font-medium">Live Preview</h3>
-    </div>
+      <H3 fontSize="$3" fontWeight="500">Live Preview</H3>
+    </XStack>
   );
 
   useEffect(() => {
@@ -811,106 +812,106 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
 
   if (loading) {
     return (
-      <div className="h-full flex flex-col">
+      <YStack height="100%">
         <Header />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center space-y-2">
-            <RefreshCw className="w-8 h-8 animate-spin mx-auto text-primary" />
-            <p className="text-muted-foreground">Compiling project...</p>
-          </div>
-        </div>
-      </div>
+        <XStack flex={1} alignItems="center" justifyContent="center">
+          <SizableText textAlign="center" rowGap="$2" display="flex" flexDirection="column">
+            <RefreshCw size={32} color="$color12" />
+            <Paragraph color="$color11">Compiling project...</Paragraph>
+          </SizableText>
+        </XStack>
+      </YStack>
     );
   }
 
   if (error) {
     return (
-      <div className="h-full flex flex-col">
+      <YStack height="100%">
         <Header />
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center text-destructive space-y-2">
-            <p className="font-medium">Error</p>
-            <p className="text-sm mt-2">{error}</p>
-            <Button onClick={handleRefresh} className="mt-4">
+        <XStack flex={1} alignItems="center" justifyContent="center">
+          <SizableText textAlign="center" color="$red9" rowGap="$2" display="flex" flexDirection="column">
+            <Paragraph fontWeight="500">Error</Paragraph>
+            <Paragraph fontSize="$3" marginTop="$2">{error}</Paragraph>
+            <Button onClick={handleRefresh} marginTop="$4">
               Try Again
             </Button>
-          </div>
-        </div>
-      </div>
+          </SizableText>
+        </XStack>
+      </YStack>
     );
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <YStack height="100%">
       <Header />
       {/* Mobile Layout - Single row with navigation and page selector */}
-      <div className="border-b p-2 flex items-center gap-2 md:hidden">
-        <div className="flex items-center gap-1">
+      <XStack borderBottomWidth={1} padding="$2" alignItems="center" gap="$2" $md={{ display: "none" }}>
+        <XStack alignItems="center" gap="$1">
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
+            height="$4.5" width="$4.5"
             onClick={handleBack}
             disabled={historyIndex === 0}
           >
-            <ChevronLeft className="h-3 w-3" />
+            <ChevronLeft size={12} />
           </Button>
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
+            height="$4.5" width="$4.5"
             onClick={handleForward}
             disabled={historyIndex >= navigationHistory.length - 1}
           >
-            <ChevronRight className="h-3 w-3" />
+            <ChevronRight size={12} />
           </Button>
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
+            height="$4.5" width="$4.5"
             onClick={handleHome}
           >
-            <Home className="h-3 w-3" />
+            <Home size={12} />
           </Button>
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
+            height="$4.5" width="$4.5"
             onClick={handleRefresh}
           >
-            <RefreshCw className="h-3 w-3" />
+            <RefreshCw size={12} />
           </Button>
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
+            height="$4.5" width="$4.5"
             onClick={() => setSelectorActive(prev => !prev)}
             disabled={!iframeReady}
             style={crosshairButtonStyle}
             title={selectorActive ? 'Cancel element selection' : hasFocusTarget ? 'Replace focused element' : 'Select element'}
             data-tour-id="focus-crosshair-button"
           >
-            <Crosshair className="h-3 w-3" />
+            <Crosshair size={12} />
           </Button>
           {onCaptureScreenshot && (
             <Button
               size="icon"
               variant="ghost"
-              className="h-5 w-5"
+              height="$4.5" width="$4.5"
               onClick={handleCaptureClick}
               disabled={!iframeReady || isCapturing}
               title="Capture screenshot as thumbnail"
             >
-              {isCapturing ? <Loader2 className="h-3 w-3 animate-spin" /> : <Camera className="h-3 w-3" />}
+              {isCapturing ? <Loader2 size={12} /> : <Camera size={12} />}
             </Button>
           )}
-        </div>
+        </XStack>
 
         {/* Page selector takes remaining space */}
         {compiledProject && compiledProject.routes.length > 1 && (
           <Select value={activePath} onValueChange={handleNavigation}>
-            <SelectTrigger className="flex-1 h-8 min-w-0 max-w-full">
-              <SelectValue className="truncate" />
+            <SelectTrigger flex={1} height="$6" minWidth={0} maxWidth="100%">
+              <SelectValue ellipse numberOfLines={1} />
             </SelectTrigger>
             <SelectContent>
               {compiledProject.routes.map(route => (
@@ -921,49 +922,49 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
             </SelectContent>
           </Select>
         )}
-      </div>
+      </XStack>
 
       {/* Desktop Layout - Single row */}
-      <div className="border-b p-2 hidden md:flex items-center gap-2">
-        <div className="flex items-center gap-1">
+      <YStack borderBottomWidth={1} padding="$2" display="none" alignItems="center" gap="$2">
+        <XStack alignItems="center" gap="$1">
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
+            height="$4.5" width="$4.5"
             onClick={handleBack}
             disabled={historyIndex === 0}
           >
-            <ChevronLeft className="h-3 w-3" />
+            <ChevronLeft size={12} />
           </Button>
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
+            height="$4.5" width="$4.5"
             onClick={handleForward}
             disabled={historyIndex >= navigationHistory.length - 1}
           >
-            <ChevronRight className="h-3 w-3" />
+            <ChevronRight size={12} />
           </Button>
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
+            height="$4.5" width="$4.5"
             onClick={handleHome}
           >
-            <Home className="h-3 w-3" />
+            <Home size={12} />
           </Button>
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
+            height="$4.5" width="$4.5"
             onClick={handleRefresh}
           >
-            <RefreshCw className="h-3 w-3" />
+            <RefreshCw size={12} />
           </Button>
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5"
+            height="$4.5" width="$4.5"
             onClick={() => setSelectorActive(prev => !prev)}
             disabled={!iframeReady}
             style={{
@@ -973,29 +974,29 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
             title={selectorActive ? 'Cancel element focus' : 'Select element'}
             data-tour-id="focus-crosshair-button"
           >
-            <Crosshair className="h-3 w-3" />
+            <Crosshair size={12} />
           </Button>
           {onCaptureScreenshot && (
             <Button
               size="icon"
               variant="ghost"
-              className="h-5 w-5"
+              height="$4.5" width="$4.5"
               onClick={handleCaptureClick}
               disabled={!iframeReady || isCapturing}
               title="Capture screenshot as thumbnail"
             >
-              {isCapturing ? <Loader2 className="h-3 w-3 animate-spin" /> : <Camera className="h-3 w-3" />}
+              {isCapturing ? <Loader2 size={12} /> : <Camera size={12} />}
             </Button>
           )}
-        </div>
+        </XStack>
 
-        <div className="flex-1 px-3 py-1 bg-muted rounded text-sm">
+        <SizableText flex={1} paddingHorizontal="$3" paddingVertical="$1" backgroundColor="$color3" borderRadius="$2" fontSize="$3" display="flex" flexDirection="column">
           {activePath}
-        </div>
+        </SizableText>
 
         {compiledProject && compiledProject.routes.length > 1 && (
           <Select value={activePath} onValueChange={handleNavigation}>
-            <SelectTrigger className="w-[200px] h-8">
+            <SelectTrigger width={200} height="$6">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -1008,53 +1009,50 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
           </Select>
         )}
 
-        <div className="flex items-center gap-1 border-l pl-2">
+        <XStack alignItems="center" gap="$1" borderLeftWidth={1} paddingLeft="$2">
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5 rounded-sm"
+            height="$4.5" width="$4.5" borderRadius="$1"
             style={{
               backgroundColor: deviceSize === 'mobile' ? 'var(--brand-accent)' : undefined,
               color: deviceSize === 'mobile' ? 'white' : undefined
             }}
             onClick={() => setDeviceSize('mobile')}
           >
-            <Smartphone className="h-3 w-3" />
+            <Smartphone size={12} />
           </Button>
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5 rounded-sm"
+            height="$4.5" width="$4.5" borderRadius="$1"
             style={{
               backgroundColor: deviceSize === 'tablet' ? 'var(--brand-accent)' : undefined,
               color: deviceSize === 'tablet' ? 'white' : undefined
             }}
             onClick={() => setDeviceSize('tablet')}
           >
-            <Tablet className="h-3 w-3" />
+            <Tablet size={12} />
           </Button>
           <Button
             size="icon"
             variant="ghost"
-            className="h-5 w-5 rounded-sm"
+            height="$4.5" width="$4.5" borderRadius="$1"
             style={{
               backgroundColor: deviceSize === 'desktop' ? 'var(--brand-accent)' : undefined,
               color: deviceSize === 'desktop' ? 'white' : undefined
             }}
             onClick={() => setDeviceSize('desktop')}
           >
-            <Monitor className="h-3 w-3" />
+            <Monitor size={12} />
           </Button>
-        </div>
-      </div>
+        </XStack>
+      </YStack>
 
       {/* Preview Frame */}
-      <div className="flex-1 bg-muted/20 dark:bg-muted/10 p-4 overflow-auto min-h-0">
-        <div 
-          className={cn(
-            "bg-white mx-auto shadow-2xl transition-all duration-300",
-            deviceSize !== 'responsive' && "rounded-lg"
-          )}
+      <YStack flex={1} backgroundColor="$color3" padding="$4" overflow="scroll" minHeight={0} $theme-dark={{ backgroundColor: "$color3" }}>
+        <YStack 
+          backgroundColor="white" alignSelf="center" elevation={6} {...{ borderRadius: deviceSize !== 'responsive' ? "$5" : undefined }}
           style={{
             width: DEVICE_SIZES[deviceSize].width || '100%',
             height: DEVICE_SIZES[deviceSize].height || '100%',
@@ -1077,10 +1075,10 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
             className="w-full h-full rounded-lg"
             sandbox="allow-scripts allow-same-origin allow-forms"
             title="Preview"
-          />
-        </div>
-      </div>
-    </div>
+  />
+        </YStack>
+      </YStack>
+    </YStack>
   );
 });
 

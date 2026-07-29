@@ -1,5 +1,6 @@
 "use client";
 
+import { SizableText, YStack, H1, Paragraph, H2, H3, XStack } from '@hanzo/gui';
 import { Button, Badge, Input, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import { Shield, Lock, Users, Zap, Globe, HeadphonesIcon, ArrowRight, CheckCircle2, Building } from "lucide-react";
 import Header from "@/components/layout/header";
@@ -9,148 +10,148 @@ import SiteFooter from "@/components/landing/site-footer";
 export default function EnterprisePage() {
   const features = [
     {
-      icon: <Shield className="w-6 h-6" />,
+      icon: <Shield size={24} />,
       title: "Enterprise Security",
       description: "End-to-end encryption, SAML SSO, and advanced access controls. SOC 2 Type II audit in progress."
     },
     {
-      icon: <Users className="w-6 h-6" />,
+      icon: <Users size={24} />,
       title: "Unlimited Team Members",
       description: "Scale your team without limits. Advanced role management and permissions"
     },
     {
-      icon: <Zap className="w-6 h-6" />,
+      icon: <Zap size={24} />,
       title: "Dedicated Infrastructure",
       description: "Isolated compute resources with guaranteed performance and 99.99% SLA"
     },
     {
-      icon: <Globe className="w-6 h-6" />,
+      icon: <Globe size={24} />,
       title: "Global Deployment",
       description: "Deploy to multiple regions with automatic failover and edge optimization"
     },
     {
-      icon: <Lock className="w-6 h-6" />,
+      icon: <Lock size={24} />,
       title: "Private AI Models",
       description: "Train and deploy custom models on your data with complete privacy"
     },
     {
-      icon: <HeadphonesIcon className="w-6 h-6" />,
+      icon: <HeadphonesIcon size={24} />,
       title: "24/7 Priority Support",
       description: "Dedicated support team with <1 hour response time and technical account manager"
     }
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
       <Header />
 
       {/* Hero Section */}
-      <section className="px-4 md:px-8 py-16 md:py-24 text-center">
-        <div className="max-w-4xl mx-auto">
-          <Badge className="mb-4 bg-primary text-primary-foreground border-0">
-            <Building className="w-4 h-4 mr-2" />
+      <SizableText paddingHorizontal="$4" paddingVertical="$10" textAlign="center" display="flex" flexDirection="column" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
+        <YStack maxWidth={896} alignSelf="center">
+          <Badge marginBottom="$4" backgroundColor="$color12" color="$background" borderWidth={0}>
+            <Building size={16} />
             Enterprise Ready
           </Badge>
-          <h1 className="text-4xl md:text-6xl font-medium mb-6 text-balance">
+          <H1 fontSize="$11" fontWeight="500" marginBottom="$5" $md={{ fontSize: "$13" }}>
             AI Development at
-            <span className="text-foreground">
+            <SizableText color="$color">
               {" "}Enterprise Scale
-            </span>
-          </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            </SizableText>
+          </H1>
+          <Paragraph fontSize="$7" color="$color11" marginBottom="$6" maxWidth={672} alignSelf="center">
             Build, deploy, and scale AI applications with enterprise-grade security, compliance, and dedicated support
-          </p>
-          <div className="flex flex-col sm:flex-row items-center gap-4 justify-center">
-            <Button size="lg" className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90">
+          </Paragraph>
+          <YStack alignItems="center" gap="$4" justifyContent="center" $sm={{ flexDirection: "row" }}>
+            <Button size="lg" width="100%" backgroundColor="$color12" color="$background" $sm={{ width: "auto" }} hoverStyle={{ backgroundColor: "$color12" }}>
               Schedule Demo
-              <ArrowRight className="ml-2 w-5 h-5" />
+              <ArrowRight size={20} />
             </Button>
-            <Button size="lg" variant="outline" className="w-full sm:w-auto border-border text-foreground hover:bg-accent">
+            <Button size="lg" variant="outline" width="100%" borderColor="$borderColor" color="$color" $sm={{ width: "auto" }} hoverStyle={{ backgroundColor: "$color3" }}>
               Download Whitepaper
             </Button>
-          </div>
-        </div>
-      </section>
+          </YStack>
+        </YStack>
+      </SizableText>
 
       {/* Trust Section — real Techstars '17 + infra-partner proof (shared with landing) */}
       <LogoWall />
 
       {/* Features Grid */}
-      <section className="px-4 md:px-8 py-20">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-medium mb-4">
+      <YStack paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6" }}>
+        <YStack maxWidth={1280} alignSelf="center">
+          <SizableText textAlign="center" marginBottom="$10" display="flex" flexDirection="column">
+            <H2 fontSize="$10" fontWeight="500" marginBottom="$4" $md={{ fontSize: "$11" }}>
               Everything you need for enterprise AI
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            </H2>
+            <Paragraph fontSize="$6" color="$color11" maxWidth={672} alignSelf="center">
               Built from the ground up with enterprise requirements in mind
-            </p>
-          </div>
+            </Paragraph>
+          </SizableText>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <YStack gap="$6">
             {features.map(feature => (
-              <div key={feature.title} className="bg-muted rounded-2xl p-8 border border-border hover:border-violet-500/50 transition-all">
-                <div className="p-3 bg-gradient-to-br from-violet-500/20 to-purple-500/20 rounded-xl inline-block mb-6">
+              <YStack key={feature.title} backgroundColor="$color3" borderRadius="$8" padding="$6" borderWidth={1} borderColor="$borderColor" hoverStyle={{ borderColor: "$purple9" }}>
+                <YStack padding="$3" borderRadius="$6" marginBottom="$5">
                   {feature.icon}
-                </div>
-                <h3 className="text-xl font-medium mb-3">{feature.title}</h3>
-                <p className="text-muted-foreground">{feature.description}</p>
-              </div>
+                </YStack>
+                <H3 fontSize="$7" fontWeight="500" marginBottom="$3">{feature.title}</H3>
+                <Paragraph color="$color11">{feature.description}</Paragraph>
+              </YStack>
             ))}
-          </div>
-        </div>
-      </section>
+          </YStack>
+        </YStack>
+      </YStack>
 
       {/* Security & Compliance */}
-      <section className="px-4 md:px-8 py-20 bg-gradient-to-b from-transparent via-violet-950/10 to-transparent">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+      <YStack paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6" }}>
+        <YStack maxWidth={1280} alignSelf="center">
+          <YStack gap="$10" alignItems="center">
             <div>
-              <Badge className="mb-4 bg-violet-500/20 text-violet-400 border-violet-500/30">
+              <Badge marginBottom="$4" backgroundColor="$purple9" color="$purple8" borderColor="$purple9">
                 Security First
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-medium mb-6">
+              <H2 fontSize="$10" fontWeight="500" marginBottom="$5" $md={{ fontSize: "$11" }}>
                 Bank-grade security & compliance
-              </h2>
-              <p className="text-lg text-muted-foreground mb-8">
+              </H2>
+              <Paragraph fontSize="$6" color="$color11" marginBottom="$6">
                 We take security seriously so you can focus on building amazing products
-              </p>
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
+              </Paragraph>
+              <YStack rowGap="$4">
+                <XStack alignItems="flex-start" gap="$3">
+                  <CheckCircle2 size={24} color="$green8" />
                   <div>
-                    <div className="font-medium mb-1">SOC 2 Type II — Audit in Progress</div>
-                    <div className="text-sm text-muted-foreground">Independent Type II audit underway; report available under NDA on completion</div>
+                    <SizableText fontWeight="500" marginBottom="$1" display="flex" flexDirection="column">SOC 2 Type II — Audit in Progress</SizableText>
+                    <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">Independent Type II audit underway; report available under NDA on completion</SizableText>
                   </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
+                </XStack>
+                <XStack alignItems="flex-start" gap="$3">
+                  <CheckCircle2 size={24} color="$green8" />
                   <div>
-                    <div className="font-medium mb-1">GDPR & CCPA Compliant</div>
-                    <div className="text-sm text-muted-foreground">Full compliance with global data privacy regulations</div>
+                    <SizableText fontWeight="500" marginBottom="$1" display="flex" flexDirection="column">GDPR & CCPA Compliant</SizableText>
+                    <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">Full compliance with global data privacy regulations</SizableText>
                   </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
+                </XStack>
+                <XStack alignItems="flex-start" gap="$3">
+                  <CheckCircle2 size={24} color="$green8" />
                   <div>
-                    <div className="font-medium mb-1">SSO, RBAC & Audit Logs</div>
-                    <div className="text-sm text-muted-foreground">SAML single sign-on, role-based access control, and a full audit trail</div>
+                    <SizableText fontWeight="500" marginBottom="$1" display="flex" flexDirection="column">SSO, RBAC & Audit Logs</SizableText>
+                    <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">SAML single sign-on, role-based access control, and a full audit trail</SizableText>
                   </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" />
+                </XStack>
+                <XStack alignItems="flex-start" gap="$3">
+                  <CheckCircle2 size={24} color="$green8" />
                   <div>
-                    <div className="font-medium mb-1">End-to-end Encryption</div>
-                    <div className="text-sm text-muted-foreground">Your data is encrypted at rest and in transit</div>
+                    <SizableText fontWeight="500" marginBottom="$1" display="flex" flexDirection="column">End-to-end Encryption</SizableText>
+                    <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">Your data is encrypted at rest and in transit</SizableText>
                   </div>
-                </div>
-              </div>
+                </XStack>
+              </YStack>
             </div>
-            <div className="bg-muted rounded-2xl p-8 border border-border">
-              <h3 className="text-2xl font-medium mb-6">Get a custom quote</h3>
-              <p className="text-muted-foreground mb-8">
+            <YStack backgroundColor="$color3" borderRadius="$8" padding="$6" borderWidth={1} borderColor="$borderColor">
+              <H3 fontSize="$8" fontWeight="500" marginBottom="$5">Get a custom quote</H3>
+              <Paragraph color="$color11" marginBottom="$6">
                 Tell us about your needs and we'll create a custom plan for your organization
-              </p>
+              </Paragraph>
               {/* This form used to run its own control spec, and got five controls
                   onto four of them: two 49px hand-rolled inputs, a 46px NATIVE
                   <select> painting a raw OS chevron and OS menu beside Radix-quality
@@ -158,7 +159,7 @@ export default function EnterprisePage() {
                   was `focus:border-violet-500/50`, which the monochrome sweep
                   neutralises to a grey barely distinct from the resting border. All
                   five are now the ONE control. */}
-              <form className="space-y-4">
+              <YStack rowGap="$4">
                 <Input type="text" placeholder="Company Name" />
                 <Input type="email" placeholder="Work Email" />
                 <Select>
@@ -179,30 +180,30 @@ export default function EnterprisePage() {
                     Button kept the near-black foreground that was picked for its
                     WHITE default fill — leaving the page's primary CTA at 1.10:1.
                     Its sibling, which never hand-painted, measures 19.80:1. */}
-                <Button className="w-full">Contact Sales Team</Button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </section>
+                <Button width="100%">Contact Sales Team</Button>
+              </YStack>
+            </YStack>
+          </YStack>
+        </YStack>
+      </YStack>
 
       {/* CTA Section */}
-      <section className="px-4 md:px-8 py-20 text-center">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-medium mb-6">
+      <SizableText paddingHorizontal="$4" paddingVertical="$11" textAlign="center" display="flex" flexDirection="column" $md={{ paddingHorizontal: "$6" }}>
+        <YStack maxWidth={896} alignSelf="center">
+          <H2 fontSize="$10" fontWeight="500" marginBottom="$5" $md={{ fontSize: "$11" }}>
             Ready to transform your business with AI?
-          </h2>
-          <p className="text-xl text-muted-foreground mb-8">
+          </H2>
+          <Paragraph fontSize="$7" color="$color11" marginBottom="$6">
             Join leading companies using Hanzo to build the future
-          </p>
-          <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
+          </Paragraph>
+          <Button size="lg" backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
             Schedule Enterprise Demo
-            <ArrowRight className="ml-2 w-5 h-5" />
+            <ArrowRight size={20} />
           </Button>
-        </div>
-      </section>
+        </YStack>
+      </SizableText>
 
       <SiteFooter />
-    </div>
+    </SizableText>
   );
 }

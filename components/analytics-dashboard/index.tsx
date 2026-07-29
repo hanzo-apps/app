@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { XStack, SizableText, YStack, Paragraph, H3 } from '@hanzo/gui';
+import { useState, useEffect } from 'react';
 import { Deployment } from '@/lib/vfs/types';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Button, Tabs, TabsContent, TabsList, TabsTrigger, toast } from '@hanzo/ui';
 import { HeatmapViewer } from '@/components/heatmap-viewer';
 import { SessionViewer } from '@/components/session-viewer';
 import { EngagementMetrics } from '@/components/engagement-metrics';
-import { X, BarChart3, MousePointerClick, Users, Activity, Download, Trash2 } from 'lucide-react';
+import { BarChart3, MousePointerClick, Users, Activity, Download, Trash2 } from 'lucide-react';
 
 interface AnalyticsDashboardProps {
   deployment: Deployment;
@@ -183,200 +184,200 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[64rem] h-[90vh] p-0 flex flex-col">
-        <div className="border-b px-6 py-4 flex items-center justify-between">
-          <DialogHeader className="space-y-1">
-            <DialogTitle className="text-2xl">Analytics Dashboard</DialogTitle>
+      <DialogContent maxWidth="64rem" height="90vh" padding="$0" flexDirection="column">
+        <XStack borderBottomWidth={1} paddingHorizontal="$5" paddingVertical="$4" alignItems="center" justifyContent="space-between">
+          <DialogHeader rowGap="$1">
+            <DialogTitle fontSize="$8">Analytics Dashboard</DialogTitle>
             <DialogDescription>{deployment.name || deployment.id}</DialogDescription>
           </DialogHeader>
-          <div className="flex items-center gap-2">
+          <XStack alignItems="center" gap="$2">
             <Button variant="outline" size="sm" onClick={handleExport} disabled={notPublished}>
-              <Download className="h-4 w-4 mr-2" />
+              <Download size={16} />
               Export
             </Button>
             <Button variant="outline" size="sm" onClick={handleClearData} disabled={notPublished}>
-              <Trash2 className="h-4 w-4 mr-2" />
+              <Trash2 size={16} />
               Clear Data
             </Button>
-          </div>
-        </div>
+          </XStack>
+        </XStack>
 
         {storage && (
-        <div className="border-b px-6 py-2 bg-muted/50 text-sm">
-          <span className="text-muted-foreground">Storage:</span>{' '}
-          <span className="font-medium">{storage.totalMB.toFixed(2)} MB</span>
+        <SizableText borderBottomWidth={1} paddingHorizontal="$5" paddingVertical="$2" backgroundColor="$color3" fontSize="$3" display="flex" flexDirection="column">
+          <SizableText color="$color11">Storage:</SizableText>{' '}
+          <SizableText fontWeight="500">{storage.totalMB.toFixed(2)} MB</SizableText>
           {' • '}
-          <span className="text-muted-foreground">Pageviews:</span>{' '}
-          <span className="font-medium">{storage.breakdown.pageviews.count.toLocaleString()}</span>
+          <SizableText color="$color11">Pageviews:</SizableText>{' '}
+          <SizableText fontWeight="500">{storage.breakdown.pageviews.count.toLocaleString()}</SizableText>
           {' • '}
-          <span className="text-muted-foreground">Interactions:</span>{' '}
-          <span className="font-medium">{storage.breakdown.interactions.count.toLocaleString()}</span>
+          <SizableText color="$color11">Interactions:</SizableText>{' '}
+          <SizableText fontWeight="500">{storage.breakdown.interactions.count.toLocaleString()}</SizableText>
           {' • '}
-          <span className="text-muted-foreground">Sessions:</span>{' '}
-          <span className="font-medium">{storage.breakdown.sessions.count.toLocaleString()}</span>
-        </div>
+          <SizableText color="$color11">Sessions:</SizableText>{' '}
+          <SizableText fontWeight="500">{storage.breakdown.sessions.count.toLocaleString()}</SizableText>
+        </SizableText>
       )}
 
-      <div className="flex-1 overflow-auto">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-          <div className="border-b px-6">
+      <YStack flex={1} overflow="scroll">
+        <Tabs value={activeTab} onValueChange={setActiveTab} height="100%" flexDirection="column">
+          <YStack borderBottomWidth={1} paddingHorizontal="$5">
             <TabsList>
               <TabsTrigger value="overview">
-                <BarChart3 className="h-4 w-4 mr-2" />
+                <BarChart3 size={16} />
                 Overview
               </TabsTrigger>
               <TabsTrigger value="heatmaps">
-                <MousePointerClick className="h-4 w-4 mr-2" />
+                <MousePointerClick size={16} />
                 Heatmaps
               </TabsTrigger>
               <TabsTrigger value="sessions">
-                <Users className="h-4 w-4 mr-2" />
+                <Users size={16} />
                 Sessions
               </TabsTrigger>
               <TabsTrigger value="engagement">
-                <Activity className="h-4 w-4 mr-2" />
+                <Activity size={16} />
                 Engagement
               </TabsTrigger>
             </TabsList>
-          </div>
+          </YStack>
 
-          <div className="flex-1 overflow-auto">
-            <TabsContent value="overview" className="p-6 space-y-6">
+          <YStack flex={1} overflow="scroll">
+            <TabsContent value="overview" padding="$5" rowGap="$5">
               {loading && (
-                <div className="flex items-center justify-center h-96">
-                  <p className="text-muted-foreground">Loading analytics...</p>
-                </div>
+                <XStack alignItems="center" justifyContent="center" height={384}>
+                  <Paragraph color="$color11">Loading analytics...</Paragraph>
+                </XStack>
               )}
 
               {!loading && notPublished && (
-                <div className="flex flex-col items-center justify-center h-96 text-center">
-                  <BarChart3 className="h-16 w-16 text-muted-foreground/50 mb-4" />
-                  <h3 className="text-lg font-medium mb-2">Analytics Not Available</h3>
-                  <p className="text-muted-foreground max-w-md">
+                <SizableText flexDirection="column" alignItems="center" justifyContent="center" height={384} textAlign="center" display="flex">
+                  <BarChart3 size={64} color="$color11" />
+                  <H3 fontSize="$6" fontWeight="500" marginBottom="$2">Analytics Not Available</H3>
+                  <Paragraph color="$color11" maxWidth={448}>
                     Analytics data will be available after you publish your deployment for the first time.
                     The analytics database is created when the deployment is published.
-                  </p>
-                </div>
+                  </Paragraph>
+                </SizableText>
               )}
 
               {!loading && !notPublished && overview && (
                 <>
-                  <div className="grid grid-cols-4 gap-4">
-                    <div className="border rounded-lg p-4">
-                      <div className="text-sm text-muted-foreground">Total Pageviews</div>
-                      <div className="text-2xl font-medium">{overview.totalPageviews.toLocaleString()}</div>
-                    </div>
-                    <div className="border rounded-lg p-4">
-                      <div className="text-sm text-muted-foreground">Unique Visitors</div>
-                      <div className="text-2xl font-medium">{overview.uniqueVisitors.toLocaleString()}</div>
-                    </div>
-                    <div className="border rounded-lg p-4">
-                      <div className="text-sm text-muted-foreground">Avg. Time on Site</div>
-                      <div className="text-2xl font-medium">{formatDuration(overview.averageTimeOnSite)}</div>
-                    </div>
-                    <div className="border rounded-lg p-4">
-                      <div className="text-sm text-muted-foreground">Bounce Rate</div>
-                      <div className="text-2xl font-medium">{(overview.bounceRate * 100).toFixed(1)}%</div>
-                    </div>
-                  </div>
+                  <YStack gap="$4">
+                    <YStack borderWidth={1} borderRadius="$5" padding="$4">
+                      <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">Total Pageviews</SizableText>
+                      <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{overview.totalPageviews.toLocaleString()}</SizableText>
+                    </YStack>
+                    <YStack borderWidth={1} borderRadius="$5" padding="$4">
+                      <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">Unique Visitors</SizableText>
+                      <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{overview.uniqueVisitors.toLocaleString()}</SizableText>
+                    </YStack>
+                    <YStack borderWidth={1} borderRadius="$5" padding="$4">
+                      <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">Avg. Time on Site</SizableText>
+                      <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{formatDuration(overview.averageTimeOnSite)}</SizableText>
+                    </YStack>
+                    <YStack borderWidth={1} borderRadius="$5" padding="$4">
+                      <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">Bounce Rate</SizableText>
+                      <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{(overview.bounceRate * 100).toFixed(1)}%</SizableText>
+                    </YStack>
+                  </YStack>
 
-                  <div className="border rounded-lg p-4">
-                    <h3 className="font-medium mb-4">Top Pages</h3>
-                    <div className="space-y-2">
+                  <YStack borderWidth={1} borderRadius="$5" padding="$4">
+                    <H3 fontWeight="500" marginBottom="$4">Top Pages</H3>
+                    <YStack rowGap="$2">
                       {overview.topPages.map((page) => (
-                        <div key={page.page} className="flex justify-between items-center">
-                          <span className="text-sm truncate flex-1">{page.page}</span>
-                          <span className="text-sm font-medium ml-4">{page.views.toLocaleString()}</span>
-                        </div>
+                        <XStack key={page.page} justifyContent="space-between" alignItems="center">
+                          <SizableText fontSize="$3" numberOfLines={1} flex={1}>{page.page}</SizableText>
+                          <SizableText fontSize="$3" fontWeight="500" marginLeft="$4">{page.views.toLocaleString()}</SizableText>
+                        </XStack>
                       ))}
-                    </div>
-                  </div>
+                    </YStack>
+                  </YStack>
 
-                  <div className="border rounded-lg p-4">
-                    <h3 className="font-medium mb-4">Top Referrers</h3>
-                    <div className="space-y-2">
+                  <YStack borderWidth={1} borderRadius="$5" padding="$4">
+                    <H3 fontWeight="500" marginBottom="$4">Top Referrers</H3>
+                    <YStack rowGap="$2">
                       {overview.topReferrers.map((referrer) => (
-                        <div key={referrer.referrer} className="flex justify-between items-center">
-                          <span className="text-sm truncate flex-1">
+                        <XStack key={referrer.referrer} justifyContent="space-between" alignItems="center">
+                          <SizableText fontSize="$3" numberOfLines={1} flex={1}>
                             {referrer.referrer || '(Direct)'}
-                          </span>
-                          <span className="text-sm font-medium ml-4">{referrer.count.toLocaleString()}</span>
-                        </div>
+                          </SizableText>
+                          <SizableText fontSize="$3" fontWeight="500" marginLeft="$4">{referrer.count.toLocaleString()}</SizableText>
+                        </XStack>
                       ))}
-                    </div>
-                  </div>
+                    </YStack>
+                  </YStack>
 
-                  <div className="border rounded-lg p-4">
-                    <h3 className="font-medium mb-4">Device Breakdown</h3>
-                    <div className="space-y-2">
+                  <YStack borderWidth={1} borderRadius="$5" padding="$4">
+                    <H3 fontWeight="500" marginBottom="$4">Device Breakdown</H3>
+                    <YStack rowGap="$2">
                       {Object.entries(overview.deviceBreakdown).map(([device, count]) => {
                         const total = Object.values(overview.deviceBreakdown).reduce((sum, c) => sum + c, 0);
                         const percentage = total > 0 ? (count / total) * 100 : 0;
 
                         return (
                           <div key={device}>
-                            <div className="flex justify-between text-sm mb-1">
-                              <span className="capitalize">{device}</span>
-                              <span className="text-muted-foreground">
+                            <SizableText justifyContent="space-between" fontSize="$3" marginBottom="$1" display="flex" flexDirection="row">
+                              <SizableText textTransform="capitalize">{device}</SizableText>
+                              <SizableText color="$color11">
                                 {count.toLocaleString()} ({percentage.toFixed(1)}%)
-                              </span>
-                            </div>
-                            <div className="h-6 bg-muted rounded overflow-hidden">
-                              <div className="h-full bg-primary" style={{ width: `${percentage}%` }} />
-                            </div>
+                              </SizableText>
+                            </SizableText>
+                            <YStack height="$5" backgroundColor="$color3" borderRadius="$2" overflow="hidden">
+                              <YStack height="100%" backgroundColor="$color12" style={{ width: `${percentage}%` }} />
+                            </YStack>
                           </div>
                         );
                       })}
-                    </div>
-                  </div>
+                    </YStack>
+                  </YStack>
                 </>
               )}
             </TabsContent>
 
-            <TabsContent value="heatmaps" className="p-6">
+            <TabsContent value="heatmaps" padding="$5">
               {notPublished ? (
-                <div className="flex flex-col items-center justify-center h-96 text-center">
-                  <MousePointerClick className="h-16 w-16 text-muted-foreground/50 mb-4" />
-                  <h3 className="text-lg font-medium mb-2">Heatmaps Not Available</h3>
-                  <p className="text-muted-foreground max-w-md">
+                <SizableText flexDirection="column" alignItems="center" justifyContent="center" height={384} textAlign="center" display="flex">
+                  <MousePointerClick size={64} color="$color11" />
+                  <H3 fontSize="$6" fontWeight="500" marginBottom="$2">Heatmaps Not Available</H3>
+                  <Paragraph color="$color11" maxWidth={448}>
                     Heatmap data will be collected after you publish your deployment.
-                  </p>
-                </div>
+                  </Paragraph>
+                </SizableText>
               ) : (
                 <HeatmapViewer deploymentId={deployment.id} pages={pages} />
               )}
             </TabsContent>
 
-            <TabsContent value="sessions" className="p-6">
+            <TabsContent value="sessions" padding="$5">
               {notPublished ? (
-                <div className="flex flex-col items-center justify-center h-96 text-center">
-                  <Users className="h-16 w-16 text-muted-foreground/50 mb-4" />
-                  <h3 className="text-lg font-medium mb-2">Sessions Not Available</h3>
-                  <p className="text-muted-foreground max-w-md">
+                <SizableText flexDirection="column" alignItems="center" justifyContent="center" height={384} textAlign="center" display="flex">
+                  <Users size={64} color="$color11" />
+                  <H3 fontSize="$6" fontWeight="500" marginBottom="$2">Sessions Not Available</H3>
+                  <Paragraph color="$color11" maxWidth={448}>
                     Session data will be collected after you publish your deployment.
-                  </p>
-                </div>
+                  </Paragraph>
+                </SizableText>
               ) : (
                 <SessionViewer deploymentId={deployment.id} />
               )}
             </TabsContent>
 
-            <TabsContent value="engagement" className="p-6">
+            <TabsContent value="engagement" padding="$5">
               {notPublished ? (
-                <div className="flex flex-col items-center justify-center h-96 text-center">
-                  <Activity className="h-16 w-16 text-muted-foreground/50 mb-4" />
-                  <h3 className="text-lg font-medium mb-2">Engagement Metrics Not Available</h3>
-                  <p className="text-muted-foreground max-w-md">
+                <SizableText flexDirection="column" alignItems="center" justifyContent="center" height={384} textAlign="center" display="flex">
+                  <Activity size={64} color="$color11" />
+                  <H3 fontSize="$6" fontWeight="500" marginBottom="$2">Engagement Metrics Not Available</H3>
+                  <Paragraph color="$color11" maxWidth={448}>
                     Engagement data will be collected after you publish your deployment.
-                  </p>
-                </div>
+                  </Paragraph>
+                </SizableText>
               ) : (
                 <EngagementMetrics deploymentId={deployment.id} />
               )}
             </TabsContent>
-          </div>
+          </YStack>
         </Tabs>
-        </div>
+        </YStack>
       </DialogContent>
     </Dialog>
   );

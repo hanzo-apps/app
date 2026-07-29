@@ -1,3 +1,6 @@
+'use client';
+
+import { SizableText, YStack, XStack, H1, Paragraph, Anchor } from '@hanzo/gui';
 // The readable build — the agent session that produced a product, turn by turn.
 //
 // A visitor lands here from a product and follows how it was actually made: the
@@ -72,145 +75,145 @@ export function BuildTranscript({ build }: { build: Build }) {
   const bound = build.turns.filter((t) => t.commit).length;
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute left-1/2 top-[-14%] h-[520px] w-[860px] -translate-x-1/2 rounded-full bg-foreground/[0.05] blur-[130px]" />
-      </div>
+    <SizableText position="relative" minHeight="100%" backgroundColor="$background" color="$color" overflow="hidden" display="flex" flexDirection="column">
+      <YStack pointerEvents="none" position="fixed" top={0} right={0} bottom={0} left={0} zIndex={0} overflow="hidden">
+        <YStack position="absolute" left="50%" top="-14%" height={520} width={860} x="50%" borderRadius="$10" backgroundColor="$color" />
+      </YStack>
 
       <Header />
 
-      <main className="relative z-10">
-        <section className="px-4 pt-9 md:px-8 md:pt-14">
-          <div className="mx-auto max-w-4xl">
+      <YStack position="relative" zIndex={10}>
+        <YStack paddingHorizontal="$4" paddingTop={36} $md={{ paddingHorizontal: "$6", paddingTop: "$9" }}>
+          <YStack alignSelf="center" maxWidth={896}>
             <nav aria-label="Breadcrumb">
-              <ol className="flex flex-wrap items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+              <SizableText flexWrap="wrap" alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.24} color="$color11" display="flex" flexDirection="row">
                 <li>
-                  <Link href="/builds" className="transition-colors hover:text-foreground">
+                  <Link href="/builds"><XStack hoverStyle={{ color: "$color" }}>
                     Builds
-                  </Link>
+                  </XStack></Link>
                 </li>
                 <li aria-hidden="true">
-                  <ChevronRight className="h-3 w-3 text-muted-foreground" />
+                  <ChevronRight size={12} color="$color11" />
                 </li>
                 <li>{build.org}</li>
                 <li aria-hidden="true">
-                  <ChevronRight className="h-3 w-3 text-muted-foreground" />
+                  <ChevronRight size={12} color="$color11" />
                 </li>
-                <li className="text-foreground">{build.project}</li>
-              </ol>
+                <SizableText color="$color">{build.project}</SizableText>
+              </SizableText>
             </nav>
 
-            <h1 className="mt-8 text-balance text-3xl font-medium leading-[1.08] tracking-tight sm:text-4xl">
+            <H1 marginTop="$6" fontSize="$10" fontWeight="500" lineHeight={1.08} letterSpacing={-0.4} $sm={{ fontSize: "$11" }}>
               {build.title || `How ${build.project} was built`}
-            </h1>
+            </H1>
 
-            <div className="mt-5 flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted px-3 py-1 font-mono text-[11px] text-muted-foreground">
+            <XStack marginTop="$4.5" flexWrap="wrap" alignItems="center" gap="$2">
+              <SizableText alignItems="center" gap="$1.5" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1" fontFamily="$mono" fontSize={11} color="$color11">
                 {build.agent}
-              </span>
+              </SizableText>
               {build.model ? (
-                <span className="inline-flex items-center rounded-full border border-border bg-muted px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+                <SizableText alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color11">
                   {build.model}
-                </span>
+                </SizableText>
               ) : null}
-              <span className="inline-flex items-center rounded-full border border-border bg-muted px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+              <SizableText alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color11">
                 {build.turns.length} turns
-              </span>
-              <span className="inline-flex items-center rounded-full border border-border bg-muted px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+              </SizableText>
+              <SizableText alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color11">
                 {bound} commits
-              </span>
-            </div>
+              </SizableText>
+            </XStack>
 
             {/* The claim and how to check it, side by side. */}
-            <div className="mt-8 rounded-xl border border-border bg-muted/40 p-4">
-              <p className={EYEBROW}>Verify</p>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            <YStack marginTop="$6" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$4">
+              <Paragraph className={`${EYEBROW}`}>Verify</Paragraph>
+              <Paragraph marginTop="$2" fontSize="$3" lineHeight={1.625} color="$color11">
                 Every commit below is bound to its turn by a git trailer or note on the
                 commit itself — not by a table on our side. Re-derive all of them:
-              </p>
-              <pre className="mt-3 overflow-x-auto rounded-lg border border-border bg-background p-3 font-mono text-[11px] text-muted-foreground">
+              </Paragraph>
+              <SizableText marginTop="$3" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$3" fontFamily="$mono" fontSize={11} color="$color11" overflow="scroll" whiteSpace="pre">
                 {build.verify}
-              </pre>
+              </SizableText>
               {build.repo ? (
-                <a
+                <Anchor
                   href={build.repo}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-3 inline-flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+                  marginTop="$3" alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={11} color="$color11" hoverStyle={{ color: "$color" }}
                 >
                   {build.repo}
-                  <ArrowUpRight className="h-3 w-3" />
-                </a>
+                  <ArrowUpRight size={12} />
+                </Anchor>
               ) : null}
-            </div>
-          </div>
-        </section>
+            </YStack>
+          </YStack>
+        </YStack>
 
         {/* ── The session ──────────────────────────────────────── */}
-        <section className="px-4 py-16 md:px-8 md:py-20">
-          <div className="mx-auto max-w-4xl">
-            <ol className="relative border-l border-border pl-6">
+        <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
+          <YStack alignSelf="center" maxWidth={896}>
+            <YStack position="relative" borderLeftWidth={1} borderColor="$borderColor" paddingLeft="$5">
               {build.turns.map((t) => {
                 const cmd = t.commit ? forkCommand(build.repo, t.commit) : null;
                 const isUser = t.actor === "user" || t.kind === "message" && t.actor === "user";
                 return (
-                  <li key={t.turn} className="relative pb-10 last:pb-0">
-                    <span className="absolute -left-[31px] flex h-5 w-5 items-center justify-center rounded-full border border-border bg-background">
+                  <SizableText key={t.turn} position="relative" paddingBottom="$7" className="last:pb-0">
+                    <SizableText position="absolute" left={-31} height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background">
                       {isUser ? (
-                        <User className="h-2.5 w-2.5 text-muted-foreground" />
+                        <User size={10} color="$color11" />
                       ) : t.kind === "status" ? (
-                        <Terminal className="h-2.5 w-2.5 text-muted-foreground" />
+                        <Terminal size={10} color="$color11" />
                       ) : (
-                        <Bot className="h-2.5 w-2.5 text-muted-foreground" />
+                        <Bot size={10} color="$color11" />
                       )}
-                    </span>
+                    </SizableText>
 
-                    <div className="flex flex-wrap items-baseline gap-2">
-                      <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+                    <XStack flexWrap="wrap" alignItems="baseline" gap="$2">
+                      <SizableText fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.24} color="$color11">
                         Turn {t.turn}
-                      </span>
+                      </SizableText>
                       {t.actor ? (
-                        <span className="font-mono text-[11px] text-muted-foreground/70">
+                        <SizableText fontFamily="$mono" fontSize={11} color="$color11">
                           {t.actor}
-                        </span>
+                        </SizableText>
                       ) : null}
                       <time className="font-mono text-[11px] text-muted-foreground/70">{t.at}</time>
-                    </div>
+                    </XStack>
 
-                    <div className="mt-2">
+                    <YStack marginTop="$2">
                       <TurnBody text={t.body} />
-                    </div>
+                    </YStack>
 
                     {t.commit ? (
-                      <div className="mt-4 rounded-lg border border-border bg-muted/40 p-3">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <GitCommit className="h-3.5 w-3.5 text-muted-foreground" />
-                          <code className="font-mono text-[11px] text-foreground">
+                      <YStack marginTop="$4" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$3">
+                        <XStack flexWrap="wrap" alignItems="center" gap="$2">
+                          <GitCommit size={14} color="$color11" />
+                          <SizableText fontFamily="$mono" fontSize={11} color="$color">
                             {t.commit.slice(0, 12)}
-                          </code>
+                          </SizableText>
                           {t.subject ? (
-                            <span className="text-sm text-muted-foreground">{t.subject}</span>
+                            <SizableText fontSize="$3" color="$color11">{t.subject}</SizableText>
                           ) : null}
-                        </div>
+                        </XStack>
                         {cmd ? (
                           <>
-                            <p className={`${EYEBROW} mt-3`}>Fork from here</p>
-                            <pre className="mt-1.5 overflow-x-auto rounded border border-border bg-background p-2.5 font-mono text-[11px] text-muted-foreground">
+                            <Paragraph marginTop="$3" className={`${EYEBROW}`}>Fork from here</Paragraph>
+                            <SizableText marginTop="$1.5" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$2.5" fontFamily="$mono" fontSize={11} color="$color11" overflow="scroll" whiteSpace="pre">
                               {cmd}
-                            </pre>
+                            </SizableText>
                           </>
                         ) : null}
-                      </div>
+                      </YStack>
                     ) : null}
-                  </li>
+                  </SizableText>
                 );
               })}
-            </ol>
-          </div>
-        </section>
-      </main>
+            </YStack>
+          </YStack>
+        </YStack>
+      </YStack>
 
       <SiteFooter />
-    </div>
+    </SizableText>
   );
 }

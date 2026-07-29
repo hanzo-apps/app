@@ -1,10 +1,10 @@
 'use client';
 
+import { Button, Input } from '@hanzo/ui';
+import { YStack, Image, XStack } from '@hanzo/gui';
 import React, { useRef, useState } from 'react';
 import { Camera, ImageUp, X, Loader2 } from 'lucide-react';
 import { compressImage } from '@/lib/utils/image-compress';
-import { cn } from '@/lib/utils';
-
 interface ThumbnailAreaProps {
   image: string | undefined;
   onCapture?: () => Promise<string | null>;  // undefined = capture unavailable
@@ -70,87 +70,83 @@ export function ThumbnailArea({
 
   if (image) {
     return (
-      <div className={cn('relative group', className)} onClick={stopProp}>
+      <YStack position="relative" group className={`${className}`} onClick={stopProp}>
         {isSm ? (
-          <div className="w-16 h-12 rounded-md overflow-hidden bg-muted shrink-0">
-            <img src={image} alt="Thumbnail" className="w-full h-full object-cover" />
-          </div>
+          <YStack width="$10" height="$8" borderRadius="$3" overflow="hidden" backgroundColor="$color3" flexShrink={0}>
+            <Image src={image} alt="Thumbnail" width="100%" height="100%" objectFit="cover" />
+          </YStack>
         ) : (
-          <div className="w-full aspect-video bg-muted">
-            <img src={image} alt="Thumbnail" className="w-full h-full object-cover" />
-          </div>
+          <YStack width="100%" backgroundColor="$color3">
+            <Image src={image} alt="Thumbnail" width="100%" height="100%" objectFit="cover" />
+          </YStack>
         )}
-        <button
+        <Button
           type="button"
           onClick={handleRemove}
-          className={cn(
-            'absolute flex items-center justify-center bg-background/80 text-foreground opacity-0 group-hover:opacity-100 transition-opacity border border-border shadow-sm',
-            btnBase,
-            isSm ? 'top-0 right-0 -translate-y-1/3 translate-x-1/3' : 'top-1.5 right-1.5'
-          )}
+          position="absolute" alignItems="center" justifyContent="center" backgroundColor="$background" color="$color" opacity={0} borderWidth={1} borderColor="$borderColor" elevation={1} $group-hover={{ opacity: 1 }} {...{ top: isSm ? "$0" : "$1.5", right: isSm ? "$0" : "$1.5", y: isSm ? "33.333%" : undefined, x: isSm ? "33.333%" : undefined }} className={`${btnBase}`}
           title="Remove thumbnail"
         >
-          <X className={iconSize} />
-        </button>
-      </div>
+          <X />
+        </Button>
+      </YStack>
     );
   }
 
   // No image state
   return (
-    <div className={cn('relative', className)} onClick={stopProp}>
+    <YStack position="relative" className={`${className}`} onClick={stopProp}>
       {isSm ? (
-        <div className="w-16 h-12 rounded-md bg-muted flex items-center justify-center gap-1 shrink-0">
+        <XStack width="$10" height="$8" borderRadius="$3" backgroundColor="$color3" alignItems="center" justifyContent="center" gap="$1" flexShrink={0}>
           {onCapture && (
-            <button
+            <Button
               type="button"
               onClick={handleCapture}
               disabled={isCapturing}
-              className="h-6 w-6 rounded flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted-foreground/15 transition-colors"
+              height="$5" width="$5" borderRadius="$2" alignItems="center" justifyContent="center" color="$color11" hoverStyle={{ color: "$color", backgroundColor: "$color11" }}
               title="Capture"
             >
-              {isCapturing ? <Loader2 className="h-3 w-3 animate-spin" /> : <Camera className="h-3 w-3" />}
-            </button>
+              {isCapturing ? <Loader2 size={12} /> : <Camera size={12} />}
+            </Button>
           )}
-          <button
+          <Button
             type="button"
             onClick={handleUploadClick}
-            className="h-6 w-6 rounded flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted-foreground/15 transition-colors"
+            height="$5" width="$5" borderRadius="$2" alignItems="center" justifyContent="center" color="$color11" hoverStyle={{ color: "$color", backgroundColor: "$color11" }}
             title="Upload image"
           >
-            <ImageUp className="h-3 w-3" />
-          </button>
-        </div>
+            <ImageUp size={12} />
+          </Button>
+        </XStack>
       ) : (
-        <div className="w-full aspect-video bg-muted flex items-center justify-center gap-3">
+        <XStack width="100%" backgroundColor="$color3" alignItems="center" justifyContent="center" gap="$3">
           {onCapture && (
-            <button
+            <Button
               type="button"
               onClick={handleCapture}
               disabled={isCapturing}
-              className="h-9 w-9 rounded-lg flex items-center justify-center border border-border/60 bg-background/50 text-muted-foreground hover:text-foreground hover:bg-background/80 transition-colors shadow-sm"
+              height={36} width={36} borderRadius="$5" alignItems="center" justifyContent="center" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" color="$color11" elevation={1} hoverStyle={{ color: "$color", backgroundColor: "$background" }}
               title="Capture screenshot"
             >
-              {isCapturing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
-            </button>
+              {isCapturing ? <Loader2 size={16} /> : <Camera size={16} />}
+            </Button>
           )}
-          <button
+          <Button
             type="button"
             onClick={handleUploadClick}
-            className="h-9 w-9 rounded-lg flex items-center justify-center border border-border/60 bg-background/50 text-muted-foreground hover:text-foreground hover:bg-background/80 transition-colors shadow-sm"
+            height={36} width={36} borderRadius="$5" alignItems="center" justifyContent="center" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" color="$color11" elevation={1} hoverStyle={{ color: "$color", backgroundColor: "$background" }}
             title="Upload image"
           >
-            <ImageUp className="h-4 w-4" />
-          </button>
-        </div>
+            <ImageUp size={16} />
+          </Button>
+        </XStack>
       )}
-      <input
+      <Input
         ref={fileInputRef}
         type="file"
         accept="image/*"
-        className="hidden"
+        display="none"
         onChange={handleUpload}
-      />
-    </div>
+  />
+    </YStack>
   );
 }

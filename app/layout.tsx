@@ -108,7 +108,7 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
-      <body className="antialiased bg-background text-foreground min-h-screen">
+      <body>
         <IframeDetector />
         <ChunkReloader />
         <PointerEventsGuard />

@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from '@hanzo/ui';
+import { YStack, XStack, SizableText, H3, Paragraph } from '@hanzo/gui';
 // Hero focal visual — a faithful miniature of the ACTUAL /dev builder chrome:
 // chat rail on the left (with the rounded composer input), the generated app in
 // a rounded browser frame on the right — shown on desktop AND a phone frame side
@@ -72,61 +74,59 @@ function VibeApp({ v, compact }: { v: number; compact?: boolean }): ReactElement
     { label: "Low", n: 2, w: "12%" },
   ];
   return (
-    <div className={`flex h-full flex-col ${compact ? "gap-2 p-2.5" : "gap-3 p-4"}`}>
-      <div className="flex items-center justify-between">
-        <span className={`font-mono uppercase tracking-[0.2em] text-foreground/75 ${compact ? "text-[8px]" : "text-[10px]"}`}>
+    <YStack height="100%" {...{ gap: compact ? "$2" : "$3", padding: compact ? "$2.5" : "$4" }}>
+      <XStack alignItems="center" justifyContent="space-between">
+        <SizableText fontFamily="$mono" textTransform="uppercase" letterSpacing={3.2} color="$color" {...{ fontSize: compact ? 8 : 10 }}>
           Vibe Check
-        </span>
+        </SizableText>
         {v >= 2 && !compact && (
-          <span className="flex items-center gap-1 font-mono text-[8px] uppercase tracking-[0.12em] text-green-400/80">
-            <span className="livedot h-1 w-1 rounded-full bg-green-400" />
+          <SizableText alignItems="center" gap="$1" fontFamily="$mono" fontSize={8} textTransform="uppercase" letterSpacing={1.92} color="$green8">
+            <SizableText height="$1" width="$1" borderRadius="$10" backgroundColor="$green8" className="livedot" />
             realtime · Base
-          </span>
+          </SizableText>
         )}
         {v >= 2 && compact && (
-          <span className="livedot h-1.5 w-1.5 rounded-full bg-green-400" />
+          <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$green8" className="livedot" />
         )}
-      </div>
+      </XStack>
 
-      <h3 className={`text-balance font-medium leading-tight tracking-tight text-foreground ${compact ? "text-[13px]" : "text-lg"}`}>
+      <H3 fontWeight="500" lineHeight={1.25} letterSpacing={-0.4} color="$color" {...{ fontSize: compact ? 13 : "$6" }}>
         How&apos;s the team feeling today?
-      </h3>
+      </H3>
 
-      <div className={`grid grid-cols-3 ${compact ? "gap-1.5" : "gap-2"}`}>
+      <YStack {...{ gap: compact ? "$1.5" : "$2" }}>
         {votes.map((o, i) => (
-          <div
+          <SizableText
             key={o.label}
-            className={`rounded-lg border text-center font-medium ${compact ? "px-1 py-1.5 text-[9px]" : "px-2 py-2.5 text-[12px]"} ${
-              i === 0 ? "border-foreground/30 bg-foreground/[0.08] text-foreground" : "border-border bg-foreground/[0.02] text-foreground/60"
-            }`}
+            borderRadius="$5" borderWidth={1} textAlign="center" fontWeight="500" display="flex" flexDirection="column" {...{ paddingHorizontal: compact ? "$1" : "$2", paddingVertical: compact ? "$1.5" : "$2.5", fontSize: compact ? 9 : 12, borderColor: i === 0 ? "$color" : "$borderColor", backgroundColor: i === 0 ? "$color" : "$color", color: i === 0 ? "$color" : "$color" }}
           >
             {o.label}
-          </div>
+          </SizableText>
         ))}
-      </div>
+      </YStack>
 
       {v >= 1 && (
-        <div className={`rise flex flex-1 flex-col justify-end ${compact ? "gap-1" : "gap-1.5"}`}>
+        <YStack flex={1} justifyContent="flex-end" {...{ gap: compact ? "$1" : "$1.5" }} className="rise">
           {votes.map((o) => (
-            <div key={o.label} className="flex items-center gap-2">
-              <span className={`w-10 shrink-0 font-mono text-foreground/40 ${compact ? "text-[7px]" : "text-[9px]"}`}>
+            <XStack key={o.label} alignItems="center" gap="$2">
+              <SizableText width="$7" flexShrink={0} fontFamily="$mono" color="$color" {...{ fontSize: compact ? 7 : 9 }}>
                 {o.label}
-              </span>
-              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-foreground/[0.06]">
-                <div className="h-full rounded-full bg-foreground/60" style={{ width: o.w }} />
-              </div>
-              <span className={`w-4 shrink-0 text-right font-mono tabular-nums text-foreground/50 ${compact ? "text-[7px]" : "text-[9px]"}`}>
+              </SizableText>
+              <YStack height="$1.5" flex={1} overflow="hidden" borderRadius="$10" backgroundColor="$color">
+                <YStack height="100%" borderRadius="$10" backgroundColor="$color" style={{ width: o.w }} />
+              </YStack>
+              <SizableText width="$4" flexShrink={0} textAlign="right" fontFamily="$mono" fontVariant="tabular-nums" color="$color" {...{ fontSize: compact ? 7 : 9 }}>
                 {o.n}
-              </span>
-            </div>
+              </SizableText>
+            </XStack>
           ))}
-          <span className={`mt-1 font-mono text-foreground/30 ${compact ? "text-[7px]" : "text-[9px]"}`}>
+          <SizableText marginTop="$1" fontFamily="$mono" color="$color" {...{ fontSize: compact ? 7 : 9 }}>
             22 votes today{v >= 2 ? " · updating live" : ""}
-          </span>
-        </div>
+          </SizableText>
+        </YStack>
       )}
-      {v === 0 && <div className="flex-1" />}
-    </div>
+      {v === 0 && <YStack flex={1} />}
+    </YStack>
   );
 }
 
@@ -232,7 +232,7 @@ export default function HeroPreview() {
   const busy = phase === "building" || phase === "typing";
 
   return (
-    <div ref={rootRef} className="idm relative mx-auto w-full max-w-5xl">
+    <YStack ref={rootRef} position="relative" alignSelf="center" width="100%" maxWidth={1024} className="idm">
       <style>{`
         @keyframes idmBlink { 0%,49% {opacity:1} 50%,100% {opacity:0} }
         @keyframes idmRise { from {opacity:0; transform:translateY(8px)} to {opacity:1; transform:none} }
@@ -248,248 +248,240 @@ export default function HeroPreview() {
       `}</style>
 
       {/* Soft floor glow to seat the frame. */}
-      <div className="pointer-events-none absolute inset-x-0 -bottom-10 top-8 -z-10 rounded-[2rem] bg-foreground/[0.05] blur-2xl sm:-inset-x-8" />
+      <YStack pointerEvents="none" position="absolute" left="$0" right="$0" bottom="-7" top="$6" zIndex={10} borderRadius="2rem" backgroundColor="$color" $sm={{ left: "-6", right: "-6" }} />
 
-      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-2xl shadow-black/60 ring-1 ring-foreground/[0.03]">
+      <YStack overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" elevation={6}>
         {/* ── Editor header — the real /dev chrome in miniature ── */}
-        <div className="flex items-center gap-3 border-b border-border bg-foreground/[0.02] px-3.5 py-2.5">
-          <div className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-foreground/10" />
-            <span className="h-2.5 w-2.5 rounded-full bg-foreground/10" />
-            <span className="h-2.5 w-2.5 rounded-full bg-foreground/10" />
-          </div>
+        <XStack alignItems="center" gap="$3" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$3.5" paddingVertical="$2.5">
+          <XStack alignItems="center" gap="$1.5">
+            <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
+            <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
+            <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
+          </XStack>
           <HMark className="h-3.5 w-3.5 shrink-0 text-foreground" />
-          <span className="hidden truncate font-mono text-[10px] text-foreground/45 sm:inline">
+          <SizableText display="none" numberOfLines={1} fontFamily="$mono" fontSize={10} color="$color">
             maxpower / vibe-check
-          </span>
+          </SizableText>
 
           {/* View tabs (chat | preview | code) — the builder's ONE view state. */}
-          <div className="mx-auto hidden items-center rounded-lg border border-border p-0.5 sm:flex">
+          <YStack alignSelf="center" display="none" alignItems="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" padding="$0.5">
             {[
               { id: "chat", icon: MessageSquare },
               { id: "preview", icon: Eye },
               { id: "code", icon: Code2 },
             ].map((tabItem, i) => (
-              <span
+              <SizableText
                 key={tabItem.id}
-                className={`grid h-5 w-6 place-items-center rounded ${i < 2 ? "bg-foreground/10 text-foreground" : "text-foreground/35"}`}
+                height="$4.5" width="$5" alignItems="center" justifyContent="center" borderRadius="$2" {...{ backgroundColor: i < 2 ? "$color" : undefined, color: i < 2 ? "$color" : "$color" }}
               >
                 <tabItem.icon className="h-3 w-3" />
-              </span>
+              </SizableText>
             ))}
-          </div>
+          </YStack>
 
-          <div className="ml-auto flex items-center gap-1.5 sm:ml-0">
-            <button
+          <XStack marginLeft="auto" alignItems="center" gap="$1.5" $sm={{ marginLeft: "$0" }}>
+            <Button
               type="button"
               aria-label="Replay the demo build"
               onClick={() => run()}
-              className="grid h-5 w-5 place-items-center rounded text-foreground/35 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+              height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" color="$color" hoverStyle={{ color: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
             >
-              <RotateCcw className="h-3 w-3" />
-            </button>
-            <span className="grid h-5 w-5 place-items-center rounded text-foreground/35">
-              <Clock className="h-3 w-3" />
-            </span>
-            <div className="flex items-center rounded-md border border-border p-0.5 lg:hidden">
-              <button
+              <RotateCcw size={12} />
+            </Button>
+            <SizableText height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" color="$color">
+              <Clock size={12} />
+            </SizableText>
+            <XStack alignItems="center" borderRadius="$3" borderWidth={1} borderColor="$borderColor" padding="$0.5" $lg={{ display: "none" }}>
+              <Button
                 type="button"
                 aria-label="Desktop preview"
                 aria-pressed={device === "desktop"}
                 onClick={() => setDevice("desktop")}
-                className={`grid h-5 w-5 place-items-center rounded ${device === "desktop" ? "bg-foreground/10 text-foreground" : "text-foreground/35"}`}
+                height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" {...{ backgroundColor: device === "desktop" ? "$color" : undefined, color: device === "desktop" ? "$color" : "$color" }}
               >
-                <Monitor className="h-3 w-3" />
-              </button>
-              <button
+                <Monitor size={12} />
+              </Button>
+              <Button
                 type="button"
                 aria-label="Mobile preview"
                 aria-pressed={device === "mobile"}
                 onClick={() => setDevice("mobile")}
-                className={`grid h-5 w-5 place-items-center rounded ${device === "mobile" ? "bg-foreground/10 text-foreground" : "text-foreground/35"}`}
+                height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" {...{ backgroundColor: device === "mobile" ? "$color" : undefined, color: device === "mobile" ? "$color" : "$color" }}
               >
-                <Smartphone className="h-3 w-3" />
-              </button>
-            </div>
-            <span
-              className={`flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-semibold ${
-                live
-                  ? "bg-green-400/10 text-green-400/90 ring-1 ring-green-400/25"
-                  : "bg-primary text-primary-foreground"
-              }`}
+                <Smartphone size={12} />
+              </Button>
+            </XStack>
+            <SizableText
+              alignItems="center" gap="$1" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1" fontSize={10} fontWeight="600" {...{ backgroundColor: live ? "$green8" : "$color12", color: live ? "$green8" : "$background" }}
             >
               {live ? (
                 <>
-                  <Check className="h-3 w-3" strokeWidth={3} />
-                  <span className="hidden sm:inline">Published</span>
+                  <Check size={12} strokeWidth={3} />
+                  <SizableText display="none">Published</SizableText>
                 </>
               ) : phase === "publishing" ? (
                 <>
-                  <Loader2 className="h-3 w-3 animate-spin" /> Publishing
+                  <Loader2 size={12} /> Publishing
                 </>
               ) : (
                 "Publish"
               )}
-            </span>
-          </div>
-        </div>
+            </SizableText>
+          </XStack>
+        </XStack>
 
         {/* ── Body: chat rail + previews ── */}
-        <div className="flex flex-col md:h-[420px] md:flex-row">
+        <YStack $md={{ height: 420, flexDirection: "row" }}>
           {/* Chat rail — transcript + the rounded composer input. */}
-          <aside className="flex w-full shrink-0 flex-col border-b border-border bg-background/30 md:w-[248px] md:border-b-0 md:border-r">
-            <div className="flex items-center gap-2 px-3.5 pt-3">
-              <Sparkles className="h-3 w-3 text-foreground/40" />
-              <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-foreground/40">
+          <YStack width="100%" flexShrink={0} borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" $md={{ width: 248, borderBottomWidth: 0, borderRightWidth: 1 }}>
+            <XStack alignItems="center" gap="$2" paddingHorizontal="$3.5" paddingTop="$3">
+              <Sparkles size={12} color="$color" />
+              <SizableText fontFamily="$mono" fontSize={9} textTransform="uppercase" letterSpacing={2.56} color="$color">
                 Agent chat
-              </span>
-            </div>
+              </SizableText>
+            </XStack>
 
-            <div
+            <YStack
               ref={chatRef}
-              className="flex max-h-40 min-h-0 flex-1 flex-col gap-1.5 overflow-hidden px-3.5 py-3 md:max-h-none"
+              maxHeight="$17" minHeight={0} flex={1} gap="$1.5" overflow="hidden" paddingHorizontal="$3.5" paddingVertical="$3" className="md:max-h-none"
             >
               {bubbles.map((b, i) =>
                 b.role === "user" ? (
-                  <div
+                  <SizableText
                     key={i}
-                    className="line self-end rounded-lg rounded-br-sm bg-foreground/[0.08] px-2.5 py-1.5 text-[11px] leading-snug text-foreground/85"
+                    alignSelf="flex-end" borderRadius="$5" borderBottomRightRadius="$1" backgroundColor="$color" paddingHorizontal="$2.5" paddingVertical="$1.5" fontSize={11} lineHeight={1.375} color="$color" display="flex" flexDirection="column" className="line"
                   >
                     {b.text}
-                  </div>
+                  </SizableText>
                 ) : (
-                  <div key={i} className="line flex items-center gap-1.5 font-mono text-[10px] text-foreground/50">
-                    <Check className="h-2.5 w-2.5 shrink-0 text-foreground/45" strokeWidth={3} />
-                    <span className="truncate">{b.text}</span>
-                  </div>
+                  <SizableText key={i} alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={10} color="$color" display="flex" flexDirection="row" className="line">
+                    <Check size={10} color="$color" strokeWidth={3} />
+                    <SizableText numberOfLines={1}>{b.text}</SizableText>
+                  </SizableText>
                 ),
               )}
               {streamLine && (
-                <div className="line flex items-center gap-1.5 font-mono text-[10px] text-foreground/55">
-                  <Loader2 className="h-2.5 w-2.5 shrink-0 animate-spin" />
-                  <span className="truncate">{streamLine}</span>
-                </div>
+                <SizableText alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={10} color="$color" display="flex" flexDirection="row" className="line">
+                  <Loader2 size={10} />
+                  <SizableText numberOfLines={1}>{streamLine}</SizableText>
+                </SizableText>
               )}
-            </div>
+            </YStack>
 
             {/* The rounded chat input — mirrors the real composer. */}
-            <div className="px-3.5 pb-3.5">
-              <div className="flex items-center gap-2 rounded-xl border border-border bg-background/50 px-3 py-2">
-                <span className="min-w-0 flex-1 truncate font-mono text-[10px] text-foreground/55">
+            <YStack paddingHorizontal="$3.5" paddingBottom="$3.5">
+              <XStack alignItems="center" gap="$2" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2">
+                <SizableText minWidth={0} flex={1} numberOfLines={1} fontFamily="$mono" fontSize={10} color="$color">
                   {typed || (busy ? "…" : "Ask Hanzo to change anything…")}
                   {phase === "typing" && (
-                    <span className="caret ml-px inline-block h-3 w-px translate-y-px bg-foreground/80 align-middle" />
+                    <SizableText marginLeft="$0.25" height="$3" width={1} y={1} backgroundColor="$color" verticalAlign="middle" className="caret" />
                   )}
-                </span>
-                <CornerDownLeft className="h-3 w-3 shrink-0 text-foreground/25" />
-              </div>
-            </div>
-          </aside>
+                </SizableText>
+                <CornerDownLeft size={12} color="$color" />
+              </XStack>
+            </YStack>
+          </YStack>
 
           {/* Previews: rounded browser frame (desktop) + phone frame (mobile). */}
-          <div className="relative flex min-w-0 flex-1 items-stretch gap-4 bg-card p-4">
+          <XStack position="relative" minWidth={0} flex={1} alignItems="stretch" gap="$4" backgroundColor="$background" padding="$4">
             {/* Desktop browser frame */}
-            <div
-              className={`min-w-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-card ${
-                device === "desktop" ? "flex" : "hidden lg:flex"
-              }`}
+            <YStack
+              minWidth={0} flex={1} overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" {...{ display: device === "desktop" ? undefined : "none" }}
             >
-              <div className="flex items-center gap-2 border-b border-border bg-foreground/[0.02] px-3 py-2">
-                <div className="mx-auto flex w-full max-w-[240px] items-center gap-2 rounded-md border border-border bg-background/40 px-2.5 py-1">
+              <XStack alignItems="center" gap="$2" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$3" paddingVertical="$2">
+                <XStack alignSelf="center" width="100%" maxWidth={240} alignItems="center" gap="$2" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2.5" paddingVertical="$1">
                   <svg viewBox="0 0 24 24" className="h-2.5 w-2.5 shrink-0 text-foreground/30" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
                     <rect x="4" y="10" width="16" height="10" rx="2" />
                     <path d="M8 10V7a4 4 0 1 1 8 0v3" />
                   </svg>
-                  <span className="truncate font-mono text-[10px] text-foreground/60">{SLUG}</span>
-                </div>
-                <span className="flex shrink-0 items-center gap-1">
+                  <SizableText numberOfLines={1} fontFamily="$mono" fontSize={10} color="$color">{SLUG}</SizableText>
+                </XStack>
+                <SizableText flexShrink={0} alignItems="center" gap="$1">
                   {live ? (
                     <>
-                      <span className="livedot h-1.5 w-1.5 rounded-full bg-green-400" />
-                      <span className="hidden font-mono text-[8px] uppercase tracking-[0.14em] text-green-400/80 sm:inline">
+                      <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$green8" className="livedot" />
+                      <SizableText display="none" fontFamily="$mono" fontSize={8} textTransform="uppercase" letterSpacing={2.24} color="$green8">
                         Live
-                      </span>
+                      </SizableText>
                     </>
                   ) : (
-                    <Loader2 className="h-2.5 w-2.5 animate-spin text-foreground/40" />
+                    <Loader2 size={10} color="$color" />
                   )}
-                </span>
-              </div>
-              <div className="relative min-h-[240px] flex-1">
+                </SizableText>
+              </XStack>
+              <YStack position="relative" minHeight={240} flex={1}>
                 {v >= 0 ? (
-                  <div key={`d${v}`} className="rise h-full">
+                  <YStack key={`d${v}`} height="100%" className="rise">
                     <VibeApp v={v} />
-                  </div>
+                  </YStack>
                 ) : (
                   <Generating />
                 )}
-              </div>
-            </div>
+              </YStack>
+            </YStack>
 
             {/* Phone frame */}
-            <div
-              className={`w-[172px] shrink-0 flex-col self-center ${
-                device === "mobile" ? "mx-auto flex" : "hidden lg:flex"
-              }`}
+            <YStack
+              width={172} flexShrink={0} {...{ alignSelf: device === "mobile" ? "center" : "center", display: device === "mobile" ? undefined : "none" }}
             >
-              <div className="overflow-hidden rounded-[1.6rem] border border-border bg-card p-1.5 shadow-xl shadow-black/40">
-                <div className="mx-auto mb-1 h-1 w-10 rounded-full bg-foreground/10" />
-                <div className="relative h-[280px] overflow-hidden rounded-[1.1rem] bg-card">
+              <YStack overflow="hidden" borderRadius="1.6rem" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$1.5" elevation={5}>
+                <YStack alignSelf="center" marginBottom="$1" height="$1" width="$7" borderRadius="$10" backgroundColor="$color" />
+                <YStack position="relative" height={280} overflow="hidden" borderRadius="1.1rem" backgroundColor="$background">
                   {v >= 0 ? (
-                    <div key={`m${v}`} className="rise h-full">
+                    <YStack key={`m${v}`} height="100%" className="rise">
                       <VibeApp v={v} compact />
-                    </div>
+                    </YStack>
                   ) : (
                     <Generating />
                   )}
-                </div>
-              </div>
-              <span className="mt-2 text-center font-mono text-[8px] uppercase tracking-[0.16em] text-foreground/25">
+                </YStack>
+              </YStack>
+              <SizableText marginTop="$2" textAlign="center" fontFamily="$mono" fontSize={8} textTransform="uppercase" letterSpacing={2.56} color="$color">
                 Mobile
-              </span>
-            </div>
-          </div>
-        </div>
+              </SizableText>
+            </YStack>
+          </XStack>
+        </YStack>
 
         {/* Status bar — git push payoff + live URL, exactly one line. */}
-        <div className="flex items-center gap-2 border-t border-border bg-foreground/[0.01] px-3.5 py-1.5 font-mono text-[9px]">
-          <span className="flex min-w-0 items-center gap-1.5 text-foreground/40">
-            <span className="truncate">
+        <SizableText alignItems="center" gap="$2" borderTopWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$3.5" paddingVertical="$1.5" fontFamily="$mono" fontSize={9} display="flex" flexDirection="row">
+          <SizableText minWidth={0} alignItems="center" gap="$1.5" color="$color">
+            <SizableText numberOfLines={1}>
               {busy ? (streamLine ?? "working…") : live ? "pushed to main · e4b21c7" : "main"}
-            </span>
-          </span>
-          <span className="ml-auto flex shrink-0 items-center gap-1.5">
+            </SizableText>
+          </SizableText>
+          <SizableText marginLeft="auto" flexShrink={0} alignItems="center" gap="$1.5">
             {live ? (
               <>
-                <span className="livedot h-1.5 w-1.5 rounded-full bg-green-400" />
-                <span className="text-green-400/80">Live at {SLUG}</span>
+                <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$green8" className="livedot" />
+                <SizableText color="$green8">Live at {SLUG}</SizableText>
               </>
             ) : phase === "publishing" ? (
               <>
-                <Loader2 className="h-2.5 w-2.5 animate-spin text-foreground/45" />
-                <span className="text-foreground/40">Publishing…</span>
+                <Loader2 size={10} color="$color" />
+                <SizableText color="$color">Publishing…</SizableText>
               </>
             ) : (
-              <span className="text-foreground/30">{busy ? "Building…" : "Ready"}</span>
+              <SizableText color="$color">{busy ? "Building…" : "Ready"}</SizableText>
             )}
-          </span>
-        </div>
-      </div>
+          </SizableText>
+        </SizableText>
+      </YStack>
 
       {/* Honesty microcopy — a demo, simulated client-side. */}
-      <p className="mt-4 text-center font-mono text-[10px] uppercase tracking-[0.14em] text-foreground/25">
+      <Paragraph marginTop="$4" textAlign="center" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={2.24} color="$color">
         Demo · watch the builder build, edit &amp; publish an app — desktop and mobile
-      </p>
-    </div>
+      </Paragraph>
+    </YStack>
   );
 }
 
 function Generating(): ReactElement {
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-2 text-foreground/40">
-      <Loader2 className="h-4 w-4 animate-spin" />
-      <span className="font-mono text-[9px] uppercase tracking-[0.14em]">Generating</span>
-    </div>
+    <SizableText height="100%" flexDirection="column" alignItems="center" justifyContent="center" gap="$2" color="$color" display="flex">
+      <Loader2 size={16} />
+      <SizableText fontFamily="$mono" fontSize={9} textTransform="uppercase" letterSpacing={2.24}>Generating</SizableText>
+    </SizableText>
   );
 }
 

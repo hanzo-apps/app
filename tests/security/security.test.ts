@@ -1,14 +1,7 @@
 import { NextRequest } from 'next/server';
 import { RateLimiter } from '@/lib/security/rate-limiter';
 import { DDoSProtection } from '@/lib/security/ddos-protection';
-import {
-  validateBody,
-  validateQuery,
-  sanitizeInput,
-  sanitizeSQLInput,
-  validateFileUpload,
-  schemas,
-} from '@/lib/security/input-validation';
+import { sanitizeInput, sanitizeSQLInput, validateFileUpload, schemas } from '@/lib/security/input-validation';
 import { validateEnv } from '@/lib/security/env-validation';
 
 describe('Security Tests', () => {

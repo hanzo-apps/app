@@ -1,3 +1,6 @@
+'use client';
+
+import { XStack } from '@hanzo/gui';
 import { Page } from "@/types";
 import { ListPagesItem } from "./page";
 
@@ -14,7 +17,7 @@ export function ListPages({
   onDeletePage: (path: string) => void;
 }) {
   return (
-    <div className="w-full flex items-center justify-start bg-card overflow-auto flex-nowrap min-h-[44px]">
+    <XStack width="100%" alignItems="center" justifyContent="flex-start" backgroundColor="$background" overflow="scroll" flexWrap="nowrap" minHeight={44}>
       {pages.map((page, i) => (
         <ListPagesItem
           key={i}
@@ -23,8 +26,8 @@ export function ListPages({
           onSelectPage={onSelectPage}
           onDeletePage={onDeletePage}
           index={i}
-        />
+  />
       ))}
-    </div>
+    </XStack>
   );
 }

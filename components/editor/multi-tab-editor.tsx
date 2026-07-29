@@ -1,12 +1,13 @@
 'use client';
 
+import { YStack, XStack, H3, SizableText, Paragraph, Image } from '@hanzo/gui';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { CodeEditor } from '@/components/code-editor';
 import { VirtualFile, ProjectRuntime } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';
 import { X, Code2, Save, FileCode, Image as ImageIcon, AlertCircle, Search, Folder } from 'lucide-react';
-import { Button } from '@hanzo/ui';
-import { cn, logger } from '@/lib/utils';
+import { Button, Input } from '@hanzo/ui';
+import { logger } from '@/lib/utils';
 
 // index.html floats to the top of its folder; everything else alphabetical.
 function fileIndexRank(name: string): number {
@@ -322,161 +323,153 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
   const browseGroups = useMemo(() => groupFiles(browseFiltered), [browseFiltered]);
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="p-3 border-b bg-muted/70 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+    <YStack height="100%">
+      <XStack padding="$3" borderBottomWidth={1} backgroundColor="$color3" alignItems="center" justifyContent="space-between">
+        <XStack alignItems="center" gap="$2">
           <Code2 
-            className="h-4 w-4 md:hidden" 
+            size={16} 
             style={{ color: 'var(--brand-accent)' }} 
-          />
+  />
           {onClose ? (
-            <button
+            <Button
               type="button"
               onClick={onClose}
               aria-label="Hide code editor"
-              className="relative hidden h-6 w-6 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-destructive md:flex group"
+              position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" color="$color11" group hoverStyle={{ color: "$red9" }}
             >
               <Code2 
-                className="h-4 w-4 transition-opacity group-hover:opacity-0" 
+                size={16} 
                 style={{ color: 'var(--brand-accent)' }} 
-              />
-              <X className="absolute h-3 w-3 opacity-0 transition-opacity group-hover:opacity-100" />
-            </button>
+  />
+              <X size={12} />
+            </Button>
           ) : (
             <Code2 
-              className="hidden h-4 w-4 md:inline-flex" 
+              size={16} 
               style={{ color: 'var(--brand-accent)' }} 
-            />
+  />
           )}
-          <h3 className="text-sm font-medium">Code Editor</h3>
-        </div>
+          <H3 fontSize="$3" fontWeight="500">Code Editor</H3>
+        </XStack>
         {activeFile?.modified && getFileType(activeFile.file.path).type === 'text' && (
           <Button
             size="sm"
             variant="ghost"
-            className="h-5 px-2 gap-1.5"
+            height="$4.5" paddingHorizontal="$2" gap="$1.5"
             onClick={() => saveFile(activeFilePath!)}
           >
-            <Save className="h-3 w-3" />
-            <span className="text-xs">Save</span>
+            <Save size={12} />
+            <SizableText fontSize="$1">Save</SizableText>
           </Button>
         )}
-      </div>
+      </XStack>
       
       {openFiles.size === 0 ? (
-        <div className="flex-1 min-h-0 flex flex-col">
-          <div className="flex items-center gap-2 border-b px-3 py-2">
-            <Search className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-            <input
+        <YStack flex={1} minHeight={0}>
+          <XStack alignItems="center" gap="$2" borderBottomWidth={1} paddingHorizontal="$3" paddingVertical="$2">
+            <Search size={14} color="$color11" />
+            <Input
               value={browseQuery}
               onChange={(e) => setBrowseQuery(e.target.value)}
               placeholder="Search files…"
               aria-label="Search files"
-              className="w-full bg-transparent py-0.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
-            />
-            <span className="shrink-0 font-mono text-[10px] text-muted-foreground">
+              width="100%" backgroundColor="transparent" paddingVertical="$0.5" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0 }}
+  />
+            <SizableText flexShrink={0} fontFamily="$mono" fontSize={10} color="$color11">
               {browseFiltered.length}
-            </span>
-          </div>
-          <div className="min-h-0 flex-1 overflow-y-auto py-1">
+            </SizableText>
+          </XStack>
+          <YStack minHeight={0} flex={1} paddingVertical="$1" overflow="scroll">
             {browseGroups.length === 0 ? (
-              <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center text-muted-foreground">
-                <FileCode className="h-10 w-10 opacity-40" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">
+              <SizableText height="100%" flexDirection="column" alignItems="center" justifyContent="center" gap="$3" padding="$5" textAlign="center" color="$color11" display="flex">
+                <FileCode size={40} />
+                <YStack rowGap="$1">
+                  <Paragraph fontSize="$3" fontWeight="500">
                     {allFiles.length === 0
                       ? 'No files in this project yet'
                       : 'No files match your search'}
-                  </p>
-                  <p className="text-xs">Pick a file to open it in the editor.</p>
-                </div>
-              </div>
+                  </Paragraph>
+                  <Paragraph fontSize="$1">Pick a file to open it in the editor.</Paragraph>
+                </YStack>
+              </SizableText>
             ) : (
               browseGroups.map((group) => (
-                <div key={group.folder || '/'} className="py-0.5">
+                <YStack key={group.folder || '/'} paddingVertical="$0.5">
                   {group.folder && (
-                    <div className="flex items-center gap-1.5 px-3 py-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground/70">
-                      <Folder className="h-3 w-3 shrink-0" />
-                      <span className="truncate">{group.folder}</span>
-                    </div>
+                    <SizableText alignItems="center" gap="$1.5" paddingHorizontal="$3" paddingVertical="$1" fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.4} color="$color11" display="flex" flexDirection="row">
+                      <Folder size={12} />
+                      <SizableText numberOfLines={1}>{group.folder}</SizableText>
+                    </SizableText>
                   )}
                   {group.items.map((file) => (
-                    <button
+                    <Button
                       key={file.path}
                       type="button"
                       onClick={() => openFile(file)}
                       title={file.path}
-                      className={cn(
-                        'flex w-full items-center gap-2 px-3 py-1.5 text-left transition-colors hover:bg-accent hover:text-accent-foreground focus:outline-none',
-                        group.folder ? 'pl-7' : ''
-                      )}
+                      width="100%" alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$1.5" textAlign="left" hoverStyle={{ backgroundColor: "$color3", color: "$color" }} focusStyle={{ outlineWidth: 0 }} {...{ paddingLeft: group.folder ? 28 : undefined }}
                     >
                       {getFileType(file.path).type === 'image' ? (
-                        <ImageIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                        <ImageIcon size={14} color="$color11" />
                       ) : (
-                        <FileCode className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                        <FileCode size={14} color="$color11" />
                       )}
-                      <span className="truncate font-mono text-xs">{file.name}</span>
-                    </button>
+                      <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1">{file.name}</SizableText>
+                    </Button>
                   ))}
-                </div>
+                </YStack>
               ))
             )}
-          </div>
-        </div>
+          </YStack>
+        </YStack>
       ) : (
         <>
-      <div className="border-b bg-muted/70">
-        <div className="flex items-center overflow-x-auto scrollbar-thin">
+      <YStack borderBottomWidth={1} backgroundColor="$color3">
+        <XStack alignItems="center" overflow="scroll" className="scrollbar-thin">
           {Array.from(openFiles.entries()).map(([path, file]) => (
-            <div
+            <XStack
               key={path}
-              className={cn(
-                'flex items-center gap-2 px-4 py-2.5 border-r cursor-pointer transition-all relative group',
-                activeFilePath === path 
-                  ? 'bg-background border-b-2 border-b-primary shadow-sm' 
-                  : 'hover:bg-muted/50 border-b-2 border-b-transparent'
-              )}
+              alignItems="center" gap="$2" paddingHorizontal="$4" paddingVertical="$2.5" borderRightWidth={1} cursor="pointer" position="relative" group {...{ backgroundColor: activeFilePath === path ? "$background" : undefined, borderBottomWidth: activeFilePath === path ? 2 : 2, borderBottomColor: activeFilePath === path ? "$color12" : "transparent", elevation: activeFilePath === path ? 1 : undefined, hoverStyle: activeFilePath === path ? undefined : {"backgroundColor":"$color3"} }}
               onClick={() => setActiveFilePath(path)}
             >
-              <span className="text-sm">
+              <SizableText fontSize="$3">
                 {file.file.name}
-                {file.modified && <span className="text-orange-500 ml-1">●</span>}
-              </span>
+                {file.modified && <SizableText color="$orange9" marginLeft="$1">●</SizableText>}
+              </SizableText>
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-4 w-4 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                height="$4" width="$4" padding="$0" opacity={0} $group-hover={{ opacity: 1 }}
                 onClick={(e) => closeFile(path, e)}
               >
-                <X className="h-3 w-3 hover:text-destructive" />
+                <X size={12} />
               </Button>
-            </div>
+            </XStack>
           ))}
-        </div>
-      </div>
+        </XStack>
+      </YStack>
 
           {activeFile && (
-            <div className="flex-1 border-t">
+            <YStack flex={1} borderTopWidth={1}>
               {(() => {
                 const fileType = getFileType(activeFile.file.path);
                 
                 if (fileType.type === 'image') {
                   return (
-                    <div className="h-full flex items-center justify-center bg-background p-8">
-                      <div className="text-center space-y-4 max-w-2xl">
-                        <ImageIcon className="h-12 w-12 mx-auto text-muted-foreground" />
-                        <div className="space-y-2">
-                          <h3 className="text-lg font-medium">Image Preview</h3>
-                          <p className="text-sm text-muted-foreground">
+                    <XStack height="100%" alignItems="center" justifyContent="center" backgroundColor="$background" padding="$6">
+                      <SizableText textAlign="center" rowGap="$4" maxWidth={672} display="flex" flexDirection="column">
+                        <ImageIcon size={48} color="$color11" />
+                        <YStack rowGap="$2">
+                          <H3 fontSize="$6" fontWeight="500">Image Preview</H3>
+                          <Paragraph fontSize="$3" color="$color11">
                             {activeFile.file.name}
-                          </p>
-                        </div>
-                        <div className="border rounded-lg p-4 bg-muted/30 max-h-96 overflow-auto">
-                          <img 
+                          </Paragraph>
+                        </YStack>
+                        <YStack borderWidth={1} borderRadius="$5" padding="$4" backgroundColor="$color3" maxHeight={384} overflow="scroll">
+                          <Image 
                             src={`data:image/${activeFile.file.path.split('.').pop()};base64,${activeFile.content}`}
                             alt={activeFile.file.name}
-                            className="max-w-full h-auto rounded shadow-sm"
+                            maxWidth="100%" height="auto" borderRadius="$2" elevation={1}
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
                               target.style.display = 'none';
@@ -488,33 +481,33 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
                                 target.parentElement?.appendChild(div);
                               }
                             }}
-                          />
-                        </div>
-                        <p className="text-xs text-muted-foreground">
+  />
+                        </YStack>
+                        <Paragraph fontSize="$1" color="$color11">
                           Image files cannot be edited in the text editor
-                        </p>
-                      </div>
-                    </div>
+                        </Paragraph>
+                      </SizableText>
+                    </XStack>
                   );
                 }
                 
                 if (fileType.type === 'unsupported') {
                   return (
-                    <div className="h-full flex items-center justify-center bg-background p-8">
-                      <div className="text-center space-y-4">
-                        <AlertCircle className="h-12 w-12 mx-auto text-muted-foreground" />
-                        <div className="space-y-2">
-                          <h3 className="text-lg font-medium">Unsupported File Type</h3>
-                          <p className="text-sm text-muted-foreground">
+                    <XStack height="100%" alignItems="center" justifyContent="center" backgroundColor="$background" padding="$6">
+                      <SizableText textAlign="center" rowGap="$4" display="flex" flexDirection="column">
+                        <AlertCircle size={48} color="$color11" />
+                        <YStack rowGap="$2">
+                          <H3 fontSize="$6" fontWeight="500">Unsupported File Type</H3>
+                          <Paragraph fontSize="$3" color="$color11">
                             {activeFile.file.name}
-                          </p>
-                          <p className="text-sm text-muted-foreground max-w-md">
+                          </Paragraph>
+                          <Paragraph fontSize="$3" color="$color11" maxWidth={448}>
                             This file type is not supported for editing in the text editor.
                             Binary files and certain document formats cannot be displayed here.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+                          </Paragraph>
+                        </YStack>
+                      </SizableText>
+                    </XStack>
                   );
                 }
                 
@@ -525,14 +518,14 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
                     language={getLanguageFromPath(activeFile.file.path)}
                     value={activeFile.content}
                     onChange={(value) => handleContentChange(value, activeFile.file.path)}
-                  />
+  />
                 );
               })()}
-            </div>
+            </YStack>
           )}
         </>
       )}
-    </div>
+    </YStack>
   );
 }
 

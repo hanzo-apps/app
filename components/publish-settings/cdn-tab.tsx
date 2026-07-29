@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import { YStack, XStack, H3, Paragraph, SizableText, H4 } from '@hanzo/gui';
+import { useState } from 'react';
 import { PublishSettings, CdnConfig } from '@/lib/vfs/types';
 import { Button, Input, Label, Switch, Badge, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import { Plus, Edit, Trash2, Link2 } from 'lucide-react';
@@ -93,42 +94,42 @@ export function CdnTab({ settings, onChange }: CdnTabProps) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <YStack rowGap="$5">
+      <XStack alignItems="center" justifyContent="space-between">
         <div>
-          <h3 className="text-lg font-medium">CDN Resources</h3>
-          <p className="text-sm text-muted-foreground">
+          <H3 fontSize="$6" fontWeight="500">CDN Resources</H3>
+          <Paragraph fontSize="$3" color="$color11">
             Add external CSS and JavaScript libraries
-          </p>
+          </Paragraph>
         </div>
         <Button onClick={handleAddCdn} size="sm">
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus size={16} />
           Add CDN Resource
         </Button>
-      </div>
+      </XStack>
 
       {settings.cdnLinks.length === 0 ? (
-        <div className="text-center p-8 border-2 border-dashed rounded-lg">
-          <Link2 className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
-          <h3 className="text-lg font-medium mb-2">No CDN Resources</h3>
-          <p className="text-sm text-muted-foreground mb-4">
+        <SizableText textAlign="center" padding="$6" borderWidth={2} borderStyle="dashed" borderRadius="$5" display="flex" flexDirection="column">
+          <Link2 size={48} color="$color11" />
+          <H3 fontSize="$6" fontWeight="500" marginBottom="$2">No CDN Resources</H3>
+          <Paragraph fontSize="$3" color="$color11" marginBottom="$4">
             Add libraries like Bootstrap, Tailwind, or custom stylesheets
-          </p>
+          </Paragraph>
           <Button onClick={handleAddCdn} variant="outline">
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus size={16} />
             Add Your First Resource
           </Button>
-        </div>
+        </SizableText>
       ) : (
-        <div className="space-y-4">
+        <YStack rowGap="$4">
           {settings.cdnLinks.map((cdn) => (
-            <div
+            <XStack
               key={cdn.id}
-              className="flex items-start gap-4 p-4 border rounded-lg hover:bg-accent/50 transition-colors"
+              alignItems="flex-start" gap="$4" padding="$4" borderWidth={1} borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
             >
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-2">
-                  <h4 className="font-medium truncate">{cdn.name}</h4>
+              <YStack flex={1} minWidth={0}>
+                <XStack alignItems="center" gap="$2" marginBottom="$2">
+                  <H4 fontWeight="500" numberOfLines={1}>{cdn.name}</H4>
                   <Badge variant={cdn.type === 'css' ? 'default' : 'secondary'}>
                     {cdn.type.toUpperCase()}
                   </Badge>
@@ -136,37 +137,37 @@ export function CdnTab({ settings, onChange }: CdnTabProps) {
                   {cdn.crossorigin && (
                     <Badge variant="outline">{cdn.crossorigin}</Badge>
                   )}
-                </div>
-                <p className="text-sm text-muted-foreground truncate">{cdn.url}</p>
-              </div>
-              <div className="flex items-center gap-2">
+                </XStack>
+                <Paragraph fontSize="$3" color="$color11" numberOfLines={1}>{cdn.url}</Paragraph>
+              </YStack>
+              <XStack alignItems="center" gap="$2">
                 <Switch
                   checked={cdn.enabled}
                   onCheckedChange={() => handleToggleCdn(cdn.id)}
-                />
+  />
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => handleEditCdn(cdn)}
                 >
-                  <Edit className="h-4 w-4" />
+                  <Edit size={16} />
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => handleDeleteCdn(cdn.id)}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 size={16} />
                 </Button>
-              </div>
-            </div>
+              </XStack>
+            </XStack>
           ))}
-        </div>
+        </YStack>
       )}
 
       {/* CDN Editor Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent maxWidth={672}>
           <DialogHeader>
             <DialogTitle>
               {editingCdn?.name ? 'Edit CDN Resource' : 'Add CDN Resource'}
@@ -177,8 +178,8 @@ export function CdnTab({ settings, onChange }: CdnTabProps) {
           </DialogHeader>
 
           {editingCdn && (
-            <div className="space-y-4">
-              <div className="space-y-2">
+            <YStack rowGap="$4">
+              <YStack rowGap="$2">
                 <Label htmlFor="cdn-name">Resource Name</Label>
                 <Input
                   id="cdn-name"
@@ -187,10 +188,10 @@ export function CdnTab({ settings, onChange }: CdnTabProps) {
                   onChange={(e) =>
                     setEditingCdn({ ...editingCdn, name: e.target.value })
                   }
-                />
-              </div>
+  />
+              </YStack>
 
-              <div className="space-y-2">
+              <YStack rowGap="$2">
                 <Label htmlFor="cdn-url">CDN URL</Label>
                 <Input
                   id="cdn-url"
@@ -205,10 +206,10 @@ export function CdnTab({ settings, onChange }: CdnTabProps) {
                       type: url ? autoDetectType(url) : editingCdn.type,
                     });
                   }}
-                />
-              </div>
+  />
+              </YStack>
 
-              <div className="space-y-2">
+              <YStack rowGap="$2">
                 <Label htmlFor="cdn-type">Type</Label>
                 <Select
                   value={editingCdn.type}
@@ -224,9 +225,9 @@ export function CdnTab({ settings, onChange }: CdnTabProps) {
                     <SelectItem value="js">JavaScript Library</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
+              </YStack>
 
-              <div className="space-y-2">
+              <YStack rowGap="$2">
                 <Label htmlFor="cdn-integrity">
                   SRI Integrity Hash (Optional)
                 </Label>
@@ -240,13 +241,13 @@ export function CdnTab({ settings, onChange }: CdnTabProps) {
                       integrity: e.target.value || undefined,
                     })
                   }
-                />
-                <p className="text-xs text-muted-foreground">
+  />
+                <Paragraph fontSize="$1" color="$color11">
                   Subresource Integrity hash for security verification
-                </p>
-              </div>
+                </Paragraph>
+              </YStack>
 
-              <div className="space-y-2">
+              <YStack rowGap="$2">
                 <Label htmlFor="cdn-crossorigin">CORS Setting (Optional)</Label>
                 <Select
                   value={editingCdn.crossorigin || 'none'}
@@ -269,8 +270,8 @@ export function CdnTab({ settings, onChange }: CdnTabProps) {
                     <SelectItem value="use-credentials">Use Credentials</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-            </div>
+              </YStack>
+            </YStack>
           )}
 
           <DialogFooter>
@@ -281,6 +282,6 @@ export function CdnTab({ settings, onChange }: CdnTabProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </YStack>
   );
 }

@@ -23,6 +23,7 @@
  * "connected" signal.
  */
 
+import { SizableText, H1, Paragraph, YStack, XStack, H2 } from '@hanzo/gui';
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -48,7 +49,6 @@ import { useUser } from "@/hooks/useUser";
 import { useOrg } from "@/lib/org/client";
 import { AppShell } from "@/components/app-shell";
 import { currentOrg, orgDisplayName } from "@/lib/org-scope";
-import { cn } from "@/lib/utils";
 import {
   fetchConnectors,
   connectProvider,
@@ -196,42 +196,42 @@ function ConnectorsInner() {
   // honest sign-in CTA rather than an empty list.
   if (!userLoading && !user) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-6 text-center text-foreground">
-        <Plug className="size-8 text-muted-foreground" />
+      <SizableText minHeight="100%" flexDirection="column" alignItems="center" justifyContent="center" gap="$4" backgroundColor="$background" paddingHorizontal="$5" textAlign="center" color="$color" display="flex">
+        <Plug size={32} color="$color11" />
         <div>
-          <h1 className="text-lg font-medium">Sign in to manage connectors</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <H1 fontSize="$6" fontWeight="500">Sign in to manage connectors</H1>
+          <Paragraph marginTop="$1" fontSize="$3" color="$color11">
             Connectors are scoped to your workspace.
-          </p>
+          </Paragraph>
         </div>
         <Button asChild>
           <Link href="/login">Sign in</Link>
         </Button>
-      </div>
+      </SizableText>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
       {/* Header */}
-      <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur">
-        <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-6 py-4">
-          <div className="flex min-w-0 items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => router.back()} className="gap-2">
-              <ArrowLeft className="size-4" />
+      <YStack position="sticky" top="$0" zIndex={10} borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" backdropFilter="blur(8px)">
+        <XStack alignSelf="center" maxWidth={768} alignItems="center" justifyContent="space-between" gap="$4" paddingHorizontal="$5" paddingVertical="$4">
+          <XStack minWidth={0} alignItems="center" gap="$3">
+            <Button variant="ghost" size="sm" onClick={() => router.back()} gap="$2">
+              <ArrowLeft size={16} />
               Back
             </Button>
-            <div className="min-w-0">
-              <h1 className="truncate text-xl font-medium">Connectors</h1>
-              <p className="truncate text-xs text-muted-foreground">
+            <YStack minWidth={0}>
+              <H1 numberOfLines={1} fontSize="$7" fontWeight="500">Connectors</H1>
+              <Paragraph numberOfLines={1} fontSize="$1" color="$color11">
                 {orgName ? `Connect services to ${orgName}` : "Connect services to your workspace"}
-              </p>
-            </div>
-          </div>
-          <div className="flex shrink-0 items-center gap-2">
+              </Paragraph>
+            </YStack>
+          </XStack>
+          <XStack flexShrink={0} alignItems="center" gap="$2">
             {connectedCount > 0 && (
-              <Badge variant="outline" className="gap-1.5">
-                <span className="size-1.5 rounded-full bg-green-500" />
+              <Badge variant="outline" gap="$1.5">
+                <SizableText width="$1.5" height="$1.5" borderRadius="$10" backgroundColor="$green9" />
                 {connectedCount} connected
               </Badge>
             )}
@@ -242,74 +242,69 @@ function ConnectorsInner() {
               aria-label="Refresh"
               title="Refresh"
             >
-              <RefreshCw className={cn("size-4", loading && "animate-spin")} />
+              <RefreshCw size={16} />
             </Button>
-          </div>
-        </div>
-      </header>
+          </XStack>
+        </XStack>
+      </YStack>
 
-      <div className="mx-auto max-w-3xl px-6 py-6">
+      <YStack alignSelf="center" maxWidth={768} paddingHorizontal="$5" paddingVertical="$5">
         {/* Search */}
-        <div className="relative mb-4">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <YStack position="relative" marginBottom="$4">
+          <Search size={16} color="$color11" />
           <Input
             placeholder="Search connectors…"
-            className="pl-9"
+            paddingLeft={36}
             value={query}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
-          />
-        </div>
+  />
+        </YStack>
 
         {/* Category filter — only when the catalog spans more than one. */}
         {categories.length > 2 && (
-          <div className="mb-6 flex flex-wrap gap-1.5">
+          <XStack marginBottom="$5" flexWrap="wrap" gap="$1.5">
             {categories.map((c) => (
-              <button
+              <Button
                 key={c}
                 onClick={() => setCategory(c)}
-                className={cn(
-                  "rounded-full px-3 py-1 text-xs capitalize transition-colors",
-                  category === c
-                    ? "bg-foreground text-background"
-                    : "text-muted-foreground hover:bg-accent hover:text-foreground",
-                )}
+                borderRadius="$10" paddingHorizontal="$3" paddingVertical="$1" fontSize="$1" textTransform="capitalize" {...{ backgroundColor: category === c ? "$color" : undefined, color: category === c ? "$background" : "$color11", hoverStyle: category === c ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
               >
                 {c}
-              </button>
+              </Button>
             ))}
-          </div>
+          </XStack>
         )}
 
         {/* Loading */}
         {loading && providers.length === 0 ? (
-          <div className="space-y-3">
+          <YStack rowGap="$3">
             {[0, 1, 2].map((i) => (
-              <div key={i} className="h-[92px] animate-pulse rounded-xl border border-border bg-muted/40" />
+              <YStack key={i} height={92} borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" />
             ))}
-          </div>
+          </YStack>
         ) : providers.length === 0 ? (
           /* Empty — honest about the org-scoped surface being unpopulated. */
-          <div className="rounded-xl border border-dashed border-border px-6 py-16 text-center">
-            <Plug className="mx-auto mb-3 size-8 text-muted-foreground" />
-            <h2 className="text-sm font-medium">No connectors available yet</h2>
-            <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
+          <SizableText borderRadius="$6" borderWidth={1} borderStyle="dashed" borderColor="$borderColor" paddingHorizontal="$5" paddingVertical="$10" textAlign="center" display="flex" flexDirection="column">
+            <Plug size={32} color="$color11" />
+            <H2 fontSize="$3" fontWeight="500">No connectors available yet</H2>
+            <Paragraph alignSelf="center" marginTop="$1" maxWidth={384} fontSize="$3" color="$color11">
               Connectors for this workspace will appear here once they're enabled. Nothing to set
               up in the meantime.
-            </p>
-          </div>
+            </Paragraph>
+          </SizableText>
         ) : filtered.length === 0 ? (
-          <p className="py-16 text-center text-sm text-muted-foreground">
+          <Paragraph paddingVertical="$10" textAlign="center" fontSize="$3" color="$color11">
             No connectors match “{query}”.
-          </p>
+          </Paragraph>
         ) : (
-          <div className="space-y-8">
+          <YStack rowGap="$6">
             <Section title="Connected" rows={connected} busyId={busyId} onConnect={onConnect} onDisconnect={onDisconnect} />
             <Section title="Available" rows={available} busyId={busyId} onConnect={onConnect} onDisconnect={onDisconnect} />
             <Section title="Coming soon" rows={unavailable} busyId={busyId} onConnect={onConnect} onDisconnect={onDisconnect} muted />
-          </div>
+          </YStack>
         )}
-      </div>
-    </div>
+      </YStack>
+    </SizableText>
   );
 }
 
@@ -331,10 +326,10 @@ function Section({
   if (rows.length === 0) return null;
   return (
     <section>
-      <h2 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+      <H2 marginBottom="$3" fontSize="$1" fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11">
         {title}
-      </h2>
-      <div className="space-y-3">
+      </H2>
+      <YStack rowGap="$3">
         {rows.map((p) => (
           <ConnectorRow
             key={p.id}
@@ -344,9 +339,9 @@ function Section({
             onConnect={onConnect}
             onDisconnect={onDisconnect}
             muted={muted}
-          />
+  />
         ))}
-      </div>
+      </YStack>
     </section>
   );
 }
@@ -369,64 +364,61 @@ function ConnectorRow({
   const Icon = iconFor(p.id);
   const since = p.connection ? sinceLabel(p.connection.connectedAt) : "";
   return (
-    <div
-      className={cn(
-        "flex items-center gap-4 rounded-xl border border-border bg-card px-4 py-3.5 transition-colors",
-        muted && "opacity-60",
-      )}
+    <XStack
+      alignItems="center" gap="$4" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$4" paddingVertical="$3.5" {...{ opacity: muted ? 0.6 : undefined }}
     >
-      <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-muted text-foreground">
+      <SizableText width="$7" height="$7" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" color="$color" display="flex" flexDirection="row">
         <Icon className="size-5" />
-      </div>
+      </SizableText>
 
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <span className="truncate font-medium">{p.name}</span>
+      <YStack minWidth={0} flex={1}>
+        <XStack alignItems="center" gap="$2">
+          <SizableText numberOfLines={1} fontWeight="500">{p.name}</SizableText>
           {p.connected && (
-            <span className="inline-flex items-center gap-1 text-xs text-green-600 dark:text-green-500">
-              <span className="size-1.5 rounded-full bg-green-500" />
+            <SizableText alignItems="center" gap="$1" fontSize="$1" color="$green10" $theme-dark={{ color: "$green9" }}>
+              <SizableText width="$1.5" height="$1.5" borderRadius="$10" backgroundColor="$green9" />
               Connected
-            </span>
+            </SizableText>
           )}
           {p.category && !p.connected && (
-            <Badge variant="outline" className="hidden capitalize sm:inline-flex">
+            <Badge variant="outline" display="none" textTransform="capitalize">
               {p.category}
             </Badge>
           )}
-        </div>
-        <p className="truncate text-sm text-muted-foreground">
+        </XStack>
+        <Paragraph numberOfLines={1} fontSize="$3" color="$color11">
           {p.connected && p.connection?.account
             ? `${p.connection.account}${since ? ` · ${since}` : ""}`
             : p.description}
-        </p>
-      </div>
+        </Paragraph>
+      </YStack>
 
-      <div className="shrink-0">
+      <YStack flexShrink={0}>
         {p.connected ? (
           <Button
             variant="outline"
             size="sm"
-            className="gap-1.5"
+            gap="$1.5"
             disabled={busy || disabled}
             onClick={() => onDisconnect(p)}
           >
-            {busy ? <Loader2 className="size-3.5 animate-spin" /> : <X className="size-3.5" />}
+            {busy ? <Loader2 size={14} /> : <X size={14} />}
             Disconnect
           </Button>
         ) : p.available ? (
           <Button
             size="sm"
-            className="gap-1.5 !bg-foreground !text-background hover:!bg-foreground/90"
+            gap="$1.5" backgroundColor="$color" color="$background" hoverStyle={{ backgroundColor: "$color" }}
             disabled={busy || disabled}
             onClick={() => onConnect(p)}
           >
-            {busy ? <Loader2 className="size-3.5 animate-spin" /> : <LinkIcon className="size-3.5" />}
+            {busy ? <Loader2 size={14} /> : <LinkIcon size={14} />}
             Connect
           </Button>
         ) : (
-          <span className="text-xs text-muted-foreground">Unavailable</span>
+          <SizableText fontSize="$1" color="$color11">Unavailable</SizableText>
         )}
-      </div>
-    </div>
+      </YStack>
+    </XStack>
   );
 }

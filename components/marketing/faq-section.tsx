@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from '@hanzo/ui';
+import { YStack, Paragraph, H2, SizableText } from '@hanzo/gui';
 // One reusable FAQ block for the marketing/support surfaces. Monochrome,
 // keyboard-accessible expand/collapse. DRY: /pricing (billing subset) and /faq
 // (full set) both render THIS — no per-page accordion code. Answers are
@@ -28,19 +30,19 @@ export default function FaqSection({
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <section id={id} className="px-4 py-16 md:px-8 md:py-24">
-      <div className="mx-auto max-w-3xl">
+    <YStack id={id} paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
+      <YStack alignSelf="center" maxWidth={768}>
         {(title || eyebrow) && (
           <Reveal className="mb-10 text-center">
             {eyebrow && (
-              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+              <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
                 {eyebrow}
-              </p>
+              </Paragraph>
             )}
             {title && (
-              <h2 className="mt-3 text-3xl font-medium tracking-tight md:text-4xl">
+              <H2 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
                 {title}
-              </h2>
+              </H2>
             )}
           </Reveal>
         )}
@@ -50,33 +52,33 @@ export default function FaqSection({
             const isOpen = open === i;
             return (
               <div key={i}>
-                <button
+                <Button
                   type="button"
                   aria-expanded={isOpen}
                   onClick={() => setOpen(isOpen ? null : i)}
-                  className="flex w-full items-center justify-between gap-4 py-5 text-left transition-colors hover:text-foreground"
+                  width="100%" alignItems="center" justifyContent="space-between" gap="$4" paddingVertical="$4.5" textAlign="left" hoverStyle={{ color: "$color" }}
                 >
-                  <span className="text-base font-medium text-foreground md:text-lg">
+                  <SizableText fontSize="$4" fontWeight="500" color="$color" $md={{ fontSize: "$6" }}>
                     {it.q}
-                  </span>
-                  <span className="flex-shrink-0 text-muted-foreground">
+                  </SizableText>
+                  <SizableText flexShrink={0} color="$color11">
                     {isOpen ? (
-                      <Minus className="h-5 w-5" />
+                      <Minus size={20} />
                     ) : (
-                      <Plus className="h-5 w-5" />
+                      <Plus size={20} />
                     )}
-                  </span>
-                </button>
+                  </SizableText>
+                </Button>
                 {isOpen && (
-                  <div className="pb-6 pr-8 text-sm leading-relaxed text-muted-foreground md:text-base">
+                  <SizableText paddingBottom="$5" paddingRight="$6" fontSize="$3" lineHeight={1.625} color="$color11" display="flex" flexDirection="column" $md={{ fontSize: "$4" }}>
                     {it.a}
-                  </div>
+                  </SizableText>
                 )}
               </div>
             );
           })}
         </Reveal>
-      </div>
-    </section>
+      </YStack>
+    </YStack>
   );
 }

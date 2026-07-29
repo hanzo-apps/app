@@ -1,5 +1,7 @@
 'use client';
 
+import { Button } from '@hanzo/ui';
+import { SizableText, YStack, XStack } from '@hanzo/gui';
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -32,53 +34,44 @@ export function TemplatesView({ onProjectSelect }: TemplatesViewProps) {
   };
 
   return (
-    <div className="flex h-full flex-col bg-background text-foreground">
+    <SizableText height="100%" flexDirection="column" backgroundColor="$background" color="$color" display="flex">
       {/* Mode toggle: the curated gallery vs. your imported/built-in templates. */}
-      <div className="shrink-0 px-5 pt-5 sm:px-8 sm:pt-6">
-        <div className="mx-auto flex max-w-7xl items-center">
-          <div className="flex rounded-full border border-border p-0.5">
-            <button
+      <YStack flexShrink={0} paddingHorizontal="$4.5" paddingTop="$4.5" $sm={{ paddingHorizontal: "$6", paddingTop: "$5" }}>
+        <XStack alignSelf="center" maxWidth={1280} alignItems="center">
+          <XStack borderRadius="$10" borderWidth={1} borderColor="$borderColor" padding="$0.5">
+            <Button
               onClick={() => setMode('gallery')}
-              className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm transition-colors ${
-                mode === 'gallery'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
+              alignItems="center" gap="$1.5" borderRadius="$10" paddingHorizontal="$3.5" paddingVertical="$1.5" fontSize="$3" {...{ backgroundColor: mode === 'gallery' ? "$color12" : undefined, color: mode === 'gallery' ? "$background" : "$color11", hoverStyle: mode === 'gallery' ? undefined : {"color":"$color"} }}
             >
-              <Sparkles className="h-4 w-4" />
+              <Sparkles size={16} />
               Gallery
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setMode('custom')}
-              className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm transition-colors ${
-                mode === 'custom'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
+              alignItems="center" gap="$1.5" borderRadius="$10" paddingHorizontal="$3.5" paddingVertical="$1.5" fontSize="$3" {...{ backgroundColor: mode === 'custom' ? "$color12" : undefined, color: mode === 'custom' ? "$background" : "$color11", hoverStyle: mode === 'custom' ? undefined : {"color":"$color"} }}
             >
-              <Package className="h-4 w-4" />
+              <Package size={16} />
               My Templates
-            </button>
-          </div>
+            </Button>
+          </XStack>
           <Link
             href="/community"
-            className="ml-auto inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <Users className="h-4 w-4" />
+          ><SizableText marginLeft="auto" alignItems="center" gap="$1.5" fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}>
+            <Users size={16} />
             See what people built
-          </Link>
-        </div>
-      </div>
+          </SizableText></Link>
+        </XStack>
+      </YStack>
 
       {mode === 'custom' ? (
-        <div className="min-h-0 flex-1">
+        <YStack minHeight={0} flex={1}>
           <TemplateManager onProjectCreated={handleProjectCreated} />
-        </div>
+        </YStack>
       ) : (
-        <div className="min-h-0 flex-1 overflow-y-auto">
+        <YStack minHeight={0} flex={1} overflow="scroll">
           <TemplateGallery />
-        </div>
+        </YStack>
       )}
-    </div>
+    </SizableText>
   );
 }

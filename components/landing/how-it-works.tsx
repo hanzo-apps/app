@@ -1,3 +1,6 @@
+'use client';
+
+import { YStack, Paragraph, H2, SizableText, H3 } from '@hanzo/gui';
 // Three-step "how it works" — the Lovable structure (idea → build → ship) in
 // Hanzo's monochrome. The third step is the differentiator: it ships to Hanzo
 // Cloud, not just a preview.
@@ -24,34 +27,34 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section className="relative border-t border-border px-4 py-20 md:px-8 md:py-28">
-      <div className="mx-auto max-w-6xl">
+    <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$13" }}>
+      <YStack alignSelf="center" maxWidth={1152}>
         <Reveal className="mx-auto max-w-2xl text-center">
-          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+          <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
             How it works
-          </p>
-          <h2 className="mt-4 text-3xl font-medium tracking-tight md:text-4xl">
+          </Paragraph>
+          <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
             From a sentence to a shipped app.
-          </h2>
+          </H2>
         </Reveal>
 
         <Reveal delay={80} className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-border bg-muted md:grid-cols-3">
           {steps.map((s) => (
-            <div
+            <YStack
               key={s.n}
-              className="flex flex-col bg-background p-8 transition-colors duration-200 hover:bg-card md:p-10"
+              backgroundColor="$background" padding="$6" hoverStyle={{ backgroundColor: "$background" }} $md={{ padding: "$7" }}
             >
-              <span className="font-mono text-sm text-muted-foreground">{s.n}</span>
-              <h3 className="mt-6 text-xl font-medium tracking-tight text-foreground">
+              <SizableText fontFamily="$mono" fontSize="$3" color="$color11">{s.n}</SizableText>
+              <H3 marginTop="$5" fontSize="$7" fontWeight="500" letterSpacing={-0.4} color="$color">
                 {s.title}
-              </h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              </H3>
+              <Paragraph marginTop="$3" fontSize="$3" lineHeight={1.625} color="$color11">
                 {s.body}
-              </p>
-            </div>
+              </Paragraph>
+            </YStack>
           ))}
         </Reveal>
-      </div>
-    </section>
+      </YStack>
+    </YStack>
   );
 }

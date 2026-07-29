@@ -1,5 +1,6 @@
 'use client';
 
+import { XStack, YStack, SizableText } from '@hanzo/gui';
 import React from 'react';
 import { Button } from '@hanzo/ui';
 import { Loader2, LogOut } from 'lucide-react';
@@ -15,36 +16,36 @@ interface ConnectionBadgeProps {
 export function ConnectionBadge({ method, extra, info, onDisconnect, disconnecting }: ConnectionBadgeProps) {
   return (
     <div>
-      <div className="flex items-center justify-between p-2.5 rounded-lg border border-green-600/15 bg-green-500/5">
-        <div className="flex items-center gap-2">
-          <div className="h-1.5 w-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
-          <span className="text-sm font-medium text-green-600 dark:text-green-400">Connected</span>
+      <XStack alignItems="center" justifyContent="space-between" padding="$2.5" borderRadius="$5" borderWidth={1} borderColor="$green10" backgroundColor="$green9">
+        <XStack alignItems="center" gap="$2">
+          <YStack height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$green9" shadowColor="$shadowColor" />
+          <SizableText fontSize="$3" fontWeight="500" color="$green10" $theme-dark={{ color: "$green8" }}>Connected</SizableText>
           {method && (
-            <span className="text-xs text-muted-foreground">via {method}</span>
+            <SizableText fontSize="$1" color="$color11">via {method}</SizableText>
           )}
           {extra && (
-            <span className="text-xs text-muted-foreground">{extra}</span>
+            <SizableText fontSize="$1" color="$color11">{extra}</SizableText>
           )}
-        </div>
+        </XStack>
         <Button
           size="sm"
           variant="ghost"
-          className="gap-1 text-muted-foreground hover:text-destructive h-7 px-2 text-xs"
+          gap="$1" color="$color11" height={28} paddingHorizontal="$2" fontSize="$1" hoverStyle={{ color: "$red9" }}
           onClick={onDisconnect}
           disabled={disconnecting}
         >
           {disconnecting ? (
-            <Loader2 className="h-3 w-3 animate-spin" />
+            <Loader2 size={12} />
           ) : (
-            <LogOut className="h-3 w-3" />
+            <LogOut size={12} />
           )}
           Disconnect
         </Button>
-      </div>
+      </XStack>
       {info && (
-        <div className="text-xs text-muted-foreground mt-2 pl-0.5">
+        <SizableText fontSize="$1" color="$color11" marginTop="$2" paddingLeft="$0.5" display="flex" flexDirection="column">
           {info}
-        </div>
+        </SizableText>
       )}
     </div>
   );

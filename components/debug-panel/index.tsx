@@ -1,7 +1,8 @@
 'use client';
 
+import { YStack, XStack, SizableText } from '@hanzo/gui';
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { Button, Collapsible, CollapsibleContent, CollapsibleTrigger } from '@hanzo/ui';
+import { Button, Collapsible, CollapsibleContent, CollapsibleTrigger, Input, Label } from '@hanzo/ui';
 import { ChevronDown, ChevronUp, Bug, X, Trash2, Terminal } from 'lucide-react';
 import { vfsShell } from '@/lib/vfs/cli-shell';
 import { MemoryMonitor } from './memory-monitor';
@@ -145,170 +146,166 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
   }, {} as Record<string, number>);
 
   return (
-    <div className="h-full flex flex-col bg-card border border-border rounded-lg overflow-hidden">
+    <YStack height="100%" backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$5" overflow="hidden">
       {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-border bg-muted/30 shrink-0">
-        <div className="flex items-center gap-2">
-          <Bug className="h-4 w-4 md:hidden" />
+      <XStack alignItems="center" justifyContent="space-between" padding="$3" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$color3" flexShrink={0}>
+        <XStack alignItems="center" gap="$2">
+          <Bug size={16} />
           {onClose ? (
-            <button
+            <Button
               type="button"
               onClick={onClose}
               aria-label="Hide debug panel"
-              className="relative hidden h-6 w-6 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-destructive md:flex group"
+              position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" color="$color11" group hoverStyle={{ color: "$red9" }}
             >
               <Bug
-                className="h-4 w-4 transition-opacity group-hover:opacity-0"
-              />
-              <X className="absolute h-3 w-3 opacity-0 transition-opacity group-hover:opacity-100" />
-            </button>
+                size={16}
+  />
+              <X size={12} />
+            </Button>
           ) : (
-            <Bug className="hidden h-4 w-4 md:inline-flex" />
+            <Bug size={16} />
           )}
-          <span className="font-medium text-sm">Debug Events</span>
-          <span className="text-xs text-muted-foreground">
+          <SizableText fontWeight="500" fontSize="$3">Debug Events</SizableText>
+          <SizableText fontSize="$1" color="$color11">
             ({filteredEvents.length}/{events.length})
-          </span>
+          </SizableText>
           <MemoryMonitor />
-        </div>
-        <div className="flex items-center gap-1">
+        </XStack>
+        <XStack alignItems="center" gap="$1">
           <Button
             variant="ghost"
             size="sm"
             onClick={handleClear}
-            className="h-7 px-2 hover:bg-muted"
+            height={28} paddingHorizontal="$2" hoverStyle={{ backgroundColor: "$color3" }}
             title="Clear all events"
           >
-            <Trash2 className="h-3 w-3" />
+            <Trash2 size={12} />
           </Button>
           <Button
             variant="ghost"
             size="sm"
             onClick={handleExport}
-            className="h-7 px-2 text-xs hover:bg-muted"
+            height={28} paddingHorizontal="$2" fontSize="$1" hoverStyle={{ backgroundColor: "$color3" }}
             title="Export to JSON"
           >
             Export
           </Button>
-        </div>
-      </div>
+        </XStack>
+      </XStack>
 
       {/* Event Counts */}
-      <div className="p-2 border-b border-border bg-muted/20 text-xs">
-        <div className="flex flex-wrap gap-2">
+      <SizableText padding="$2" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$color3" fontSize="$1" display="flex" flexDirection="column">
+        <XStack flexWrap="wrap" gap="$2">
           {Object.entries(eventCounts).map(([event, count]) => (
-            <button
+            <Button
               key={event}
               onClick={() => setFilter(filter === event ? '' : event)}
-              className={`px-2 py-1 rounded ${
-                filter === event
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted hover:bg-muted/80'
-              }`}
+              paddingHorizontal="$2" paddingVertical="$1" borderRadius="$2" {...{ backgroundColor: filter === event ? "$color12" : "$color3", color: filter === event ? "$background" : undefined, hoverStyle: filter === event ? undefined : {"backgroundColor":"$color3"} }}
             >
               {event} ({count})
-            </button>
+            </Button>
           ))}
-        </div>
-      </div>
+        </XStack>
+      </SizableText>
 
       {/* Filter Input */}
-      <div className="p-2 border-b border-border">
-        <input
+      <YStack padding="$2" borderBottomWidth={1} borderColor="$borderColor">
+        <Input
           type="text"
           placeholder="Filter events..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="w-full px-2 py-1 text-xs rounded bg-background border border-border"
-        />
-      </div>
+          width="100%" paddingHorizontal="$2" paddingVertical="$1" fontSize="$1" borderRadius="$2" backgroundColor="$background" borderWidth={1} borderColor="$borderColor"
+  />
+      </YStack>
 
       {/* Auto-scroll toggle */}
-      <div className="p-2 border-b border-border flex items-center gap-2">
-        <label className="text-xs flex items-center gap-1 cursor-pointer">
-          <input
+      <XStack padding="$2" borderBottomWidth={1} borderColor="$borderColor" alignItems="center" gap="$2">
+        <Label fontSize="$1" alignItems="center" gap="$1" cursor="pointer">
+          <Input
             type="checkbox"
             checked={autoScroll}
             onChange={(e) => setAutoScroll(e.target.checked)}
-            className="rounded"
-          />
+            borderRadius="$2"
+  />
           Auto-scroll
-        </label>
-      </div>
+        </Label>
+      </XStack>
 
       {/* Events List */}
-      <div className="flex-1 overflow-y-auto p-2 space-y-1">
+      <YStack flex={1} padding="$2" rowGap="$1" overflow="scroll">
         {filteredEvents.length === 0 ? (
-          <div className="text-xs text-muted-foreground text-center p-4">
+          <SizableText fontSize="$1" color="$color11" textAlign="center" padding="$4" display="flex" flexDirection="column">
             No events yet. Events will appear here as they occur.
-          </div>
+          </SizableText>
         ) : (
           filteredEvents.map((event) => (
             <EventItem key={event.id} event={event} />
           ))
         )}
         <div ref={eventsEndRef} />
-      </div>
+      </YStack>
 
       {/* Mini Terminal */}
       {projectId && (
-        <div className="border-t border-border shrink-0">
+        <YStack borderTopWidth={1} borderColor="$borderColor" flexShrink={0}>
           {/* Terminal Header */}
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/30 border-b border-border">
-            <Terminal className="h-3 w-3 text-muted-foreground" />
-            <span className="text-xs font-medium">VFS Shell</span>
+          <XStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$1.5" backgroundColor="$color3" borderBottomWidth={1} borderColor="$borderColor">
+            <Terminal size={12} color="$color11" />
+            <SizableText fontSize="$1" fontWeight="500">VFS Shell</SizableText>
             {shellOutput.length > 0 && (
-              <button
+              <Button
                 onClick={() => setShellOutput([])}
-                className="ml-auto text-xs text-muted-foreground hover:text-foreground"
+                marginLeft="auto" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}
               >
                 Clear
-              </button>
+              </Button>
             )}
-          </div>
+          </XStack>
 
           {/* Output history */}
           {shellOutput.length > 0 && (
-            <div
+            <SizableText
               ref={shellOutputRef}
-              className="max-h-32 overflow-y-auto p-2 bg-neutral-950 font-mono text-xs"
+              maxHeight="$14" padding="$2" backgroundColor="$color12" fontFamily="$mono" fontSize="$1" overflow="scroll" display="flex" flexDirection="column"
             >
               {shellOutput.map((entry, i) => (
-                <div key={i} className="mb-2">
-                  <div className="text-emerald-400">$ {entry.cmd}</div>
-                  <pre className={`whitespace-pre-wrap ${entry.isError ? 'text-red-400' : 'text-neutral-300'}`}>
+                <YStack key={i} marginBottom="$2">
+                  <SizableText color="$green8" display="flex" flexDirection="column">$ {entry.cmd}</SizableText>
+                  <SizableText whiteSpace="pre" fontFamily="$mono" {...{ color: entry.isError ? "$red8" : "$color4" }}>
                     {entry.output}
-                  </pre>
-                </div>
+                  </SizableText>
+                </YStack>
               ))}
-            </div>
+            </SizableText>
           )}
 
           {/* Command input */}
-          <div className="flex items-center gap-2 p-2 bg-neutral-950">
-            <span className="text-emerald-400 font-mono text-xs">$</span>
-            <input
+          <XStack alignItems="center" gap="$2" padding="$2" backgroundColor="$color12">
+            <SizableText color="$green8" fontFamily="$mono" fontSize="$1">$</SizableText>
+            <Input
               type="text"
               value={command}
               onChange={(e) => setCommand(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleRunCommand()}
               placeholder="ls -la /.skills/"
               disabled={isRunning}
-              className="flex-1 bg-transparent border-none outline-none text-xs font-mono text-neutral-100 placeholder:text-neutral-600"
-            />
+              flex={1} backgroundColor="transparent" borderWidth={0} outlineWidth={0} fontSize="$1" fontFamily="$mono" color="$color2" placeholderTextColor="$color10"
+  />
             <Button
               variant="ghost"
               size="sm"
               onClick={handleRunCommand}
               disabled={isRunning || !command.trim()}
-              className="h-6 px-2 text-xs text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800"
+              height="$5" paddingHorizontal="$2" fontSize="$1" color="$color8" hoverStyle={{ color: "$color2", backgroundColor: "$color11" }}
             >
               {isRunning ? '...' : 'Run'}
             </Button>
-          </div>
-        </div>
+          </XStack>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 }
 
@@ -329,24 +326,24 @@ function EventItem({ event }: { event: DebugEvent }) {
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <CollapsibleTrigger className="w-full text-left">
-        <div className="flex items-center gap-2 p-1.5 rounded hover:bg-muted/50 text-xs">
-          {isOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-          <span className="text-muted-foreground font-mono">{time}</span>
-          <span className={`font-medium ${getEventColor(event.event)}`}>
+      <CollapsibleTrigger width="100%" textAlign="left">
+        <SizableText alignItems="center" gap="$2" padding="$1.5" borderRadius="$2" fontSize="$1" display="flex" flexDirection="row" hoverStyle={{ backgroundColor: "$color3" }}>
+          {isOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+          <SizableText color="$color11" fontFamily="$mono">{time}</SizableText>
+          <SizableText fontWeight="500" className={`${getEventColor(event.event)}`}>
             {event.event}
-          </span>
+          </SizableText>
           {event.count && event.count > 1 && (
-            <span className="text-muted-foreground font-mono">
+            <SizableText color="$color11" fontFamily="$mono">
               ({event.count})
-            </span>
+            </SizableText>
           )}
-        </div>
+        </SizableText>
       </CollapsibleTrigger>
       <CollapsibleContent>
-        <div className="ml-6 p-2 bg-muted/30 rounded text-xs font-mono overflow-x-auto">
+        <SizableText marginLeft="$5" padding="$2" backgroundColor="$color3" borderRadius="$2" fontSize="$1" fontFamily="$mono" overflow="scroll" display="flex" flexDirection="column">
           <pre>{JSON.stringify(event.data, null, 2)}</pre>
-        </div>
+        </SizableText>
       </CollapsibleContent>
     </Collapsible>
   );

@@ -1,38 +1,11 @@
 "use client";
 
+import { XStack, YStack, Paragraph, SizableText, H2 } from '@hanzo/gui';
 import { useState, useEffect, useRef } from "react";
 import { useUser } from "@/hooks/useUser";
 import Link from "next/link";
-import {
-  MessageCircle,
-  Plus,
-  Search,
-  Settings,
-  Code2,
-  Send,
-  Paperclip,
-  MoreVertical,
-  Edit3,
-  Trash2,
-  Copy,
-  Share2,
-  Sparkles,
-  Image as ImageIcon,
-  Mic,
-  StopCircle,
-  PanelLeftClose,
-  PanelLeft,
-  Download,
-  RefreshCw,
-  Zap,
-  Bot,
-  User,
-  ArrowUp,
-  MoreHorizontal,
-  Users
-} from "lucide-react";
-import { Button, Input, Avatar, AvatarFallback, AvatarImage, ScrollArea, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea } from '@hanzo/ui';
-import { cn } from "@/lib/utils";
+import { MessageCircle, Plus, Search, Settings, Code2, Paperclip, Edit3, Trash2, Copy, Share2, Sparkles, Image as ImageIcon, Mic, StopCircle, PanelLeftClose, PanelLeft, RefreshCw, Bot, User, ArrowUp, MoreHorizontal, Users } from "lucide-react";
+import { Button, Input, ScrollArea, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea } from '@hanzo/ui';
 import { DEFAULT_MODEL } from "@/lib/providers";
 import { useModels } from "@/lib/hooks/use-models";
 import { type BotAgent, TEAM_PRESETS, getBotGateway } from "@/lib/bot-gateway";
@@ -357,137 +330,129 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="relative h-screen flex bg-background">
+    <XStack position="relative" height="100%" backgroundColor="$background">
       {/* Sidebar — overlay drawer below lg so it never steals width; in flow at lg+ */}
-      <div className={cn(
-        "absolute inset-y-0 left-0 z-30 flex flex-col bg-card border-r border-border transition-all duration-200 lg:relative lg:z-auto",
-        sidebarCollapsed ? "w-0 overflow-hidden" : "w-64"
-      )}>
+      <YStack position="absolute" top="$0" bottom="$0" left="$0" zIndex={30} backgroundColor="$background" borderRightWidth={1} borderColor="$borderColor" $lg={{ position: "relative" }} {...{ width: sidebarCollapsed ? "$0" : 256, overflow: sidebarCollapsed ? "hidden" : undefined }} className="lg:z-auto">
         {/* Sidebar Header */}
-        <div className="p-3 border-b border-border">
+        <YStack padding="$3" borderBottomWidth={1} borderColor="$borderColor">
           <Button
             onClick={createNewChat}
-            className="w-full bg-card hover:bg-muted text-foreground border border-border justify-start gap-2"
+            width="100%" backgroundColor="$background" color="$color" borderWidth={1} borderColor="$borderColor" justifyContent="flex-start" gap="$2" hoverStyle={{ backgroundColor: "$color3" }}
           >
-            <Plus className="w-4 h-4" />
+            <Plus size={16} />
             New chat
           </Button>
-        </div>
+        </YStack>
 
         {/* Search */}
-        <div className="p-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
+        <YStack padding="$3">
+          <YStack position="relative">
+            <Search size={16} color="$color11" />
             <Input
               placeholder="Search"
               value={searchQuery}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-card border-border text-foreground placeholder:text-muted-foreground"
-            />
-          </div>
-        </div>
+              paddingLeft={36} backgroundColor="$background" borderColor="$borderColor" color="$color" placeholderTextColor="$color11"
+  />
+          </YStack>
+        </YStack>
 
         {/* Chat List */}
-        <ScrollArea className="flex-1">
-          <div className="p-2 space-y-1">
+        <ScrollArea flex={1}>
+          <YStack padding="$2" rowGap="$1">
             {sortedChats.map(chat => (
-              <button
+              <Button
                 key={chat.id}
                 onClick={() => selectChat(chat)}
-                className={cn(
-                  "w-full text-left p-3 rounded-lg transition-all group relative",
-                  activeChat?.id === chat.id
-                    ? "bg-muted text-foreground"
-                    : "hover:bg-muted text-muted-foreground hover:text-foreground"
-                )}
+                width="100%" textAlign="left" padding="$3" borderRadius="$5" group position="relative" {...{ backgroundColor: activeChat?.id === chat.id ? "$color3" : undefined, color: activeChat?.id === chat.id ? "$color" : "$color11", hoverStyle: activeChat?.id === chat.id ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
               >
-                <div className="flex items-start gap-3">
-                  <MessageCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{chat.title}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
+                <XStack alignItems="flex-start" gap="$3">
+                  <MessageCircle size={16} />
+                  <YStack flex={1} minWidth={0}>
+                    <Paragraph fontSize="$3" fontWeight="500" numberOfLines={1}>{chat.title}</Paragraph>
+                    <Paragraph fontSize="$1" color="$color11" marginTop="$0.5">
                       {formatRelativeTime(chat.updatedAt)}
-                    </p>
-                  </div>
-                </div>
+                    </Paragraph>
+                  </YStack>
+                </XStack>
 
                 {/* Hover Actions */}
-                <div className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <YStack position="absolute" right="$2" top="$2" opacity={0} $group-hover={{ opacity: 1 }}>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                        <MoreHorizontal className="w-4 h-4" />
+                      <Button variant="ghost" size="sm" height="$5" width="$5" padding="$0">
+                        <MoreHorizontal size={16} />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuContent align="end" width="$19">
                       <DropdownMenuItem onClick={() => duplicateChat(chat.id)}>
-                        <Copy className="w-4 h-4 mr-2" />
+                        <Copy size={16} />
                         Duplicate
                       </DropdownMenuItem>
                       <DropdownMenuItem>
-                        <Edit3 className="w-4 h-4 mr-2" />
+                        <Edit3 size={16} />
                         Rename
                       </DropdownMenuItem>
                       <DropdownMenuItem>
-                        <Share2 className="w-4 h-4 mr-2" />
+                        <Share2 size={16} />
                         Share
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={() => deleteChat(chat.id)}
-                        className="text-red-500"
+                        color="$red9"
                       >
-                        <Trash2 className="w-4 h-4 mr-2" />
+                        <Trash2 size={16} />
                         Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
-                </div>
-              </button>
+                </YStack>
+              </Button>
             ))}
-          </div>
+          </YStack>
         </ScrollArea>
-      </div>
+      </YStack>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <YStack flex={1} minWidth={0}>
         {/* Chat Header */}
-        <div className="border-b border-border p-3">
-          <div className="flex items-center justify-between flex-wrap gap-y-2">
-            <div className="flex items-center gap-3">
+        <YStack borderBottomWidth={1} borderColor="$borderColor" padding="$3">
+          <XStack alignItems="center" justifyContent="space-between" flexWrap="wrap" rowGap="$2">
+            <XStack alignItems="center" gap="$3">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                className="text-muted-foreground hover:text-foreground"
+                color="$color11" hoverStyle={{ color: "$color" }}
               >
-                {sidebarCollapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
+                {sidebarCollapsed ? <PanelLeft size={16} /> : <PanelLeftClose size={16} />}
               </Button>
-              <div className="flex items-center gap-2">
+              <XStack alignItems="center" gap="$2">
                 {/* Agent Selector */}
                 <Select value={selectedAgentId} onValueChange={setSelectedAgentId}>
-                  <SelectTrigger className="min-w-0 flex-1 md:flex-none md:w-[160px] bg-card border-border text-foreground">
+                  <SelectTrigger minWidth={0} flex={1} backgroundColor="$background" borderColor="$borderColor" color="$color" $md={{ flex: 0, width: 160 }}>
                     <SelectValue>
-                      <span className="flex items-center gap-2">
+                      <SizableText alignItems="center" gap="$2">
                         <span>{selectedAgent?.emoji}</span>
                         <span>{selectedAgent?.name}</span>
-                      </span>
+                      </SizableText>
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    <DropdownMenuLabel className="text-muted-foreground text-xs px-2 py-1">
-                      <Users className="w-3 h-3 inline mr-1" />
+                    <DropdownMenuLabel color="$color11" fontSize="$1" paddingHorizontal="$2" paddingVertical="$1">
+                      <Users size={12} />
                       Team Agents
                     </DropdownMenuLabel>
                     {agents.map((agent) => (
                       <SelectItem key={agent.id} value={agent.id}>
-                        <span className="flex items-center gap-2">
+                        <SizableText alignItems="center" gap="$2">
                           <span>{agent.emoji}</span>
                           <span>{agent.name}</span>
                           {agent.description && (
-                            <span className="text-xs text-muted-foreground ml-1">{agent.description}</span>
+                            <SizableText fontSize="$1" color="$color11" marginLeft="$1">{agent.description}</SizableText>
                           )}
-                        </span>
+                        </SizableText>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -495,7 +460,7 @@ export default function ChatPage() {
 
                 {/* Model Selector */}
                 <Select value={selectedModel} onValueChange={setSelectedModel}>
-                  <SelectTrigger className="min-w-0 flex-1 md:flex-none md:w-[180px] bg-card border-border text-foreground">
+                  <SelectTrigger minWidth={0} flex={1} backgroundColor="$background" borderColor="$borderColor" color="$color" $md={{ flex: 0, width: 180 }}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -508,136 +473,133 @@ export default function ChatPage() {
                 </Select>
 
                 {/* Gateway status indicator */}
-                <div className={cn(
-                  "w-2 h-2 rounded-full",
-                  gatewayConnected ? "bg-green-500" : "bg-muted-foreground"
-                )} title={gatewayConnected ? "Bot gateway connected" : "Bot gateway offline"} />
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
+                <YStack width="$2" height="$2" borderRadius="$10" {...{ backgroundColor: gatewayConnected ? "$green9" : "$color11" }} title={gatewayConnected ? "Bot gateway connected" : "Bot gateway offline"} />
+              </XStack>
+            </XStack>
+            <XStack alignItems="center" gap="$2">
               <Link href="/playground">
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                  <Code2 className="w-4 h-4 md:mr-2" />
-                  <span className="hidden md:inline">Playground</span>
+                <Button variant="ghost" size="sm" color="$color11" hoverStyle={{ color: "$color" }}>
+                  <Code2 size={16} />
+                  <SizableText display="none">Playground</SizableText>
                 </Button>
               </Link>
               <Link href="/agents">
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                  <Bot className="w-4 h-4 md:mr-2" />
-                  <span className="hidden md:inline">Agents</span>
+                <Button variant="ghost" size="sm" color="$color11" hoverStyle={{ color: "$color" }}>
+                  <Bot size={16} />
+                  <SizableText display="none">Agents</SizableText>
                 </Button>
               </Link>
               <Link href="/integrations">
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                  <Settings className="w-4 h-4" />
+                <Button variant="ghost" size="sm" color="$color11" hoverStyle={{ color: "$color" }}>
+                  <Settings size={16} />
                 </Button>
               </Link>
-            </div>
-          </div>
-        </div>
+            </XStack>
+          </XStack>
+        </YStack>
 
         {/* Messages */}
-        <ScrollArea className="flex-1">
-          <div className="p-6 max-w-4xl mx-auto">
+        <ScrollArea flex={1}>
+          <YStack padding="$5" maxWidth={896} alignSelf="center">
             {activeChat ? (
-              <div className="space-y-6">
+              <YStack rowGap="$5">
                 {activeChat.messages.map((message, index) => (
-                  <div key={message.id} className="group">
-                    <div className="flex gap-4">
+                  <YStack key={message.id} group>
+                    <XStack gap="$4">
                       {message.role === "assistant" ? (
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center flex-shrink-0">
-                          <span className="text-white font-medium text-sm">
+                        <XStack width="$6" height="$6" borderRadius="$5" alignItems="center" justifyContent="center" flexShrink={0}>
+                          <SizableText color="white" fontWeight="500" fontSize="$3">
                             {message.agentEmoji ?? "H"}
-                          </span>
-                        </div>
+                          </SizableText>
+                        </XStack>
                       ) : (
-                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-                          <User className="w-4 h-4 text-muted-foreground" />
-                        </div>
+                        <XStack width="$6" height="$6" borderRadius="$10" backgroundColor="$color3" alignItems="center" justifyContent="center" flexShrink={0}>
+                          <User size={16} color="$color11" />
+                        </XStack>
                       )}
-                      <div className="flex-1 space-y-2">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-foreground">
+                      <YStack flex={1} rowGap="$2">
+                        <XStack alignItems="center" gap="$2">
+                          <SizableText fontWeight="500" color="$color">
                             {message.role === "assistant"
                               ? (message.agentName ?? "Hanzo")
                               : "You"}
-                          </span>
+                          </SizableText>
                           {message.model && (
-                            <span className="text-xs text-muted-foreground">{message.model}</span>
+                            <SizableText fontSize="$1" color="$color11">{message.model}</SizableText>
                           )}
-                          <span className="text-xs text-muted-foreground">
+                          <SizableText fontSize="$1" color="$color11">
                             {formatRelativeTime(message.timestamp)}
-                          </span>
-                        </div>
-                        <div className="text-foreground prose prose-invert max-w-none">
-                          <p className="whitespace-pre-wrap">{message.content}</p>
+                          </SizableText>
+                        </XStack>
+                        <SizableText color="$color" maxWidth="none" display="flex" flexDirection="column" className="prose prose-invert">
+                          <Paragraph whiteSpace="pre-wrap">{message.content}</Paragraph>
                           {message.isStreaming && (
-                            <span className="inline-block w-2 h-4 ml-1 bg-foreground animate-pulse" />
+                            <SizableText width="$2" height="$4" marginLeft="$1" backgroundColor="$color" />
                           )}
-                        </div>
+                        </SizableText>
                         {message.role === "assistant" && !message.isStreaming && (
-                          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <XStack alignItems="center" gap="$2" opacity={0} $group-hover={{ opacity: 1 }}>
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-8 px-2 text-muted-foreground hover:text-foreground"
+                              height="$6" paddingHorizontal="$2" color="$color11" hoverStyle={{ color: "$color" }}
                               onClick={() => copyMessage(message.content)}
                             >
-                              <Copy className="w-3 h-3 mr-1" />
+                              <Copy size={12} />
                               Copy
                             </Button>
-                            <Button variant="ghost" size="sm" className="h-8 px-2 text-muted-foreground hover:text-foreground">
-                              <RefreshCw className="w-3 h-3 mr-1" />
+                            <Button variant="ghost" size="sm" height="$6" paddingHorizontal="$2" color="$color11" hoverStyle={{ color: "$color" }}>
+                              <RefreshCw size={12} />
                               Regenerate
                             </Button>
-                            <Button variant="ghost" size="sm" className="h-8 px-2 text-muted-foreground hover:text-foreground">
-                              <Share2 className="w-3 h-3" />
+                            <Button variant="ghost" size="sm" height="$6" paddingHorizontal="$2" color="$color11" hoverStyle={{ color: "$color" }}>
+                              <Share2 size={12} />
                             </Button>
-                          </div>
+                          </XStack>
                         )}
-                      </div>
-                    </div>
-                  </div>
+                      </YStack>
+                    </XStack>
+                  </YStack>
                 ))}
                 <div ref={messagesEndRef} />
-              </div>
+              </YStack>
             ) : (
-              <div className="flex items-center justify-center h-full">
-                <div className="text-center space-y-4">
-                  <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl flex items-center justify-center mx-auto">
-                    <span className="text-white font-medium text-4xl">{selectedAgent?.emoji ?? "H"}</span>
-                  </div>
-                  <h2 className="text-2xl font-medium text-foreground">Chat with {selectedAgent?.name ?? "Hanzo"}</h2>
-                  <p className="text-muted-foreground max-w-md">
+              <XStack alignItems="center" justifyContent="center" height="100%">
+                <SizableText textAlign="center" rowGap="$4" display="flex" flexDirection="column">
+                  <XStack width="$11" height="$11" borderRadius="$8" alignItems="center" justifyContent="center" alignSelf="center">
+                    <SizableText color="white" fontWeight="500" fontSize="$11">{selectedAgent?.emoji ?? "H"}</SizableText>
+                  </XStack>
+                  <H2 fontSize="$8" fontWeight="500" color="$color">Chat with {selectedAgent?.name ?? "Hanzo"}</H2>
+                  <Paragraph color="$color11" maxWidth={448}>
                     {selectedAgent?.description ?? "Start a new chat or select an existing one to continue your conversation"}
-                  </p>
-                  <Button onClick={createNewChat} className="gap-2">
-                    <Plus className="w-4 h-4" />
+                  </Paragraph>
+                  <Button onClick={createNewChat} gap="$2">
+                    <Plus size={16} />
                     New Chat
                   </Button>
-                </div>
-              </div>
+                </SizableText>
+              </XStack>
             )}
-          </div>
+          </YStack>
         </ScrollArea>
 
         {/* Input Area */}
         {activeChat && (
-          <div className="border-t border-border p-4">
-            <div className="max-w-4xl mx-auto">
-              <div className="flex items-end gap-3">
-                <div className="flex gap-1">
-                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                    <Paperclip className="w-4 h-4" />
+          <YStack borderTopWidth={1} borderColor="$borderColor" padding="$4">
+            <YStack maxWidth={896} alignSelf="center">
+              <XStack alignItems="flex-end" gap="$3">
+                <XStack gap="$1">
+                  <Button variant="ghost" size="sm" color="$color11" hoverStyle={{ color: "$color" }}>
+                    <Paperclip size={16} />
                   </Button>
-                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                    <ImageIcon className="w-4 h-4" />
+                  <Button variant="ghost" size="sm" color="$color11" hoverStyle={{ color: "$color" }}>
+                    <ImageIcon size={16} />
                   </Button>
-                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                    <Mic className="w-4 h-4" />
+                  <Button variant="ghost" size="sm" color="$color11" hoverStyle={{ color: "$color" }}>
+                    <Mic size={16} />
                   </Button>
-                </div>
-                <div className="flex-1 relative">
+                </XStack>
+                <YStack flex={1} position="relative">
                   <Textarea
                     ref={textareaRef}
                     value={inputMessage}
@@ -649,38 +611,38 @@ export default function ChatPage() {
                       }
                     }}
                     placeholder={`Message ${selectedAgent?.name ?? "Hanzo"}...`}
-                    className="min-h-[44px] max-h-[200px] bg-card border-border text-foreground placeholder:text-muted-foreground resize-none pr-12"
+                    minHeight={44} maxHeight={200} backgroundColor="$background" borderColor="$borderColor" color="$color" placeholderTextColor="$color11" resize="none" paddingRight="$8"
                     rows={1}
-                  />
+  />
                   <Button
                     onClick={sendMessage}
                     disabled={!inputMessage.trim() || isStreaming}
                     size="sm"
-                    className="absolute right-2 bottom-2 h-8 w-8 p-0 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                    position="absolute" right="$2" bottom="$2" height="$6" width="$6" padding="$0" backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }} disabledStyle={{ opacity: 0.5 }}
                   >
                     {isStreaming ? (
-                      <StopCircle className="w-4 h-4" />
+                      <StopCircle size={16} />
                     ) : (
-                      <ArrowUp className="w-4 h-4" />
+                      <ArrowUp size={16} />
                     )}
                   </Button>
-                </div>
-              </div>
-              <div className="flex items-center justify-between mt-2">
-                <p className="text-xs text-muted-foreground">
+                </YStack>
+              </XStack>
+              <XStack alignItems="center" justifyContent="space-between" marginTop="$2">
+                <Paragraph fontSize="$1" color="$color11">
                   {isStreaming ? "Generating..." : "Press Enter to send, Shift+Enter for new line"}
-                </p>
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="sm" className="h-6 text-xs text-muted-foreground hover:text-foreground">
-                    <Sparkles className="w-3 h-3 mr-1" />
+                </Paragraph>
+                <XStack alignItems="center" gap="$2">
+                  <Button variant="ghost" size="sm" height="$5" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}>
+                    <Sparkles size={12} />
                     Enhance prompt
                   </Button>
-                </div>
-              </div>
-            </div>
-          </div>
+                </XStack>
+              </XStack>
+            </YStack>
+          </YStack>
         )}
-      </div>
-    </div>
+      </YStack>
+    </XStack>
   );
 }

@@ -1,36 +1,12 @@
 "use client";
 
+import { SizableText, YStack, XStack, H1, Paragraph, H2, H3 } from '@hanzo/gui';
 import { useState } from "react";
 import { Button, Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@hanzo/ui';
 import Link from "next/link";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import SiteFooter from "@/components/landing/site-footer";
-import {
-  ArrowRight,
-  Check,
-  X,
-  Menu,
-  Sparkles,
-  Zap,
-  Brain,
-  Code,
-  Globe,
-  Shield,
-  Database,
-  Rocket,
-  Users,
-  Server,
-  Cloud,
-  Settings,
-  BarChart,
-  Lock,
-  Cpu,
-  Layers,
-  GitBranch,
-  MonitorPlay,
-  Package,
-  Terminal
-} from "lucide-react";
+import { ArrowRight, Check, X, Menu, Sparkles, Zap, Brain, Code, Globe, Shield, Database, Rocket, Users, Server, Cloud, Settings, BarChart, Cpu, Layers, GitBranch, MonitorPlay, Package } from "lucide-react";
 import { useUser } from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
 
@@ -41,37 +17,37 @@ export default function FeaturesPage() {
 
   const coreFeatures = [
     {
-      icon: <Brain className="w-6 h-6 text-violet-400" />,
+      icon: <Brain size={24} color="$purple8" />,
       title: "AI-Powered Code Generation",
       description: "Advanced AI models generate production-ready code from natural language descriptions",
       features: ["Frontier model integration", "Custom code patterns", "Context-aware generation", "Multi-language support"]
     },
     {
-      icon: <Code className="w-6 h-6 text-blue-400" />,
+      icon: <Code size={24} color="$blue8" />,
       title: "Smart Development Tools",
       description: "Intelligent development environment with advanced debugging and optimization",
       features: ["Real-time code analysis", "Auto-completion", "Error detection", "Performance optimization"]
     },
     {
-      icon: <Globe className="w-6 h-6 text-green-400" />,
+      icon: <Globe size={24} color="$green8" />,
       title: "Instant Deployment",
       description: "Deploy your applications instantly with global CDN and edge computing",
       features: ["One-click deployment", "Global CDN", "Edge functions", "Auto-scaling"]
     },
     {
-      icon: <Shield className="w-6 h-6 text-purple-400" />,
+      icon: <Shield size={24} color="$purple8" />,
       title: "Enterprise Security",
       description: "Bank-grade security with encryption, compliance, and access controls",
       features: ["End-to-end encryption", "SOC 2 Type II audit in progress", "Role-based access", "Audit logging"]
     },
     {
-      icon: <Database className="w-6 h-6 text-orange-400" />,
+      icon: <Database size={24} color="$orange8" />,
       title: "Integrated Database",
       description: "Managed databases with automatic backups and scaling",
       features: ["PostgreSQL & SQLite", "Auto-backups", "Query optimization", "Real-time sync"]
     },
     {
-      icon: <Rocket className="w-6 h-6 text-pink-400" />,
+      icon: <Rocket size={24} color="$pink8" />,
       title: "Performance Monitoring",
       description: "Real-time analytics and performance monitoring for your applications",
       features: ["Real-time metrics", "Error tracking", "Performance insights", "Custom dashboards"]
@@ -80,22 +56,22 @@ export default function FeaturesPage() {
 
   const aiCapabilities = [
     {
-      icon: <Sparkles className="w-8 h-8 text-violet-400" />,
+      icon: <Sparkles size={32} color="$purple8" />,
       title: "Natural Language to Code",
       description: "Describe what you want in plain English, and our AI will generate the complete application with all necessary components, styling, and functionality."
     },
     {
-      icon: <GitBranch className="w-8 h-8 text-blue-400" />,
+      icon: <GitBranch size={32} color="$blue8" />,
       title: "Smart Code Evolution",
       description: "AI continuously learns from your codebase to suggest improvements, refactor legacy code, and maintain consistency across your projects."
     },
     {
-      icon: <MonitorPlay className="w-8 h-8 text-green-400" />,
+      icon: <MonitorPlay size={32} color="$green8" />,
       title: "Visual Design Integration",
       description: "Upload mockups or describe your design vision, and AI will generate pixel-perfect implementations with responsive layouts."
     },
     {
-      icon: <Package className="w-8 h-8 text-purple-400" />,
+      icon: <Package size={32} color="$purple8" />,
       title: "Component Intelligence",
       description: "AI understands popular frameworks and libraries, automatically selecting the best components and patterns for your use case."
     }
@@ -169,54 +145,54 @@ export default function FeaturesPage() {
   ];
 
   return (
-    <div className="bg-card text-foreground min-h-screen">
+    <SizableText backgroundColor="$background" color="$color" minHeight="100%" display="flex" flexDirection="column">
       {/* Gradient background */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-card to-card" />
-        <div className="absolute top-[20%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-gradient-radial from-violet-500/10 via-purple-500/5 to-transparent blur-3xl" />
-      </div>
+      <YStack position="fixed" top={0} right={0} bottom={0} left={0} pointerEvents="none" zIndex={0}>
+        <YStack position="absolute" top={0} right={0} bottom={0} left={0} />
+        <YStack position="absolute" top="20%" left="50%" x="50%" y="50%" width={800} height={600} />
+      </YStack>
 
       {/* Navigation */}
-      <nav className="relative z-20 flex items-center justify-between px-4 md:px-8 py-4 md:py-5 border-b border-border">
-        <div className="flex items-center gap-6 md:gap-10">
-          <Link href="/" className="flex items-center gap-2.5">
+      <XStack position="relative" zIndex={20} alignItems="center" justifyContent="space-between" paddingHorizontal="$4" paddingVertical="$4" borderBottomWidth={1} borderColor="$borderColor" $md={{ paddingHorizontal: "$6", paddingVertical: "$4.5" }}>
+        <XStack alignItems="center" gap="$5" $md={{ gap: "$7" }}>
+          <Link href="/"><XStack alignItems="center" gap="$2.5">
             <HanzoLogo className="w-8 md:w-9 h-8 md:h-9 text-foreground" />
-            <span className="text-xl md:text-2xl font-medium">Hanzo</span>
-          </Link>
+            <SizableText fontSize="$7" fontWeight="500" $md={{ fontSize: "$8" }}>Hanzo</SizableText>
+          </XStack></Link>
 
-          <div className="hidden md:flex items-center gap-8">
-            <Link href="/features" className="text-foreground font-medium text-sm transition-colors">
+          <YStack display="none" alignItems="center" gap="$6">
+            <Link href="/features"><SizableText color="$color" fontWeight="500" fontSize="$3">
               Features
-            </Link>
-            <Link href="/community" className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors">
+            </SizableText></Link>
+            <Link href="/community"><SizableText color="$color11" fontSize="$3" fontWeight="500" hoverStyle={{ color: "$color" }}>
               Community
-            </Link>
-            <Link href="/pricing" className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors">
+            </SizableText></Link>
+            <Link href="/pricing"><SizableText color="$color11" fontSize="$3" fontWeight="500" hoverStyle={{ color: "$color" }}>
               Pricing
-            </Link>
-            <Link href="/enterprise" className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors">
+            </SizableText></Link>
+            <Link href="/enterprise"><SizableText color="$color11" fontSize="$3" fontWeight="500" hoverStyle={{ color: "$color" }}>
               Enterprise
-            </Link>
-            <Link href="/docs" className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors">
+            </SizableText></Link>
+            <Link href="/docs"><SizableText color="$color11" fontSize="$3" fontWeight="500" hoverStyle={{ color: "$color" }}>
               Docs
-            </Link>
-          </div>
-        </div>
+            </SizableText></Link>
+          </YStack>
+        </XStack>
 
         {/* Desktop Nav Actions */}
-        <div className="hidden md:flex items-center gap-4">
+        <YStack display="none" alignItems="center" gap="$4">
           {user ? (
             <>
               <Button
                 onClick={() => router.push('/projects')}
                 variant="ghost"
-                className="text-muted-foreground hover:text-foreground text-sm font-medium"
+                color="$color11" fontSize="$3" fontWeight="500" hoverStyle={{ color: "$color" }}
               >
                 Dashboard
               </Button>
               <Button
                 onClick={() => router.push('/dev')}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-medium px-5 py-2.5 rounded-xl"
+                backgroundColor="$color12" color="$background" fontSize="$3" fontWeight="500" paddingHorizontal="$4.5" paddingVertical="$2.5" borderRadius="$6" hoverStyle={{ backgroundColor: "$color12" }}
               >
                 Get started
               </Button>
@@ -226,336 +202,330 @@ export default function FeaturesPage() {
               <Button
                 onClick={openLoginWindow}
                 variant="ghost"
-                className="text-muted-foreground hover:text-foreground text-sm font-medium"
+                color="$color11" fontSize="$3" fontWeight="500" hoverStyle={{ color: "$color" }}
               >
                 Log in
               </Button>
               <Button
                 onClick={openLoginWindow}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-medium px-5 py-2.5 rounded-xl"
+                backgroundColor="$color12" color="$background" fontSize="$3" fontWeight="500" paddingHorizontal="$4.5" paddingVertical="$2.5" borderRadius="$6" hoverStyle={{ backgroundColor: "$color12" }}
               >
                 Get started
               </Button>
             </>
           )}
-        </div>
+        </YStack>
 
         {/* Mobile Menu Button */}
-        <button
+        <Button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-2 hover:bg-accent rounded-lg transition-colors"
+          padding="$2" borderRadius="$5" $md={{ display: "none" }} hoverStyle={{ backgroundColor: "$color3" }}
         >
           {mobileMenuOpen ? (
-            <X className="w-6 h-6" />
+            <X size={24} />
           ) : (
-            <Menu className="w-6 h-6" />
+            <Menu size={24} />
           )}
-        </button>
-      </nav>
+        </Button>
+      </XStack>
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 bg-background/95 backdrop-blur-xl z-50 md:hidden">
-          <div className="flex flex-col h-full">
-            <div className="flex items-center justify-between p-4 border-b border-border">
-              <Link href="/" className="flex items-center gap-2.5">
+        <YStack position="fixed" top={0} right={0} bottom={0} left={0} backgroundColor="$background" backdropFilter="blur(24px)" zIndex={50} $md={{ display: "none" }}>
+          <YStack height="100%">
+            <XStack alignItems="center" justifyContent="space-between" padding="$4" borderBottomWidth={1} borderColor="$borderColor">
+              <Link href="/"><XStack alignItems="center" gap="$2.5">
                 <HanzoLogo className="w-8 h-8 text-foreground" />
-                <span className="text-xl font-medium">Hanzo</span>
-              </Link>
-              <button
+                <SizableText fontSize="$7" fontWeight="500">Hanzo</SizableText>
+              </XStack></Link>
+              <Button
                 onClick={() => setMobileMenuOpen(false)}
-                className="p-2 hover:bg-accent rounded-lg transition-colors"
+                padding="$2" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
               >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto py-8 px-4">
-              <div className="space-y-6">
-                <Link href="/features" className="block text-2xl font-medium text-foreground transition-colors">
+                <X size={24} />
+              </Button>
+            </XStack>
+            <YStack flex={1} paddingVertical="$6" paddingHorizontal="$4" overflow="scroll">
+              <YStack rowGap="$5">
+                <Link href="/features"><SizableText fontSize="$8" fontWeight="500" color="$color">
                   Features
-                </Link>
-                <Link href="/community" className="block text-2xl font-medium text-muted-foreground hover:text-foreground transition-colors">
+                </SizableText></Link>
+                <Link href="/community"><SizableText fontSize="$8" fontWeight="500" color="$color11" hoverStyle={{ color: "$color" }}>
                   Community
-                </Link>
-                <Link href="/pricing" className="block text-2xl font-medium text-muted-foreground hover:text-foreground transition-colors">
+                </SizableText></Link>
+                <Link href="/pricing"><SizableText fontSize="$8" fontWeight="500" color="$color11" hoverStyle={{ color: "$color" }}>
                   Pricing
-                </Link>
-                <Link href="/enterprise" className="block text-2xl font-medium text-muted-foreground hover:text-foreground transition-colors">
+                </SizableText></Link>
+                <Link href="/enterprise"><SizableText fontSize="$8" fontWeight="500" color="$color11" hoverStyle={{ color: "$color" }}>
                   Enterprise
-                </Link>
-                <Link href="/docs" className="block text-2xl font-medium text-muted-foreground hover:text-foreground transition-colors">
+                </SizableText></Link>
+                <Link href="/docs"><SizableText fontSize="$8" fontWeight="500" color="$color11" hoverStyle={{ color: "$color" }}>
                   Docs
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
+                </SizableText></Link>
+              </YStack>
+            </YStack>
+          </YStack>
+        </YStack>
       )}
 
-      <main className="relative z-10">
+      <YStack position="relative" zIndex={10}>
         {/* Hero Section */}
-        <section className="px-4 md:px-8 pt-16 md:pt-24 pb-16 md:pb-20">
-          <div className="max-w-5xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 md:mb-8 bg-violet-500/10 border border-violet-500/20 rounded-full">
-              <Sparkles className="w-4 h-4 text-violet-400" />
-              <span className="text-sm text-violet-300">Powered by Advanced AI</span>
-            </div>
+        <YStack paddingHorizontal="$4" paddingTop="$10" paddingBottom="$10" $md={{ paddingHorizontal: "$6", paddingTop: "$12", paddingBottom: "$11" }}>
+          <SizableText maxWidth={1024} alignSelf="center" textAlign="center" display="flex" flexDirection="column">
+            <XStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$1.5" marginBottom="$5" backgroundColor="$purple9" borderWidth={1} borderColor="$purple9" borderRadius="$10" $md={{ marginBottom: "$6" }}>
+              <Sparkles size={16} color="$purple8" />
+              <SizableText fontSize="$3" color="$purple4">Powered by Advanced AI</SizableText>
+            </XStack>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-medium mb-4 md:mb-6">
+            <H1 fontSize="$11" fontWeight="500" marginBottom="$4" $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13", marginBottom: "$5" }}>
               Everything you need to{" "}
-              <span className="relative inline-block">
-                <span className="bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              <SizableText position="relative">
+                <SizableText backgroundClip="text" color="transparent">
                   build faster
-                </span>
-                <div className="absolute -inset-2 bg-gradient-to-r from-violet-400/20 via-purple-400/20 to-pink-400/20 blur-2xl -z-10" />
-              </span>
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">
+                </SizableText>
+                <YStack position="absolute" top="-2" right="-2" bottom="-2" left="-2" zIndex={10} />
+              </SizableText>
+            </H1>
+            <Paragraph fontSize="$6" color="$color11" marginBottom="$8" maxWidth={768} alignSelf="center" $md={{ fontSize: "$7" }}>
               From AI-powered code generation to instant deployment, Hanzo provides all the tools you need to turn ideas into production-ready applications
-            </p>
+            </Paragraph>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <YStack gap="$4" justifyContent="center" alignItems="center" $sm={{ flexDirection: "row" }}>
               <Button
                 onClick={() => user ? router.push('/dev') : openLoginWindow()}
-                className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-400 hover:to-purple-400 text-white px-8 py-3 rounded-xl font-medium text-lg"
+                color="white" paddingHorizontal="$6" paddingVertical="$3" borderRadius="$6" fontWeight="500" fontSize="$6"
               >
-                <Zap className="w-5 h-5 mr-2" />
+                <Zap size={20} />
                 Start Building
               </Button>
               <Button
                 onClick={() => router.push('/docs')}
                 variant="outline"
-                className="border-border text-foreground hover:bg-accent px-8 py-3 rounded-xl font-medium text-lg"
+                borderColor="$borderColor" color="$color" paddingHorizontal="$6" paddingVertical="$3" borderRadius="$6" fontWeight="500" fontSize="$6" hoverStyle={{ backgroundColor: "$color3" }}
               >
                 View Documentation
-                <ArrowRight className="ml-2 w-5 h-5" />
+                <ArrowRight size={20} />
               </Button>
-            </div>
-          </div>
-        </section>
+            </YStack>
+          </SizableText>
+        </YStack>
 
         {/* Core Features */}
-        <section className="px-4 md:px-8 py-16 md:py-20 bg-gradient-to-b from-transparent via-violet-950/5 to-transparent">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
-              <Badge className="mb-4 bg-gradient-to-r from-violet-600 to-purple-600 text-white border-0 px-4 py-1.5">
-                <Settings className="w-4 h-4 mr-2" />
+        <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
+          <YStack maxWidth={1280} alignSelf="center">
+            <SizableText textAlign="center" marginBottom="$10" display="flex" flexDirection="column">
+              <Badge marginBottom="$4" color="white" borderWidth={0} paddingHorizontal="$4" paddingVertical="$1.5">
+                <Settings size={16} />
                 Core Features
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-medium mb-4">Everything you need in one platform</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              <H2 fontSize="$10" fontWeight="500" marginBottom="$4" $md={{ fontSize: "$11" }}>Everything you need in one platform</H2>
+              <Paragraph fontSize="$6" color="$color11" maxWidth={672} alignSelf="center">
                 Comprehensive development tools designed to accelerate your workflow
-              </p>
-            </div>
+              </Paragraph>
+            </SizableText>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <YStack gap="$6">
               {coreFeatures.map((feature, index) => (
-                <Card key={index} className="bg-card border-border hover:border-violet-500/30 transition-all">
+                <Card key={index} backgroundColor="$background" borderColor="$borderColor" hoverStyle={{ borderColor: "$purple9" }}>
                   <CardHeader>
-                    <div className="flex items-center gap-3 mb-2">
+                    <XStack alignItems="center" gap="$3" marginBottom="$2">
                       {feature.icon}
-                      <CardTitle className="text-xl text-foreground">{feature.title}</CardTitle>
-                    </div>
-                    <CardDescription className="text-muted-foreground">
+                      <CardTitle fontSize="$7" color="$color">{feature.title}</CardTitle>
+                    </XStack>
+                    <CardDescription color="$color11">
                       {feature.description}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <ul className="space-y-2">
+                    <YStack rowGap="$2">
                       {feature.features.map((item, idx) => (
-                        <li key={idx} className="flex items-center gap-2 text-sm text-foreground">
-                          <Check className="w-4 h-4 text-green-400" />
+                        <SizableText key={idx} alignItems="center" gap="$2" fontSize="$3" color="$color">
+                          <Check size={16} color="$green8" />
                           {item}
-                        </li>
+                        </SizableText>
                       ))}
-                    </ul>
+                    </YStack>
                   </CardContent>
                 </Card>
               ))}
-            </div>
-          </div>
-        </section>
+            </YStack>
+          </YStack>
+        </YStack>
 
         {/* AI Capabilities */}
-        <section className="px-4 md:px-8 py-16 md:py-20">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
-              <Badge className="mb-4 bg-gradient-to-r from-blue-600 to-violet-600 text-white border-0 px-4 py-1.5">
-                <Brain className="w-4 h-4 mr-2" />
+        <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
+          <YStack maxWidth={1280} alignSelf="center">
+            <SizableText textAlign="center" marginBottom="$10" display="flex" flexDirection="column">
+              <Badge marginBottom="$4" color="white" borderWidth={0} paddingHorizontal="$4" paddingVertical="$1.5">
+                <Brain size={16} />
                 AI Capabilities
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-medium mb-4">Next-generation AI development</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              <H2 fontSize="$10" fontWeight="500" marginBottom="$4" $md={{ fontSize: "$11" }}>Next-generation AI development</H2>
+              <Paragraph fontSize="$6" color="$color11" maxWidth={672} alignSelf="center">
                 Advanced AI models that understand your intent and generate production-ready code
-              </p>
-            </div>
+              </Paragraph>
+            </SizableText>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <YStack gap="$8">
               {aiCapabilities.map((capability, index) => (
-                <div key={index} className="flex gap-6">
-                  <div className="flex-shrink-0">
-                    <div className="p-3 bg-gradient-to-br from-violet-500/10 to-purple-500/10 rounded-xl border border-violet-500/20">
+                <XStack key={index} gap="$5">
+                  <YStack flexShrink={0}>
+                    <YStack padding="$3" borderRadius="$6" borderWidth={1} borderColor="$purple9">
                       {capability.icon}
-                    </div>
-                  </div>
+                    </YStack>
+                  </YStack>
                   <div>
-                    <h3 className="text-xl font-medium mb-3 text-foreground">{capability.title}</h3>
-                    <p className="text-foreground leading-relaxed">{capability.description}</p>
+                    <H3 fontSize="$7" fontWeight="500" marginBottom="$3" color="$color">{capability.title}</H3>
+                    <Paragraph color="$color" lineHeight={1.625}>{capability.description}</Paragraph>
                   </div>
-                </div>
+                </XStack>
               ))}
-            </div>
-          </div>
-        </section>
+            </YStack>
+          </YStack>
+        </YStack>
 
         {/* Technical Stack */}
-        <section className="px-4 md:px-8 py-16 md:py-20 bg-gradient-to-b from-transparent via-purple-950/5 to-transparent">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
-              <Badge className="mb-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 px-4 py-1.5">
-                <Layers className="w-4 h-4 mr-2" />
+        <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
+          <YStack maxWidth={1280} alignSelf="center">
+            <SizableText textAlign="center" marginBottom="$10" display="flex" flexDirection="column">
+              <Badge marginBottom="$4" color="white" borderWidth={0} paddingHorizontal="$4" paddingVertical="$1.5">
+                <Layers size={16} />
                 Technology Stack
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-medium mb-4">Built on modern infrastructure</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              <H2 fontSize="$10" fontWeight="500" marginBottom="$4" $md={{ fontSize: "$11" }}>Built on modern infrastructure</H2>
+              <Paragraph fontSize="$6" color="$color11" maxWidth={672} alignSelf="center">
                 Enterprise-grade technology stack designed for scale and performance
-              </p>
-            </div>
+              </Paragraph>
+            </SizableText>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="inline-flex p-4 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-2xl border border-blue-500/20 mb-4">
-                  <Cloud className="w-8 h-8 text-blue-400" />
-                </div>
-                <h3 className="text-xl font-medium mb-2 text-foreground">Cloud Infrastructure</h3>
-                <p className="text-muted-foreground">Global CDN, edge computing, and auto-scaling infrastructure</p>
-              </div>
-              <div className="text-center">
-                <div className="inline-flex p-4 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-2xl border border-green-500/20 mb-4">
-                  <Server className="w-8 h-8 text-green-400" />
-                </div>
-                <h3 className="text-xl font-medium mb-2 text-foreground">Database Solutions</h3>
-                <p className="text-muted-foreground">Hanzo Base (SQLite), Hanzo SQL, and Hanzo KV with auto-backups</p>
-              </div>
-              <div className="text-center">
-                <div className="inline-flex p-4 bg-gradient-to-br from-purple-500/10 to-violet-500/10 rounded-2xl border border-purple-500/20 mb-4">
-                  <Cpu className="w-8 h-8 text-purple-400" />
-                </div>
-                <h3 className="text-xl font-medium mb-2 text-foreground">AI Processing</h3>
-                <p className="text-muted-foreground">GPT-4, Claude, and custom models for code generation</p>
-              </div>
-            </div>
-          </div>
-        </section>
+            <YStack gap="$6">
+              <SizableText textAlign="center" display="flex" flexDirection="column">
+                <XStack padding="$4" borderRadius="$8" borderWidth={1} borderColor="$blue9" marginBottom="$4">
+                  <Cloud size={32} color="$blue8" />
+                </XStack>
+                <H3 fontSize="$7" fontWeight="500" marginBottom="$2" color="$color">Cloud Infrastructure</H3>
+                <Paragraph color="$color11">Global CDN, edge computing, and auto-scaling infrastructure</Paragraph>
+              </SizableText>
+              <SizableText textAlign="center" display="flex" flexDirection="column">
+                <XStack padding="$4" borderRadius="$8" borderWidth={1} borderColor="$green9" marginBottom="$4">
+                  <Server size={32} color="$green8" />
+                </XStack>
+                <H3 fontSize="$7" fontWeight="500" marginBottom="$2" color="$color">Database Solutions</H3>
+                <Paragraph color="$color11">Hanzo Base (SQLite), Hanzo SQL, and Hanzo KV with auto-backups</Paragraph>
+              </SizableText>
+              <SizableText textAlign="center" display="flex" flexDirection="column">
+                <XStack padding="$4" borderRadius="$8" borderWidth={1} borderColor="$purple9" marginBottom="$4">
+                  <Cpu size={32} color="$purple8" />
+                </XStack>
+                <H3 fontSize="$7" fontWeight="500" marginBottom="$2" color="$color">AI Processing</H3>
+                <Paragraph color="$color11">GPT-4, Claude, and custom models for code generation</Paragraph>
+              </SizableText>
+            </YStack>
+          </YStack>
+        </YStack>
 
         {/* Pricing Comparison */}
-        <section className="px-4 md:px-8 py-16 md:py-20">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
-              <Badge className="mb-4 bg-gradient-to-r from-green-600 to-blue-600 text-white border-0 px-4 py-1.5">
-                <BarChart className="w-4 h-4 mr-2" />
+        <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
+          <YStack maxWidth={1280} alignSelf="center">
+            <SizableText textAlign="center" marginBottom="$10" display="flex" flexDirection="column">
+              <Badge marginBottom="$4" color="white" borderWidth={0} paddingHorizontal="$4" paddingVertical="$1.5">
+                <BarChart size={16} />
                 Simple Pricing
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-medium mb-4">Choose your plan</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              <H2 fontSize="$10" fontWeight="500" marginBottom="$4" $md={{ fontSize: "$11" }}>Choose your plan</H2>
+              <Paragraph fontSize="$6" color="$color11" maxWidth={672} alignSelf="center">
                 Start free, scale as you grow. No hidden fees or surprises.
-              </p>
-            </div>
+              </Paragraph>
+            </SizableText>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <YStack gap="$6">
               {pricingPlans.map((plan, index) => (
                 <Card
                   key={index}
-                  className={`relative bg-card border-border transition-all ${
-                    plan.popular ? 'border-violet-500/50 scale-105' : 'hover:border-foreground/30'
-                  }`}
+                  position="relative" backgroundColor="$background" {...{ borderColor: plan.popular ? "$purple9" : "$borderColor", scale: plan.popular ? 1.05 : undefined, hoverStyle: plan.popular ? undefined : {"borderColor":"$color"} }}
                 >
                   {plan.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <Badge className="bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0 px-4 py-1">
+                    <YStack position="absolute" top="-3" left="50%" x="50%">
+                      <Badge color="white" borderWidth={0} paddingHorizontal="$4" paddingVertical="$1">
                         Most Popular
                       </Badge>
-                    </div>
+                    </YStack>
                   )}
-                  <CardHeader className="text-center pb-6">
-                    <CardTitle className="text-2xl text-foreground">{plan.name}</CardTitle>
-                    <div className="mt-4">
-                      <span className="text-4xl font-medium text-foreground">{plan.price}</span>
-                      {plan.period && <span className="text-muted-foreground ml-1">{plan.period}</span>}
-                    </div>
-                    <CardDescription className="text-muted-foreground mt-2">
+                  <CardHeader textAlign="center" paddingBottom="$5">
+                    <CardTitle fontSize="$8" color="$color">{plan.name}</CardTitle>
+                    <YStack marginTop="$4">
+                      <SizableText fontSize="$11" fontWeight="500" color="$color">{plan.price}</SizableText>
+                      {plan.period && <SizableText color="$color11" marginLeft="$1">{plan.period}</SizableText>}
+                    </YStack>
+                    <CardDescription color="$color11" marginTop="$2">
                       {plan.description}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent rowGap="$4">
                     <Button
-                      className={`w-full ${
-                        plan.popular
-                          ? 'bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-400 hover:to-purple-400 text-white'
-                          : 'bg-accent text-foreground border border-border hover:border-foreground/30'
-                      }`}
+                      width="100%" {...{ color: plan.popular ? "white" : "$color", backgroundColor: plan.popular ? undefined : "$color3", borderWidth: plan.popular ? undefined : 1, borderColor: plan.popular ? undefined : "$borderColor", hoverStyle: plan.popular ? undefined : {"borderColor":"$color"} }}
                       onClick={() => plan.name === 'Enterprise' ? router.push('/enterprise') : (user ? router.push('/dev') : openLoginWindow())}
                     >
                       {plan.cta}
                     </Button>
-                    <div className="space-y-3">
+                    <YStack rowGap="$3">
                       {plan.features.map((feature, idx) => (
-                        <div key={idx} className="flex items-center gap-3">
-                          <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
-                          <span className="text-sm text-foreground">{feature}</span>
-                        </div>
+                        <XStack key={idx} alignItems="center" gap="$3">
+                          <Check size={16} color="$green8" />
+                          <SizableText fontSize="$3" color="$color">{feature}</SizableText>
+                        </XStack>
                       ))}
                       {plan.notIncluded.map((feature, idx) => (
-                        <div key={idx} className="flex items-center gap-3">
-                          <X className="w-4 h-4 text-red-400 flex-shrink-0" />
-                          <span className="text-sm text-muted-foreground">{feature}</span>
-                        </div>
+                        <XStack key={idx} alignItems="center" gap="$3">
+                          <X size={16} color="$red8" />
+                          <SizableText fontSize="$3" color="$color11">{feature}</SizableText>
+                        </XStack>
                       ))}
-                    </div>
+                    </YStack>
                   </CardContent>
                 </Card>
               ))}
-            </div>
+            </YStack>
 
-            <div className="text-center mt-12">
-              <p className="text-muted-foreground mb-4">All plans include free SSL certificates and 99.9% uptime SLA</p>
-              <Link href="/pricing" className="text-violet-400 hover:text-violet-300 text-sm font-medium">
+            <SizableText textAlign="center" marginTop="$8" display="flex" flexDirection="column">
+              <Paragraph color="$color11" marginBottom="$4">All plans include free SSL certificates and 99.9% uptime SLA</Paragraph>
+              <Link href="/pricing"><SizableText color="$purple8" fontSize="$3" fontWeight="500" hoverStyle={{ color: "$purple4" }}>
                 View detailed pricing comparison →
-              </Link>
-            </div>
-          </div>
-        </section>
+              </SizableText></Link>
+            </SizableText>
+          </YStack>
+        </YStack>
 
         {/* CTA Section */}
-        <section className="px-4 md:px-8 py-16 md:py-20 bg-gradient-to-b from-violet-950/10 to-transparent">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-medium mb-4">
+        <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
+          <SizableText maxWidth={896} alignSelf="center" textAlign="center" display="flex" flexDirection="column">
+            <H2 fontSize="$10" fontWeight="500" marginBottom="$4" $md={{ fontSize: "$11" }}>
               Ready to build your next project?
-            </h2>
-            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+            </H2>
+            <Paragraph fontSize="$6" color="$color11" marginBottom="$6" maxWidth={672} alignSelf="center">
               Join thousands of developers who are already building amazing applications with Hanzo AI
-            </p>
+            </Paragraph>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <YStack gap="$4" justifyContent="center" alignItems="center" $sm={{ flexDirection: "row" }}>
               <Button
                 onClick={() => user ? router.push('/dev') : openLoginWindow()}
-                className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-400 hover:to-purple-400 text-white px-8 py-3 rounded-xl font-medium text-lg"
+                color="white" paddingHorizontal="$6" paddingVertical="$3" borderRadius="$6" fontWeight="500" fontSize="$6"
               >
-                <Zap className="w-5 h-5 mr-2" />
+                <Zap size={20} />
                 Start Building Now
               </Button>
               <Button
                 onClick={() => router.push('/community')}
                 variant="outline"
-                className="border-border text-foreground hover:bg-accent px-8 py-3 rounded-xl font-medium text-lg"
+                borderColor="$borderColor" color="$color" paddingHorizontal="$6" paddingVertical="$3" borderRadius="$6" fontWeight="500" fontSize="$6" hoverStyle={{ backgroundColor: "$color3" }}
               >
-                <Users className="w-5 h-5 mr-2" />
+                <Users size={20} />
                 Explore Community
               </Button>
-            </div>
-          </div>
-        </section>
-      </main>
+            </YStack>
+          </SizableText>
+        </YStack>
+      </YStack>
 
       {/* Footer — the ONE shared ecosystem footer (@hanzogui/shell via SiteFooter),
           same as every other marketing page. Replaces a bespoke footer whose
@@ -564,6 +534,6 @@ export default function FeaturesPage() {
           the live canonical hanzo.ai/* destinations and carries SDKs → hanzo.ai/sdks
           and Docs → docs.hanzo.ai. */}
       <SiteFooter />
-    </div>
+    </SizableText>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { SizableText, YStack, XStack, H3, Paragraph, Anchor } from '@hanzo/gui';
 import {
   useCallback,
   useEffect,
@@ -8,7 +9,7 @@ import {
   type ComponentType,
 } from "react";
 import { useIam } from "@hanzo/iam/react";
-import { toast, Button, Input, Switch, Popover, PopoverContent, PopoverTrigger } from '@hanzo/ui';
+import { toast, Button, Input, Switch, Popover, PopoverContent, PopoverTrigger, Label } from '@hanzo/ui';
 import {
   AlertCircle,
   Check,
@@ -314,186 +315,186 @@ export function GitSyncButton({
           variant="outline"
           size="sm"
           disabled={disabled}
-          className="!h-7 gap-1.5 px-2.5 text-xs !border-border !bg-foreground/[0.04] !text-foreground transition-colors duration-150 hover:!bg-muted"
+          height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1" borderColor="$borderColor" backgroundColor="$color" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
           title="Push your project to Hanzo git, GitHub, or GitLab"
         >
-          <UploadCloud className="size-3.5" />
-          <span className="hidden md:inline">Push to Git</span>
+          <UploadCloud size={14} />
+          <SizableText display="none">Push to Git</SizableText>
           {linked && (
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden />
+            <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$green8" aria-hidden />
           )}
         </Button>
       </PopoverTrigger>
       <PopoverContent
         align="end"
-        className="w-[360px] p-0"
+        width={360} padding="$0"
       >
-        <div className="border-b border-border p-5">
-          <div className="mb-1 flex items-center gap-2">
-            <UploadCloud className="h-[18px] w-[18px] text-foreground" />
-            <h3 className="text-[15px] font-medium">Push to a Git repository</h3>
-          </div>
-          <p className="text-sm text-muted-foreground">
+        <YStack borderBottomWidth={1} borderColor="$borderColor" padding="$4.5">
+          <XStack marginBottom="$1" alignItems="center" gap="$2">
+            <UploadCloud size={18} color="$color" />
+            <H3 fontSize={15} fontWeight="500">Push to a Git repository</H3>
+          </XStack>
+          <Paragraph fontSize="$3" color="$color11">
             Push your generated project to a repo you own — one commit, on the
             default branch. Re-syncing pushes to the same repo.
-          </p>
-        </div>
+          </Paragraph>
+        </YStack>
 
         {needsConnect ? (
-          <div className="flex flex-col items-center px-6 py-8 text-center">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-border bg-foreground/[0.04]">
+          <SizableText flexDirection="column" alignItems="center" paddingHorizontal="$5" paddingVertical="$6" textAlign="center" display="flex">
+            <XStack marginBottom="$4" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color">
               <ProviderIcon className="h-6 w-6 text-foreground" />
-            </div>
-            <p className="text-sm font-medium">Connect {providerName}</p>
-            <p className="mx-auto mt-1.5 max-w-xs text-sm text-muted-foreground">
+            </XStack>
+            <Paragraph fontSize="$3" fontWeight="500">Connect {providerName}</Paragraph>
+            <Paragraph alignSelf="center" marginTop="$1.5" maxWidth={320} fontSize="$3" color="$color11">
               Link {providerName} to your Hanzo account, then push your project.
-            </p>
-            <button
+            </Paragraph>
+            <Button
               type="button"
               onClick={connect}
-              className="mt-5 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              marginTop="$4.5" alignItems="center" gap="$2" borderRadius="$5" backgroundColor="$color12" paddingHorizontal="$4" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
             >
               <ProviderIcon className="h-4 w-4" />
               Connect {providerName}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
               onClick={() => setNeedsConnect(false)}
-              className="mt-3 text-xs text-muted-foreground hover:text-foreground"
+              marginTop="$3" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}
             >
               I&apos;ve connected — try again
-            </button>
-          </div>
+            </Button>
+          </SizableText>
         ) : result?.ok ? (
-          <div className="px-6 py-7 text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-emerald-400/20 bg-emerald-400/10">
-              <Check className="h-6 w-6 text-emerald-400" />
-            </div>
-            <p className="text-sm font-medium">
+          <SizableText paddingHorizontal="$5" paddingVertical={28} textAlign="center" display="flex" flexDirection="column">
+            <XStack alignSelf="center" marginBottom="$4" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$green8" backgroundColor="$green8">
+              <Check size={24} color="$green8" />
+            </XStack>
+            <Paragraph fontSize="$3" fontWeight="500">
               {result.created ? "Repository created" : "Commit pushed"}
-            </p>
+            </Paragraph>
 
-            <div className="mt-3 rounded-xl border border-border bg-foreground/[0.02] p-3 text-left">
-              <div className="flex items-center gap-2">
+            <SizableText marginTop="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" padding="$3" textAlign="left" display="flex" flexDirection="column">
+              <XStack alignItems="center" gap="$2">
                 {(() => {
                   const I = providerMeta(result.provider || provider).Icon;
                   return <I className="h-4 w-4 shrink-0 text-foreground" />;
                 })()}
-                <a
+                <Anchor
                   href={result.htmlUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="min-w-0 flex-1 truncate text-sm text-foreground hover:text-foreground"
+                  minWidth={0} flex={1} numberOfLines={1} fontSize="$3" color="$color" hoverStyle={{ color: "$color" }}
                 >
                   {repoLabel(result.htmlUrl || result.repoUrl || "")}
-                </a>
-                <button
+                </Anchor>
+                <Button
                   type="button"
                   onClick={() => copyUrl(result.htmlUrl || result.repoUrl || "")}
-                  className="text-muted-foreground transition-colors hover:text-foreground"
+                  color="$color11" hoverStyle={{ color: "$color" }}
                   title="Copy URL"
                 >
                   {copied ? (
-                    <Check className="h-3.5 w-3.5 text-emerald-400" />
+                    <Check size={14} color="$green8" />
                   ) : (
-                    <Copy className="h-3.5 w-3.5" />
+                    <Copy size={14} />
                   )}
-                </button>
-                <a
+                </Button>
+                <Anchor
                   href={result.htmlUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-muted-foreground transition-colors hover:text-foreground"
+                  color="$color11" hoverStyle={{ color: "$color" }}
                   title="Open repository"
                 >
-                  <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-              </div>
+                  <ExternalLink size={14} />
+                </Anchor>
+              </XStack>
               {(result.branch || result.commitSha) && (
-                <div className="mt-2 flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
-                  <GitBranch className="h-3 w-3" />
+                <SizableText marginTop="$2" alignItems="center" gap="$1.5" fontFamily="$mono" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+                  <GitBranch size={12} />
                   {result.branch}
                   {result.commitSha ? ` · ${result.commitSha.slice(0, 7)}` : ""}
-                </div>
+                </SizableText>
               )}
-            </div>
+            </SizableText>
 
-            <div className="mt-4 flex items-center justify-center gap-2">
+            <XStack marginTop="$4" alignItems="center" justifyContent="center" gap="$2">
               <Button
                 variant="default"
                 size="sm"
                 onClick={resync}
                 disabled={loading}
-                className="gap-1.5"
+                gap="$1.5"
               >
                 {loading ? (
-                  <Loader2 className="size-3.5 animate-spin" />
+                  <Loader2 size={14} />
                 ) : (
-                  <RefreshCw className="size-3.5" />
+                  <RefreshCw size={14} />
                 )}
                 Push again
               </Button>
-              <button
+              <Button
                 type="button"
                 onClick={() => {
                   setResult(null);
                   setShowForm(true);
                 }}
-                className="rounded-lg px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+                borderRadius="$5" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}
               >
                 Push elsewhere
-              </button>
-            </div>
-          </div>
+              </Button>
+            </XStack>
+          </SizableText>
         ) : linked && !showForm ? (
-          <div className="p-5">
-            <div className="rounded-xl border border-border bg-foreground/[0.02] p-3.5">
-              <div className="mb-1.5 flex items-center gap-1.5 text-[11px] uppercase tracking-wide text-muted-foreground">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+          <YStack padding="$4.5">
+            <YStack borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" padding="$3.5">
+              <SizableText marginBottom="$1.5" alignItems="center" gap="$1.5" fontSize={11} textTransform="uppercase" letterSpacing={0.4} color="$color11" display="flex" flexDirection="row">
+                <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$green8" />
                 Linked repository
-              </div>
-              <div className="flex items-center gap-2">
+              </SizableText>
+              <XStack alignItems="center" gap="$2">
                 {(() => {
                   const I = providerMeta(linked.provider).Icon;
                   return <I className="h-4 w-4 shrink-0 text-foreground" />;
                 })()}
-                <a
+                <Anchor
                   href={linked.htmlUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="min-w-0 flex-1 truncate text-sm font-medium text-foreground hover:text-foreground"
+                  minWidth={0} flex={1} numberOfLines={1} fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ color: "$color" }}
                 >
                   {linked.label}
-                </a>
-                <button
+                </Anchor>
+                <Button
                   type="button"
                   onClick={() => copyUrl(linked.htmlUrl)}
-                  className="text-muted-foreground transition-colors hover:text-foreground"
+                  color="$color11" hoverStyle={{ color: "$color" }}
                   title="Copy URL"
                 >
                   {copied ? (
-                    <Check className="h-3.5 w-3.5 text-emerald-400" />
+                    <Check size={14} color="$green8" />
                   ) : (
-                    <Copy className="h-3.5 w-3.5" />
+                    <Copy size={14} />
                   )}
-                </button>
-                <a
+                </Button>
+                <Anchor
                   href={linked.htmlUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-muted-foreground transition-colors hover:text-foreground"
+                  color="$color11" hoverStyle={{ color: "$color" }}
                   title="Open repository"
                 >
-                  <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-              </div>
-              <div className="mt-1.5 flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
-                <GitBranch className="h-3 w-3" />
+                  <ExternalLink size={14} />
+                </Anchor>
+              </XStack>
+              <SizableText marginTop="$1.5" alignItems="center" gap="$1.5" fontFamily="$mono" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+                <GitBranch size={12} />
                 {linked.branch}
-              </div>
-            </div>
+              </SizableText>
+            </YStack>
 
-            <div className="mt-3">
+            <YStack marginTop="$3">
               <CommitMessageField
                 value={message}
                 loading={messageLoading}
@@ -501,8 +502,8 @@ export function GitSyncButton({
                   messageEdited.current = true;
                   setMessage(v);
                 }}
-              />
-            </div>
+  />
+            </YStack>
 
             {error && <ErrorNote message={error} />}
 
@@ -510,58 +511,54 @@ export function GitSyncButton({
               variant="default"
               onClick={resync}
               disabled={loading}
-              className="mt-3 w-full gap-2"
+              marginTop="$3" width="100%" gap="$2"
             >
               {loading ? (
-                <Loader2 className="size-4 animate-spin" />
+                <Loader2 size={16} />
               ) : (
-                <RefreshCw className="size-4" />
+                <RefreshCw size={16} />
               )}
               Push update to {providerMeta(linked.provider).label}
             </Button>
-            <button
+            <Button
               type="button"
               onClick={() => {
                 setShowForm(true);
                 setError(null);
               }}
-              className="mt-2 w-full text-center text-xs text-muted-foreground transition-colors hover:text-foreground"
+              marginTop="$2" width="100%" textAlign="center" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}
             >
               Push to a different repository
-            </button>
-          </div>
+            </Button>
+          </YStack>
         ) : (
-          <div className="space-y-4 p-5">
+          <YStack rowGap="$4" padding="$4.5">
             {/* Provider toggle — Hanzo first (our own git, the default). */}
-            <div className="grid grid-cols-3 gap-2">
+            <YStack gap="$2">
               {PROVIDERS.map(({ id, label, Icon }) => {
                 const activeP = provider === id;
                 return (
-                  <button
+                  <Button
                     key={id}
                     type="button"
                     onClick={() => setProvider(id)}
-                    className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border text-sm transition-colors ${
-                      activeP
-                        ? "border-border bg-muted text-foreground"
-                        : "border-border bg-transparent text-muted-foreground hover:border-border hover:text-foreground"
-                    }`}
+                    height={36} alignItems="center" justifyContent="center" gap="$1.5" borderRadius="$5" borderWidth={1} fontSize="$3" {...{ borderColor: activeP ? "$borderColor" : "$borderColor", backgroundColor: activeP ? "$color3" : "transparent", color: activeP ? "$color" : "$color11", hoverStyle: activeP ? undefined : {"borderColor":"$borderColor","color":"$color"} }}
                   >
                     <Icon className="h-4 w-4" />
                     {label}
-                  </button>
+                  </Button>
                 );
               })}
-            </div>
+            </YStack>
 
             <div>
-              <label className="mb-1.5 block text-xs text-muted-foreground">Repository name</label>
+              <Label marginBottom="$1.5" fontSize="$1" color="$color11">Repository name</Label>
               <Input
                 value={name}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
                 placeholder="my-awesome-site"
-                className="!border-border !bg-background/40 !text-foreground placeholder:!text-muted-foreground"
-              />
+                borderColor="$borderColor" backgroundColor="$background" color="$color" placeholderTextColor="$color11"
+  />
             </div>
 
             <CommitMessageField
@@ -571,15 +568,15 @@ export function GitSyncButton({
                 messageEdited.current = true;
                 setMessage(v);
               }}
-            />
+  />
 
-            <label className="flex cursor-pointer items-center justify-between rounded-lg border border-border bg-foreground/[0.02] px-3 py-2.5">
-              <span className="flex items-center gap-2 text-sm text-foreground">
-                <Lock className="h-3.5 w-3.5 text-muted-foreground" />
+            <Label cursor="pointer" alignItems="center" justifyContent="space-between" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$3" paddingVertical="$2.5">
+              <SizableText alignItems="center" gap="$2" fontSize="$3" color="$color">
+                <Lock size={14} color="$color11" />
                 Private repository
-              </span>
+              </SizableText>
               <Switch checked={isPrivate} onCheckedChange={setIsPrivate} />
-            </label>
+            </Label>
 
             {error && <ErrorNote message={error} />}
 
@@ -587,36 +584,36 @@ export function GitSyncButton({
               variant="default"
               onClick={push}
               disabled={loading}
-              className="w-full gap-2"
+              width="100%" gap="$2"
             >
               {loading ? (
-                <Loader2 className="size-4 animate-spin" />
+                <Loader2 size={16} />
               ) : (
-                <UploadCloud className="size-4" />
+                <UploadCloud size={16} />
               )}
               Push to {providerName}
             </Button>
 
             {linked && (
-              <button
+              <Button
                 type="button"
                 onClick={() => {
                   setShowForm(false);
                   setError(null);
                 }}
-                className="w-full truncate text-center text-xs text-muted-foreground transition-colors hover:text-foreground"
+                width="100%" numberOfLines={1} textAlign="center" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}
               >
                 Back to {linked.label}
-              </button>
+              </Button>
             )}
 
-            <p className="flex items-center gap-1 text-xs text-muted-foreground">
-              <ExternalLink className="size-3" />
+            <Paragraph alignItems="center" gap="$1" fontSize="$1" color="$color11">
+              <ExternalLink size={12} />
               {provider === "hanzo"
                 ? "Pushes to your Hanzo account. Credentials stay server-side."
                 : `Pushes with your linked ${providerName} account. Token stays server-side.`}
-            </p>
-          </div>
+            </Paragraph>
+          </YStack>
         )}
       </PopoverContent>
     </Popover>
@@ -638,21 +635,21 @@ function CommitMessageField({
 }) {
   return (
     <div>
-      <label className="mb-1.5 block text-xs text-muted-foreground">Commit message</label>
-      <div className="relative">
+      <Label marginBottom="$1.5" fontSize="$1" color="$color11">Commit message</Label>
+      <YStack position="relative">
         <Input
           value={value}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
           placeholder="Describe this change"
-          className="!border-border !bg-background/40 !text-foreground placeholder:!text-muted-foreground"
-        />
+          borderColor="$borderColor" backgroundColor="$background" color="$color" placeholderTextColor="$color11"
+  />
         {loading && (
-          <Loader2 className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 animate-spin text-muted-foreground" />
+          <Loader2 size={14} color="$color11" />
         )}
-      </div>
-      <p className="mt-1 text-[10px] text-muted-foreground">
+      </YStack>
+      <Paragraph marginTop="$1" fontSize={10} color="$color11">
         AI-proposed from your edits — edit before pushing.
-      </p>
+      </Paragraph>
     </div>
   );
 }
@@ -660,9 +657,9 @@ function CommitMessageField({
 /** Inline, on-brand error note (semantic red — the one exception to monochrome). */
 function ErrorNote({ message }: { message: string }) {
   return (
-    <div className="flex items-start gap-2 rounded-lg border border-red-500/25 bg-red-500/[0.06] px-3 py-2.5 text-left">
-      <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-red-400" />
-      <p className="text-xs text-red-200/90">{message}</p>
-    </div>
+    <SizableText alignItems="flex-start" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$red9" backgroundColor="$red9" paddingHorizontal="$3" paddingVertical="$2.5" textAlign="left" display="flex" flexDirection="row">
+      <AlertCircle size={14} color="$red8" />
+      <Paragraph fontSize="$1" color="$red3">{message}</Paragraph>
+    </SizableText>
   );
 }

@@ -1,3 +1,6 @@
+'use client';
+
+import { YStack, Image } from '@hanzo/gui';
 // Partner / infrastructure logo wall — REAL assets only, honestly labeled.
 // Hanzo AI is Techstars '17 (real backing); the rest are the real cloud +
 // silicon partners the platform runs on. No fabricated customers.
@@ -23,25 +26,25 @@ const partners = [
 
 export default function LogoWall() {
   return (
-    <section className="relative border-t border-border px-4 py-16 md:px-8 md:py-20">
-      <div className="mx-auto max-w-6xl">
+    <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
+      <YStack alignSelf="center" maxWidth={1152}>
         <Reveal as="p" className="text-center font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
           Backed by Techstars · Built on world-class infrastructure
         </Reveal>
 
-        <div className="mt-10 grid grid-cols-3 items-center gap-x-10 gap-y-8 md:gap-x-14">
+        <YStack marginTop="$7" alignItems="center" columnGap="$7" rowGap="$6" $md={{ columnGap: "$9" }}>
           {partners.map((p, i) => (
             <Reveal key={p.alt} delay={i * 40} className="text-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={p.src}
                 alt={p.alt}
-                className="h-6 w-auto max-w-full object-contain opacity-45 transition-opacity duration-200 [filter:brightness(0)] dark:[filter:brightness(0)_invert(1)] hover:opacity-90 md:h-7"
-              />
+                height="$5" width="auto" maxWidth="100%" objectFit="contain" opacity={0.45} hoverStyle={{ opacity: 0.9 }} $md={{ height: 28 }}
+  />
             </Reveal>
           ))}
-        </div>
-      </div>
-    </section>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }

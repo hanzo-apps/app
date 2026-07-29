@@ -1,10 +1,9 @@
 "use client";
 
+import { YStack, XStack, Paragraph, SizableText, Anchor } from '@hanzo/gui';
 import { useRef, useState } from "react";
 import Link from "next/link";
 import { useMount, useUnmount } from "react-use";
-import classNames from "classnames";
-
 import { Button } from '@hanzo/ui';
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { useUser } from "@/hooks/useUser";
@@ -80,22 +79,17 @@ export default function Navigation() {
   };
 
   return (
-    <div
-      className={classNames(
-        "sticky top-0 z-10 transition-all duration-200 backdrop-blur-md",
-        {
-          "bg-background/30": isScrolled,
-        }
-      )}
+    <YStack
+      position="sticky" top="$0" zIndex={10} backdropFilter="blur(12px)" {...{ backgroundColor: isScrolled ? "$background" : undefined }}
     >
-      <nav className="grid grid-cols-2 p-4 max-w-7xl mx-auto px-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-2">
+      <YStack padding="$4" maxWidth={1280} alignSelf="center" paddingHorizontal="$4" $sm={{ paddingHorizontal: "$5" }}>
+        <Link href="/"><XStack alignItems="center" gap="$2">
           <HanzoLogo className="w-9 h-9 text-foreground" />
-          <p className="font-sans text-foreground text-xl font-medium">Hanzo</p>
-        </Link>
-        <ul className="items-center justify-center gap-6 hidden">
+          <Paragraph fontFamily="$body" color="$color" fontSize="$7" fontWeight="500">Hanzo</Paragraph>
+        </XStack></Link>
+        <YStack alignItems="center" justifyContent="center" gap="$5" display="none">
           {navigationLinks.map((link) => (
-            <li
+            <SizableText
               key={link.name}
               ref={(el) => {
                 const index = navigationLinks.findIndex(
@@ -105,48 +99,38 @@ export default function Navigation() {
                   linksRef.current[index] = el;
                 }
               }}
-              className="inline-block font-sans text-sm"
+              fontFamily="$body" fontSize="$3"
             >
               {'external' in link && link.external ? (
-                <a
+                <Anchor
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary transition-colors"
+                  color="$color11" hoverStyle={{ color: "$color12" }}
                 >
                   {link.name}
-                </a>
+                </Anchor>
               ) : (
                 <Link
                   href={link.href}
-                  className={classNames(
-                    "text-muted-foreground hover:text-primary transition-colors",
-                    {
-                      "text-primary": hash === link.href,
-                    }
-                  )}
+
                   onClick={() => {
                     handleClick(link.href);
                   }}
-                >
+                ><SizableText color="$color11" hoverStyle={{ color: "$color12" }}>
                   {link.name}
-                </Link>
+                </SizableText></Link>
               )}
-            </li>
+            </SizableText>
           ))}
-          <div
+          <XStack
             ref={selectorRef}
-            className={classNames(
-              "h-1 absolute bottom-4 transition-all duration-200 flex items-center justify-center",
-              {
-                "opacity-0": !hash,
-              }
-            )}
+            height="$1" position="absolute" bottom="$4" alignItems="center" justifyContent="center" {...{ opacity: !hash ? 0 : undefined }}
           >
-            <div className="size-1 bg-foreground rounded-full" />
-          </div>
-        </ul>
-        <div className="flex items-center justify-end gap-2">
+            <YStack width="$1" height="$1" backgroundColor="$color" borderRadius="$10" />
+          </XStack>
+        </YStack>
+        <XStack alignItems="center" justifyContent="flex-end" gap="$2">
           {user ? (
             <UserMenu className="!pl-3 !pr-4 !py-2 !h-auto !rounded-lg" />
           ) : (
@@ -161,8 +145,8 @@ export default function Navigation() {
               </Link>
             </>
           )}
-        </div>
-      </nav>
-    </div>
+        </XStack>
+      </YStack>
+    </YStack>
   );
 }

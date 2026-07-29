@@ -1,4 +1,7 @@
+'use client';
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { XStack } from '@hanzo/gui';
 import { useState } from "react";
 import { MdSave } from "react-icons/md";
 
@@ -26,8 +29,8 @@ export function DeployButton({
   // local `gap-5` here made Publish float apart from Share/Push and read as a
   // different-weight control. Just the button (+ portal-rendered login modal).
   return (
-    <div className="relative flex items-center">
-      <div className="relative flex items-center">
+    <XStack position="relative" alignItems="center">
+      <XStack position="relative" alignItems="center">
         {user?.id ? (
           <Popover>
             <PopoverTrigger asChild>
@@ -35,16 +38,16 @@ export function DeployButton({
                 <Button
                   variant="default"
                   size="sm"
-                  className="max-lg:hidden !h-7 gap-1.5 px-2.5 text-xs"
+                  height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1" $lg={{ display: "none" }}
                   disabled={disabled}
                 >
-                  <MdSave className="size-3.5" />
+                  <MdSave size={14} />
                   {disabled ? "Building…" : "Publish"}
                 </Button>
                 <Button
                   variant="default"
                   size="sm"
-                  className="lg:hidden !h-7 px-2.5 text-xs"
+                  height={28} paddingHorizontal="$2.5" fontSize="$1" $lg={{ display: "none" }}
                   disabled={disabled}
                 >
                   {disabled ? "Building…" : "Publish"}
@@ -52,7 +55,7 @@ export function DeployButton({
               </div>
             </PopoverTrigger>
             <PopoverContent
-              className="w-72 overflow-hidden p-0"
+              width={288} overflow="hidden" padding="$0"
               align="end"
               sideOffset={8}
             >
@@ -64,17 +67,17 @@ export function DeployButton({
             <Button
               variant="default"
               size="sm"
-              className="max-lg:hidden !h-7 gap-1.5 px-2.5 text-xs"
+              height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1" $lg={{ display: "none" }}
               onClick={() => setOpen(true)}
               disabled={disabled}
             >
-              <MdSave className="size-3.5" />
+              <MdSave size={14} />
               {disabled ? "Building…" : "Publish"}
             </Button>
             <Button
               variant="default"
               size="sm"
-              className="lg:hidden !h-7 px-2.5 text-xs"
+              height={28} paddingHorizontal="$2.5" fontSize="$1" $lg={{ display: "none" }}
               onClick={() => setOpen(true)}
               disabled={disabled}
             >
@@ -88,8 +91,8 @@ export function DeployButton({
           pages={pages}
           title="Log In to publish your Project"
           description="Log in with your Hanzo account to publish your project and increase your monthly free limit."
-        />
-      </div>
-    </div>
+  />
+      </XStack>
+    </XStack>
   );
 }

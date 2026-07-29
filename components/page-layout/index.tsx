@@ -1,12 +1,13 @@
 'use client';
 
+import { XStack, YStack, SizableText, Paragraph } from '@hanzo/gui';
 import React, { useState, useEffect } from 'react';
 import { Project } from '@/lib/vfs/types';
 import { Sidebar } from '@/components/sidebar';
 import { AppHeader } from '@/components/ui/app-header';
 import { Cloud, AlertTriangle, Database } from 'lucide-react';
 import { SyncDialog } from '@/components/project-manager/sync-dialog';
-import { cn, logger } from '@/lib/utils';
+import { logger } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { getSyncOverviewStatus } from '@/lib/vfs/auto-sync';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Button } from '@hanzo/ui';
@@ -84,7 +85,7 @@ export function PageLayout({
   }
 
   return (
-    <div className="relative flex h-screen overflow-hidden">
+    <XStack position="relative" height="100%" overflow="hidden">
       <Sidebar
         currentView={currentView}
         onNavigate={onNavigate}
@@ -99,19 +100,15 @@ export function PageLayout({
         onCollapsedChange={setSidebarCollapsed}
         mobileOpen={mobileSidebarOpen}
         onMobileOpenChange={setMobileSidebarOpen}
-      />
+  />
 
       {/* Backdrop when sidebar is unpinned and hovering */}
       {!sidebarPinned && sidebarHovering && (
-        <div className="absolute inset-0 bg-black/20 z-30" />
+        <YStack position="absolute" top={0} right={0} bottom={0} left={0} backgroundColor="black" zIndex={30} />
       )}
 
-      <div
-        className={cn(
-          "flex-1 flex flex-col overflow-hidden transition-all duration-300",
-          // On mobile, no margin (sidebar is overlay). On desktop, apply margin when unpinned
-          !sidebarPinned && "md:ml-[56px]"
-        )}
+      <YStack
+        flex={1} overflow="hidden" {...{ $md: !sidebarPinned ? {"marginLeft":56} : undefined }}
       >
         {/* Header - mobile only (logo + page name + hamburger) */}
         <AppHeader
@@ -121,25 +118,25 @@ export function PageLayout({
           hideActionsOnMobile={true}
           pageName={currentView.charAt(0).toUpperCase() + currentView.slice(1)}
           className="md:hidden"
-        />
+  />
         {/* Content area */}
-        <div className="flex-1 overflow-hidden">
+        <YStack flex={1} overflow="hidden">
           {children}
-        </div>
-      </div>
+        </YStack>
+      </YStack>
 
       {/* Sync Dialog */}
       <SyncDialog
         open={syncDialogOpen}
         onOpenChange={setSyncDialogOpen}
-      />
+  />
 
       {/* First-Time Server Initialization Modal */}
       <Dialog open={initModalOpen} onOpenChange={setInitModalOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent $sm={{ maxWidth: 448 }}>
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-orange-500" />
+            <DialogTitle alignItems="center" gap="$2">
+              <AlertTriangle size={20} color="$orange9" />
               Server Database Not Initialized
             </DialogTitle>
             <DialogDescription>
@@ -147,24 +144,24 @@ export function PageLayout({
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 py-4">
-            <div className="flex items-start gap-3 p-3 bg-muted rounded-lg">
-              <Database className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-              <div className="text-sm">
-                <p className="font-medium">Why does this matter?</p>
-                <p className="text-muted-foreground mt-1">
+          <YStack rowGap="$4" paddingVertical="$4">
+            <XStack alignItems="flex-start" gap="$3" padding="$3" backgroundColor="$color3" borderRadius="$5">
+              <Database size={20} color="$color11" />
+              <SizableText fontSize="$3" display="flex" flexDirection="column">
+                <Paragraph fontWeight="500">Why does this matter?</Paragraph>
+                <Paragraph color="$color11" marginTop="$1">
                   The <strong>Deployments</strong> feature requires projects to be synced to the server database.
                   Until you push your local projects, the Deployments view won&apos;t show any projects to publish.
-                </p>
-              </div>
-            </div>
+                </Paragraph>
+              </SizableText>
+            </XStack>
 
-            <div className="text-sm text-muted-foreground">
+            <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">
               Click <strong>Open Sync</strong> to push your local projects to the server, or dismiss this message to configure it later.
-            </div>
-          </div>
+            </SizableText>
+          </YStack>
 
-          <DialogFooter className="flex-col sm:flex-row gap-2">
+          <DialogFooter flexDirection="column" gap="$2" $sm={{ flexDirection: "row" }}>
             <Button
               variant="outline"
               onClick={handleDismissInitModal}
@@ -174,12 +171,12 @@ export function PageLayout({
             <Button
               onClick={handleOpenSyncFromInit}
             >
-              <Cloud className="w-4 h-4 mr-2" />
+              <Cloud size={16} />
               Open Sync
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </XStack>
   );
 }

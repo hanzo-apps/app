@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import { XStack, SizableText, YStack, Paragraph, H4, H2 } from '@hanzo/gui';
+import { useState, useEffect, useMemo } from 'react';
 import { Deployment, Project } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';
 import { getSyncManager } from '@/lib/vfs/sync-manager';
@@ -512,55 +513,55 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
 
   if (!isServerMode) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <div className="text-center text-muted-foreground">
+      <XStack height="100%" alignItems="center" justifyContent="center">
+        <SizableText textAlign="center" color="$color11" display="flex" flexDirection="column">
           <p>Deployments feature is only available in Server Mode</p>
-        </div>
-      </div>
+        </SizableText>
+      </XStack>
     );
   }
 
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-4">Loading deployments...</p>
-        </div>
-      </div>
+      <XStack height="100%" alignItems="center" justifyContent="center">
+        <SizableText textAlign="center" display="flex" flexDirection="column">
+          <YStack borderRadius="$10" height="$8" width="$8" borderBottomWidth={2} borderColor="$orange9" alignSelf="center"></YStack>
+          <Paragraph marginTop="$4">Loading deployments...</Paragraph>
+        </SizableText>
+      </XStack>
     );
   }
 
   return (
     <>
-      <div className="h-full flex flex-col">
+      <YStack height="100%">
         {/* Toolbar */}
-        <div className="pt-4 px-4 pb-3 sm:pt-6 sm:px-6 sm:pb-3 shrink-0">
-          <div className="mx-auto max-w-7xl flex flex-col sm:flex-row gap-3">
+        <YStack paddingTop="$4" paddingHorizontal="$4" paddingBottom="$3" flexShrink={0} $sm={{ paddingTop: "$5", paddingHorizontal: "$5", paddingBottom: "$3" }}>
+          <YStack alignSelf="center" maxWidth={1280} gap="$3" $sm={{ flexDirection: "row" }}>
             {/* Search */}
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <YStack position="relative" flex={1}>
+              <Search size={16} color="$color11" />
               <Input
                 placeholder="Search deployments..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9"
-              />
-            </div>
+                paddingLeft={36}
+  />
+            </YStack>
 
             {/* Controls */}
-            <div className="flex items-center gap-2">
+            <XStack alignItems="center" gap="$2">
               {/* Sort */}
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <ArrowUpDown className="h-4 w-4" />
-                    <span className="hidden sm:inline">Sort</span>
+                  <Button variant="outline" size="sm" gap="$2">
+                    <ArrowUpDown size={16} />
+                    <SizableText display="none">Sort</SizableText>
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-48" align="end">
-                  <div className="space-y-2">
-                    <h4 className="font-medium text-sm">Sort by</h4>
+                <PopoverContent width="$19" align="end">
+                  <YStack rowGap="$2">
+                    <H4 fontWeight="500" fontSize="$3">Sort by</H4>
                     <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
                       <SelectTrigger>
                         <SelectValue />
@@ -572,44 +573,44 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
                         <SelectItem value="name">Name</SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
+                  </YStack>
                 </PopoverContent>
               </Popover>
 
               {/* New Deployment */}
-              <Button onClick={() => setShowCreateModal(true)} size="sm" className="gap-2">
-                <Plus className="h-4 w-4" />
+              <Button onClick={() => setShowCreateModal(true)} size="sm" gap="$2">
+                <Plus size={16} />
                 <span>New</span>
               </Button>
-            </div>
-          </div>
-        </div>
+            </XStack>
+          </YStack>
+        </YStack>
 
         {/* Deployments Grid/List */}
-        <div className="flex-1 px-4 pt-3 pb-4 sm:px-6 sm:pt-3 sm:pb-6 overflow-auto">
-          <div className="mx-auto max-w-7xl">
+        <YStack flex={1} paddingHorizontal="$4" paddingTop="$3" paddingBottom="$4" overflow="scroll" $sm={{ paddingHorizontal: "$5", paddingTop: "$3", paddingBottom: "$5" }}>
+          <YStack alignSelf="center" maxWidth={1280}>
             {filteredAndSortedDeployments.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-16 text-center">
-                <Globe className="h-16 w-16 text-muted-foreground mb-4" />
+              <SizableText flexDirection="column" alignItems="center" justifyContent="center" paddingVertical="$10" textAlign="center" display="flex">
+                <Globe size={64} color="$color11" />
                 {deployments.length === 0 ? (
                   <>
-                    <h2 className="text-xl font-medium mb-2">No Deployments Yet</h2>
-                    <p className="text-muted-foreground mb-4 max-w-md">
+                    <H2 fontSize="$7" fontWeight="500" marginBottom="$2">No Deployments Yet</H2>
+                    <Paragraph color="$color11" marginBottom="$4" maxWidth={448}>
                       Create your first deployment by clicking the "New" button above.
                       Deployments let you publish projects and manage their public settings independently.
-                    </p>
+                    </Paragraph>
                   </>
                 ) : (
                   <>
-                    <h2 className="text-xl font-medium mb-2">No deployments found</h2>
-                    <p className="text-muted-foreground mb-4 max-w-md">
+                    <H2 fontSize="$7" fontWeight="500" marginBottom="$2">No deployments found</H2>
+                    <Paragraph color="$color11" marginBottom="$4" maxWidth={448}>
                       Try adjusting your search or filter criteria
-                    </p>
+                    </Paragraph>
                   </>
                 )}
-              </div>
+              </SizableText>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <YStack gap="$4">
                 {filteredAndSortedDeployments.map((deployment) => {
                   const project = projects.find(p => p.id === deployment.projectId);
                   return (
@@ -628,14 +629,14 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
                       onDelete={handleDelete}
                       onExportAsTemplate={handleExportAsTemplate}
                       onThumbnailChange={handleDeploymentThumbnailChange}
-                    />
+  />
                   );
                 })}
-              </div>
+              </YStack>
             )}
-          </div>
-        </div>
-      </div>
+          </YStack>
+        </YStack>
+      </YStack>
 
       {selectedDeployment && (
         <>
@@ -648,7 +649,7 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
               setSelectedDeployment(null);
             }}
             onSave={handleSaveSettings}
-          />
+  />
 
           <ServerSettingsModal
             deployment={selectedDeployment}
@@ -657,7 +658,7 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
               setShowServerSettingsModal(false);
               setSelectedDeployment(null);
             }}
-          />
+  />
 
           <AnalyticsDashboard
             deployment={selectedDeployment}
@@ -666,7 +667,7 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
               setShowAnalyticsModal(false);
               setSelectedDeployment(null);
             }}
-          />
+  />
         </>
       )}
 
@@ -675,7 +676,7 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onCreate={handleCreateDeployment}
-      />
+  />
 
       <TemplateExportDialog
         project={templateExportProject}
@@ -687,7 +688,7 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
             setTemplateExportProject(null);
           }
         }}
-      />
+  />
 
       {swapDialogState && (
         <ProjectSwapDialog
@@ -699,7 +700,7 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
           newProjectId={swapDialogState.newProjectId}
           newProjectName={swapDialogState.newProjectName}
           onSwapComplete={handleSwapComplete}
-        />
+  />
       )}
     </>
   );

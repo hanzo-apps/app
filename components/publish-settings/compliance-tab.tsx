@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import { YStack, XStack, H3, Paragraph, H4 } from '@hanzo/gui';
 import { PublishSettings, ComplianceConfig } from '@/lib/vfs/types';
 import { Label, Input, Textarea, Switch, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import { Shield, Info, Cookie } from 'lucide-react';
@@ -25,45 +25,45 @@ export function ComplianceTab({ settings, onChange }: ComplianceTabProps) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <YStack rowGap="$5">
+      <XStack alignItems="center" justifyContent="space-between">
         <div>
-          <h3 className="text-lg font-medium">Compliance & Consent</h3>
-          <p className="text-sm text-muted-foreground">
+          <H3 fontSize="$6" fontWeight="500">Compliance & Consent</H3>
+          <Paragraph fontSize="$3" color="$color11">
             Cookie consent banner and privacy compliance
-          </p>
+          </Paragraph>
         </div>
-      </div>
+      </XStack>
 
       {/* Enable Compliance Banner */}
-      <div className="flex items-center justify-between p-4 border rounded-lg">
-        <div className="space-y-1">
-          <Label htmlFor="compliance-enabled" className="text-base">
+      <XStack alignItems="center" justifyContent="space-between" padding="$4" borderWidth={1} borderRadius="$5">
+        <YStack rowGap="$1">
+          <Label htmlFor="compliance-enabled" fontSize="$4">
             Enable Consent Banner
           </Label>
-          <p className="text-sm text-muted-foreground">
+          <Paragraph fontSize="$3" color="$color11">
             Show a cookie consent banner to visitors
-          </p>
-        </div>
+          </Paragraph>
+        </YStack>
         <Switch
           id="compliance-enabled"
           checked={settings.compliance.enabled}
           onCheckedChange={(checked) =>
             handleComplianceChange('enabled', checked)
           }
-        />
-      </div>
+  />
+      </XStack>
 
       {settings.compliance.enabled && (
         <>
           {/* Banner Configuration */}
-          <div className="space-y-4">
+          <YStack rowGap="$4">
             <div>
-              <h4 className="font-medium mb-4">Banner Configuration</h4>
+              <H4 fontWeight="500" marginBottom="$4">Banner Configuration</H4>
             </div>
 
             {/* Banner Position */}
-            <div className="space-y-2">
+            <YStack rowGap="$2">
               <Label htmlFor="banner-position">Banner Position</Label>
               <Select
                 value={settings.compliance.bannerPosition}
@@ -79,10 +79,10 @@ export function ComplianceTab({ settings, onChange }: ComplianceTabProps) {
                   <SelectItem value="bottom">Bottom</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+            </YStack>
 
             {/* Banner Style */}
-            <div className="space-y-2">
+            <YStack rowGap="$2">
               <Label htmlFor="banner-style">Banner Style</Label>
               <Select
                 value={settings.compliance.bannerStyle}
@@ -99,10 +99,10 @@ export function ComplianceTab({ settings, onChange }: ComplianceTabProps) {
                   <SelectItem value="corner">Bottom-right Corner</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+            </YStack>
 
             {/* Banner Message */}
-            <div className="space-y-2">
+            <YStack rowGap="$2">
               <Label htmlFor="banner-message">Banner Message</Label>
               <Textarea
                 id="banner-message"
@@ -113,15 +113,15 @@ export function ComplianceTab({ settings, onChange }: ComplianceTabProps) {
                   handleComplianceChange('message', e.target.value)
                 }
                 maxLength={500}
-              />
-              <p className="text-xs text-muted-foreground">
+  />
+              <Paragraph fontSize="$1" color="$color11">
                 {settings.compliance.message.length}/500 characters
-              </p>
-            </div>
+              </Paragraph>
+            </YStack>
 
             {/* Button Texts */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
+            <YStack gap="$4">
+              <YStack rowGap="$2">
                 <Label htmlFor="accept-text">Accept Button Text</Label>
                 <Input
                   id="accept-text"
@@ -131,10 +131,10 @@ export function ComplianceTab({ settings, onChange }: ComplianceTabProps) {
                     handleComplianceChange('acceptButtonText', e.target.value)
                   }
                   maxLength={50}
-                />
-              </div>
+  />
+              </YStack>
 
-              <div className="space-y-2">
+              <YStack rowGap="$2">
                 <Label htmlFor="decline-text">Decline Button Text</Label>
                 <Input
                   id="decline-text"
@@ -144,20 +144,20 @@ export function ComplianceTab({ settings, onChange }: ComplianceTabProps) {
                     handleComplianceChange('declineButtonText', e.target.value)
                   }
                   maxLength={50}
-                />
-              </div>
-            </div>
+  />
+              </YStack>
+            </YStack>
 
             {/* Policy Links */}
-            <div className="space-y-4">
+            <YStack rowGap="$4">
               <div>
-                <h4 className="font-medium mb-2">Policy Links (Optional)</h4>
-                <p className="text-sm text-muted-foreground mb-4">
+                <H4 fontWeight="500" marginBottom="$2">Policy Links (Optional)</H4>
+                <Paragraph fontSize="$3" color="$color11" marginBottom="$4">
                   Add links to your privacy and cookie policies
-                </p>
+                </Paragraph>
               </div>
 
-              <div className="space-y-2">
+              <YStack rowGap="$2">
                 <Label htmlFor="privacy-policy-url">Privacy Policy URL</Label>
                 <Input
                   id="privacy-policy-url"
@@ -167,10 +167,10 @@ export function ComplianceTab({ settings, onChange }: ComplianceTabProps) {
                   onChange={(e) =>
                     handleComplianceChange('privacyPolicyUrl', e.target.value)
                   }
-                />
-              </div>
+  />
+              </YStack>
 
-              <div className="space-y-2">
+              <YStack rowGap="$2">
                 <Label htmlFor="cookie-policy-url">Cookie Policy URL</Label>
                 <Input
                   id="cookie-policy-url"
@@ -180,18 +180,18 @@ export function ComplianceTab({ settings, onChange }: ComplianceTabProps) {
                   onChange={(e) =>
                     handleComplianceChange('cookiePolicyUrl', e.target.value)
                   }
-                />
-              </div>
-            </div>
-          </div>
+  />
+              </YStack>
+            </YStack>
+          </YStack>
 
           {/* Compliance Mode */}
-          <div className="space-y-4">
+          <YStack rowGap="$4">
             <div>
-              <h4 className="font-medium mb-4">Compliance Mode</h4>
+              <H4 fontWeight="500" marginBottom="$4">Compliance Mode</H4>
             </div>
 
-            <div className="space-y-2">
+            <YStack rowGap="$2">
               <Label htmlFor="compliance-mode">Mode</Label>
               <Select
                 value={settings.compliance.mode}
@@ -207,75 +207,75 @@ export function ComplianceTab({ settings, onChange }: ComplianceTabProps) {
                   <SelectItem value="opt-out">Opt-out</SelectItem>
                 </SelectContent>
               </Select>
-              <p className="text-xs text-muted-foreground">
+              <Paragraph fontSize="$1" color="$color11">
                 {settings.compliance.mode === 'opt-in'
                   ? 'Blocks analytics until user accepts (required for GDPR)'
                   : 'Allows analytics by default, user can decline'}
-              </p>
-            </div>
+              </Paragraph>
+            </YStack>
 
             {/* Block Analytics Toggle */}
-            <div className="flex items-center justify-between p-4 border rounded-lg">
-              <div className="space-y-1 flex-1">
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="block-analytics" className="text-base">
+            <XStack alignItems="center" justifyContent="space-between" padding="$4" borderWidth={1} borderRadius="$5">
+              <YStack rowGap="$1" flex={1}>
+                <XStack alignItems="center" gap="$2">
+                  <Label htmlFor="block-analytics" fontSize="$4">
                     Block Analytics Until Consent
                   </Label>
-                  <Cookie className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <p className="text-sm text-muted-foreground">
+                  <Cookie size={16} color="$color11" />
+                </XStack>
+                <Paragraph fontSize="$3" color="$color11">
                   Prevent analytics tracking until user accepts
-                </p>
-              </div>
+                </Paragraph>
+              </YStack>
               <Switch
                 id="block-analytics"
                 checked={settings.compliance.blockAnalytics}
                 onCheckedChange={(checked) =>
                   handleComplianceChange('blockAnalytics', checked)
                 }
-              />
-            </div>
+  />
+            </XStack>
 
             {settings.compliance.mode === 'opt-in' && (
-              <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
-                <div className="flex gap-3">
-                  <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-                  <div className="space-y-1">
-                    <h4 className="font-medium text-blue-900 dark:text-blue-100">
+              <YStack padding="$4" backgroundColor="$blue1" borderWidth={1} borderColor="$blue3" borderRadius="$5" $theme-dark={{ backgroundColor: "$blue12", borderColor: "$blue11" }}>
+                <XStack gap="$3">
+                  <Shield size={20} color="$blue10" />
+                  <YStack rowGap="$1">
+                    <H4 fontWeight="500" color="$blue12" $theme-dark={{ color: "$blue2" }}>
                       GDPR Compliance Mode
-                    </h4>
-                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                    </H4>
+                    <Paragraph fontSize="$3" color="$blue11" $theme-dark={{ color: "$blue3" }}>
                       In opt-in mode, cookies and tracking are blocked by default until
                       the user explicitly accepts. This is required for GDPR compliance.
-                    </p>
-                  </div>
-                </div>
-              </div>
+                    </Paragraph>
+                  </YStack>
+                </XStack>
+              </YStack>
             )}
-          </div>
+          </YStack>
 
           {/* Preview Info */}
-          <div className="space-y-4">
+          <YStack rowGap="$4">
             <div>
-              <h4 className="font-medium mb-4">Preview</h4>
+              <H4 fontWeight="500" marginBottom="$4">Preview</H4>
             </div>
 
-            <div className="p-4 bg-muted rounded-lg border">
-              <div className="flex gap-3">
-                <Info className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">Live Preview</p>
-                  <p className="text-sm text-muted-foreground">
+            <YStack padding="$4" backgroundColor="$color3" borderRadius="$5" borderWidth={1}>
+              <XStack gap="$3">
+                <Info size={20} color="$color11" />
+                <YStack rowGap="$1">
+                  <Paragraph fontSize="$3" fontWeight="500">Live Preview</Paragraph>
+                  <Paragraph fontSize="$3" color="$color11">
                     The consent banner will appear on your published deployment based on the
                     configuration above. Visitors' choices are stored in their browser's
                     localStorage.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+                  </Paragraph>
+                </YStack>
+              </XStack>
+            </YStack>
+          </YStack>
         </>
       )}
-    </div>
+    </YStack>
   );
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { SizableText, YStack, XStack, Image } from '@hanzo/gui';
 import { useState, useEffect, useRef, useMemo, useCallback, DragEvent, ClipboardEvent } from 'react';
 import { MessageSquare, Loader2, CheckCircle, XCircle, ChevronRight, FileCode, ClipboardList, Bot, RotateCcw, RefreshCw, Send, ChevronUp, ChevronDown, Code, Trash2, X, Brain, Image as ImageIcon } from 'lucide-react';
 import { DebugEvent } from '@/components/debug-panel';
@@ -17,7 +18,7 @@ type FocusTarget = FocusContextPayload & { timestamp: number };
 // Helper to render user message content (string or ContentBlock[])
 function UserMessageContent({ content }: { content: string | ContentBlock[] }) {
   if (typeof content === 'string') {
-    return <div className="whitespace-pre-wrap">{content}</div>;
+    return <SizableText whiteSpace="pre-wrap" display="flex" flexDirection="column">{content}</SizableText>;
   }
 
   // Separate text and image blocks
@@ -25,30 +26,30 @@ function UserMessageContent({ content }: { content: string | ContentBlock[] }) {
   const imageBlocks = content.filter(b => b.type === 'image_url');
 
   return (
-    <div className="space-y-2">
+    <YStack rowGap="$2">
       {/* Render text blocks */}
       {textBlocks.map((block, index) => (
-        <div key={`text-${index}`} className="whitespace-pre-wrap">
+        <SizableText key={`text-${index}`} whiteSpace="pre-wrap" display="flex" flexDirection="column">
           {block.type === 'text' && block.text}
-        </div>
+        </SizableText>
       ))}
 
       {/* Render images in a flex container */}
       {imageBlocks.length > 0 && (
-        <div className="flex flex-wrap gap-2 p-1 rounded-md bg-muted/50">
+        <XStack flexWrap="wrap" gap="$2" padding="$1" borderRadius="$3" backgroundColor="$color3">
           {imageBlocks.map((block, index) => (
             block.type === 'image_url' && (
-              <img
+              <Image
                 key={`img-${index}`}
                 src={block.image_url.url}
                 alt="Attached image"
-                className="h-[60px] w-auto rounded border border-border object-cover"
-              />
+                height={60} width="auto" borderRadius="$2" borderWidth={1} borderColor="$borderColor" objectFit="cover"
+  />
             )
           ))}
-        </div>
+        </XStack>
       )}
-    </div>
+    </YStack>
   );
 }
 
@@ -110,15 +111,15 @@ interface Turn {
 }
 
 const toolIcons: Record<string, React.ReactNode> = {
-  shell: <ChevronRight className="h-3 w-3 text-blue-500" />,
-  write: <FileCode className="h-3 w-3 text-orange-500" />,
+  shell: <ChevronRight size={12} color="$blue9" />,
+  write: <FileCode size={12} color="$orange9" />,
 };
 
 const statusIcons: Record<string, React.ReactNode> = {
-  pending: <Loader2 className="h-3 w-3 animate-spin text-neutral-400" />,
-  executing: <Loader2 className="h-3 w-3 animate-spin text-blue-500" />,
-  completed: <CheckCircle className="h-3 w-3 text-green-500" />,
-  failed: <XCircle className="h-3 w-3 text-red-500" />,
+  pending: <Loader2 size={12} color="$color8" />,
+  executing: <Loader2 size={12} color="$blue9" />,
+  completed: <CheckCircle size={12} color="$green9" />,
+  failed: <XCircle size={12} color="$red9" />,
 };
 
 export function ChatPanel({
@@ -686,89 +687,89 @@ export function ChatPanel({
   // Focus context hint
   const trimmedSnippet = focusPreviewSnippet?.trim() ?? '';
   const focusContextHint = focusContext ? (
-    <div
+    <SizableText
       id="focus-context-hint"
-      className="rounded-md border border-dashed border-primary/40 bg-primary/5 px-3 py-2 text-xs text-muted-foreground shadow-sm"
+      borderRadius="$3" borderWidth={1} borderStyle="dashed" borderColor="$color12" backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$2" fontSize="$1" color="$color11" elevation={1} display="flex" flexDirection="column"
     >
-      <div className="flex flex-wrap items-center justify-between gap-2 text-foreground">
-        <div className="flex items-center gap-2">
-          <span className="font-medium text-xs uppercase tracking-wide text-primary">context</span>
-          <span className="text-[10px] uppercase tracking-wide text-muted-foreground">included in next message</span>
-        </div>
+      <SizableText flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$2" color="$color" display="flex" flexDirection="row">
+        <XStack alignItems="center" gap="$2">
+          <SizableText fontWeight="500" fontSize="$1" textTransform="uppercase" letterSpacing={0.4} color="$color12">context</SizableText>
+          <SizableText fontSize={10} textTransform="uppercase" letterSpacing={0.4} color="$color11">included in next message</SizableText>
+        </XStack>
         <Button
           size="sm"
           variant="ghost"
-          className="h-6 px-2 text-xs"
+          height="$5" paddingHorizontal="$2" fontSize="$1"
           onClick={() => setFocusContext(null)}
           title="Clear focus context"
         >
           Clear
         </Button>
-      </div>
-      <div className="mt-2 space-y-2">
+      </SizableText>
+      <YStack marginTop="$2" rowGap="$2">
         {focusContext.domPath && (
-          <div className="text-[11px] font-mono text-muted-foreground/80 break-all leading-snug">
+          <SizableText fontSize={11} fontFamily="$mono" color="$color11" wordBreak="break-all" lineHeight={1.375} display="flex" flexDirection="column">
             {focusContext.domPath}
-          </div>
+          </SizableText>
         )}
         {trimmedSnippet && (
-          <pre className="max-h-24 overflow-auto rounded border border-border/50 bg-background/90 px-2 py-1 text-[11px] text-foreground leading-relaxed">
+          <SizableText maxHeight="$12" overflow="scroll" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2" paddingVertical="$1" fontSize={11} color="$color" lineHeight={1.625} fontFamily="$mono" whiteSpace="pre">
             <code>{trimmedSnippet}</code>
-          </pre>
+          </SizableText>
         )}
-      </div>
-    </div>
+      </YStack>
+    </SizableText>
   ) : null;
 
   return (
-    <div className="h-full flex flex-col bg-card border border-border rounded-lg overflow-hidden" data-tour-id="assistant-panel">
+    <YStack height="100%" backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$5" overflow="hidden" data-tour-id="assistant-panel">
       {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-border bg-muted/30 shrink-0">
-        <div className="flex items-center gap-2">
-          <MessageSquare className="h-4 w-4 md:hidden" style={{ color: 'var(--brand-accent)' }} />
+      <XStack alignItems="center" justifyContent="space-between" padding="$3" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$color3" flexShrink={0}>
+        <XStack alignItems="center" gap="$2">
+          <MessageSquare size={16} style={{ color: 'var(--brand-accent)' }} />
           {onClose ? (
-            <button
+            <Button
               type="button"
               onClick={onClose}
               aria-label="Hide chat panel"
-              className="relative hidden h-6 w-6 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-destructive md:flex group"
+              position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" color="$color11" group hoverStyle={{ color: "$red9" }}
             >
               <MessageSquare
-                className="h-4 w-4 transition-opacity group-hover:opacity-0"
+                size={16}
                 style={{ color: 'var(--brand-accent)' }}
-              />
-              <X className="absolute h-3 w-3 opacity-0 transition-opacity group-hover:opacity-100" />
-            </button>
+  />
+              <X size={12} />
+            </Button>
           ) : (
             <MessageSquare
-              className="hidden h-4 w-4 md:inline-flex"
+              size={16}
               style={{ color: 'var(--brand-accent)' }}
-            />
+  />
           )}
-          <span className="font-medium text-sm">Chat</span>
-        </div>
-        <div className="flex items-center gap-1">
+          <SizableText fontWeight="500" fontSize="$3">Chat</SizableText>
+        </XStack>
+        <XStack alignItems="center" gap="$1">
           {onClearChat && (
             <Button
               variant="ghost"
               size="sm"
               onClick={onClearChat}
-              className="h-7 px-2 hover:bg-muted"
+              height={28} paddingHorizontal="$2" hoverStyle={{ backgroundColor: "$color3" }}
               title="Clear chat"
               data-tour-id="clear-chat-button"
             >
-              <Trash2 className="h-3 w-3" />
+              <Trash2 size={12} />
             </Button>
           )}
-        </div>
-      </div>
+        </XStack>
+      </XStack>
 
       {/* Messages */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+      <YStack ref={scrollRef} flex={1} padding="$4" rowGap="$4" overflow="scroll">
         {turns.length === 0 ? (
-          <div className="text-xs text-muted-foreground text-center p-4">
+          <SizableText fontSize="$1" color="$color11" textAlign="center" padding="$4" display="flex" flexDirection="column">
             No messages yet. Start a conversation to see it here.
-          </div>
+          </SizableText>
         ) : (
           turns.map((turn) => (
             <TurnDisplay
@@ -778,61 +779,59 @@ export function ChatPanel({
               onRetry={onRetry}
               expandedItems={expandedItems}
               onToggleExpanded={toggleExpanded}
-            />
+  />
           ))
         )}
-      </div>
+      </YStack>
 
       {/* Input */}
-      <div className="p-3 space-y-2">
+      <YStack padding="$3" rowGap="$2">
         {focusContextHint}
-        <div
-          className={`bg-card border rounded-lg shadow-sm overflow-hidden transition-all ${
-            isDragging ? 'border-primary border-2 bg-primary/5' : 'border-border'
-          }`}
+        <YStack
+          borderRadius="$5" elevation={1} overflow="hidden" {...{ borderColor: isDragging ? "$color12" : "$borderColor", borderWidth: isDragging ? 2 : 1, backgroundColor: isDragging ? "$color12" : "$background" }}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
         >
           {/* Image previews */}
           {pendingImages.length > 0 && (
-            <div className="px-3 pt-2 flex flex-wrap gap-2">
+            <XStack paddingHorizontal="$3" paddingTop="$2" flexWrap="wrap" gap="$2">
               {pendingImages.map((img) => (
-                <div
+                <YStack
                   key={img.id}
-                  className="relative group"
+                  position="relative" group
                 >
-                  <img
+                  <Image
                     src={img.preview}
                     alt="Pending upload"
-                    className="h-12 w-12 object-cover rounded border border-border"
-                  />
-                  <button
+                    height="$8" width="$8" objectFit="cover" borderRadius="$2" borderWidth={1} borderColor="$borderColor"
+  />
+                  <Button
                     onClick={() => removeImage(img.id)}
-                    className="absolute -top-1 -right-1 h-4 w-4 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    position="absolute" top="-1" right="-1" height="$4" width="$4" backgroundColor="$red9" color="$background" borderRadius="$10" alignItems="center" justifyContent="center" opacity={0} $group-hover={{ opacity: 1 }}
                     title="Remove image"
                   >
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
+                    <X size={12} />
+                  </Button>
+                </YStack>
               ))}
-              <span className="text-xs text-muted-foreground self-end pb-1">
+              <SizableText fontSize="$1" color="$color11" alignSelf="flex-end" paddingBottom="$1">
                 {pendingImages.length} image{pendingImages.length !== 1 ? 's' : ''} attached
-              </span>
-            </div>
+              </SizableText>
+            </XStack>
           )}
 
           {/* Drop overlay */}
           {isDragging && supportsVision && (
-            <div className="absolute inset-0 flex items-center justify-center bg-primary/10 z-10 pointer-events-none">
-              <div className="text-primary font-medium flex items-center gap-2">
-                <ImageIcon className="h-5 w-5" />
+            <XStack position="absolute" top={0} right={0} bottom={0} left={0} alignItems="center" justifyContent="center" backgroundColor="$color12" zIndex={10} pointerEvents="none">
+              <SizableText color="$color12" fontWeight="500" alignItems="center" gap="$2" display="flex" flexDirection="row">
+                <ImageIcon size={20} />
                 Drop image here
-              </div>
-            </div>
+              </SizableText>
+            </XStack>
           )}
 
-          <div className="relative flex bg-card rounded-lg transition-all">
+          <XStack position="relative" backgroundColor="$background" borderRadius="$5">
             <Textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
@@ -847,56 +846,56 @@ export function ChatPanel({
               }}
               onPaste={handlePaste}
               placeholder={!providerReady ? "Select a provider to start..." : supportsVision ? "Describe what you want to build... (paste or drop images)" : "Describe what you want to build..."}
-              className="flex-1 px-3 py-2 bg-transparent border-0 resize-none focus:outline-none text-sm placeholder:text-muted-foreground text-foreground"
+              flex={1} paddingHorizontal="$3" paddingVertical="$2" backgroundColor="transparent" borderWidth={0} resize="none" fontSize="$3" placeholderTextColor="$color11" color="$color" focusStyle={{ outlineWidth: 0 }}
               rows={3}
               disabled={generating || isTourLockingInput || !providerReady}
-            />
-            <div className="flex flex-col p-2 gap-2">
+  />
+            <YStack padding="$2" gap="$2">
               <Button
                 onClick={generating ? onStop : handleSend}
                 disabled={isTourLockingInput ? !generating : (!generating && (!prompt.trim() && pendingImages.length === 0 || !providerReady))}
                 size="sm"
-                className="flex items-center gap-2"
+                alignItems="center" gap="$2"
               >
                 {generating ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 size={16} />
                     Stop
                   </>
                 ) : (
                   <>
-                    <Send className="h-4 w-4" />
+                    <Send size={16} />
                     Send
                   </>
                 )}
               </Button>
-            </div>
-          </div>
+            </YStack>
+          </XStack>
 
           {/* Footer */}
-          <div className="border-t border-border bg-muted/50 px-2 py-2">
-            <div className="flex items-center justify-between gap-2">
+          <YStack borderTopWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2" paddingVertical="$2">
+            <XStack alignItems="center" justifyContent="space-between" gap="$2">
               <Popover open={showMobileSettings} onOpenChange={setShowMobileSettings}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     size="sm"
-                    className={`h-7 text-xs ${!providerReady ? 'ring-2 ring-primary/70 animate-ring-opacity border-primary' : ''}`}
+                    height={28} fontSize="$1" {...{ borderColor: !providerReady ? "$color12" : undefined }}
                     data-tour-id="provider-settings-trigger"
                   >
                     <span>{providerReady ? getModelDisplayName(currentModel) : 'Select provider'}</span>
                     {showMobileSettings ? (
-                      <ChevronDown className="h-3 w-3 ml-1" />
+                      <ChevronDown size={12} />
                     ) : (
-                      <ChevronUp className="h-3 w-3 ml-1" />
+                      <ChevronUp size={12} />
                     )}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-[460px] max-w-[calc(100vw-2rem)] max-h-[min(680px,calc(100vh-5rem))] overflow-hidden flex flex-col" align="start" data-tour-id="provider-settings-popup">
+                <PopoverContent width={460} maxWidth="calc(100vw-2rem)" maxHeight="min(680px,calc(100vh-5rem))" overflow="hidden" flexDirection="column" align="start" data-tour-id="provider-settings-popup">
                   <ModelSettingsPanel
                     onClose={() => setShowMobileSettings(false)}
                     onModelChange={(modelId) => setCurrentModel(modelId)}
-                  />
+  />
                 </PopoverContent>
               </Popover>
 
@@ -915,11 +914,11 @@ export function ChatPanel({
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+            </XStack>
+          </YStack>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }
 
@@ -933,18 +932,18 @@ interface TurnDisplayProps {
 
 function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded }: TurnDisplayProps) {
   return (
-    <div className="space-y-2" {...(turn.checkpointId ? { 'data-checkpoint-id': turn.checkpointId } : {})}>
+    <YStack rowGap="$2" {...(turn.checkpointId ? { 'data-checkpoint-id': turn.checkpointId } : {})}>
       {/* Render items in chronological order */}
       {turn.items.map((item) => {
         switch (item.type) {
           case 'waiting':
             return (
-              <div key={item.id} className="bg-muted/30 rounded-md p-2 opacity-70">
-                <div className="flex items-center gap-2 px-1">
-                  <Loader2 className="h-3 w-3 animate-spin text-blue-400" />
-                  <span className="text-xs text-muted-foreground">Waiting for response...</span>
-                </div>
-              </div>
+              <YStack key={item.id} backgroundColor="$color3" borderRadius="$3" padding="$2" opacity={0.7}>
+                <XStack alignItems="center" gap="$2" paddingHorizontal="$1">
+                  <Loader2 size={12} color="$blue8" />
+                  <SizableText fontSize="$1" color="$color11">Waiting for response...</SizableText>
+                </XStack>
+              </YStack>
             );
 
           case 'reasoning':
@@ -955,7 +954,7 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
                 content={item.data}
                 isExpanded={expandedItems.has(item.id)}
                 onToggle={() => onToggleExpanded(item.id)}
-              />
+  />
             );
 
           case 'plan':
@@ -966,7 +965,7 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
                 content={item.data}
                 isExpanded={expandedItems.has(item.id)}
                 onToggle={() => onToggleExpanded(item.id)}
-              />
+  />
             );
 
           case 'agent':
@@ -977,7 +976,7 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
                 content={item.data}
                 isExpanded={expandedItems.has(item.id)}
                 onToggle={() => onToggleExpanded(item.id)}
-              />
+  />
             );
 
           case 'progress':
@@ -988,7 +987,7 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
                 content={item.data}
                 isExpanded={expandedItems.has(item.id)}
                 onToggle={() => onToggleExpanded(item.id)}
-              />
+  />
             );
 
           case 'tool':
@@ -999,43 +998,43 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
                 tool={item.data as ToolCall}
                 isExpanded={expandedItems.has(item.id)}
                 onToggle={() => onToggleExpanded(item.id)}
-              />
+  />
             );
 
           case 'text':
             return (
-              <div key={item.id} className="text-sm text-foreground/90 bg-muted/20 px-3 py-2 rounded">
+              <SizableText key={item.id} fontSize="$3" color="$color" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$2" display="flex" flexDirection="column">
                 <MarkdownRenderer content={item.data} />
-              </div>
+              </SizableText>
             );
 
           case 'project_context':
             return (
-              <div key={item.id} className={`rounded-md transition-all ${expandedItems.has(item.id) ? 'bg-muted/30 p-2' : 'p-1.5'}`}>
-                <button
+              <YStack key={item.id} borderRadius="$3" {...{ backgroundColor: expandedItems.has(item.id) ? "$color3" : undefined, padding: expandedItems.has(item.id) ? "$2" : "$1.5" }}>
+                <Button
                   onClick={() => onToggleExpanded(item.id)}
-                  className="flex items-center gap-2 w-full text-left hover:bg-muted/30 rounded px-1"
+                  alignItems="center" gap="$2" width="100%" textAlign="left" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color3" }}
                 >
-                  <ChevronRight className={`h-3 w-3 text-muted-foreground transition-transform ${expandedItems.has(item.id) ? 'rotate-90' : ''}`} />
-                  <FileCode className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">Project context</span>
-                </button>
+                  <ChevronRight size={12} color="$color11" />
+                  <FileCode size={12} color="$color11" />
+                  <SizableText fontSize="$1" color="$color11">Project context</SizableText>
+                </Button>
                 {expandedItems.has(item.id) && (
-                  <div className="mt-2 px-2">
-                    <pre className="text-xs bg-muted/50 p-2 rounded overflow-x-auto whitespace-pre-wrap text-muted-foreground">
+                  <YStack marginTop="$2" paddingHorizontal="$2">
+                    <SizableText fontSize="$1" backgroundColor="$color3" padding="$2" borderRadius="$2" whiteSpace="pre" color="$color11" overflow="scroll" fontFamily="$mono">
                       {item.data}
-                    </pre>
-                  </div>
+                    </SizableText>
+                  </YStack>
                 )}
-              </div>
+              </YStack>
             );
 
           case 'user':
             return (
-              <div key={item.id} className="text-sm text-foreground bg-primary/10 px-3 py-2 rounded border border-primary/20">
-                <div className="font-medium text-primary mb-1 text-xs">User</div>
+              <SizableText key={item.id} fontSize="$3" color="$color" backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$2" borderWidth={1} borderColor="$color12" display="flex" flexDirection="column">
+                <SizableText fontWeight="500" color="$color12" marginBottom="$1" fontSize="$1" display="flex" flexDirection="column">User</SizableText>
                 <UserMessageContent content={item.data} />
-              </div>
+              </SizableText>
             );
 
           case 'synthetic_error':
@@ -1048,32 +1047,32 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
                 content={item.data}
                 isExpanded={expandedItems.has(item.id)}
                 onToggle={() => onToggleExpanded(item.id)}
-              />
+  />
             );
 
           case 'error':
             return (
-              <div key={item.id} className="text-sm bg-destructive/10 border border-destructive/20 px-3 py-2 rounded">
-                <div className="flex items-start gap-2">
-                  <XCircle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
-                  <div className="flex-1">
-                    <div className="font-medium text-destructive mb-1">Error</div>
-                    <div className="text-destructive/90 whitespace-pre-wrap font-mono text-xs">
+              <SizableText key={item.id} fontSize="$3" backgroundColor="$red9" borderWidth={1} borderColor="$red9" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$2" display="flex" flexDirection="column">
+                <XStack alignItems="flex-start" gap="$2">
+                  <XCircle size={16} color="$red9" />
+                  <YStack flex={1}>
+                    <SizableText fontWeight="500" color="$red9" marginBottom="$1" display="flex" flexDirection="column">Error</SizableText>
+                    <SizableText color="$red9" whiteSpace="pre-wrap" fontFamily="$mono" fontSize="$1" display="flex" flexDirection="column">
                       {item.data?.message || JSON.stringify(item.data, null, 2)}
-                    </div>
+                    </SizableText>
                     {item.data?.stack && (
                       <details className="mt-2">
                         <summary className="text-xs text-destructive/70 cursor-pointer hover:text-destructive">
                           Stack trace
                         </summary>
-                        <pre className="text-[10px] text-destructive/60 mt-1 overflow-x-auto">
+                        <SizableText fontSize={10} color="$red9" marginTop="$1" overflow="scroll" fontFamily="$mono" whiteSpace="pre">
                           {item.data.stack}
-                        </pre>
+                        </SizableText>
                       </details>
                     )}
-                  </div>
-                </div>
-              </div>
+                  </YStack>
+                </XStack>
+              </SizableText>
             );
 
           default:
@@ -1083,28 +1082,28 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
 
       {/* Usage info and checkpoint actions */}
       {(turn.usage || turn.checkpointId) && (
-        <div className="flex items-center justify-between gap-2">
+        <XStack alignItems="center" justifyContent="space-between" gap="$2">
           {/* Usage info */}
           {turn.usage && (
-            <div className="text-xs text-muted-foreground">
+            <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
               Tokens: {(turn.usage.usage?.totalTokens || turn.usage.totalTokens)?.toLocaleString() || 'N/A'}
               {(turn.usage.totalCost !== undefined || turn.usage.cost !== undefined) &&
                 ` • Cost: $${((turn.usage.totalCost ?? turn.usage.cost) || 0).toFixed(4)}`}
-            </div>
+            </SizableText>
           )}
 
           {/* Checkpoint actions */}
           {turn.checkpointId && (
-            <div className="flex items-center gap-1">
+            <XStack alignItems="center" gap="$1">
               {onRestore && (
                 <Button
                   size="sm"
                   variant="ghost"
                   onClick={() => onRestore(turn.checkpointId!)}
-                  className="h-6 px-2 text-xs"
+                  height="$5" paddingHorizontal="$2" fontSize="$1"
                   title="Restore to this checkpoint"
                 >
-                  <RotateCcw className="h-3 w-3 mr-1" />
+                  <RotateCcw size={12} />
                   Restore
                 </Button>
               )}
@@ -1113,18 +1112,18 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
                   size="sm"
                   variant="ghost"
                   onClick={() => onRetry(turn.checkpointId!)}
-                  className="h-6 px-2 text-xs"
+                  height="$5" paddingHorizontal="$2" fontSize="$1"
                   title="Restore files and retry from this checkpoint"
                 >
-                  <RefreshCw className="h-3 w-3 mr-1" />
+                  <RefreshCw size={12} />
                   Retry
                 </Button>
               )}
-            </div>
+            </XStack>
           )}
-        </div>
+        </XStack>
       )}
-    </div>
+    </YStack>
   );
 }
 
@@ -1137,80 +1136,78 @@ interface ToolDisplayProps {
 
 function ToolDisplay({ itemId, tool, isExpanded, onToggle }: ToolDisplayProps) {
   return (
-    <div
-      className={`bg-muted/30 rounded-md transition-all ${
-        tool.status === 'executing' ? 'ring-2 ring-blue-500/20 animate-pulse' : ''
-      } ${isExpanded ? 'p-2' : 'p-1.5'}`}
+    <YStack
+      backgroundColor="$color3" borderRadius="$3" {...{ padding: isExpanded ? "$2" : "$1.5" }}
     >
-      <button
+      <Button
         onClick={onToggle}
-        className="flex items-center gap-2 w-full text-left hover:bg-muted/50 rounded px-1"
+        alignItems="center" gap="$2" width="100%" textAlign="left" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color3" }}
       >
-        <div className="flex items-center gap-1.5">
-          {toolIcons[tool.name] || <ChevronRight className="h-3 w-3" />}
-          <span className="text-xs font-mono">{tool.name}</span>
-        </div>
+        <XStack alignItems="center" gap="$1.5">
+          {toolIcons[tool.name] || <ChevronRight size={12} />}
+          <SizableText fontSize="$1" fontFamily="$mono">{tool.name}</SizableText>
+        </XStack>
 
         {/* Tool-specific preview */}
         {tool.name === 'shell' && tool.parameters?.cmd && (
-          <code className="text-xs text-muted-foreground">
+          <SizableText fontSize="$1" color="$color11">
             {Array.isArray(tool.parameters.cmd)
               ? tool.parameters.cmd.slice(1).join(' ').substring(0, 50)
               : String(tool.parameters.cmd).substring(0, 50)}
-          </code>
+          </SizableText>
         )}
         {(tool.parameters?.path || tool.parameters?.file_path) && (
-          <code className="text-xs text-muted-foreground">
+          <SizableText fontSize="$1" color="$color11">
             {tool.parameters.path || tool.parameters.file_path}
-          </code>
+          </SizableText>
         )}
 
-        <div className="ml-auto">
+        <YStack marginLeft="auto">
           {statusIcons[tool.status || 'completed']}
-        </div>
-      </button>
+        </YStack>
+      </Button>
 
       {/* Expanded view */}
       {isExpanded && (
-        <div className="mt-2 space-y-2">
+        <YStack marginTop="$2" rowGap="$2">
           {/* Parameters */}
           {tool.parameters && Object.keys(tool.parameters).length > 0 && (
-            <div className="px-2">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+            <YStack paddingHorizontal="$2">
+              <SizableText fontSize={10} textTransform="uppercase" letterSpacing={0.8} color="$color11" marginBottom="$1" display="flex" flexDirection="column">
                 Parameters
-              </div>
-              <pre className="text-xs bg-muted/50 p-2 rounded overflow-x-auto">
+              </SizableText>
+              <SizableText fontSize="$1" backgroundColor="$color3" padding="$2" borderRadius="$2" overflow="scroll" fontFamily="$mono" whiteSpace="pre">
                 {JSON.stringify(tool.parameters, null, 2)}
-              </pre>
-            </div>
+              </SizableText>
+            </YStack>
           )}
 
           {/* Result */}
           {tool.result && (
-            <div className="px-2">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+            <YStack paddingHorizontal="$2">
+              <SizableText fontSize={10} textTransform="uppercase" letterSpacing={0.8} color="$color11" marginBottom="$1" display="flex" flexDirection="column">
                 Result
-              </div>
-              <pre className="text-xs bg-muted/50 p-2 rounded overflow-x-auto max-h-40 overflow-y-auto">
+              </SizableText>
+              <SizableText fontSize="$1" backgroundColor="$color3" padding="$2" borderRadius="$2" maxHeight="$17" overflow="scroll" fontFamily="$mono" whiteSpace="pre">
                 {typeof tool.result === 'string' ? tool.result : JSON.stringify(tool.result, null, 2)}
-              </pre>
-            </div>
+              </SizableText>
+            </YStack>
           )}
 
           {/* Error */}
           {tool.error && (
-            <div className="px-2">
-              <div className="text-[10px] uppercase tracking-wider text-destructive mb-1">
+            <YStack paddingHorizontal="$2">
+              <SizableText fontSize={10} textTransform="uppercase" letterSpacing={0.8} color="$red9" marginBottom="$1" display="flex" flexDirection="column">
                 Error
-              </div>
-              <pre className="text-xs bg-destructive/10 text-destructive p-2 rounded overflow-x-auto">
+              </SizableText>
+              <SizableText fontSize="$1" backgroundColor="$red9" color="$red9" padding="$2" borderRadius="$2" overflow="scroll" fontFamily="$mono" whiteSpace="pre">
                 {tool.error}
-              </pre>
-            </div>
+              </SizableText>
+            </YStack>
           )}
-        </div>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 }
 
@@ -1223,29 +1220,29 @@ interface SyntheticErrorDisplayProps {
 
 function SyntheticErrorDisplay({ itemId, content, isExpanded, onToggle }: SyntheticErrorDisplayProps) {
   return (
-    <div className={`bg-amber-500/10 rounded-md transition-all ${isExpanded ? 'p-2' : 'p-1.5'}`}>
-      <button
+    <YStack backgroundColor="$yellow9" borderRadius="$3" {...{ padding: isExpanded ? "$2" : "$1.5" }}>
+      <Button
         onClick={onToggle}
-        className="flex items-center gap-2 w-full text-left hover:bg-amber-500/20 rounded px-1"
+        alignItems="center" gap="$2" width="100%" textAlign="left" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$yellow9" }}
       >
-        <div className="flex items-center gap-1.5">
-          <RefreshCw className="h-3 w-3 text-amber-600" />
-          <span className="text-xs font-mono">Auto-correction</span>
-        </div>
-        <div className="ml-auto">
-          <CheckCircle className="h-3 w-3 text-amber-600" />
-        </div>
-      </button>
+        <XStack alignItems="center" gap="$1.5">
+          <RefreshCw size={12} color="$yellow10" />
+          <SizableText fontSize="$1" fontFamily="$mono">Auto-correction</SizableText>
+        </XStack>
+        <YStack marginLeft="auto">
+          <CheckCircle size={12} color="$yellow10" />
+        </YStack>
+      </Button>
 
       {/* Expanded view */}
       {isExpanded && (
-        <div className="mt-2 px-2">
-          <pre className="text-xs bg-muted/50 p-2 rounded overflow-x-auto whitespace-pre-wrap">
+        <YStack marginTop="$2" paddingHorizontal="$2">
+          <SizableText fontSize="$1" backgroundColor="$color3" padding="$2" borderRadius="$2" whiteSpace="pre" overflow="scroll" fontFamily="$mono">
             {content}
-          </pre>
-        </div>
+          </SizableText>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 }
 
@@ -1263,35 +1260,35 @@ function ReasoningDisplay({ itemId, content, isExpanded, onToggle }: ReasoningDi
   const isStreaming = !content || content.length < 20; // Short content might still be streaming
 
   return (
-    <div className="bg-violet-500/10 rounded-md transition-all p-1.5 border border-violet-500/20">
-      <button
+    <YStack backgroundColor="$purple9" borderRadius="$3" padding="$1.5" borderWidth={1} borderColor="$purple9">
+      <Button
         onClick={onToggle}
-        className="flex items-center gap-2 w-full text-left hover:bg-violet-500/20 rounded px-1"
+        alignItems="center" gap="$2" width="100%" textAlign="left" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$purple9" }}
       >
-        <div className="flex items-center gap-1.5">
+        <XStack alignItems="center" gap="$1.5">
           {isStreaming ? (
-            <Loader2 className="h-3 w-3 animate-spin text-violet-500" />
+            <Loader2 size={12} color="$purple9" />
           ) : (
-            <Brain className="h-3 w-3 text-violet-500" />
+            <Brain size={12} color="$purple9" />
           )}
-          <span className="text-xs font-mono">reasoning</span>
-        </div>
-        <code className="text-xs text-muted-foreground truncate flex-1">
+          <SizableText fontSize="$1" fontFamily="$mono">reasoning</SizableText>
+        </XStack>
+        <SizableText fontSize="$1" color="$color11" numberOfLines={1} flex={1}>
           {isStreaming ? 'Thinking...' : preview}
-        </code>
-        <div className="ml-auto">
-          <ChevronRight className={`h-3 w-3 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-        </div>
-      </button>
+        </SizableText>
+        <YStack marginLeft="auto">
+          <ChevronRight size={12} />
+        </YStack>
+      </Button>
 
       {isExpanded && (
-        <div className="mt-2 px-2">
-          <div className="text-xs bg-muted/50 p-2 rounded overflow-x-auto max-h-64 overflow-y-auto">
+        <YStack marginTop="$2" paddingHorizontal="$2">
+          <SizableText fontSize="$1" backgroundColor="$color3" padding="$2" borderRadius="$2" maxHeight={256} overflow="scroll" display="flex" flexDirection="column">
             <MarkdownRenderer content={content || 'Thinking...'} />
-          </div>
-        </div>
+          </SizableText>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 }
 
@@ -1308,31 +1305,31 @@ function PlanDisplay({ itemId, content, isExpanded, onToggle }: PlanDisplayProps
   const preview = lines[0]?.replace(/^\*\*|\*\*$/g, '').substring(0, 50) || 'Plan';
 
   return (
-    <div className="bg-muted/30 rounded-md transition-all p-1.5">
-      <button
+    <YStack backgroundColor="$color3" borderRadius="$3" padding="$1.5">
+      <Button
         onClick={onToggle}
-        className="flex items-center gap-2 w-full text-left hover:bg-muted/50 rounded px-1"
+        alignItems="center" gap="$2" width="100%" textAlign="left" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color3" }}
       >
-        <div className="flex items-center gap-1.5">
-          <ClipboardList className="h-3 w-3 text-orange-500" />
-          <span className="text-xs font-mono">plan</span>
-        </div>
-        <code className="text-xs text-muted-foreground truncate flex-1">
+        <XStack alignItems="center" gap="$1.5">
+          <ClipboardList size={12} color="$orange9" />
+          <SizableText fontSize="$1" fontFamily="$mono">plan</SizableText>
+        </XStack>
+        <SizableText fontSize="$1" color="$color11" numberOfLines={1} flex={1}>
           {preview}
-        </code>
-        <div className="ml-auto">
-          <ChevronRight className={`h-3 w-3 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-        </div>
-      </button>
+        </SizableText>
+        <YStack marginLeft="auto">
+          <ChevronRight size={12} />
+        </YStack>
+      </Button>
 
       {isExpanded && (
-        <div className="mt-2 px-2">
-          <pre className="text-xs bg-muted/50 p-2 rounded overflow-x-auto whitespace-pre-wrap">
+        <YStack marginTop="$2" paddingHorizontal="$2">
+          <SizableText fontSize="$1" backgroundColor="$color3" padding="$2" borderRadius="$2" whiteSpace="pre" overflow="scroll" fontFamily="$mono">
             {content}
-          </pre>
-        </div>
+          </SizableText>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 }
 
@@ -1349,31 +1346,31 @@ function AgentDisplay({ itemId, content, isExpanded, onToggle }: AgentDisplayPro
   const preview = lines[0]?.replace(/^\*\*|\*\*$/g, '').replace(/^🤖\s*/, '').substring(0, 50) || 'Agent';
 
   return (
-    <div className="bg-muted/30 rounded-md transition-all p-1.5">
-      <button
+    <YStack backgroundColor="$color3" borderRadius="$3" padding="$1.5">
+      <Button
         onClick={onToggle}
-        className="flex items-center gap-2 w-full text-left hover:bg-muted/50 rounded px-1"
+        alignItems="center" gap="$2" width="100%" textAlign="left" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color3" }}
       >
-        <div className="flex items-center gap-1.5">
-          <Bot className="h-3 w-3 text-purple-500" />
-          <span className="text-xs font-mono">agent</span>
-        </div>
-        <code className="text-xs text-muted-foreground truncate flex-1">
+        <XStack alignItems="center" gap="$1.5">
+          <Bot size={12} color="$purple9" />
+          <SizableText fontSize="$1" fontFamily="$mono">agent</SizableText>
+        </XStack>
+        <SizableText fontSize="$1" color="$color11" numberOfLines={1} flex={1}>
           {preview}
-        </code>
-        <div className="ml-auto">
-          <ChevronRight className={`h-3 w-3 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-        </div>
-      </button>
+        </SizableText>
+        <YStack marginLeft="auto">
+          <ChevronRight size={12} />
+        </YStack>
+      </Button>
 
       {isExpanded && (
-        <div className="mt-2 px-2">
-          <pre className="text-xs bg-muted/50 p-2 rounded overflow-x-auto whitespace-pre-wrap">
+        <YStack marginTop="$2" paddingHorizontal="$2">
+          <SizableText fontSize="$1" backgroundColor="$color3" padding="$2" borderRadius="$2" whiteSpace="pre" overflow="scroll" fontFamily="$mono">
             {content}
-          </pre>
-        </div>
+          </SizableText>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 }
 
@@ -1390,34 +1387,34 @@ function ProgressDisplay({ itemId, content, isExpanded, onToggle }: ProgressDisp
   const preview = content.replace(/^[✅🔄]\s*/, '').substring(0, 50);
 
   return (
-    <div className="bg-muted/30 rounded-md transition-all p-1.5">
-      <button
+    <YStack backgroundColor="$color3" borderRadius="$3" padding="$1.5">
+      <Button
         onClick={onToggle}
-        className="flex items-center gap-2 w-full text-left hover:bg-muted/50 rounded px-1"
+        alignItems="center" gap="$2" width="100%" textAlign="left" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color3" }}
       >
-        <div className="flex items-center gap-1.5">
+        <XStack alignItems="center" gap="$1.5">
           {isCompleted ? (
-            <CheckCircle className="h-3 w-3 text-green-500" />
+            <CheckCircle size={12} color="$green9" />
           ) : (
-            <Loader2 className="h-3 w-3 animate-spin text-blue-500" />
+            <Loader2 size={12} color="$blue9" />
           )}
-          <span className="text-xs font-mono">progress</span>
-        </div>
-        <code className="text-xs text-muted-foreground truncate flex-1">
+          <SizableText fontSize="$1" fontFamily="$mono">progress</SizableText>
+        </XStack>
+        <SizableText fontSize="$1" color="$color11" numberOfLines={1} flex={1}>
           {preview}
-        </code>
-        <div className="ml-auto">
-          <ChevronRight className={`h-3 w-3 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-        </div>
-      </button>
+        </SizableText>
+        <YStack marginLeft="auto">
+          <ChevronRight size={12} />
+        </YStack>
+      </Button>
 
       {isExpanded && (
-        <div className="mt-2 px-2">
-          <pre className="text-xs bg-muted/50 p-2 rounded overflow-x-auto whitespace-pre-wrap">
+        <YStack marginTop="$2" paddingHorizontal="$2">
+          <SizableText fontSize="$1" backgroundColor="$color3" padding="$2" borderRadius="$2" whiteSpace="pre" overflow="scroll" fontFamily="$mono">
             {content}
-          </pre>
-        </div>
+          </SizableText>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 }

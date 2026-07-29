@@ -1,5 +1,6 @@
 "use client";
 
+import { SizableText, YStack, XStack, H1, Paragraph, Anchor, H3, H2 } from '@hanzo/gui';
 // Support hub for hanzo.app. Monochrome design system (Header + SiteFooter +
 // Reveal). Contact + channels are REAL only: support@hanzo.ai, the community
 // Discord and status page that already ship in the repo footer, docs, FAQ, and
@@ -31,7 +32,7 @@ interface Channel {
 
 const channels: Channel[] = [
   {
-    icon: <Mail className="h-5 w-5" />,
+    icon: <Mail size={20} />,
     title: "Email support",
     description:
       "Reach the team directly for account, billing, or technical help. We read every message.",
@@ -40,7 +41,7 @@ const channels: Channel[] = [
     cta: "support@hanzo.ai",
   },
   {
-    icon: <MessagesSquare className="h-5 w-5" />,
+    icon: <MessagesSquare size={20} />,
     title: "Community",
     description:
       "Join the Hanzo Discord to ask questions, share what you built, and talk to other builders.",
@@ -49,7 +50,7 @@ const channels: Channel[] = [
     cta: "Open Discord",
   },
   {
-    icon: <Activity className="h-5 w-5" />,
+    icon: <Activity size={20} />,
     title: "System status",
     description:
       "Live status and incident history for Hanzo Cloud and the API. Check here first if something looks down.",
@@ -58,7 +59,7 @@ const channels: Channel[] = [
     cta: "View status",
   },
   {
-    icon: <HelpCircle className="h-5 w-5" />,
+    icon: <HelpCircle size={20} />,
     title: "FAQ",
     description:
       "Quick answers on how the builder works, which models power it, custom domains, GitHub export, and billing.",
@@ -66,7 +67,7 @@ const channels: Channel[] = [
     cta: "Read the FAQ",
   },
   {
-    icon: <BookOpen className="h-5 w-5" />,
+    icon: <BookOpen size={20} />,
     title: "Documentation",
     description:
       "Guides and references for the builder, Hanzo Cloud, and the AI API.",
@@ -74,7 +75,7 @@ const channels: Channel[] = [
     cta: "Browse docs",
   },
   {
-    icon: <Github className="h-5 w-5" />,
+    icon: <Github size={20} />,
     title: "GitHub",
     description:
       "Hanzo is open on GitHub. File an issue, read the source, or import a repo into the builder.",
@@ -86,74 +87,74 @@ const channels: Channel[] = [
 
 export default function HelpPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
       <Header />
 
       <main>
         {/* ── Hero ─────────────────────────────────────────────── */}
-        <section className="relative overflow-hidden px-4 py-20 text-center md:px-8 md:py-28">
-          <div className="pointer-events-none absolute inset-0 overflow-hidden">
-            <div className="absolute left-1/2 top-[-30%] h-[420px] w-[720px] -translate-x-1/2 rounded-full bg-foreground/[0.05] blur-[130px]" />
-          </div>
+        <SizableText position="relative" overflow="hidden" paddingHorizontal="$4" paddingVertical="$11" textAlign="center" display="flex" flexDirection="column" $md={{ paddingHorizontal: "$6", paddingVertical: "$13" }}>
+          <YStack pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} overflow="hidden">
+            <YStack position="absolute" left="50%" top="-30%" height={420} width={720} x="50%" borderRadius="$10" backgroundColor="$color" />
+          </YStack>
 
-          <div className="relative mx-auto max-w-3xl">
+          <YStack position="relative" alignSelf="center" maxWidth={768}>
             <Reveal>
-              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3 py-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-foreground/70" />
-                <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
+              <XStack marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1.5">
+                <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color" />
+                <SizableText fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.4} color="$color11">
                   Support
-                </span>
-              </div>
+                </SizableText>
+              </XStack>
             </Reveal>
 
             <Reveal delay={60}>
-              <h1 className="text-balance text-4xl font-medium leading-[1.03] tracking-tight sm:text-5xl md:text-6xl">
+              <H1 fontSize="$11" fontWeight="500" lineHeight={1.03} letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
                 How can we help?
-              </h1>
+              </H1>
             </Reveal>
 
             <Reveal delay={120}>
-              <p className="mx-auto mt-5 max-w-xl text-pretty text-base text-muted-foreground md:text-lg">
+              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
                 Start with the FAQ or docs for a fast answer, or reach the team
                 directly at{" "}
-                <a
+                <Anchor
                   href="mailto:support@hanzo.ai"
-                  className="text-foreground underline underline-offset-4 hover:text-foreground/80"
+                  color="$color" textDecorationLine="underline" hoverStyle={{ color: "$color" }}
                 >
                   support@hanzo.ai
-                </a>
+                </Anchor>
                 .
-              </p>
+              </Paragraph>
             </Reveal>
-          </div>
-        </section>
+          </YStack>
+        </SizableText>
 
         {/* ── Channels ─────────────────────────────────────────── */}
-        <section className="px-4 pb-8 md:px-8">
-          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <YStack paddingHorizontal="$4" paddingBottom="$6" $md={{ paddingHorizontal: "$6" }}>
+          <YStack alignSelf="center" maxWidth={1152} gap="$4.5">
             {channels.map((c, i) => {
               const inner = (
-                <div className="group flex h-full flex-col rounded-2xl border border-border bg-muted p-6 transition-colors hover:border-foreground/20 hover:bg-foreground/[0.03]">
-                  <div className="flex items-center justify-between">
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-muted text-foreground">
+                <YStack group height="100%" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$5" hoverStyle={{ borderColor: "$color", backgroundColor: "$color" }}>
+                  <XStack alignItems="center" justifyContent="space-between">
+                    <SizableText height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" color="$color">
                       {c.icon}
-                    </span>
+                    </SizableText>
                     {c.external ? (
-                      <ArrowUpRight className="h-4 w-4 text-foreground/30 transition-colors group-hover:text-foreground/60" />
+                      <ArrowUpRight size={16} color="$color" />
                     ) : (
-                      <ArrowRight className="h-4 w-4 text-foreground/30 transition-colors group-hover:text-foreground/60" />
+                      <ArrowRight size={16} color="$color" />
                     )}
-                  </div>
-                  <h3 className="mt-5 text-base font-medium text-foreground">
+                  </XStack>
+                  <H3 marginTop="$4.5" fontSize="$4" fontWeight="500" color="$color">
                     {c.title}
-                  </h3>
-                  <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+                  </H3>
+                  <Paragraph marginTop="$2" flex={1} fontSize="$3" lineHeight={1.625} color="$color11">
                     {c.description}
-                  </p>
-                  <span className="mt-4 text-sm font-medium text-foreground/70 transition-colors group-hover:text-foreground">
+                  </Paragraph>
+                  <SizableText marginTop="$4" fontSize="$3" fontWeight="500" color="$color" $group-hover={{ color: "$color" }}>
                     {c.cta} →
-                  </span>
-                </div>
+                  </SizableText>
+                </YStack>
               );
               return (
                 <Reveal key={c.title} delay={i * 60}>
@@ -167,35 +168,35 @@ export default function HelpPage() {
                 </Reveal>
               );
             })}
-          </div>
-        </section>
+          </YStack>
+        </YStack>
 
         {/* ── Contact CTA ──────────────────────────────────────── */}
-        <section className="px-4 py-16 md:px-8 md:py-24">
+        <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
           <Reveal className="mx-auto max-w-6xl">
-            <div className="flex flex-col items-start justify-between gap-5 rounded-2xl border border-border bg-muted p-8 sm:flex-row sm:items-center md:p-10">
+            <YStack alignItems="flex-start" justifyContent="space-between" gap="$4.5" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$6" $sm={{ flexDirection: "row", alignItems: "center" }} $md={{ padding: "$7" }}>
               <div>
-                <h2 className="text-2xl font-medium tracking-tight md:text-3xl">
+                <H2 fontSize="$8" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$10" }}>
                   Talk to a human.
-                </h2>
-                <p className="mt-2 max-w-md text-sm text-muted-foreground md:text-base">
+                </H2>
+                <Paragraph marginTop="$2" maxWidth={448} fontSize="$3" color="$color11" $md={{ fontSize: "$4" }}>
                   Account, billing, or something the docs didn&apos;t cover — email
                   the team and we&apos;ll get back to you.
-                </p>
+                </Paragraph>
               </div>
-              <a
+              <Anchor
                 href="mailto:support@hanzo.ai"
-                className="inline-flex flex-shrink-0 items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90"
+                flexShrink={0} alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
               >
-                <Mail className="h-4 w-4" />
+                <Mail size={16} />
                 Email support
-              </a>
-            </div>
+              </Anchor>
+            </YStack>
           </Reveal>
-        </section>
+        </YStack>
       </main>
 
       <SiteFooter />
-    </div>
+    </SizableText>
   );
 }

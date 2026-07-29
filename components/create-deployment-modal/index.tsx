@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import { YStack, Paragraph, SizableText } from '@hanzo/gui';
+import { useState } from 'react';
 import { Project } from '@/lib/vfs/types';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Button, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 
@@ -73,7 +74,7 @@ export function CreateDeploymentModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent $sm={{ maxWidth: 500 }}>
         <DialogHeader>
           <DialogTitle>Create New Deployment</DialogTitle>
           <DialogDescription>
@@ -82,9 +83,9 @@ export function CreateDeploymentModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4">
+        <YStack gap="$4" paddingVertical="$4">
           {/* Project Selection */}
-          <div className="grid gap-2">
+          <YStack gap="$2">
             <Label htmlFor="project">Project</Label>
             <Select value={projectId} onValueChange={handleProjectChange}>
               <SelectTrigger id="project">
@@ -98,46 +99,46 @@ export function CreateDeploymentModal({
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-xs text-muted-foreground">
+            <Paragraph fontSize="$1" color="$color11">
               Choose which project to publish
-            </p>
-          </div>
+            </Paragraph>
+          </YStack>
 
           {/* Deployment Name */}
-          <div className="grid gap-2">
+          <YStack gap="$2">
             <Label htmlFor="name">Deployment Name</Label>
             <Input
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="My Awesome Deployment"
-            />
-            <p className="text-xs text-muted-foreground">
+  />
+            <Paragraph fontSize="$1" color="$color11">
               Display name for this published deployment
-            </p>
-          </div>
+            </Paragraph>
+          </YStack>
 
           {/* Slug (Optional) */}
-          <div className="grid gap-2">
+          <YStack gap="$2">
             <Label htmlFor="slug">Slug (Optional)</Label>
             <Input
               id="slug"
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
               placeholder="my-awesome-deployment"
-            />
-            <p className="text-xs text-muted-foreground">
+  />
+            <Paragraph fontSize="$1" color="$color11">
               URL-friendly identifier for this deployment
-            </p>
-          </div>
+            </Paragraph>
+          </YStack>
 
           {/* Error Message */}
           {error && (
-            <div className="text-sm text-destructive bg-destructive/10 p-3 rounded">
+            <SizableText fontSize="$3" color="$red9" backgroundColor="$red9" padding="$3" borderRadius="$2" display="flex" flexDirection="column">
               {error}
-            </div>
+            </SizableText>
           )}
-        </div>
+        </YStack>
 
         <DialogFooter>
           <Button variant="outline" onClick={handleClose} disabled={isCreating}>

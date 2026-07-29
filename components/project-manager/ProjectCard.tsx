@@ -1,10 +1,9 @@
 'use client';
 
-import React from 'react';
+import { YStack, XStack, SizableText, H3, Paragraph, Anchor } from '@hanzo/gui';
 import { useRouter } from 'next/navigation';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, buttonVariants } from '@hanzo/ui';
 import { Pencil, Trash2, MoreVertical, ExternalLink, Globe, Settings } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { builderLink, configLink, liveUrlOf, type Project } from '@/lib/api/projects';
 import { statusOf } from '@/lib/project-status';
 
@@ -27,66 +26,66 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
   const visitUrl = liveUrlOf(project);
 
   return (
-    <div className="group border border-border rounded-lg bg-card hover:shadow-lg hover:border-primary/50 transition-all">
-      <div className="p-4 pb-3">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            <span className={`h-2.5 w-2.5 rounded-full shrink-0 ${status.dot}`} title={status.label} />
-            <h3 className="font-medium text-base truncate">{project.name}</h3>
-          </div>
+    <YStack group borderWidth={1} borderColor="$borderColor" borderRadius="$5" backgroundColor="$background" hoverStyle={{ elevation: 4, borderColor: "$color12" }}>
+      <YStack padding="$4" paddingBottom="$3">
+        <XStack alignItems="flex-start" justifyContent="space-between" gap="$2">
+          <XStack alignItems="center" gap="$2" minWidth={0} flex={1}>
+            <SizableText height="$2.5" width="$2.5" borderRadius="$10" flexShrink={0} className={`${status.dot}`} title={status.label} />
+            <H3 fontWeight="500" fontSize="$4" numberOfLines={1}>{project.name}</H3>
+          </XStack>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="ghost" className="h-7 w-7 shrink-0">
-                <MoreVertical className="h-4 w-4" />
+              <Button size="icon" variant="ghost" height={28} width={28} flexShrink={0}>
+                <MoreVertical size={16} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => router.push(builderLink(project.slug, project.org))}>
-                <Pencil className="mr-2 h-4 w-4" />
+                <Pencil size={16} />
                 Edit in builder
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => router.push(configLink(project.slug, project.org))}>
-                <Settings className="mr-2 h-4 w-4" />
+                <Settings size={16} />
                 Configure
               </DropdownMenuItem>
               {visitUrl && (
                 <DropdownMenuItem onClick={() => window.open(visitUrl, '_blank', 'noopener')}>
-                  <ExternalLink className="mr-2 h-4 w-4" />
+                  <ExternalLink size={16} />
                   Visit site
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive" onClick={() => onDelete(project)}>
-                <Trash2 className="mr-2 h-4 w-4" />
+              <DropdownMenuItem color="$red9" onClick={() => onDelete(project)}>
+                <Trash2 size={16} />
                 Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
+        </XStack>
 
-        <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Globe className="h-3.5 w-3.5" />
-          <span className="capitalize">{project.framework || 'static'}</span>
-          <span className="mx-1">·</span>
+        <SizableText marginTop="$2" alignItems="center" gap="$1.5" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+          <Globe size={14} />
+          <SizableText textTransform="capitalize">{project.framework || 'static'}</SizableText>
+          <SizableText marginHorizontal="$1">·</SizableText>
           <span>{status.label}</span>
-        </div>
+        </SizableText>
 
         {project.description && (
-          <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{project.description}</p>
+          <Paragraph marginTop="$2" fontSize="$3" color="$color11" numberOfLines={2}>{project.description}</Paragraph>
         )}
-      </div>
+      </YStack>
 
-      <div className="border-t px-4 py-3 flex items-center justify-between">
-        <span className="text-xs text-muted-foreground">Updated {timeAgo(project.updatedAt)}</span>
-        <div className="flex gap-1">
+      <XStack borderTopWidth={1} paddingHorizontal="$4" paddingVertical="$3" alignItems="center" justifyContent="space-between">
+        <SizableText fontSize="$1" color="$color11">Updated {timeAgo(project.updatedAt)}</SizableText>
+        <XStack gap="$1">
           <Button
             size="sm"
             variant="ghost"
-            className="h-7 px-2 text-xs"
+            height={28} paddingHorizontal="$2" fontSize="$1"
             onClick={() => router.push(builderLink(project.slug, project.org))}
           >
-            <Pencil className="h-3 w-3 mr-1" />
+            <Pencil size={12} />
             Edit
           </Button>
           {visitUrl && (
@@ -94,21 +93,18 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
             // Button wraps its children in an array for the loading slot, which
             // trips Radix Slot's React.Children.only when it renders as a Slot.
             // See components/editor/cross-surface-links.tsx for the same footgun.
-            <a
+            <Anchor
               href={visitUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className={cn(
-                buttonVariants({ size: 'sm', variant: 'ghost' }),
-                'h-7 px-2 text-xs',
-              )}
+              height={28} paddingHorizontal="$2" fontSize="$1" className={`${buttonVariants({ size: 'sm', variant: 'ghost' })}`}
             >
-              <ExternalLink className="h-3 w-3 mr-1" />
+              <ExternalLink size={12} />
               Visit
-            </a>
+            </Anchor>
           )}
-        </div>
-      </div>
-    </div>
+        </XStack>
+      </XStack>
+    </YStack>
   );
 }

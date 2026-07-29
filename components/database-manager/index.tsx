@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import { YStack } from '@hanzo/gui';
+import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@hanzo/ui';
 import { DataBrowser } from './data-browser';
 import { SchemaViewer } from './schema-viewer';
@@ -20,78 +21,78 @@ export function DatabaseManager({ deploymentId }: DatabaseManagerProps) {
   const [activeTab, setActiveTab] = useState('data');
 
   return (
-    <div className="h-full flex flex-col">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-        <TabsList className="grid w-full grid-cols-8">
-          <TabsTrigger value="data" className="flex items-center gap-1.5">
-            <Table2 className="h-3.5 w-3.5" />
+    <YStack height="100%">
+      <Tabs value={activeTab} onValueChange={setActiveTab} flex={1} flexDirection="column">
+        <TabsList width="100%">
+          <TabsTrigger value="data" alignItems="center" gap="$1.5">
+            <Table2 size={14} />
             Data
           </TabsTrigger>
-          <TabsTrigger value="schema" className="flex items-center gap-1.5">
-            <Database className="h-3.5 w-3.5" />
+          <TabsTrigger value="schema" alignItems="center" gap="$1.5">
+            <Database size={14} />
             Schema
           </TabsTrigger>
-          <TabsTrigger value="query" className="flex items-center gap-1.5">
-            <Terminal className="h-3.5 w-3.5" />
+          <TabsTrigger value="query" alignItems="center" gap="$1.5">
+            <Terminal size={14} />
             SQL
           </TabsTrigger>
-          <TabsTrigger value="functions" className="flex items-center gap-1.5">
-            <Code2 className="h-3.5 w-3.5" />
+          <TabsTrigger value="functions" alignItems="center" gap="$1.5">
+            <Code2 size={14} />
             Functions
           </TabsTrigger>
-          <TabsTrigger value="helpers" className="flex items-center gap-1.5">
-            <Wrench className="h-3.5 w-3.5" />
+          <TabsTrigger value="helpers" alignItems="center" gap="$1.5">
+            <Wrench size={14} />
             Helpers
           </TabsTrigger>
-          <TabsTrigger value="secrets" className="flex items-center gap-1.5">
-            <Key className="h-3.5 w-3.5" />
+          <TabsTrigger value="secrets" alignItems="center" gap="$1.5">
+            <Key size={14} />
             Secrets
           </TabsTrigger>
-          <TabsTrigger value="schedules" className="flex items-center gap-1.5">
-            <Clock className="h-3.5 w-3.5" />
+          <TabsTrigger value="schedules" alignItems="center" gap="$1.5">
+            <Clock size={14} />
             Schedules
           </TabsTrigger>
-          <TabsTrigger value="logs" className="flex items-center gap-1.5">
-            <ScrollText className="h-3.5 w-3.5" />
+          <TabsTrigger value="logs" alignItems="center" gap="$1.5">
+            <ScrollText size={14} />
             Logs
           </TabsTrigger>
         </TabsList>
 
-        <div className="flex-1 overflow-hidden mt-4">
-          <TabsContent value="data" className="h-full m-0">
+        <YStack flex={1} overflow="hidden" marginTop="$4">
+          <TabsContent value="data" height="100%" margin="$0">
             <DataBrowser deploymentId={deploymentId} />
           </TabsContent>
 
-          <TabsContent value="schema" className="h-full m-0">
+          <TabsContent value="schema" height="100%" margin="$0">
             <SchemaViewer deploymentId={deploymentId} />
           </TabsContent>
 
-          <TabsContent value="query" className="h-full m-0">
+          <TabsContent value="query" height="100%" margin="$0">
             <SqlEditor deploymentId={deploymentId} />
           </TabsContent>
 
-          <TabsContent value="functions" className="h-full m-0">
+          <TabsContent value="functions" height="100%" margin="$0">
             <FunctionsManager deploymentId={deploymentId} />
           </TabsContent>
 
-          <TabsContent value="helpers" className="h-full m-0">
+          <TabsContent value="helpers" height="100%" margin="$0">
             <ServerFunctionsManager deploymentId={deploymentId} />
           </TabsContent>
 
-          <TabsContent value="secrets" className="h-full m-0">
+          <TabsContent value="secrets" height="100%" margin="$0">
             <SecretsManager deploymentId={deploymentId} />
           </TabsContent>
 
-          <TabsContent value="schedules" className="h-full m-0">
+          <TabsContent value="schedules" height="100%" margin="$0">
             <ScheduledFunctionsManager deploymentId={deploymentId} />
           </TabsContent>
 
-          <TabsContent value="logs" className="h-full m-0">
+          <TabsContent value="logs" height="100%" margin="$0">
             <LogsViewer deploymentId={deploymentId} />
           </TabsContent>
-        </div>
+        </YStack>
       </Tabs>
-    </div>
+    </YStack>
   );
 }
 

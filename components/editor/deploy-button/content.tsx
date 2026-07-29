@@ -1,8 +1,11 @@
+'use client';
+
+import { YStack, XStack, Paragraph, SizableText, Anchor } from '@hanzo/gui';
 import { Rocket, Check, Copy, ExternalLink } from "lucide-react";
 import Image from "next/image";
 
 import Loading from "@/components/loading";
-import { Button, Input, toast } from '@hanzo/ui';
+import { Button, Input, toast, Label } from '@hanzo/ui';
 import SpaceIcon from "@/assets/space.svg";
 import { Page } from "@/types";
 import { builderLink } from "@/lib/api/projects";
@@ -195,21 +198,21 @@ export const DeployButtonContent = ({
     const host = published.url.replace(/^https?:\/\//, "");
     return (
       <>
-        <header className="border-b border-border bg-card p-4">
-          <div className="mb-2 flex items-center justify-center">
-            <div className="flex size-9 items-center justify-center rounded-lg border border-green-500/30 bg-green-500/10">
-              <Rocket className="size-4 text-green-400" />
-            </div>
-          </div>
-          <p className="text-center text-base font-medium text-foreground">Your app is live</p>
-          <p className="mt-1 text-center text-xs leading-relaxed text-muted-foreground">
+        <YStack borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4">
+          <XStack marginBottom="$2" alignItems="center" justifyContent="center">
+            <XStack width={36} height={36} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$green9" backgroundColor="$green9">
+              <Rocket size={16} color="$green8" />
+            </XStack>
+          </XStack>
+          <Paragraph textAlign="center" fontSize="$4" fontWeight="500" color="$color">Your app is live</Paragraph>
+          <Paragraph marginTop="$1" textAlign="center" fontSize="$1" lineHeight={1.625} color="$color11">
             Share this link — anyone can open it.
-          </p>
-        </header>
-        <main className="space-y-3 bg-card p-4">
-          <div className="flex items-center gap-2 rounded-lg border border-border bg-foreground/[0.04] px-3 py-2">
-            <span className="flex-1 truncate font-mono text-sm text-foreground">{host}</span>
-            <button
+          </Paragraph>
+        </YStack>
+        <YStack rowGap="$3" backgroundColor="$background" padding="$4">
+          <XStack alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$3" paddingVertical="$2">
+            <SizableText flex={1} numberOfLines={1} fontFamily="$mono" fontSize="$3" color="$color">{host}</SizableText>
+            <Button
               type="button"
               aria-label="Copy link"
               onClick={() => {
@@ -221,27 +224,27 @@ export const DeployButtonContent = ({
                   () => {},
                 );
               }}
-              className="flex size-7 flex-shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              width={28} height={28} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
             >
-              {copied ? <Check className="size-4 text-green-400" /> : <Copy className="size-4" />}
-            </button>
-          </div>
-          <a
+              {copied ? <Check size={16} color="$green8" /> : <Copy size={16} />}
+            </Button>
+          </XStack>
+          <Anchor
             href={published.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex w-full items-center justify-center gap-1.5 rounded-md !bg-primary px-3 py-2 text-sm font-medium !text-primary-foreground transition-colors hover:!bg-primary/90"
+            width="100%" alignItems="center" justifyContent="center" gap="$1.5" borderRadius="$3" backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
           >
-            Open site <ExternalLink className="size-4" />
-          </a>
-          <button
+            Open site <ExternalLink size={16} />
+          </Anchor>
+          <Button
             type="button"
             onClick={() => router.push(builderLink(published.slug, published.org))}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted hover:text-foreground"
+            width="100%" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
           >
             Back to editor
-          </button>
-        </main>
+          </Button>
+        </YStack>
       </>
     );
   }
@@ -249,21 +252,21 @@ export const DeployButtonContent = ({
   return (
     <>
       {/* Black chrome to match the builder — compact header. */}
-      <header className="border-b border-border bg-card p-4">
-        <div className="mb-2 flex items-center justify-center">
-          <div className="flex size-9 items-center justify-center rounded-lg border border-border bg-foreground/[0.06]">
-            <Image src={SpaceIcon} alt="" className="size-5" />
-          </div>
-        </div>
-        <p className="text-center text-base font-medium text-foreground">Publish your project</p>
-        <p className="mt-1 text-center text-xs leading-relaxed text-muted-foreground">
+      <YStack borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4">
+        <XStack marginBottom="$2" alignItems="center" justifyContent="center">
+          <XStack width={36} height={36} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color">
+            <Image src={SpaceIcon} alt="" width="$4.5" height="$4.5" />
+          </XStack>
+        </XStack>
+        <Paragraph textAlign="center" fontSize="$4" fontWeight="500" color="$color">Publish your project</Paragraph>
+        <Paragraph marginTop="$1" textAlign="center" fontSize="$1" lineHeight={1.625} color="$color11">
           {options?.description ??
             "Publish to your org on Hanzo Cloud — billed to your org, live across your Hanzo tools."}
-        </p>
-      </header>
-      <main className="space-y-3 bg-card p-4">
+        </Paragraph>
+      </YStack>
+      <YStack rowGap="$3" backgroundColor="$background" padding="$4">
         <div>
-          <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Project title</label>
+          <Label marginBottom="$1.5" fontSize="$1" fontWeight="500" color="$color11">Project title</Label>
           <Input
             type="text"
             placeholder="My Awesome Website"
@@ -271,14 +274,14 @@ export const DeployButtonContent = ({
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setConfig({ ...config, title: e.target.value })
             }
-            className="!border-border !bg-foreground/[0.04] !text-foreground !placeholder:text-muted-foreground selection:bg-[var(--brand-accent-soft)]"
-          />
+            borderColor="$borderColor" backgroundColor="$color" color="$color" placeholderTextColor="$color11" className="selection:bg-[var(--brand-accent-soft)]"
+  />
         </div>
         <Button
           variant="default"
           size="sm"
           onClick={publish}
-          className="relative w-full gap-1.5 !bg-primary font-medium !text-primary-foreground hover:!bg-primary/90"
+          position="relative" width="100%" gap="$1.5" backgroundColor="$color12" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
           disabled={loading}
         >
           {loading ? (
@@ -287,11 +290,11 @@ export const DeployButtonContent = ({
             </>
           ) : (
             <>
-              Publish <Rocket className="size-4" />
+              Publish <Rocket size={16} />
             </>
           )}
         </Button>
-      </main>
+      </YStack>
     </>
   );
 };

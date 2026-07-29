@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { YStack, Paragraph, SizableText, XStack } from '@hanzo/gui';
+import { useState, useEffect } from 'react';
 import { CodeEditor } from '@/components/code-editor';
 import { EdgeFunction } from '@/lib/vfs/types';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Button, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
@@ -104,7 +105,7 @@ export function FunctionEditor({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-3xl h-[85vh] flex flex-col">
+      <DialogContent height="85vh" flexDirection="column" $sm={{ maxWidth: 768 }}>
         <DialogHeader>
           <DialogTitle>
             {fn ? 'Edit Function' : 'Create Function'}
@@ -114,10 +115,10 @@ export function FunctionEditor({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-auto space-y-4">
+        <YStack flex={1} overflow="scroll" rowGap="$4">
           {/* Name & Method */}
-          <div className="grid grid-cols-3 gap-4">
-            <div className="col-span-2 space-y-2">
+          <YStack gap="$4">
+            <YStack rowGap="$2">
               <Label htmlFor="name">Function Name</Label>
               <Input
                 id="name"
@@ -125,14 +126,14 @@ export function FunctionEditor({
                 onChange={e => setName(e.target.value.toLowerCase())}
                 placeholder="my-function"
                 disabled={!!fn}
-              />
+  />
               {deploymentId && (
-                <p className="text-xs text-muted-foreground">
-                  URL: /api/deployments/{deploymentId}/functions/<span className="font-mono">{name || 'name'}</span>
-                </p>
+                <Paragraph fontSize="$1" color="$color11">
+                  URL: /api/deployments/{deploymentId}/functions/<SizableText fontFamily="$mono">{name || 'name'}</SizableText>
+                </Paragraph>
               )}
-            </div>
-            <div className="space-y-2">
+            </YStack>
+            <YStack rowGap="$2">
               <Label htmlFor="method">HTTP Method</Label>
               <Select value={method} onValueChange={v => setMethod(v as EdgeFunction['method'])}>
                 <SelectTrigger>
@@ -146,24 +147,24 @@ export function FunctionEditor({
                   <SelectItem value="DELETE">DELETE</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-          </div>
+            </YStack>
+          </YStack>
 
           {/* Description */}
-          <div className="space-y-2">
+          <YStack rowGap="$2">
             <Label htmlFor="description">Description (optional)</Label>
             <Input
               id="description"
               value={description}
               onChange={e => setDescription(e.target.value)}
               placeholder="What does this function do?"
-            />
-          </div>
+  />
+          </YStack>
 
           {/* Timeout */}
-          <div className="space-y-2">
+          <YStack rowGap="$2">
             <Label htmlFor="timeout">Timeout (seconds)</Label>
-            <div className="flex items-center gap-2">
+            <XStack alignItems="center" gap="$2">
               <Input
                 id="timeout"
                 type="number"
@@ -171,63 +172,63 @@ export function FunctionEditor({
                 max={30}
                 value={timeoutMs / 1000}
                 onChange={e => setTimeoutMs(Math.min(30, Math.max(1, parseInt(e.target.value) || 5)) * 1000)}
-                className="w-24"
-              />
-              <span className="text-sm text-muted-foreground">1-30 seconds</span>
-            </div>
-          </div>
+                width="$12"
+  />
+              <SizableText fontSize="$3" color="$color11">1-30 seconds</SizableText>
+            </XStack>
+          </YStack>
 
           {/* Code Editor */}
-          <div className="space-y-2">
+          <YStack rowGap="$2">
             <Label>Function Code</Label>
-            <div className="h-64 border rounded-lg overflow-hidden">
+            <YStack height={256} borderWidth={1} borderRadius="$5" overflow="hidden">
               <CodeEditor
                 language="javascript"
                 value={code}
                 onChange={(value) => setCode(value)}
-              />
-            </div>
-          </div>
+  />
+            </YStack>
+          </YStack>
 
           {/* API Reference */}
-          <div className="bg-muted/30 border rounded-lg p-4 space-y-2">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <Info className="h-4 w-4" />
+          <YStack backgroundColor="$color3" borderWidth={1} borderRadius="$5" padding="$4" rowGap="$2">
+            <SizableText alignItems="center" gap="$2" fontSize="$3" fontWeight="500" display="flex" flexDirection="row">
+              <Info size={16} />
               Available APIs
-            </div>
-            <div className="grid gap-2 text-xs font-mono">
-              <div><span className="text-blue-500">request</span>.method, .body, .query, .headers, .params, .path</div>
-              <div><span className="text-green-500">db</span>.query(sql, params), .run(sql, params), .all(sql, params)</div>
-              <div><span className="text-purple-500">Response</span>.json(data, status), .text(text, status), .error(msg, status)</div>
-              <div><span className="text-yellow-500">fetch</span>(url, options) - External HTTP requests</div>
-            </div>
-          </div>
+            </SizableText>
+            <SizableText gap="$2" fontSize="$1" fontFamily="$mono" display="flex" flexDirection="column">
+              <div><SizableText color="$blue9">request</SizableText>.method, .body, .query, .headers, .params, .path</div>
+              <div><SizableText color="$green9">db</SizableText>.query(sql, params), .run(sql, params), .all(sql, params)</div>
+              <div><SizableText color="$purple9">Response</SizableText>.json(data, status), .text(text, status), .error(msg, status)</div>
+              <div><SizableText color="$yellow9">fetch</SizableText>(url, options) - External HTTP requests</div>
+            </SizableText>
+          </YStack>
 
           {/* Error */}
           {error && (
-            <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 p-3 rounded-lg">
-              <AlertCircle className="h-4 w-4" />
+            <SizableText alignItems="center" gap="$2" fontSize="$3" color="$red9" backgroundColor="$red9" padding="$3" borderRadius="$5" display="flex" flexDirection="row">
+              <AlertCircle size={16} />
               {error}
-            </div>
+            </SizableText>
           )}
-        </div>
+        </YStack>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-2 pt-4 border-t">
+        <XStack alignItems="center" justifyContent="flex-end" gap="$2" paddingTop="$4" borderTopWidth={1}>
           <Button variant="outline" onClick={onClose} disabled={saving}>
             Cancel
           </Button>
           <Button onClick={handleSave} disabled={saving}>
             {saving ? (
               <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                <Loader2 size={16} />
                 Saving...
               </>
             ) : (
               fn ? 'Save Changes' : 'Create Function'
             )}
           </Button>
-        </div>
+        </XStack>
       </DialogContent>
     </Dialog>
   );

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { YStack, SizableText, H3, XStack, H4, Paragraph } from '@hanzo/gui';
+import { useState, useEffect } from 'react';
 import { Button, toast } from '@hanzo/ui';
 
 interface SessionPage {
@@ -90,188 +91,188 @@ export function SessionViewer({ deploymentId }: SessionViewerProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <YStack rowGap="$5">
       {/* Summary Stats */}
       {data && data.summary && (
-        <div className="grid grid-cols-4 gap-4">
-          <div className="border rounded-lg p-4">
-            <div className="text-sm text-muted-foreground">Total Sessions</div>
-            <div className="text-2xl font-medium">{(data.summary.totalSessions || 0).toLocaleString()}</div>
-          </div>
-          <div className="border rounded-lg p-4">
-            <div className="text-sm text-muted-foreground">Bounce Rate</div>
-            <div className="text-2xl font-medium">{((data.summary.bounceRate || 0) * 100).toFixed(1)}%</div>
-          </div>
-          <div className="border rounded-lg p-4">
-            <div className="text-sm text-muted-foreground">Avg. Duration</div>
-            <div className="text-2xl font-medium">{formatDuration(data.summary.averageDuration || 0)}</div>
-          </div>
-          <div className="border rounded-lg p-4">
-            <div className="text-sm text-muted-foreground">Avg. Pages/Session</div>
-            <div className="text-2xl font-medium">{(data.summary.averagePageCount || 0).toFixed(1)}</div>
-          </div>
-        </div>
+        <YStack gap="$4">
+          <YStack borderWidth={1} borderRadius="$5" padding="$4">
+            <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">Total Sessions</SizableText>
+            <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{(data.summary.totalSessions || 0).toLocaleString()}</SizableText>
+          </YStack>
+          <YStack borderWidth={1} borderRadius="$5" padding="$4">
+            <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">Bounce Rate</SizableText>
+            <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{((data.summary.bounceRate || 0) * 100).toFixed(1)}%</SizableText>
+          </YStack>
+          <YStack borderWidth={1} borderRadius="$5" padding="$4">
+            <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">Avg. Duration</SizableText>
+            <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{formatDuration(data.summary.averageDuration || 0)}</SizableText>
+          </YStack>
+          <YStack borderWidth={1} borderRadius="$5" padding="$4">
+            <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">Avg. Pages/Session</SizableText>
+            <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{(data.summary.averagePageCount || 0).toFixed(1)}</SizableText>
+          </YStack>
+        </YStack>
       )}
 
       {/* Flow Visualization */}
       {data && data.flowData && (
-        <div className="border rounded-lg p-4">
-          <h3 className="font-medium mb-4">Page Flow</h3>
-          <div className="space-y-2">
+        <YStack borderWidth={1} borderRadius="$5" padding="$4">
+          <H3 fontWeight="500" marginBottom="$4">Page Flow</H3>
+          <YStack rowGap="$2">
             {/* Simple flow visualization */}
             {data.flowData.nodes.slice(0, 10).map((node, index) => {
               const outgoingLinks = data.flowData.links.filter((l) => l.source === node.id);
               const incomingLinks = data.flowData.links.filter((l) => l.target === node.id);
 
               return (
-                <div key={node.id} className="border rounded p-3">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-medium">{node.label}</span>
-                    <span className="text-sm text-muted-foreground">{node.value} visits</span>
-                  </div>
+                <YStack key={node.id} borderWidth={1} borderRadius="$2" padding="$3">
+                  <XStack justifyContent="space-between" alignItems="center" marginBottom="$2">
+                    <SizableText fontWeight="500">{node.label}</SizableText>
+                    <SizableText fontSize="$3" color="$color11">{node.value} visits</SizableText>
+                  </XStack>
 
                   {/* Incoming links */}
                   {incomingLinks.length > 0 && (
-                    <div className="text-xs text-muted-foreground mb-1">
+                    <SizableText fontSize="$1" color="$color11" marginBottom="$1" display="flex" flexDirection="column">
                       ← From: {incomingLinks.slice(0, 3).map((l) => l.source).join(', ')}
                       {incomingLinks.length > 3 && ` (+${incomingLinks.length - 3} more)`}
-                    </div>
+                    </SizableText>
                   )}
 
                   {/* Outgoing links */}
                   {outgoingLinks.length > 0 && (
-                    <div className="text-xs text-muted-foreground">
+                    <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
                       → To: {outgoingLinks.slice(0, 3).map((l) => l.target).join(', ')}
                       {outgoingLinks.length > 3 && ` (+${outgoingLinks.length - 3} more)`}
-                    </div>
+                    </SizableText>
                   )}
-                </div>
+                </YStack>
               );
             })}
-          </div>
-        </div>
+          </YStack>
+        </YStack>
       )}
 
       {/* Session List */}
       {data && data.sessions.length > 0 && (
-        <div className="border rounded-lg">
-          <div className="p-4 border-b">
-            <h3 className="font-medium">Recent Sessions</h3>
-          </div>
-          <div className="divide-y max-h-96 overflow-y-auto">
+        <YStack borderWidth={1} borderRadius="$5">
+          <YStack padding="$4" borderBottomWidth={1}>
+            <H3 fontWeight="500">Recent Sessions</H3>
+          </YStack>
+          <YStack maxHeight={384} overflow="scroll">
             {data.sessions.slice(0, 50).map((session) => (
-              <div
+              <YStack
                 key={session.sessionId}
-                className="p-4 hover:bg-muted cursor-pointer"
+                padding="$4" cursor="pointer" hoverStyle={{ backgroundColor: "$color3" }}
                 onClick={() => setSelectedSession(session)}
               >
-                <div className="flex justify-between items-start mb-2">
-                  <div className="flex-1">
-                    <div className="font-medium text-sm">
+                <XStack justifyContent="space-between" alignItems="flex-start" marginBottom="$2">
+                  <YStack flex={1}>
+                    <SizableText fontWeight="500" fontSize="$3" display="flex" flexDirection="column">
                       {session.entryPage} → {session.exitPage}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
+                    </SizableText>
+                    <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
                       {new Date(session.createdAt).toLocaleString()}
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-sm">{session.pageCount} pages</div>
-                    <div className="text-xs text-muted-foreground">
+                    </SizableText>
+                  </YStack>
+                  <SizableText textAlign="right" display="flex" flexDirection="column">
+                    <SizableText fontSize="$3" display="flex" flexDirection="column">{session.pageCount} pages</SizableText>
+                    <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
                       {formatDuration(session.totalDuration)}
-                    </div>
-                  </div>
-                </div>
+                    </SizableText>
+                  </SizableText>
+                </XStack>
 
                 {session.isBounce && (
-                  <div className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-red-100 text-red-800">
+                  <SizableText alignItems="center" paddingHorizontal="$2" paddingVertical="$0.5" borderRadius="$2" fontSize="$1" backgroundColor="$red2" color="$red11" display="flex" flexDirection="row">
                     Bounce
-                  </div>
+                  </SizableText>
                 )}
-              </div>
+              </YStack>
             ))}
-          </div>
-        </div>
+          </YStack>
+        </YStack>
       )}
 
       {/* Session Details Modal */}
       {selectedSession && (
-        <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+        <XStack
+          position="fixed" top={0} right={0} bottom={0} left={0} backgroundColor="black" alignItems="center" justifyContent="center" zIndex={50}
           onClick={() => setSelectedSession(null)}
         >
-          <div
-            className="bg-background border rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+          <YStack
+            backgroundColor="$background" borderWidth={1} borderRadius="$5" padding="$5" maxWidth={672} width="100%" maxHeight="80vh" overflow="scroll"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex justify-between items-start mb-4">
-              <h3 className="text-lg font-medium">Session Journey</h3>
+            <XStack justifyContent="space-between" alignItems="flex-start" marginBottom="$4">
+              <H3 fontSize="$6" fontWeight="500">Session Journey</H3>
               <Button variant="ghost" size="sm" onClick={() => setSelectedSession(null)}>
                 ✕
               </Button>
-            </div>
+            </XStack>
 
-            <div className="space-y-4">
+            <YStack rowGap="$4">
               {/* Session metadata */}
-              <div className="grid grid-cols-2 gap-4 text-sm">
+              <SizableText gap="$4" fontSize="$3" display="flex" flexDirection="column">
                 <div>
-                  <span className="text-muted-foreground">Started:</span>{' '}
+                  <SizableText color="$color11">Started:</SizableText>{' '}
                   {new Date(selectedSession.createdAt).toLocaleString()}
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Ended:</span>{' '}
+                  <SizableText color="$color11">Ended:</SizableText>{' '}
                   {new Date(selectedSession.endedAt).toLocaleString()}
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Total Duration:</span>{' '}
+                  <SizableText color="$color11">Total Duration:</SizableText>{' '}
                   {formatDuration(selectedSession.totalDuration)}
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Pages Visited:</span>{' '}
+                  <SizableText color="$color11">Pages Visited:</SizableText>{' '}
                   {selectedSession.pageCount}
                 </div>
-              </div>
+              </SizableText>
 
               {/* Journey timeline */}
-              <div className="border-t pt-4">
-                <h4 className="font-medium mb-3">Page Journey</h4>
-                <div className="space-y-3">
+              <YStack borderTopWidth={1} paddingTop="$4">
+                <H4 fontWeight="500" marginBottom="$3">Page Journey</H4>
+                <YStack rowGap="$3">
                   {selectedSession.pages.map((page, index) => (
-                    <div key={index} className="flex items-start gap-3">
-                      <div className="flex flex-col items-center">
-                        <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-medium">
+                    <XStack key={index} alignItems="flex-start" gap="$3">
+                      <YStack alignItems="center">
+                        <SizableText width="$6" height="$6" borderRadius="$10" backgroundColor="$color12" color="$background" alignItems="center" justifyContent="center" fontSize="$1" fontWeight="500" display="flex" flexDirection="row">
                           {index + 1}
-                        </div>
+                        </SizableText>
                         {index < selectedSession.pages.length - 1 && (
-                          <div className="w-0.5 h-8 bg-border" />
+                          <YStack width="$0.5" height="$6" backgroundColor="$borderColor" />
                         )}
-                      </div>
-                      <div className="flex-1">
-                        <div className="font-medium">{page.path}</div>
-                        <div className="text-xs text-muted-foreground">
+                      </YStack>
+                      <YStack flex={1}>
+                        <SizableText fontWeight="500" display="flex" flexDirection="column">{page.path}</SizableText>
+                        <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
                           {new Date(page.timestamp).toLocaleTimeString()}
                           {page.duration && ` • ${formatDuration(page.duration)}`}
-                        </div>
-                      </div>
-                    </div>
+                        </SizableText>
+                      </YStack>
+                    </XStack>
                   ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                </YStack>
+              </YStack>
+            </YStack>
+          </YStack>
+        </XStack>
       )}
 
       {loading && (
-        <div className="flex items-center justify-center h-96 border rounded-lg">
-          <p className="text-muted-foreground">Loading session data...</p>
-        </div>
+        <XStack alignItems="center" justifyContent="center" height={384} borderWidth={1} borderRadius="$5">
+          <Paragraph color="$color11">Loading session data...</Paragraph>
+        </XStack>
       )}
 
       {!loading && !data && (
-        <div className="flex items-center justify-center h-96 border rounded-lg">
-          <p className="text-muted-foreground">No session data available</p>
-        </div>
+        <XStack alignItems="center" justifyContent="center" height={384} borderWidth={1} borderRadius="$5">
+          <Paragraph color="$color11">No session data available</Paragraph>
+        </XStack>
       )}
-    </div>
+    </YStack>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback, Suspense } from 'react';
+import { YStack, XStack, SizableText, Paragraph, H1 } from '@hanzo/gui';
+import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { MarkdownRenderer } from '@/components/markdown-renderer';
 import { TableOfContents } from '@/components/table-of-contents';
@@ -199,13 +200,13 @@ function DocsViewContent() {
   const showToc = tocItems.length >= 3;
 
   return (
-    <div className="h-full flex flex-col">
+    <YStack height="100%">
       {/* Two-column layout: Content + TOC */}
-      <div className={`flex-1 overflow-hidden ${showToc ? 'lg:grid lg:grid-cols-[1fr_280px]' : ''}`}>
+      <YStack flex={1} overflow="hidden">
         {/* Main Content Area - scrollable */}
-        <div className="h-full overflow-y-auto docs-content-area bg-background">
-          <div
-            className="p-6 sm:p-8 max-w-4xl mx-auto"
+        <YStack height="100%" backgroundColor="$background" overflow="scroll" className="docs-content-area">
+          <YStack
+            padding="$5" maxWidth={896} alignSelf="center" $sm={{ padding: "$6" }}
             onClick={(e) => {
               // Handle anchor link clicks
               const target = e.target as HTMLElement;
@@ -223,58 +224,58 @@ function DocsViewContent() {
             }}
           >
           {loading && (
-            <div className="flex items-center justify-center h-screen">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto" />
-                <p className="mt-4 text-muted-foreground">Loading documentation...</p>
-              </div>
-            </div>
+            <XStack alignItems="center" justifyContent="center" height="100%">
+              <SizableText textAlign="center" display="flex" flexDirection="column">
+                <YStack borderRadius="$10" height="$8" width="$8" borderBottomWidth={2} borderColor="$color12" alignSelf="center" />
+                <Paragraph marginTop="$4" color="$color11">Loading documentation...</Paragraph>
+              </SizableText>
+            </XStack>
           )}
 
           {error && (
-            <div className="flex items-center gap-3 p-4 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive">
-              <AlertCircle className="h-5 w-5 flex-shrink-0" />
+            <SizableText alignItems="center" gap="$3" padding="$4" backgroundColor="$red9" borderWidth={1} borderColor="$red9" borderRadius="$5" color="$red9" display="flex" flexDirection="row">
+              <AlertCircle size={20} />
               <div>
-                <p className="font-medium">Error loading document</p>
-                <p className="text-sm">{error}</p>
+                <Paragraph fontWeight="500">Error loading document</Paragraph>
+                <Paragraph fontSize="$3">{error}</Paragraph>
               </div>
-            </div>
+            </SizableText>
           )}
 
           {!loading && !error && content && (
             <>
               {/* Document Title */}
-              <div className="mb-6 pb-4 border-b">
-                <div className="flex items-center gap-3 mb-2">
+              <YStack marginBottom="$5" paddingBottom="$4" borderBottomWidth={1}>
+                <XStack alignItems="center" gap="$3" marginBottom="$2">
                   <selectedDoc.icon className="h-8 w-8 text-primary" />
-                  <h1 className="text-3xl font-medium">{selectedDoc.title}</h1>
-                </div>
-              </div>
+                  <H1 fontSize="$10" fontWeight="500">{selectedDoc.title}</H1>
+                </XStack>
+              </YStack>
 
               {/* Markdown Content */}
               <MarkdownRenderer content={content} />
             </>
           )}
-          </div>
-        </div>
+          </YStack>
+        </YStack>
 
         {/* Table of Contents Sidebar - independent scrollable column */}
         {showToc && (
-          <div className="hidden lg:block h-full overflow-y-auto border-l border-border bg-muted/30">
-            <div className="p-6 sticky top-0">
+          <YStack display="none" height="100%" borderLeftWidth={1} borderColor="$borderColor" backgroundColor="$color3" overflow="scroll">
+            <YStack padding="$5" position="sticky" top="$0">
               <TableOfContents items={tocItems} activeId={activeId} visibleIds={visibleIds} onItemClick={handleTocClick} />
-            </div>
-          </div>
+            </YStack>
+          </YStack>
         )}
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }
 
 // Wrapper component with Suspense boundary for Next.js 15
 export function DocsView() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center h-full">Loading documentation...</div>}>
+    <Suspense fallback={<XStack alignItems="center" justifyContent="center" height="100%">Loading documentation...</XStack>}>
       <DocsViewContent />
     </Suspense>
   );

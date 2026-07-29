@@ -1,3 +1,5 @@
+'use client';
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { toast, Button } from '@hanzo/ui';
@@ -60,18 +62,18 @@ export function SaveButton({
       <Button
         variant="default"
         size="sm"
-        className="max-lg:hidden !h-7 gap-1.5 px-2.5 text-xs relative"
+        height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1" position="relative" $lg={{ display: "none" }}
         onClick={updateSpace}
         disabled={loading}
       >
-        <MdSave className="size-3.5" />
+        <MdSave size={14} />
         {loading ? "Publishing…" : "Publish"}
         {loading && <Loading className="ml-1 size-3.5 animate-spin" />}
       </Button>
       <Button
         variant="default"
         size="sm"
-        className="lg:hidden !h-7 px-2.5 text-xs relative"
+        height={28} paddingHorizontal="$2.5" fontSize="$1" position="relative" $lg={{ display: "none" }}
         onClick={updateSpace}
         disabled={loading}
       >

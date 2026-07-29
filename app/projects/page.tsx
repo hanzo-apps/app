@@ -10,6 +10,7 @@
  * shell, one look, everywhere.
  */
 
+import { XStack, SizableText, Paragraph, YStack, H1 } from '@hanzo/gui';
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
@@ -28,29 +29,29 @@ export default function ProjectsPage() {
 
   if (loading || !user) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="text-center">
+      <XStack minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="$background">
+        <SizableText textAlign="center" display="flex" flexDirection="column">
           <HanzoLogo className="mx-auto mb-4 h-12 w-12 animate-pulse text-foreground" />
-          <p className="text-muted-foreground">
+          <Paragraph color="$color11">
             {loading ? "Loading your projects…" : "Redirecting to login…"}
-          </p>
-        </div>
-      </div>
+          </Paragraph>
+        </SizableText>
+      </XStack>
     );
   }
 
   return (
     <AppShell currentView="all-projects">
-      <div className="flex-1 overflow-y-auto bg-background">
-        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:py-10">
-          <h1 className="mb-6 text-2xl font-medium tracking-tight text-foreground">
+      <YStack flex={1} backgroundColor="$background" overflow="scroll">
+        <YStack alignSelf="center" maxWidth={1152} paddingHorizontal="$4" paddingVertical="$6" $sm={{ paddingHorizontal: "$5" }} $lg={{ paddingVertical: "$7" }}>
+          <H1 marginBottom="$5" fontSize="$8" fontWeight="500" letterSpacing={-0.4} color="$color">
             Projects
-          </h1>
+          </H1>
           {/* Sidebar already renders the org switcher — suppress the duplicate in
               the list toolbar so there's one org control, not two. */}
           <ProjectList showOrgSwitcher={false} />
-        </div>
-      </div>
+        </YStack>
+      </YStack>
     </AppShell>
   );
 }

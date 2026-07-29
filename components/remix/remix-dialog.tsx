@@ -9,8 +9,9 @@
  * to the progress modal which does the real create + provision + seed.
  */
 
+import { YStack, SizableText, XStack } from '@hanzo/gui';
 import { useEffect, useState } from 'react';
-import { Dialog, DialogContent, DialogTitle, DialogDescription, Button, Checkbox, Input } from '@hanzo/ui';
+import { Dialog, DialogContent, DialogTitle, DialogDescription, Button, Checkbox, Input, Label } from '@hanzo/ui';
 
 const ACK_TEXT =
   'When remixing a template, I take responsibility over project security, compliance, data, and operations. Templates are provided as starting points and don’t guarantee functionality or security out of the box.';
@@ -45,17 +46,17 @@ export function RemixDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md border-border bg-card text-foreground">
-        <DialogTitle className="text-lg font-medium">Remix project</DialogTitle>
-        <DialogDescription className="text-muted-foreground">
+      <DialogContent maxWidth={448} borderColor="$borderColor" backgroundColor="$background" color="$color">
+        <DialogTitle fontSize="$6" fontWeight="500">Remix project</DialogTitle>
+        <DialogDescription color="$color11">
           By remixing a project, you’ll create a copy that you own.
         </DialogDescription>
 
-        <div className="mt-2 space-y-4">
+        <YStack marginTop="$2" rowGap="$4">
           <div>
-            <label htmlFor="remix-name" className="mb-1.5 block text-sm text-foreground">
+            <Label htmlFor="remix-name" marginBottom="$1.5" fontSize="$3" color="$color">
               Project name
-            </label>
+            </Label>
             <Input
               id="remix-name"
               value={name}
@@ -63,33 +64,33 @@ export function RemixDialog({
               onKeyDown={(e: React.KeyboardEvent) => {
                 if (e.key === 'Enter') confirm();
               }}
-              className="border-border bg-muted text-foreground"
+              borderColor="$borderColor" backgroundColor="$color3" color="$color"
               autoFocus
-            />
+  />
           </div>
 
-          <label className="flex cursor-pointer items-start gap-2.5">
+          <Label cursor="pointer" alignItems="flex-start" gap="$2.5">
             <Checkbox
               checked={ack}
               onCheckedChange={(v: boolean | 'indeterminate') => setAck(v === true)}
-              className="mt-0.5 border-border"
-            />
-            <span className="text-xs leading-relaxed text-muted-foreground">{ACK_TEXT}</span>
-          </label>
-        </div>
+              marginTop="$0.5" borderColor="$borderColor"
+  />
+            <SizableText fontSize="$1" lineHeight={1.625} color="$color11">{ACK_TEXT}</SizableText>
+          </Label>
+        </YStack>
 
-        <div className="mt-2 flex justify-end gap-2">
-          <Button variant="ghost" onClick={() => onOpenChange(false)} className="text-foreground">
+        <XStack marginTop="$2" justifyContent="flex-end" gap="$2">
+          <Button variant="ghost" onClick={() => onOpenChange(false)} color="$color">
             Cancel
           </Button>
           <Button
             onClick={confirm}
             disabled={!ack || !name.trim()}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
+            backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }} disabledStyle={{ opacity: 0.4 }}
           >
             Acknowledge and remix
           </Button>
-        </div>
+        </XStack>
       </DialogContent>
     </Dialog>
   );

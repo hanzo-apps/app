@@ -7,6 +7,7 @@
  * when a WebGL build is hosted for the title.
  */
 
+import { YStack, XStack, SizableText, H3, Paragraph } from '@hanzo/gui';
 import Link from 'next/link';
 import { Badge } from '@hanzo/ui';
 import { Gamepad2, Monitor, Smartphone, Globe, Play } from 'lucide-react';
@@ -29,50 +30,49 @@ export function GameCard({ game }: { game: GameEntry }) {
       href={`/games/${game.id}`}
       data-testid="game-card"
       aria-label={`${game.name} — ${game.genre}`}
-      className="group flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-all hover:-translate-y-1 hover:border-foreground/50"
-    >
+    ><YStack group height="100%" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "-1", borderColor: "$color" }}>
       {/* Header band — engine + play status */}
-      <div className="flex items-center justify-between border-b border-border bg-card px-4 py-3">
-        <span className="inline-flex items-center gap-2 text-sm font-medium text-foreground">
-          <Gamepad2 className="h-4 w-4 text-muted-foreground" aria-hidden />
+      <XStack alignItems="center" justifyContent="space-between" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$4" paddingVertical="$3">
+        <SizableText alignItems="center" gap="$2" fontSize="$3" fontWeight="500" color="$color">
+          <Gamepad2 size={16} color="$color11" aria-hidden />
           {ENGINE_LABEL[game.engine]}
-          <span className="text-muted-foreground">{game.engineVersion}</span>
-        </span>
+          <SizableText color="$color11">{game.engineVersion}</SizableText>
+        </SizableText>
         {playable ? (
-          <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-[11px] font-medium text-primary-foreground">
-            <Play className="h-3 w-3 fill-primary-foreground" aria-hidden />
+          <SizableText alignItems="center" gap="$1" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$2" paddingVertical="$0.5" fontSize={11} fontWeight="500" color="$background">
+            <Play size={12} aria-hidden />
             Play
-          </span>
+          </SizableText>
         ) : (
-          <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">
+          <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$0.5" fontSize={11} color="$color11">
             {game.targets.includes('webgl') ? 'WebGL-ready' : 'Desktop'}
-          </span>
+          </SizableText>
         )}
-      </div>
+      </XStack>
 
-      <div className="flex flex-1 flex-col p-4">
-        <div className="mb-1 flex items-center gap-2">
-          <h3 className="font-medium text-foreground">{game.name}</h3>
-          <Badge variant="secondary" className="text-[11px]">
+      <YStack flex={1} padding="$4">
+        <XStack marginBottom="$1" alignItems="center" gap="$2">
+          <H3 fontWeight="500" color="$color">{game.name}</H3>
+          <Badge variant="secondary" fontSize={11}>
             {game.genre}
           </Badge>
-        </div>
-        <p className="line-clamp-3 flex-1 text-xs text-muted-foreground">{game.description}</p>
+        </XStack>
+        <Paragraph numberOfLines={3} flex={1} fontSize="$1" color="$color11">{game.description}</Paragraph>
 
         {/* Target families + license */}
-        <div className="mt-3 flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-muted-foreground">
+        <XStack marginTop="$3" alignItems="center" justifyContent="space-between">
+          <SizableText alignItems="center" gap="$1.5" color="$color11" display="flex" flexDirection="row">
             {families.map((f) => {
               const Icon = FAMILY_ICON[f];
               return <Icon key={f} className="h-3.5 w-3.5" aria-label={f} />;
             })}
-          </div>
-          <span className="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
+          </SizableText>
+          <SizableText fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={0.4} color="$color11">
             {game.license}
-          </span>
-        </div>
-      </div>
-    </Link>
+          </SizableText>
+        </XStack>
+      </YStack>
+    </YStack></Link>
   );
 }
 

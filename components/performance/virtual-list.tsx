@@ -1,5 +1,6 @@
 'use client';
 
+import { XStack, YStack, SizableText } from '@hanzo/gui';
 import React, { useRef, useCallback, useMemo } from 'react';
 
 // Type definitions for react-window
@@ -23,8 +24,6 @@ const FixedSizeList = ({ children, height, width, itemCount, itemSize, itemData 
 };
 
 const VariableSizeList = FixedSizeList; // Simplified for now
-import { cn } from '@/lib/utils';
-
 // Simple AutoSizer component wrapper
 const AutoSizer = ({ children }: { children: (size: { width: number; height: number }) => React.ReactNode }) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -306,9 +305,9 @@ export function InfiniteVirtualList<T>({
     (item: any, index: number, style: React.CSSProperties) => {
       if (item.__loader) {
         return (
-          <div className="flex items-center justify-center p-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-900 dark:border-neutral-100" />
-          </div>
+          <XStack alignItems="center" justifyContent="center" padding="$4">
+            <YStack borderRadius="$10" height="$6" width="$6" borderBottomWidth={2} borderColor="$color12" $theme-dark={{ borderColor: "$color2" }} />
+          </XStack>
         );
       }
       return props.renderItem(item, index, style);
@@ -322,7 +321,7 @@ export function InfiniteVirtualList<T>({
       items={itemsWithLoader}
       renderItem={renderItemWithLoader}
       onItemsRendered={handleItemsRendered}
-    />
+  />
   );
 }
 
@@ -362,48 +361,42 @@ export function VirtualTable<T>({
         : rowClassName;
 
       return (
-        <div
+        <XStack
           style={style}
-          className={cn(
-            'flex items-center border-b border-neutral-200 dark:border-neutral-700',
-            rowClass
-          )}
+          alignItems="center" borderBottomWidth={1} borderColor="$color3" $theme-dark={{ borderColor: "$color11" }} className={`${rowClass}`}
         >
           {columns.map((column) => (
-            <div
+            <SizableText
               key={column.key}
               style={{ width: column.width }}
-              className="px-2 overflow-hidden text-ellipsis whitespace-nowrap"
+              paddingHorizontal="$2" overflow="hidden" whiteSpace="nowrap" display="flex" flexDirection="column"
             >
               {column.render(item)}
-            </div>
+            </SizableText>
           ))}
-        </div>
+        </XStack>
       );
     },
     [columns, rowClassName]
   );
 
   return (
-    <div className={cn('border border-neutral-200 dark:border-neutral-700 rounded-lg overflow-hidden', className)}>
+    <YStack borderWidth={1} borderColor="$color3" borderRadius="$5" overflow="hidden" $theme-dark={{ borderColor: "$color11" }} className={`${className}`}>
       {/* Header */}
-      <div
-        className={cn(
-          'flex items-center bg-neutral-50 dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700 font-medium',
-          headerClassName
-        )}
+      <SizableText
+        alignItems="center" backgroundColor="$color1" borderBottomWidth={1} borderColor="$color3" fontWeight="500" display="flex" flexDirection="row" $theme-dark={{ backgroundColor: "$color11", borderColor: "$color11" }} className={`${headerClassName}`}
         style={{ height: rowHeight, width: totalWidth }}
       >
         {columns.map((column) => (
-          <div
+          <SizableText
             key={column.key}
             style={{ width: column.width }}
-            className="px-2 overflow-hidden text-ellipsis whitespace-nowrap"
+            paddingHorizontal="$2" overflow="hidden" whiteSpace="nowrap" display="flex" flexDirection="column"
           >
             {column.header}
-          </div>
+          </SizableText>
         ))}
-      </div>
+      </SizableText>
 
       {/* Body */}
       <VirtualList
@@ -412,8 +405,8 @@ export function VirtualTable<T>({
         itemHeight={rowHeight}
         renderItem={renderRow}
         className="scrollbar-thin scrollbar-thumb-neutral-400 dark:scrollbar-thumb-neutral-600"
-      />
-    </div>
+  />
+    </YStack>
   );
 }
 

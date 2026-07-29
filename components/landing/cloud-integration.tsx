@@ -1,3 +1,6 @@
+'use client';
+
+import { YStack, Paragraph, H2, Anchor, XStack, SizableText, H3 } from '@hanzo/gui';
 // The differentiator — what a generic UI generator can't say.
 //
 // hanzo.app doesn't just draw a screen; it ships a full app on Hanzo Cloud
@@ -72,65 +75,61 @@ const capabilities: Capability[] = [
 
 export default function CloudIntegration() {
   return (
-    <section className="relative border-t border-border px-4 py-20 md:px-8 md:py-28">
-      <div className="mx-auto max-w-6xl">
+    <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$13" }}>
+      <YStack alignSelf="center" maxWidth={1152}>
         <Reveal className="mx-auto max-w-2xl text-center">
-          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+          <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
             The difference
-          </p>
-          <h2 className="mt-4 text-3xl font-medium tracking-tight md:text-[2.75rem] md:leading-[1.1]">
+          </Paragraph>
+          <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ color: "2.75rem", lineHeight: 1.1 }}>
             More than a UI. A full app on Hanzo Cloud.
-          </h2>
-          <p className="mt-4 text-base text-muted-foreground md:text-lg">
+          </H2>
+          <Paragraph marginTop="$4" fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
             Other builders hand you a screenshot. Hanzo ships a running app —
             database, auth, AI, secrets, and storage already connected.
-          </p>
+          </Paragraph>
         </Reveal>
 
-        <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <YStack marginTop="$9" gap="$4">
           {capabilities.map((c, i) => {
             const Icon = c.icon;
             return (
               <Reveal key={c.name} delay={i * 60} className="h-full">
-              <a
+              <Anchor
                 href={c.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`group relative flex h-full flex-col rounded-2xl border p-6 transition-all duration-200 ${
-                  c.primary
-                    ? "border-foreground/20 bg-muted hover:border-foreground/30"
-                    : "border-border bg-muted hover:border-foreground/20 hover:bg-accent"
-                }`}
+                group position="relative" height="100%" flexDirection="column" borderRadius="$8" borderWidth={1} padding="$5" {...{ borderColor: c.primary ? "$color" : "$borderColor", backgroundColor: c.primary ? "$color3" : "$color3", hoverStyle: c.primary ? {"borderColor":"$color"} : {"borderColor":"$color","backgroundColor":"$color3"} }}
               >
-                <div className="flex items-center justify-between">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-muted">
+                <XStack alignItems="center" justifyContent="space-between">
+                  <SizableText height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
                     <Icon className="h-5 w-5 text-foreground" strokeWidth={1.5} />
-                  </span>
-                  <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+                  </SizableText>
+                  <SizableText fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={2.4} color="$color11">
                     {c.product}
-                  </span>
-                </div>
+                  </SizableText>
+                </XStack>
 
-                <h3 className="mt-5 text-lg font-medium tracking-tight text-foreground">
+                <H3 marginTop="$4.5" fontSize="$6" fontWeight="500" letterSpacing={-0.4} color="$color">
                   {c.name}
-                </h3>
-                <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+                </H3>
+                <Paragraph marginTop="$2" flex={1} fontSize="$3" lineHeight={1.625} color="$color11">
                   {c.desc}
-                </p>
+                </Paragraph>
 
-                <code className="mt-5 block truncate rounded-lg border border-border bg-background/50 px-3 py-2 font-mono text-[11px] text-muted-foreground transition-colors duration-200 group-hover:text-foreground">
+                <SizableText marginTop="$4.5" numberOfLines={1} borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" fontFamily="$mono" fontSize={11} color="$color11" $group-hover={{ color: "$color" }}>
                   {c.snippet}
-                </code>
-              </a>
+                </SizableText>
+              </Anchor>
               </Reveal>
             );
           })}
-        </div>
+        </YStack>
 
         <Reveal as="p" delay={120} className="mt-10 text-center font-mono text-xs text-muted-foreground">
           The same infrastructure that runs Hanzo, wired into every app you build.
         </Reveal>
-      </div>
-    </section>
+      </YStack>
+    </YStack>
   );
 }

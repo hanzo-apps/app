@@ -7,6 +7,8 @@
  * the shared `lib/avatar` override (localStorage) until IAM carries a real org
  * `logo` through `/v1/orgs`. Monochrome; matches the dashboard chrome.
  */
+import { Label, Input } from '@hanzo/ui';
+import { XStack, YStack, H1, Paragraph, SizableText } from '@hanzo/gui';
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
@@ -37,39 +39,39 @@ function OrganizationSettingsInner() {
 
   if (loading) {
     return (
-      <div className="flex flex-1 items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
+      <XStack flex={1} alignItems="center" justifyContent="center" backgroundColor="$background">
+        <Loader2 size={32} color="$color11" />
+      </XStack>
     );
   }
 
   return (
-    <div className="flex-1 overflow-y-auto bg-background">
-      <div className="mx-auto max-w-2xl px-6 py-10">
-        <h1 className="text-2xl font-medium text-foreground">Organization settings</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+    <YStack flex={1} backgroundColor="$background" overflow="scroll">
+      <YStack alignSelf="center" maxWidth={672} paddingHorizontal="$5" paddingVertical="$7">
+        <H1 fontSize="$8" fontWeight="500" color="$color">Organization settings</H1>
+        <Paragraph marginTop="$1" fontSize="$3" color="$color11">
           Personalize how {name} appears across Hanzo.
-        </p>
+        </Paragraph>
 
-        <div className="mt-8 rounded-xl border border-border bg-muted p-6">
+        <YStack marginTop="$6" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$5">
           {/* Current org — avatar live-previews the picked emoji. */}
-          <div className="flex items-center gap-4">
+          <XStack alignItems="center" gap="$4">
             <OrgAvatar name={name} logo={serverLogo} className="h-12 w-12 text-lg" />
-            <div className="min-w-0">
-              <div className="truncate font-medium text-foreground">{name}</div>
+            <YStack minWidth={0}>
+              <SizableText numberOfLines={1} fontWeight="500" color="$color" display="flex" flexDirection="column">{name}</SizableText>
               {currentId && (
-                <div className="truncate font-mono text-xs text-muted-foreground">{currentId}</div>
+                <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color11" display="flex" flexDirection="column">{currentId}</SizableText>
               )}
-            </div>
-          </div>
+            </YStack>
+          </XStack>
 
           {/* Emoji picker — persists to the shared override. */}
-          <div className="mt-6">
-            <label htmlFor="org-emoji" className="mb-2 block text-sm font-medium text-foreground">
+          <YStack marginTop="$5">
+            <Label htmlFor="org-emoji" marginBottom="$2" fontSize="$3" fontWeight="500" color="$color">
               Emoji
-            </label>
-            <div className="flex items-center gap-3">
-              <input
+            </Label>
+            <XStack alignItems="center" gap="$3">
+              <Input
                 id="org-emoji"
                 value={emoji}
                 onChange={(e) => {
@@ -82,22 +84,22 @@ function OrganizationSettingsInner() {
                 maxLength={4}
                 aria-label={`Set an emoji for ${name}`}
                 disabled={!currentId}
-                className="w-16 rounded-lg border border-border bg-transparent px-2 py-2 text-center text-lg outline-none focus:border-foreground/40 disabled:opacity-40"
-              />
-              <p className="text-xs text-muted-foreground">
+                width="$10" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="transparent" paddingHorizontal="$2" paddingVertical="$2" textAlign="center" fontSize="$6" outlineWidth={0} focusStyle={{ borderColor: "$color" }} disabledStyle={{ opacity: 0.4 }}
+  />
+              <Paragraph fontSize="$1" color="$color11">
                 Pick a single emoji to represent the org. Leave empty to fall back to the
                 org&apos;s initial.
-              </p>
-            </div>
-          </div>
+              </Paragraph>
+            </XStack>
+          </YStack>
 
-          <p className="mt-6 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
+          <Paragraph marginTop="$5" borderTopWidth={1} borderColor="$borderColor" paddingTop="$4" fontSize="$1" lineHeight={1.625} color="$color11">
             An uploaded image logo will be supported once Hanzo IAM carries it for your
             organization. Until then, this emoji is stored on this device.
-          </p>
-        </div>
-      </div>
-    </div>
+          </Paragraph>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }
 
@@ -111,14 +113,14 @@ export default function OrganizationSettingsPage() {
 
   if (loading || !user) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="text-center">
+      <XStack minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="$background">
+        <SizableText textAlign="center" display="flex" flexDirection="column">
           <HanzoLogo className="mx-auto mb-4 h-12 w-12 animate-pulse text-foreground" />
-          <p className="text-muted-foreground">
+          <Paragraph color="$color11">
             {loading ? "Loading settings..." : "Redirecting to login..."}
-          </p>
-        </div>
-      </div>
+          </Paragraph>
+        </SizableText>
+      </XStack>
     );
   }
 

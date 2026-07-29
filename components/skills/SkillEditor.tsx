@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { YStack, XStack, H1, Paragraph, H3, SizableText } from '@hanzo/gui';
+import { useState, useEffect } from 'react';
 import { Skill } from '@/lib/vfs/skills/types';
 import { skillsService } from '@/lib/vfs/skills';
 import { createSkillTemplate, parseSkillFile, generateSkillFile } from '@/lib/vfs/skills/parser';
@@ -96,65 +97,57 @@ export function SkillEditor({ skill, mode, onSave, onCancel }: SkillEditorProps)
   }, [name, description, markdown, activeTab]);
 
   return (
-    <div className="flex flex-col bg-background h-[inherit]">
+    <YStack backgroundColor="$background" height="inherit">
       {/* Header */}
-      <div className="border-b px-6 py-4 shrink-0">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <YStack borderBottomWidth={1} paddingHorizontal="$5" paddingVertical="$4" flexShrink={0}>
+        <XStack alignItems="center" justifyContent="space-between">
+          <XStack alignItems="center" gap="$3">
             <Button variant="ghost" size="sm" onClick={onCancel}>
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft size={16} />
             </Button>
             <div>
-              <h1 className="text-2xl font-medium">
+              <H1 fontSize="$8" fontWeight="500">
                 {mode === 'create' ? 'Create New Skill' : 'Edit Skill'}
-              </h1>
-              <p className="text-sm text-muted-foreground">
+              </H1>
+              <Paragraph fontSize="$3" color="$color11">
                 Define specialized knowledge for the AI assistant
-              </p>
+              </Paragraph>
             </div>
-          </div>
-          <div className="flex gap-2">
+          </XStack>
+          <XStack gap="$2">
             <Button variant="outline" onClick={onCancel}>
               Cancel
             </Button>
             <Button onClick={handleSave} disabled={saving}>
-              <Save className="w-4 h-4 mr-2" />
+              <Save size={16} />
               {saving ? 'Saving...' : 'Save Skill'}
             </Button>
-          </div>
-        </div>
-      </div>
+          </XStack>
+        </XStack>
+      </YStack>
 
       {/* Editor Tabs */}
-      <div className="flex-1 flex flex-col overflow-auto">
-        <div className="border-b px-6 shrink-0">
-          <div className="flex gap-2">
-            <button
+      <YStack flex={1} overflow="scroll">
+        <YStack borderBottomWidth={1} paddingHorizontal="$5" flexShrink={0}>
+          <XStack gap="$2">
+            <Button
               onClick={() => setActiveTab('form')}
-              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === 'form'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
-              }`}
+              paddingHorizontal="$4" paddingVertical="$2" fontSize="$3" fontWeight="500" borderBottomWidth={2} {...{ borderColor: activeTab === 'form' ? "$color12" : "transparent", color: activeTab === 'form' ? "$color12" : "$color11", hoverStyle: activeTab === 'form' ? undefined : {"color":"$color"} }}
             >
               Form Editor
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setActiveTab('raw')}
-              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === 'raw'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
-              }`}
+              paddingHorizontal="$4" paddingVertical="$2" fontSize="$3" fontWeight="500" borderBottomWidth={2} {...{ borderColor: activeTab === 'raw' ? "$color12" : "transparent", color: activeTab === 'raw' ? "$color12" : "$color11", hoverStyle: activeTab === 'raw' ? undefined : {"color":"$color"} }}
             >
               Raw Markdown
-            </button>
-          </div>
-        </div>
+            </Button>
+          </XStack>
+        </YStack>
 
         {activeTab === 'form' && (
-          <div className="flex-1 overflow-y-auto px-6 py-4">
-            <div className="space-y-6">
+          <YStack flex={1} paddingHorizontal="$5" paddingVertical="$4" overflow="scroll">
+            <YStack rowGap="$5">
               <div>
                 <Label htmlFor="name">Skill Name *</Label>
                 <Input
@@ -162,11 +155,11 @@ export function SkillEditor({ skill, mode, onSave, onCancel }: SkillEditorProps)
                   placeholder="e.g., react-hooks, python-testing, ui-design"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="mt-1.5"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
+                  marginTop="$1.5"
+  />
+                <Paragraph fontSize="$1" color="$color11" marginTop="$1">
                   Lowercase with hyphens (will be used as file name)
-                </p>
+                </Paragraph>
               </div>
 
               <div>
@@ -176,11 +169,11 @@ export function SkillEditor({ skill, mode, onSave, onCancel }: SkillEditorProps)
                   placeholder="Brief description of what this skill covers"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="mt-1.5"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
+                  marginTop="$1.5"
+  />
+                <Paragraph fontSize="$1" color="$color11" marginTop="$1">
                   Max 200 characters - shown in skills list
-                </p>
+                </Paragraph>
               </div>
 
               <div>
@@ -190,50 +183,50 @@ export function SkillEditor({ skill, mode, onSave, onCancel }: SkillEditorProps)
                   placeholder="Write the skill content in markdown format...&#10;&#10;## Guidelines&#10;- Guideline 1&#10;- Guideline 2&#10;&#10;## Examples&#10;```javascript&#10;// Example code&#10;```"
                   value={markdown}
                   onChange={(e) => setMarkdown(e.target.value)}
-                  className="mt-1.5 font-mono text-sm min-h-[400px]"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
+                  marginTop="$1.5" fontFamily="$mono" fontSize="$3" minHeight={400}
+  />
+                <Paragraph fontSize="$1" color="$color11" marginTop="$1">
                   Markdown content that the AI will read when using this skill
-                </p>
+                </Paragraph>
               </div>
 
-              <div className="bg-muted/50 rounded-lg p-4">
-                <h3 className="font-medium mb-2 flex items-center gap-2">
-                  <FileText className="w-4 h-4" />
+              <YStack backgroundColor="$color3" borderRadius="$5" padding="$4">
+                <H3 fontWeight="500" marginBottom="$2" alignItems="center" gap="$2">
+                  <FileText size={16} />
                   Tips for Writing Skills
-                </h3>
-                <ul className="text-sm text-muted-foreground space-y-1 ml-5 list-disc">
+                </H3>
+                <SizableText fontSize="$3" color="$color11" rowGap="$1" marginLeft="$4.5" display="flex" flexDirection="column">
                   <li>Be specific and actionable - provide clear guidelines and examples</li>
                   <li>Use markdown formatting for better readability</li>
                   <li>Include code examples where relevant</li>
                   <li>Focus on practical knowledge the AI can apply</li>
                   <li>Keep it concise but comprehensive</li>
-                </ul>
-              </div>
-            </div>
-          </div>
+                </SizableText>
+              </YStack>
+            </YStack>
+          </YStack>
         )}
 
         {activeTab === 'raw' && (
-          <div className="flex-1 overflow-auto px-6 py-4">
-            <div className="max-w-4xl">
+          <YStack flex={1} overflow="scroll" paddingHorizontal="$5" paddingVertical="$4">
+            <YStack maxWidth={896}>
               <div>
                 <Label htmlFor="raw-content">Raw SKILL.md Content</Label>
                 <Textarea
                   id="raw-content"
                   value={rawContent}
                   onChange={(e) => handleRawChange(e.target.value)}
-                  className="mt-1.5 font-mono text-sm min-h-[600px]"
+                  marginTop="$1.5" fontFamily="$mono" fontSize="$3" minHeight={600}
                   spellCheck={false}
-                />
-                <p className="text-xs text-muted-foreground mt-1">
+  />
+                <Paragraph fontSize="$1" color="$color11" marginTop="$1">
                   Direct editing of the SKILL.md file (YAML frontmatter + markdown)
-                </p>
+                </Paragraph>
               </div>
-            </div>
-          </div>
+            </YStack>
+          </YStack>
         )}
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }

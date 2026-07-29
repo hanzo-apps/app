@@ -1,5 +1,6 @@
 'use client';
 
+import { SizableText, YStack, XStack, H1, Paragraph, Anchor, H2 } from '@hanzo/gui';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useIam } from '@hanzo/iam/react';
@@ -60,160 +61,160 @@ export default function LoginPage() {
   }, [ideas.length]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
       {/* Navigation */}
-      <nav className="absolute top-0 left-0 right-0 z-50">
-        <div className="max-w-[1400px] mx-auto px-6 py-5 flex items-center justify-between">
-          <Link href="/" className="flex items-center">
+      <YStack position="absolute" top="$0" left="$0" right="$0" zIndex={50}>
+        <XStack maxWidth={1400} alignSelf="center" paddingHorizontal="$5" paddingVertical="$4.5" alignItems="center" justifyContent="space-between">
+          <Link href="/"><XStack alignItems="center">
             <HanzoBrand className="text-foreground" markClassName="w-8 h-8" />
-          </Link>
-        </div>
-      </nav>
+          </XStack></Link>
+        </XStack>
+      </YStack>
 
       {/* Main Content */}
-      <div className="min-h-screen flex">
+      <XStack minHeight="100%">
         {/* Left Side - Redirecting to IAM */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-20">
-          <div className="w-full max-w-md text-center">
-            <div className="flex justify-center mb-10">
+        <XStack width="100%" alignItems="center" justifyContent="center" paddingHorizontal="$5" paddingVertical="$11" $lg={{ width: "50%" }}>
+          <SizableText width="100%" maxWidth={448} textAlign="center" display="flex" flexDirection="column">
+            <XStack justifyContent="center" marginBottom="$7">
               <HanzoBrand
                 className="text-foreground"
                 markClassName="w-11 h-11"
                 wordmarkClassName="text-3xl"
-              />
-            </div>
+  />
+            </XStack>
 
-            <h1 className="text-4xl font-medium mb-4 tracking-tight">Welcome back</h1>
-            <p className="text-muted-foreground text-lg mb-10">Taking you to Hanzo ID to sign in</p>
+            <H1 fontSize="$11" fontWeight="500" marginBottom="$4" letterSpacing={-0.4}>Welcome back</H1>
+            <Paragraph color="$color11" fontSize="$6" marginBottom="$7">Taking you to Hanzo ID to sign in</Paragraph>
 
-            <div className="flex items-center justify-center gap-2 text-muted-foreground mb-12">
-              <Loader2 className="w-5 h-5 animate-spin" />
-              <p className="text-sm">Redirecting to secure sign in…</p>
-            </div>
+            <SizableText alignItems="center" justifyContent="center" gap="$2" color="$color11" marginBottom="$8" display="flex" flexDirection="row">
+              <Loader2 size={20} />
+              <Paragraph fontSize="$3">Redirecting to secure sign in…</Paragraph>
+            </SizableText>
 
             {/* Desktop App Options */}
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground text-center">Run locally without login</p>
+            <YStack rowGap="$4">
+              <Paragraph fontSize="$3" color="$color11" textAlign="center">Run locally without login</Paragraph>
 
-              <div className="grid grid-cols-2 gap-3">
-                <a
+              <YStack gap="$3">
+                <Anchor
                   href="https://github.com/hanzoai/app/releases/latest"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 p-3.5 bg-muted hover:bg-accent rounded-xl border border-border transition-all group"
+                  alignItems="center" justifyContent="center" gap="$2" padding="$3.5" backgroundColor="$color3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" group hoverStyle={{ backgroundColor: "$color3" }}
                 >
-                  <Monitor className="w-4 h-4 text-muted-foreground group-hover:text-foreground" />
-                  <span className="text-sm text-muted-foreground group-hover:text-foreground">Windows</span>
-                </a>
+                  <Monitor size={16} color="$color11" />
+                  <SizableText fontSize="$3" color="$color11" $group-hover={{ color: "$color" }}>Windows</SizableText>
+                </Anchor>
 
-                <a
+                <Anchor
                   href="https://github.com/hanzoai/app/releases/latest"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 p-3.5 bg-muted hover:bg-accent rounded-xl border border-border transition-all group"
+                  alignItems="center" justifyContent="center" gap="$2" padding="$3.5" backgroundColor="$color3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" group hoverStyle={{ backgroundColor: "$color3" }}
                 >
-                  <Apple className="w-4 h-4 text-muted-foreground group-hover:text-foreground" />
-                  <span className="text-sm text-muted-foreground group-hover:text-foreground">macOS</span>
-                </a>
+                  <Apple size={16} color="$color11" />
+                  <SizableText fontSize="$3" color="$color11" $group-hover={{ color: "$color" }}>macOS</SizableText>
+                </Anchor>
 
-                <a
+                <Anchor
                   href="https://github.com/hanzoai/app/releases/latest"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 p-3.5 bg-muted hover:bg-accent rounded-xl border border-border transition-all group"
+                  alignItems="center" justifyContent="center" gap="$2" padding="$3.5" backgroundColor="$color3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" group hoverStyle={{ backgroundColor: "$color3" }}
                 >
-                  <Terminal className="w-4 h-4 text-muted-foreground group-hover:text-foreground" />
-                  <span className="text-sm text-muted-foreground group-hover:text-foreground">Linux</span>
-                </a>
+                  <Terminal size={16} color="$color11" />
+                  <SizableText fontSize="$3" color="$color11" $group-hover={{ color: "$color" }}>Linux</SizableText>
+                </Anchor>
 
-                <div className="flex items-center justify-center gap-2 p-3.5 bg-muted rounded-xl border border-border opacity-40 cursor-not-allowed">
-                  <Smartphone className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">Mobile</span>
-                </div>
-              </div>
+                <XStack alignItems="center" justifyContent="center" gap="$2" padding="$3.5" backgroundColor="$color3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" opacity={0.4} cursor="not-allowed">
+                  <Smartphone size={16} color="$color11" />
+                  <SizableText fontSize="$3" color="$color11">Mobile</SizableText>
+                </XStack>
+              </YStack>
 
-              <p className="text-xs text-muted-foreground text-center">
+              <Paragraph fontSize="$1" color="$color11" textAlign="center">
                 Mobile coming soon • Local AI models included
-              </p>
-            </div>
-          </div>
-        </div>
+              </Paragraph>
+            </YStack>
+          </SizableText>
+        </XStack>
 
         {/* Right Side - Animated Ideas */}
-        <div className="hidden lg:flex w-1/2 items-center justify-center px-6 py-20 bg-gradient-to-br from-card via-background to-card relative overflow-hidden">
-          <div className="absolute inset-0 opacity-20">
-            <div
-              className="absolute inset-0"
+        <YStack display="none" width="50%" alignItems="center" justifyContent="center" paddingHorizontal="$5" paddingVertical="$11" position="relative" overflow="hidden">
+          <YStack position="absolute" top={0} right={0} bottom={0} left={0} opacity={0.2}>
+            <YStack
+              position="absolute" top={0} right={0} bottom={0} left={0}
               style={{
                 backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 1px)`,
                 backgroundSize: '40px 40px',
               }}
-            />
-          </div>
+  />
+          </YStack>
 
-          <div className="absolute top-1/4 -right-32 w-96 h-96 bg-foreground/5 rounded-full blur-3xl animate-pulse" />
-          <div
-            className="absolute bottom-1/4 -left-32 w-96 h-96 bg-foreground/5 rounded-full blur-3xl animate-pulse"
+          <YStack position="absolute" top="25%" right="-14" width={384} height={384} backgroundColor="$color" borderRadius="$10" />
+          <YStack
+            position="absolute" bottom="25%" left="-14" width={384} height={384} backgroundColor="$color" borderRadius="$10"
             style={{ animationDelay: '2s' }}
-          />
+  />
 
-          <div className="relative z-10 max-w-xl w-full">
-            <div className="mb-8">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-accent backdrop-blur-sm rounded-full border border-border mb-6">
-                <Sparkles className="w-4 h-4 text-foreground" />
-                <span className="text-sm text-foreground">AI-powered development</span>
-              </div>
+          <YStack position="relative" zIndex={10} maxWidth={576} width="100%">
+            <YStack marginBottom="$6">
+              <XStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$1.5" backgroundColor="$color3" backdropFilter="blur(4px)" borderRadius="$10" borderWidth={1} borderColor="$borderColor" marginBottom="$5">
+                <Sparkles size={16} color="$color" />
+                <SizableText fontSize="$3" color="$color">AI-powered development</SizableText>
+              </XStack>
 
-              <h2 className="text-3xl font-medium mb-4">Start building in seconds</h2>
+              <H2 fontSize="$10" fontWeight="500" marginBottom="$4">Start building in seconds</H2>
 
-              <p className="text-muted-foreground mb-8">
+              <Paragraph color="$color11" marginBottom="$6">
                 Describe your idea and watch AI bring it to life instantly
-              </p>
-            </div>
+              </Paragraph>
+            </YStack>
 
-            <div className="bg-muted backdrop-blur-sm rounded-2xl border border-border p-6">
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-foreground/60 rounded-full mt-2 animate-pulse" />
-                <div className="flex-1">
-                  <p className="text-muted-foreground text-xs uppercase tracking-wider mb-3">Try something like</p>
-                  <div className="min-h-[60px]">
-                    <p
-                      className={`text-xl text-foreground transition-all duration-500 font-light ${isTyping ? 'opacity-100' : 'opacity-0'}`}
+            <YStack backgroundColor="$color3" backdropFilter="blur(4px)" borderRadius="$8" borderWidth={1} borderColor="$borderColor" padding="$5">
+              <XStack alignItems="flex-start" gap="$3">
+                <YStack width="$2" height="$2" backgroundColor="$color" borderRadius="$10" marginTop="$2" />
+                <YStack flex={1}>
+                  <Paragraph color="$color11" fontSize="$1" textTransform="uppercase" letterSpacing={0.8} marginBottom="$3">Try something like</Paragraph>
+                  <YStack minHeight={60}>
+                    <Paragraph
+                      fontSize="$7" color="$color" fontWeight="300" {...{ opacity: isTyping ? 1 : 0 }}
                     >
                       {ideas[currentIdea]}
-                      <span className="inline-block w-0.5 h-6 bg-foreground/60 ml-1 animate-pulse" />
-                    </p>
-                  </div>
-                </div>
-              </div>
+                      <SizableText width="$0.5" height="$5" backgroundColor="$color" marginLeft="$1" />
+                    </Paragraph>
+                  </YStack>
+                </YStack>
+              </XStack>
 
-              <div className="mt-6 pt-6 border-t border-border">
-                <div className="flex items-center justify-end">
-                  <div className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-xl font-medium text-sm">
-                    <Zap className="w-3.5 h-3.5" />
+              <YStack marginTop="$5" paddingTop="$5" borderTopWidth={1} borderColor="$borderColor">
+                <XStack alignItems="center" justifyContent="flex-end">
+                  <SizableText alignItems="center" gap="$2" paddingHorizontal="$4.5" paddingVertical="$2.5" backgroundColor="$color12" color="$background" borderRadius="$6" fontWeight="500" fontSize="$3" display="flex" flexDirection="row">
+                    <Zap size={14} />
                     Generate
-                  </div>
-                </div>
-              </div>
-            </div>
+                  </SizableText>
+                </XStack>
+              </YStack>
+            </YStack>
 
-            <div className="grid grid-cols-3 gap-6 mt-10">
-              <div className="text-center">
-                <p className="text-3xl font-light text-foreground">10k+</p>
-                <p className="text-xs text-muted-foreground mt-1">Apps built</p>
-              </div>
-              <div className="text-center">
-                <p className="text-3xl font-light text-foreground">50ms</p>
-                <p className="text-xs text-muted-foreground mt-1">Response time</p>
-              </div>
-              <div className="text-center">
-                <p className="text-3xl font-light text-foreground">400+</p>
-                <p className="text-xs text-muted-foreground mt-1">AI models</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+            <YStack gap="$5" marginTop="$7">
+              <SizableText textAlign="center" display="flex" flexDirection="column">
+                <Paragraph fontSize="$10" fontWeight="300" color="$color">10k+</Paragraph>
+                <Paragraph fontSize="$1" color="$color11" marginTop="$1">Apps built</Paragraph>
+              </SizableText>
+              <SizableText textAlign="center" display="flex" flexDirection="column">
+                <Paragraph fontSize="$10" fontWeight="300" color="$color">50ms</Paragraph>
+                <Paragraph fontSize="$1" color="$color11" marginTop="$1">Response time</Paragraph>
+              </SizableText>
+              <SizableText textAlign="center" display="flex" flexDirection="column">
+                <Paragraph fontSize="$10" fontWeight="300" color="$color">400+</Paragraph>
+                <Paragraph fontSize="$1" color="$color11" marginTop="$1">AI models</Paragraph>
+              </SizableText>
+            </YStack>
+          </YStack>
+        </YStack>
+      </XStack>
+    </SizableText>
   );
 }

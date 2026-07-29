@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { XStack, SizableText, YStack, Paragraph, H4, H3 } from '@hanzo/gui';
+import { useState, useEffect, useCallback } from 'react';
 import { CustomTemplate, BackendFeatures } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';
 import { templateService } from '@/lib/vfs/template-service';
@@ -295,37 +296,37 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
 
   if (loading || creating) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4">{creating ? 'Setting up your project...' : 'Loading templates...'}</p>
-        </div>
-      </div>
+      <XStack alignItems="center" justifyContent="center" height="100%">
+        <SizableText textAlign="center" display="flex" flexDirection="column">
+          <YStack borderRadius="$10" height="$8" width="$8" borderBottomWidth={2} borderColor="$color12" alignSelf="center"></YStack>
+          <Paragraph marginTop="$4">{creating ? 'Setting up your project...' : 'Loading templates...'}</Paragraph>
+        </SizableText>
+      </XStack>
     );
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <YStack height="100%">
       {/* Toolbar */}
-      <div className="pt-4 px-4 pb-3 sm:pt-6 sm:px-6 sm:pb-3 shrink-0">
-        <div className="mx-auto max-w-7xl flex flex-col sm:flex-row gap-3">
+      <YStack paddingTop="$4" paddingHorizontal="$4" paddingBottom="$3" flexShrink={0} $sm={{ paddingTop: "$5", paddingHorizontal: "$5", paddingBottom: "$3" }}>
+        <YStack alignSelf="center" maxWidth={1280} gap="$3" $sm={{ flexDirection: "row" }}>
         {/* Search */}
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <YStack position="relative" flex={1}>
+          <Search size={16} color="$color11" />
           <Input
             placeholder="Search templates..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
-          />
-        </div>
+            paddingLeft={36}
+  />
+        </YStack>
 
         {/* Controls */}
-        <div className="flex items-center gap-2">
+        <XStack alignItems="center" gap="$2">
           {/* Type Filter */}
           <Select value={typeFilter} onValueChange={(value) => setTypeFilter(value as TypeFilter)}>
-            <SelectTrigger className="w-[110px] h-9 text-sm">
-              <Filter className="h-4 w-4 mr-1 shrink-0" />
+            <SelectTrigger width={110} height={36} fontSize="$3">
+              <Filter size={16} />
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -338,14 +339,14 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
           {/* Sort */}
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-2">
-                <ArrowUpDown className="h-4 w-4" />
-                <span className="hidden sm:inline">Sort</span>
+              <Button variant="outline" size="sm" gap="$2">
+                <ArrowUpDown size={16} />
+                <SizableText display="none">Sort</SizableText>
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-48" align="end">
-              <div className="space-y-2">
-                <h4 className="font-medium text-sm">Sort by</h4>
+            <PopoverContent width="$19" align="end">
+              <YStack rowGap="$2">
+                <H4 fontWeight="500" fontSize="$3">Sort by</H4>
                 <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
                   <SelectTrigger>
                     <SelectValue />
@@ -357,76 +358,73 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
                     <SelectItem value="files">File Count</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
+              </YStack>
             </PopoverContent>
           </Popover>
 
           {/* View Mode */}
-          <div className="flex border rounded-full">
+          <XStack borderWidth={1} borderRadius="$10">
             <Button
               variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('grid')}
-              className="rounded-r-none rounded-l-full"
+              borderTopRightRadius={0} borderBottomRightRadius={0} borderTopLeftRadius="$10" borderBottomLeftRadius="$10"
             >
-              <LayoutGrid className="h-4 w-4" />
+              <LayoutGrid size={16} />
             </Button>
             <Button
               variant={viewMode === 'list' ? 'secondary' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('list')}
-              className="rounded-l-none rounded-r-full"
+              borderTopLeftRadius={0} borderBottomLeftRadius={0} borderTopRightRadius="$10" borderBottomRightRadius="$10"
             >
-              <List className="h-4 w-4" />
+              <List size={16} />
             </Button>
-          </div>
+          </XStack>
 
           {/* Import */}
-          <Button onClick={handleImportTemplate} size="sm" className="gap-2">
-            <Upload className="h-4 w-4" />
+          <Button onClick={handleImportTemplate} size="sm" gap="$2">
+            <Upload size={16} />
             <span>Import</span>
           </Button>
-        </div>
-        </div>
-      </div>
+        </XStack>
+        </YStack>
+      </YStack>
 
       {/* Templates Grid/List */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-4 pt-3 pb-4 sm:px-6 sm:pt-3 sm:pb-6">
-        <div className="mx-auto max-w-7xl">
+      <YStack flex={1} minHeight={0} paddingHorizontal="$4" paddingTop="$3" paddingBottom="$4" overflow="scroll" $sm={{ paddingHorizontal: "$5", paddingTop: "$3", paddingBottom: "$5" }}>
+        <YStack alignSelf="center" maxWidth={1280}>
         {sortedTemplates.length === 0 ? (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center max-w-md">
+          <XStack alignItems="center" justifyContent="center" height="100%">
+            <SizableText textAlign="center" maxWidth={448} display="flex" flexDirection="column">
               {searchQuery ? (
                 <>
-                  <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="font-medium mb-2">No templates found</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
+                  <Search size={48} color="$color11" />
+                  <H3 fontWeight="500" marginBottom="$2">No templates found</H3>
+                  <Paragraph fontSize="$3" color="$color11" marginBottom="$4">
                     No templates match your search query "{searchQuery}"
-                  </p>
+                  </Paragraph>
                   <Button variant="outline" onClick={() => setSearchQuery('')}>
                     Clear search
                   </Button>
                 </>
               ) : (
                 <>
-                  <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="font-medium mb-2">No custom templates yet</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
+                  <Package size={48} color="$color11" />
+                  <H3 fontWeight="500" marginBottom="$2">No custom templates yet</H3>
+                  <Paragraph fontSize="$3" color="$color11" marginBottom="$4">
                     Import custom templates to get started with professional designs.
-                  </p>
+                  </Paragraph>
                   <Button onClick={handleImportTemplate}>
-                    <Upload className="h-4 w-4 mr-2" />
+                    <Upload size={16} />
                     Import Template
                   </Button>
                 </>
               )}
-            </div>
-          </div>
+            </SizableText>
+          </XStack>
         ) : (
-          <div className={viewMode === 'grid'
-            ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
-            : 'space-y-3'
-          }>
+          <YStack {...{ gap: viewMode === 'grid' ? "$4" : undefined, rowGap: viewMode === 'grid' ? undefined : "$3" }}>
             {sortedTemplates.map((template) => (
               <TemplateCard
                 key={template.id}
@@ -435,12 +433,12 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
                 onDelete={handleDeleteTemplate}
                 onExport={handleExportTemplate}
                 viewMode={viewMode}
-              />
+  />
             ))}
-          </div>
+          </YStack>
         )}
-        </div>
-      </div>
-    </div>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }

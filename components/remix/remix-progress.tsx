@@ -18,6 +18,7 @@
  * the user is never stranded.
  */
 
+import { SizableText, H2, Paragraph, YStack, XStack } from '@hanzo/gui';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogContent, DialogTitle } from '@hanzo/ui';
@@ -136,21 +137,21 @@ export function RemixProgress({
     <Dialog open={open} onOpenChange={() => {}}>
       <DialogContent
         showCloseButton={false}
-        className="max-w-sm border-border bg-card text-foreground"
+        maxWidth={384} borderColor="$borderColor" backgroundColor="$background" color="$color"
       >
-        <DialogTitle className="sr-only">Remixing project</DialogTitle>
+        <DialogTitle position="absolute" width={1} height={1} overflow="hidden">Remixing project</DialogTitle>
 
-        <div className="flex flex-col items-center pb-1 pt-2 text-center">
+        <SizableText flexDirection="column" alignItems="center" paddingBottom="$1" paddingTop="$2" textAlign="center" display="flex">
           <HanzoLogo animated className="mb-3 h-8 w-8 text-foreground" />
-          <h2 className="text-base font-medium">Remixing project</h2>
-          <p className="mt-1 text-xs text-muted-foreground">This may take a few moments.</p>
-        </div>
+          <H2 fontSize="$4" fontWeight="500">Remixing project</H2>
+          <Paragraph marginTop="$1" fontSize="$1" color="$color11">This may take a few moments.</Paragraph>
+        </SizableText>
 
-        <div className="mt-3 space-y-3">
+        <YStack marginTop="$3" rowGap="$3">
           <Step state={s1} label="Creating project" />
           <Step state={s2} label="Setting up integrations" subline={s2 === 'active' ? subline : undefined} />
           <Step state={s3} label="Finalizing" />
-        </div>
+        </YStack>
       </DialogContent>
     </Dialog>
   );
@@ -158,21 +159,21 @@ export function RemixProgress({
 
 function Step({ state, label, subline }: { state: StepState; label: string; subline?: string }) {
   return (
-    <div className="flex items-start gap-3">
-      <span className="mt-0.5 flex h-5 w-5 items-center justify-center">
+    <XStack alignItems="flex-start" gap="$3">
+      <SizableText marginTop="$0.5" height="$4.5" width="$4.5" alignItems="center" justifyContent="center">
         {state === 'done' ? (
-          <Check className="h-4 w-4 text-emerald-400" />
+          <Check size={16} color="$green8" />
         ) : state === 'active' ? (
-          <Loader2 className="h-4 w-4 animate-spin text-foreground motion-reduce:animate-none" />
+          <Loader2 size={16} color="$color" />
         ) : (
-          <Circle className="h-2.5 w-2.5 fill-muted-foreground text-muted-foreground" />
+          <Circle size={10} color="$color11" />
         )}
-      </span>
-      <div className="min-w-0">
-        <p className={state === 'pending' ? 'text-sm text-muted-foreground' : 'text-sm text-foreground'}>{label}</p>
-        {subline && <p className="mt-0.5 text-xs text-muted-foreground">{subline}</p>}
-      </div>
-    </div>
+      </SizableText>
+      <YStack minWidth={0}>
+        <Paragraph {...{ fontSize: state === 'pending' ? "$3" : "$3", color: state === 'pending' ? "$color11" : "$color" }}>{label}</Paragraph>
+        {subline && <Paragraph marginTop="$0.5" fontSize="$1" color="$color11">{subline}</Paragraph>}
+      </YStack>
+    </XStack>
   );
 }
 

@@ -1,8 +1,8 @@
 "use client";
+import { XStack, YStack, Paragraph, SizableText } from '@hanzo/gui';
 import { useUpdateEffect } from "react-use";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import classNames from "classnames";
-import { toast } from '@hanzo/ui';
+import { toast, Button } from '@hanzo/ui';
 import { Maximize2, Minimize2 } from "lucide-react";
 import { useThrottleFn } from "react-use";
 
@@ -20,34 +20,34 @@ import { Page } from "@/types";
  */
 function PreviewOverlay({ building }: { building: boolean }) {
   return (
-    <div className="preview-stage pointer-events-none absolute inset-0 z-[5] flex items-center justify-center bg-background">
+    <XStack pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} zIndex={5} alignItems="center" justifyContent="center" backgroundColor="$background" className="preview-stage">
       {building ? (
-        <div className="w-full max-w-2xl px-8">
-          <div className="mx-auto flex flex-col gap-3">
-            <div className="h-8 w-1/3 rounded-md bg-foreground/[0.06] animate-pulse" />
-            <div className="h-28 w-full rounded-lg bg-foreground/[0.05] animate-pulse [animation-delay:120ms]" />
-            <div className="grid grid-cols-3 gap-3">
-              <div className="h-20 rounded-lg bg-foreground/[0.05] animate-pulse [animation-delay:200ms]" />
-              <div className="h-20 rounded-lg bg-foreground/[0.05] animate-pulse [animation-delay:280ms]" />
-              <div className="h-20 rounded-lg bg-foreground/[0.05] animate-pulse [animation-delay:360ms]" />
-            </div>
-            <div className="h-4 w-2/3 rounded bg-foreground/[0.06] animate-pulse [animation-delay:440ms]" />
-            <div className="h-4 w-1/2 rounded bg-foreground/[0.06] animate-pulse [animation-delay:520ms]" />
-          </div>
-          <p className="mt-6 text-center text-[13px]">
-            <span className="thread-shimmer-text">Building your app…</span>
-          </p>
-        </div>
+        <YStack width="100%" maxWidth={672} paddingHorizontal="$6">
+          <YStack alignSelf="center" gap="$3">
+            <YStack height="$6" width="33.333%" borderRadius="$3" backgroundColor="$color" />
+            <YStack height="$13" width="100%" borderRadius="$5" backgroundColor="$color" className="[animation-delay:120ms]" />
+            <YStack gap="$3">
+              <YStack height="$11" borderRadius="$5" backgroundColor="$color" className="[animation-delay:200ms]" />
+              <YStack height="$11" borderRadius="$5" backgroundColor="$color" className="[animation-delay:280ms]" />
+              <YStack height="$11" borderRadius="$5" backgroundColor="$color" className="[animation-delay:360ms]" />
+            </YStack>
+            <YStack height="$4" width="66.667%" borderRadius="$2" backgroundColor="$color" className="[animation-delay:440ms]" />
+            <YStack height="$4" width="50%" borderRadius="$2" backgroundColor="$color" className="[animation-delay:520ms]" />
+          </YStack>
+          <Paragraph marginTop="$5" textAlign="center" fontSize={13}>
+            <SizableText className="thread-shimmer-text">Building your app…</SizableText>
+          </Paragraph>
+        </YStack>
       ) : (
-        <div className="max-w-sm px-8 text-center">
-          <p className="text-[15px] font-semibold text-foreground">Describe your idea.</p>
-          <p className="mt-1.5 text-[13px] text-muted-foreground">
-            <span aria-hidden className="mr-1">↓</span>Watch Hanzo build it live
-            <span className="ml-0.5 inline-block h-4 w-[2px] translate-y-[3px] animate-pulse bg-foreground align-middle motion-reduce:animate-none" />
-          </p>
-        </div>
+        <SizableText maxWidth={384} paddingHorizontal="$6" textAlign="center" display="flex" flexDirection="column">
+          <Paragraph fontSize={15} fontWeight="600" color="$color">Describe your idea.</Paragraph>
+          <Paragraph marginTop="$1.5" fontSize={13} color="$color11">
+            <SizableText aria-hidden marginRight="$1">↓</SizableText>Watch Hanzo build it live
+            <SizableText marginLeft="$0.5" height="$4" width={2} y={3} backgroundColor="$color" verticalAlign="middle" />
+          </Paragraph>
+        </SizableText>
       )}
-    </div>
+    </XStack>
   );
 }
 
@@ -287,36 +287,30 @@ export const Preview = ({
   // preview is never a flat black rect (the default iframe is dark by design).
   const isEmpty = useMemo(() => isTheSameHtml(html), [html]);
 
-  const frameClass = (visible: boolean) =>
-    classNames(
-      "absolute inset-0 w-full select-none bg-background h-full transition-opacity ease-out",
-      {
-        "opacity-100": visible,
-        "opacity-0": !visible,
-        "pointer-events-none": !visible || isResizing || isAiWorking,
-        "lg:max-w-md lg:mx-auto lg:!rounded-[42px] lg:border-[8px] lg:border-border lg:shadow-2xl lg:h-[80dvh] lg:max-h-[996px]":
-          device === "mobile" && !isFullscreen,
-        "!h-full !max-w-none !rounded-none !border-0 !ring-0": isFullscreen,
-      }
-    );
+  // The iframe is an atomic host element: gui cannot style it, so its fill
+  // lives in one app CSS rule and everything that VARIES is a style prop on the
+  // box around it.
+  const frameBox = (visible: boolean) => ({
+    position: 'absolute' as const,
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    opacity: visible ? 1 : 0,
+    pointerEvents: (!visible || isResizing || isAiWorking ? 'none' : 'auto') as 'none' | 'auto',
+    backgroundColor: '$background',
+    userSelect: 'none' as const,
+    ...(device === 'mobile' && !isFullscreen
+      ? { $lg: { maxWidth: 448, alignSelf: 'center' as const, borderRadius: 42, borderWidth: 8, borderColor: '$borderColor', height: '80dvh', maxHeight: 996 } }
+      : null),
+    ...(isFullscreen ? { height: '100%', maxWidth: 'none', borderRadius: 0, borderWidth: 0 } : null),
+  })
   const frameStyle = { transitionDuration: reduced ? "0ms" : "180ms" };
 
   return (
-    <div
+    <XStack
       ref={ref}
-      className={classNames(
-        // No border/padding seam here — the raised preview CARD (in the editor
-        // shell) owns the frame; this just fills it edge-to-edge.
-        "group/preview w-full h-full relative z-0 flex items-center justify-center bg-background",
-        {
-          "max-lg:h-0": currentTab === "chat" && !isFullscreen,
-          "max-lg:h-full": currentTab === "preview",
-          // In native fullscreen the container IS the fullscreen surface — go
-          // edge-to-edge and force full height so the iframe fills the screen
-          // regardless of the current tab/device.
-          "!h-full !p-0": isFullscreen,
-        }
-      )}
+      width="100%" position="relative" zIndex={0} alignItems="center" justifyContent="center" backgroundColor="$background" {...{ $lg: currentTab === "preview" ? {"height":"100%"} : currentTab === "chat" && !isFullscreen ? {"height":"$0"} : undefined, height: isFullscreen ? "100%" : "100%", padding: isFullscreen ? "$0" : undefined }} className="group/preview"
       onClick={(e) => {
         if (isAiWorking) {
           e.preventDefault();
@@ -327,26 +321,20 @@ export const Preview = ({
     >
       {/* Fullscreen toggle — pinned to the elevated preview surface. Escape (or a
           second press) restores; the icon mirrors the real fullscreen state. */}
-      <button
+      <Button
         type="button"
         onClick={toggleFullscreen}
         title={isFullscreen ? "Exit fullscreen (Esc)" : "Fullscreen preview"}
         aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
         aria-pressed={isFullscreen}
-        className={classNames(
-          "absolute right-3 z-20 inline-flex size-9 items-center justify-center rounded-lg bg-card/80 text-muted-foreground ring-1 ring-border backdrop-blur transition-all hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          // Fade in on hover of the surface (always visible while fullscreen).
-          isFullscreen
-            ? "top-3 opacity-100"
-            : "top-6 opacity-0 group-hover/preview:opacity-100 focus-visible:opacity-100"
-        )}
+        position="absolute" right="$3" zIndex={20} width={36} height={36} alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$background" color="$color11" backdropFilter="blur(8px)" hoverStyle={{ backgroundColor: "$color3", color: "$color" }} {...{ top: isFullscreen ? "$3" : "$5", opacity: isFullscreen ? 1 : 0, "$group-preview-hover": isFullscreen ? undefined : {"opacity":1}, focusVisibleStyle: isFullscreen ? { outlineWidth: 0 } : {"opacity":1} }}
       >
         {isFullscreen ? (
-          <Minimize2 className="size-4" />
+          <Minimize2 size={16} />
         ) : (
-          <Maximize2 className="size-4" />
+          <Maximize2 size={16} />
         )}
-      </button>
+      </Button>
       <GridPattern
         x={-1}
         y={-1}
@@ -354,10 +342,10 @@ export const Preview = ({
         className={cn(
           "[mask-image:radial-gradient(900px_circle_at_center,white,transparent)]"
         )}
-      />
+  />
       {!isAiWorking && hoveredElement && selectedElement && (
-        <div
-          className="cursor-pointer absolute bg-white/10 border-[2px] border-dashed border-white rounded-r-lg rounded-b-lg p-3 z-10 pointer-events-none"
+        <YStack
+          cursor="pointer" position="absolute" backgroundColor="white" borderColor="white" borderStyle="dashed" borderTopRightRadius="$5" borderBottomRightRadius="$5" borderBottomLeftRadius="$5" padding="$3" zIndex={10} pointerEvents="none"
           style={{
             top:
               selectedElement.getBoundingClientRect().top +
@@ -369,39 +357,43 @@ export const Preview = ({
             height: selectedElement.getBoundingClientRect().height,
           }}
         >
-          <span className="bg-white rounded-t-md text-sm text-neutral-900 px-2 py-0.5 -translate-y-7 absolute top-0 left-0">
+          <SizableText backgroundColor="white" borderTopLeftRadius="$3" borderTopRightRadius="$3" fontSize="$3" color="$color12" paddingHorizontal="$2" paddingVertical="$0.5" y={-28} position="absolute" top="$0" left="$0">
             {htmlTagToText(selectedElement.tagName.toLowerCase())}
-          </span>
-        </div>
+          </SizableText>
+        </YStack>
       )}
       {/* Two stacked frames: the visible one holds the settled/streamed result;
           the hidden one paints the next stream update and crossfades in on load.
           The container fills the surface so both frames share the same box. */}
-      <div className="relative h-full w-full">
-        <iframe
-          id={frontA ? "preview-iframe" : undefined}
-          ref={iframeA}
-          title="output"
-          className={frameClass(frontA)}
-          style={frameStyle}
-          srcDoc={srcA}
-          onLoad={() => handleFrameLoad("a")}
-        />
-        <iframe
-          id={!frontA ? "preview-iframe" : undefined}
-          ref={iframeB}
-          title="output"
-          aria-hidden={frontA}
-          className={frameClass(!frontA)}
-          style={frameStyle}
-          srcDoc={srcB}
-          onLoad={() => handleFrameLoad("b")}
-        />
-      </div>
+      <YStack position="relative" height="100%" width="100%">
+        <YStack overflow="hidden" {...frameBox(frontA)}>
+          <iframe
+            id={frontA ? "preview-iframe" : undefined}
+            ref={iframeA}
+            title="output"
+            className="preview-frame"
+            style={frameStyle}
+            srcDoc={srcA}
+            onLoad={() => handleFrameLoad("a")}
+          />
+        </YStack>
+        <YStack overflow="hidden" {...frameBox(!frontA)}>
+          <iframe
+            id={!frontA ? "preview-iframe" : undefined}
+            ref={iframeB}
+            title="output"
+            aria-hidden={frontA}
+            className="preview-frame"
+            style={frameStyle}
+            srcDoc={srcB}
+            onLoad={() => handleFrameLoad("b")}
+          />
+        </YStack>
+      </YStack>
       {/* Themed idle/building canvas over the (dark-by-design) default iframe —
           only while nothing real has been generated yet. Real streamed/settled
           HTML clears `isEmpty`, revealing the iframe underneath. */}
       {isEmpty && <PreviewOverlay building={isAiWorking} />}
-    </div>
+    </XStack>
   );
 };

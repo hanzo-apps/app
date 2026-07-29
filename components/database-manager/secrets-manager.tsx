@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { XStack, YStack, Paragraph, H3, SizableText } from '@hanzo/gui';
+import { useState, useEffect } from 'react';
 import { toast, Badge, Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@hanzo/ui';
 import { Secret } from '@/lib/vfs/types';
 import {
   Plus, Loader2, AlertCircle, Key, MoreVertical, Pencil, Trash2, AlertTriangle
 } from 'lucide-react';
 import { SecretEditor } from './secret-editor';
-import { cn } from '@/lib/utils';
 import type { SecretsDataProvider } from './data-providers';
 
 interface SecretsManagerProps {
@@ -119,123 +119,123 @@ export function SecretsManager({ deploymentId, dataProvider }: SecretsManagerPro
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
+      <XStack alignItems="center" justifyContent="center" height="100%">
+        <Loader2 size={24} color="$color11" />
+      </XStack>
     );
   }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-4">
-        <AlertCircle className="h-8 w-8 text-destructive" />
-        <p className="text-sm text-muted-foreground">{error}</p>
+      <YStack alignItems="center" justifyContent="center" height="100%" gap="$4">
+        <AlertCircle size={32} color="$red9" />
+        <Paragraph fontSize="$3" color="$color11">{error}</Paragraph>
         <Button variant="outline" onClick={loadSecrets}>
           Retry
         </Button>
-      </div>
+      </YStack>
     );
   }
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium">Secrets</h3>
+    <YStack height="100%">
+      <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+        <H3 fontSize="$3" fontWeight="500">Secrets</H3>
         <Button
           size="sm"
           onClick={() => setIsCreating(true)}
           disabled={!encryptionConfigured}
         >
-          <Plus className="h-4 w-4 mr-1" />
+          <Plus size={16} />
           New Secret
         </Button>
-      </div>
+      </XStack>
 
       {/* Warning if encryption not configured */}
       {!encryptionConfigured && (
-        <div className="flex items-center gap-2 text-sm bg-yellow-500/10 border border-yellow-500/30 text-yellow-600 dark:text-yellow-400 p-3 rounded-lg mb-4">
-          <AlertTriangle className="h-4 w-4 shrink-0" />
+        <SizableText alignItems="center" gap="$2" fontSize="$3" backgroundColor="$yellow9" borderWidth={1} borderColor="$yellow9" color="$yellow10" padding="$3" borderRadius="$5" marginBottom="$4" display="flex" flexDirection="row" $theme-dark={{ color: "$yellow8" }}>
+          <AlertTriangle size={16} />
           <div>
-            <p className="font-medium">Encryption not configured</p>
-            <p className="text-xs opacity-80">
+            <Paragraph fontWeight="500">Encryption not configured</Paragraph>
+            <Paragraph fontSize="$1" opacity={0.8}>
               Set the SECRETS_ENCRYPTION_KEY environment variable to enable secrets.
-            </p>
+            </Paragraph>
           </div>
-        </div>
+        </SizableText>
       )}
 
-      <div className="flex-1 overflow-auto">
+      <YStack flex={1} overflow="scroll">
         {secrets.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full p-8 text-center border rounded-lg">
-            <Key className="h-8 w-8 text-muted-foreground mb-2" />
-            <p className="text-sm text-muted-foreground">No secrets yet</p>
-            <p className="text-xs text-muted-foreground mt-1 mb-4">
+          <SizableText flexDirection="column" alignItems="center" justifyContent="center" height="100%" padding="$6" textAlign="center" borderWidth={1} borderRadius="$5" display="flex">
+            <Key size={32} color="$color11" />
+            <Paragraph fontSize="$3" color="$color11">No secrets yet</Paragraph>
+            <Paragraph fontSize="$1" color="$color11" marginTop="$1" marginBottom="$4">
               Store API keys and tokens securely for your edge functions
-            </p>
+            </Paragraph>
             <Button
               size="sm"
               onClick={() => setIsCreating(true)}
               disabled={!encryptionConfigured}
             >
-              <Plus className="h-4 w-4 mr-1" />
+              <Plus size={16} />
               Create Secret
             </Button>
-          </div>
+          </SizableText>
         ) : (
-          <div className="grid gap-3">
+          <YStack gap="$3">
             {secrets.map(secret => (
-              <div
+              <YStack
                 key={secret.id}
-                className="border rounded-lg p-4 transition-colors"
+                borderWidth={1} borderRadius="$5" padding="$4"
               >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0 overflow-hidden">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Key className="h-4 w-4 text-yellow-500 shrink-0" />
-                      <span className="font-mono font-medium truncate">{secret.name}</span>
+                <XStack alignItems="flex-start" justifyContent="space-between" gap="$2">
+                  <YStack flex={1} minWidth={0} overflow="hidden">
+                    <XStack alignItems="center" gap="$2" flexWrap="wrap">
+                      <Key size={16} color="$yellow9" />
+                      <SizableText fontFamily="$mono" fontWeight="500" numberOfLines={1}>{secret.name}</SizableText>
                       {!secret.hasValue && (
-                        <Badge variant="outline" className="text-amber-600 border-amber-500/50 bg-amber-500/10 text-xs shrink-0">
+                        <Badge variant="outline" color="$yellow10" borderColor="$yellow9" backgroundColor="$yellow9" fontSize="$1" flexShrink={0}>
                           Value not set
                         </Badge>
                       )}
-                    </div>
+                    </XStack>
                     {secret.description && (
-                      <p className="text-sm text-muted-foreground mt-1 truncate">
+                      <Paragraph fontSize="$3" color="$color11" marginTop="$1" numberOfLines={1}>
                         {secret.description}
-                      </p>
+                      </Paragraph>
                     )}
-                    <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                      <span className="shrink-0">Updated {formatDate(secret.updatedAt)}</span>
-                      <span className="font-mono truncate">secrets.get('{secret.name}')</span>
-                    </div>
-                  </div>
+                    <SizableText alignItems="center" gap="$4" marginTop="$2" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+                      <SizableText flexShrink={0}>Updated {formatDate(secret.updatedAt)}</SizableText>
+                      <SizableText fontFamily="$mono" numberOfLines={1}>secrets.get('{secret.name}')</SizableText>
+                    </SizableText>
+                  </YStack>
 
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="sm">
-                        <MoreVertical className="h-4 w-4" />
+                        <MoreVertical size={16} />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => setEditingSecret(secret)}>
-                        <Pencil className="h-4 w-4 mr-2" />
+                        <Pencil size={16} />
                         Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => deleteSecret(secret)}
-                        className="text-destructive"
+                        color="$red9"
                       >
-                        <Trash2 className="h-4 w-4 mr-2" />
+                        <Trash2 size={16} />
                         Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
-                </div>
-              </div>
+                </XStack>
+              </YStack>
             ))}
-          </div>
+          </YStack>
         )}
-      </div>
+      </YStack>
 
       {/* Secret Editor Dialog */}
       {(isCreating || editingSecret) && (
@@ -247,8 +247,8 @@ export function SecretsManager({ deploymentId, dataProvider }: SecretsManagerPro
             setEditingSecret(null);
           }}
           onSave={handleSave}
-        />
+  />
       )}
-    </div>
+    </YStack>
   );
 }

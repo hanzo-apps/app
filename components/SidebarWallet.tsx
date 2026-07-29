@@ -15,6 +15,7 @@
  *  - Honest states: loading (—), a real balance, or "—" when unauthenticated /
  *    billing not configured on this deployment.
  */
+import { YStack } from '@hanzo/gui';
 import {useRouter} from 'next/navigation'
 import {User, Wallet} from 'lucide-react'
 import {UserMenu, resolveIdentity, useUserTheme} from '@hanzo/iam/react'
@@ -70,7 +71,7 @@ export function SidebarWallet({collapsed}: {collapsed: boolean}) {
   // mounts. hanzo.app supplies only what is its own (profile, top-up, the live
   // per-org balance) and, when collapsed, hides the label so the rail stays narrow.
   return (
-    <div className="border-t p-2">
+    <YStack borderTopWidth={1} padding="$2">
       <UserMenu
         identity={identity}
         isAuthenticated
@@ -93,12 +94,12 @@ export function SidebarWallet({collapsed}: {collapsed: boolean}) {
         items={[
           {
             label: 'Profile',
-            icon: <User className="h-4 w-4" />,
+            icon: <User size={16} />,
             onSelect: () => router.push('/profile'),
           },
           {
             label: 'Top up',
-            icon: <Wallet className="h-4 w-4" />,
+            icon: <Wallet size={16} />,
             onSelect: openTopUp,
           },
         ]}
@@ -110,7 +111,7 @@ export function SidebarWallet({collapsed}: {collapsed: boolean}) {
             ? 'hidden'
             : 'min-w-0 flex-1 truncate text-sm font-medium',
         }}
-      />
-    </div>
+  />
+    </YStack>
   )
 }

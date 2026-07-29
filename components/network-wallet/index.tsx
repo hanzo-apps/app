@@ -15,6 +15,8 @@
  * white surface with a semantic-green live dot; disconnect is the only muted
  * destructive affordance. No brand hue.
  */
+import { Button } from '@hanzo/ui';
+import { XStack, SizableText } from '@hanzo/gui';
 import { Loader2, LogOut, Wallet } from "lucide-react";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 
@@ -36,46 +38,46 @@ function WalletInner() {
 
   if (isConnected && address) {
     return (
-      <div className="flex items-center gap-2 rounded-lg border border-border bg-muted px-3 py-2">
-        <span
-          className="size-1.5 shrink-0 rounded-full bg-green-500 shadow-[0_0_6px_0] shadow-green-500/60"
+      <XStack alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2">
+        <SizableText
+          width="$1.5" height="$1.5" flexShrink={0} borderRadius="$10" backgroundColor="$green9" shadowColor="$shadowColor"
           aria-hidden
-        />
-        <span className="flex min-w-0 flex-1 flex-col leading-tight">
-          <span className="text-[11px] font-medium text-muted-foreground">Wallet</span>
-          <span className="truncate font-mono text-xs text-foreground">
+  />
+        <SizableText minWidth={0} flex={1} flexDirection="column" lineHeight={1.25}>
+          <SizableText fontSize={11} fontWeight="500" color="$color11">Wallet</SizableText>
+          <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">
             {shortAddress(address)}
-          </span>
-        </span>
-        <button
+          </SizableText>
+        </SizableText>
+        <Button
           type="button"
           onClick={() => disconnect()}
           title="Disconnect wallet"
           aria-label="Disconnect wallet"
-          className="grid size-7 shrink-0 place-items-center rounded-md text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+          width={28} height={28} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
         >
-          <LogOut className="size-3.5" />
-        </button>
-      </div>
+          <LogOut size={14} />
+        </Button>
+      </XStack>
     );
   }
 
   return (
-    <button
+    <Button
       type="button"
       onClick={() => injectedConnector && connect({ connector: injectedConnector })}
       disabled={isPending || !injectedConnector}
-      className="flex w-full items-center gap-2 rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground transition-colors duration-150 hover:border-foreground/20 hover:bg-accent hover:text-foreground disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+      width="100%" alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3" color="$color" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3", color: "$color" }} disabledStyle={{ opacity: 0.5 }} focusVisibleStyle={{ outlineWidth: 0 }}
     >
       {isPending ? (
-        <Loader2 className="size-4 shrink-0 animate-spin text-muted-foreground motion-reduce:animate-none" />
+        <Loader2 size={16} color="$color11" />
       ) : (
-        <Wallet className="size-4 shrink-0 text-muted-foreground" />
+        <Wallet size={16} color="$color11" />
       )}
-      <span className="flex-1 text-left">
+      <SizableText flex={1} textAlign="left">
         {isPending ? "Connecting…" : "Connect wallet"}
-      </span>
-    </button>
+      </SizableText>
+    </Button>
   );
 }
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
 import {
   useCallback,
   useEffect,
@@ -24,8 +25,7 @@ import {
   UploadCloud,
   X,
 } from "lucide-react";
-import classNames from "classnames";
-import { toast, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@hanzo/ui';
+import { toast, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Button } from '@hanzo/ui';
 
 import { HtmlHistory, Page } from "@/types";
 import { HanzoLogo } from "@/components/HanzoLogo";
@@ -492,7 +492,7 @@ export function HistoryPanel({
       onBookmark={() => toggleBookmark(rev.key)}
       onDetails={() => openDetails(rev)}
       onPreview={rev.kind === "commit" ? () => previewCommit(rev.sha) : undefined}
-    />
+  />
   );
 
   const showBookmarksOnly = filter === "bookmarks";
@@ -501,99 +501,96 @@ export function HistoryPanel({
   const nothing = working.length === 0 && commitsShown.length === 0;
 
   return (
-    <div className="absolute inset-0 z-20 flex flex-col bg-card">
+    <YStack position="absolute" top={0} right={0} bottom={0} left={0} zIndex={20} backgroundColor="$background">
       {/* Panel header: title · All|Bookmarks filter · close. Left gutter matches
           the top toolbar (px-3 lg:px-4) so "History" lines up under the org
           switcher instead of sitting inset from it. */}
-      <div className="flex items-center gap-2 px-3 lg:px-4 pb-2 pt-3">
-        <RotateCcw className="size-4 text-muted-foreground" />
-        <span className="text-[13px] font-medium text-foreground">History</span>
-        <div className="ml-auto flex items-center gap-1.5">
-          <div className="flex items-center gap-0.5 rounded-lg bg-white/[0.03] p-0.5 ring-1 ring-white/10">
+      <XStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingBottom="$2" paddingTop="$3" $lg={{ paddingHorizontal: "$4" }}>
+        <RotateCcw size={16} color="$color11" />
+        <SizableText fontSize={13} fontWeight="500" color="$color">History</SizableText>
+        <XStack marginLeft="auto" alignItems="center" gap="$1.5">
+          <XStack alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="white" padding="$0.5">
             {(["all", "bookmarks"] as const).map((f) => (
-              <button
+              <Button
                 key={f}
                 type="button"
                 onClick={() => setFilter(f)}
-                className={classNames(
-                  "rounded-md px-2 py-1 text-[11px] font-medium transition-colors",
-                  filter === f ? "bg-muted text-foreground shadow-sm" : "text-muted-foreground hover:bg-white/[0.06] hover:text-foreground",
-                )}
+                borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1" fontSize={11} fontWeight="500" {...{ backgroundColor: filter === f ? "$color3" : undefined, color: filter === f ? "$color" : "$color11", elevation: filter === f ? 1 : undefined, hoverStyle: filter === f ? undefined : {"backgroundColor":"white","color":"$color"} }}
               >
                 {f === "all" ? "All" : "Bookmarks"}
-              </button>
+              </Button>
             ))}
-          </div>
+          </XStack>
           {onClose && (
-            <button
+            <Button
               type="button"
               onClick={onClose}
               title="Close history"
-              className="grid size-7 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              width={28} height={28} alignItems="center" justifyContent="center" borderRadius="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
             >
-              <X className="size-4" />
-            </button>
+              <X size={16} />
+            </Button>
           )}
-        </div>
-      </div>
+        </XStack>
+      </XStack>
 
       {/* Previewing-a-past-commit banner (item 11 "out of date → back to working"). */}
       {previewingSha && (
-        <div className="mx-3 mb-1 flex items-center gap-2 rounded-lg border border-amber-400/20 bg-amber-400/[0.06] px-3 py-2 text-xs">
-          <Eye className="size-3.5 shrink-0 text-amber-300/90" />
-          <span className="min-w-0 flex-1 truncate text-amber-100/90">
+        <SizableText marginHorizontal="$3" marginBottom="$1" alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$yellow8" backgroundColor="$yellow8" paddingHorizontal="$3" paddingVertical="$2" fontSize="$1" display="flex" flexDirection="row">
+          <Eye size={14} color="$yellow4" />
+          <SizableText minWidth={0} flex={1} numberOfLines={1} color="$yellow2">
             Preview shows {previewingSha.slice(0, 7)} — an older version.
-          </span>
-          <button
+          </SizableText>
+          <Button
             type="button"
             onClick={exitPreview}
-            className="shrink-0 rounded-md bg-muted px-2 py-1 font-medium text-foreground transition-colors hover:bg-white/20"
+            flexShrink={0} borderRadius="$3" backgroundColor="$color3" paddingHorizontal="$2" paddingVertical="$1" fontWeight="500" color="$color" hoverStyle={{ backgroundColor: "white" }}
           >
             Back to working
-          </button>
-        </div>
+          </Button>
+        </SizableText>
       )}
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-3 [scrollbar-width:thin]">
+      <YStack minHeight={0} flex={1} paddingHorizontal="$2" paddingBottom="$3" overflow="scroll" className="[scrollbar-width:thin]">
         {nothing ? (
           <EmptyState bookmarks={showBookmarksOnly} />
         ) : (
           <>
             {working.length > 0 && (
-              <section className="mb-2">
+              <YStack marginBottom="$2">
                 <GroupHeader label="Working changes" hint={`${working.length} uncommitted`}>
-                  <button
+                  <Button
                     type="button"
                     onClick={openGitSync}
-                    className="inline-flex items-center gap-1 rounded-md px-1.5 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    alignItems="center" gap="$1" borderRadius="$3" paddingHorizontal="$1.5" paddingVertical="$1" fontSize={11} fontWeight="500" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
                     title="Commit & push these changes"
                   >
-                    <UploadCloud className="size-3" />
+                    <UploadCloud size={12} />
                     Commit &amp; push
-                  </button>
+                  </Button>
                 </GroupHeader>
-                <div className="space-y-1">{working.map(renderCard)}</div>
-              </section>
+                <YStack rowGap="$1">{working.map(renderCard)}</YStack>
+              </YStack>
             )}
 
             {hasRepo && (
               <section>
                 <GroupHeader label="Commits" hint={repo ? `${repo.provider}/${repo.branch}` : ""} />
                 {commitsLoading && commitsShown.length === 0 ? (
-                  <div className="flex items-center gap-2 px-2 py-6 text-xs text-muted-foreground">
-                    <Loader2 className="size-3.5 animate-spin motion-reduce:animate-none" />
+                  <SizableText alignItems="center" gap="$2" paddingHorizontal="$2" paddingVertical="$5" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+                    <Loader2 size={14} />
                     Loading commits…
-                  </div>
+                  </SizableText>
                 ) : commitsShown.length === 0 ? (
-                  <div className="px-2 py-6 text-xs text-muted-foreground">
+                  <SizableText paddingHorizontal="$2" paddingVertical="$5" fontSize="$1" color="$color11" display="flex" flexDirection="column">
                     {showBookmarksOnly
                       ? "No bookmarked commits."
                       : logSupported
                         ? "No commits yet — push to create the first."
                         : `Commit history isn't available for ${repo ? PROVIDER_LABEL[repo.provider] : "this"} git yet.`}
-                  </div>
+                  </SizableText>
                 ) : (
-                  <div className="space-y-1">{commitsShown.map(renderCard)}</div>
+                  <YStack rowGap="$1">{commitsShown.map(renderCard)}</YStack>
                 )}
               </section>
             )}
@@ -601,8 +598,8 @@ export function HistoryPanel({
             {!hasRepo && repoResolved && !showBookmarksOnly && <ConnectRepoCta />}
           </>
         )}
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }
 
@@ -640,119 +637,111 @@ function RevCard({
     : null;
   const canDetails = isCommit || rev.kind === "edit";
   return (
-    <div
-      className={classNames(
-        "rounded-xl border px-3 py-2.5 transition-colors duration-150 motion-reduce:transition-none",
-        isPreviewing
-          ? "border-amber-400/30 bg-amber-400/[0.04]"
-          : isActive
+    <YStack
+      borderRadius="$6" borderWidth={1} paddingHorizontal="$3" paddingVertical="$2.5" className={`${isPreviewing ? "border-amber-400/30 bg-amber-400/[0.04]" : isActive
             ? "border-border bg-white/[0.05]"
-            : "border-border bg-white/[0.02] hover:border-border hover:bg-white/[0.04]",
-      )}
+            : "border-border bg-white/[0.02] hover:border-border hover:bg-white/[0.04]"}`}
     >
-      <div className="flex items-start gap-2">
+      <XStack alignItems="flex-start" gap="$2">
         {Icon ? (
           <Icon className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
         ) : (
-          <span
-            className={classNames("mt-1 size-1.5 shrink-0 rounded-full", isActive ? "bg-white" : "bg-white/30")}
+          <SizableText
+            marginTop="$1" width="$1.5" height="$1.5" flexShrink={0} borderRadius="$10" {...{ backgroundColor: isActive ? "white" : "white" }}
             aria-hidden
-          />
+  />
         )}
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-[13px] leading-snug text-foreground">{rev.title}</p>
-          <div className="mt-0.5 flex items-center gap-1.5 font-mono text-[10px] text-muted-foreground">
+        <YStack minWidth={0} flex={1}>
+          <Paragraph numberOfLines={1} fontSize={13} lineHeight={1.375} color="$color">{rev.title}</Paragraph>
+          <SizableText marginTop="$0.5" alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={10} color="$color11" display="flex" flexDirection="row">
             <span>{rel(rev.at)}</span>
             {isCommit && (
               <>
-                <span className="text-muted-foreground">·</span>
-                <span className="truncate text-muted-foreground">{rev.author}</span>
-                <span className="text-muted-foreground">·</span>
-                <span className="text-muted-foreground">{rev.shortSha}</span>
+                <SizableText color="$color11">·</SizableText>
+                <SizableText numberOfLines={1} color="$color11">{rev.author}</SizableText>
+                <SizableText color="$color11">·</SizableText>
+                <SizableText color="$color11">{rev.shortSha}</SizableText>
               </>
             )}
             {rev.kind === "checkpoint" && (
-              <span className="uppercase tracking-wide text-muted-foreground">· {rev.cpKind === "manual" ? "save" : rev.cpKind}</span>
+              <SizableText textTransform="uppercase" letterSpacing={0.4} color="$color11">· {rev.cpKind === "manual" ? "save" : rev.cpKind}</SizableText>
             )}
-          </div>
-        </div>
-        <button
+          </SizableText>
+        </YStack>
+        <Button
           type="button"
           onClick={onBookmark}
           title={isBookmarked ? "Remove bookmark" : "Bookmark this revision"}
           aria-pressed={isBookmarked}
-          className={classNames(
-            "grid size-6 shrink-0 place-items-center rounded-md transition-colors",
-            isBookmarked ? "text-foreground" : "text-muted-foreground hover:text-foreground",
-          )}
+          width="$5" height="$5" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" {...{ color: isBookmarked ? "$color" : "$color11", hoverStyle: isBookmarked ? undefined : {"color":"$color"} }}
         >
-          {isBookmarked ? <BookmarkCheck className="size-3.5" /> : <Bookmark className="size-3.5" />}
-        </button>
-      </div>
+          {isBookmarked ? <BookmarkCheck size={14} /> : <Bookmark size={14} />}
+        </Button>
+      </XStack>
 
       {/* Action row: Details · Preview · revert · ⋮ */}
-      <div className="mt-2 flex items-center gap-1.5">
+      <XStack marginTop="$2" alignItems="center" gap="$1.5">
         {canDetails && (
           <CardButton onClick={onDetails}>
-            <ListTree className="size-3" />
+            <ListTree size={12} />
             Details
           </CardButton>
         )}
         {isCommit && onPreview && canPreview && (
           <CardButton onClick={onPreview} active={isPreviewing}>
-            {previewBusy ? <Loader2 className="size-3 animate-spin motion-reduce:animate-none" /> : <Eye className="size-3" />}
+            {previewBusy ? <Loader2 size={12} /> : <Eye size={12} />}
             {isPreviewing ? "Previewing" : "Preview"}
           </CardButton>
         )}
         {!isCommit && (
           <CardButton onClick={onRestore} disabled={isBusy}>
-            {isBusy ? <Loader2 className="size-3 animate-spin motion-reduce:animate-none" /> : <Undo2 className="size-3" />}
+            {isBusy ? <Loader2 size={12} /> : <Undo2 size={12} />}
             Restore
           </CardButton>
         )}
-        <div className="ml-auto">
+        <YStack marginLeft="auto">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button
+              <Button
                 type="button"
                 title="More"
-                className="grid size-6 place-items-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground data-[state=open]:bg-muted"
+                width="$5" height="$5" alignItems="center" justifyContent="center" borderRadius="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }} className="data-[state=open]:bg-muted"
               >
-                <MoreVertical className="size-3.5" />
-              </button>
+                <MoreVertical size={14} />
+              </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="min-w-[190px]"
+              minWidth={190}
             >
               <MenuItem onSelect={onRestore}>
-                <Undo2 className="size-3.5" />
+                <Undo2 size={14} />
                 {isCommit ? "Open on " + (providerLabel || "provider") : "Restore this version"}
               </MenuItem>
               {canDetails && (
                 <MenuItem onSelect={onDetails}>
-                  <ListTree className="size-3.5" />
+                  <ListTree size={14} />
                   View details
                 </MenuItem>
               )}
               <MenuItem onSelect={onBookmark}>
                 {isBookmarked ? (
                   <>
-                    <BookmarkCheck className="size-3.5" />
+                    <BookmarkCheck size={14} />
                     Remove bookmark
                   </>
                 ) : (
                   <>
-                    <Bookmark className="size-3.5" />
+                    <Bookmark size={14} />
                     Bookmark
                   </>
                 )}
               </MenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
-      </div>
-    </div>
+        </YStack>
+      </XStack>
+    </YStack>
   );
 }
 
@@ -768,27 +757,24 @@ function CardButton({
   active?: boolean;
 }) {
   return (
-    <button
+    <Button
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={classNames(
-        "inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium transition-colors disabled:opacity-50",
-        active ? "bg-amber-400/15 text-amber-100" : "bg-white/[0.04] text-muted-foreground hover:bg-muted hover:text-foreground",
-      )}
+      alignItems="center" gap="$1" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1" fontSize={11} fontWeight="500" disabledStyle={{ opacity: 0.5 }} {...{ backgroundColor: active ? "$yellow8" : "white", color: active ? "$yellow2" : "$color11", hoverStyle: active ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
     >
       {children}
-    </button>
+    </Button>
   );
 }
 
 function GroupHeader({ label, hint, children }: { label: string; hint?: string; children?: ReactNode }) {
   return (
-    <div className="flex items-center gap-2 px-1 pb-1.5 pt-1">
-      <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{label}</span>
-      {hint && <span className="font-mono text-[10px] text-muted-foreground">{hint}</span>}
-      {children && <span className="ml-auto">{children}</span>}
-    </div>
+    <XStack alignItems="center" gap="$2" paddingHorizontal="$1" paddingBottom="$1.5" paddingTop="$1">
+      <SizableText fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.4} color="$color11">{label}</SizableText>
+      {hint && <SizableText fontFamily="$mono" fontSize={10} color="$color11">{hint}</SizableText>}
+      {children && <SizableText marginLeft="auto">{children}</SizableText>}
+    </XStack>
   );
 }
 
@@ -796,7 +782,7 @@ function MenuItem({ onSelect, children }: { onSelect: () => void; children: Reac
   return (
     <DropdownMenuItem
       onSelect={onSelect}
-      className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-xs text-foreground focus:!bg-muted focus:!text-foreground"
+      cursor="pointer" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$1" color="$color" focusStyle={{ backgroundColor: "$color3", color: "$color" }}
     >
       {children}
     </DropdownMenuItem>
@@ -805,36 +791,36 @@ function MenuItem({ onSelect, children }: { onSelect: () => void; children: Reac
 
 function ConnectRepoCta() {
   return (
-    <div className="mt-2 rounded-xl border border-border bg-white/[0.02] p-3.5">
-      <div className="mb-1 flex items-center gap-1.5 text-[13px] font-medium text-foreground">
-        <GitBranch className="size-3.5 text-muted-foreground" />
+    <YStack marginTop="$2" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="white" padding="$3.5">
+      <SizableText marginBottom="$1" alignItems="center" gap="$1.5" fontSize={13} fontWeight="500" color="$color" display="flex" flexDirection="row">
+        <GitBranch size={14} color="$color11" />
         Keep full version history
-      </div>
-      <p className="text-xs text-muted-foreground">
+      </SizableText>
+      <Paragraph fontSize="$1" color="$color11">
         Connect a repository to record every change as a git commit — a durable timeline you can preview and review.
-      </p>
-      <button
+      </Paragraph>
+      <Button
         type="button"
         onClick={openGitSync}
-        className="mt-2.5 inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+        marginTop="$2.5" alignItems="center" gap="$1.5" borderRadius="$5" backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$1" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
       >
-        <UploadCloud className="size-3.5" />
+        <UploadCloud size={14} />
         Connect a repo
-      </button>
-    </div>
+      </Button>
+    </YStack>
   );
 }
 
 function EmptyState({ bookmarks }: { bookmarks: boolean }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-2 px-4 py-16 text-center">
-      <Bookmark className="size-7 text-muted-foreground" />
-      <p className="text-[13px] font-medium text-foreground">{bookmarks ? "No bookmarks yet" : "No revisions yet"}</p>
-      <p className="max-w-[220px] text-xs text-muted-foreground">
+    <SizableText flexDirection="column" alignItems="center" justifyContent="center" gap="$2" paddingHorizontal="$4" paddingVertical="$10" textAlign="center" display="flex">
+      <Bookmark size={28} color="$color11" />
+      <Paragraph fontSize={13} fontWeight="500" color="$color">{bookmarks ? "No bookmarks yet" : "No revisions yet"}</Paragraph>
+      <Paragraph maxWidth={220} fontSize="$1" color="$color11">
         {bookmarks
           ? "Bookmark any revision to pin it here for quick access."
           : "Your edits and commits appear here — preview or restore any version."}
-      </p>
-    </div>
+      </Paragraph>
+    </SizableText>
   );
 }

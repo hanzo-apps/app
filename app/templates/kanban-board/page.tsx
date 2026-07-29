@@ -1,5 +1,6 @@
 "use client";
 
+import { YStack, XStack, H1, Paragraph, SizableText } from '@hanzo/gui';
 import { useState } from "react";
 
 interface Task {
@@ -13,18 +14,8 @@ interface Task {
   attachments: number;
   labels: string[];
 }
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Button, Badge, ScrollArea, Avatar, AvatarFallback, AvatarImage, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, Input, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
-import {
-  Plus,
-  MoreHorizontal,
-  Calendar,
-  User,
-  Tag,
-  MessageSquare,
-  Paperclip,
-  Clock,
-  AlertCircle
-} from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, Button, Badge, ScrollArea, Avatar, AvatarFallback, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, Input, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Label } from '@hanzo/ui';
+import { Plus, MoreHorizontal, Calendar, User, MessageSquare, Paperclip } from "lucide-react";
 
 const columns = [
   {
@@ -161,23 +152,23 @@ export default function KanbanBoard() {
   const [newTaskColumn, setNewTaskColumn] = useState("todo");
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <YStack minHeight="100%" backgroundColor="$background" padding="$5">
       {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between">
+      <YStack marginBottom="$5">
+        <XStack alignItems="center" justifyContent="space-between">
           <div>
-            <h1 className="text-3xl font-medium">Project Board</h1>
-            <p className="text-muted-foreground">Built with @hanzo/ui components</p>
+            <H1 fontSize="$10" fontWeight="500">Project Board</H1>
+            <Paragraph color="$color11">Built with @hanzo/ui components</Paragraph>
           </div>
-          <div className="flex items-center gap-2">
+          <XStack alignItems="center" gap="$2">
             <Button variant="outline">
-              <User className="w-4 h-4 mr-2" />
+              <User size={16} />
               Team
             </Button>
             <Dialog>
               <DialogTrigger asChild>
-                <Button className="bg-[#171717] hover:bg-[#000000]">
-                  <Plus className="w-4 h-4 mr-2" />
+                <Button backgroundColor="#171717" hoverStyle={{ backgroundColor: "#000000" }}>
+                  <Plus size={16} />
                   New Task
                 </Button>
               </DialogTrigger>
@@ -188,17 +179,17 @@ export default function KanbanBoard() {
                     Add a new task to your kanban board
                   </DialogDescription>
                 </DialogHeader>
-                <div className="space-y-4 pt-4">
+                <YStack rowGap="$4" paddingTop="$4">
                   <div>
-                    <label className="text-sm font-medium">Title</label>
+                    <Label fontSize="$3" fontWeight="500">Title</Label>
                     <Input
                       placeholder="Task title"
                       value={newTaskTitle}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewTaskTitle(e.target.value)}
-                    />
+  />
                   </div>
                   <div>
-                    <label className="text-sm font-medium">Column</label>
+                    <Label fontSize="$3" fontWeight="500">Column</Label>
                     <Select value={newTaskColumn} onValueChange={setNewTaskColumn}>
                       <SelectTrigger>
                         <SelectValue />
@@ -213,152 +204,152 @@ export default function KanbanBoard() {
                     </Select>
                   </div>
                   <div>
-                    <label className="text-sm font-medium">Description</label>
+                    <Label fontSize="$3" fontWeight="500">Description</Label>
                     <Textarea placeholder="Task description (optional)" />
                   </div>
-                  <Button className="w-full bg-[#171717] hover:bg-[#000000]">Create Task</Button>
-                </div>
+                  <Button width="100%" backgroundColor="#171717" hoverStyle={{ backgroundColor: "#000000" }}>Create Task</Button>
+                </YStack>
               </DialogContent>
             </Dialog>
-          </div>
-        </div>
-      </div>
+          </XStack>
+        </XStack>
+      </YStack>
 
       {/* Board */}
-      <div className="flex gap-4 overflow-x-auto pb-4">
+      <XStack gap="$4" paddingBottom="$4" overflow="scroll">
         {columns.map(column => (
-          <div key={column.id} className="min-w-[320px]">
-            <Card className="mb-4">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-3 h-3 rounded-full ${column.color}`} />
-                    <CardTitle className="text-base">{column.title}</CardTitle>
-                    <Badge variant="secondary" className="ml-2">
+          <YStack key={column.id} minWidth={320}>
+            <Card marginBottom="$4">
+              <CardHeader paddingBottom="$3">
+                <XStack alignItems="center" justifyContent="space-between">
+                  <XStack alignItems="center" gap="$2">
+                    <YStack width="$3" height="$3" borderRadius="$10" className={`${column.color}`} />
+                    <CardTitle fontSize="$4">{column.title}</CardTitle>
+                    <Badge variant="secondary" marginLeft="$2">
                       {column.tasks.length}
                     </Badge>
-                  </div>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Plus className="w-4 h-4" />
+                  </XStack>
+                  <Button variant="ghost" size="icon" height="$6" width="$6">
+                    <Plus size={16} />
                   </Button>
-                </div>
+                </XStack>
               </CardHeader>
             </Card>
 
-            <ScrollArea className="h-[calc(100vh-240px)]">
-              <div className="space-y-3">
+            <ScrollArea height="calc(100vh-240px)">
+              <YStack rowGap="$3">
                 {column.tasks.map(task => (
                   <Card
                     key={task.id}
-                    className="cursor-pointer hover:shadow-md transition-shadow"
+                    cursor="pointer" hoverStyle={{ elevation: 3 }}
                     onClick={() => setSelectedTask(task)}
                   >
-                    <CardHeader className="pb-3">
-                      <div className="flex items-start justify-between">
-                        <CardTitle className="text-sm font-medium">
+                    <CardHeader paddingBottom="$3">
+                      <XStack alignItems="flex-start" justifyContent="space-between">
+                        <CardTitle fontSize="$3" fontWeight="500">
                           {task.title}
                         </CardTitle>
-                        <Button variant="ghost" size="icon" className="h-6 w-6 -mr-2 -mt-1">
-                          <MoreHorizontal className="w-3 h-3" />
+                        <Button variant="ghost" size="icon" height="$5" width="$5" marginRight="-2" marginTop="-1">
+                          <MoreHorizontal size={12} />
                         </Button>
-                      </div>
-                      <CardDescription className="text-xs line-clamp-2">
+                      </XStack>
+                      <CardDescription fontSize="$1" numberOfLines={2} ellipse>
                         {task.description}
                       </CardDescription>
                     </CardHeader>
 
-                    <CardContent className="pb-3">
+                    <CardContent paddingBottom="$3">
                       {/* Labels */}
-                      <div className="flex flex-wrap gap-1 mb-3">
+                      <XStack flexWrap="wrap" gap="$1" marginBottom="$3">
                         {task.labels.map(label => (
                           <Badge
                             key={label}
                             variant="secondary"
-                            className={`text-xs px-2 py-0 ${labelColors[label as keyof typeof labelColors] || ""}`}
+                            fontSize="$1" paddingHorizontal="$2" paddingVertical="$0" className={`${labelColors[label as keyof typeof labelColors] || ""}`}
                           >
                             {label}
                           </Badge>
                         ))}
-                      </div>
+                      </XStack>
 
                       {/* Priority indicator */}
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className={`w-2 h-2 rounded-full ${priorityColors[task.priority as keyof typeof priorityColors]}`} />
-                        <span className="text-xs text-muted-foreground">
+                      <XStack alignItems="center" gap="$2" marginBottom="$3">
+                        <YStack width="$2" height="$2" borderRadius="$10" className={`${priorityColors[task.priority as keyof typeof priorityColors]}`} />
+                        <SizableText fontSize="$1" color="$color11">
                           {task.priority} priority
-                        </span>
-                      </div>
+                        </SizableText>
+                      </XStack>
 
                       {/* Meta info */}
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <div className="flex items-center gap-3">
+                      <SizableText alignItems="center" justifyContent="space-between" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+                        <XStack alignItems="center" gap="$3">
                           {task.dueDate && (
-                            <div className="flex items-center gap-1">
-                              <Calendar className="w-3 h-3" />
+                            <XStack alignItems="center" gap="$1">
+                              <Calendar size={12} />
                               {task.dueDate}
-                            </div>
+                            </XStack>
                           )}
                           {task.comments > 0 && (
-                            <div className="flex items-center gap-1">
-                              <MessageSquare className="w-3 h-3" />
+                            <XStack alignItems="center" gap="$1">
+                              <MessageSquare size={12} />
                               {task.comments}
-                            </div>
+                            </XStack>
                           )}
                           {task.attachments > 0 && (
-                            <div className="flex items-center gap-1">
-                              <Paperclip className="w-3 h-3" />
+                            <XStack alignItems="center" gap="$1">
+                              <Paperclip size={12} />
                               {task.attachments}
-                            </div>
+                            </XStack>
                           )}
-                        </div>
-                        <Avatar className="h-6 w-6">
-                          <AvatarFallback className="text-xs">
+                        </XStack>
+                        <Avatar height="$5" width="$5">
+                          <AvatarFallback fontSize="$1">
                             {task.assignee.split(" ").map(n => n[0]).join("")}
                           </AvatarFallback>
                         </Avatar>
-                      </div>
+                      </SizableText>
                     </CardContent>
                   </Card>
                 ))}
-              </div>
+              </YStack>
             </ScrollArea>
-          </div>
+          </YStack>
         ))}
-      </div>
+      </XStack>
 
       {/* Task Detail Modal */}
       {selectedTask && (
         <Dialog open={!!selectedTask} onOpenChange={() => setSelectedTask(null)}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent maxWidth={672}>
             <DialogHeader>
               <DialogTitle>{selectedTask.title}</DialogTitle>
               <DialogDescription>{selectedTask.description}</DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 pt-4">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <User className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm">{selectedTask.assignee}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm">Due {selectedTask.dueDate}</span>
-                </div>
-                <Badge className={priorityColors[selectedTask.priority as keyof typeof priorityColors]}>
+            <YStack rowGap="$4" paddingTop="$4">
+              <XStack alignItems="center" gap="$4">
+                <XStack alignItems="center" gap="$2">
+                  <User size={16} color="$color11" />
+                  <SizableText fontSize="$3">{selectedTask.assignee}</SizableText>
+                </XStack>
+                <XStack alignItems="center" gap="$2">
+                  <Calendar size={16} color="$color11" />
+                  <SizableText fontSize="$3">Due {selectedTask.dueDate}</SizableText>
+                </XStack>
+                <Badge className={`${priorityColors[selectedTask.priority as keyof typeof priorityColors]}`}>
                   {selectedTask.priority}
                 </Badge>
-              </div>
-              <div className="flex gap-1">
+              </XStack>
+              <XStack gap="$1">
                 {selectedTask.labels.map(label => (
                   <Badge key={label} variant="outline">
                     {label}
                   </Badge>
                 ))}
-              </div>
-            </div>
+              </XStack>
+            </YStack>
           </DialogContent>
         </Dialog>
       )}
-    </div>
+    </YStack>
   );
 }

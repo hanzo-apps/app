@@ -1,5 +1,6 @@
 'use client';
 
+import { YStack, XStack, Image, H3, SizableText, Paragraph, Anchor } from '@hanzo/gui';
 import React from 'react';
 import { CustomTemplate, LICENSE_OPTIONS } from '@/lib/vfs/types';
 import type { BuiltInTemplateMetadata } from '@/lib/vfs/templates/registry';
@@ -59,74 +60,74 @@ export function TemplateCard({
   // List view (horizontal row)
   if (viewMode === 'list') {
     return (
-      <div
-        className="border border-border rounded-lg p-4 bg-card"
+      <YStack
+        borderWidth={1} borderColor="$borderColor" borderRadius="$5" padding="$4" backgroundColor="$background"
       >
-        <div className="flex items-center gap-4">
+        <XStack alignItems="center" gap="$4">
           {/* Thumbnail */}
-          <div className="relative shrink-0">
+          <YStack position="relative" flexShrink={0}>
             {customTemplate?.metadata.thumbnail ? (
-              <div className="w-24 h-16 rounded-md overflow-hidden bg-muted">
-                <img
+              <YStack width="$12" height="$10" borderRadius="$3" overflow="hidden" backgroundColor="$color3">
+                <Image
                   src={customTemplate.metadata.thumbnail}
                   alt={template.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+                  width="100%" height="100%" objectFit="cover"
+  />
+              </YStack>
             ) : (
-              <div className="w-24 h-16 rounded-md bg-muted flex items-center justify-center">
-                <FileBox className="h-8 w-8 text-muted-foreground" />
-              </div>
+              <XStack width="$12" height="$10" borderRadius="$3" backgroundColor="$color3" alignItems="center" justifyContent="center">
+                <FileBox size={32} color="$color11" />
+              </XStack>
             )}
             {isBuiltIn && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="absolute top-1 right-1 bg-background/90 rounded-full p-1">
-                    <Link2 className="h-3 w-3 text-muted-foreground" />
-                  </div>
+                  <YStack position="absolute" top="$1" right="$1" backgroundColor="$background" borderRadius="$10" padding="$1">
+                    <Link2 size={12} color="$color11" />
+                  </YStack>
                 </TooltipTrigger>
                 <TooltipContent>Built-in template</TooltipContent>
               </Tooltip>
             )}
-          </div>
+          </YStack>
 
           {/* Template Info */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <h3 className="font-medium text-base truncate" title={template.name}>
+          <YStack flex={1} minWidth={0}>
+            <XStack alignItems="center" gap="$2" marginBottom="$1">
+              <H3 fontWeight="500" fontSize="$4" numberOfLines={1} title={template.name}>
                 {template.name}
-              </h3>
+              </H3>
               {customTemplate && (
-                <span className="text-xs text-muted-foreground shrink-0">
+                <SizableText fontSize="$1" color="$color11" flexShrink={0}>
                   v{customTemplate.version}
-                </span>
+                </SizableText>
               )}
-            </div>
+            </XStack>
 
-            <p className="text-sm text-muted-foreground line-clamp-1 mb-2" title={template.description}>
+            <Paragraph fontSize="$3" color="$color11" numberOfLines={1} marginBottom="$2" title={template.description}>
               {template.description}
-            </p>
+            </Paragraph>
 
             {/* Metadata */}
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+            <SizableText flexWrap="wrap" alignItems="center" columnGap="$2" rowGap="$1" fontSize="$1" color="$color11" display="flex" flexDirection="row">
               {runtimeBadge && (
-                <Badge className={`text-xs px-1.5 py-0 h-auto ${runtimeBadge.className}`}>{runtimeBadge.label}</Badge>
+                <Badge fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0" height="auto" className={`${runtimeBadge.className}`}>{runtimeBadge.label}</Badge>
               )}
               {hasBackendFeatures && (
-                <Badge className="text-xs px-1.5 py-0 h-auto bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800">
-                  <Server className="h-3 w-3 mr-0.5" />
+                <Badge fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0" height="auto" backgroundColor="$orange2" color="$orange11" borderColor="$orange3" $theme-dark={{ backgroundColor: "$orange12", color: "$orange8", borderColor: "$orange11" }}>
+                  <Server size={12} />
                   Backend
                 </Badge>
               )}
               {(customTemplate?.metadata.author || template.metadata?.author) && (
-                <span className="truncate max-w-[150px]" title={customTemplate?.metadata.author || template.metadata?.author}>
+                <SizableText numberOfLines={1} maxWidth={150} title={customTemplate?.metadata.author || template.metadata?.author}>
                   by {customTemplate?.metadata.author || template.metadata?.author}
-                </span>
+                </SizableText>
               )}
               {customTemplate?.metadata.license && (
                 <>
                   {customTemplate.metadata.author && <span>•</span>}
-                  <Badge variant="secondary" className="text-xs px-1.5 py-0 h-auto">
+                  <Badge variant="secondary" fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0" height="auto">
                     {getLicenseLabel(customTemplate.metadata.license)}
                   </Badge>
                 </>
@@ -141,42 +142,42 @@ export function TemplateCard({
                 <>
                   <span>•</span>
                   {(customTemplate?.metadata.tags || template.metadata?.tags || []).slice(0, 2).map((tag) => (
-                    <Badge key={tag} variant="outline" className="text-xs px-1.5 py-0 h-auto">
+                    <Badge key={tag} variant="outline" fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0" height="auto">
                       {tag}
                     </Badge>
                   ))}
                   {(customTemplate?.metadata.tags || template.metadata?.tags || []).length > 2 && (
-                    <Badge variant="outline" className="text-xs px-1.5 py-0 h-auto">
+                    <Badge variant="outline" fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0" height="auto">
                       +{(customTemplate?.metadata.tags || template.metadata?.tags || []).length - 2}
                     </Badge>
                   )}
                 </>
               )}
-            </div>
-          </div>
+            </SizableText>
+          </YStack>
 
           {/* Actions - Desktop */}
-          <div className="hidden md:flex items-center gap-3 shrink-0">
-            <span className="text-xs text-muted-foreground whitespace-nowrap">
+          <YStack display="none" alignItems="center" gap="$3" flexShrink={0}>
+            <SizableText fontSize="$1" color="$color11" whiteSpace="nowrap">
               {formatDate(customTemplate?.updatedAt || template.updatedAt)}
-            </span>
+            </SizableText>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button size="icon" variant="ghost" className="h-8 w-8">
-                  <MoreVertical className="h-4 w-4" />
+                <Button size="icon" variant="ghost" height="$6" width="$6">
+                  <MoreVertical size={16} />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => onSelect(template)}>
-                  <Plus className="mr-2 h-4 w-4" />
+                  <Plus size={16} />
                   Create Project
                 </DropdownMenuItem>
                 {onExport && (
                   <>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleExport}>
-                      <Download className="mr-2 h-4 w-4" />
+                      <Download size={16} />
                       Export Template
                     </DropdownMenuItem>
                   </>
@@ -188,11 +189,11 @@ export function TemplateCard({
                       <TooltipTrigger asChild>
                         <div>
                           <DropdownMenuItem
-                            className="text-destructive"
+                            color="$red9"
                             onClick={handleDelete}
                             disabled={isBuiltIn}
                           >
-                            <Trash2 className="mr-2 h-4 w-4" />
+                            <Trash2 size={16} />
                             Delete
                           </DropdownMenuItem>
                         </div>
@@ -205,26 +206,26 @@ export function TemplateCard({
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
+          </YStack>
 
           {/* Actions - Mobile */}
-          <div className="md:hidden">
+          <YStack $md={{ display: "none" }}>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button size="icon" variant="ghost" className="h-8 w-8">
-                  <MoreVertical className="h-4 w-4" />
+                <Button size="icon" variant="ghost" height="$6" width="$6">
+                  <MoreVertical size={16} />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => onSelect(template)}>
-                  <Plus className="mr-2 h-4 w-4" />
+                  <Plus size={16} />
                   Create Project
                 </DropdownMenuItem>
                 {onExport && (
                   <>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleExport}>
-                      <Download className="mr-2 h-4 w-4" />
+                      <Download size={16} />
                       Export Template
                     </DropdownMenuItem>
                   </>
@@ -233,49 +234,49 @@ export function TemplateCard({
                   <>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
-                      className="text-destructive"
+                      color="$red9"
                       onClick={handleDelete}
                       disabled={isBuiltIn}
                     >
-                      <Trash2 className="mr-2 h-4 w-4" />
+                      <Trash2 size={16} />
                       Delete
                     </DropdownMenuItem>
                   </>
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
-        </div>
-      </div>
+          </YStack>
+        </XStack>
+      </YStack>
     );
   }
 
   // Grid view (vertical card)
   return (
-    <div
-      className="border border-border rounded-lg overflow-hidden bg-card group"
+    <YStack
+      borderWidth={1} borderColor="$borderColor" borderRadius="$5" overflow="hidden" backgroundColor="$background" group
     >
       {/* Thumbnail */}
-      <div className="relative">
+      <YStack position="relative">
         {customTemplate?.metadata.thumbnail ? (
-          <div className="w-full aspect-video bg-muted">
-            <img
+          <YStack width="100%" backgroundColor="$color3">
+            <Image
               src={customTemplate.metadata.thumbnail}
               alt={template.name}
-              className="w-full h-full object-cover"
-            />
-          </div>
+              width="100%" height="100%" objectFit="cover"
+  />
+          </YStack>
         ) : (
-          <div className="w-full aspect-video bg-muted flex items-center justify-center">
-            <FileBox className="h-16 w-16 text-muted-foreground" />
-          </div>
+          <XStack width="100%" backgroundColor="$color3" alignItems="center" justifyContent="center">
+            <FileBox size={64} color="$color11" />
+          </XStack>
         )}
         {isBuiltIn && (
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="absolute top-2 right-2 bg-background/90 rounded-full p-1.5 shadow-sm">
-                <Link2 className="h-4 w-4 text-muted-foreground" />
-              </div>
+              <YStack position="absolute" top="$2" right="$2" backgroundColor="$background" borderRadius="$10" padding="$1.5" elevation={1}>
+                <Link2 size={16} color="$color11" />
+              </YStack>
             </TooltipTrigger>
             <TooltipContent>Built-in template</TooltipContent>
           </Tooltip>
@@ -283,90 +284,90 @@ export function TemplateCard({
         {customTemplate?.metadata.downloadUrl && (
           <Tooltip>
             <TooltipTrigger asChild>
-              <a
+              <Anchor
                 href={customTemplate.metadata.downloadUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="absolute top-2 left-2 bg-background/90 hover:bg-background rounded-full p-1.5 shadow-sm transition-colors"
+                position="absolute" top="$2" left="$2" backgroundColor="$background" borderRadius="$10" padding="$1.5" elevation={1} hoverStyle={{ backgroundColor: "$background" }}
                 onClick={(e) => e.stopPropagation()}
               >
-                <ExternalLink className="h-4 w-4 text-muted-foreground" />
-              </a>
+                <ExternalLink size={16} color="$color11" />
+              </Anchor>
             </TooltipTrigger>
             <TooltipContent>View on marketplace</TooltipContent>
           </Tooltip>
         )}
-      </div>
+      </YStack>
 
       {/* Content */}
-      <div className="p-4 space-y-3">
+      <YStack padding="$4" rowGap="$3">
         {/* Header */}
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <h3 className="font-medium text-base line-clamp-1 flex-1" title={template.name}>
+        <YStack rowGap="$1">
+          <XStack alignItems="center" gap="$2">
+            <H3 fontWeight="500" fontSize="$4" numberOfLines={1} flex={1} title={template.name}>
               {template.name}
-            </h3>
+            </H3>
             {customTemplate && (
-              <span className="text-xs text-muted-foreground shrink-0">
+              <SizableText fontSize="$1" color="$color11" flexShrink={0}>
                 v{customTemplate.version}
-              </span>
+              </SizableText>
             )}
-          </div>
-          <p className="text-sm text-muted-foreground line-clamp-2" title={template.description}>
+          </XStack>
+          <Paragraph fontSize="$3" color="$color11" numberOfLines={2} title={template.description}>
             {template.description}
-          </p>
-        </div>
+          </Paragraph>
+        </YStack>
 
         {/* Metadata */}
-        <div className="space-y-2">
+        <YStack rowGap="$2">
           {(customTemplate?.metadata.author || template.metadata?.author) && (
-            <div className="text-xs text-muted-foreground">
+            <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
               {customTemplate?.metadata.authorUrl ? (
-                <a
+                <Anchor
                   href={customTemplate.metadata.authorUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary hover:underline inline-flex items-center gap-1"
+                  color="$color12" alignItems="center" gap="$1" hoverStyle={{ textDecorationLine: "underline" }}
                   onClick={(e) => e.stopPropagation()}
                 >
                   by {customTemplate.metadata.author}
-                  <ExternalLink className="h-3 w-3" />
-                </a>
+                  <ExternalLink size={12} />
+                </Anchor>
               ) : (
                 <span>by {customTemplate?.metadata.author || template.metadata?.author}</span>
               )}
-            </div>
+            </SizableText>
           )}
 
           {/* Tags */}
           {((customTemplate?.metadata.tags || template.metadata?.tags || []).length > 0 || (isBuiltIn && 'runtime' in template) || hasBackendFeatures) && (
-            <div className="flex flex-wrap gap-1">
+            <XStack flexWrap="wrap" gap="$1">
               {runtimeBadge && (
-                <Badge className={`text-xs px-1.5 py-0.5 ${runtimeBadge.className}`}>{runtimeBadge.label}</Badge>
+                <Badge fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0.5" className={`${runtimeBadge.className}`}>{runtimeBadge.label}</Badge>
               )}
               {hasBackendFeatures && (
-                <Badge className="text-xs px-1.5 py-0.5 bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800">
-                  <Server className="h-3 w-3 mr-0.5" />
+                <Badge fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0.5" backgroundColor="$orange2" color="$orange11" borderColor="$orange3" $theme-dark={{ backgroundColor: "$orange12", color: "$orange8", borderColor: "$orange11" }}>
+                  <Server size={12} />
                   Backend
                 </Badge>
               )}
               {(customTemplate?.metadata.tags || template.metadata?.tags || []).slice(0, 3).map((tag) => (
-                <Badge key={tag} variant="secondary" className="text-xs px-1.5 py-0.5">
+                <Badge key={tag} variant="secondary" fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0.5">
                   {tag}
                 </Badge>
               ))}
               {(customTemplate?.metadata.tags || template.metadata?.tags || []).length > 3 && (
-                <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
+                <Badge variant="secondary" fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0.5">
                   +{(customTemplate?.metadata.tags || template.metadata?.tags || []).length - 3}
                 </Badge>
               )}
-            </div>
+            </XStack>
           )}
 
           {/* License and file count */}
-          <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
+          <SizableText alignItems="center" gap="$2" fontSize="$1" color="$color11" flexWrap="wrap" display="flex" flexDirection="row">
             {customTemplate?.metadata.license && (
-              <Badge variant="outline" className="text-xs px-1.5 py-0 h-auto">
+              <Badge variant="outline" fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0" height="auto">
                 {getLicenseLabel(customTemplate.metadata.license)}
               </Badge>
             )}
@@ -376,31 +377,31 @@ export function TemplateCard({
                 <span>{customTemplate.files.length} files</span>
               </>
             )}
-          </div>
-        </div>
+          </SizableText>
+        </YStack>
 
         {/* Footer */}
-        <div className="pt-3 border-t flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">
+        <XStack paddingTop="$3" borderTopWidth={1} alignItems="center" justifyContent="space-between">
+          <SizableText fontSize="$1" color="$color11">
             {formatDate(customTemplate?.updatedAt || template.updatedAt)}
-          </span>
+          </SizableText>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="ghost" className="h-8 w-8">
-                <MoreVertical className="h-4 w-4" />
+              <Button size="icon" variant="ghost" height="$6" width="$6">
+                <MoreVertical size={16} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => onSelect(template)}>
-                <Plus className="mr-2 h-4 w-4" />
+                <Plus size={16} />
                 Create Project
               </DropdownMenuItem>
               {onExport && (
                 <>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleExport}>
-                    <Download className="mr-2 h-4 w-4" />
+                    <Download size={16} />
                     Export Template
                   </DropdownMenuItem>
                 </>
@@ -412,11 +413,11 @@ export function TemplateCard({
                     <TooltipTrigger asChild>
                       <div>
                         <DropdownMenuItem
-                          className="text-destructive"
+                          color="$red9"
                           onClick={handleDelete}
                           disabled={isBuiltIn}
                         >
-                          <Trash2 className="mr-2 h-4 w-4" />
+                          <Trash2 size={16} />
                           Delete
                         </DropdownMenuItem>
                       </div>
@@ -429,8 +430,8 @@ export function TemplateCard({
               )}
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
-      </div>
-    </div>
+        </XStack>
+      </YStack>
+    </YStack>
   );
 }

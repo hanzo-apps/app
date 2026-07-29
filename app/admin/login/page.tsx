@@ -1,5 +1,7 @@
 'use client';
 
+import { Label, Input, Button } from '@hanzo/ui';
+import { SizableText, YStack, H1, Paragraph } from '@hanzo/gui';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -41,7 +43,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4 animate-fadeIn">
+    <SizableText minHeight="100%" backgroundColor="$background" color="$color" alignItems="center" justifyContent="center" padding="$4" display="flex" flexDirection="row">
       <style jsx>{`
         @keyframes fadeIn {
           from { opacity: 0; }
@@ -59,9 +61,9 @@ export default function LoginPage() {
         }
       `}</style>
 
-      <div className="max-w-md w-full text-center">
+      <SizableText maxWidth={448} width="100%" textAlign="center" display="flex" flexDirection="column">
         {/* Logo */}
-        <div className="mb-8 animate-float">
+        <YStack marginBottom="$6">
           <svg
             className="w-24 h-24 mx-auto"
             version="1.0"
@@ -77,47 +79,47 @@ export default function LoginPage() {
               <path d="M3047 2515 c-47 -16 -81 -46 -101 -90 -14 -28 -16 -95 -16 -463 0 -281 4 -440 11 -459 15 -40 48 -73 94 -94 38 -17 79 -19 685 -19 626 0 646 -1 678 -20 58 -35 72 -72 72 -185 0 -110 -14 -147 -67 -182 -25 -17 -73 -18 -698 -23 -672 -5 -672 -5 -708 -33 -20 -15 -44 -42 -53 -60 -21 -39 -21 -125 -1 -163 20 -38 65 -80 100 -93 19 -8 289 -11 833 -11 701 0 809 2 841 15 48 20 71 41 94 88 19 35 19 60 17 480 -3 444 -3 444 -30 479 -54 71 -23 68 -740 68 -612 0 -645 1 -685 20 -67 30 -83 66 -83 183 0 116 14 156 68 189 35 21 35 21 691 22 606 1 658 2 688 19 137 74 130 264 -12 328 -38 18 -85 19 -840 18 -652 0 -807 -2 -838 -14z"/>
             </g>
           </svg>
-        </div>
+        </YStack>
 
         {/* Title */}
-        <h1 className="text-3xl font-medium mb-2 tracking-tight">Hanzo App Admin</h1>
-        <p className="text-muted-foreground mb-8">Enter your password to continue</p>
+        <H1 fontSize="$10" fontWeight="500" marginBottom="$2" letterSpacing={-0.4}>Hanzo App Admin</H1>
+        <Paragraph color="$color11" marginBottom="$6">Enter your password to continue</Paragraph>
 
         {/* Login Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="text-left">
-            <label htmlFor="password" className="block text-sm font-medium text-muted-foreground mb-2">
+        <YStack onSubmit={handleSubmit} rowGap="$4">
+          <SizableText textAlign="left" display="flex" flexDirection="column">
+            <Label htmlFor="password" fontSize="$3" fontWeight="500" color="$color11" marginBottom="$2">
               Password
-            </label>
-            <input
+            </Label>
+            <Input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-card border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+              width="100%" paddingHorizontal="$4" paddingVertical="$3" backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$5" color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0, borderColor: "transparent" }}
               placeholder="Enter your password"
               required
               autoFocus
-            />
-          </div>
+  />
+          </SizableText>
 
           {error && (
-            <div className="p-3 bg-red-900/20 border border-red-800 text-red-400 rounded-lg text-sm">
+            <SizableText padding="$3" backgroundColor="$red12" borderWidth={1} borderColor="$red11" color="$red8" borderRadius="$5" fontSize="$3" display="flex" flexDirection="column">
               {error}
-            </div>
+            </SizableText>
           )}
 
-          <button
+          <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 px-4 rounded-lg transition-colors disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
+            width="100%" backgroundColor="$orange10" color="white" fontWeight="500" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$orange11" }} disabledStyle={{ backgroundColor: "$color3", color: "$color11", cursor: "not-allowed" }}
           >
             {isLoading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
+          </Button>
+        </YStack>
 
         {/* Footer */}
-        <div className="mt-12 pt-6 border-t border-border flex items-center justify-center gap-2 text-sm text-muted-foreground">
+        <SizableText marginTop="$8" paddingTop="$5" borderTopWidth={1} borderColor="$borderColor" alignItems="center" justifyContent="center" gap="$2" fontSize="$3" color="$color11" display="flex" flexDirection="row">
           <span>Powered by</span>
           <svg
             className="w-5 h-5 opacity-80"
@@ -135,8 +137,8 @@ export default function LoginPage() {
             </g>
           </svg>
           <span>Hanzo App</span>
-        </div>
-      </div>
-    </div>
+        </SizableText>
+      </SizableText>
+    </SizableText>
   );
 }

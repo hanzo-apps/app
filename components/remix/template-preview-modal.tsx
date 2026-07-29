@@ -9,6 +9,7 @@
  * and link straight to their existing detail page instead.
  */
 
+import { XStack, YStack, H2, Paragraph, Image, SizableText, Anchor } from '@hanzo/gui';
 import { Dialog, DialogContent, DialogTitle, Button } from '@hanzo/ui';
 import { ExternalLink, Sparkles, Gamepad2 } from 'lucide-react';
 import Link from 'next/link';
@@ -30,70 +31,70 @@ export function TemplatePreviewModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl overflow-hidden border-border bg-card p-0 text-foreground">
-        <DialogTitle className="sr-only">{item.title} preview</DialogTitle>
+      <DialogContent maxWidth={768} overflow="hidden" borderColor="$borderColor" backgroundColor="$background" padding="$0" color="$color">
+        <DialogTitle position="absolute" width={1} height={1} overflow="hidden">{item.title} preview</DialogTitle>
 
         {/* Header */}
-        <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-3">
-          <div className="min-w-0">
-            <h2 className="truncate text-base font-medium">{item.title}</h2>
-            <p className="text-xs text-muted-foreground">
+        <XStack alignItems="center" justifyContent="space-between" gap="$3" borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$4.5" paddingVertical="$3">
+          <YStack minWidth={0}>
+            <H2 numberOfLines={1} fontSize="$4" fontWeight="500">{item.title}</H2>
+            <Paragraph fontSize="$1" color="$color11">
               {isGame ? `by Hanzo · ${item.framework}` : 'by Hanzo'}
-            </p>
-          </div>
+            </Paragraph>
+          </YStack>
           {isGame ? (
             <Link href={item.href || '#'} onClick={() => onOpenChange(false)}>
-              <Button size="sm" className="gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90">
-                <Gamepad2 className="h-4 w-4" />
+              <Button size="sm" gap="$1.5" backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
+                <Gamepad2 size={16} />
                 Open game
               </Button>
             </Link>
           ) : (
             <Button
               size="sm"
-              className="gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90"
+              gap="$1.5" backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
               onClick={() => onUse(item)}
             >
-              <Sparkles className="h-4 w-4" />
+              <Sparkles size={16} />
               Use template
             </Button>
           )}
-        </div>
+        </XStack>
 
         {/* Preview body */}
-        <div className="p-5">
-          <div className="relative aspect-[16/9] overflow-hidden rounded-lg border border-border bg-card">
+        <YStack padding="$4.5">
+          <YStack position="relative" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background">
             {item.hasImage ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 src={item.image}
                 alt={`${item.title} preview`}
-                className="h-full w-full object-cover object-top"
-              />
+                height="100%" width="100%" objectFit="cover" objectPosition="top"
+  />
             ) : (
-              <div className="flex h-full flex-col items-center justify-center gap-2 text-muted-foreground">
-                <Gamepad2 className="h-10 w-10" />
-                <span className="text-sm">{item.framework}</span>
-                {item.meta && <span className="text-xs text-muted-foreground">{item.meta}</span>}
-              </div>
+              <SizableText height="100%" flexDirection="column" alignItems="center" justifyContent="center" gap="$2" color="$color11" display="flex">
+                <Gamepad2 size={40} />
+                <SizableText fontSize="$3">{item.framework}</SizableText>
+                {item.meta && <SizableText fontSize="$1" color="$color11">{item.meta}</SizableText>}
+              </SizableText>
             )}
-          </div>
+          </YStack>
 
-          <div className="mt-4 flex items-start justify-between gap-4">
-            <p className="text-sm text-muted-foreground">{item.description}</p>
+          <XStack marginTop="$4" alignItems="flex-start" justifyContent="space-between" gap="$4">
+            <Paragraph fontSize="$3" color="$color11">{item.description}</Paragraph>
             {item.previewUrl && (
-              <a
+              <Anchor
                 href={item.previewUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+                flexShrink={0} alignItems="center" gap="$1" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}
               >
                 Live preview
-                <ExternalLink className="h-3 w-3" />
-              </a>
+                <ExternalLink size={12} />
+              </Anchor>
             )}
-          </div>
-        </div>
+          </XStack>
+        </YStack>
       </DialogContent>
     </Dialog>
   );

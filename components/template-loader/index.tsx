@@ -1,7 +1,8 @@
 "use client";
 
+import { XStack, SizableText, YStack, Image, H1, Paragraph, Anchor, H3, H4 } from '@hanzo/gui';
 import { useState, useEffect } from "react";
-import { Button } from '@hanzo/ui';
+import { Button, Label, Textarea } from '@hanzo/ui';
 import {
   Sparkles,
   Code,
@@ -99,115 +100,102 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
   };
 
   return (
-    <div className="min-h-[100dvh] bg-background flex items-center justify-center p-4 lg:p-6">
-      <div className="w-full max-w-5xl overflow-hidden rounded-2xl border border-border bg-card text-foreground shadow-2xl lg:grid lg:grid-cols-2 lg:max-h-[calc(100dvh-3rem)]">
+    <XStack minHeight="100dvh" backgroundColor="$background" alignItems="center" justifyContent="center" padding="$4" $lg={{ padding: "$5" }}>
+      <SizableText width="100%" maxWidth={1024} overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" color="$color" elevation={6} display="flex" flexDirection="column" $lg={{ maxHeight: "calc(100dvh-3rem)" }}>
         {/* LEFT — template identity + live preview thumbnail. */}
-        <div className="flex flex-col border-b border-border p-6 lg:border-b-0 lg:border-r lg:p-8">
-          <div className="mb-4 inline-flex w-max items-center gap-2 rounded-full border border-border bg-muted px-3 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+        <YStack borderBottomWidth={1} borderColor="$borderColor" padding="$5" $lg={{ borderBottomWidth: 0, borderRightWidth: 1, padding: "$6" }}>
+          <SizableText marginBottom="$4" width="max-content" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={2.4} color="$color11" display="flex" flexDirection="row">
             Start from this template
-          </div>
+          </SizableText>
           {meta?.screenshotUrl ? (
-            <div className="mb-5 aspect-[16/10] w-full overflow-hidden rounded-xl border border-border bg-muted">
+            <YStack marginBottom="$4.5" width="100%" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={meta.screenshotUrl}
                 alt={`${templateTitle} preview`}
-                className="h-full w-full object-cover object-top"
+                height="100%" width="100%" objectFit="cover" objectPosition="top"
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).style.display = "none";
                 }}
-              />
-            </div>
+  />
+            </YStack>
           ) : (
-            <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-xl border border-border bg-muted">
-              <Sparkles className="h-8 w-8 text-foreground" />
-            </div>
+            <XStack marginBottom="$4.5" height="$10" width="$10" alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
+              <Sparkles size={32} color="$color" />
+            </XStack>
           )}
-          <h1 className="text-3xl font-medium tracking-tight text-balance">{templateTitle}</h1>
-          <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">{templateDescription}</p>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+          <H1 fontSize="$10" fontWeight="500" letterSpacing={-0.4}>{templateTitle}</H1>
+          <Paragraph marginTop="$2" fontSize={15} lineHeight={1.625} color="$color11">{templateDescription}</Paragraph>
+          <Paragraph marginTop="$3" fontSize="$3" lineHeight={1.625} color="$color11">
             A polished, production-quality starting point — edit it live in the
             preview panel, fork it to your account, or ship straight to Hanzo Cloud.
-          </p>
-          <div className="mt-auto pt-6">
-            <a
+          </Paragraph>
+          <YStack marginTop="auto" paddingTop="$5">
+            <Anchor
               href={templateRepo.fullUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              alignItems="center" gap="$1.5" fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}
             >
-              <Github className="h-4 w-4" />
+              <Github size={16} />
               View source
-            </a>
-          </div>
-        </div>
+            </Anchor>
+          </YStack>
+        </YStack>
 
         {/* RIGHT — how to start + first message. The chat input and primary CTA
             are pinned (shrink-0) so they stay visible without scrolling; only the
             option list scrolls if the viewport is short. */}
-        <div className="flex min-h-0 flex-col p-6 lg:max-h-[calc(100dvh-3rem)] lg:p-8">
-          <h3 className="mb-2.5 shrink-0 text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
+        <YStack minHeight={0} padding="$5" $lg={{ maxHeight: "calc(100dvh-3rem)", padding: "$6" }}>
+          <H3 marginBottom="$2.5" flexShrink={0} fontSize="$1" fontWeight="500" textTransform="uppercase" letterSpacing={1.92} color="$color11">
             Choose how to start
-          </h3>
-          <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
+          </H3>
+          <YStack minHeight={0} flex={1} rowGap="$2" paddingRight="$1" overflow="scroll">
             {START_OPTIONS.map((opt) => {
               const active = selectedMode === opt.mode;
               return (
-                <button
+                <Button
                   key={opt.mode}
                   type="button"
                   onClick={() => setSelectedMode(opt.mode)}
                   aria-pressed={active}
-                  className={cn(
-                    "group flex w-full items-start gap-3.5 rounded-xl border p-3.5 text-left transition-colors",
-                    active
-                      ? "border-foreground/25 bg-accent"
-                      : "border-border bg-muted hover:border-foreground/20 hover:bg-accent"
-                  )}
+                  group width="100%" alignItems="flex-start" gap="$3.5" borderRadius="$6" borderWidth={1} padding="$3.5" textAlign="left" {...{ borderColor: active ? "$color" : "$borderColor", backgroundColor: active ? "$color3" : "$color3", hoverStyle: active ? undefined : {"borderColor":"$color","backgroundColor":"$color3"} }}
                 >
-                  <div
-                    className={cn(
-                      "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border",
-                      opt.mode === "deploy"
-                        ? "border-green-500/25 bg-green-500/10"
-                        : active
+                  <XStack
+                    height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} className={`${opt.mode === "deploy" ? "border-green-500/25 bg-green-500/10" : active
                           ? "border-foreground/20 bg-accent"
-                          : "border-border bg-muted"
-                    )}
+                          : "border-border bg-muted"}`}
                   >
                     <opt.icon className={cn("h-4 w-4", opt.mode === "deploy" ? "text-green-400" : "text-foreground")} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <h4 className="text-sm font-medium text-foreground">{opt.title}</h4>
-                      <span
-                        className={cn(
-                          "flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full border transition-colors",
-                          active ? "border-primary bg-primary" : "border-foreground/25"
-                        )}
+                  </XStack>
+                  <YStack minWidth={0} flex={1}>
+                    <XStack alignItems="center" justifyContent="space-between" gap="$2">
+                      <H4 fontSize="$3" fontWeight="500" color="$color">{opt.title}</H4>
+                      <SizableText
+                        height="$4" width="$4" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} {...{ borderColor: active ? "$color12" : "$color", backgroundColor: active ? "$color12" : undefined }}
                       >
-                        {active && <Check className="h-3 w-3 text-primary-foreground" strokeWidth={3} />}
-                      </span>
-                    </div>
-                    <p className="mt-0.5 text-[13px] leading-snug text-muted-foreground">{opt.desc}</p>
-                  </div>
-                </button>
+                        {active && <Check size={12} color="$background" strokeWidth={3} />}
+                      </SizableText>
+                    </XStack>
+                    <Paragraph marginTop="$0.5" fontSize={13} lineHeight={1.375} color="$color11">{opt.desc}</Paragraph>
+                  </YStack>
+                </Button>
               );
             })}
-          </div>
+          </YStack>
 
           {/* Optional first message — the change to build ON TOP of the ready
               template. Pinned below the option list, always in view. */}
-          <div className="mt-5 shrink-0">
-            <label
+          <YStack marginTop="$4.5" flexShrink={0}>
+            <Label
               htmlFor="tpl-first-msg"
-              className="mb-2 block text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground"
+              marginBottom="$2" fontSize="$1" fontWeight="500" textTransform="uppercase" letterSpacing={1.92} color="$color11"
             >
               What do you want to change?{" "}
-              <span className="normal-case tracking-normal text-muted-foreground">(optional)</span>
-            </label>
-            <div className="rounded-xl border border-border bg-muted transition-colors focus-within:border-foreground/25">
-              <textarea
+              <SizableText textTransform="none" letterSpacing={0} color="$color11">(optional)</SizableText>
+            </Label>
+            <YStack borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" focusStyle={{ borderColor: "$color" }}>
+              <Textarea
                 id="tpl-first-msg"
                 value={firstMessage}
                 onChange={(e) => setFirstMessage(e.target.value)}
@@ -220,32 +208,32 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
                 }}
                 rows={2}
                 placeholder="e.g. rename the brand to Bean & Bloom and rewrite the hero copy…"
-                className="w-full resize-none bg-transparent px-3.5 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
-              />
-            </div>
-            <p className="mt-1.5 text-xs text-muted-foreground">
+                width="100%" resize="none" backgroundColor="transparent" paddingHorizontal="$3.5" paddingVertical="$3" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0 }}
+  />
+            </YStack>
+            <Paragraph marginTop="$1.5" fontSize="$1" color="$color11">
               Leave blank to open the template as-is — it loads and previews instantly. Add a note and Hanzo builds it on top.
-            </p>
-          </div>
+            </Paragraph>
+          </YStack>
 
           {/* Actions — pinned. */}
-          <div className="mt-5 flex shrink-0 gap-3">
+          <XStack marginTop="$4.5" flexShrink={0} gap="$3">
             <Button
               variant="outline"
               onClick={() => window.history.back()}
-              className="flex-1 border-border bg-transparent text-foreground hover:bg-accent hover:text-foreground"
+              flex={1} borderColor="$borderColor" backgroundColor="transparent" color="$color" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
               disabled={loading}
             >
               Back
             </Button>
             <Button
               onClick={handleProceed}
-              className="flex-[2] bg-primary font-medium text-primary-foreground hover:bg-primary/90"
+              flex={2} backgroundColor="$color12" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
               disabled={loading}
             >
               {loading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 size={16} />
                   Loading…
                 </>
               ) : (
@@ -253,13 +241,13 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
                   {selectedMode === "edit" && "Edit now"}
                   {selectedMode === "fork" && "Fork template"}
                   {selectedMode === "deploy" && "Deploy now"}
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight size={16} />
                 </>
               )}
             </Button>
-          </div>
-        </div>
-      </div>
-    </div>
+          </XStack>
+        </YStack>
+      </SizableText>
+    </XStack>
   );
 }

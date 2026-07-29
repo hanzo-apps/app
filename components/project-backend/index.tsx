@@ -1,5 +1,6 @@
 'use client';
 
+import { YStack, SizableText, Paragraph, XStack, H4, Anchor } from '@hanzo/gui';
 import React, { useState, useMemo } from 'react';
 import { vfs } from '@/lib/vfs';
 import { Tabs, TabsContent, TabsList, TabsTrigger, Switch, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, Dialog, DialogContent, DialogHeader, DialogTitle, Tooltip, TooltipContent, TooltipTrigger, toast } from '@hanzo/ui';
@@ -220,29 +221,29 @@ function GeneralTab({ project, onProjectUpdate }: { project: Project; onProjectU
   };
 
   return (
-    <div className="p-4 space-y-6">
-      <div className="space-y-2">
+    <YStack padding="$4" rowGap="$5">
+      <YStack rowGap="$2">
         <Label htmlFor="runtime">Runtime</Label>
         <Select value={project.settings?.runtime || 'static'} onValueChange={handleRuntimeChange}>
-          <SelectTrigger id="runtime" className="w-full">
-            <div className="truncate flex-1 text-left">
+          <SelectTrigger id="runtime" width="100%">
+            <SizableText numberOfLines={1} flex={1} textAlign="left" display="flex" flexDirection="column">
               {getProjectRuntimes().find(r => r.value === (project.settings?.runtime || 'static'))?.label}
-            </div>
+            </SizableText>
           </SelectTrigger>
           <SelectContent>
             {getProjectRuntimes().map(rt => (
               <SelectItem key={rt.value} value={rt.value}>
-                <div className="flex flex-col gap-0.5">
-                  <div className="font-medium">{rt.label}</div>
-                  <div className="text-xs text-muted-foreground">{rt.description}</div>
-                </div>
+                <YStack gap="$0.5">
+                  <SizableText fontWeight="500" display="flex" flexDirection="column">{rt.label}</SizableText>
+                  <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">{rt.description}</SizableText>
+                </YStack>
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </YStack>
 
-      <div className="space-y-2">
+      <YStack rowGap="$2">
         <Label htmlFor="entry-point">Preview Entry Point</Label>
         <Input
           id="entry-point"
@@ -251,12 +252,12 @@ function GeneralTab({ project, onProjectUpdate }: { project: Project; onProjectU
           onBlur={handleEntryPointCommit}
           onKeyDown={(e) => { if (e.key === 'Enter') handleEntryPointCommit(); }}
           placeholder="/index.html"
-        />
-        <p className="text-xs text-muted-foreground">
+  />
+        <Paragraph fontSize="$1" color="$color11">
           The file loaded in the preview panel when opening this project.
-        </p>
-      </div>
-    </div>
+        </Paragraph>
+      </YStack>
+    </YStack>
   );
 }
 
@@ -274,7 +275,7 @@ export function ProjectSettingsPanel({ project, onProjectUpdate, enabled }: Proj
     const trigger = (
       <TabsTrigger
         value={value}
-        className="flex items-center gap-1 text-xs"
+        alignItems="center" gap="$1" fontSize="$1"
         disabled={backendTabsDisabled}
       >
         {icon}
@@ -295,23 +296,23 @@ export function ProjectSettingsPanel({ project, onProjectUpdate, enabled }: Proj
   };
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex-1 overflow-hidden p-3">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="general" className="flex items-center gap-1 text-xs">
-              <Settings2 className="h-3 w-3" />
+    <YStack height="100%">
+      <YStack flex={1} overflow="hidden" padding="$3">
+        <Tabs value={activeTab} onValueChange={setActiveTab} height="100%" flexDirection="column">
+          <TabsList width="100%">
+            <TabsTrigger value="general" alignItems="center" gap="$1" fontSize="$1">
+              <Settings2 size={12} />
               General
             </TabsTrigger>
-            {backendTabTrigger('functions', <Code2 className="h-3 w-3" />, 'Functions')}
-            {backendTabTrigger('helpers', <Wrench className="h-3 w-3" />, 'Helpers')}
-            {backendTabTrigger('secrets', <Key className="h-3 w-3" />, 'Secrets')}
-            {backendTabTrigger('schedules', <Clock className="h-3 w-3" />, 'Schedules')}
-            {backendTabTrigger('schema', <Database className="h-3 w-3" />, 'Schema')}
+            {backendTabTrigger('functions', <Code2 size={12} />, 'Functions')}
+            {backendTabTrigger('helpers', <Wrench size={12} />, 'Helpers')}
+            {backendTabTrigger('secrets', <Key size={12} />, 'Secrets')}
+            {backendTabTrigger('schedules', <Clock size={12} />, 'Schedules')}
+            {backendTabTrigger('schema', <Database size={12} />, 'Schema')}
           </TabsList>
 
-          <div className="flex-1 overflow-hidden mt-3">
-            <TabsContent value="general" className="h-full m-0 overflow-auto">
+          <YStack flex={1} overflow="hidden" marginTop="$3">
+            <TabsContent value="general" height="100%" margin="$0" overflow="scroll">
               <GeneralTab project={project} onProjectUpdate={onProjectUpdate} />
             </TabsContent>
 
@@ -319,24 +320,24 @@ export function ProjectSettingsPanel({ project, onProjectUpdate, enabled }: Proj
               /* Browser mode: backend tabs show lock screen */
               <>
                 {['functions', 'helpers', 'secrets', 'schedules', 'schema'].map(tab => (
-                  <TabsContent key={tab} value={tab} className="h-full m-0">
-                    <div className="h-full flex items-center justify-center p-8">
-                      <div className="text-center max-w-sm">
-                        <Lock className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-                        <h4 className="font-medium mb-2">Server Mode Required</h4>
-                        <p className="text-sm text-muted-foreground mb-4">
+                  <TabsContent key={tab} value={tab} height="100%" margin="$0">
+                    <XStack height="100%" alignItems="center" justifyContent="center" padding="$6">
+                      <SizableText textAlign="center" maxWidth={384} display="flex" flexDirection="column">
+                        <Lock size={40} color="$color11" />
+                        <H4 fontWeight="500" marginBottom="$2">Server Mode Required</H4>
+                        <Paragraph fontSize="$3" color="$color11" marginBottom="$4">
                           Backend features require Server Mode. Deploy to a self-hosted instance to use edge functions, secrets, and database features.
-                        </p>
-                        <a
+                        </Paragraph>
+                        <Anchor
                           href="https://github.com/hanzoai/app"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-sm text-primary hover:underline"
+                          fontSize="$3" color="$color12" hoverStyle={{ textDecorationLine: "underline" }}
                         >
                           View setup guide
-                        </a>
-                      </div>
-                    </div>
+                        </Anchor>
+                      </SizableText>
+                    </XStack>
                   </TabsContent>
                 ))}
               </>
@@ -344,52 +345,52 @@ export function ProjectSettingsPanel({ project, onProjectUpdate, enabled }: Proj
               /* Server mode but backend disabled */
               <>
                 {['functions', 'helpers', 'secrets', 'schedules', 'schema'].map(tab => (
-                  <TabsContent key={tab} value={tab} className="h-full m-0">
-                    <div className="h-full flex items-center justify-center">
-                      <div className="text-center max-w-xs">
-                        <PowerOff className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-                        <p className="text-sm text-muted-foreground">
+                  <TabsContent key={tab} value={tab} height="100%" margin="$0">
+                    <XStack height="100%" alignItems="center" justifyContent="center">
+                      <SizableText textAlign="center" maxWidth={320} display="flex" flexDirection="column">
+                        <PowerOff size={32} color="$color11" />
+                        <Paragraph fontSize="$3" color="$color11">
                           Backend features are disabled for this project. Enable them using the toggle above to manage edge functions, secrets, and more.
-                        </p>
-                      </div>
-                    </div>
+                        </Paragraph>
+                      </SizableText>
+                    </XStack>
                   </TabsContent>
                 ))}
               </>
             ) : (
               /* Server mode, backend enabled */
               <>
-                <TabsContent value="functions" className="h-full m-0">
+                <TabsContent value="functions" height="100%" margin="$0">
                   <FunctionsManager dataProvider={functionsProvider} hideRuntimeFeatures />
                 </TabsContent>
 
-                <TabsContent value="helpers" className="h-full m-0">
+                <TabsContent value="helpers" height="100%" margin="$0">
                   <ServerFunctionsManager dataProvider={serverFunctionsProvider} />
                 </TabsContent>
 
-                <TabsContent value="secrets" className="h-full m-0">
+                <TabsContent value="secrets" height="100%" margin="$0">
                   <SecretsManager dataProvider={secretsProvider} />
                 </TabsContent>
 
-                <TabsContent value="schedules" className="h-full m-0">
+                <TabsContent value="schedules" height="100%" margin="$0">
                   <ScheduledFunctionsManager dataProvider={scheduledFunctionsProvider} />
                 </TabsContent>
 
-                <TabsContent value="schema" className="h-full m-0">
+                <TabsContent value="schema" height="100%" margin="$0">
                   <SchemaEditor
                     projectId={project.id}
                     enabled={enabled}
                     onSchemaChange={() => {
                       vfs.refreshServerContext();
                     }}
-                  />
+  />
                 </TabsContent>
               </>
             )}
-          </div>
+          </YStack>
         </Tabs>
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }
 
@@ -407,29 +408,29 @@ export function ProjectSettingsModal({ project, isOpen, onClose, onProjectUpdate
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-3xl h-[70vh] flex flex-col">
+      <DialogContent height="70vh" flexDirection="column" $sm={{ maxWidth: 768 }}>
         <DialogHeader>
-          <div className="flex items-center justify-between pr-6">
+          <XStack alignItems="center" justifyContent="space-between" paddingRight="$5">
             <div>
-              <DialogTitle className="flex items-center gap-2">
-                <Settings2 className="h-4 w-4" />
+              <DialogTitle alignItems="center" gap="$2">
+                <Settings2 size={16} />
                 Project Settings
               </DialogTitle>
-              <p className="text-sm text-muted-foreground mt-1">
+              <Paragraph fontSize="$3" color="$color11" marginTop="$1">
                 {project.name}
-              </p>
+              </Paragraph>
             </div>
             {isServerMode && (
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">Backend {enabled ? 'Enabled' : 'Disabled'}</span>
+              <XStack alignItems="center" gap="$2">
+                <SizableText fontSize="$1" color="$color11">Backend {enabled ? 'Enabled' : 'Disabled'}</SizableText>
                 <Switch checked={enabled} onCheckedChange={onToggleEnabled} />
-              </div>
+              </XStack>
             )}
-          </div>
+          </XStack>
         </DialogHeader>
-        <div className="flex-1 overflow-hidden">
+        <YStack flex={1} overflow="hidden">
           <ProjectSettingsPanel project={project} onProjectUpdate={onProjectUpdate} enabled={enabled} />
-        </div>
+        </YStack>
       </DialogContent>
     </Dialog>
   );

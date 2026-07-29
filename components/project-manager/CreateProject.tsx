@@ -1,20 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
-import {
-  Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@hanzo/ui';
+import { YStack, SizableText, Paragraph, XStack } from '@hanzo/gui';
+import { useState } from 'react';
+import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Label } from '@hanzo/ui';
 import { Loader2 } from 'lucide-react';
 import {
   createProject,
@@ -88,46 +76,46 @@ export function CreateProject({ open, onOpenChange, onCreated }: CreateProjectPr
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <YStack rowGap="$4">
           {/* Name */}
           <div>
-            <label htmlFor="create-name" className="text-sm font-medium">
+            <Label htmlFor="create-name" fontSize="$3" fontWeight="500">
               Project Name
-            </label>
+            </Label>
             <Input
               id="create-name"
               value={name}
               onChange={(e) => setName(e.target.value.slice(0, 64))}
               placeholder="my-project"
-              className="mt-1.5"
+              marginTop="$1.5"
               maxLength={64}
               disabled={submitting}
-            />
-            <span className="text-xs text-muted-foreground">{name.length}/64</span>
+  />
+            <SizableText fontSize="$1" color="$color11">{name.length}/64</SizableText>
           </div>
 
           {/* Description */}
           <div>
-            <label htmlFor="create-desc" className="text-sm font-medium">
+            <Label htmlFor="create-desc" fontSize="$3" fontWeight="500">
               Description
-            </label>
+            </Label>
             <Input
               id="create-desc"
               value={description}
               onChange={(e) => setDescription(e.target.value.slice(0, 256))}
               placeholder="A brief description of your project"
-              className="mt-1.5"
+              marginTop="$1.5"
               maxLength={256}
               disabled={submitting}
-            />
-            <span className="text-xs text-muted-foreground">{description.length}/256</span>
+  />
+            <SizableText fontSize="$1" color="$color11">{description.length}/256</SizableText>
           </div>
 
           {/* Framework */}
           <div>
-            <label className="text-sm font-medium">Framework</label>
+            <Label fontSize="$3" fontWeight="500">Framework</Label>
             <Select value={framework} onValueChange={(v) => setFramework(v as Framework)} disabled={submitting}>
-              <SelectTrigger className="mt-1.5 bg-card">
+              <SelectTrigger marginTop="$1.5" backgroundColor="$background">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -138,27 +126,27 @@ export function CreateProject({ open, onOpenChange, onCreated }: CreateProjectPr
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-xs text-muted-foreground mt-1">
+            <Paragraph fontSize="$1" color="$color11" marginTop="$1">
               How the site is built. &quot;Static&quot; means it&apos;s already built.
-            </p>
+            </Paragraph>
           </div>
 
           {/* Error */}
           {error && (
-            <p className="text-sm text-destructive">{error}</p>
+            <Paragraph fontSize="$3" color="$red9">{error}</Paragraph>
           )}
-        </div>
+        </YStack>
 
         {/* Footer */}
-        <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
+        <XStack $sm={{ flexDirection: "row", justifyContent: "flex-end", columnGap: "$2" }}>
           <Button variant="outline" onClick={() => handleOpenChange(false)} disabled={submitting}>
             Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={submitting || !name.trim()}>
-            {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {submitting && <Loader2 size={16} />}
             Create Project
           </Button>
-        </div>
+        </XStack>
       </DialogContent>
     </Dialog>
   );

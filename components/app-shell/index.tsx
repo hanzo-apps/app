@@ -21,6 +21,8 @@
  * nav. The Sidebar's own nav items self-route (absolute canonical routes);
  * selecting a recent project opens it in the builder.
  */
+import { Button } from '@hanzo/ui';
+import { SizableText, YStack, XStack } from '@hanzo/gui';
 import React, { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Menu, Search } from 'lucide-react';
@@ -52,7 +54,7 @@ export function AppShell({ children, currentView = 'templates' }: AppShellProps)
     // page rendered as {children} (Connectors, Settings, …) read the SAME context,
     // so a page that calls useOrg never crashes for lack of a provider ancestor.
     <OrgProvider>
-    <div className="relative flex h-screen overflow-hidden bg-background text-foreground">
+    <SizableText position="relative" height="100%" overflow="hidden" backgroundColor="$background" color="$color" display="flex" flexDirection="row">
       <Sidebar
         currentView={currentView}
         onNavigate={() => {}}
@@ -63,36 +65,36 @@ export function AppShell({ children, currentView = 'templates' }: AppShellProps)
         onOpenSearch={() => setPaletteOpen(true)}
         mobileOpen={mobileOpen}
         onMobileOpenChange={setMobileOpen}
-      />
+  />
 
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+      <YStack minWidth={0} flex={1} overflow="hidden">
         {/* Mobile top bar — the ONLY way to reach the nav below md (the sidebar is
             an off-canvas drawer there). Hidden at md+, where the sidebar is
             always visible in-flow. */}
-        <div className="flex h-12 items-center gap-2 border-b border-border bg-background px-3 md:hidden">
-          <button
+        <XStack height="$8" alignItems="center" gap="$2" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" $md={{ display: "none" }}>
+          <Button
             onClick={() => setMobileOpen(true)}
             aria-label="Open menu"
-            className="flex h-9 w-9 items-center justify-center rounded-md text-foreground hover:bg-muted hover:text-foreground"
+            height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$3" color="$color" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
           >
-            <Menu className="h-5 w-5" />
-          </button>
+            <Menu size={20} />
+          </Button>
           <HanzoLogo className="h-5 w-5 text-foreground" />
-          <span className="text-sm font-medium">Hanzo App</span>
-          <button
+          <SizableText fontSize="$3" fontWeight="500">Hanzo App</SizableText>
+          <Button
             onClick={() => setPaletteOpen(true)}
             aria-label="Search"
-            className="ml-auto flex h-9 w-9 items-center justify-center rounded-md text-foreground hover:bg-muted hover:text-foreground"
+            marginLeft="auto" height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$3" color="$color" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
           >
-            <Search className="h-5 w-5" />
-          </button>
-        </div>
+            <Search size={20} />
+          </Button>
+        </XStack>
 
         {children}
-      </div>
+      </YStack>
 
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
-    </div>
+    </SizableText>
     </OrgProvider>
   );
 }

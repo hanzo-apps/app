@@ -2,13 +2,7 @@
  * Tests for provider client utilities
  */
 
-import {
-  fetchModels,
-  chatCompletion,
-  validateApiKey,
-  testLocalConnection,
-  createProviderError
-} from '@/lib/llm/providers/client';
+import { fetchModels, chatCompletion, testLocalConnection, createProviderError } from '@/lib/llm/providers/client';
 import { ProviderId, ChatCompletionRequest } from '@/lib/llm/providers/types';
 
 // Mock fetch

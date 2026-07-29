@@ -1,5 +1,6 @@
 "use client";
 
+import { YStack, XStack, H1, Paragraph, SizableText } from '@hanzo/gui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Button, Badge, Tabs, TabsContent, TabsList, TabsTrigger, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Progress } from '@hanzo/ui';
 import {
   TrendingUp,
@@ -19,28 +20,28 @@ const metrics = [
     value: "$45,231.89",
     change: "+20.1%",
     trend: "up",
-    icon: <DollarSign className="w-4 h-4" />
+    icon: <DollarSign size={16} />
   },
   {
     title: "Active Users",
     value: "2,350",
     change: "+15.3%",
     trend: "up",
-    icon: <Users className="w-4 h-4" />
+    icon: <Users size={16} />
   },
   {
     title: "Sales",
     value: "12,234",
     change: "+19%",
     trend: "up",
-    icon: <CreditCard className="w-4 h-4" />
+    icon: <CreditCard size={16} />
   },
   {
     title: "Active Now",
     value: "573",
     change: "-2.4%",
     trend: "down",
-    icon: <Activity className="w-4 h-4" />
+    icon: <Activity size={16} />
   }
 ];
 
@@ -55,17 +56,17 @@ const recentSales = [
 
 export default function AnalyticsDashboard() {
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <YStack minHeight="100%" backgroundColor="$background" padding="$5">
+      <YStack maxWidth={1280} alignSelf="center" rowGap="$5">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <XStack alignItems="center" justifyContent="space-between">
           <div>
-            <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
-            <p className="text-muted-foreground">Built with @hanzo/ui components</p>
+            <H1 fontSize="$10" fontWeight="700">Analytics Dashboard</H1>
+            <Paragraph color="$color11">Built with @hanzo/ui components</Paragraph>
           </div>
-          <div className="flex items-center gap-2">
+          <XStack alignItems="center" gap="$2">
             <Select defaultValue="7d">
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger width={180}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -75,49 +76,49 @@ export default function AnalyticsDashboard() {
                 <SelectItem value="90d">Last 90 days</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline" className="gap-2">
-              <Calendar className="w-4 h-4" />
+            <Button variant="outline" gap="$2">
+              <Calendar size={16} />
               Pick Date
             </Button>
-            <Button className="gap-2">
-              <Download className="w-4 h-4" />
+            <Button gap="$2">
+              <Download size={16} />
               Export
             </Button>
-          </div>
-        </div>
+          </XStack>
+        </XStack>
 
         {/* Metric Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <YStack gap="$4">
           {metrics.map((metric) => (
             <Card key={metric.title}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
+              <CardHeader flexDirection="row" alignItems="center" justifyContent="space-between" rowGap="$0" paddingBottom="$2">
+                <CardTitle fontSize="$3" fontWeight="500">
                   {metric.title}
                 </CardTitle>
-                <div className="w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-500">
+                <SizableText width="$6" height="$6" borderRadius="$10" backgroundColor="$purple9" alignItems="center" justifyContent="center" color="$purple9" display="flex" flexDirection="row">
                   {metric.icon}
-                </div>
+                </SizableText>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{metric.value}</div>
-                <div className="flex items-center gap-1 text-xs">
+                <SizableText fontSize="$8" fontWeight="700" display="flex" flexDirection="column">{metric.value}</SizableText>
+                <SizableText alignItems="center" gap="$1" fontSize="$1" display="flex" flexDirection="row">
                   {metric.trend === "up" ? (
-                    <TrendingUp className="w-3 h-3 text-green-600" />
+                    <TrendingUp size={12} color="$green10" />
                   ) : (
-                    <TrendingDown className="w-3 h-3 text-red-600" />
+                    <TrendingDown size={12} color="$red10" />
                   )}
-                  <span className={metric.trend === "up" ? "text-green-600" : "text-red-600"}>
+                  <SizableText {...{ color: metric.trend === "up" ? "$green10" : "$red10" }}>
                     {metric.change}
-                  </span>
-                  <span className="text-muted-foreground">from last month</span>
-                </div>
+                  </SizableText>
+                  <SizableText color="$color11">from last month</SizableText>
+                </SizableText>
               </CardContent>
             </Card>
           ))}
-        </div>
+        </YStack>
 
         {/* Main Content Tabs */}
-        <Tabs defaultValue="overview" className="space-y-4">
+        <Tabs defaultValue="overview" rowGap="$4">
           <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
@@ -125,64 +126,64 @@ export default function AnalyticsDashboard() {
             <TabsTrigger value="notifications">Notifications</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+          <TabsContent value="overview" rowGap="$4">
+            <YStack gap="$4">
               {/* Chart Card */}
-              <Card className="col-span-4">
+              <Card>
                 <CardHeader>
                   <CardTitle>Revenue Overview</CardTitle>
                   <CardDescription>Monthly revenue for the current year</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-[300px] flex items-center justify-center bg-muted rounded">
-                    <p className="text-muted-foreground">Chart Component (@hanzo/ui)</p>
-                  </div>
+                  <XStack height={300} alignItems="center" justifyContent="center" backgroundColor="$color3" borderRadius="$2">
+                    <Paragraph color="$color11">Chart Component (@hanzo/ui)</Paragraph>
+                  </XStack>
                 </CardContent>
               </Card>
 
               {/* Recent Sales */}
-              <Card className="col-span-3">
+              <Card>
                 <CardHeader>
                   <CardTitle>Recent Sales</CardTitle>
                   <CardDescription>You made 265 sales this month.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
+                  <YStack rowGap="$4">
                     {recentSales.map((sale, i) => (
-                      <div key={i} className="flex items-center">
-                        <div className="w-9 h-9 rounded-full bg-indigo-500/10 flex items-center justify-center text-sm font-medium text-indigo-600">
+                      <XStack key={i} alignItems="center">
+                        <SizableText width={36} height={36} borderRadius="$10" backgroundColor="$purple9" alignItems="center" justifyContent="center" fontSize="$3" fontWeight="500" color="$purple10" display="flex" flexDirection="row">
                           {sale.name.split(" ").map(n => n[0]).join("")}
-                        </div>
-                        <div className="ml-4 space-y-1 flex-1">
-                          <p className="text-sm font-medium">{sale.name}</p>
-                          <p className="text-sm text-muted-foreground">{sale.email}</p>
-                        </div>
-                        <div className="font-medium">{sale.amount}</div>
-                      </div>
+                        </SizableText>
+                        <YStack marginLeft="$4" rowGap="$1" flex={1}>
+                          <Paragraph fontSize="$3" fontWeight="500">{sale.name}</Paragraph>
+                          <Paragraph fontSize="$3" color="$color11">{sale.email}</Paragraph>
+                        </YStack>
+                        <SizableText fontWeight="500" display="flex" flexDirection="column">{sale.amount}</SizableText>
+                      </XStack>
                     ))}
-                  </div>
+                  </YStack>
                 </CardContent>
               </Card>
-            </div>
+            </YStack>
 
             {/* Additional Stats */}
-            <div className="grid gap-4 md:grid-cols-3">
+            <YStack gap="$4">
               <Card>
                 <CardHeader>
                   <CardTitle>Conversion Rate</CardTitle>
                   <CardDescription>Visitor to customer conversion</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Rate</span>
-                      <span className="text-sm font-medium">3.2%</span>
-                    </div>
-                    <Progress value={32} className="h-2 [&>div]:bg-indigo-500" />
-                    <p className="text-xs text-muted-foreground">
+                  <YStack rowGap="$2">
+                    <XStack alignItems="center" justifyContent="space-between">
+                      <SizableText fontSize="$3">Rate</SizableText>
+                      <SizableText fontSize="$3" fontWeight="500">3.2%</SizableText>
+                    </XStack>
+                    <Progress value={32} height="$2" className="[&>div]:bg-indigo-500" />
+                    <Paragraph fontSize="$1" color="$color11">
                       +0.5% from last month
-                    </p>
-                  </div>
+                    </Paragraph>
+                  </YStack>
                 </CardContent>
               </Card>
 
@@ -192,16 +193,16 @@ export default function AnalyticsDashboard() {
                   <CardDescription>Average purchase amount</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2">
-                    <div className="text-2xl font-bold">$89.42</div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="text-green-600 border-green-600">
-                        <TrendingUp className="w-3 h-3 mr-1" />
+                  <YStack rowGap="$2">
+                    <SizableText fontSize="$8" fontWeight="700" display="flex" flexDirection="column">$89.42</SizableText>
+                    <XStack alignItems="center" gap="$2">
+                      <Badge variant="outline" color="$green10" borderColor="$green10">
+                        <TrendingUp size={12} />
                         12%
                       </Badge>
-                      <span className="text-xs text-muted-foreground">vs last month</span>
-                    </div>
-                  </div>
+                      <SizableText fontSize="$1" color="$color11">vs last month</SizableText>
+                    </XStack>
+                  </YStack>
                 </CardContent>
               </Card>
 
@@ -211,28 +212,26 @@ export default function AnalyticsDashboard() {
                   <CardDescription>Based on reviews</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2">
-                    <div className="text-2xl font-bold">4.8/5.0</div>
-                    <div className="flex items-center gap-1">
+                  <YStack rowGap="$2">
+                    <SizableText fontSize="$8" fontWeight="700" display="flex" flexDirection="column">4.8/5.0</SizableText>
+                    <XStack alignItems="center" gap="$1">
                       {[...Array(5)].map((_, i) => (
-                        <div
+                        <YStack
                           key={i}
-                          className={`w-4 h-4 rounded ${
-                            i < 4 ? "bg-yellow-400" : "bg-muted"
-                          }`}
-                        />
+                          width="$4" height="$4" borderRadius="$2" {...{ backgroundColor: i < 4 ? "$yellow8" : "$color3" }}
+  />
                       ))}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
+                    </XStack>
+                    <Paragraph fontSize="$1" color="$color11">
                       Based on 1,234 reviews
-                    </p>
-                  </div>
+                    </Paragraph>
+                  </YStack>
                 </CardContent>
               </Card>
-            </div>
+            </YStack>
           </TabsContent>
         </Tabs>
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }

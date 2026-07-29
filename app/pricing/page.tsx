@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from '@hanzo/ui';
+import { SizableText, YStack, XStack, H1, Paragraph, H3 } from '@hanzo/gui';
 // Canonical plans page. One subscription = shared AI usage across every Hanzo
 // app (builder, Hanzo Chat, the API at api.hanzo.ai). Monochrome design system:
 // Header + SiteFooter + Reveal, true-black, Geist. Honest feature lists — no
@@ -115,93 +117,85 @@ export default function PricingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
       <Header />
 
       <main>
         {/* ── Hero ─────────────────────────────────────────────── */}
-        <section className="relative overflow-hidden px-4 py-12 text-center sm:py-16 md:px-8 md:py-24">
-          <div className="pointer-events-none absolute inset-0 overflow-hidden">
-            <div className="absolute left-1/2 top-[-30%] h-[420px] w-[720px] -translate-x-1/2 rounded-full bg-foreground/[0.05] blur-[130px]" />
-          </div>
+        <SizableText position="relative" overflow="hidden" paddingHorizontal="$4" paddingVertical="$8" textAlign="center" display="flex" flexDirection="column" $sm={{ paddingVertical: "$10" }} $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
+          <YStack pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} overflow="hidden">
+            <YStack position="absolute" left="50%" top="-30%" height={420} width={720} x="50%" borderRadius="$10" backgroundColor="$color" />
+          </YStack>
 
-          <div className="relative mx-auto max-w-3xl">
+          <YStack position="relative" alignSelf="center" maxWidth={768}>
             <Reveal>
-              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3 py-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-foreground/70" />
-                <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
+              <XStack marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1.5">
+                <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color" />
+                <SizableText fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.4} color="$color11">
                   One plan · every Hanzo app
-                </span>
-              </div>
+                </SizableText>
+              </XStack>
             </Reveal>
 
             <Reveal delay={60}>
-              <h1 className="text-balance text-4xl font-medium leading-[1.03] tracking-tight sm:text-5xl md:text-6xl">
+              <H1 fontSize="$11" fontWeight="500" lineHeight={1.03} letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
                 Shared AI usage,
                 <br />
                 across everything you build.
-              </h1>
+              </H1>
             </Reveal>
 
             <Reveal delay={120}>
-              <p className="mx-auto mt-5 max-w-xl text-pretty text-base text-muted-foreground md:text-lg">
+              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
                 One subscription powers AI across the app builder, Hanzo Chat, and
                 the API at{" "}
-                <code className="font-mono text-foreground">api.hanzo.ai</code> — from
+                <SizableText fontFamily="$mono" color="$color">api.hanzo.ai</SizableText> — from
                 a single monthly allowance. Start for free; add a plan when you need
                 more.
-              </p>
+              </Paragraph>
             </Reveal>
-          </div>
-        </section>
+          </YStack>
+        </SizableText>
 
         {/* ── Plans ────────────────────────────────────────────── */}
-        <section className="px-4 pb-8 md:px-8">
-          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <YStack paddingHorizontal="$4" paddingBottom="$6" $md={{ paddingHorizontal: "$6" }}>
+          <YStack alignSelf="center" maxWidth={1152} gap="$4.5">
             {plans.map((plan, i) => (
               <Reveal key={plan.id} delay={i * 80}>
-                <div
-                  className={`relative flex h-full flex-col rounded-2xl border p-7 transition-colors ${
-                    plan.highlighted
-                      ? "border-foreground/25 bg-muted"
-                      : "border-border bg-muted hover:border-foreground/20"
-                  }`}
+                <YStack
+                  position="relative" height="100%" borderRadius="$8" borderWidth={1} padding={28} {...{ borderColor: plan.highlighted ? "$color" : "$borderColor", backgroundColor: plan.highlighted ? "$color3" : "$color3", hoverStyle: plan.highlighted ? undefined : {"borderColor":"$color"} }}
                 >
                   {plan.badge && (
-                    <div className="absolute -top-3 left-7">
-                      <span className="rounded-full bg-primary px-3 py-1 text-[11px] font-medium text-primary-foreground">
+                    <YStack position="absolute" top="-3" left={28}>
+                      <SizableText borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$1" fontSize={11} fontWeight="500" color="$background">
                         {plan.badge}
-                      </span>
-                    </div>
+                      </SizableText>
+                    </YStack>
                   )}
 
-                  <h3 className="text-lg font-medium text-foreground">{plan.name}</h3>
-                  <p className="mt-1.5 min-h-[2.5rem] text-sm text-muted-foreground">
+                  <H3 fontSize="$6" fontWeight="500" color="$color">{plan.name}</H3>
+                  <Paragraph marginTop="$1.5" minHeight="2.5rem" fontSize="$3" color="$color11">
                     {plan.tagline}
-                  </p>
+                  </Paragraph>
 
                   {/* Price straight from the catalog that will be charged. While
                       it loads we show a dash — never a stand-in number. */}
-                  <div className="mt-5 flex items-baseline gap-1.5">
-                    <span className="font-mono text-4xl font-medium tracking-tight">
+                  <XStack marginTop="$4.5" alignItems="baseline" gap="$1.5">
+                    <SizableText fontFamily="$mono" fontSize="$11" fontWeight="500" letterSpacing={-0.4}>
                       {catalog.get(plan.id) ? usd(catalog.get(plan.id)!.price) : "—"}
-                    </span>
-                    <span className="text-sm text-muted-foreground">
+                    </SizableText>
+                    <SizableText fontSize="$3" color="$color11">
                       {catalog.get(plan.id)?.perSeat ? "/seat/month" : "/month"}
-                    </span>
-                  </div>
+                    </SizableText>
+                  </XStack>
 
-                  <button
+                  <Button
                     onClick={() => choosePlan(plan.id)}
                     disabled={
                       isAuthenticated && (catalogLoading || !catalog.get(plan.id))
                     }
                     title={catalogError ?? undefined}
-                    className={`mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium transition-all disabled:opacity-60 ${
-                      plan.highlighted
-                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                        : "border border-border bg-muted text-foreground hover:border-foreground/30 hover:bg-accent"
-                    }`}
+                    marginTop="$5" width="100%" alignItems="center" justifyContent="center" gap="$2" borderRadius="$10" paddingHorizontal="$4.5" paddingVertical="$3" fontSize="$3" fontWeight="500" disabledStyle={{ opacity: 0.6 }} {...{ backgroundColor: plan.highlighted ? "$color12" : "$color3", color: plan.highlighted ? "$background" : "$color", hoverStyle: plan.highlighted ? {"backgroundColor":"$color12"} : {"borderColor":"$color","backgroundColor":"$color3"}, borderWidth: plan.highlighted ? undefined : 1, borderColor: plan.highlighted ? undefined : "$borderColor" }}
                   >
                     {!isAuthenticated
                       ? "Get started"
@@ -210,71 +204,69 @@ export default function PricingPage() {
                         : catalog.get(plan.id)
                           ? "Choose plan"
                           : "Unavailable"}
-                    <ArrowRight className="h-4 w-4" />
-                  </button>
+                    <ArrowRight size={16} />
+                  </Button>
 
-                  <ul className="mt-7 space-y-3.5 border-t border-border pt-6">
+                  <YStack marginTop={28} rowGap="$3.5" borderTopWidth={1} borderColor="$borderColor" paddingTop="$5">
                     {plan.features.map((f) => (
-                      <li key={f} className="flex items-start gap-3">
-                        <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-foreground" />
-                        <span className="text-sm text-foreground">{f}</span>
-                      </li>
+                      <SizableText key={f} alignItems="flex-start" gap="$3">
+                        <Check size={16} color="$color" />
+                        <SizableText fontSize="$3" color="$color">{f}</SizableText>
+                      </SizableText>
                     ))}
-                  </ul>
-                </div>
+                  </YStack>
+                </YStack>
               </Reveal>
             ))}
-          </div>
-        </section>
+          </YStack>
+        </YStack>
 
         {/* ── Free-to-start note ───────────────────────────────── */}
-        <section className="px-4 md:px-8">
+        <YStack paddingHorizontal="$4" $md={{ paddingHorizontal: "$6" }}>
           <Reveal className="mx-auto max-w-6xl">
-            <div className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-border bg-muted p-6 sm:flex-row sm:items-center md:p-7">
+            <YStack alignItems="flex-start" justifyContent="space-between" gap="$4" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$5" $sm={{ flexDirection: "row", alignItems: "center" }} $md={{ padding: 28 }}>
               <div>
-                <h3 className="text-base font-medium text-foreground">
+                <H3 fontSize="$4" fontWeight="500" color="$color">
                   Start for free
-                </h3>
-                <p className="mt-1 text-sm text-muted-foreground">
+                </H3>
+                <Paragraph marginTop="$1" fontSize="$3" color="$color11">
                   No card required to sign up. Create an account, explore the
                   builder, and subscribe when you&apos;re ready to ship with more
                   shared AI usage.
-                </p>
+                </Paragraph>
               </div>
               <Link
                 href="/dev"
-                className="inline-flex flex-shrink-0 items-center gap-2 rounded-full border border-border bg-muted px-5 py-2.5 text-sm font-medium text-foreground transition-all hover:border-foreground/30 hover:bg-accent"
-              >
+              ><SizableText flexShrink={0} alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$4.5" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}>
                 Open the builder
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
+                <ArrowRight size={16} />
+              </SizableText></Link>
+            </YStack>
           </Reveal>
-        </section>
+        </YStack>
 
         {/* ── Enterprise note ──────────────────────────────────── */}
-        <section className="px-4 pt-8 md:px-8">
+        <YStack paddingHorizontal="$4" paddingTop="$6" $md={{ paddingHorizontal: "$6" }}>
           <Reveal className="mx-auto max-w-6xl">
-            <div className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-border bg-muted p-6 sm:flex-row sm:items-center md:p-7">
+            <YStack alignItems="flex-start" justifyContent="space-between" gap="$4" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$5" $sm={{ flexDirection: "row", alignItems: "center" }} $md={{ padding: 28 }}>
               <div>
-                <h3 className="text-base font-medium text-foreground">
+                <H3 fontSize="$4" fontWeight="500" color="$color">
                   Need more than Max?
-                </h3>
-                <p className="mt-1 text-sm text-muted-foreground">
+                </H3>
+                <Paragraph marginTop="$1" fontSize="$3" color="$color11">
                   Volume usage, SSO, dedicated support, and custom terms for your
                   organization.
-                </p>
+                </Paragraph>
               </div>
               <Link
                 href="/enterprise"
-                className="inline-flex flex-shrink-0 items-center gap-2 rounded-full border border-border bg-muted px-5 py-2.5 text-sm font-medium text-foreground transition-all hover:border-foreground/30 hover:bg-accent"
-              >
+              ><SizableText flexShrink={0} alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$4.5" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}>
                 Talk to us
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
+                <ArrowRight size={16} />
+              </SizableText></Link>
+            </YStack>
           </Reveal>
-        </section>
+        </YStack>
 
         {/* ── Billing FAQ ──────────────────────────────────────── */}
         <FaqSection
@@ -282,30 +274,28 @@ export default function PricingPage() {
           eyebrow="Billing"
           title="Questions about pricing"
           items={billingFaq}
-        />
+  />
 
-        <section className="border-t border-border px-4 pb-4 text-center md:px-8">
-          <p className="mt-8 text-sm text-muted-foreground">
+        <SizableText borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingBottom="$4" textAlign="center" display="flex" flexDirection="column" $md={{ paddingHorizontal: "$6" }}>
+          <Paragraph marginTop="$6" fontSize="$3" color="$color11">
             More questions? Read the{" "}
             <Link
               href="/faq"
-              className="text-foreground underline underline-offset-4 hover:text-foreground/80"
-            >
+            ><SizableText color="$color" textDecorationLine="underline" hoverStyle={{ color: "$color" }}>
               full FAQ
-            </Link>{" "}
+            </SizableText></Link>{" "}
             or{" "}
             <Link
               href="/help"
-              className="text-foreground underline underline-offset-4 hover:text-foreground/80"
-            >
+            ><SizableText color="$color" textDecorationLine="underline" hoverStyle={{ color: "$color" }}>
               get help
-            </Link>
+            </SizableText></Link>
             .
-          </p>
-        </section>
+          </Paragraph>
+        </SizableText>
       </main>
 
       <SiteFooter />
-    </div>
+    </SizableText>
   );
 }

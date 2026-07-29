@@ -19,8 +19,9 @@
  * every tile is a focusable link (Tab / Shift-Tab / Enter). The current app is
  * marked `aria-current="page"`.
  */
+import { SizableText, XStack, YStack, Anchor } from '@hanzo/gui';
 import Link from 'next/link';
-import { Popover, PopoverContent, PopoverTrigger } from '@hanzo/ui';
+import { Popover, PopoverContent, PopoverTrigger, Button } from '@hanzo/ui';
 import {
   MessageSquare,
   LayoutGrid,
@@ -46,8 +47,6 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { HanzoLogo } from '@/components/HanzoLogo';
-import { cn } from '@/lib/utils';
-
 type AppGroup = 'Products' | 'Platform' | 'Install' | 'Account';
 
 interface HanzoApp {
@@ -92,68 +91,62 @@ export function AppSwitcher({ currentApp = 'app' }: { currentApp?: string }) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button
+        <Button
           type="button"
           aria-label="Open Hanzo apps"
-          className="group flex shrink-0 items-center gap-2 rounded-lg px-1 py-1 outline-none transition-colors hover:bg-card focus-visible:ring-2 focus-visible:ring-foreground/30"
+          group flexShrink={0} alignItems="center" gap="$2" borderRadius="$5" paddingHorizontal="$1" paddingVertical="$1" outlineWidth={0} hoverStyle={{ backgroundColor: "$background" }}
         >
           <HanzoLogo className="h-7 w-7 text-foreground" />
-          <span className="text-lg font-medium tracking-tight text-foreground">Hanzo</span>
-          <ChevronDown className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
-        </button>
+          <SizableText fontSize="$6" fontWeight="500" letterSpacing={-0.4} color="$color">Hanzo</SizableText>
+          <ChevronDown size={16} color="$color11" />
+        </Button>
       </PopoverTrigger>
       <PopoverContent
         align="start"
         sideOffset={8}
-        className="w-[340px] overflow-hidden p-0"
+        width={340} overflow="hidden" padding="$0"
       >
-        <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
-          <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <XStack alignItems="center" justifyContent="space-between" borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$2.5">
+          <SizableText fontSize={11} fontWeight="600" textTransform="uppercase" letterSpacing={0.4} color="$color11">
             Hanzo Apps
-          </span>
+          </SizableText>
           <Link
             href="/"
             aria-label="Hanzo App home"
-            className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-          >
-            <Home className="h-4 w-4" />
-          </Link>
-        </div>
-        <div className="max-h-[70vh] overflow-y-auto p-2">
+          ><SizableText height={28} width={28} alignItems="center" justifyContent="center" borderRadius="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}>
+            <Home size={16} />
+          </SizableText></Link>
+        </XStack>
+        <YStack maxHeight="70vh" padding="$2" overflow="scroll">
           {GROUPS.map((group) => {
             const apps = HANZO_APPS.filter((a) => a.group === group);
             if (apps.length === 0) return null;
             return (
-              <div key={group} className="mb-1.5 last:mb-0">
-                <div className="px-2 pb-1 pt-1.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground/70">
+              <YStack key={group} marginBottom="$1.5" className="last:mb-0">
+                <SizableText paddingHorizontal="$2" paddingBottom="$1" paddingTop="$1.5" fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.4} color="$color11" display="flex" flexDirection="column">
                   {group}
-                </div>
-                <div className="grid grid-cols-3 gap-1">
+                </SizableText>
+                <YStack gap="$1">
                   {apps.map((app) => {
                     const current = app.id === currentApp;
                     const Icon = app.icon;
                     return (
-                      <a
+                      <Anchor
                         key={app.id}
                         href={app.href}
                         aria-current={current ? 'page' : undefined}
-                        className={cn(
-                          'flex flex-col items-center gap-1.5 rounded-lg border px-2 py-2.5 text-center outline-none transition-colors focus-visible:ring-2 focus-visible:ring-foreground/30',
-                          current
-                            ? 'border-border bg-accent text-foreground'
-                            : 'border-transparent text-muted-foreground hover:bg-accent hover:text-foreground',
-                        )}
+                        flexDirection="column" alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} paddingHorizontal="$2" paddingVertical="$2.5" textAlign="center" outlineWidth={0} {...{ borderColor: current ? "$borderColor" : "transparent", backgroundColor: current ? "$color3" : undefined, color: current ? "$color" : "$color11", hoverStyle: current ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
                       >
                         <Icon className="h-5 w-5" />
-                        <span className="w-full truncate text-xs font-medium">{app.label}</span>
-                      </a>
+                        <SizableText width="100%" numberOfLines={1} fontSize="$1" fontWeight="500">{app.label}</SizableText>
+                      </Anchor>
                     );
                   })}
-                </div>
-              </div>
+                </YStack>
+              </YStack>
             );
           })}
-        </div>
+        </YStack>
       </PopoverContent>
     </Popover>
   );

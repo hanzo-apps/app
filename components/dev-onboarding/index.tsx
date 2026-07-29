@@ -1,5 +1,6 @@
 "use client";
 
+import { XStack, YStack, SizableText, H1, Paragraph, H3, Image } from '@hanzo/gui';
 import { useState, useEffect } from "react";
 import {
   Sparkles,
@@ -37,22 +38,22 @@ const features = [
   {
     title: "Instant Generation",
     description: "Streams as it builds",
-    icon: <Zap className="w-4 h-4" />
+    icon: <Zap size={16} />
   },
   {
     title: "400+ AI Models",
     description: "Latest LLMs available",
-    icon: <Brain className="w-4 h-4" />
+    icon: <Brain size={16} />
   },
   {
     title: "Real Data",
     description: "Hanzo Base, built in",
-    icon: <Database className="w-4 h-4" />
+    icon: <Database size={16} />
   },
   {
     title: "Beautiful UIs",
     description: "Tailored & shadowui",
-    icon: <Palette className="w-4 h-4" />
+    icon: <Palette size={16} />
   }
 ];
 
@@ -112,144 +113,144 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
     // viewport height here would add the header's height to the page and push the
     // foot of the content off-screen.
     return (
-      <div className="flex-1 overflow-y-auto bg-background flex justify-center items-start px-6 py-16">
-        <div className="max-w-6xl w-full">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-medium text-foreground mb-4">
+      <XStack flex={1} backgroundColor="$background" justifyContent="center" alignItems="flex-start" paddingHorizontal="$5" paddingVertical="$10" overflow="scroll">
+        <YStack maxWidth={1152} width="100%">
+          <SizableText textAlign="center" marginBottom="$8" display="flex" flexDirection="column">
+            <H1 fontSize="$11" fontWeight="500" color="$color" marginBottom="$4">
               Welcome to Hanzo AI
-            </h1>
-            <p className="text-xl text-muted-foreground">
+            </H1>
+            <Paragraph fontSize="$7" color="$color11">
               Your AI-powered development platform is ready
-            </p>
-          </div>
+            </Paragraph>
+          </SizableText>
 
           {/* Quick Start Options */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <Card className="bg-card border-border p-6">
-              <h3 className="text-lg font-medium text-foreground mb-4">
+          <YStack gap="$5" marginBottom="$6">
+            <Card backgroundColor="$background" borderColor="$borderColor" padding="$5">
+              <H3 fontSize="$6" fontWeight="500" color="$color" marginBottom="$4">
                 Start with a prompt
-              </h3>
+              </H3>
               <Textarea
                 placeholder="Describe what you want to build..."
-                className="bg-muted border-border text-foreground mb-4 min-h-[100px]"
+                backgroundColor="$color3" borderColor="$borderColor" color="$color" marginBottom="$4" minHeight={100}
                 value={prompt}
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPrompt(e.target.value)}
-              />
+  />
               <Button
-                className="w-full gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+                width="100%" gap="$2" backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
                 onClick={() => prompt && onComplete(prompt)}
                 disabled={!prompt.trim()}
               >
-                <Sparkles className="w-4 h-4" />
+                <Sparkles size={16} />
                 Start Building
               </Button>
             </Card>
 
-            <Card className="bg-card border-border p-6">
-              <h3 className="text-lg font-medium text-foreground mb-4">
+            <Card backgroundColor="$background" borderColor="$borderColor" padding="$5">
+              <H3 fontSize="$6" fontWeight="500" color="$color" marginBottom="$4">
                 Import existing project
-              </h3>
-              <div className="space-y-3">
+              </H3>
+              <YStack rowGap="$3">
                 <Button
                   variant="outline"
-                  className="w-full justify-start gap-2"
+                  width="100%" justifyContent="flex-start" gap="$2"
                   onClick={() => handleImportProject("github")}
                 >
-                  <Github className="w-4 h-4" />
+                  <Github size={16} />
                   Import from GitHub
                 </Button>
                 <Button
                   variant="outline"
-                  className="w-full justify-start gap-2"
+                  width="100%" justifyContent="flex-start" gap="$2"
                   onClick={() => handleImportProject("hanzo")}
                 >
-                  <Upload className="w-4 h-4" />
+                  <Upload size={16} />
                   Import from Hanzo
                 </Button>
                 <Button
                   variant="outline"
-                  className="w-full justify-start gap-2"
+                  width="100%" justifyContent="flex-start" gap="$2"
                   onClick={() => router.push("/new")}
                 >
-                  <FolderOpen className="w-4 h-4" />
+                  <FolderOpen size={16} />
                   Upload project files
                 </Button>
-              </div>
+              </YStack>
             </Card>
-          </div>
+          </YStack>
 
           {/* Popular templates — real gallery templates with real previews */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-foreground">
+          <YStack marginBottom="$6">
+            <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+              <H3 fontSize="$6" fontWeight="500" color="$color">
                 Start from a template
-              </h3>
+              </H3>
               <Link href="/gallery">
-                <Button variant="ghost" size="sm" className="gap-2">
-                  <Globe className="w-4 h-4" />
+                <Button variant="ghost" size="sm" gap="$2">
+                  <Globe size={16} />
                   Browse all
                 </Button>
               </Link>
-            </div>
+            </XStack>
 
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+            <YStack gap="$3">
               {popular.map((template) => (
-                <button
+                <Button
                   key={template.slug}
                   onClick={() => handleTemplateSelect(template)}
-                  className="flex flex-col overflow-hidden rounded-lg border border-border bg-card hover:border-foreground/30 hover:-translate-y-0.5 transition-all text-left group"
+                  flexDirection="column" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" textAlign="left" group hoverStyle={{ borderColor: "$color", y: "-0.5" }}
                 >
-                  <div className="relative aspect-[16/10] bg-card overflow-hidden">
+                  <YStack position="relative" backgroundColor="$background" overflow="hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                       src={template.screenshotUrl}
                       alt={`${template.displayName} preview`}
                       loading="lazy"
-                      className="w-full h-full object-cover object-top group-hover:scale-[1.03] transition-transform"
+                      width="100%" height="100%" objectFit="cover" objectPosition="top" className="group-hover:scale-[1.03]"
                       onError={(e) => {
                         (e.currentTarget as HTMLImageElement).style.display = "none";
                       }}
-                    />
-                    <Badge className="absolute top-1.5 right-1.5 bg-black/70 text-white border-neutral-700 text-[10px]">
+  />
+                    <Badge position="absolute" top="$1.5" right="$1.5" backgroundColor="black" color="white" borderColor="$color11" fontSize={10}>
                       {template.category}
                     </Badge>
-                  </div>
-                  <div className="p-3">
-                    <p className="text-foreground font-medium text-sm truncate">{template.displayName}</p>
-                    <p className="text-muted-foreground text-xs mt-0.5 line-clamp-1">
+                  </YStack>
+                  <YStack padding="$3">
+                    <Paragraph color="$color" fontWeight="500" fontSize="$3" numberOfLines={1}>{template.displayName}</Paragraph>
+                    <Paragraph color="$color11" fontSize="$1" marginTop="$0.5" numberOfLines={1}>
                       {template.description || template.framework}
-                    </p>
-                  </div>
-                </button>
+                    </Paragraph>
+                  </YStack>
+                </Button>
               ))}
-            </div>
-          </div>
+            </YStack>
+          </YStack>
 
           {/* Features Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <YStack gap="$4">
             {features.map((feature, i) => (
-              <div key={i} className="text-center">
-                <div className="w-12 h-12 bg-card rounded-lg flex items-center justify-center text-foreground mb-2 mx-auto">
+              <SizableText key={i} textAlign="center" display="flex" flexDirection="column">
+                <SizableText width="$8" height="$8" backgroundColor="$background" borderRadius="$5" alignItems="center" justifyContent="center" color="$color" marginBottom="$2" alignSelf="center" display="flex" flexDirection="row">
                   {feature.icon}
-                </div>
-                <p className="text-foreground text-sm font-medium">{feature.title}</p>
-                <p className="text-muted-foreground text-xs">{feature.description}</p>
-              </div>
+                </SizableText>
+                <Paragraph color="$color" fontSize="$3" fontWeight="500">{feature.title}</Paragraph>
+                <Paragraph color="$color11" fontSize="$1">{feature.description}</Paragraph>
+              </SizableText>
             ))}
-          </div>
+          </YStack>
 
           {/* Proof — real only: Techstars '17 backing + the real model count. */}
-          <div className="flex justify-center gap-8 mt-8 text-center">
+          <SizableText justifyContent="center" gap="$6" marginTop="$6" textAlign="center" display="flex" flexDirection="row">
             <div>
-              <p className="text-2xl font-medium text-foreground">Techstars &apos;17</p>
-              <p className="text-xs text-muted-foreground">backed</p>
+              <Paragraph fontSize="$8" fontWeight="500" color="$color">Techstars &apos;17</Paragraph>
+              <Paragraph fontSize="$1" color="$color11">backed</Paragraph>
             </div>
             <div>
-              <p className="text-2xl font-medium text-foreground">400+</p>
-              <p className="text-xs text-muted-foreground">AI models</p>
+              <Paragraph fontSize="$8" fontWeight="500" color="$color">400+</Paragraph>
+              <Paragraph fontSize="$1" color="$color11">AI models</Paragraph>
             </div>
-          </div>
-        </div>
-      </div>
+          </SizableText>
+        </YStack>
+      </XStack>
     );
 }

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { YStack, XStack, SizableText } from '@hanzo/gui';
+import { useState, useEffect } from 'react';
 import { Deployment, Project } from '@/lib/vfs/types';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Button, Tabs, TabsContent, TabsList, TabsTrigger } from '@hanzo/ui';
 import { GeneralTab } from '../publish-settings/general-tab';
@@ -146,7 +147,7 @@ export function DeploymentSettingsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-2xl h-[80vh] flex flex-col">
+      <DialogContent height="80vh" flexDirection="column" $sm={{ maxWidth: 672 }}>
         <DialogHeader>
           <DialogTitle>Deployment Settings - {deployment.name}</DialogTitle>
           <DialogDescription>
@@ -154,8 +155,8 @@ export function DeploymentSettingsModal({
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-          <TabsList className="grid w-full grid-cols-6 mb-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab} flex={1} flexDirection="column" overflow="hidden">
+          <TabsList width="100%" marginBottom="$4">
             <TabsTrigger value="general">General</TabsTrigger>
             <TabsTrigger value="scripts">Scripts</TabsTrigger>
             <TabsTrigger value="cdn">CDN</TabsTrigger>
@@ -164,8 +165,8 @@ export function DeploymentSettingsModal({
             <TabsTrigger value="compliance">Compliance</TabsTrigger>
           </TabsList>
 
-          <div className="flex-1 overflow-auto">
-            <TabsContent value="general" className="mt-0 h-full">
+          <YStack flex={1} overflow="scroll">
+            <TabsContent value="general" marginTop="$0" height="100%">
               <GeneralTab
                 settings={settings}
                 onChange={handleGeneralChange}
@@ -173,43 +174,43 @@ export function DeploymentSettingsModal({
                 deploymentId={deployment.id}
                 projects={projects}
                 onProjectChange={setProjectId}
-              />
+  />
             </TabsContent>
 
-            <TabsContent value="scripts" className="mt-0 h-full">
+            <TabsContent value="scripts" marginTop="$0" height="100%">
               <ScriptsTab settings={settings} onChange={updateSettings} />
             </TabsContent>
 
-            <TabsContent value="cdn" className="mt-0 h-full">
+            <TabsContent value="cdn" marginTop="$0" height="100%">
               <CdnTab settings={settings} onChange={updateSettings} />
             </TabsContent>
 
-            <TabsContent value="analytics" className="mt-0 h-full">
+            <TabsContent value="analytics" marginTop="$0" height="100%">
               <AnalyticsTab settings={settings} onChange={updateSettings} />
             </TabsContent>
 
-            <TabsContent value="seo" className="mt-0 h-full">
+            <TabsContent value="seo" marginTop="$0" height="100%">
               <SeoTab settings={settings} onChange={updateSettings} />
             </TabsContent>
 
-            <TabsContent value="compliance" className="mt-0 h-full">
+            <TabsContent value="compliance" marginTop="$0" height="100%">
               <ComplianceTab settings={settings} onChange={updateSettings} />
             </TabsContent>
-          </div>
+          </YStack>
 
-          <div className="flex items-center justify-between pt-4 border-t">
-            <div className="text-sm text-muted-foreground">
+          <XStack alignItems="center" justifyContent="space-between" paddingTop="$4" borderTopWidth={1}>
+            <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">
               {isDirty && <span>You have unsaved changes</span>}
-            </div>
-            <div className="flex gap-2">
+            </SizableText>
+            <XStack gap="$2">
               <Button variant="outline" onClick={handleClose} disabled={isSaving}>
                 Cancel
               </Button>
               <Button onClick={handleSave} disabled={!isDirty || isSaving}>
                 {isSaving ? 'Saving...' : 'Save Changes'}
               </Button>
-            </div>
-          </div>
+            </XStack>
+          </XStack>
         </Tabs>
       </DialogContent>
     </Dialog>

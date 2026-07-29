@@ -1,5 +1,6 @@
 "use client";
 
+import { SizableText, YStack, Paragraph, XStack } from '@hanzo/gui';
 // The ONE public/marketing header for hanzo.app — native, minimal, monochrome.
 //
 // One clear nav and nothing else: a few real marketing routes plus the Community
@@ -18,8 +19,6 @@ import { Button, Avatar, AvatarFallback, AvatarImage, DropdownMenu, DropdownMenu
 import { AppSwitcher } from "@/components/layout/app-switcher";
 import { HeaderSearch } from "@/components/layout/header-search";
 import { useUser } from "@/hooks/useUser";
-import { cn } from "@/lib/utils";
-
 // The marketing nav — real routes only (no /product 404, no per-app grid).
 const NAV = [
   { label: "Templates", href: "/templates" },
@@ -49,42 +48,42 @@ export default function Header() {
   const accountMenu = (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="gap-2 text-foreground/80 hover:text-foreground">
-          <Avatar className="h-7 w-7">
+        <Button variant="ghost" gap="$2" color="$color" hoverStyle={{ color: "$color" }}>
+          <Avatar height={28} width={28}>
             <AvatarImage src={user?.avatarUrl} alt={displayName} />
-            <AvatarFallback className="bg-foreground/10 text-xs text-foreground">
+            <AvatarFallback backgroundColor="$color" fontSize="$1" color="$color">
               {userInitial}
             </AvatarFallback>
           </Avatar>
-          <span className="max-w-[150px] truncate">{displayName}</span>
-          <ChevronDown className="h-4 w-4" />
+          <SizableText maxWidth={150} numberOfLines={1}>{displayName}</SizableText>
+          <ChevronDown size={16} />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
+      <DropdownMenuContent align="end" width={224}>
         <DropdownMenuLabel>
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{displayName}</p>
-            <p className="text-xs leading-none text-muted-foreground">
+          <YStack rowGap="$1">
+            <Paragraph fontSize="$3" fontWeight="500" lineHeight={1}>{displayName}</Paragraph>
+            <Paragraph fontSize="$1" lineHeight={1} color="$color11">
               {user?.email || user?.username}
-            </p>
-          </div>
+            </Paragraph>
+          </YStack>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => router.push("/dashboard")}>
-          <Home className="mr-2 h-4 w-4" />
+          <Home size={16} />
           Dashboard
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => router.push("/settings")}>
-          <Settings className="mr-2 h-4 w-4" />
+          <Settings size={16} />
           Settings
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => router.push("/billing")}>
-          <DollarSign className="mr-2 h-4 w-4" />
+          <DollarSign size={16} />
           Billing
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => logout()} className="text-foreground/70">
-          <LogOut className="mr-2 h-4 w-4" />
+        <DropdownMenuItem onClick={() => logout()} color="$color">
+          <LogOut size={16} />
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -96,13 +95,13 @@ export default function Header() {
       <Button
         onClick={() => login()}
         variant="ghost"
-        className="text-sm font-medium text-foreground/70 hover:text-foreground"
+        fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ color: "$color" }}
       >
         Sign In
       </Button>
       <Button
         onClick={getStarted}
-        className="rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+        borderRadius="$6" backgroundColor="$color12" paddingHorizontal="$4.5" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
       >
         Get started
       </Button>
@@ -110,72 +109,60 @@ export default function Header() {
   );
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:gap-4 sm:px-6">
+    <YStack position="sticky" top="$0" zIndex={50} borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" backdropFilter="blur(12px)">
+      <XStack alignSelf="center" height="$10" maxWidth={1280} alignItems="center" gap="$3" paddingHorizontal="$4" $sm={{ gap: "$4", paddingHorizontal: "$5" }}>
         {/* Brand mark = the cross-app switcher trigger (the ONE way in) */}
         <AppSwitcher currentApp="app" />
 
         {/* One nav */}
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
+        <YStack display="none" alignItems="center" gap="$1" aria-label="Primary">
           {NAV.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={cn(
-                "rounded-lg px-3 py-2 text-sm transition-colors",
-                isActive(link.href)
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
+            ><SizableText borderRadius="$5" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3">
               {link.label}
-            </Link>
+            </SizableText></Link>
           ))}
-        </nav>
+        </YStack>
 
-        <div className="flex-1" />
+        <YStack flex={1} />
 
         {/* Search — opens the command palette (⌘K / `/`). Always visible. */}
         <HeaderSearch />
 
         {/* Auth (desktop) */}
-        <div className="hidden items-center gap-2 md:flex">
+        <YStack display="none" alignItems="center" gap="$2">
           {isAuthenticated && user ? accountMenu : signedOutCTAs}
-        </div>
+        </YStack>
 
         {/* Mobile toggle */}
-        <button
+        <Button
           type="button"
           onClick={() => setMobileOpen((v) => !v)}
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
           aria-expanded={mobileOpen}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-foreground hover:bg-card md:hidden"
+          height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" color="$color" hoverStyle={{ backgroundColor: "$background" }} $md={{ display: "none" }}
         >
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
-      </div>
+          {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+        </Button>
+      </XStack>
 
       {/* Mobile sheet */}
       {mobileOpen && (
-        <div className="border-t border-border bg-background px-4 py-3 md:hidden">
-          <nav className="flex flex-col" aria-label="Primary">
+        <YStack borderTopWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$4" paddingVertical="$3" $md={{ display: "none" }}>
+          <YStack aria-label="Primary">
             {NAV.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className={cn(
-                  "rounded-lg px-3 py-2.5 text-sm transition-colors",
-                  isActive(link.href)
-                    ? "bg-card text-foreground"
-                    : "text-foreground/90 hover:bg-card"
-                )}
-              >
+              ><SizableText borderRadius="$5" paddingHorizontal="$3" paddingVertical="$2.5" fontSize="$3">
                 {link.label}
-              </Link>
+              </SizableText></Link>
             ))}
-          </nav>
-          <div className="mt-3 flex flex-col gap-2 border-t border-border pt-3">
+          </YStack>
+          <YStack marginTop="$3" gap="$2" borderTopWidth={1} borderColor="$borderColor" paddingTop="$3">
             {isAuthenticated && user ? (
               accountMenu
             ) : (
@@ -183,21 +170,21 @@ export default function Header() {
                 <Button
                   onClick={() => login()}
                   variant="ghost"
-                  className="justify-start text-sm font-medium text-foreground/80 hover:text-foreground"
+                  justifyContent="flex-start" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ color: "$color" }}
                 >
                   Sign In
                 </Button>
                 <Button
                   onClick={getStarted}
-                  className="rounded-xl bg-primary text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                  borderRadius="$6" backgroundColor="$color12" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
                 >
                   Get started
                 </Button>
               </>
             )}
-          </div>
-        </div>
+          </YStack>
+        </YStack>
       )}
-    </header>
+    </YStack>
   );
 }

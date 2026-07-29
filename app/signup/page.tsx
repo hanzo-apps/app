@@ -1,5 +1,6 @@
 'use client';
 
+import { SizableText, YStack, XStack, H3, Paragraph } from '@hanzo/gui';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useIam } from '@hanzo/iam/react';
@@ -31,127 +32,127 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-card text-foreground flex flex-col">
+    <SizableText minHeight="100%" backgroundColor="$background" color="$color" flexDirection="column" display="flex">
       {/* Navigation */}
-      <nav className="border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
+      <YStack borderBottomWidth={1} borderColor="$borderColor">
+        <XStack maxWidth={1280} alignSelf="center" paddingHorizontal="$4" paddingVertical="$4" alignItems="center" justifyContent="space-between" $md={{ paddingHorizontal: "$6" }}>
+          <Link href="/"><XStack alignItems="center" gap="$2.5">
             <HanzoLogo className="w-8 h-8 text-foreground" />
-            <span className="text-xl font-medium">Hanzo</span>
-          </Link>
+            <SizableText fontSize="$7" fontWeight="500">Hanzo</SizableText>
+          </XStack></Link>
           <Link href="/login">
-            <Button variant="outline" className="border-border text-foreground hover:bg-accent">
+            <Button variant="outline" borderColor="$borderColor" color="$color" hoverStyle={{ backgroundColor: "$color3" }}>
               Sign in
             </Button>
           </Link>
-        </div>
-      </nav>
+        </XStack>
+      </YStack>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center p-4 py-12">
-        <div className="w-full max-w-md">
-          <Card className="bg-card border-border">
-            <CardHeader className="space-y-1 text-center pb-8">
-              <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 bg-muted border border-border rounded-2xl flex items-center justify-center relative">
+      <XStack flex={1} alignItems="center" justifyContent="center" padding="$4" paddingVertical="$8">
+        <YStack width="100%" maxWidth={448}>
+          <Card backgroundColor="$background" borderColor="$borderColor">
+            <CardHeader rowGap="$1" textAlign="center" paddingBottom="$6">
+              <XStack justifyContent="center" marginBottom="$5">
+                <XStack width="$10" height="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" borderRadius="$8" alignItems="center" justifyContent="center" position="relative">
                   <HanzoLogo className="w-10 h-10 text-foreground" />
-                  <Badge className="absolute -top-2 -right-2 bg-primary text-primary-foreground border-0">
+                  <Badge position="absolute" top="-2" right="-2" backgroundColor="$color12" color="$background" borderWidth={0}>
                     Free
                   </Badge>
-                </div>
-              </div>
-              <CardTitle className="text-2xl">Create your account</CardTitle>
-              <CardDescription className="text-muted-foreground">
+                </XStack>
+              </XStack>
+              <CardTitle fontSize="$8">Create your account</CardTitle>
+              <CardDescription color="$color11">
                 Start building with Hanzo AI today
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent rowGap="$5">
               {/* What you get section */}
-              <div className="space-y-3 p-4 bg-muted rounded-lg border border-border">
-                <h3 className="text-sm font-medium text-foreground mb-3">What you'll get:</h3>
-                <div className="grid grid-cols-1 gap-2">
-                  <div className="flex items-center gap-3">
-                    <Sparkles className="w-4 h-4 text-foreground" />
-                    <span className="text-sm text-foreground">Access to 400+ AI models</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Zap className="w-4 h-4 text-foreground" />
-                    <span className="text-sm text-foreground">$5 free cloud credits to start</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Shield className="w-4 h-4 text-foreground" />
-                    <span className="text-sm text-foreground">Secure cloud infrastructure</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Rocket className="w-4 h-4 text-foreground" />
-                    <span className="text-sm text-foreground">Deploy instantly to production</span>
-                  </div>
-                </div>
-              </div>
+              <YStack rowGap="$3" padding="$4" backgroundColor="$color3" borderRadius="$5" borderWidth={1} borderColor="$borderColor">
+                <H3 fontSize="$3" fontWeight="500" color="$color" marginBottom="$3">What you'll get:</H3>
+                <YStack gap="$2">
+                  <XStack alignItems="center" gap="$3">
+                    <Sparkles size={16} color="$color" />
+                    <SizableText fontSize="$3" color="$color">Access to 400+ AI models</SizableText>
+                  </XStack>
+                  <XStack alignItems="center" gap="$3">
+                    <Zap size={16} color="$color" />
+                    <SizableText fontSize="$3" color="$color">$5 free cloud credits to start</SizableText>
+                  </XStack>
+                  <XStack alignItems="center" gap="$3">
+                    <Shield size={16} color="$color" />
+                    <SizableText fontSize="$3" color="$color">Secure cloud infrastructure</SizableText>
+                  </XStack>
+                  <XStack alignItems="center" gap="$3">
+                    <Rocket size={16} color="$color" />
+                    <SizableText fontSize="$3" color="$color">Deploy instantly to production</SizableText>
+                  </XStack>
+                </YStack>
+              </YStack>
 
               {/* Signup Button — Hanzo IAM, the only way */}
               <Button
                 onClick={handleSignup}
                 disabled={loading}
-                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-medium h-12"
+                width="100%" backgroundColor="$color12" color="$background" fontWeight="500" height="$8" hoverStyle={{ backgroundColor: "$color12" }}
                 size="lg"
               >
                 {loading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <Loader2 size={20} />
                 ) : (
                   <>
-                    <Rocket className="w-5 h-5 mr-2" />
+                    <Rocket size={20} />
                     Sign up with Hanzo
                   </>
                 )}
               </Button>
 
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-border"></div>
-                </div>
-                <div className="relative flex justify-center text-xs">
-                  <span className="bg-card px-2 text-muted-foreground">
+              <YStack position="relative">
+                <XStack position="absolute" top={0} right={0} bottom={0} left={0} alignItems="center">
+                  <YStack width="100%" borderTopWidth={1} borderColor="$borderColor"></YStack>
+                </XStack>
+                <SizableText position="relative" justifyContent="center" fontSize="$1" display="flex" flexDirection="row">
+                  <SizableText backgroundColor="$background" paddingHorizontal="$2" color="$color11">
                     No credit card required
-                  </span>
-                </div>
-              </div>
+                  </SizableText>
+                </SizableText>
+              </YStack>
 
               {/* Trust badges */}
-              <div className="flex items-center justify-center gap-6 pt-2">
-                <div className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">Encrypted &amp; Audited</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">GDPR Ready</span>
-                </div>
-              </div>
+              <XStack alignItems="center" justifyContent="center" gap="$5" paddingTop="$2">
+                <XStack alignItems="center" gap="$2">
+                  <Shield size={16} color="$color11" />
+                  <SizableText fontSize="$1" color="$color11">Encrypted &amp; Audited</SizableText>
+                </XStack>
+                <XStack alignItems="center" gap="$2">
+                  <Shield size={16} color="$color11" />
+                  <SizableText fontSize="$1" color="$color11">GDPR Ready</SizableText>
+                </XStack>
+              </XStack>
 
               {/* Footer Links */}
-              <div className="pt-4 text-center space-y-2">
-                <p className="text-sm text-muted-foreground">
+              <SizableText paddingTop="$4" textAlign="center" rowGap="$2" display="flex" flexDirection="column">
+                <Paragraph fontSize="$3" color="$color11">
                   Already have an account?{' '}
-                  <Link href="/login" className="text-foreground hover:text-foreground/70 underline">
+                  <Link href="/login"><SizableText color="$color" textDecorationLine="underline" hoverStyle={{ color: "$color" }}>
                     Sign in
-                  </Link>
-                </p>
-                <p className="text-xs text-muted-foreground">
+                  </SizableText></Link>
+                </Paragraph>
+                <Paragraph fontSize="$1" color="$color11">
                   By signing up, you agree to our{' '}
-                  <Link href="/terms" className="underline hover:text-foreground">
+                  <Link href="/terms"><SizableText textDecorationLine="underline" hoverStyle={{ color: "$color" }}>
                     Terms
-                  </Link>{' '}
+                  </SizableText></Link>{' '}
                   and{' '}
-                  <Link href="/privacy" className="underline hover:text-foreground">
+                  <Link href="/privacy"><SizableText textDecorationLine="underline" hoverStyle={{ color: "$color" }}>
                     Privacy Policy
-                  </Link>
-                </p>
-              </div>
+                  </SizableText></Link>
+                </Paragraph>
+              </SizableText>
             </CardContent>
           </Card>
-        </div>
-      </div>
-    </div>
+        </YStack>
+      </XStack>
+    </SizableText>
   );
 }

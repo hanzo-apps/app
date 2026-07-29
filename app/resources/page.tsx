@@ -12,8 +12,9 @@
  * provision + seed) → the builder. Game cards open their existing detail page.
  */
 
+import { SizableText, YStack, XStack, H1, Paragraph, Image, H3 } from '@hanzo/gui';
 import { useEffect, useMemo, useState } from 'react';
-import { Badge, Input } from '@hanzo/ui';
+import { Badge, Input, Button } from '@hanzo/ui';
 import { Search, Star, Sparkles, Gamepad2, Loader2 } from 'lucide-react';
 import { AppShell } from '@/components/app-shell';
 import { snapshotCatalog } from '@/lib/gallery-catalog';
@@ -93,90 +94,86 @@ export default function ResourcesPage() {
 
   return (
     <AppShell currentView="resources">
-      <div className="flex-1 overflow-y-auto bg-background text-foreground">
+      <SizableText flex={1} backgroundColor="$background" color="$color" overflow="scroll" display="flex" flexDirection="column">
         {/* Hero */}
-        <header className="border-b border-border bg-gradient-to-b from-card to-background">
-          <div className="container mx-auto px-6 py-10">
-            <div className="mb-2 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
-                <Sparkles className="h-6 w-6 text-foreground" />
-              </div>
-              <h1 className="text-3xl font-medium">Resources</h1>
-              <Badge variant="secondary" className="ml-1">
+        <YStack borderBottomWidth={1} borderColor="$borderColor">
+          <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$7">
+            <XStack marginBottom="$2" alignItems="center" gap="$3">
+              <XStack height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color3">
+                <Sparkles size={24} color="$color" />
+              </XStack>
+              <H1 fontSize="$10" fontWeight="500">Resources</H1>
+              <Badge variant="secondary" marginLeft="$1">
                 {items.length} resources
               </Badge>
-            </div>
-            <p className="max-w-2xl text-muted-foreground">
+            </XStack>
+            <Paragraph maxWidth={672} color="$color11">
               Start from a template to build your next project. Every template forks into the
-              builder and deploys to a live <code className="text-muted-foreground">*.hanzo.app</code>{' '}
+              builder and deploys to a live <SizableText color="$color11">*.hanzo.app</SizableText>{' '}
               URL — including a growing library of open-source games.
-            </p>
-          </div>
-        </header>
+            </Paragraph>
+          </YStack>
+        </YStack>
 
         {/* Filters */}
-        <div className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur">
-          <div className="container mx-auto flex flex-wrap items-start gap-3 px-6 py-3">
-            <div className="relative w-full sm:w-auto">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <YStack position="sticky" top="$0" zIndex={30} borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" backdropFilter="blur(8px)">
+          <XStack width="100%" maxWidth={1280} alignSelf="center" flexWrap="wrap" alignItems="flex-start" gap="$3" paddingHorizontal="$5" paddingVertical="$3">
+            <YStack position="relative" width="100%" $sm={{ width: "auto" }}>
+              <Search size={16} color="$color11" />
               <Input
                 placeholder="Search resources…"
                 value={query}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
-                className="w-full sm:w-64 border-border bg-card pl-9 text-foreground"
-              />
-            </div>
-            <div className="flex flex-nowrap items-center gap-1.5 overflow-x-auto sm:flex-wrap [scrollbar-width:none]">
+                width="100%" borderColor="$borderColor" backgroundColor="$background" paddingLeft={36} color="$color" $sm={{ width: 256 }}
+  />
+            </YStack>
+            <XStack flexWrap="nowrap" alignItems="center" gap="$1.5" overflow="scroll" $sm={{ flexWrap: "wrap" }} className="[scrollbar-width:none]">
               {categories.map((cat) => (
-                <button
+                <Button
                   key={cat}
                   onClick={() => setCategory(cat)}
-                  className={`rounded-full px-3 py-2 sm:py-1.5 text-xs font-medium shrink-0 whitespace-nowrap transition-colors ${
-                    category === cat
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-card text-muted-foreground hover:bg-muted hover:text-foreground'
-                  }`}
+                  borderRadius="$10" paddingHorizontal="$3" paddingVertical="$2" fontSize="$1" fontWeight="500" flexShrink={0} whiteSpace="nowrap" $sm={{ paddingVertical: "$1.5" }} {...{ backgroundColor: category === cat ? "$color12" : "$background", color: category === cat ? "$background" : "$color11", hoverStyle: category === cat ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
                 >
                   {cat}
-                </button>
+                </Button>
               ))}
-            </div>
-            <Badge variant="secondary" className="ml-auto">
+            </XStack>
+            <Badge variant="secondary" marginLeft="auto">
               {filtered.length} shown{loading ? ' · syncing…' : ''}
             </Badge>
-          </div>
-        </div>
+          </XStack>
+        </YStack>
 
         {/* Grid */}
-        <div className="container mx-auto px-6 py-8">
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$6">
+          <YStack gap="$4.5">
             {filtered.map((item) => (
               <ResourceCard key={item.id} item={item} onOpen={openPreview} />
             ))}
-          </div>
+          </YStack>
 
           {filtered.length === 0 && (
-            <div className="py-20 text-center">
+            <SizableText paddingVertical="$11" textAlign="center" display="flex" flexDirection="column">
               {loading ? (
-                <Loader2 className="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
+                <Loader2 size={24} color="$color11" />
               ) : (
                 <>
-                  <p className="text-lg text-muted-foreground">Nothing matches your search.</p>
-                  <button
+                  <Paragraph fontSize="$6" color="$color11">Nothing matches your search.</Paragraph>
+                  <Button
                     onClick={() => {
                       setCategory('All');
                       setQuery('');
                     }}
-                    className="mt-2 text-foreground underline"
+                    marginTop="$2" color="$color" textDecorationLine="underline"
                   >
                     Clear filters
-                  </button>
+                  </Button>
                 </>
               )}
-            </div>
+            </SizableText>
           )}
-        </div>
-      </div>
+        </YStack>
+      </SizableText>
 
       {/* Remix flow */}
       <TemplatePreviewModal
@@ -184,19 +181,19 @@ export default function ResourcesPage() {
         open={previewOpen}
         onOpenChange={setPreviewOpen}
         onUse={startRemix}
-      />
+  />
       <RemixDialog
         templateTitle={selected?.title ?? ''}
         open={remixOpen}
         onOpenChange={setRemixOpen}
         onConfirm={confirmRemix}
-      />
+  />
       <RemixProgress
         open={progressOpen}
         projectName={remixName}
         templateSlug={selected?.templateSlug ?? ''}
         onOpenChange={setProgressOpen}
-      />
+  />
     </AppShell>
   );
 }
@@ -209,50 +206,50 @@ function ResourceCard({
   onOpen: (item: ResourceItem) => void;
 }) {
   return (
-    <button
+    <Button
       type="button"
       onClick={() => onOpen(item)}
-      className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card/50 text-left transition-all hover:-translate-y-1 hover:border-foreground/50"
+      group flexDirection="column" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" textAlign="left" hoverStyle={{ y: "-1", borderColor: "$color" }}
     >
-      <div className="relative aspect-[16/10] overflow-hidden bg-card">
+      <YStack position="relative" overflow="hidden" backgroundColor="$background">
         {item.hasImage ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={item.image}
             alt={`${item.title} preview`}
             loading="lazy"
-            className="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.03]"
+            height="100%" width="100%" objectFit="cover" objectPosition="top" className="group-hover:scale-[1.03]"
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).style.display = 'none';
             }}
-          />
+  />
         ) : (
-          <div className="flex h-full flex-col items-center justify-center gap-1.5 text-muted-foreground">
-            <Gamepad2 className="h-8 w-8" />
-            <span className="text-xs">{item.framework}</span>
-          </div>
+          <SizableText height="100%" flexDirection="column" alignItems="center" justifyContent="center" gap="$1.5" color="$color11" display="flex">
+            <Gamepad2 size={32} />
+            <SizableText fontSize="$1">{item.framework}</SizableText>
+          </SizableText>
         )}
         {item.kind === 'game' ? (
-          <Badge className="absolute right-2 top-2 border-border bg-background/70 text-[11px] text-foreground">
+          <Badge position="absolute" right="$2" top="$2" borderColor="$borderColor" backgroundColor="$background" fontSize={11} color="$color">
             Game
           </Badge>
         ) : (
-          <Badge className="absolute right-2 top-2 border-border bg-background/70 text-[11px] text-foreground">
+          <Badge position="absolute" right="$2" top="$2" borderColor="$borderColor" backgroundColor="$background" fontSize={11} color="$color">
             {item.category}
           </Badge>
         )}
         {typeof item.rating === 'number' && (
-          <div className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-background/70 px-2 py-0.5 text-[11px] text-foreground">
-            <Star className="h-3 w-3 fill-foreground" />
+          <SizableText position="absolute" left="$2" top="$2" alignItems="center" gap="$1" borderRadius="$10" backgroundColor="$background" paddingHorizontal="$2" paddingVertical="$0.5" fontSize={11} color="$color" display="flex" flexDirection="row">
+            <Star size={12} />
             {item.rating}
-          </div>
+          </SizableText>
         )}
-      </div>
-      <div className="flex flex-1 flex-col p-4">
-        <h3 className="font-medium text-foreground">{item.title}</h3>
-        <p className="mt-1 line-clamp-2 min-h-[2.5rem] text-xs text-muted-foreground">{item.description}</p>
-        <p className="mt-auto pt-3 text-[11px] text-muted-foreground">{item.meta || item.framework}</p>
-      </div>
-    </button>
+      </YStack>
+      <YStack flex={1} padding="$4">
+        <H3 fontWeight="500" color="$color">{item.title}</H3>
+        <Paragraph marginTop="$1" numberOfLines={2} minHeight="2.5rem" fontSize="$1" color="$color11">{item.description}</Paragraph>
+        <Paragraph marginTop="auto" paddingTop="$3" fontSize={11} color="$color11">{item.meta || item.framework}</Paragraph>
+      </YStack>
+    </Button>
   );
 }

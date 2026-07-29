@@ -10,14 +10,15 @@
  * - Save/auto-save functionality
  */
 
-import React, { useState, useCallback } from 'react';
+import { Button } from '@hanzo/ui';
+import { YStack, XStack, H1, SizableText, Paragraph, H2 } from '@hanzo/gui';
+import { useState, useCallback } from 'react';
 import { WorkspaceLayout } from './split-layout';
 import { LivePreview } from '../preview/live-preview';
 import { CheckpointList } from '../ui/rollback-button';
 import { SaveButton, AutoSaveIndicator } from '../ui/save-button';
 import { checkpointManager } from '@/lib/vfs/checkpoint';
 import { saveManager } from '@/lib/vfs/save-manager';
-import { vfs } from '@/lib/vfs';
 import { Settings, History, Eye, EyeOff } from 'lucide-react';
 
 interface DevWorkspaceProps {
@@ -64,117 +65,113 @@ export function DevWorkspace({ projectId }: DevWorkspaceProps) {
   }, []);
 
   return (
-    <div className="h-screen flex flex-col">
+    <YStack height="100%">
       {/* Toolbar */}
-      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center justify-between px-4 py-2">
-          <div className="flex items-center gap-4">
-            <h1 className="text-lg font-medium">Hanzo Build</h1>
+      <YStack borderBottomWidth={1} backgroundColor="$background" backdropFilter="blur(8px)" className="supports-[backdrop-filter]:bg-background/60">
+        <XStack alignItems="center" justifyContent="space-between" paddingHorizontal="$4" paddingVertical="$2">
+          <XStack alignItems="center" gap="$4">
+            <H1 fontSize="$6" fontWeight="500">Hanzo Build</H1>
             <AutoSaveIndicator projectId={projectId} />
-          </div>
+          </XStack>
 
-          <div className="flex items-center gap-2">
-            <button
+          <XStack alignItems="center" gap="$2">
+            <Button
               onClick={() => setShowHistory(!showHistory)}
-              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                showHistory
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-              }`}
+              alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$1.5" borderRadius="$3" fontSize="$3" fontWeight="500" {...{ backgroundColor: showHistory ? "$color12" : "$color4", color: showHistory ? "$background" : "$color", hoverStyle: showHistory ? undefined : {"backgroundColor":"$color4"} }}
             >
-              <History className="h-4 w-4" />
+              <History size={16} />
               History
-            </button>
+            </Button>
 
-            <button
+            <Button
               onClick={() => setShowPreview(!showPreview)}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80"
+              alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$1.5" borderRadius="$3" fontSize="$3" fontWeight="500" backgroundColor="$color4" color="$color" hoverStyle={{ backgroundColor: "$color4" }}
             >
               {showPreview ? (
                 <>
-                  <EyeOff className="h-4 w-4" />
+                  <EyeOff size={16} />
                   Hide Preview
                 </>
               ) : (
                 <>
-                  <Eye className="h-4 w-4" />
+                  <Eye size={16} />
                   Show Preview
                 </>
               )}
-            </button>
+            </Button>
 
             <SaveButton projectId={projectId} onSave={handleSave} />
 
-            <button
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80"
+            <Button
+              alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$1.5" borderRadius="$3" fontSize="$3" fontWeight="500" backgroundColor="$color4" color="$color" hoverStyle={{ backgroundColor: "$color4" }}
             >
-              <Settings className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      </div>
+              <Settings size={16} />
+            </Button>
+          </XStack>
+        </XStack>
+      </YStack>
 
       {/* Main content area */}
-      <div className="flex-1 min-h-0 relative">
+      <YStack flex={1} minHeight={0} position="relative">
         <WorkspaceLayout
           showPreview={showPreview}
           editor={
-            <div className="h-full flex flex-col bg-muted/30">
+            <YStack height="100%" backgroundColor="$color3">
               {/* Editor placeholder */}
-              <div className="flex-1 p-4">
-                <div className="h-full border-2 border-dashed border-border rounded-lg flex items-center justify-center">
-                  <div className="text-center space-y-4">
-                    <p className="text-lg font-medium">Code Editor</p>
-                    <p className="text-sm text-muted-foreground">
+              <YStack flex={1} padding="$4">
+                <XStack height="100%" borderWidth={2} borderStyle="dashed" borderColor="$borderColor" borderRadius="$5" alignItems="center" justifyContent="center">
+                  <SizableText textAlign="center" rowGap="$4" display="flex" flexDirection="column">
+                    <Paragraph fontSize="$6" fontWeight="500">Code Editor</Paragraph>
+                    <Paragraph fontSize="$3" color="$color11">
                       Integrate your editor component here
-                    </p>
+                    </Paragraph>
 
                     {/* Demo buttons */}
-                    <div className="space-x-2 pt-4">
-                      <button
+                    <YStack columnGap="$2" paddingTop="$4">
+                      <Button
                         onClick={() => handleAIOperation('Generate component')}
-                        className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+                        paddingHorizontal="$4" paddingVertical="$2" backgroundColor="$color12" color="$background" borderRadius="$3" hoverStyle={{ backgroundColor: "$color12" }}
                       >
                         Simulate AI Operation
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+                      </Button>
+                    </YStack>
+                  </SizableText>
+                </XStack>
+              </YStack>
+            </YStack>
           }
           preview={
             <LivePreview
               projectId={projectId}
               refreshTrigger={refreshTrigger}
               onClose={() => setShowPreview(false)}
-            />
+  />
           }
-        />
+  />
 
         {/* History sidebar */}
         {showHistory && (
-          <div className="absolute right-0 top-0 bottom-0 w-80 border-l bg-background shadow-lg overflow-hidden z-10">
-            <div className="h-full flex flex-col">
-              <div className="border-b p-4 flex items-center justify-between">
-                <h2 className="font-medium">Checkpoint History</h2>
-                <button
+          <YStack position="absolute" right="$0" top="$0" bottom="$0" width={320} borderLeftWidth={1} backgroundColor="$background" elevation={4} overflow="hidden" zIndex={10}>
+            <YStack height="100%">
+              <XStack borderBottomWidth={1} padding="$4" alignItems="center" justifyContent="space-between">
+                <H2 fontWeight="500">Checkpoint History</H2>
+                <Button
                   onClick={() => setShowHistory(false)}
-                  className="text-muted-foreground hover:text-foreground"
+                  color="$color11" hoverStyle={{ color: "$color" }}
                 >
                   ×
-                </button>
-              </div>
-              <div className="flex-1 overflow-auto p-4">
+                </Button>
+              </XStack>
+              <YStack flex={1} overflow="scroll" padding="$4">
                 <CheckpointList
                   projectId={projectId}
                   onRestore={handleCheckpointRestore}
-                />
-              </div>
-            </div>
-          </div>
+  />
+              </YStack>
+            </YStack>
+          </YStack>
         )}
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }

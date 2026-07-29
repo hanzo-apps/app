@@ -1,5 +1,6 @@
 "use client";
 
+import { YStack, Anchor, SizableText } from '@hanzo/gui';
 import { useEffect, useState } from "react";
 import { MessageSquare, LayoutGrid } from "lucide-react";
 
@@ -58,27 +59,27 @@ export function CrossSurfaceLinks() {
   const slug = useProjectSlug();
   if (!slug) return null;
   return (
-    <div className="hidden items-center gap-1 md:flex">
-      <a
+    <YStack display="none" alignItems="center" gap="$1">
+      <Anchor
         href={chatProjectUrl(slug)}
         target="_blank"
         rel="noopener noreferrer"
         title="Chat about this project in hanzo.chat"
-        className={linkClass}
+        className={`${linkClass}`}
       >
-        <MessageSquare className="size-4" />
-        <span className="hidden lg:inline">Chat</span>
-      </a>
-      <a
+        <MessageSquare size={16} />
+        <SizableText display="none">Chat</SizableText>
+      </Anchor>
+      <Anchor
         href={consoleProjectUrl(slug)}
         target="_blank"
         rel="noopener noreferrer"
         title="Manage this project in console.hanzo.ai"
-        className={linkClass}
+        className={`${linkClass}`}
       >
-        <LayoutGrid className="size-4" />
-        <span className="hidden lg:inline">Console</span>
-      </a>
-    </div>
+        <LayoutGrid size={16} />
+        <SizableText display="none">Console</SizableText>
+      </Anchor>
+    </YStack>
   );
 }

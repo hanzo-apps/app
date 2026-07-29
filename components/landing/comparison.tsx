@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from '@hanzo/ui';
+import { SizableText, YStack, Paragraph, H2, XStack, H3 } from '@hanzo/gui';
 // Why Hanzo — the competitive-advantage matrix.
 //
 // A single conversion centerpiece: ten buyer criteria across Hanzo and the
@@ -279,10 +281,10 @@ const TEXT: Record<Tone, string> = {
 
 function Dot({ tone }: { tone: Tone }) {
   return (
-    <span
+    <SizableText
       aria-hidden
-      className={`inline-block h-[7px] w-[7px] flex-none rounded-full ${DOT[tone]}`}
-    />
+      height={7} width={7} flex={0} borderRadius="$10" className={`${DOT[tone]}`}
+  />
   );
 }
 
@@ -301,20 +303,20 @@ export default function Comparison() {
     el.scrollBy({ left: dir * Math.max(340, el.clientWidth * 0.8), behavior: "smooth" });
   };
   return (
-    <section className="relative border-t border-border px-4 py-20 md:px-8 md:py-28">
-      <div className="mx-auto max-w-6xl">
+    <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$13" }}>
+      <YStack alignSelf="center" maxWidth={1152}>
         <Reveal className="mx-auto max-w-2xl text-center">
-          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+          <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
             Why Hanzo
-          </p>
-          <h2 className="mt-4 text-3xl font-medium tracking-tight md:text-[2.75rem] md:leading-[1.1]">
+          </Paragraph>
+          <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ color: "2.75rem", lineHeight: 1.1 }}>
             One platform beats the whole stack.
-          </h2>
-          <p className="mt-4 text-base text-muted-foreground md:text-lg">
+          </H2>
+          <Paragraph marginTop="$4" fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
             Site builders lock you in. AI coding tools hand you bugs to clean up.
             Hanzo ships production apps you own — fast, secure, and built to
             scale.
-          </p>
+          </Paragraph>
         </Reveal>
 
         {/* Legend */}
@@ -322,137 +324,133 @@ export default function Comparison() {
           delay={60}
           className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 font-mono text-[11px] text-muted-foreground"
         >
-          <span className="inline-flex items-center gap-1.5">
+          <SizableText alignItems="center" gap="$1.5">
             <Dot tone="good" /> Advantage
-          </span>
-          <span className="inline-flex items-center gap-1.5">
+          </SizableText>
+          <SizableText alignItems="center" gap="$1.5">
             <Dot tone="mid" /> Caveat
-          </span>
-          <span className="inline-flex items-center gap-1.5">
+          </SizableText>
+          <SizableText alignItems="center" gap="$1.5">
             <Dot tone="bad" /> Weakness
-          </span>
-          <span className="inline-flex items-center gap-1.5">
+          </SizableText>
+          <SizableText alignItems="center" gap="$1.5">
             <Dot tone="na" /> N/A
-          </span>
+          </SizableText>
         </Reveal>
 
         {/* ── Desktop / tablet-wide: sliding matrix ─────────────── */}
-        <div className="mt-10 hidden lg:block">
+        <YStack marginTop="$7" display="none">
           <Reveal delay={80}>
-            <div className="mb-3 flex items-center justify-between gap-4">
-              <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+            <XStack marginBottom="$3" alignItems="center" justifyContent="space-between" gap="$4">
+              <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={1.92} color="$color11">
                 Slide across all {COLS.length} criteria →
-              </p>
-              <div className="flex gap-2">
-                <button
+              </Paragraph>
+              <XStack gap="$2">
+                <Button
                   type="button"
                   onClick={() => slide(-1)}
                   aria-label="Previous criteria"
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
+                  height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" color="$color11" hoverStyle={{ borderColor: "$color", color: "$color" }}
                 >
                   <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden>
                     <path d="M10 4L6 8l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
                   onClick={() => slide(1)}
                   aria-label="Next criteria"
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
+                  height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" color="$color11" hoverStyle={{ borderColor: "$color", color: "$color" }}
                 >
                   <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden>
                     <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
-                </button>
-              </div>
-            </div>
+                </Button>
+              </XStack>
+            </XStack>
 
-            <div className="relative">
+            <YStack position="relative">
               {/* right edge fade — signals there's more to slide to */}
-              <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-16 bg-gradient-to-l from-background to-transparent" />
+              <YStack pointerEvents="none" position="absolute" top="$0" bottom="$0" right="$0" zIndex={20} width="$10" />
 
-              <div
+              <YStack
                 ref={scrollRef}
-                className="snap-x overflow-x-auto scroll-smooth scroll-pl-[188px] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                overflow="scroll" className="[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               >
-                <table className="border-separate border-spacing-0 text-left">
+                <SizableText textAlign="left" display="flex" flexDirection="column" className="border-separate border-spacing-0">
                   <thead>
                     <tr>
-                      <th className="sticky left-0 z-10 w-[188px] min-w-[188px] bg-background pb-4 pr-4 align-bottom" />
+                      <SizableText position="sticky" left="$0" zIndex={10} width={188} minWidth={188} backgroundColor="$background" paddingBottom="$4" paddingRight="$4" verticalAlign="bottom" />
                       {COLS.map((c) => (
-                        <th
+                        <SizableText
                           key={c.short}
-                          className="w-[208px] min-w-[208px] snap-start px-4 pb-4 align-bottom font-mono text-[10px] font-normal uppercase leading-tight tracking-[0.1em] text-muted-foreground"
+                          width={208} minWidth={208} paddingHorizontal="$4" paddingBottom="$4" verticalAlign="bottom" fontFamily="$mono" fontSize={10} fontWeight="400" textTransform="uppercase" lineHeight={1.25} letterSpacing={1.6} color="$color11"
                         >
                           <c.icon
                             className="mb-2 h-4 w-4 text-muted-foreground"
                             strokeWidth={1.5}
                             aria-hidden
-                          />
+  />
                           {c.full}
-                        </th>
+                        </SizableText>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {ROWS.map((r) => (
-                      <tr key={r.name} className="group">
-                        <th
+                      <YStack key={r.name} group>
+                        <SizableText
                           scope="row"
-                          className={`sticky left-0 z-10 w-[188px] min-w-[188px] whitespace-nowrap py-3 pl-1 pr-5 text-left align-top font-medium ${
-                            r.hanzo ? "bg-muted text-foreground" : "bg-background text-foreground"
-                          }`}
+                          position="sticky" left="$0" zIndex={10} width={188} minWidth={188} whiteSpace="nowrap" paddingVertical="$3" paddingLeft="$1" paddingRight="$4.5" textAlign="left" verticalAlign="top" fontWeight="500" {...{ backgroundColor: r.hanzo ? "$color3" : "$background", color: r.hanzo ? "$color" : "$color" }}
                         >
-                          <span className="flex items-center gap-2">
+                          <SizableText alignItems="center" gap="$2">
                             {r.name}
                             {r.hanzo && (
-                              <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-emerald-300">
+                              <SizableText borderRadius="$10" borderWidth={1} borderColor="$green8" backgroundColor="$green8" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={9} textTransform="uppercase" letterSpacing={1.92} color="$green4">
                                 Best
-                              </span>
+                              </SizableText>
                             )}
-                          </span>
+                          </SizableText>
                           {r.note && (
-                            <span className="mt-0.5 block font-mono text-[10px] font-normal text-muted-foreground">
+                            <SizableText marginTop="$0.5" fontFamily="$mono" fontSize={10} fontWeight="400" color="$color11">
                               {r.note}
-                            </span>
+                            </SizableText>
                           )}
-                        </th>
+                        </SizableText>
                         {r.cells.map((cell, ci) => (
-                          <td
+                          <SizableText
                             key={ci}
-                            className={`w-[208px] min-w-[208px] snap-start px-4 py-3 align-top ${
-                              r.hanzo ? "bg-muted" : "group-hover:bg-muted"
-                            }`}
+                            width={208} minWidth={208} paddingHorizontal="$4" paddingVertical="$3" verticalAlign="top" {...{ backgroundColor: r.hanzo ? "$color3" : undefined, "$group-hover": r.hanzo ? undefined : {"backgroundColor":"$color3"} }}
                           >
-                            <div className="flex items-start gap-2">
-                              <span className="mt-1">
+                            <XStack alignItems="flex-start" gap="$2">
+                              <SizableText marginTop="$1">
                                 <Dot tone={r.hanzo ? "good" : cell.t} />
-                              </span>
-                              <div className="min-w-0">
-                                <div className={`flex items-center gap-1.5 text-[13px] leading-snug ${r.hanzo ? "text-foreground" : TEXT[cell.t]}`}>
+                              </SizableText>
+                              <YStack minWidth={0}>
+                                <SizableText alignItems="center" gap="$1.5" fontSize={13} lineHeight={1.375} display="flex" flexDirection="row" className={`${r.hanzo ? "text-foreground" : TEXT[cell.t]}`}>
                                   <ColIcon i={ci} className="h-3.5 w-3.5 flex-none text-muted-foreground" />
                                   {cell.v}
-                                </div>
+                                </SizableText>
                                 {cell.d && (
-                                  <div className="mt-0.5 text-[11px] leading-snug text-muted-foreground">
+                                  <SizableText marginTop="$0.5" fontSize={11} lineHeight={1.375} color="$color11" display="flex" flexDirection="column">
                                     {cell.d}
-                                  </div>
+                                  </SizableText>
                                 )}
-                              </div>
-                            </div>
-                          </td>
+                              </YStack>
+                            </XStack>
+                          </SizableText>
                         ))}
-                      </tr>
+                      </YStack>
                     ))}
                   </tbody>
-                </table>
-              </div>
-            </div>
+                </SizableText>
+              </YStack>
+            </YStack>
           </Reveal>
-        </div>
+        </YStack>
 
         {/* ── Mobile: Hanzo card (full) + collapsible competitors ── */}
-        <div className="mt-10 space-y-3 lg:hidden">
+        <YStack marginTop="$7" rowGap="$3" $lg={{ display: "none" }}>
           {ROWS.map((r) => {
             const weak = r.cells.filter((c) => c.t === "bad").length;
             if (r.hanzo) {
@@ -461,33 +459,33 @@ export default function Comparison() {
                   key={r.name}
                   className="rounded-2xl border border-emerald-400/25 bg-muted p-5"
                 >
-                  <div className="mb-4 flex items-center gap-2">
-                    <h3 className="text-lg font-medium text-foreground">{r.name}</h3>
-                    <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-emerald-300">
+                  <XStack marginBottom="$4" alignItems="center" gap="$2">
+                    <H3 fontSize="$6" fontWeight="500" color="$color">{r.name}</H3>
+                    <SizableText borderRadius="$10" borderWidth={1} borderColor="$green8" backgroundColor="$green8" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={9} textTransform="uppercase" letterSpacing={1.92} color="$green4">
                       Best overall
-                    </span>
-                  </div>
-                  <dl className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
+                    </SizableText>
+                  </XStack>
+                  <YStack columnGap="$5" rowGap="$3">
                     {r.cells.map((cell, ci) => (
-                      <div key={ci} className="flex items-start gap-2.5">
-                        <span className="mt-1.5">
+                      <XStack key={ci} alignItems="flex-start" gap="$2.5">
+                        <SizableText marginTop="$1.5">
                           <Dot tone="good" />
-                        </span>
-                        <div className="min-w-0">
-                          <dt className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                        </SizableText>
+                        <YStack minWidth={0}>
+                          <SizableText alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.6} color="$color11">
                             <ColIcon i={ci} className="h-3 w-3 text-muted-foreground" />
                             {COLS[ci].short}
-                          </dt>
-                          <dd className="text-sm text-foreground">
+                          </SizableText>
+                          <SizableText fontSize="$3" color="$color">
                             {cell.v}
                             {cell.d && (
-                              <span className="text-muted-foreground"> · {cell.d}</span>
+                              <SizableText color="$color11"> · {cell.d}</SizableText>
                             )}
-                          </dd>
-                        </div>
-                      </div>
+                          </SizableText>
+                        </YStack>
+                      </XStack>
                     ))}
-                  </dl>
+                  </YStack>
                 </Reveal>
               );
             }
@@ -497,22 +495,22 @@ export default function Comparison() {
                 className="group overflow-hidden rounded-2xl border border-border bg-muted"
               >
                 <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4">
-                  <span className="min-w-0">
-                    <span className="text-base font-medium text-foreground">
+                  <SizableText minWidth={0}>
+                    <SizableText fontSize="$4" fontWeight="500" color="$color">
                       {r.name}
-                    </span>
+                    </SizableText>
                     {r.note && (
-                      <span className="ml-2 font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                      <SizableText marginLeft="$2" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.6} color="$color11">
                         {r.note}
-                      </span>
+                      </SizableText>
                     )}
-                  </span>
-                  <span className="flex flex-none items-center gap-3">
+                  </SizableText>
+                  <SizableText flex={0} alignItems="center" gap="$3">
                     {weak > 0 && (
-                      <span className="inline-flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
+                      <SizableText alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={11} color="$color11">
                         <Dot tone="bad" />
                         {weak} weak {weak === 1 ? "area" : "areas"}
-                      </span>
+                      </SizableText>
                     )}
                     <svg
                       className="h-4 w-4 flex-none text-muted-foreground transition-transform duration-200 group-open:rotate-180"
@@ -526,35 +524,35 @@ export default function Comparison() {
                         strokeWidth="1.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                      />
+  />
                     </svg>
-                  </span>
+                  </SizableText>
                 </summary>
-                <dl className="grid grid-cols-1 gap-x-6 gap-y-3 border-t border-border px-5 py-4 sm:grid-cols-2">
+                <YStack columnGap="$5" rowGap="$3" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4.5" paddingVertical="$4">
                   {r.cells.map((cell, ci) => (
-                    <div key={ci} className="flex items-start gap-2.5">
-                      <span className="mt-1.5">
+                    <XStack key={ci} alignItems="flex-start" gap="$2.5">
+                      <SizableText marginTop="$1.5">
                         <Dot tone={cell.t} />
-                      </span>
-                      <div className="min-w-0">
-                        <dt className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                      </SizableText>
+                      <YStack minWidth={0}>
+                        <SizableText alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.6} color="$color11">
                           <ColIcon i={ci} className="h-3 w-3 text-muted-foreground" />
                           {COLS[ci].short}
-                        </dt>
-                        <dd className={`text-sm ${TEXT[cell.t]}`}>
+                        </SizableText>
+                        <SizableText fontSize="$3" className={`${TEXT[cell.t]}`}>
                           {cell.v}
                           {cell.d && (
-                            <span className="text-muted-foreground"> · {cell.d}</span>
+                            <SizableText color="$color11"> · {cell.d}</SizableText>
                           )}
-                        </dd>
-                      </div>
-                    </div>
+                        </SizableText>
+                      </YStack>
+                    </XStack>
                   ))}
-                </dl>
+                </YStack>
               </details>
             );
           })}
-        </div>
+        </YStack>
 
         <Reveal
           as="p"
@@ -564,7 +562,7 @@ export default function Comparison() {
           Every app ships on Hanzo Cloud — database, auth, AI, and storage wired
           in. No lock-in, ever.
         </Reveal>
-      </div>
-    </section>
+      </YStack>
+    </YStack>
   );
 }

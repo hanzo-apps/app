@@ -1,5 +1,7 @@
 'use client';
 
+import { Button } from '@hanzo/ui';
+import { SizableText } from '@hanzo/gui';
 import React from 'react';
 import { Save, Check, Loader2 } from 'lucide-react';
 import { saveManager } from '@/lib/vfs/save-manager';
@@ -49,37 +51,33 @@ export function SaveButton({ projectId, className = '', onSave }: SaveButtonProp
   };
 
   return (
-    <button
+    <Button
       onClick={handleSave}
       disabled={isSaving || (!isDirty && !justSaved)}
-      className={`inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-        justSaved
-          ? 'bg-green-600 text-white'
-          : isSaving
+      alignItems="center" gap="$2" paddingHorizontal="$4" paddingVertical="$2" borderRadius="$3" fontSize="$3" fontWeight="500" className={`${justSaved ? 'bg-green-600 text-white' : isSaving
           ? 'bg-muted text-muted-foreground cursor-not-allowed'
           : isDirty
           ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-          : 'bg-muted text-muted-foreground cursor-not-allowed'
-      } ${className}`}
+          : 'bg-muted text-muted-foreground cursor-not-allowed'} ${className}`}
     >
       {isSaving ? (
         <>
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <Loader2 size={16} />
           Saving...
         </>
       ) : justSaved ? (
         <>
-          <Check className="h-4 w-4" />
+          <Check size={16} />
           Saved
         </>
       ) : (
         <>
-          <Save className="h-4 w-4" />
+          <Save size={16} />
           Save
-          {isDirty && <span className="ml-1 h-2 w-2 rounded-full bg-current" />}
+          {isDirty && <SizableText marginLeft="$1" height="$2" width="$2" borderRadius="$10" backgroundColor="currentColor" />}
         </>
       )}
-    </button>
+    </Button>
   );
 }
 
@@ -116,23 +114,23 @@ export function AutoSaveIndicator({ projectId, className = '' }: AutoSaveIndicat
   };
 
   return (
-    <div className={`inline-flex items-center gap-2 text-xs text-muted-foreground ${className}`}>
+    <SizableText alignItems="center" gap="$2" fontSize="$1" color="$color11" display="flex" flexDirection="row" className={`${className}`}>
       {isDirty ? (
         <>
-          <span className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse" />
+          <SizableText height="$2" width="$2" borderRadius="$10" backgroundColor="$yellow9" />
           Unsaved changes
         </>
       ) : lastSaved ? (
         <>
-          <Check className="h-3 w-3 text-green-600" />
+          <Check size={12} color="$green10" />
           Saved {getTimeAgo(lastSaved)}
         </>
       ) : (
         <>
-          <Check className="h-3 w-3 text-green-600" />
+          <Check size={12} color="$green10" />
           All changes saved
         </>
       )}
-    </div>
+    </SizableText>
   );
 }

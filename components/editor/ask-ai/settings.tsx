@@ -1,4 +1,6 @@
-import classNames from "classnames";
+'use client';
+
+import { SizableText, YStack, Paragraph } from '@hanzo/gui';
 import { PiGearSixFill } from "react-icons/pi";
 import { Check } from "lucide-react";
 
@@ -49,27 +51,22 @@ function ModelRow({
   onClick: () => void;
 }) {
   return (
-    <button
+    <Button
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      className={classNames(
-        "flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm transition-colors",
-        selected
-          ? "bg-accent text-foreground"
-          : "text-muted-foreground hover:bg-accent hover:text-foreground"
-      )}
+      width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$2" textAlign="left" fontSize="$3" {...{ backgroundColor: selected ? "$color3" : undefined, color: selected ? "$color" : "$color11", hoverStyle: selected ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
     >
-      <span className="min-w-0 flex-1">
-        <span className="block truncate font-medium">{label}</span>
+      <SizableText minWidth={0} flex={1}>
+        <SizableText numberOfLines={1} fontWeight="500">{label}</SizableText>
         {hint && (
-          <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+          <SizableText marginTop="$0.5" numberOfLines={1} fontSize="$1" color="$color11">
             {hint}
-          </span>
+          </SizableText>
         )}
-      </span>
-      {selected && <Check className="size-4 shrink-0 text-foreground" />}
-    </button>
+      </SizableText>
+      {selected && <Check size={16} color="$color" />}
+    </Button>
   );
 }
 
@@ -112,9 +109,9 @@ export function Settings({
           size="iconXs"
           title="Settings — model, mode & options"
           aria-label="Settings"
-          className="rounded-full !text-muted-foreground hover:!bg-accent hover:!text-foreground"
+          borderRadius="$10" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
         >
-          <PiGearSixFill className="size-4" />
+          <PiGearSixFill size={16} />
         </Button>
       </PopoverTrigger>
       {/* ONE popover surface: solid bg-card, a single hairline border, high
@@ -124,16 +121,16 @@ export function Settings({
         side="top"
         align="end"
         sideOffset={8}
-        className="w-96 overflow-hidden p-0"
+        width={384} overflow="hidden" padding="$0"
       >
-        <header className="border-b border-border bg-card px-4 py-3 text-center text-sm font-medium text-foreground">
+        <SizableText borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$4" paddingVertical="$3" textAlign="center" fontSize="$3" fontWeight="500" color="$color" display="flex" flexDirection="column">
           Model
-        </header>
-        <main className="space-y-2.5 px-4 pt-4 pb-5">
+        </SizableText>
+        <YStack rowGap="$2.5" paddingHorizontal="$4" paddingTop="$4" paddingBottom="$4.5">
           {error && error !== "" && (
-            <p className="flex items-center justify-between rounded-md bg-red-500/10 p-2 text-sm font-medium text-red-500">
+            <Paragraph alignItems="center" justifyContent="space-between" borderRadius="$3" backgroundColor="$red9" padding="$2" fontSize="$3" fontWeight="500" color="$red9">
               {error}
-            </p>
+            </Paragraph>
           )}
 
           {/* `auto` is a first-class VALUE of the persisted `model` — the
@@ -142,22 +139,22 @@ export function Settings({
               Enso / Zen / Anthropic / OpenAI), which is NOT what Enso does, so
               it says so rather than borrowing Enso's name. It is no longer the
               fresh-session default: that is Enso, in the list below. */}
-          <div className="rounded-xl border border-border bg-card/60 p-1">
+          <YStack borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$1">
             <ModelRow
               label="Auto · smart routing"
               hint="Routes each request to the cheapest capable model"
               selected={isAuto}
               onClick={() => onModelChange(AUTO_MODEL)}
-            />
-          </div>
+  />
+          </YStack>
           <ModelSelector
             models={entries}
             value={isAuto ? undefined : model}
             onChange={onModelChange}
             size="sm"
             chatOnly
-          />
-        </main>
+  />
+        </YStack>
       </PopoverContent>
     </Popover>
   );

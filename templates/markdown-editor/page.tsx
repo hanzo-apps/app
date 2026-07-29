@@ -1,25 +1,9 @@
 "use client";
 
+import { YStack, XStack, H1, SizableText } from '@hanzo/gui';
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, Button, Textarea, Tabs, TabsContent, TabsList, TabsTrigger, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Separator, ScrollArea } from '@hanzo/ui';
-import {
-  Bold,
-  Italic,
-  Link,
-  List,
-  ListOrdered,
-  Quote,
-  Code,
-  Heading1,
-  Heading2,
-  Image,
-  Table,
-  Download,
-  Copy,
-  Eye,
-  FileText,
-  Save
-} from "lucide-react";
+import { Card, CardContent, Button, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Separator, ScrollArea } from '@hanzo/ui';
+import { Bold, Italic, Link, List, ListOrdered, Quote, Code, Heading1, Heading2, Image, Table, Download, Copy, FileText, Save } from "lucide-react";
 
 export default function MarkdownEditor() {
   const [markdown, setMarkdown] = useState(`# Welcome to Hanzo Markdown Editor
@@ -61,7 +45,6 @@ export function MyComponent() {
 3. Step three
 
 ## Blockquote
-
 > "The best way to predict the future is to invent it."
 > - Alan Kay
 
@@ -127,22 +110,22 @@ Start writing your content above!
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <YStack minHeight="100%" backgroundColor="$background">
       {/* Header Toolbar */}
-      <div className="border-b">
-        <div className="container mx-auto px-6 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <h1 className="text-xl font-bold">Markdown Editor</h1>
-              <Separator orientation="vertical" className="h-6" />
-              <div className="flex items-center gap-1">
+      <YStack borderBottomWidth={1}>
+        <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$3">
+          <XStack alignItems="center" justifyContent="space-between">
+            <XStack alignItems="center" gap="$4">
+              <H1 fontSize="$7" fontWeight="700">Markdown Editor</H1>
+              <Separator orientation="vertical" height="$5" />
+              <XStack alignItems="center" gap="$1">
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => insertMarkdown("**", "**")}
                   title="Bold"
                 >
-                  <Bold className="w-4 h-4" />
+                  <Bold size={16} />
                 </Button>
                 <Button
                   variant="ghost"
@@ -150,7 +133,7 @@ Start writing your content above!
                   onClick={() => insertMarkdown("*", "*")}
                   title="Italic"
                 >
-                  <Italic className="w-4 h-4" />
+                  <Italic size={16} />
                 </Button>
                 <Button
                   variant="ghost"
@@ -158,7 +141,7 @@ Start writing your content above!
                   onClick={() => insertMarkdown("# ")}
                   title="Heading 1"
                 >
-                  <Heading1 className="w-4 h-4" />
+                  <Heading1 size={16} />
                 </Button>
                 <Button
                   variant="ghost"
@@ -166,16 +149,16 @@ Start writing your content above!
                   onClick={() => insertMarkdown("## ")}
                   title="Heading 2"
                 >
-                  <Heading2 className="w-4 h-4" />
+                  <Heading2 size={16} />
                 </Button>
-                <Separator orientation="vertical" className="h-6 mx-1" />
+                <Separator orientation="vertical" height="$5" marginHorizontal="$1" />
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => insertMarkdown("[", "](url)")}
                   title="Link"
                 >
-                  <Link className="w-4 h-4" />
+                  <Link size={16} />
                 </Button>
                 <Button
                   variant="ghost"
@@ -183,16 +166,16 @@ Start writing your content above!
                   onClick={() => insertMarkdown("![alt text](", ")")}
                   title="Image"
                 >
-                  <Image className="w-4 h-4" />
+                  <Image size={16} />
                 </Button>
-                <Separator orientation="vertical" className="h-6 mx-1" />
+                <Separator orientation="vertical" height="$5" marginHorizontal="$1" />
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => insertMarkdown("- ")}
                   title="Bullet List"
                 >
-                  <List className="w-4 h-4" />
+                  <List size={16} />
                 </Button>
                 <Button
                   variant="ghost"
@@ -200,7 +183,7 @@ Start writing your content above!
                   onClick={() => insertMarkdown("1. ")}
                   title="Numbered List"
                 >
-                  <ListOrdered className="w-4 h-4" />
+                  <ListOrdered size={16} />
                 </Button>
                 <Button
                   variant="ghost"
@@ -208,7 +191,7 @@ Start writing your content above!
                   onClick={() => insertMarkdown("> ")}
                   title="Quote"
                 >
-                  <Quote className="w-4 h-4" />
+                  <Quote size={16} />
                 </Button>
                 <Button
                   variant="ghost"
@@ -216,7 +199,7 @@ Start writing your content above!
                   onClick={() => insertMarkdown("```\n", "\n```")}
                   title="Code Block"
                 >
-                  <Code className="w-4 h-4" />
+                  <Code size={16} />
                 </Button>
                 <Button
                   variant="ghost"
@@ -224,14 +207,14 @@ Start writing your content above!
                   onClick={() => insertMarkdown("| Column 1 | Column 2 |\n|----------|----------|\n| ", " | |")}
                   title="Table"
                 >
-                  <Table className="w-4 h-4" />
+                  <Table size={16} />
                 </Button>
-              </div>
-            </div>
+              </XStack>
+            </XStack>
 
-            <div className="flex items-center gap-2">
+            <XStack alignItems="center" gap="$2">
               <Select value={viewMode} onValueChange={setViewMode}>
-                <SelectTrigger className="w-32">
+                <SelectTrigger width="$14">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -241,72 +224,72 @@ Start writing your content above!
                 </SelectContent>
               </Select>
               <Button variant="outline" size="sm">
-                <Copy className="w-4 h-4 mr-2" />
+                <Copy size={16} />
                 Copy
               </Button>
               <Button variant="outline" size="sm">
-                <Download className="w-4 h-4 mr-2" />
+                <Download size={16} />
                 Export
               </Button>
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                <Save className="w-4 h-4 mr-2" />
+              <Button size="sm" backgroundColor="$blue10" hoverStyle={{ backgroundColor: "$blue11" }}>
+                <Save size={16} />
                 Save
               </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+            </XStack>
+          </XStack>
+        </YStack>
+      </YStack>
 
       {/* Editor Area */}
-      <div className="flex h-[calc(100vh-4rem)]">
+      <XStack height="calc(100vh-4rem)">
         {/* Editor Panel */}
         {(viewMode === "edit" || viewMode === "split") && (
-          <div className={viewMode === "split" ? "w-1/2 border-r" : "w-full"}>
-            <ScrollArea className="h-full">
+          <YStack {...{ width: viewMode === "split" ? "50%" : "100%", borderRightWidth: viewMode === "split" ? 1 : undefined }}>
+            <ScrollArea height="100%">
               <Textarea
                 id="markdown-input"
                 value={markdown}
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMarkdown(e.target.value)}
-                className="min-h-full p-6 resize-none border-0 focus-visible:ring-0 font-mono text-sm"
+                minHeight="100%" padding="$5" resize="none" borderWidth={0} fontFamily="$mono" fontSize="$3"
                 placeholder="Start writing in markdown..."
-              />
+  />
             </ScrollArea>
-          </div>
+          </YStack>
         )}
 
         {/* Preview Panel */}
         {(viewMode === "preview" || viewMode === "split") && (
-          <div className={viewMode === "split" ? "w-1/2" : "w-full"}>
-            <ScrollArea className="h-full">
-              <Card className="border-0 rounded-none">
-                <CardContent className="p-6">
+          <YStack {...{ width: viewMode === "split" ? "50%" : "100%" }}>
+            <ScrollArea height="100%">
+              <Card borderWidth={0} borderRadius={0}>
+                <CardContent padding="$5">
                   <div
                     className="markdown-preview"
                     dangerouslySetInnerHTML={{ __html: renderMarkdown(markdown) }}
-                  />
+  />
                 </CardContent>
               </Card>
             </ScrollArea>
-          </div>
+          </YStack>
         )}
-      </div>
+      </XStack>
 
       {/* Status Bar */}
-      <div className="border-t">
-        <div className="container mx-auto px-6 py-2">
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <div className="flex items-center gap-4">
+      <YStack borderTopWidth={1}>
+        <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$2">
+          <SizableText alignItems="center" justifyContent="space-between" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+            <XStack alignItems="center" gap="$4">
               <span>{markdown.length} characters</span>
               <span>{markdown.split(/\s+/).filter(w => w).length} words</span>
               <span>{markdown.split("\n").length} lines</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <FileText className="w-3 h-3" />
+            </XStack>
+            <XStack alignItems="center" gap="$2">
+              <FileText size={12} />
               <span>Markdown</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+            </XStack>
+          </SizableText>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }

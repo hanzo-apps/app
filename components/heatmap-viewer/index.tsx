@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
+import { useState, useEffect, useRef } from 'react';
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Label, toast } from '@hanzo/ui';
 
 interface HeatmapPoint {
@@ -236,10 +237,10 @@ export function HeatmapViewer({ deploymentId, pages }: HeatmapViewerProps) {
   }, [data, screenshotDataUrl]);
 
   return (
-    <div className="space-y-4">
+    <YStack rowGap="$4">
       {/* Controls */}
-      <div className="flex gap-4 items-end flex-wrap">
-        <div className="min-w-48">
+      <XStack gap="$4" alignItems="flex-end" flexWrap="wrap">
+        <YStack minWidth="$19">
           <Label htmlFor="page-select">Page</Label>
           <Select value={selectedPage} onValueChange={setSelectedPage}>
             <SelectTrigger id="page-select">
@@ -253,9 +254,9 @@ export function HeatmapViewer({ deploymentId, pages }: HeatmapViewerProps) {
               ))}
             </SelectContent>
           </Select>
-        </div>
+        </YStack>
 
-        <div className="min-w-36">
+        <YStack minWidth="$15">
           <Label htmlFor="device-select">Device</Label>
           <Select value={deviceFilter} onValueChange={(value) => setDeviceFilter(value as any)}>
             <SelectTrigger id="device-select">
@@ -268,78 +269,78 @@ export function HeatmapViewer({ deploymentId, pages }: HeatmapViewerProps) {
               <SelectItem value="desktop">Desktop</SelectItem>
             </SelectContent>
           </Select>
-        </div>
+        </YStack>
 
         <Button onClick={fetchHeatmapData} disabled={loading}>
           {loading ? 'Loading...' : 'Refresh'}
         </Button>
-      </div>
+      </XStack>
 
       {/* Sample Size */}
       {data && (
-        <div className="text-sm text-muted-foreground">
-          Sample size: <span className="font-medium">{data.sampleSize.toLocaleString()}</span> interactions
-        </div>
+        <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">
+          Sample size: <SizableText fontWeight="500">{data.sampleSize.toLocaleString()}</SizableText> interactions
+        </SizableText>
       )}
 
       {/* Visualization */}
       {loading && (
-        <div className="flex items-center justify-center h-96 border rounded-lg">
-          <p className="text-muted-foreground">Loading heatmap data...</p>
-        </div>
+        <XStack alignItems="center" justifyContent="center" height={384} borderWidth={1} borderRadius="$5">
+          <Paragraph color="$color11">Loading heatmap data...</Paragraph>
+        </XStack>
       )}
 
       {!loading && data && data.type === 'click' && (
-        <div className="border rounded-lg overflow-hidden">
+        <YStack borderWidth={1} borderRadius="$5" overflow="hidden">
           {!screenshotDataUrl && !screenshotLoading && (
-            <div className="p-8 text-center">
-              <p className="text-muted-foreground mb-4">Capture a screenshot of the page to visualize click heatmap</p>
+            <SizableText padding="$6" textAlign="center" display="flex" flexDirection="column">
+              <Paragraph color="$color11" marginBottom="$4">Capture a screenshot of the page to visualize click heatmap</Paragraph>
               <Button onClick={captureScreenshot}>Capture Page Screenshot</Button>
-            </div>
+            </SizableText>
           )}
 
           {screenshotLoading && (
-            <div className="p-8 text-center">
-              <p className="text-muted-foreground">Capturing screenshot...</p>
-            </div>
+            <SizableText padding="$6" textAlign="center" display="flex" flexDirection="column">
+              <Paragraph color="$color11">Capturing screenshot...</Paragraph>
+            </SizableText>
           )}
 
           {screenshotDataUrl && (
             <>
-              <div className="bg-muted/30 p-4 overflow-auto" style={{ maxHeight: '70vh' }}>
+              <YStack backgroundColor="$color3" padding="$4" overflow="scroll" style={{ maxHeight: '70vh' }}>
                 <canvas
                   ref={canvasRef}
                   className="mx-auto"
                   style={{ maxWidth: '100%', height: 'auto' }}
-                />
-              </div>
+  />
+              </YStack>
 
-              <div className="p-4 bg-muted text-sm border-t">
-                <div className="flex items-center justify-between">
+              <SizableText padding="$4" backgroundColor="$color3" fontSize="$3" borderTopWidth={1} display="flex" flexDirection="column">
+                <XStack alignItems="center" justifyContent="space-between">
                   <div>
-                    <p className="font-medium mb-2">Click Heatmap Legend:</p>
-                    <div className="flex gap-4">
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded bg-red-500/70" />
+                    <Paragraph fontWeight="500" marginBottom="$2">Click Heatmap Legend:</Paragraph>
+                    <XStack gap="$4">
+                      <XStack alignItems="center" gap="$2">
+                        <YStack width="$4" height="$4" borderRadius="$2" backgroundColor="$red9" />
                         <span>High activity</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded bg-orange-500/50" />
+                      </XStack>
+                      <XStack alignItems="center" gap="$2">
+                        <YStack width="$4" height="$4" borderRadius="$2" backgroundColor="$orange9" />
                         <span>Medium activity</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded bg-yellow-500/20" />
+                      </XStack>
+                      <XStack alignItems="center" gap="$2">
+                        <YStack width="$4" height="$4" borderRadius="$2" backgroundColor="$yellow9" />
                         <span>Low activity</span>
-                      </div>
-                    </div>
+                      </XStack>
+                    </XStack>
                   </div>
-                  <div className="text-right">
+                  <SizableText textAlign="right" display="flex" flexDirection="column">
                     <Button variant="outline" size="sm" onClick={captureScreenshot}>
                       Recapture
                     </Button>
-                  </div>
-                </div>
-              </div>
+                  </SizableText>
+                </XStack>
+              </SizableText>
             </>
           )}
 
@@ -354,15 +355,15 @@ export function HeatmapViewer({ deploymentId, pages }: HeatmapViewerProps) {
               // Width and height set dynamically in captureScreenshot()
             }}
             title="Page for screenshot"
-          />
-        </div>
+  />
+        </YStack>
       )}
 
       {!loading && !data && (
-        <div className="flex items-center justify-center h-96 border rounded-lg">
-          <p className="text-muted-foreground">No heatmap data available</p>
-        </div>
+        <XStack alignItems="center" justifyContent="center" height={384} borderWidth={1} borderRadius="$5">
+          <Paragraph color="$color11">No heatmap data available</Paragraph>
+        </XStack>
       )}
-    </div>
+    </YStack>
   );
 }

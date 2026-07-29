@@ -1,9 +1,10 @@
 'use client';
 
+import { SizableText, Paragraph, YStack, XStack, H1, Anchor, H2 } from '@hanzo/gui';
 import { useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { Badge, Button } from '@hanzo/ui';
+import { Badge, Button, Textarea } from '@hanzo/ui';
 import {
   Gamepad2,
   Play,
@@ -48,12 +49,12 @@ export default function GameDetail() {
   if (!game) {
     return (
       <AppShell currentView="games">
-        <div className="flex flex-1 flex-col items-center justify-center gap-4 bg-background text-foreground">
-          <p className="text-lg text-muted-foreground">Game not found.</p>
-          <Link href="/games" className="text-foreground underline">
+        <SizableText flex={1} flexDirection="column" alignItems="center" justifyContent="center" gap="$4" backgroundColor="$background" color="$color" display="flex">
+          <Paragraph fontSize="$6" color="$color11">Game not found.</Paragraph>
+          <Link href="/games"><SizableText color="$color" textDecorationLine="underline">
             Back to games
-          </Link>
-        </div>
+          </SizableText></Link>
+        </SizableText>
       </AppShell>
     );
   }
@@ -67,62 +68,61 @@ export default function GameDetail() {
 
   return (
     <AppShell currentView="games">
-      <div className="flex-1 overflow-y-auto bg-background text-foreground">
-        <div className="container mx-auto max-w-5xl px-6 py-8">
+      <SizableText flex={1} backgroundColor="$background" color="$color" overflow="scroll" display="flex" flexDirection="column">
+        <YStack width="100%" maxWidth={1024} alignSelf="center" paddingHorizontal="$5" paddingVertical="$6">
           <Link
             href="/games"
-            className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="h-4 w-4" />
+          ><SizableText marginBottom="$5" alignItems="center" gap="$1.5" fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}>
+            <ArrowLeft size={16} />
             Games
-          </Link>
+          </SizableText></Link>
 
           {/* Header */}
-          <div className="flex flex-wrap items-start justify-between gap-4">
+          <XStack flexWrap="wrap" alignItems="flex-start" justifyContent="space-between" gap="$4">
             <div>
-              <div className="mb-2 flex items-center gap-2">
-                <Gamepad2 className="h-5 w-5 text-muted-foreground" />
-                <span className="text-sm font-medium">
+              <XStack marginBottom="$2" alignItems="center" gap="$2">
+                <Gamepad2 size={20} color="$color11" />
+                <SizableText fontSize="$3" fontWeight="500">
                   {game.engine[0].toUpperCase() + game.engine.slice(1)} {game.engineVersion}
-                </span>
+                </SizableText>
                 <Badge variant="secondary">{game.genre}</Badge>
-              </div>
-              <h1 className="text-3xl font-medium">{game.name}</h1>
-              <p className="mt-2 max-w-2xl text-muted-foreground">{game.description}</p>
+              </XStack>
+              <H1 fontSize="$10" fontWeight="500">{game.name}</H1>
+              <Paragraph marginTop="$2" maxWidth={672} color="$color11">{game.description}</Paragraph>
             </div>
             {playable && (
               <Button
-                className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+                gap="$2" backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
                 onClick={() => router.push(`/games/${game.id}/play`)}
                 data-testid="play-button"
               >
-                <Play className="h-4 w-4 fill-primary-foreground" />
+                <Play size={16} />
                 Play
               </Button>
             )}
-          </div>
+          </XStack>
 
           {/* Spec grid */}
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <YStack marginTop="$6" gap="$4">
             <Spec label="Targets">
-              <div className="flex flex-wrap items-center gap-2 text-foreground">
+              <SizableText flexWrap="wrap" alignItems="center" gap="$2" color="$color" display="flex" flexDirection="row">
                 {game.targets.map((t) => {
                   const Icon = TARGET_ICON[t];
                   return (
-                    <span key={t} className="inline-flex items-center gap-1 text-sm">
+                    <SizableText key={t} alignItems="center" gap="$1" fontSize="$3">
                       <Icon className="h-4 w-4" />
                       {t}
-                    </span>
+                    </SizableText>
                   );
                 })}
-              </div>
+              </SizableText>
             </Spec>
             <Spec label="License">
-              <span className="text-sm text-foreground">{game.license}</span>
+              <SizableText fontSize="$3" color="$color">{game.license}</SizableText>
             </Spec>
             <Spec label="Build status">
-              <span className="inline-flex items-center gap-1.5 text-sm text-foreground">
-                {game.buildable && <Check className="h-4 w-4 text-foreground" />}
+              <SizableText alignItems="center" gap="$1.5" fontSize="$3" color="$color">
+                {game.buildable && <Check size={16} color="$color" />}
                 {playable
                   ? 'WebGL build (placeholder)'
                   : webglCapable
@@ -130,49 +130,49 @@ export default function GameDetail() {
                     : game.buildable
                       ? 'Desktop build'
                       : 'Not buildable'}
-              </span>
+              </SizableText>
             </Spec>
             <Spec label="Upstream">
-              <a
+              <Anchor
                 href={upstreamUrl(game.upstream)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-sm text-foreground hover:text-foreground"
+                alignItems="center" gap="$1" fontSize="$3" color="$color" hoverStyle={{ color: "$color" }}
               >
-                <Github className="h-4 w-4" />
+                <Github size={16} />
                 {game.upstream}
-                <ArrowUpRight className="h-3.5 w-3.5" />
-              </a>
+                <ArrowUpRight size={14} />
+              </Anchor>
             </Spec>
             <Spec label="Hanzo fork">
               {game.fork ? (
-                <a
+                <Anchor
                   href={`https://github.com/${game.fork}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 font-mono text-xs text-muted-foreground hover:text-foreground"
+                  alignItems="center" gap="$1" fontFamily="$mono" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}
                 >
                   {game.fork}
-                  <ArrowUpRight className="h-3 w-3" />
-                </a>
+                  <ArrowUpRight size={12} />
+                </Anchor>
               ) : (
-                <span className="text-xs text-muted-foreground">
+                <SizableText fontSize="$1" color="$color11">
                   Reference only — {game.forkReason ?? 'license forbids redistribution'}
-                </span>
+                </SizableText>
               )}
             </Spec>
             <Spec label="License terms">
-              <span className="text-xs text-muted-foreground">{game.licenseRestrictions}</span>
+              <SizableText fontSize="$1" color="$color11">{game.licenseRestrictions}</SizableText>
             </Spec>
-          </div>
+          </YStack>
 
           {/* No in-browser build — honest note, no fake play / pixel-stream button */}
           {!playable && (
-            <p className="mt-6 rounded-lg border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
+            <Paragraph marginTop="$5" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$4" paddingVertical="$3" fontSize="$3" color="$color11">
               {webglCapable ? (
                 <>
                   {game.name} builds to WebGL, but no artifact is hosted yet. A CI job drops the
-                  build under <code className="text-muted-foreground">/webgl/{game.id}/</code> (see the
+                  build under <SizableText color="$color11">/webgl/{game.id}/</SizableText> (see the
                   artifact contract) to enable in-browser play.
                 </>
               ) : (
@@ -181,58 +181,58 @@ export default function GameDetail() {
                   Pixel-streaming preview is a render-node feature and is not enabled here.
                 </>
               )}
-            </p>
+            </Paragraph>
           )}
 
           {/* Generative hook — studio pipeline */}
-          <section className="mt-10 rounded-2xl border border-border bg-card/40 p-6">
-            <div className="mb-4 flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-foreground" />
-              <h2 className="text-lg font-medium">Generate assets</h2>
-            </div>
-            <p className="mb-4 text-sm text-muted-foreground">
+          <YStack marginTop="$7" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$5">
+            <XStack marginBottom="$4" alignItems="center" gap="$2">
+              <Sparkles size={20} color="$color" />
+              <H2 fontSize="$6" fontWeight="500">Generate assets</H2>
+            </XStack>
+            <Paragraph marginBottom="$4" fontSize="$3" color="$color11">
               Open this title in the Hanzo studio pipeline to regenerate its assets.
-            </p>
+            </Paragraph>
             {game.assetSlots.length > 0 ? (
-              <div className="mb-5 flex flex-wrap gap-2">
+              <XStack marginBottom="$4.5" flexWrap="wrap" gap="$2">
                 {game.assetSlots.map((slot) => (
-                  <span
+                  <SizableText
                     key={slot}
-                    className="rounded-full border border-border bg-muted/50 px-3 py-1 text-xs capitalize text-foreground"
+                    borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1" fontSize="$1" textTransform="capitalize" color="$color"
                   >
                     {slot}
-                  </span>
+                  </SizableText>
                 ))}
-              </div>
+              </XStack>
             ) : (
-              <p className="mb-5 text-xs text-muted-foreground">
+              <Paragraph marginBottom="$4.5" fontSize="$1" color="$color11">
                 Asset slots are defined in a later catalog pass; studio infers them for now.
-              </p>
+              </Paragraph>
             )}
             <a href={studioHref(game)} target="_blank" rel="noopener noreferrer">
               {/* Same defect as the /enterprise CTA: a hand-painted dark-neutral
                   gradient under the default variant's near-black text. */}
-              <Button className="gap-2">
-                <Wand2 className="h-4 w-4" />
+              <Button gap="$2">
+                <Wand2 size={16} />
                 Generate assets in Studio
-                <ArrowUpRight className="h-4 w-4" />
+                <ArrowUpRight size={16} />
               </Button>
             </a>
-          </section>
+          </YStack>
 
           {/* Builder hook — natural-language prompt with the game repo as context */}
-          <section className="mt-6 rounded-2xl border border-border bg-card/40 p-6">
-            <div className="mb-4 flex items-center gap-2">
-              <Gamepad2 className="h-5 w-5 text-foreground" />
-              <h2 className="text-lg font-medium">Build with AI</h2>
-            </div>
-            <p className="mb-4 text-sm text-muted-foreground">
+          <YStack marginTop="$5" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$5">
+            <XStack marginBottom="$4" alignItems="center" gap="$2">
+              <Gamepad2 size={20} color="$color" />
+              <H2 fontSize="$6" fontWeight="500">Build with AI</H2>
+            </XStack>
+            <Paragraph marginBottom="$4" fontSize="$3" color="$color11">
               Describe a change and open it in the builder with{' '}
-              <code className="text-muted-foreground">{game.name}</code> as repo context — the same
+              <SizableText color="$color11">{game.name}</SizableText> as repo context — the same
               gateway-wired flow the editor uses.
-            </p>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <textarea
+            </Paragraph>
+            <YStack gap="$3" $sm={{ flexDirection: "row" }}>
+              <Textarea
                 value={ask}
                 onChange={(e) => setAsk(e.target.value)}
                 onKeyDown={(e) => {
@@ -241,31 +241,31 @@ export default function GameDetail() {
                 placeholder="e.g. add a second enemy type and a score multiplier…"
                 rows={2}
                 data-testid="builder-prompt"
-                className="flex-1 resize-none rounded-lg border border-border bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none"
-              />
+                flex={1} resize="none" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$4" paddingVertical="$3" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ borderColor: "$color8", outlineWidth: 0 }}
+  />
               <Button
-                className="gap-2 self-end bg-gradient-to-r from-neutral-700 to-neutral-900 hover:from-neutral-900 hover:to-neutral-700"
+                gap="$2" alignSelf="flex-end"
                 onClick={submitAsk}
                 disabled={!ask.trim()}
               >
-                <Sparkles className="h-4 w-4" />
+                <Sparkles size={16} />
                 Open in builder
               </Button>
-            </div>
-          </section>
-        </div>
-      </div>
+            </YStack>
+          </YStack>
+        </YStack>
+      </SizableText>
     </AppShell>
   );
 }
 
 function Spec({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <p className="mb-1.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+    <YStack borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4">
+      <Paragraph marginBottom="$1.5" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={0.8} color="$color11">
         {label}
-      </p>
+      </Paragraph>
       {children}
-    </div>
+    </YStack>
   );
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { SizableText } from '@hanzo/gui';
 import { AppShell } from '@/components/app-shell';
 import { SkillsView } from '@/components/views/skills-view';
 
@@ -17,9 +18,9 @@ import { SkillsView } from '@/components/views/skills-view';
 export default function SkillsPage() {
   return (
     <AppShell currentView="skills">
-      <div className="flex min-h-0 flex-1 flex-col bg-background text-foreground">
+      <SizableText minHeight={0} flex={1} flexDirection="column" backgroundColor="$background" color="$color" display="flex">
         <SkillsView />
-      </div>
+      </SizableText>
     </AppShell>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { YStack, Paragraph, SizableText, XStack } from '@hanzo/gui';
+import { useState, useEffect } from 'react';
 import { CodeEditor } from '@/components/code-editor';
 import { ServerFunction } from '@/lib/vfs/types';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Button, Input, Label } from '@hanzo/ui';
@@ -103,7 +104,7 @@ export function ServerFunctionEditor({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-3xl h-[85vh] flex flex-col">
+      <DialogContent height="85vh" flexDirection="column" $sm={{ maxWidth: 768 }}>
         <DialogHeader>
           <DialogTitle>
             {fn ? 'Edit Server Function' : 'Create Server Function'}
@@ -113,9 +114,9 @@ export function ServerFunctionEditor({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-auto space-y-4">
+        <YStack flex={1} overflow="scroll" rowGap="$4">
           {/* Name */}
-          <div className="space-y-2">
+          <YStack rowGap="$2">
             <Label htmlFor="name">Function Name</Label>
             <Input
               id="name"
@@ -123,59 +124,59 @@ export function ServerFunctionEditor({
               onChange={e => setName(e.target.value.replace(/[^a-zA-Z0-9_]/g, ''))}
               placeholder="validateAuth"
               disabled={!!fn}
-            />
-            <p className="text-xs text-muted-foreground">
-              Usage in edge functions: <span className="font-mono">server.{name || 'name'}(arg1, arg2, ...)</span>
-            </p>
-          </div>
+  />
+            <Paragraph fontSize="$1" color="$color11">
+              Usage in edge functions: <SizableText fontFamily="$mono">server.{name || 'name'}(arg1, arg2, ...)</SizableText>
+            </Paragraph>
+          </YStack>
 
           {/* Description */}
-          <div className="space-y-2">
+          <YStack rowGap="$2">
             <Label htmlFor="description">Description (optional)</Label>
             <Input
               id="description"
               value={description}
               onChange={e => setDescription(e.target.value)}
               placeholder="What does this helper do?"
-            />
-          </div>
+  />
+          </YStack>
 
           {/* Code Editor */}
-          <div className="space-y-2">
+          <YStack rowGap="$2">
             <Label>Function Code</Label>
-            <div className="h-64 border rounded-lg overflow-hidden">
+            <YStack height={256} borderWidth={1} borderRadius="$5" overflow="hidden">
               <CodeEditor
                 language="javascript"
                 value={code}
                 onChange={(value) => setCode(value)}
-              />
-            </div>
-          </div>
+  />
+            </YStack>
+          </YStack>
 
           {/* API Reference */}
-          <div className="bg-muted/30 border rounded-lg p-4 space-y-2">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <Info className="h-4 w-4" />
+          <YStack backgroundColor="$color3" borderWidth={1} borderRadius="$5" padding="$4" rowGap="$2">
+            <SizableText alignItems="center" gap="$2" fontSize="$3" fontWeight="500" display="flex" flexDirection="row">
+              <Info size={16} />
               Available in Server Functions
-            </div>
-            <div className="grid gap-2 text-xs font-mono">
-              <div><span className="text-orange-500">args</span> - Array of arguments passed from edge function</div>
-              <div><span className="text-green-500">db</span>.query(sql, params), .run(sql, params), .all(sql, params)</div>
-              <div><span className="text-yellow-500">fetch</span>(url, options) - External HTTP requests</div>
-              <div><span className="text-blue-500">console</span>.log(), .error(), .warn() - Logging</div>
-            </div>
-            <div className="mt-3 pt-3 border-t">
-              <p className="text-xs text-muted-foreground">
+            </SizableText>
+            <SizableText gap="$2" fontSize="$1" fontFamily="$mono" display="flex" flexDirection="column">
+              <div><SizableText color="$orange9">args</SizableText> - Array of arguments passed from edge function</div>
+              <div><SizableText color="$green9">db</SizableText>.query(sql, params), .run(sql, params), .all(sql, params)</div>
+              <div><SizableText color="$yellow9">fetch</SizableText>(url, options) - External HTTP requests</div>
+              <div><SizableText color="$blue9">console</SizableText>.log(), .error(), .warn() - Logging</div>
+            </SizableText>
+            <YStack marginTop="$3" paddingTop="$3" borderTopWidth={1}>
+              <Paragraph fontSize="$1" color="$color11">
                 <strong>Note:</strong> Return a value to send data back to the calling edge function.
                 Server functions are synchronous and share the timeout with the parent edge function.
-              </p>
-            </div>
-          </div>
+              </Paragraph>
+            </YStack>
+          </YStack>
 
           {/* Example */}
-          <div className="bg-muted/30 border rounded-lg p-4 space-y-2">
-            <div className="text-sm font-medium">Example: Using in Edge Function</div>
-            <pre className="text-xs font-mono bg-background p-2 rounded overflow-x-auto">
+          <YStack backgroundColor="$color3" borderWidth={1} borderRadius="$5" padding="$4" rowGap="$2">
+            <SizableText fontSize="$3" fontWeight="500" display="flex" flexDirection="column">Example: Using in Edge Function</SizableText>
+            <SizableText fontSize="$1" fontFamily="$mono" backgroundColor="$background" padding="$2" borderRadius="$2" overflow="scroll" whiteSpace="pre">
 {`// Edge function code
 const auth = server.${name || 'validateAuth'}(request.headers['x-api-key']);
 if (!auth.valid) {
@@ -186,34 +187,34 @@ if (!auth.valid) {
 // User is authenticated
 const products = db.query('SELECT * FROM products WHERE user_id = ?', [auth.user.id]);
 Response.json({ products });`}
-            </pre>
-          </div>
+            </SizableText>
+          </YStack>
 
           {/* Error */}
           {error && (
-            <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 p-3 rounded-lg">
-              <AlertCircle className="h-4 w-4" />
+            <SizableText alignItems="center" gap="$2" fontSize="$3" color="$red9" backgroundColor="$red9" padding="$3" borderRadius="$5" display="flex" flexDirection="row">
+              <AlertCircle size={16} />
               {error}
-            </div>
+            </SizableText>
           )}
-        </div>
+        </YStack>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-2 pt-4 border-t">
+        <XStack alignItems="center" justifyContent="flex-end" gap="$2" paddingTop="$4" borderTopWidth={1}>
           <Button variant="outline" onClick={onClose} disabled={saving}>
             Cancel
           </Button>
           <Button onClick={handleSave} disabled={saving}>
             {saving ? (
               <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                <Loader2 size={16} />
                 Saving...
               </>
             ) : (
               fn ? 'Save Changes' : 'Create Function'
             )}
           </Button>
-        </div>
+        </XStack>
       </DialogContent>
     </Dialog>
   );

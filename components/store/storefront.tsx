@@ -1,5 +1,6 @@
 "use client";
 
+import { YStack, XStack, H1, SizableText, Paragraph, H2, Image, H3 } from '@hanzo/gui';
 // Ecommerce storefront — the REAL per-org store surface.
 //
 // This template used to render a hardcoded fixture array. It now BINDS to the
@@ -162,121 +163,121 @@ export function Storefront() {
   const currency = data?.currency || "USD";
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b sticky top-0 bg-background/95 backdrop-blur z-50">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between gap-4">
-          <h1 className="text-2xl font-medium flex items-center gap-2">
-            <StoreIcon className="w-6 h-6" /> Store
-          </h1>
-          <div className="flex items-center gap-4">
-            <div className="relative hidden md:block">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+    <YStack minHeight="100%" backgroundColor="$background">
+      <YStack borderBottomWidth={1} position="sticky" top="$0" backgroundColor="$background" backdropFilter="blur(8px)" zIndex={50}>
+        <XStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$4" alignItems="center" justifyContent="space-between" gap="$4">
+          <H1 fontSize="$8" fontWeight="500" alignItems="center" gap="$2">
+            <StoreIcon size={24} /> Store
+          </H1>
+          <XStack alignItems="center" gap="$4">
+            <YStack position="relative" display="none">
+              <Search size={16} color="$color11" />
               <Input
                 placeholder="Search products..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="pl-9 w-[200px] lg:w-[300px]"
-              />
-            </div>
+                paddingLeft={36} width={200} $lg={{ width: 300 }}
+  />
+            </YStack>
             <Button
               onClick={checkout}
               disabled={cartCount === 0 || checkingOut}
-              className="relative gap-2"
+              position="relative" gap="$2"
             >
               {checkingOut ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader2 size={20} />
               ) : (
-                <ShoppingCart className="w-5 h-5" />
+                <ShoppingCart size={20} />
               )}
               {cartCount > 0 ? `Checkout (${cartCount})` : "Cart"}
             </Button>
-          </div>
-        </div>
-      </header>
+          </XStack>
+        </XStack>
+      </YStack>
 
-      <section className="py-12">
-        <div className="container mx-auto px-6">
+      <YStack paddingVertical="$8">
+        <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5">
           {loading && (
-            <div className="flex items-center justify-center py-24 text-muted-foreground">
-              <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading catalog…
-            </div>
+            <SizableText alignItems="center" justifyContent="center" paddingVertical="$12" color="$color11" display="flex" flexDirection="row">
+              <Loader2 size={24} /> Loading catalog…
+            </SizableText>
           )}
 
           {!loading && error && (
-            <div className="max-w-md mx-auto text-center py-24">
-              <StoreIcon className="w-10 h-10 mx-auto mb-4 text-muted-foreground" />
-              <p className="text-muted-foreground">{error}</p>
-            </div>
+            <SizableText maxWidth={448} alignSelf="center" textAlign="center" paddingVertical="$12" display="flex" flexDirection="column">
+              <StoreIcon size={40} color="$color11" />
+              <Paragraph color="$color11">{error}</Paragraph>
+            </SizableText>
           )}
 
           {!loading && !error && products.length === 0 && (
-            <div className="max-w-md mx-auto text-center py-24">
-              <StoreIcon className="w-10 h-10 mx-auto mb-4 text-muted-foreground" />
-              <h2 className="text-lg font-medium mb-1">No products yet</h2>
-              <p className="text-muted-foreground">
+            <SizableText maxWidth={448} alignSelf="center" textAlign="center" paddingVertical="$12" display="flex" flexDirection="column">
+              <StoreIcon size={40} color="$color11" />
+              <H2 fontSize="$6" fontWeight="500" marginBottom="$1">No products yet</H2>
+              <Paragraph color="$color11">
                 This store is connected but its catalog is empty. Add a product
                 to see it here.
-              </p>
-            </div>
+              </Paragraph>
+            </SizableText>
           )}
 
           {!loading && !error && products.length > 0 && (
             <>
-              <p className="text-sm text-muted-foreground mb-6">
+              <Paragraph fontSize="$3" color="$color11" marginBottom="$5">
                 Showing {products.length} product{products.length === 1 ? "" : "s"}
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              </Paragraph>
+              <YStack gap="$5">
                 {products.map((product) => (
-                  <Card key={product.key} className="overflow-hidden group">
-                    <div className="relative">
+                  <Card key={product.key} overflow="hidden" group>
+                    <YStack position="relative">
                       <AspectRatio ratio={1}>
                         {product.image ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img
+                          <Image
                             src={product.image}
                             alt={product.name}
-                            className="object-cover w-full h-full group-hover:scale-105 transition-transform"
-                          />
+                            objectFit="cover" width="100%" height="100%" $group-hover={{ scale: 1.05 }}
+  />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-muted">
-                            <StoreIcon className="w-8 h-8 text-muted-foreground" />
-                          </div>
+                          <XStack width="100%" height="100%" alignItems="center" justifyContent="center" backgroundColor="$color3">
+                            <StoreIcon size={32} color="$color11" />
+                          </XStack>
                         )}
                       </AspectRatio>
                       {product.listPriceCents &&
                         product.listPriceCents > product.priceCents && (
-                          <Badge className="absolute top-2 left-2">Sale</Badge>
+                          <Badge position="absolute" top="$2" left="$2">Sale</Badge>
                         )}
-                    </div>
-                    <CardContent className="p-4">
-                      <h3 className="font-medium mb-1">{product.name}</h3>
+                    </YStack>
+                    <CardContent padding="$4">
+                      <H3 fontWeight="500" marginBottom="$1">{product.name}</H3>
                       {product.headline && (
-                        <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+                        <Paragraph fontSize="$3" color="$color11" marginBottom="$2" numberOfLines={2}>
                           {product.headline}
-                        </p>
+                        </Paragraph>
                       )}
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-2xl font-medium">
+                      <XStack alignItems="center" gap="$2" marginBottom="$1">
+                        <SizableText fontSize="$8" fontWeight="500">
                           {money(product.priceCents, product.currency || currency)}
-                        </span>
+                        </SizableText>
                         {product.listPriceCents &&
                           product.listPriceCents > product.priceCents && (
-                            <span className="text-sm text-muted-foreground line-through">
+                            <SizableText fontSize="$3" color="$color11" textDecorationLine="line-through">
                               {money(
                                 product.listPriceCents,
                                 product.currency || currency,
                               )}
-                            </span>
+                            </SizableText>
                           )}
-                      </div>
+                      </XStack>
                     </CardContent>
-                    <CardFooter className="p-4 pt-0">
+                    <CardFooter padding="$4" paddingTop="$0">
                       <Button
-                        className="w-full"
+                        width="100%"
                         disabled={!product.available}
                         onClick={() => addToCart(product)}
                       >
-                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        <ShoppingCart size={16} />
                         {product.available
                           ? (cart[product.key] || 0) > 0
                             ? `In cart (${cart[product.key]})`
@@ -286,11 +287,11 @@ export function Storefront() {
                     </CardFooter>
                   </Card>
                 ))}
-              </div>
+              </YStack>
             </>
           )}
-        </div>
-      </section>
-    </div>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }

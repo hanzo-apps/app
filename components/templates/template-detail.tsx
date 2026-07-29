@@ -1,3 +1,6 @@
+'use client';
+
+import { SizableText, YStack, XStack, H1, Paragraph, Anchor, H2, H3 } from '@hanzo/gui';
 // Rich per-template detail page body for hanzo.app.
 //
 // True-black monochrome to match components/landing/* — white text, white/opacity
@@ -57,78 +60,77 @@ export function TemplateDetail({
   const catHref = `/templates?category=${categorySlug(t.category)}`;
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
+    <SizableText position="relative" minHeight="100%" backgroundColor="$background" color="$color" overflow="hidden" display="flex" flexDirection="column">
       {/* Monochrome glow — single soft radial, zero hue (matches landing). */}
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute left-1/2 top-[-14%] h-[520px] w-[860px] -translate-x-1/2 rounded-full bg-foreground/[0.05] blur-[130px]" />
-      </div>
+      <YStack pointerEvents="none" position="fixed" top={0} right={0} bottom={0} left={0} zIndex={0} overflow="hidden">
+        <YStack position="absolute" left="50%" top="-14%" height={520} width={860} x="50%" borderRadius="$10" backgroundColor="$color" />
+      </YStack>
 
       <Header />
 
-      <main className="relative z-10">
+      <YStack position="relative" zIndex={10}>
         {/* ── Breadcrumb + hero ─────────────────────────────────── */}
-        <section className="px-4 pt-9 md:px-8 md:pt-14">
-          <div className="mx-auto max-w-6xl">
+        <YStack paddingHorizontal="$4" paddingTop={36} $md={{ paddingHorizontal: "$6", paddingTop: "$9" }}>
+          <YStack alignSelf="center" maxWidth={1152}>
             <nav aria-label="Breadcrumb">
-              <ol className="flex flex-wrap items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+              <SizableText flexWrap="wrap" alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.24} color="$color11" display="flex" flexDirection="row">
                 <li>
-                  <Link href="/templates" className="transition-colors hover:text-foreground">
+                  <Link href="/templates"><XStack hoverStyle={{ color: "$color" }}>
                     Templates
-                  </Link>
+                  </XStack></Link>
                 </li>
                 <li aria-hidden="true">
-                  <ChevronRight className="h-3 w-3 text-muted-foreground" />
+                  <ChevronRight size={12} color="$color11" />
                 </li>
                 <li>
-                  <Link href={catHref} className="transition-colors hover:text-foreground">
+                  <Link href={catHref}><XStack hoverStyle={{ color: "$color" }}>
                     {t.category}
-                  </Link>
+                  </XStack></Link>
                 </li>
-              </ol>
+              </SizableText>
             </nav>
 
-            <div className="mt-8 grid items-center gap-10 lg:mt-10 lg:grid-cols-[1fr_1.25fr] lg:gap-14">
+            <YStack marginTop="$6" alignItems="center" gap="$7" $lg={{ marginTop: "$7", gap: "$9" }}>
               {/* Left — identity + CTAs */}
               <Reveal>
-                <div className="mb-5 flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted px-3 py-1 font-mono text-[11px] text-muted-foreground">
+                <XStack marginBottom="$4.5" flexWrap="wrap" alignItems="center" gap="$2">
+                  <SizableText alignItems="center" gap="$1.5" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1" fontFamily="$mono" fontSize={11} color="$color11">
                     {t.framework}
-                  </span>
+                  </SizableText>
                   {t.tags.map((tag) => (
-                    <span
+                    <SizableText
                       key={tag}
-                      className="inline-flex items-center rounded-full border border-border bg-muted px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
+                      alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color11"
                     >
                       {tag}
-                    </span>
+                    </SizableText>
                   ))}
-                </div>
+                </XStack>
 
-                <h1 className="text-balance text-3xl font-medium leading-[1.08] tracking-tight sm:text-4xl md:text-[2.9rem]">
+                <H1 fontSize="$10" fontWeight="500" lineHeight={1.08} letterSpacing={-0.4} $sm={{ fontSize: "$11" }} $md={{ color: "2.9rem" }}>
                   {t.name}
-                </h1>
-                <p className="mt-4 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
+                </H1>
+                <Paragraph marginTop="$4" maxWidth={576} fontSize="$4" lineHeight={1.625} color="$color11" $md={{ fontSize: "$6" }}>
                   {t.tagline}
-                </p>
+                </Paragraph>
 
-                <div className="mt-8 flex flex-wrap items-center gap-3">
+                <XStack marginTop="$6" flexWrap="wrap" alignItems="center" gap="$3">
                   <Link
                     href={t.fork}
-                    className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-                  >
-                    <Code2 className="h-4 w-4" />
+                  ><SizableText alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$4.5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
+                    <Code2 size={16} />
                     Use template
-                  </Link>
-                  <a
+                  </SizableText></Link>
+                  <Anchor
                     href={t.previewUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-5 py-3 text-sm font-medium text-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
+                    alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$4.5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ borderColor: "$color", color: "$color" }}
                   >
                     {t.demo ? "Open live demo" : "View source"}
-                    <ArrowUpRight className="h-4 w-4" />
-                  </a>
-                </div>
+                    <ArrowUpRight size={16} />
+                  </Anchor>
+                </XStack>
 
                 {/* How this was actually made. Rendered only when a build is
                     published — an always-on link to a story that may not exist
@@ -136,11 +138,10 @@ export function TemplateDetail({
                 {build ? (
                   <Link
                     href={`/builds/${build.org}/${build.project}`}
-                    className="mt-5 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-foreground"
-                  >
+                  ><SizableText marginTop="$4.5" alignItems="center" gap="$2" fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.24} color="$color11" hoverStyle={{ color: "$color" }}>
                     Read the build — {build.turns} turns, {build.agent}
-                    <ArrowRight className="h-3 w-3" />
-                  </Link>
+                    <ArrowRight size={12} />
+                  </SizableText></Link>
                 ) : null}
               </Reveal>
 
@@ -151,9 +152,8 @@ export function TemplateDetail({
                 <Link
                   href={t.fork}
                   aria-label={`Use the ${t.name} template`}
-                  className="group block overflow-hidden rounded-2xl border border-border bg-muted shadow-2xl shadow-black/40 transition-colors hover:border-foreground/30"
-                >
-                  <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+                ><XStack group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" elevation={6} hoverStyle={{ borderColor: "$color" }}>
+                  <YStack position="relative" overflow="hidden" backgroundColor="$color3">
                     <ProjectThumb
                       name={t.name}
                       liveUrl={t.demo}
@@ -164,31 +164,31 @@ export function TemplateDetail({
                           category={t.category}
                           slug={t.slug}
                           className="transition-transform duration-500 group-hover:scale-[1.03]"
-                        />
+  />
                       }
-                    />
+  />
                     {t.demo && (
-                      <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-black/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/70 backdrop-blur">
-                        <span className="h-1.5 w-1.5 rounded-full bg-white" />
+                      <SizableText position="absolute" left="$3" top="$3" alignItems="center" gap="$1.5" borderRadius="$10" borderWidth={1} borderColor="white" backgroundColor="black" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="white" backdropFilter="blur(8px)">
+                        <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="white" />
                         Live demo
-                      </span>
+                      </SizableText>
                     )}
-                  </div>
-                </Link>
+                  </YStack>
+                </XStack></Link>
               </Reveal>
-            </div>
-          </div>
-        </section>
+            </YStack>
+          </YStack>
+        </YStack>
 
         {/* ── Key highlights ────────────────────────────────────── */}
         {t.keyHighlights.length > 0 && (
-          <section className={`${SECTION} mt-8 md:mt-12`}>
-            <div className="mx-auto max-w-6xl">
+          <YStack marginTop="$6" $md={{ marginTop: "$8" }} className={`${SECTION}`}>
+            <YStack alignSelf="center" maxWidth={1152}>
               <Reveal>
-                <p className={EYEBROW}>Key highlights</p>
-                <h2 className="mt-4 text-3xl font-medium tracking-tight md:text-4xl">
+                <Paragraph className={`${EYEBROW}`}>Key highlights</Paragraph>
+                <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
                   What you get out of the box.
-                </h2>
+                </H2>
               </Reveal>
 
               <Reveal
@@ -198,132 +198,128 @@ export function TemplateDetail({
                 {t.keyHighlights.map((h, i) => {
                   const Icon = HIGHLIGHT_ICONS[i % HIGHLIGHT_ICONS.length];
                   return (
-                    <div
+                    <YStack
                       key={h.title}
-                      className="flex flex-col bg-card p-7 transition-colors duration-200 hover:bg-muted md:p-8"
+                      backgroundColor="$background" padding={28} hoverStyle={{ backgroundColor: "$color3" }} $md={{ padding: "$6" }}
                     >
-                      <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-muted">
+                      <SizableText height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
                         <Icon className="h-4 w-4 text-foreground" strokeWidth={1.5} />
-                      </span>
-                      <h3 className="mt-5 text-base font-medium text-foreground">{h.title}</h3>
-                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{h.body}</p>
-                    </div>
+                      </SizableText>
+                      <H3 marginTop="$4.5" fontSize="$4" fontWeight="500" color="$color">{h.title}</H3>
+                      <Paragraph marginTop="$2" fontSize="$3" lineHeight={1.625} color="$color11">{h.body}</Paragraph>
+                    </YStack>
                   );
                 })}
               </Reveal>
-            </div>
-          </section>
+            </YStack>
+          </YStack>
         )}
 
         {/* ── About + Perfect for ───────────────────────────────── */}
-        <section className={SECTION}>
-          <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1.4fr_1fr] lg:gap-16">
+        <YStack className={`${SECTION}`}>
+          <YStack alignSelf="center" maxWidth={1152} gap="$8" $lg={{ gap: "$10" }}>
             <Reveal>
-              <p className={EYEBROW}>About this template</p>
-              <h2 className="mt-4 text-2xl font-medium tracking-tight md:text-3xl">
+              <Paragraph className={`${EYEBROW}`}>About this template</Paragraph>
+              <H2 marginTop="$4" fontSize="$8" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$10" }}>
                 {t.name}
-              </h2>
-              <p className="mt-5 text-base leading-relaxed text-muted-foreground">{t.about}</p>
-              <p className="mt-4 text-base leading-relaxed text-muted-foreground">{t.description}</p>
+              </H2>
+              <Paragraph marginTop="$4.5" fontSize="$4" lineHeight={1.625} color="$color11">{t.about}</Paragraph>
+              <Paragraph marginTop="$4" fontSize="$4" lineHeight={1.625} color="$color11">{t.description}</Paragraph>
             </Reveal>
 
             {t.perfectFor.length > 0 && (
               <Reveal delay={80}>
-                <div className="rounded-2xl border border-border bg-muted p-7 md:p-8">
-                  <p className={EYEBROW}>Perfect for</p>
-                  <ul className="mt-5 space-y-3.5">
+                <YStack borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding={28} $md={{ padding: "$6" }}>
+                  <Paragraph className={`${EYEBROW}`}>Perfect for</Paragraph>
+                  <YStack marginTop="$4.5" rowGap="$3.5">
                     {t.perfectFor.map((p) => (
-                      <li key={p} className="flex items-start gap-3 text-sm text-foreground">
-                        <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-border bg-muted">
-                          <Check className="h-3 w-3 text-muted-foreground" strokeWidth={2} />
-                        </span>
-                        <span className="leading-relaxed">{p}</span>
-                      </li>
+                      <SizableText key={p} alignItems="flex-start" gap="$3" fontSize="$3" color="$color">
+                        <SizableText marginTop="$0.5" height="$4.5" width="$4.5" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
+                          <Check size={12} color="$color11" strokeWidth={2} />
+                        </SizableText>
+                        <SizableText lineHeight={1.625}>{p}</SizableText>
+                      </SizableText>
                     ))}
-                  </ul>
-                </div>
+                  </YStack>
+                </YStack>
               </Reveal>
             )}
-          </div>
-        </section>
+          </YStack>
+        </YStack>
 
         {/* ── Related templates ─────────────────────────────────── */}
         {related.length > 0 && (
-          <section className={SECTION}>
-            <div className="mx-auto max-w-6xl">
+          <YStack className={`${SECTION}`}>
+            <YStack alignSelf="center" maxWidth={1152}>
               <Reveal className="flex items-end justify-between gap-4">
                 <div>
-                  <p className={EYEBROW}>Related templates</p>
-                  <h2 className="mt-4 text-2xl font-medium tracking-tight md:text-3xl">
+                  <Paragraph className={`${EYEBROW}`}>Related templates</Paragraph>
+                  <H2 marginTop="$4" fontSize="$8" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$10" }}>
                     More in {t.category}.
-                  </h2>
+                  </H2>
                 </div>
                 <Link
                   href={catHref}
-                  className="hidden shrink-0 text-sm text-muted-foreground transition-colors hover:text-foreground sm:inline"
-                >
+                ><SizableText display="none" flexShrink={0} fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}>
                   View all →
-                </Link>
+                </SizableText></Link>
               </Reveal>
 
-              <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <YStack marginTop="$7" gap="$4">
                 {related.map((r) => (
                   <Link
                     key={r.slug}
                     href={`/templates/${r.slug}`}
-                    className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-muted transition-all duration-200 hover:-translate-y-0.5 hover:border-foreground/30 hover:bg-muted"
-                  >
-                    <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+                  ><YStack group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" hoverStyle={{ y: "-0.5", borderColor: "$color", backgroundColor: "$color3" }}>
+                    <YStack position="relative" overflow="hidden" backgroundColor="$color3">
                       <TemplateThumb
                         name={r.name}
                         category={r.category}
                         slug={r.slug}
                         className="transition-transform duration-300 group-hover:scale-[1.04]"
-                      />
-                    </div>
-                    <div className="flex flex-1 flex-col p-4">
-                      <h3 className="truncate text-sm font-medium text-foreground" title={r.name}>
+  />
+                    </YStack>
+                    <YStack flex={1} padding="$4">
+                      <H3 numberOfLines={1} fontSize="$3" fontWeight="500" color="$color" title={r.name}>
                         {r.name}
-                      </h3>
-                      <p className="mt-1 truncate text-xs text-muted-foreground">{r.framework}</p>
-                    </div>
-                  </Link>
+                      </H3>
+                      <Paragraph marginTop="$1" numberOfLines={1} fontSize="$1" color="$color11">{r.framework}</Paragraph>
+                    </YStack>
+                  </YStack></Link>
                 ))}
-              </div>
-            </div>
-          </section>
+              </YStack>
+            </YStack>
+          </YStack>
         )}
 
         {/* ── Final CTA ─────────────────────────────────────────── */}
-        <section className="border-t border-border px-4 py-24 md:px-8 md:py-28">
+        <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$12" $md={{ paddingHorizontal: "$6", paddingVertical: "$13" }}>
           <Reveal className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-medium tracking-tight md:text-4xl">
+            <H2 fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
               Make {t.name} yours.
-            </h2>
-            <p className="mx-auto mt-4 max-w-md text-base text-muted-foreground md:text-lg">
+            </H2>
+            <Paragraph alignSelf="center" marginTop="$4" maxWidth={448} fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
               Fork it into the Hanzo builder, edit it with AI, and ship it to a live
               hanzo.app URL — database, auth, and AI wired in.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            </Paragraph>
+            <XStack marginTop="$6" flexWrap="wrap" alignItems="center" justifyContent="center" gap="$3">
               <Link
                 href={t.fork}
-                className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-              >
+              ><SizableText alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
                 Use this template
-                <ArrowRight className="h-4 w-4" />
-              </Link>
+                <ArrowRight size={16} />
+              </SizableText></Link>
               <Link
                 href="/templates"
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-6 py-3 text-sm font-medium text-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
-              >
+              ><SizableText alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ borderColor: "$color", color: "$color" }}>
                 Browse all templates
-              </Link>
-            </div>
+              </SizableText></Link>
+            </XStack>
           </Reveal>
-        </section>
-      </main>
+        </YStack>
+      </YStack>
 
       <SiteFooter />
-    </div>
+    </SizableText>
   );
 }

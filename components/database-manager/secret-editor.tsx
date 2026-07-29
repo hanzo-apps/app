@@ -1,5 +1,6 @@
 'use client';
 
+import { YStack, Paragraph, SizableText, XStack } from '@hanzo/gui';
 import React, { useState, useEffect } from 'react';
 import { Secret } from '@/lib/vfs/types';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Button, Input, Label } from '@hanzo/ui';
@@ -79,7 +80,7 @@ export function SecretEditor({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent $sm={{ maxWidth: 512 }}>
         <DialogHeader>
           <DialogTitle>
             {secret ? 'Edit Secret' : 'Create Secret'}
@@ -89,9 +90,9 @@ export function SecretEditor({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <YStack rowGap="$4">
           {/* Name */}
-          <div className="space-y-2">
+          <YStack rowGap="$2">
             <Label htmlFor="name">Secret Name</Label>
             <Input
               id="name"
@@ -99,66 +100,66 @@ export function SecretEditor({
               onChange={handleNameChange}
               placeholder="HANZO_COMMERCE_API_KEY"
               disabled={!!secret}
-              className="font-mono"
-            />
-            <p className="text-xs text-muted-foreground">
+              fontFamily="$mono"
+  />
+            <Paragraph fontSize="$1" color="$color11">
               Use SCREAMING_SNAKE_CASE (e.g., API_KEY, SENDGRID_TOKEN)
-            </p>
-          </div>
+            </Paragraph>
+          </YStack>
 
           {/* Value */}
-          <div className="space-y-2">
+          <YStack rowGap="$2">
             <Label htmlFor="value">
               {secret ? 'New Value (leave empty to keep current)' : 'Secret Value'}
             </Label>
-            <div className="relative">
+            <YStack position="relative">
               <Input
                 id="value"
                 type={showValue ? 'text' : 'password'}
                 value={value}
                 onChange={e => setValue(e.target.value)}
                 placeholder={secret ? 'Enter new value to change...' : 'hzc_live_...'}
-                className="pr-10 font-mono"
-              />
+                paddingRight="$7" fontFamily="$mono"
+  />
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
+                position="absolute" right="$1" top="50%" y="50%" height={28} width={28} padding="$0"
                 onClick={() => setShowValue(!showValue)}
               >
                 {showValue ? (
-                  <EyeOff className="h-4 w-4" />
+                  <EyeOff size={16} />
                 ) : (
-                  <Eye className="h-4 w-4" />
+                  <Eye size={16} />
                 )}
               </Button>
-            </div>
-            <p className="text-xs text-muted-foreground">
+            </YStack>
+            <Paragraph fontSize="$1" color="$color11">
               {secret
                 ? 'Leave empty to keep the existing value'
                 : 'This value will be encrypted and never displayed again'}
-            </p>
-          </div>
+            </Paragraph>
+          </YStack>
 
           {/* Description */}
-          <div className="space-y-2">
+          <YStack rowGap="$2">
             <Label htmlFor="description">Description (optional)</Label>
             <Input
               id="description"
               value={description}
               onChange={e => setDescription(e.target.value)}
               placeholder="Production Hanzo Commerce API key"
-            />
-          </div>
+  />
+          </YStack>
 
           {/* Usage Reference */}
-          <div className="bg-muted/30 border rounded-lg p-4 space-y-2">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <Info className="h-4 w-4" />
+          <YStack backgroundColor="$color3" borderWidth={1} borderRadius="$5" padding="$4" rowGap="$2">
+            <SizableText alignItems="center" gap="$2" fontSize="$3" fontWeight="500" display="flex" flexDirection="row">
+              <Info size={16} />
               Usage in Edge Functions
-            </div>
-            <pre className="text-xs font-mono bg-background p-2 rounded overflow-x-auto">
+            </SizableText>
+            <SizableText fontSize="$1" fontFamily="$mono" backgroundColor="$background" padding="$2" borderRadius="$2" overflow="scroll" whiteSpace="pre">
 {`// Get secret value
 const apiKey = secrets.get('${name || 'HANZO_COMMERCE_API_KEY'}');
 
@@ -169,34 +170,34 @@ if (secrets.has('${name || 'HANZO_COMMERCE_API_KEY'}')) {
 
 // List all available secrets
 const allSecrets = secrets.list(); // ['${name || 'HANZO_COMMERCE_API_KEY'}', ...]`}
-            </pre>
-          </div>
+            </SizableText>
+          </YStack>
 
           {/* Error */}
           {error && (
-            <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 p-3 rounded-lg">
-              <AlertCircle className="h-4 w-4" />
+            <SizableText alignItems="center" gap="$2" fontSize="$3" color="$red9" backgroundColor="$red9" padding="$3" borderRadius="$5" display="flex" flexDirection="row">
+              <AlertCircle size={16} />
               {error}
-            </div>
+            </SizableText>
           )}
-        </div>
+        </YStack>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-2 pt-4 border-t">
+        <XStack alignItems="center" justifyContent="flex-end" gap="$2" paddingTop="$4" borderTopWidth={1}>
           <Button variant="outline" onClick={onClose} disabled={saving}>
             Cancel
           </Button>
           <Button onClick={handleSave} disabled={saving}>
             {saving ? (
               <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                <Loader2 size={16} />
                 Saving...
               </>
             ) : (
               secret ? 'Save Changes' : 'Create Secret'
             )}
           </Button>
-        </div>
+        </XStack>
       </DialogContent>
     </Dialog>
   );

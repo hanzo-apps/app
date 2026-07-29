@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import { YStack } from '@hanzo/gui';
 import { Deployment } from '@/lib/vfs/types';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@hanzo/ui';
 import { DatabaseManager } from '@/components/database-manager';
@@ -14,7 +14,7 @@ interface ServerSettingsModalProps {
 export function ServerSettingsModal({ deployment, isOpen, onClose }: ServerSettingsModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-4xl h-[80vh] flex flex-col">
+      <DialogContent height="80vh" flexDirection="column" $sm={{ maxWidth: 896 }}>
         <DialogHeader>
           <DialogTitle>Server Settings</DialogTitle>
           <DialogDescription>
@@ -22,9 +22,9 @@ export function ServerSettingsModal({ deployment, isOpen, onClose }: ServerSetti
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-hidden">
+        <YStack flex={1} overflow="hidden">
           <DatabaseManager deploymentId={deployment.id} />
-        </div>
+        </YStack>
       </DialogContent>
     </Dialog>
   );

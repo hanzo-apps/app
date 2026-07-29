@@ -1,8 +1,11 @@
+'use client';
+
+import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
 import { useRef, useState } from "react";
 import { Plus, Upload, Sparkles } from "lucide-react";
 import Image from "next/image";
 
-import { Popover, PopoverContent, PopoverTrigger, Button } from '@hanzo/ui';
+import { Popover, PopoverContent, PopoverTrigger, Button, Input } from '@hanzo/ui';
 import { Page, Project } from "@/types";
 import Loading from "@/components/loading";
 import { RiCheckboxCircleFill } from "react-icons/ri";
@@ -97,48 +100,48 @@ export const Uploader = ({
             size="iconXs"
             variant="ghost"
             aria-label="Add images"
-            className="rounded-full text-muted-foreground hover:bg-accent hover:text-foreground"
+            borderRadius="$10" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
           >
-            <Plus className="size-4" />
+            <Plus size={16} />
           </Button>
         </PopoverTrigger>
         <PopoverContent
           side="top"
           align="start"
           sideOffset={8}
-          className="min-w-xs overflow-hidden p-0 text-center"
+          overflow="hidden" padding="$0" textAlign="center" className="min-w-xs"
         >
           {project?.space_id ? (
             <>
-              <header className="bg-muted/40 p-6 border-b border-border">
-                <div className="flex items-center justify-center -space-x-4 mb-3">
-                  <div className="size-9 rounded-full bg-muted border border-border shadow-2xs flex items-center justify-center text-xl">
+              <YStack backgroundColor="$color3" padding="$5" borderBottomWidth={1} borderColor="$borderColor">
+                <XStack alignItems="center" justifyContent="center" columnGap="$4" marginBottom="$3">
+                  <SizableText width={36} height={36} borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$7" display="flex" flexDirection="row">
                     🎨
-                  </div>
-                  <div className="size-11 rounded-full bg-secondary border border-border shadow-lg flex items-center justify-center text-2xl z-2">
+                  </SizableText>
+                  <SizableText width={44} height={44} borderRadius="$10" backgroundColor="$color4" borderWidth={1} borderColor="$borderColor" elevation={4} alignItems="center" justifyContent="center" fontSize="$8" zIndex={2} display="flex" flexDirection="row">
                     🖼️
-                  </div>
-                  <div className="size-9 rounded-full bg-muted border border-border shadow-2xs flex items-center justify-center text-xl">
+                  </SizableText>
+                  <SizableText width={36} height={36} borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$7" display="flex" flexDirection="row">
                     💻
-                  </div>
-                </div>
-                <p className="text-xl font-medium text-foreground">
+                  </SizableText>
+                </XStack>
+                <Paragraph fontSize="$7" fontWeight="500" color="$color">
                   Add Custom Images
-                </p>
-                <p className="text-sm text-muted-foreground mt-1.5">
+                </Paragraph>
+                <Paragraph fontSize="$3" color="$color11" marginTop="$1.5">
                   Upload images to your project and use them with Hanzo AI!
-                </p>
-              </header>
-              <main className="space-y-4 p-5">
+                </Paragraph>
+              </YStack>
+              <YStack rowGap="$4" padding="$4.5">
                 <div>
-                  <p className="text-xs text-left text-muted-foreground mb-2">
+                  <Paragraph fontSize="$1" textAlign="left" color="$color11" marginBottom="$2">
                     Uploaded Images
-                  </p>
-                  <div className="grid grid-cols-4 gap-1 flex-wrap max-h-40 overflow-y-auto">
+                  </Paragraph>
+                  <YStack gap="$1" flexWrap="wrap" maxHeight="$17" overflow="scroll">
                     {files.map((file) => (
-                      <div
+                      <YStack
                         key={file}
-                        className="select-none relative cursor-pointer bg-muted rounded-md border-[2px] border-border hover:shadow-2xl transition-all duration-300"
+                        userSelect="none" position="relative" cursor="pointer" backgroundColor="$color3" borderRadius="$3" borderColor="$borderColor" hoverStyle={{ elevation: 6 }}
                         onClick={() => onSelectFile(file)}
                       >
                         <Image
@@ -146,23 +149,23 @@ export const Uploader = ({
                           alt="uploaded image"
                           width={56}
                           height={56}
-                          className="object-cover w-full rounded-sm aspect-square"
-                        />
+                          objectFit="cover" width="100%" borderRadius="$1"
+  />
                         {selectedFiles.includes(file) && (
-                          <div className="absolute top-0 right-0 h-full w-full flex items-center justify-center bg-black/50 rounded-md">
-                            <RiCheckboxCircleFill className="size-6 text-[var(--brand-accent-muted)]" />
-                          </div>
+                          <XStack position="absolute" top="$0" right="$0" height="100%" width="100%" alignItems="center" justifyContent="center" backgroundColor="black" borderRadius="$3">
+                            <RiCheckboxCircleFill size={24} color="var(--brand-accent-muted)" />
+                          </XStack>
                         )}
-                      </div>
+                      </YStack>
                     ))}
-                  </div>
+                  </YStack>
                 </div>
                 <div>
-                  <p className="text-xs text-left text-muted-foreground mb-2">
+                  <Paragraph fontSize="$1" textAlign="left" color="$color11" marginBottom="$2">
                     Generate an image with AI
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <input
+                  </Paragraph>
+                  <XStack alignItems="center" gap="$2">
+                    <Input
                       type="text"
                       value={prompt}
                       onChange={(e) => setPrompt(e.target.value)}
@@ -174,10 +177,10 @@ export const Uploader = ({
                       }}
                       placeholder="Describe an image…"
                       disabled={generating}
-                      className="flex-1 min-w-0 rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-ring"
-                    />
+                      flex={1} minWidth={0} borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0, borderColor: "$color8" }}
+  />
                     <Button
-                      className="shrink-0"
+                      flexShrink={0}
                       onClick={() => void generateImage()}
                       disabled={generating || !prompt.trim()}
                     >
@@ -185,25 +188,25 @@ export const Uploader = ({
                         <Loading
                           overlay={false}
                           className="size-4 animate-spin"
-                        />
+  />
                       ) : (
-                        <Sparkles className="size-4" />
+                        <Sparkles size={16} />
                       )}
                       Generate
                     </Button>
-                  </div>
+                  </XStack>
                   {genError && (
-                    <p className="text-xs text-left text-red-500 mt-1.5">
+                    <Paragraph fontSize="$1" textAlign="left" color="$red9" marginTop="$1.5">
                       {genError}
-                    </p>
+                    </Paragraph>
                   )}
                 </div>
                 <div>
-                  <p className="text-xs text-left text-muted-foreground mb-2">
+                  <Paragraph fontSize="$1" textAlign="left" color="$color11" marginBottom="$2">
                     Or import images from your computer
-                  </p>
+                  </Paragraph>
                   <Button
-                    className="relative w-full"
+                    position="relative" width="100%"
                     onClick={() => fileInputRef.current?.click()}
                   >
                     {isLoading ? (
@@ -211,26 +214,26 @@ export const Uploader = ({
                         <Loading
                           overlay={false}
                           className="ml-2 size-4 animate-spin"
-                        />
+  />
                         Uploading image(s)...
                       </>
                     ) : (
                       <>
-                        <Upload className="size-4" />
+                        <Upload size={16} />
                         Upload Images
                       </>
                     )}
                   </Button>
-                  <input
+                  <Input
                     ref={fileInputRef}
                     type="file"
-                    className="hidden"
+                    display="none"
                     multiple
                     accept="image/*"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => uploadFiles(e.target.files)}
-                  />
+  />
                 </div>
-              </main>
+              </YStack>
             </>
           ) : (
             <DeployButtonContent
@@ -239,7 +242,7 @@ export const Uploader = ({
               options={{
                 description: "Publish your project first to add custom images.",
               }}
-            />
+  />
           )}
         </PopoverContent>
       </form>
@@ -250,10 +253,10 @@ export const Uploader = ({
         size="iconXs"
         variant="ghost"
         aria-label="Add images"
-        className="rounded-full text-muted-foreground hover:bg-accent hover:text-foreground"
+        borderRadius="$10" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
         onClick={() => setOpen(true)}
       >
-        <Plus className="size-4" />
+        <Plus size={16} />
       </Button>
       <LoginModal
         open={open}
@@ -261,7 +264,7 @@ export const Uploader = ({
         pages={pages}
         title="Log In to add Custom Images"
         description="Sign in with your Hanzo account to publish your project and increase your monthly limit."
-      />
+  />
     </>
   );
 };

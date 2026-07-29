@@ -1,11 +1,10 @@
 'use client';
 
+import { XStack, YStack, SizableText } from '@hanzo/gui';
 import { SyncableItem } from '@/lib/vfs/sync-types';
 import { SyncStatusBadge } from './sync-status-badge';
 import { Button, Checkbox } from '@hanzo/ui';
 import { ArrowUp, ArrowDown, RefreshCw } from 'lucide-react';
-import { cn } from '@/lib/utils';
-
 interface SyncItemRowProps {
   item: SyncableItem;
   selected: boolean;
@@ -32,11 +31,8 @@ export function SyncItemRow({
   const isConflict = item.status === 'conflict';
 
   return (
-    <div
-      className={cn(
-        'flex items-center gap-3 p-2 rounded-md hover:bg-muted/50 transition-colors',
-        selected && 'bg-muted/30'
-      )}
+    <XStack
+      alignItems="center" gap="$3" padding="$2" borderRadius="$3" hoverStyle={{ backgroundColor: "$color3" }} {...{ backgroundColor: selected ? "$color3" : undefined }}
     >
       {/* Checkbox */}
       <Checkbox
@@ -44,29 +40,29 @@ export function SyncItemRow({
         onCheckedChange={(checked) => onSelectChange(checked === true)}
         disabled={disabled || syncing || item.status === 'synced' || item.status === 'server-only'}
         aria-label={`Select ${item.name}`}
-      />
+  />
 
       {/* Name */}
-      <div className="flex-1 min-w-0">
-        <span className="text-sm font-medium truncate block">{item.name}</span>
-      </div>
+      <YStack flex={1} minWidth={0}>
+        <SizableText fontSize="$3" fontWeight="500" numberOfLines={1}>{item.name}</SizableText>
+      </YStack>
 
       {/* Status Badge */}
       <SyncStatusBadge
         status={syncing ? 'syncing' : item.status}
         showLabel={true}
         size="sm"
-      />
+  />
 
       {/* Actions */}
-      <div className="flex items-center gap-1">
+      <XStack alignItems="center" gap="$1">
         {isConflict && onResolve ? (
           <Button
             variant="outline"
             size="sm"
             onClick={onResolve}
             disabled={disabled || syncing}
-            className="h-7 text-xs"
+            height={28} fontSize="$1"
           >
             Resolve
           </Button>
@@ -78,13 +74,13 @@ export function SyncItemRow({
                 size="icon"
                 onClick={onPush}
                 disabled={disabled || syncing}
-                className="h-7 w-7"
+                height={28} width={28}
                 title="Push to server"
               >
                 {syncing ? (
-                  <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                  <RefreshCw size={14} />
                 ) : (
-                  <ArrowUp className="h-3.5 w-3.5" />
+                  <ArrowUp size={14} />
                 )}
               </Button>
             )}
@@ -94,19 +90,19 @@ export function SyncItemRow({
                 size="icon"
                 onClick={onPull}
                 disabled={disabled || syncing}
-                className="h-7 w-7"
+                height={28} width={28}
                 title="Pull from server"
               >
                 {syncing ? (
-                  <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                  <RefreshCw size={14} />
                 ) : (
-                  <ArrowDown className="h-3.5 w-3.5" />
+                  <ArrowDown size={14} />
                 )}
               </Button>
             )}
           </>
         )}
-      </div>
-    </div>
+      </XStack>
+    </XStack>
   );
 }

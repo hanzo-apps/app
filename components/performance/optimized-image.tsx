@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import { XStack, SizableText, Paragraph, YStack } from '@hanzo/gui';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useInView } from 'react-intersection-observer';
-import { cn } from '@/lib/utils';
-
 export interface OptimizedImageProps {
   src: string;
   alt: string;
@@ -66,14 +65,10 @@ export function OptimizedImage({
 
   if (hasError) {
     return (
-      <div
-        className={cn(
-          'flex items-center justify-center bg-neutral-100 dark:bg-neutral-800',
-          containerClassName,
-          fill && 'absolute inset-0'
-        )}
+      <XStack
+        alignItems="center" justifyContent="center" backgroundColor="$color2" $theme-dark={{ backgroundColor: "$color11" }} {...{ position: fill ? "absolute" : undefined, top: fill ? 0 : undefined, right: fill ? 0 : undefined, bottom: fill ? 0 : undefined, left: fill ? 0 : undefined }} className={`${containerClassName}`}
       >
-        <div className="text-center p-4">
+        <SizableText textAlign="center" padding="$4" display="flex" flexDirection="column">
           <svg
             className="w-12 h-12 mx-auto text-neutral-400"
             fill="none"
@@ -85,14 +80,14 @@ export function OptimizedImage({
           >
             <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
-          <p className="mt-2 text-sm text-neutral-500">Failed to load image</p>
-        </div>
-      </div>
+          <Paragraph marginTop="$2" fontSize="$3" color="$color9">Failed to load image</Paragraph>
+        </SizableText>
+      </XStack>
     );
   }
 
   return (
-    <div ref={ref} className={cn('relative', containerClassName)}>
+    <YStack ref={ref} position="relative" className={`${containerClassName}`}>
       {shouldLoad ? (
         <Image
           src={src}
@@ -100,11 +95,7 @@ export function OptimizedImage({
           width={fill ? undefined : width}
           height={fill ? undefined : height}
           priority={priority}
-          className={cn(
-            'transition-opacity duration-300',
-            isLoaded ? 'opacity-100' : 'opacity-0',
-            className
-          )}
+          {...{ opacity: isLoaded ? 1 : 0 }} className={`${className}`}
           placeholder={placeholder}
           blurDataURL={blurDataURL || generateBlurDataURL()}
           quality={quality}
@@ -113,21 +104,18 @@ export function OptimizedImage({
           style={style}
           onLoad={handleLoad}
           onError={handleError}
-        />
+  />
       ) : (
-        <div
-          className={cn(
-            'bg-neutral-200 dark:bg-neutral-700 animate-pulse',
-            className
-          )}
+        <YStack
+          backgroundColor="$color3" $theme-dark={{ backgroundColor: "$color11" }} className={`${className}`}
           style={{
             width: fill ? '100%' : width,
             height: fill ? '100%' : height,
             ...style,
           }}
-        />
+  />
       )}
-    </div>
+    </YStack>
   );
 }
 
@@ -169,7 +157,7 @@ export function ProgressiveImage({
             srcSet={source.srcSet}
             type={source.type}
             media={source.media}
-          />
+  />
         ))}
         <OptimizedImage {...props} src={currentSrc} />
       </picture>
@@ -215,9 +203,9 @@ export function BackgroundImage({
   }, [inView, src, lazy]);
 
   return (
-    <div
+    <YStack
       ref={ref}
-      className={cn('relative overflow-hidden', className)}
+      position="relative" overflow="hidden" className={`${className}`}
       style={{
         backgroundImage: isLoaded ? `url(${src})` : undefined,
         backgroundSize: 'cover',
@@ -225,16 +213,16 @@ export function BackgroundImage({
       }}
     >
       {!isLoaded && (
-        <div className="absolute inset-0 bg-neutral-200 dark:bg-neutral-700 animate-pulse" />
+        <YStack position="absolute" top={0} right={0} bottom={0} left={0} backgroundColor="$color3" $theme-dark={{ backgroundColor: "$color11" }} />
       )}
       {overlay && (
-        <div
-          className="absolute inset-0 bg-black"
+        <YStack
+          position="absolute" top={0} right={0} bottom={0} left={0} backgroundColor="black"
           style={{ opacity: overlayOpacity }}
-        />
+  />
       )}
-      {children && <div className="relative z-10">{children}</div>}
-    </div>
+      {children && <YStack position="relative" zIndex={10}>{children}</YStack>}
+    </YStack>
   );
 }
 
@@ -273,8 +261,8 @@ export function ImageGallery({
   className,
 }: ImageGalleryProps) {
   return (
-    <div
-      className={cn('grid', className)}
+    <YStack
+      className={`${className}`}
       style={{
         gridTemplateColumns: `repeat(${columns}, 1fr)`,
         gap: `${gap * 0.25}rem`,
@@ -290,9 +278,9 @@ export function ImageGallery({
           className="w-full h-auto"
           lazy={true}
           priority={index < columns} // Priority for first row
-        />
+  />
       ))}
-    </div>
+    </YStack>
   );
 }
 

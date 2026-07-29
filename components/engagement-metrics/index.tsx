@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { XStack, Paragraph, YStack, SizableText, H3 } from '@hanzo/gui';
+import { useState, useEffect } from 'react';
 import { Button, toast } from '@hanzo/ui';
 
 interface EngagementMetrics {
@@ -66,57 +67,57 @@ export function EngagementMetrics({ deploymentId }: EngagementMetricsProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96 border rounded-lg">
-        <p className="text-muted-foreground">Loading engagement metrics...</p>
-      </div>
+      <XStack alignItems="center" justifyContent="center" height={384} borderWidth={1} borderRadius="$5">
+        <Paragraph color="$color11">Loading engagement metrics...</Paragraph>
+      </XStack>
     );
   }
 
   if (!data) {
     return (
-      <div className="flex items-center justify-center h-96 border rounded-lg">
-        <p className="text-muted-foreground">No engagement data available</p>
-      </div>
+      <XStack alignItems="center" justifyContent="center" height={384} borderWidth={1} borderRadius="$5">
+        <Paragraph color="$color11">No engagement data available</Paragraph>
+      </XStack>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <YStack rowGap="$5">
       {/* Time on Page Overview */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="border rounded-lg p-4">
-          <div className="text-sm text-muted-foreground mb-1">Average Time on Page</div>
-          <div className="text-2xl font-medium">{formatDuration(data.timeOnPage.average)}</div>
-        </div>
-        <div className="border rounded-lg p-4">
-          <div className="text-sm text-muted-foreground mb-1">Median Time on Page</div>
-          <div className="text-2xl font-medium">{formatDuration(data.timeOnPage.median)}</div>
-        </div>
-      </div>
+      <YStack gap="$4">
+        <YStack borderWidth={1} borderRadius="$5" padding="$4">
+          <SizableText fontSize="$3" color="$color11" marginBottom="$1" display="flex" flexDirection="column">Average Time on Page</SizableText>
+          <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{formatDuration(data.timeOnPage.average)}</SizableText>
+        </YStack>
+        <YStack borderWidth={1} borderRadius="$5" padding="$4">
+          <SizableText fontSize="$3" color="$color11" marginBottom="$1" display="flex" flexDirection="column">Median Time on Page</SizableText>
+          <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{formatDuration(data.timeOnPage.median)}</SizableText>
+        </YStack>
+      </YStack>
 
       {/* Time on Page by Page */}
-      <div className="border rounded-lg p-4">
-        <h3 className="font-medium mb-4">Time on Page by Path</h3>
-        <div className="space-y-2">
+      <YStack borderWidth={1} borderRadius="$5" padding="$4">
+        <H3 fontWeight="500" marginBottom="$4">Time on Page by Path</H3>
+        <YStack rowGap="$2">
           {Object.entries(data.timeOnPage.distribution)
             .sort(([, a], [, b]) => b - a)
             .slice(0, 10)
             .map(([page, time]) => (
-              <div key={page} className="flex justify-between items-center">
-                <span className="text-sm truncate flex-1">{page}</span>
-                <span className="text-sm font-medium ml-4">{formatDuration(time)}</span>
-              </div>
+              <XStack key={page} justifyContent="space-between" alignItems="center">
+                <SizableText fontSize="$3" numberOfLines={1} flex={1}>{page}</SizableText>
+                <SizableText fontSize="$3" fontWeight="500" marginLeft="$4">{formatDuration(time)}</SizableText>
+              </XStack>
             ))}
-        </div>
-      </div>
+        </YStack>
+      </YStack>
 
       {/* Scroll Depth */}
-      <div className="border rounded-lg p-4">
-        <h3 className="font-medium mb-4">Scroll Depth Funnel</h3>
-        <div className="space-y-3">
-          <div className="text-sm text-muted-foreground mb-2">
-            Average: <span className="font-medium text-foreground">{data.scrollDepth.average.toFixed(1)}%</span>
-          </div>
+      <YStack borderWidth={1} borderRadius="$5" padding="$4">
+        <H3 fontWeight="500" marginBottom="$4">Scroll Depth Funnel</H3>
+        <YStack rowGap="$3">
+          <SizableText fontSize="$3" color="$color11" marginBottom="$2" display="flex" flexDirection="column">
+            Average: <SizableText fontWeight="500" color="$color">{data.scrollDepth.average.toFixed(1)}%</SizableText>
+          </SizableText>
           {(() => {
             const milestones = [25, 50, 75, 100];
             // Calculate cumulative counts (users who reached AT LEAST this depth)
@@ -135,74 +136,74 @@ export function EngagementMetrics({ deploymentId }: EngagementMetricsProps) {
 
               return (
                 <div key={milestone}>
-                  <div className="flex justify-between text-sm mb-1">
+                  <SizableText justifyContent="space-between" fontSize="$3" marginBottom="$1" display="flex" flexDirection="row">
                     <span>Reached {milestone}%+</span>
-                    <span className="text-muted-foreground">
+                    <SizableText color="$color11">
                       {count.toLocaleString()} ({percentage.toFixed(1)}%)
-                    </span>
-                  </div>
-                  <div className="h-6 bg-muted rounded overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
+                    </SizableText>
+                  </SizableText>
+                  <YStack height="$5" backgroundColor="$color3" borderRadius="$2" overflow="hidden">
+                    <YStack
+                      height="100%" backgroundColor="$color12"
                       style={{ width: `${percentage}%` }}
-                    />
-                  </div>
+  />
+                  </YStack>
                 </div>
               );
             });
           })()}
-        </div>
-      </div>
+        </YStack>
+      </YStack>
 
       {/* Top Landing Pages */}
-      <div className="border rounded-lg p-4">
-        <h3 className="font-medium mb-4">Top Landing Pages</h3>
-        <div className="space-y-2">
+      <YStack borderWidth={1} borderRadius="$5" padding="$4">
+        <H3 fontWeight="500" marginBottom="$4">Top Landing Pages</H3>
+        <YStack rowGap="$2">
           {data.topLandingPages.slice(0, 10).map((landing) => (
-            <div key={landing.page} className="flex justify-between items-center border-b pb-2">
-              <div className="flex-1">
-                <div className="text-sm font-medium">{landing.page}</div>
-                <div className="text-xs text-muted-foreground">
+            <XStack key={landing.page} justifyContent="space-between" alignItems="center" borderBottomWidth={1} paddingBottom="$2">
+              <YStack flex={1}>
+                <SizableText fontSize="$3" fontWeight="500" display="flex" flexDirection="column">{landing.page}</SizableText>
+                <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
                   {landing.visitCount.toLocaleString()} visits
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-sm">
-                  <span className={landing.bounceRate > 0.7 ? 'text-red-500' : landing.bounceRate > 0.4 ? 'text-orange-500' : 'text-green-500'}>
+                </SizableText>
+              </YStack>
+              <SizableText textAlign="right" display="flex" flexDirection="column">
+                <SizableText fontSize="$3" display="flex" flexDirection="column">
+                  <SizableText className={`${landing.bounceRate > 0.7 ? 'text-red-500' : landing.bounceRate > 0.4 ? 'text-orange-500' : 'text-green-500'}`}>
                     {(landing.bounceRate * 100).toFixed(1)}%
-                  </span>
-                </div>
-                <div className="text-xs text-muted-foreground">bounce rate</div>
-              </div>
-            </div>
+                  </SizableText>
+                </SizableText>
+                <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">bounce rate</SizableText>
+              </SizableText>
+            </XStack>
           ))}
-        </div>
-      </div>
+        </YStack>
+      </YStack>
 
       {/* Exit Pages */}
-      <div className="border rounded-lg p-4">
-        <h3 className="font-medium mb-4">Top Exit Pages</h3>
-        <div className="space-y-2">
+      <YStack borderWidth={1} borderRadius="$5" padding="$4">
+        <H3 fontWeight="500" marginBottom="$4">Top Exit Pages</H3>
+        <YStack rowGap="$2">
           {data.exitPages.slice(0, 10).map((exit) => (
-            <div key={exit.page} className="flex justify-between items-center">
-              <span className="text-sm truncate flex-1">{exit.page}</span>
-              <div className="text-right ml-4">
-                <div className="text-sm font-medium">{exit.exitCount.toLocaleString()}</div>
-                <div className="text-xs text-muted-foreground">
+            <XStack key={exit.page} justifyContent="space-between" alignItems="center">
+              <SizableText fontSize="$3" numberOfLines={1} flex={1}>{exit.page}</SizableText>
+              <SizableText textAlign="right" marginLeft="$4" display="flex" flexDirection="column">
+                <SizableText fontSize="$3" fontWeight="500" display="flex" flexDirection="column">{exit.exitCount.toLocaleString()}</SizableText>
+                <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
                   {(exit.exitRate * 100).toFixed(1)}% exit rate
-                </div>
-              </div>
-            </div>
+                </SizableText>
+              </SizableText>
+            </XStack>
           ))}
-        </div>
-      </div>
+        </YStack>
+      </YStack>
 
       {/* Refresh Button */}
-      <div className="flex justify-end">
+      <XStack justifyContent="flex-end">
         <Button onClick={fetchEngagementMetrics} disabled={loading}>
           {loading ? 'Loading...' : 'Refresh'}
         </Button>
-      </div>
-    </div>
+      </XStack>
+    </YStack>
   );
 }

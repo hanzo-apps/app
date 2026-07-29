@@ -1,5 +1,6 @@
 'use client';
 
+import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
 import { useState, useEffect, useMemo } from 'react';
 import { Button, Badge, Tooltip, TooltipContent, TooltipTrigger } from '@hanzo/ui';
 import { History, RotateCcw, ArrowRight, X, Inbox } from 'lucide-react';
@@ -55,110 +56,106 @@ export function CheckpointPanel({
   }, [projectId, events.length, refreshKey]);
 
   return (
-    <div
-      className="h-full border border-border rounded-lg shadow-sm overflow-hidden flex flex-col"
+    <YStack
+      height="100%" borderWidth={1} borderColor="$borderColor" borderRadius="$5" elevation={1} overflow="hidden"
       style={{
         background: `linear-gradient(0deg, rgb(var(--tint) / 0.01), rgb(var(--tint) / 0.01)), var(--card)`,
         minWidth: '240px'
       }}
     >
       {/* Header */}
-      <div
-        className="flex items-center justify-between px-3 py-2 border-b border-border shrink-0"
+      <XStack
+        alignItems="center" justifyContent="space-between" paddingHorizontal="$3" paddingVertical="$2" borderBottomWidth={1} borderColor="$borderColor" flexShrink={0}
         style={{
           background: `linear-gradient(0deg, rgb(var(--tint) / 0.03), rgb(var(--tint) / 0.05))`
         }}
       >
-        <div className="flex items-center gap-2">
-          <History className="h-3.5 w-3.5" style={{ color: 'var(--brand-accent)' }} />
-          <span className="text-xs font-medium">Checkpoints</span>
+        <XStack alignItems="center" gap="$2">
+          <History size={14} style={{ color: 'var(--brand-accent)' }} />
+          <SizableText fontSize="$1" fontWeight="500">Checkpoints</SizableText>
           {checkpoints.length > 0 && (
-            <span className="text-[10px] text-muted-foreground">({checkpoints.length})</span>
+            <SizableText fontSize={10} color="$color11">({checkpoints.length})</SizableText>
           )}
-        </div>
+        </XStack>
         {onClose && (
-          <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={onClose}>
-            <X className="h-3.5 w-3.5" />
+          <Button variant="ghost" size="sm" height="$5" width="$5" padding="$0" onClick={onClose}>
+            <X size={14} />
           </Button>
         )}
-      </div>
+      </XStack>
 
       {/* Checkpoint list */}
-      <div className="flex-1 overflow-y-auto">
+      <YStack flex={1} overflow="scroll">
         {checkpoints.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-muted-foreground gap-2 p-4">
-            <Inbox className="h-8 w-8 opacity-40" />
-            <span className="text-xs text-center">No checkpoints yet. Checkpoints are created automatically when the AI makes changes.</span>
-          </div>
+          <SizableText flexDirection="column" alignItems="center" justifyContent="center" height="100%" color="$color11" gap="$2" padding="$4" display="flex">
+            <Inbox size={32} />
+            <SizableText fontSize="$1" textAlign="center">No checkpoints yet. Checkpoints are created automatically when the AI makes changes.</SizableText>
+          </SizableText>
         ) : (
-          <div className="p-2 space-y-1.5">
+          <YStack padding="$2" rowGap="$1.5">
             {checkpoints.map((cp) => {
               const isCurrent = cp.id === currentCheckpointId;
               const hasLinkedTurn = linkedCheckpointIds.has(cp.id);
 
               return (
-                <div
+                <SizableText
                   key={cp.id}
-                  className={`rounded-md border px-2.5 py-2 text-xs transition-colors ${
-                    isCurrent
-                      ? 'border-primary/40 bg-primary/5'
-                      : 'border-border/60 bg-card hover:bg-muted/30'
-                  }`}
+                  borderRadius="$3" borderWidth={1} paddingHorizontal="$2.5" paddingVertical="$2" fontSize="$1" display="flex" flexDirection="column" {...{ borderColor: isCurrent ? "$color12" : "$borderColor", backgroundColor: isCurrent ? "$color12" : "$background", hoverStyle: isCurrent ? undefined : {"backgroundColor":"$color3"} }}
                 >
                   {/* Top row: badge + timestamp */}
-                  <div className="flex items-center gap-1.5 mb-1">
+                  <XStack alignItems="center" gap="$1.5" marginBottom="$1">
                     <Badge
                       variant={cp.kind === 'manual' ? 'default' : 'secondary'}
-                      className="text-[9px] px-1.5 py-0 h-4 leading-none"
+                      fontSize={9} paddingHorizontal="$1.5" paddingVertical="$0" height="$4" lineHeight={1}
                     >
                       {cp.kind === 'manual' ? 'save' : cp.kind}
                     </Badge>
-                    <span className="text-[10px] text-muted-foreground ml-auto whitespace-nowrap">
+                    <SizableText fontSize={10} color="$color11" marginLeft="auto" whiteSpace="nowrap">
                       {formatDistanceToNow(new Date(cp.timestamp), { addSuffix: true })}
-                    </span>
-                  </div>
+                    </SizableText>
+                  </XStack>
 
                   {/* Description */}
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <p className="text-[11px] text-foreground/80 truncate leading-snug mb-1.5">
+                      <Paragraph fontSize={11} color="$color" numberOfLines={1} lineHeight={1.375} marginBottom="$1.5">
                         {cp.description}
-                      </p>
+                      </Paragraph>
                     </TooltipTrigger>
-                    <TooltipContent side="bottom" className="max-w-[300px]">
-                      <p className="text-xs">{cp.description}</p>
+                    <TooltipContent side="bottom" maxWidth={300}>
+                      <Paragraph fontSize="$1">{cp.description}</Paragraph>
                     </TooltipContent>
                   </Tooltip>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-1">
+                  <XStack alignItems="center" gap="$1">
                     {hasLinkedTurn && (
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-5 px-1.5 text-[10px] text-muted-foreground hover:text-foreground"
+                        height="$4.5" paddingHorizontal="$1.5" fontSize={10} color="$color11" hoverStyle={{ color: "$color" }}
                         onClick={() => onScrollToTurn(cp.id)}
                       >
-                        <ArrowRight className="h-3 w-3 mr-0.5" />
+                        <ArrowRight size={12} />
                         Jump
                       </Button>
                     )}
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-5 px-1.5 text-[10px] text-muted-foreground hover:text-foreground ml-auto"
+                      height="$4.5" paddingHorizontal="$1.5" fontSize={10} color="$color11" marginLeft="auto" hoverStyle={{ color: "$color" }}
                       onClick={() => onRestore(cp.id, cp.description)}
                     >
-                      <RotateCcw className="h-3 w-3 mr-0.5" />
+                      <RotateCcw size={12} />
                       Restore
                     </Button>
-                  </div>
-                </div>
+                  </XStack>
+                </SizableText>
               );
             })}
-          </div>
+          </YStack>
         )}
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }

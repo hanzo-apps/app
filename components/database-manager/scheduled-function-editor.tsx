@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { YStack, Paragraph, SizableText, XStack } from '@hanzo/gui';
+import { useState, useEffect } from 'react';
 import { ScheduledFunction, EdgeFunction } from '@/lib/vfs/types';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Button, Input, Label, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import { Loader2, AlertCircle, Info } from 'lucide-react';
@@ -96,7 +97,7 @@ export function ScheduledFunctionEditor({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg max-h-[85vh] flex flex-col">
+      <DialogContent maxHeight="85vh" flexDirection="column" $sm={{ maxWidth: 512 }}>
         <DialogHeader>
           <DialogTitle>
             {fn ? 'Edit Schedule' : 'Create Schedule'}
@@ -106,9 +107,9 @@ export function ScheduledFunctionEditor({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-auto space-y-4">
+        <YStack flex={1} overflow="scroll" rowGap="$4">
           {/* Name */}
-          <div className="space-y-2">
+          <YStack rowGap="$2">
             <Label htmlFor="sched-name">Name</Label>
             <Input
               id="sched-name"
@@ -116,11 +117,11 @@ export function ScheduledFunctionEditor({
               onChange={e => setName(e.target.value.toLowerCase())}
               placeholder="daily-report"
               disabled={!!fn}
-            />
-          </div>
+  />
+          </YStack>
 
           {/* Edge Function */}
-          <div className="space-y-2">
+          <YStack rowGap="$2">
             <Label htmlFor="sched-function">Edge Function</Label>
             <Select value={functionId} onValueChange={setFunctionId}>
               <SelectTrigger>
@@ -135,104 +136,104 @@ export function ScheduledFunctionEditor({
               </SelectContent>
             </Select>
             {edgeFunctions.length === 0 && (
-              <p className="text-xs text-muted-foreground">
+              <Paragraph fontSize="$1" color="$color11">
                 No edge functions available. Create one in the Functions tab first.
-              </p>
+              </Paragraph>
             )}
-          </div>
+          </YStack>
 
           {/* Cron Expression */}
-          <div className="space-y-2">
+          <YStack rowGap="$2">
             <Label htmlFor="sched-cron">Cron Expression</Label>
             <Input
               id="sched-cron"
               value={cronExpression}
               onChange={e => setCronExpression(e.target.value)}
               placeholder="0 8 * * *"
-              className="font-mono"
-            />
-          </div>
+              fontFamily="$mono"
+  />
+          </YStack>
 
           {/* Timezone */}
-          <div className="space-y-2">
+          <YStack rowGap="$2">
             <Label htmlFor="sched-tz">Timezone</Label>
             <Input
               id="sched-tz"
               value={timezone}
               onChange={e => setTimezone(e.target.value)}
               placeholder="UTC"
-            />
-            <p className="text-xs text-muted-foreground">
+  />
+            <Paragraph fontSize="$1" color="$color11">
               e.g. UTC, America/New_York, Europe/London
-            </p>
-          </div>
+            </Paragraph>
+          </YStack>
 
           {/* Description */}
-          <div className="space-y-2">
+          <YStack rowGap="$2">
             <Label htmlFor="sched-desc">Description (optional)</Label>
             <Input
               id="sched-desc"
               value={description}
               onChange={e => setDescription(e.target.value)}
               placeholder="What does this schedule do?"
-            />
-          </div>
+  />
+          </YStack>
 
           {/* Config */}
-          <div className="space-y-2">
+          <YStack rowGap="$2">
             <Label htmlFor="sched-config">Config JSON (optional)</Label>
             <Textarea
               id="sched-config"
               value={config}
               onChange={e => setConfig(e.target.value)}
               placeholder="{}"
-              className="font-mono text-sm h-20"
-            />
-            <p className="text-xs text-muted-foreground">
+              fontFamily="$mono" fontSize="$3" height="$11"
+  />
+            <Paragraph fontSize="$1" color="$color11">
               Custom data passed as the request body to the edge function.
-            </p>
-          </div>
+            </Paragraph>
+          </YStack>
 
           {/* Cron Reference */}
-          <div className="bg-muted/30 border rounded-lg p-4 space-y-2">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <Info className="h-4 w-4" />
-              Cron Patterns <span className="font-normal text-muted-foreground">(minimum 5 min interval)</span>
-            </div>
-            <div className="grid gap-1 text-xs font-mono">
-              <div><span className="text-muted-foreground">*/5 * * * *</span>  Every 5 minutes</div>
-              <div><span className="text-muted-foreground">0 * * * *</span>    Every hour</div>
-              <div><span className="text-muted-foreground">0 8 * * *</span>    Daily at 8am</div>
-              <div><span className="text-muted-foreground">0 0 * * 1</span>    Every Monday at midnight</div>
-              <div><span className="text-muted-foreground">0 0 1 * *</span>    First of every month</div>
-            </div>
-          </div>
+          <YStack backgroundColor="$color3" borderWidth={1} borderRadius="$5" padding="$4" rowGap="$2">
+            <SizableText alignItems="center" gap="$2" fontSize="$3" fontWeight="500" display="flex" flexDirection="row">
+              <Info size={16} />
+              Cron Patterns <SizableText fontWeight="400" color="$color11">(minimum 5 min interval)</SizableText>
+            </SizableText>
+            <SizableText gap="$1" fontSize="$1" fontFamily="$mono" display="flex" flexDirection="column">
+              <div><SizableText color="$color11">*/5 * * * *</SizableText>  Every 5 minutes</div>
+              <div><SizableText color="$color11">0 * * * *</SizableText>    Every hour</div>
+              <div><SizableText color="$color11">0 8 * * *</SizableText>    Daily at 8am</div>
+              <div><SizableText color="$color11">0 0 * * 1</SizableText>    Every Monday at midnight</div>
+              <div><SizableText color="$color11">0 0 1 * *</SizableText>    First of every month</div>
+            </SizableText>
+          </YStack>
 
           {/* Error */}
           {error && (
-            <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 p-3 rounded-lg">
-              <AlertCircle className="h-4 w-4 shrink-0" />
+            <SizableText alignItems="center" gap="$2" fontSize="$3" color="$red9" backgroundColor="$red9" padding="$3" borderRadius="$5" display="flex" flexDirection="row">
+              <AlertCircle size={16} />
               {error}
-            </div>
+            </SizableText>
           )}
-        </div>
+        </YStack>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-2 pt-4 border-t">
+        <XStack alignItems="center" justifyContent="flex-end" gap="$2" paddingTop="$4" borderTopWidth={1}>
           <Button variant="outline" onClick={onClose} disabled={saving}>
             Cancel
           </Button>
           <Button onClick={handleSave} disabled={saving}>
             {saving ? (
               <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                <Loader2 size={16} />
                 Saving...
               </>
             ) : (
               fn ? 'Save Changes' : 'Create Schedule'
             )}
           </Button>
-        </div>
+        </XStack>
       </DialogContent>
     </Dialog>
   );

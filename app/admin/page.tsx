@@ -1,5 +1,6 @@
 'use client';
 
+import { XStack, Paragraph } from '@hanzo/gui';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -13,8 +14,8 @@ export default function AdminPage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
-      <p className="text-neutral-400">Redirecting...</p>
-    </div>
+    <XStack minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="#0a0a0a">
+      <Paragraph color="$color8">Redirecting...</Paragraph>
+    </XStack>
   );
 }

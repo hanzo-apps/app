@@ -1,5 +1,6 @@
 'use client';
 
+import { SizableText, YStack } from '@hanzo/gui';
 import { useEffect, useRef } from 'react';
 import { SyncableItem } from '@/lib/vfs/sync-types';
 import { SummaryBar } from './summary-bar';
@@ -166,9 +167,9 @@ export function SkillsTab({
 
   if (items.length === 0) {
     return (
-      <div className="text-center py-8 text-muted-foreground">
+      <SizableText textAlign="center" paddingVertical="$6" color="$color11" display="flex" flexDirection="column">
         No custom skills to sync
-      </div>
+      </SizableText>
     );
   }
 
@@ -178,7 +179,7 @@ export function SkillsTab({
       <SummaryBar items={items} />
 
       {/* Item List - scrollable */}
-      <div className="mt-3 border rounded-lg divide-y overflow-y-auto max-h-64">
+      <YStack marginTop="$3" borderWidth={1} borderRadius="$5" maxHeight={256} overflow="scroll">
         {items.map((item) => (
           <SyncItemRow
             key={item.id}
@@ -189,9 +190,9 @@ export function SkillsTab({
             onPull={() => handlePullSingle(item)}
             syncing={syncingIds.has(item.id)}
             disabled={syncingIds.size > 0}
-          />
+  />
         ))}
-      </div>
+      </YStack>
     </div>
   );
 }

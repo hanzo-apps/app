@@ -1,5 +1,6 @@
 "use client";
 
+import { SizableText } from '@hanzo/gui';
 import { AppShell } from "@/components/app-shell";
 import { CatalogBrowser } from "@/components/catalog-browser";
 
@@ -10,9 +11,9 @@ import { CatalogBrowser } from "@/components/catalog-browser";
 export default function CatalogPage() {
   return (
     <AppShell currentView="templates">
-      <div className="flex-1 overflow-y-auto bg-background text-foreground">
+      <SizableText flex={1} backgroundColor="$background" color="$color" overflow="scroll" display="flex" flexDirection="column">
         <CatalogBrowser />
-      </div>
+      </SizableText>
     </AppShell>
   );
 }

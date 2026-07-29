@@ -1,3 +1,6 @@
+'use client';
+
+import { YStack, XStack } from '@hanzo/gui';
 import Image from "next/image";
 
 import { Button } from '@hanzo/ui';
@@ -14,34 +17,32 @@ export const SelectedFiles = ({
 }) => {
   if (files.length === 0) return null;
   return (
-    <div className="px-4 pt-3">
-      <div className="flex items-center justify-start gap-2">
+    <YStack paddingHorizontal="$4" paddingTop="$3">
+      <XStack alignItems="center" justifyContent="flex-start" gap="$2">
         {files.map((file) => (
-          <div
+          <XStack
             key={file}
-            className="flex items-center relative justify-start gap-2 p-1 bg-muted rounded-md"
+            alignItems="center" position="relative" justifyContent="flex-start" gap="$2" padding="$1" backgroundColor="$color3" borderRadius="$3"
           >
             <Image
               src={file}
               alt="uploaded image"
-              className="size-12 rounded-md object-cover"
+              width="$8" height="$8" borderRadius="$3" objectFit="cover"
               width={40}
               height={40}
-            />
+  />
             <Button
               size="iconXsss"
               variant="secondary"
-              className={`absolute top-0.5 right-0.5 ${
-                isAiWorking ? "opacity-50 !cursor-not-allowed" : ""
-              }`}
+              position="absolute" top="$0.5" right="$0.5" {...{ opacity: isAiWorking ? 0.5 : undefined, cursor: isAiWorking ? "not-allowed" : undefined }}
               disabled={isAiWorking}
               onClick={() => onDelete(file)}
             >
-              <Minus className="size-4" />
+              <Minus size={16} />
             </Button>
-          </div>
+          </XStack>
         ))}
-      </div>
-    </div>
+      </XStack>
+    </YStack>
   );
 };
