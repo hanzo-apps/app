@@ -40,12 +40,10 @@ import {
   type Project,
   type Deployment,
 } from "@/lib/api/projects";
-import { Input } from "@/components/control";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";
+import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, toast } from '@hanzo/ui';
 import { statusOf } from "@/lib/project-status";
 import { relativeTime } from "@/lib/projects-view";
 import { currentOrg, setCurrentOrg } from "@/lib/org-scope";
-import { toast } from "@hanzo/ui";
 
 export default function ProjectSettingsPage() {
   const params = useParams<{ org: string; project: string }>();

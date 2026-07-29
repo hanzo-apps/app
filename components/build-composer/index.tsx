@@ -30,7 +30,7 @@ import {
   Plus,
   Sparkles,
 } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/overlay';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@hanzo/ui';
 import { cn } from '@/lib/utils';
 import { baseEnabled, setBaseEnabled } from '@/lib/base/flag';
 

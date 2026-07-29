@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@hanzo/ui";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@hanzo/ui';
 import {
   FolderOpen,
   Clock,

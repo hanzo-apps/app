@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Button } from '@hanzo/ui';
-import { Input } from '@/components/control';
+import { Button, Input } from '@hanzo/ui';
 import { Plus, Search, FolderOpen, Loader2 } from 'lucide-react';
 import {
   fetchProjects,

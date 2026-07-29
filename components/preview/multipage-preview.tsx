@@ -9,7 +9,7 @@ import {
   PreviewHostMessage
 } from '@/lib/preview/types';
 import { vfs } from '@/lib/vfs';
-import { Button } from '@hanzo/ui';
+import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import {
   RefreshCw,
   Smartphone,
@@ -24,7 +24,6 @@ import {
   Loader2,
   X
 } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
 import { cn, logger } from '@/lib/utils';
 import { captureIframeScreenshot } from '@/lib/utils/screenshot';
 import type { ProjectRuntime } from '@/lib/vfs/types';

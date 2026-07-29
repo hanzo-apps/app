@@ -16,7 +16,7 @@
  */
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { Button } from "@hanzo/ui";
+import { Button } from '@hanzo/ui';
 
 describe("@hanzo/ui Button asChild (React.Children.only crash guard)", () => {
   it("renders an anchor child without throwing", () => {

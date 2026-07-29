@@ -23,7 +23,7 @@
  */
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { toast } from "@hanzo/ui";
+import { toast, Avatar, AvatarFallback, AvatarImage, Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Input, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '@hanzo/ui';
 import {
   Check,
   ChevronsUpDown,
@@ -37,9 +37,6 @@ import {
   Wallet,
 } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage, Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@hanzo/ui";
-import { Input } from "@/components/control";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "@/components/overlay";
 
 import { useUser } from "@/hooks/useUser";
 import { useOrg } from "@/lib/org/client";

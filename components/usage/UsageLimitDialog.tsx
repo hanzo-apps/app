@@ -15,13 +15,7 @@
  * description) comes from the @hanzo/ui Dialog (Radix).
  */
 import { useRouter } from 'next/navigation';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@hanzo/ui';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@hanzo/ui';
 import { Wallet, Sparkles, ArrowRight, type LucideIcon } from 'lucide-react';
 
 import { useCloudBalance, spendableCents } from '@/lib/billing/live-balance';

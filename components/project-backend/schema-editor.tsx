@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { Button } from '@hanzo/ui';
+import { Button, toast } from '@hanzo/ui';
 import { Play, Loader2 } from 'lucide-react';
-import { toast } from '@hanzo/ui';
 import { SchemaViewer } from '@/components/database-manager/schema-viewer';
 import { SqlEditor } from '@/components/database-manager/sql-editor';
 

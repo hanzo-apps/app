@@ -13,8 +13,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
-import { Badge } from '@hanzo/ui';
-import { Input } from '@/components/control';
+import { Badge, Input } from '@hanzo/ui';
 import { Search, Star, Sparkles, Gamepad2, Loader2 } from 'lucide-react';
 import { AppShell } from '@/components/app-shell';
 import { snapshotCatalog } from '@/lib/gallery-catalog';

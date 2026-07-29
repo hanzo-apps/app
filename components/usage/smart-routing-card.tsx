@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { Zap, ExternalLink } from "lucide-react";
 import { useLocalStorage } from "react-use";
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@hanzo/ui";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@hanzo/ui';
 import {
   AUTO_MODEL,
   DEFAULT_MODEL,

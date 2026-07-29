@@ -1,17 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@hanzo/ui';
-import { Button } from '@hanzo/ui';
-import { Switch } from '@/components/control';
-import { Label } from '@/components/control';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, Button, Switch, Label } from '@hanzo/ui';
 import {
   Loader2, AlertTriangle, Plus, Minus, RefreshCw, Key,
   Code2, Wrench, Clock,

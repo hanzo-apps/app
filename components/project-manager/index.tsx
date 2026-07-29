@@ -7,9 +7,7 @@ import { getProjectRuntimes } from '@/lib/runtimes/registry';
 import { vfs } from '@/lib/vfs';
 import { templateService } from '@/lib/vfs/template-service';
 import { logger } from '@/lib/utils';
-import { Button } from '@hanzo/ui';
-import { Input } from '@/components/control';
-import { Textarea } from '@/components/control';
+import { Button, Input, Textarea, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Label, toast, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue, Popover, PopoverContent, PopoverTrigger } from '@hanzo/ui';
 import { ProjectCard } from './project-card';
 import { MultipagePreview } from '@/components/preview/multipage-preview';
 import { AboutModal } from '@/components/about-modal';
@@ -25,16 +23,6 @@ import {
   TestTube,
   Github
 } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@hanzo/ui';
-import { Label } from '@/components/control';
-import { toast } from '@hanzo/ui';
 import { EVENTS } from '@hanzo/event';
 import { useAnalytics } from '@hanzo/event/react';
 import { provisionBackendFeatures } from '@/lib/vfs/provision-backend-features';
@@ -54,8 +42,6 @@ import {
   getBuiltInTemplatesForRuntime,
   type BuiltInTemplateMetadata
 } from '@/lib/vfs/project-templates';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/overlay';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/overlay';
 import { useGuidedTour } from '@/components/guided-tour/context';
 import { GuidedTourOverlay } from '@/components/guided-tour/overlay';
 import { configManager, migrateBackendKey } from '@/lib/config/storage';

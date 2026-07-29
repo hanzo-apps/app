@@ -2,18 +2,7 @@
 
 import React, { useState } from 'react';
 import { Project } from '@/lib/vfs/types';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@hanzo/ui';
-import { Button } from '@hanzo/ui';
-import { Input } from '@/components/control';
-import { Label } from '@/components/control';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Button, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 
 interface CreateDeploymentModalProps {
   projects: Project[];

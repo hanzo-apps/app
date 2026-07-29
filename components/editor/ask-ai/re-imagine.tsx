@@ -1,10 +1,7 @@
 import { useState } from "react";
 import { Paintbrush } from "lucide-react";
-import { toast } from "@hanzo/ui";
+import { toast, Button, Popover, PopoverContent, PopoverTrigger, Input } from '@hanzo/ui';
 
-import { Button } from "@hanzo/ui";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/overlay";
-import { Input } from "@/components/control";
 import Loading from "@/components/loading";
 import { api } from "@/lib/api";
 

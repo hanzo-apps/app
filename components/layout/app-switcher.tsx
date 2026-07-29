@@ -20,7 +20,7 @@
  * marked `aria-current="page"`.
  */
 import Link from 'next/link';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/overlay';
+import { Popover, PopoverContent, PopoverTrigger } from '@hanzo/ui';
 import {
   MessageSquare,
   LayoutGrid,

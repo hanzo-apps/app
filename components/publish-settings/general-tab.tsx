@@ -2,11 +2,7 @@
 
 import React, { useState } from 'react';
 import { PublishSettings, Project } from '@/lib/vfs/types';
-import { Label } from '@/components/control';
-import { Input } from '@/components/control';
-import { Switch } from '@/components/control';
-import { Badge } from '@hanzo/ui';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
+import { Label, Input, Switch, Badge, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import { Globe, AlertTriangle } from 'lucide-react';
 
 interface GeneralTabProps {

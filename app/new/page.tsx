@@ -2,7 +2,7 @@
 
 import { Suspense, useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@hanzo/ui";
+import { Button, toast } from '@hanzo/ui';
 import {
   ArrowRight,
   ArrowUp,
@@ -24,7 +24,6 @@ import {
   templateBuilderLink,
   type GalleryTemplate,
 } from "@/lib/api/templates";
-import { toast } from "@hanzo/ui";
 import { ImportGitPanel } from "@/components/import-git-panel";
 import { UserMenu } from "@/components/user-menu";
 import { useUser } from "@/hooks/useUser";

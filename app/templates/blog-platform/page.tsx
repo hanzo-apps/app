@@ -1,13 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@hanzo/ui";
-import { Button } from "@hanzo/ui";
-import { Badge } from "@hanzo/ui";
-import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
-import { Input } from "@/components/control";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@hanzo/ui";
-import { AspectRatio } from "@hanzo/ui";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Button, Badge, Avatar, AvatarFallback, AvatarImage, Input, Tabs, TabsContent, TabsList, TabsTrigger, AspectRatio } from '@hanzo/ui';
 import {
   Bookmark,
   Heart,

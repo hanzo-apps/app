@@ -27,7 +27,7 @@ import {
 } from '@hanzo/usage'
 import { useIamToken } from '@hanzo/iam/react'
 
-import guiConfig from '@/lib/gui.config'
+import guiConfig from '@hanzo/ui/gui-config'
 
 // get-cloud-usages + ai/connections live on the cloud API (api.hanzo.ai), not this origin.
 import { API_BASE } from '@/lib/platform'

@@ -2,13 +2,7 @@
 
 import React from 'react';
 import { Deployment } from '@/lib/vfs/types';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@hanzo/ui';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@hanzo/ui';
 import { DatabaseManager } from '@/components/database-manager';
 
 interface ServerSettingsModalProps {

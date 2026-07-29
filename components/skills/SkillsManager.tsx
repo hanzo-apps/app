@@ -4,16 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Skill } from '@/lib/vfs/skills/types';
 import { skillsService } from '@/lib/vfs/skills';
 import { logger } from '@/lib/utils';
-import { Button } from '@hanzo/ui';
-import { Input } from '@/components/control';
-import { Badge } from '@hanzo/ui';
-import { Switch } from '@/components/control';
-import { Label } from '@/components/control';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@hanzo/ui';
+import { Button, Input, Badge, Switch, Label, Collapsible, CollapsibleContent, CollapsibleTrigger, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, toast } from '@hanzo/ui';
 import {
   Plus,
   Search,
@@ -27,15 +18,6 @@ import {
   ChevronRight,
   Power
 } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@hanzo/ui';
-import { toast } from '@hanzo/ui';
 import { SkillEditor } from './SkillEditor';
 
 export function SkillsManager() {

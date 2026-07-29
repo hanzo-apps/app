@@ -2,19 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { configManager, AppSettings, CostSettings } from '@/lib/config/storage';
-import { Button } from '@hanzo/ui';
-import { Input } from '@/components/control';
-import { Label } from '@/components/control';
-import { Switch } from '@/components/control';
-import { toast } from '@hanzo/ui';
+import { Button, Input, Label, Switch, toast, Collapsible, CollapsibleContent, CollapsibleTrigger, Tabs, TabsList, TabsTrigger } from '@hanzo/ui';
 import { useTheme } from 'next-themes';
 import { DollarSign, AlertTriangle, Info, Download, Upload, Database, ChevronDown, Palette } from 'lucide-react';
 import { CostCalculator } from '@/lib/llm/cost-calculator';
 import { AboutModal } from '@/components/about-modal';
 import { BackupService } from '@/lib/vfs/backup-service';
 import { setTelemetryOptIn } from '@/lib/telemetry';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@hanzo/ui';
-import { ToggleGroup, ToggleGroupItem } from '@hanzo/ui';
 
 interface SettingsPanelProps {
   onClose?: () => void;
@@ -166,21 +160,21 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
               {/* Theme */}
               <div>
                 <Label htmlFor="theme">Theme</Label>
-                <ToggleGroup
-                  type="single"
-                  value={mounted ? (theme || 'dark') : 'dark'}
+                <Tabs
+                  value={mounted ? theme || 'dark' : 'dark'}
                   onValueChange={(value: string) => {
-                    if (value) {
-                      setTheme(value);
-                      updateSetting('theme', value as 'light' | 'dark' | 'system');
-                    }
+                    setTheme(value);
+                    updateSetting('theme', value as 'light' | 'dark' | 'system');
                   }}
-                  className="w-full mt-2"
+                  w="100%"
+                  mt="$2"
                 >
-                  <ToggleGroupItem value="dark" className="flex-1">Dark</ToggleGroupItem>
-                  <ToggleGroupItem value="light" className="flex-1">Light</ToggleGroupItem>
-                  <ToggleGroupItem value="system" className="flex-1">System</ToggleGroupItem>
-                </ToggleGroup>
+                  <TabsList w="100%">
+                    <TabsTrigger value="dark" flex={1}>Dark</TabsTrigger>
+                    <TabsTrigger value="light" flex={1}>Light</TabsTrigger>
+                    <TabsTrigger value="system" flex={1}>System</TabsTrigger>
+                  </TabsList>
+                </Tabs>
               </div>
 
               {/* Telemetry */}

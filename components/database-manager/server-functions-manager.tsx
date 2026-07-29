@@ -1,14 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { toast } from '@hanzo/ui';
+import { toast, Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@hanzo/ui';
 import { ServerFunction } from '@/lib/vfs/types';
 import {
   Plus, Loader2, AlertCircle, Wrench, MoreVertical, Pencil, Trash2,
   ToggleLeft, ToggleRight
 } from 'lucide-react';
-import { Button } from '@hanzo/ui';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/overlay';
 import { ServerFunctionEditor } from './server-function-editor';
 import { cn } from '@/lib/utils';
 import type { ServerFunctionsDataProvider } from './data-providers';

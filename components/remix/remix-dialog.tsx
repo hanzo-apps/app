@@ -10,8 +10,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import { Dialog, DialogContent, DialogTitle, DialogDescription, Button, Checkbox } from '@hanzo/ui';
-import { Input } from '@/components/control';
+import { Dialog, DialogContent, DialogTitle, DialogDescription, Button, Checkbox, Input } from '@hanzo/ui';
 
 const ACK_TEXT =
   'When remixing a template, I take responsibility over project security, compliance, data, and operations. Templates are provided as starting points and don’t guarantee functionality or security out of the box.';

@@ -328,7 +328,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <App />
   </React.StrictMode>,
 )`,
-    'src/App.tsx': `import { Button } from '@hanzo/ui'
+    'src/App.tsx': `import { Button } from '@hanzo/ui';
 import './App.css'
 
 function App() {
