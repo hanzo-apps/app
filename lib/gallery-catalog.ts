@@ -103,14 +103,16 @@ export function popularTemplates(templates: GalleryTemplate[], count = 6): Galle
   const byRating = [...(pool.length ? pool : apps)].sort(
     (a, b) => b.rating - a.rating || a.tier - b.tier,
   );
-  // Rotate among the top shelf: shuffle the best 3×count so the strip stays
-  // fresh between visits while never dipping below the quality bar.
+  // Rotate among the top shelf so the strip stays fresh between visits without
+  // dipping below the quality bar — DETERMINISTICALLY. Math.random() here renders
+  // one order on the server and another on the client, which is a hydration
+  // mismatch (React #418) on the busiest page we have. The rotation is a function
+  // of the hour instead: server and client agree within a render, and the strip
+  // still changes through the day.
   const shelf = byRating.slice(0, count * 3);
-  for (let i = shelf.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shelf[i], shelf[j]] = [shelf[j], shelf[i]];
-  }
-  byRating.splice(0, shelf.length, ...shelf);
+  const hour = Math.floor(Date.now() / 3_600_000);
+  const rotated = shelf.map((_, i) => shelf[(i + hour) % shelf.length]);
+  byRating.splice(0, rotated.length, ...rotated);
   const picked: GalleryTemplate[] = [];
   const usedCategory = new Set<string>();
   for (const t of byRating) {
