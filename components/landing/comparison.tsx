@@ -304,7 +304,7 @@ export default function Comparison() {
     <section className="relative border-t border-border px-4 py-20 md:px-8 md:py-28">
       <div className="mx-auto max-w-6xl">
         <Reveal className="mx-auto max-w-2xl text-center">
-          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+          <p className="font-mono text-[11px]  text-muted-foreground">
             Why Hanzo
           </p>
           <h2 className="mt-4 text-3xl font-medium tracking-tight md:text-[2.75rem] md:leading-[1.1]">
@@ -340,7 +340,7 @@ export default function Comparison() {
         <div className="mt-10 hidden lg:block">
           <Reveal delay={80}>
             <div className="mb-3 flex items-center justify-between gap-4">
-              <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+              <p className="font-mono text-[11px]  text-muted-foreground">
                 Slide across all {COLS.length} criteria →
               </p>
               <div className="flex gap-2">
@@ -382,7 +382,7 @@ export default function Comparison() {
                       {COLS.map((c) => (
                         <th
                           key={c.short}
-                          className="w-[208px] min-w-[208px] snap-start px-4 pb-4 align-bottom font-mono text-[10px] font-normal uppercase leading-tight tracking-[0.1em] text-muted-foreground"
+                          className="w-[208px] min-w-[208px] snap-start px-4 pb-4 align-bottom font-mono text-[10px] font-normal  leading-tight tracking-[0.1em] text-muted-foreground"
                         >
                           <c.icon
                             className="mb-2 h-4 w-4 text-muted-foreground"
@@ -406,7 +406,7 @@ export default function Comparison() {
                           <span className="flex items-center gap-2">
                             {r.name}
                             {r.hanzo && (
-                              <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-emerald-300">
+                              <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 font-mono text-[9px]  text-emerald-300">
                                 Best
                               </span>
                             )}
@@ -463,7 +463,7 @@ export default function Comparison() {
                 >
                   <div className="mb-4 flex items-center gap-2">
                     <h3 className="text-lg font-medium text-foreground">{r.name}</h3>
-                    <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-emerald-300">
+                    <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 font-mono text-[9px]  text-emerald-300">
                       Best overall
                     </span>
                   </div>
@@ -474,7 +474,7 @@ export default function Comparison() {
                           <Dot tone="good" />
                         </span>
                         <div className="min-w-0">
-                          <dt className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                          <dt className="flex items-center gap-1.5 font-mono text-[10px]  text-muted-foreground">
                             <ColIcon i={ci} className="h-3 w-3 text-muted-foreground" />
                             {COLS[ci].short}
                           </dt>
@@ -502,7 +502,7 @@ export default function Comparison() {
                       {r.name}
                     </span>
                     {r.note && (
-                      <span className="ml-2 font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                      <span className="ml-2 font-mono text-[10px]  text-muted-foreground">
                         {r.note}
                       </span>
                     )}
@@ -537,7 +537,7 @@ export default function Comparison() {
                         <Dot tone={cell.t} />
                       </span>
                       <div className="min-w-0">
-                        <dt className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                        <dt className="flex items-center gap-1.5 font-mono text-[10px]  text-muted-foreground">
                           <ColIcon i={ci} className="h-3 w-3 text-muted-foreground" />
                           {COLS[ci].short}
                         </dt>

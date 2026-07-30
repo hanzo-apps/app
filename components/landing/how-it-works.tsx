@@ -27,7 +27,7 @@ export default function HowItWorks() {
     <section className="relative border-t border-border px-4 py-20 md:px-8 md:py-28">
       <div className="mx-auto max-w-6xl">
         <Reveal className="mx-auto max-w-2xl text-center">
-          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+          <p className="font-mono text-[11px]  text-muted-foreground">
             How it works
           </p>
           <h2 className="mt-4 text-3xl font-medium tracking-tight md:text-4xl">
