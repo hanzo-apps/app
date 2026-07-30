@@ -14,22 +14,45 @@ that don't already have a chat surface.
 
 ## Drop it into any app
 
-Add the tag (served by hanzo.app) and the declaration metas:
+One line. The same line on every property, byte for byte:
 
 ```html
 <script async src="https://hanzo.app/edit.js"></script>
+```
 
-<meta name="hanzo:repo"     content="owner/repo">      <!-- required -->
-<meta name="hanzo:path"     content="path/to/file.mdx"><!-- optional override; auto-resolved otherwise -->
+That is the whole install. The tag carries **both** capabilities — the edit
+widget and session replay — and needs no per-site configuration, because the
+host→repo map lives in `edit.js` itself (the one file every site already loads).
+Adding a property is a line in that map, not a commit in that property's repo.
+
+Optional metas, each of which WINS over the map when present — a repo knows its
+own name better than a table does, and a host we don't list (a preview build, a
+branch deploy, a brand-new domain) declares itself and works immediately:
+
+```html
+<meta name="hanzo:repo"     content="owner/repo">      <!-- overrides the host map -->
+<meta name="hanzo:path"     content="path/to/file.mdx"><!-- optional; auto-resolved otherwise -->
 <meta name="hanzo:branch"   content="main">            <!-- optional, default main -->
 <meta name="hanzo:provider" content="github">          <!-- optional: github|gitlab|gitea, default github -->
 <meta name="hanzo:key"      content="pk_...">           <!-- optional publishable project key -->
 ```
 
-With **no `hanzo:repo`** the widget renders nothing. **You no longer need
-`hanzo:path`** — the widget auto-resolves the source file(s) for the current
-view and pre-fills the field (see below). `hanzo:path` remains an optional
-explicit override that wins when a page maps 1:1 to a known file.
+Resolving to **no repo at all** disables only the edit widget — session replay
+still runs, because a page worth watching back is not the same question as a page
+worth editing.
+
+**The site's CSP has to allow it**, and this is the one step that fails silently
+when skipped. Any app serving its own policy (`HANZO_STATIC_CSP` on the static
+fleet) needs both origins:
+
+```
+script-src  … https://hanzo.app https://insights.hanzo.ai
+connect-src … https://insights.hanzo.ai
+```
+
+**You no longer need `hanzo:path`** — the widget auto-resolves the source file(s)
+for the current view and pre-fills the field (see below). `hanzo:path` remains an
+optional explicit override that wins when a page maps 1:1 to a known file.
 
 In Next.js, declare the repo-wide metas once in `app/layout.tsx`:
 
@@ -107,10 +130,54 @@ effective path from `candidateFiles` when `path` is omitted. The trace is
 untrusted input: file paths run through `safePath`, and the replay deep-link is
 **reconstructed** from the session id server-side (never echoed from the client).
 
-**Session replay is present-when-available.** Replay INGEST is a separate,
-not-yet-live workstream, so the `deepLink` is well-formed now and simply *lights
-up* once ingest lands — it never blocks a fix, and when no session id is
-resolvable the reference is omitted entirely.
+---
+
+## Session replay
+
+The same tag records the session, so a filed fix arrives with the recording of
+the thing that went wrong attached — same `sessionId`, so `replayRef.deepLink`
+resolves to it.
+
+**The recorder is not bundled.** `edit.js` loads the one Insights itself serves,
+`<insights>/static/recorder.js`, so the rrweb build that RECORDS is by
+construction the build the player REPLAYS. Vendoring a copy would fork that pair
+and let it drift silently — and a recording the player of the day cannot read is
+worse than no recording, because it looks like it worked. (Same reasoning as the
+route manifest: prefer the signal derived from the same source as its consumer.)
+It is also one URL across the whole fleet, so it is one CDN entry, warm for every
+site after the first.
+
+Batches ride the documented recordings route as the `$snapshot` envelope
+`insights-capture` parses (`RawRecording`):
+
+```jsonc
+POST https://insights.hanzo.ai/v1/s          // Content-Type: application/json
+[{ "event": "$snapshot", "api_key": "<publishable ingest key>",
+   "distinct_id": "<session id>",
+   "properties": { "$session_id": "…", "$window_id": "…",
+                   "$snapshot_source": "web", "$lib": "hanzo-edit",
+                   "$snapshot_data": [ /* rrweb events */ ] } }]
+```
+
+Flushed every 5s, at 100 buffered events, and once more when the page is hidden
+or unloading (`keepalive`, so the tail survives the navigation that a bug report
+needs most). Deliberately **not** `sendBeacon`: capture 502s on a `text/plain`
+body, so the envelope must be `application/json` — which preflights, and a
+`keepalive` fetch preflights far more reliably than a beacon does. The preflight
+is cached for a day.
+
+**Privacy is the default, not a deployment option.** `maskAllInputs` is on, so no
+value anyone types can leave the page; the widget's own subtree is never recorded
+(it can hold unsent prose); `.hz-no-record` hides any subtree, `.hz-mask` masks
+text, `.hz-unmask` opts back in. Replay is skipped entirely for Do-Not-Track, for
+`localStorage.hz_replay_off = '1'`, and for any page that sets
+`window.__hanzoNoReplay = true` before the tag runs.
+
+Replay is **orthogonal to editing**: it boots before the repo gate, so it runs on
+pages that map to no repo at all. Everything about it is granted by
+`/v1/edit/config` — absent an `INSIGHTS_INGEST_KEY` the lane reports
+`enabled:false` and nothing is recorded, and `INSIGHTS_REPLAY_SAMPLE_RATE`
+throttles the whole fleet from one env var without redeploying a single site.
 
 ---
 
