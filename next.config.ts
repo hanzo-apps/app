@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import { withGui } from '@hanzogui/next-plugin';
 
 import { transpiled } from './transpile';
 
@@ -94,4 +95,13 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// The DESIGNED gui integration: withGui injects the config into every entry at
+// build time (no more chunk-graph roulette where a prerender worker evaluates a
+// gui component before any config module ran) and wires build-time CSS
+// extraction. appDir because this is an app-router app.
+export default withGui({
+  config: './lib/gui.config.ts',
+  components: ['@hanzo/gui'],
+  appDir: true,
+  disableExtraction: process.env.NODE_ENV === 'development',
+})(nextConfig);

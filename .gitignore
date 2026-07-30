@@ -109,3 +109,6 @@ tests/e2e/test-results.json
 
 # Claude Code session state (worktrees, transcripts) — never commit
 .claude/
+
+# gui compiler cache (withGui / @hanzogui/static)
+.gui/

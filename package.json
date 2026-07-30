@@ -112,6 +112,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
+    "@hanzogui/next-plugin": "7.3.2",
     "@playwright/test": "^1.61.1",
     "@testing-library/jest-dom": "6.4.8",
     "@testing-library/react": "16.0.1",
@@ -167,7 +168,8 @@
       "picomatch@4": ">=4.0.4",
       "brace-expansion@1": ">=1.1.16",
       "brace-expansion@2": ">=2.1.2",
-      "axios": ">=1.18.0"
+      "axios": ">=1.18.0",
+      "@hanzogui/web": "7.3.3"
     },
     "onlyBuiltDependencies": [
       "better-sqlite3"
