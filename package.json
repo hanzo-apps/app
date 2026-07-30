@@ -112,6 +112,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
+    "@hanzogui/next-plugin": "7.3.2",
     "@playwright/test": "^1.61.1",
     "@testing-library/jest-dom": "6.4.8",
     "@testing-library/react": "16.0.1",
@@ -173,7 +174,7 @@
       "better-sqlite3"
     ]
   },
-  "description": "Hanzo App \u2014 AI web & app builder on Hanzo Cloud",
+  "description": "Hanzo App — AI web & app builder on Hanzo Cloud",
   "author": "Hanzo AI, Inc.",
   "repository": {
     "type": "git",

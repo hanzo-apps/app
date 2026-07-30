@@ -5,7 +5,27 @@
 // surface change. This module stays as the app's stable footer entry point
 // (`SiteFooter` default + `PreFooterCTA` named) so its call sites are untouched.
 
-import { HanzoFooter, HanzoPreFooterCTA } from "@hanzogui/shell";
+// CLIENT-ONLY. @hanzogui/shell renders a Tamagui Dialog internally, and
+// DialogSheetController -> useAdaptIsActive -> useMedia throws during prerender
+// ("Cannot create proxy with a non-object as target or handler"). This module is
+// a SERVER component, so it is the last Tamagui surface reaching the prerenderer
+// after the root-layout dialog was gated — and it is why /templates/[slug] was
+// the only route still failing.
+//
+// Cost: the footer's cross-property links leave the prerendered HTML, so a
+// crawler that does not run JS will not see them. Revisit if @hanzogui/shell
+// stops rendering a Dialog unconditionally, which is the real fix.
+'use client';
+
+import dynamic from 'next/dynamic';
+
+const HanzoFooter = dynamic(() => import('@hanzogui/shell').then((m) => m.HanzoFooter), {
+  ssr: false,
+});
+const HanzoPreFooterCTA = dynamic(
+  () => import('@hanzogui/shell').then((m) => m.HanzoPreFooterCTA),
+  { ssr: false },
+);
 
 // PreFooterCTA — the product-specific call to action placed IMMEDIATELY above the
 // shared footer. Heading + actions come from the shell's canonical surface data.
