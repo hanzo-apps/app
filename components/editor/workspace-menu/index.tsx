@@ -52,10 +52,12 @@ import type { Project } from "@/types";
 const fmtUsd = (cents: number): string => `$${(cents / 100).toFixed(2)}`;
 
 // Shared item styling — Hanzo darker chrome: white-on-black, hairline focus,
-// a crisp 150ms hover.
-const ITEM =
-  "cursor-pointer gap-2.5 rounded-md px-2 py-2 text-sm text-foreground transition-colors duration-150 focus:bg-foreground/[0.06] focus:text-foreground";
-const ICON = "size-4 shrink-0 text-muted-foreground";
+// a crisp hover. ONE gui prop bundle, spread on every menu item.
+const ITEM = {
+  cursor: "pointer", gap: "$2.5", borderRadius: "$3",
+  paddingHorizontal: "$2", paddingVertical: "$2", fontSize: "$3",
+  color: "$color", focusStyle: { backgroundColor: "$color3" },
+} as const;
 
 export function WorkspaceMenu({
   project,
@@ -158,7 +160,7 @@ export function WorkspaceMenu({
           <Button
             type="button"
             title="Workspace"
-            minWidth={0} alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$2.5" paddingVertical="$1.5" fontSize="$3" color="$color" hoverStyle={{ borderColor: "$borderColor", backgroundColor: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }} className="data-[state=open]:border-border data-[state=open]:bg-foreground/[0.06]"
+            minWidth={0} alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$2.5" paddingVertical="$1.5" fontSize="$3" color="$color" hoverStyle={{ borderColor: "$borderColor", backgroundColor: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
           >
             <OrgAvatar name={orgName} logo={activeOrg?.logo} />
             <SizableText maxWidth="9rem" numberOfLines={1} fontWeight="500" color="$color">
@@ -175,7 +177,7 @@ export function WorkspaceMenu({
           width="19rem" padding="$1.5"
         >
           {/* Back to the dashboard. */}
-          <DropdownMenuItem asChild className={`${ITEM}`}>
+          <DropdownMenuItem asChild {...ITEM}>
             <Link href="/dashboard">
               <LayoutDashboard />
               Go to Dashboard
@@ -207,8 +209,8 @@ export function WorkspaceMenu({
           {/* Active workspace + plan badge — a switcher when there's more than one. */}
           {canSwitch ? (
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-foreground transition-colors duration-150 focus:bg-foreground/[0.06] focus:text-foreground data-[state=open]:bg-foreground/[0.06]">
-                <OrgAvatar name={orgName} logo={activeOrg?.logo} className="size-7 text-[11px]" />
+              <DropdownMenuSubTrigger display="flex" alignItems="center" gap="$2.5" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$3" color="$color" focusStyle={{ backgroundColor: "$color3" }}>
+                <OrgAvatar name={orgName} logo={activeOrg?.logo} size={28} />
                 <SizableText minWidth={0} flex={1}>
                   <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{orgName}</SizableText>
                   <SizableText fontSize={11} color="$color11">Switch workspace</SizableText>
@@ -217,7 +219,7 @@ export function WorkspaceMenu({
                   {orgKind}
                 </SizableText>
               </DropdownMenuSubTrigger>
-              <DropdownMenuSubContent className="max-h-72 w-64">
+              <DropdownMenuSubContent maxHeight={288} width={256}>
                 {orgs.map((o) => {
                   const isCurrent = o.name === orgId;
                   return (
@@ -236,7 +238,7 @@ export function WorkspaceMenu({
             </DropdownMenuSub>
           ) : (
             <XStack alignItems="center" gap="$2.5" paddingHorizontal="$2" paddingVertical="$1.5">
-              <OrgAvatar name={orgName} logo={activeOrg?.logo} className="size-7 text-[11px]" />
+              <OrgAvatar name={orgName} logo={activeOrg?.logo} size={28} />
               <SizableText minWidth={0} flex={1}>
                 <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{orgName}</SizableText>
                 <SizableText fontSize={11} color="$color11">Workspace</SizableText>
@@ -284,27 +286,27 @@ export function WorkspaceMenu({
 
           <DropdownMenuSeparator marginHorizontal="-1.5" marginVertical="$1.5" backgroundColor="$borderColor" />
 
-          <DropdownMenuItem asChild className={`${ITEM}`}>
+          <DropdownMenuItem asChild {...ITEM}>
             <Link href="/settings">
               <Settings />
               Settings
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild className={`${ITEM}`}>
+          <DropdownMenuItem asChild {...ITEM}>
             <Link href="/connectors">
               <Plug />
               Project connectors
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem className={`${ITEM}`} onSelect={() => openRename()}>
+          <DropdownMenuItem {...ITEM} onSelect={() => openRename()}>
             <Pencil />
             Rename project
           </DropdownMenuItem>
-          <DropdownMenuItem className={`${ITEM}`} onSelect={() => setDetailsOpen(true)}>
+          <DropdownMenuItem {...ITEM} onSelect={() => setDetailsOpen(true)}>
             <Info />
             Project details
           </DropdownMenuItem>
-          <DropdownMenuItem asChild className={`${ITEM}`}>
+          <DropdownMenuItem asChild {...ITEM}>
             <a href="https://hanzo.ai/docs" target="_blank" rel="noopener noreferrer">
               <LifeBuoy />
               Help
@@ -315,7 +317,7 @@ export function WorkspaceMenu({
 
           <DropdownMenuItem
             onSelect={() => void logout()}
-            color="$color" className={`${ITEM}`}
+            color="$color" {...ITEM}
           >
             <LogOut size={16} />
             Sign out
@@ -345,7 +347,7 @@ export function WorkspaceMenu({
                 if (!renaming) void submitRename();
               }
             }}
-            borderColor="$borderColor" backgroundColor="$color" color="$color" className="selection:bg-[var(--brand-accent-soft)]"
+            borderColor="$borderColor" backgroundColor="$color" color="$color"
   />
           <XStack justifyContent="flex-end" gap="$2">
             <Button
