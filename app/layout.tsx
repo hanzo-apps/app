@@ -33,6 +33,9 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  // Same policy as sans: text paints in the fallback immediately and swaps —
+  // without it, mono text (code, data) blocks on the woff2 (FOIT).
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -85,6 +88,26 @@ export const metadata: Metadata = {
   },
 };
 
+// Speculation Rules — progressive: browsers that don't know the script type
+// ignore it entirely. Top nav routes prefetch on hover/pointerdown (moderate);
+// the static marketing pages additionally prerender on pointerdown
+// (conservative) so the click lands on an already-rendered document. All
+// targets are public, side-effect-free GET routes.
+const SPECULATION_RULES = JSON.stringify({
+  prefetch: [
+    {
+      urls: ["/templates", "/pricing", "/enterprise", "/community", "/gallery", "/new"],
+      eagerness: "moderate",
+    },
+  ],
+  prerender: [
+    {
+      urls: ["/templates", "/pricing", "/enterprise", "/community"],
+      eagerness: "conservative",
+    },
+  ],
+});
+
 export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
@@ -113,11 +136,16 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body className="antialiased bg-background text-foreground min-h-screen">
-        <IframeDetector />
         <ChunkReloader />
         <PointerEventsGuard />
         <ErrorBoundary level="app">
           <Providers>
+            {/* IframeDetector mounts IframeWarningModal (a Dialog) even while
+                closed; DialogContent's gui backend reads the theme context, so
+                it must live under Providers (GuiProvider). Outside it, the
+                client render throws "Missing theme." and the app-level error
+                boundary replaces the ENTIRE page. */}
+            <IframeDetector />
             <TanstackProvider>
               <AppContext>{children}</AppContext>
             </TanstackProvider>
@@ -129,6 +157,10 @@ export default async function RootLayout({
             Served by hanzo.app at /edit.js; any Hanzo app drops in the same tag:
             <script async src="https://hanzo.app/edit.js"></script>. */}
         <script async src="/edit.js" />
+        <script
+          type="speculationrules"
+          dangerouslySetInnerHTML={{ __html: SPECULATION_RULES }}
+        />
       </body>
     </html>
   );
