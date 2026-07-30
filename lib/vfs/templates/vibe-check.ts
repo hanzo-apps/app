@@ -52,7 +52,7 @@ const INDEX_HTML = `<!DOCTYPE html>
         <span class="text-white/25">·</span>
         <span class="text-white/45">realtime</span>
       </div>
-      <div class="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs">
+      <div class="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs rounded-[10px]">
         <span id="statusDot" class="h-2 w-2 rounded-full bg-amber-400 live-dot"></span>
         <span id="statusText" class="text-white/70">Connecting…</span>
       </div>
@@ -60,20 +60,20 @@ const INDEX_HTML = `<!DOCTYPE html>
 
     <!-- Hero -->
     <main class="flex flex-1 flex-col justify-center py-9">
-      <div class="mb-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/40">Team vibe check</div>
+      <div class="mb-2 text-[11px] font-semibold  text-white/40">Team vibe check</div>
       <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">How's the team feeling today?</h1>
       <p class="mt-2 text-white/50">One tap. Everyone on your team sees it update live — no refresh.</p>
 
       <!-- Notice banner (auth / backend states) -->
-      <div id="notice" class="mt-5 hidden rounded-xl border px-4 py-3 text-sm"></div>
+      <div id="notice" class="mt-5 hidden rounded-xl border px-4 py-3 text-sm rounded-[10px]"></div>
 
       <!-- Vote buttons -->
       <div id="vibes" class="mt-7 grid grid-cols-5 gap-2 sm:gap-3"></div>
 
       <!-- Results -->
-      <section class="mt-8 rounded-2xl border border-white/10 bg-white/[0.02] p-5">
+      <section class="mt-8 rounded-2xl border border-white/10 bg-white/[0.02] p-5 rounded-[10px]">
         <div class="mb-4 flex items-baseline justify-between">
-          <h2 class="text-xs font-semibold uppercase tracking-wider text-white/45">Live results</h2>
+          <h2 class="text-xs font-semibold  text-white/45">Live results</h2>
           <div class="font-mono text-sm text-white/50"><span id="total" class="text-white">0</span> votes</div>
         </div>
         <div id="bars" class="space-y-3"></div>
@@ -82,7 +82,7 @@ const INDEX_HTML = `<!DOCTYPE html>
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-white/[0.06] pt-5 text-xs leading-relaxed text-white/35">
+    <footer class="border-t border-white/[0.06] pt-5 text-xs leading-relaxed text-white/35 rounded-[10px]">
       Each tap writes to the org-scoped <code class="rounded bg-white/10 px-1 py-0.5 font-mono text-white/60">votes</code>
       collection in Hanzo Base through <code class="rounded bg-white/10 px-1 py-0.5 font-mono text-white/60">/v1/base</code>,
       and every change streams back over the Base realtime SSE subscription. Open this in two windows to watch them sync.
@@ -91,7 +91,7 @@ const INDEX_HTML = `<!DOCTYPE html>
 
   <!-- realtime toast -->
   <div id="toast" class="pointer-events-none fixed inset-x-0 bottom-6 flex justify-center opacity-0 transition-opacity duration-300">
-    <div class="flex items-center gap-2 rounded-full border border-white/10 bg-zinc-900/90 px-4 py-2 text-sm shadow-2xl backdrop-blur">
+    <div class="flex items-center gap-2 rounded-full border border-white/10 bg-zinc-900/90 px-4 py-2 text-sm shadow-2xl backdrop-blur rounded-[10px]">
       <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span><span id="toastText"></span>
     </div>
   </div>

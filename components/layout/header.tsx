@@ -23,10 +23,11 @@ import { cn } from "@/lib/utils";
 
 // The marketing nav — real routes only (no /product 404, no per-app grid).
 const NAV = [
+  { label: "Community", href: "/community" },
+  { label: "Features", href: "/features" },
   { label: "Templates", href: "/templates" },
   { label: "Pricing", href: "/pricing" },
   { label: "Enterprise", href: "/enterprise" },
-  { label: "Community", href: "/community" },
 ];
 
 export default function Header() {

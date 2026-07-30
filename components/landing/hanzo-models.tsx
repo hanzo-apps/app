@@ -12,7 +12,7 @@ export default function HanzoModels() {
     <section className="relative border-t border-border px-4 py-20 md:px-8 md:py-28">
       <div className="mx-auto max-w-6xl">
         <Reveal className="mx-auto max-w-2xl text-center">
-          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+          <p className="font-mono text-[11px]  text-muted-foreground">
             Hanzo models
           </p>
           <h2 className="mt-4 text-3xl font-medium tracking-tight md:text-[2.75rem] md:leading-[1.1]">
@@ -38,7 +38,7 @@ export default function HanzoModels() {
                 <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-muted">
                   <Orbit className="h-5 w-5 text-foreground" strokeWidth={1.5} />
                 </span>
-                <span className="rounded-full border border-border px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+                <span className="rounded-full border border-border px-2.5 py-0.5 font-mono text-[10px]  text-muted-foreground">
                   Proprietary
                 </span>
               </div>
@@ -69,7 +69,7 @@ export default function HanzoModels() {
                 <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-muted">
                   <Boxes className="h-5 w-5 text-foreground" strokeWidth={1.5} />
                 </span>
-                <span className="rounded-full border border-border px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+                <span className="rounded-full border border-border px-2.5 py-0.5 font-mono text-[10px]  text-muted-foreground">
                   Open source
                 </span>
               </div>
