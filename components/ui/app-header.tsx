@@ -9,7 +9,7 @@ import { ChevronDown, ChevronUp, Menu } from 'lucide-react';
 export interface HeaderAction {
   id: string;
   label: string;
-  icon?: React.ComponentType<{ className?: string }>;
+  icon?: React.ComponentType<{ size?: number }>;
   onClick: () => void;
   variant?: 'default' | 'outline' | 'ghost' | 'secondary';
   size?: 'default' | 'sm' | 'lg' | 'icon';
@@ -21,7 +21,7 @@ export interface HeaderAction {
 export interface ViewTab {
   id: string;
   label: string;
-  icon?: React.ComponentType<{ className?: string }>;
+  icon?: React.ComponentType<{ size?: number }>;
 }
 
 interface AppHeaderProps {
@@ -106,8 +106,12 @@ export function AppHeader({
                   variant={activeViewTab === tab.id ? 'secondary' : 'ghost'}
                   size="sm"
                   onClick={() => onViewTabChange?.(tab.id)}
-                  gap="$2" className={`${index === 0 ? 'rounded-r-none rounded-l-full' : index === viewTabs.length - 1 ? 'rounded-l-none rounded-r-full' :
-                    'rounded-none'}`}
+                  gap="$2"
+                  {...(index === 0
+                    ? { borderTopRightRadius: 0, borderBottomRightRadius: 0, borderTopLeftRadius: 9999, borderBottomLeftRadius: 9999 }
+                    : index === viewTabs.length - 1
+                      ? { borderTopLeftRadius: 0, borderBottomLeftRadius: 0, borderTopRightRadius: 9999, borderBottomRightRadius: 9999 }
+                      : { borderRadius: 0 })}
                 >
                   {tab.icon && <tab.icon size={16} />}
                   {tab.label}
@@ -146,10 +150,10 @@ export function AppHeader({
                   size={action.size || 'sm'}
                   onClick={action.onClick}
                   disabled={action.disabled}
-                  justifyContent="flex-start"
+                  gap="$2" justifyContent="flex-start"
                   data-tour-id={action.dataTourId}
                 >
-                  {action.icon && <action.icon className="h-4 w-4 mr-2" />}
+                  {action.icon && <action.icon size={16} />}
                   {action.label}
                 </Button>
               )
@@ -169,10 +173,10 @@ export function AppHeader({
                   size={action.size || 'sm'}
                   onClick={action.onClick}
                   disabled={action.disabled}
-                  height="$6" paddingHorizontal="$3"
+                  gap="$2" height="$6" paddingHorizontal="$3"
                   data-tour-id={action.dataTourId}
                 >
-                  {action.icon && <action.icon className="h-4 w-4 mr-2" />}
+                  {action.icon && <action.icon size={16} />}
                   {action.label}
                 </Button>
               )
@@ -235,10 +239,10 @@ export function AppHeader({
                       setMobileMenuOpen(false);
                     }}
                     disabled={action.disabled}
-                    width="100%" justifyContent="flex-start"
+                    gap="$2" width="100%" justifyContent="flex-start"
                     data-tour-id={action.dataTourId}
                   >
-                    {action.icon && <action.icon className="h-4 w-4 mr-2" />}
+                    {action.icon && <action.icon size={16} />}
                     {action.label}
                   </Button>
                 )

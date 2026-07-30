@@ -343,7 +343,7 @@ export default function HeroPreview() {
 
             <YStack
               ref={chatRef}
-              maxHeight="$17" minHeight={0} flex={1} gap="$1.5" overflow="hidden" paddingHorizontal="$3.5" paddingVertical="$3" className="md:max-h-none"
+              maxHeight="$17" minHeight={0} flex={1} gap="$1.5" overflow="hidden" paddingHorizontal="$3.5" paddingVertical="$3" $md={{ maxHeight: "none" }}
             >
               {bubbles.map((b, i) =>
                 b.role === "user" ? (
@@ -390,7 +390,7 @@ export default function HeroPreview() {
             >
               <XStack alignItems="center" gap="$2" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$3" paddingVertical="$2">
                 <XStack alignSelf="center" width="100%" maxWidth={240} alignItems="center" gap="$2" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2.5" paddingVertical="$1">
-                  <svg viewBox="0 0 24 24" className="h-2.5 w-2.5 shrink-0 text-foreground/30" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+                  <svg viewBox="0 0 24 24" width={10} height={10} opacity={0.3} fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
                     <rect x="4" y="10" width="16" height="10" rx="2" />
                     <path d="M8 10V7a4 4 0 1 1 8 0v3" />
                   </svg>
