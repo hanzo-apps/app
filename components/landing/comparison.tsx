@@ -266,32 +266,32 @@ const ROWS: Row[] = [
 // Severity reads as LIGHTNESS, not hue — the house is monochrome, and the
 // argument ("row one is a clean sweep") survives it: Hanzo's row stays solid
 // white while everyone else's dots fade out.
-const DOT: Record<Tone, string> = {
-  good: "bg-foreground",
-  mid: "bg-foreground/45",
-  bad: "bg-foreground/20",
-  na: "bg-transparent ring-1 ring-inset ring-foreground/20",
+const DOT: Record<Tone, React.ComponentProps<typeof SizableText>> = {
+  good: { backgroundColor: "$color" },
+  mid: { backgroundColor: "$color", opacity: 0.45 },
+  bad: { backgroundColor: "$color", opacity: 0.2 },
+  na: { backgroundColor: "transparent", borderWidth: 1, borderColor: "$color", opacity: 0.2 },
 };
 const TEXT: Record<Tone, string> = {
-  good: "text-foreground",
-  mid: "text-foreground",
-  bad: "text-muted-foreground",
-  na: "text-muted-foreground",
+  good: "$color",
+  mid: "$color",
+  bad: "$color11",
+  na: "$color11",
 };
 
 function Dot({ tone }: { tone: Tone }) {
   return (
     <SizableText
       aria-hidden
-      height={7} width={7} flex={0} borderRadius="$10" className={`${DOT[tone]}`}
+      height={7} width={7} flex={0} borderRadius="$10" {...DOT[tone]}
   />
   );
 }
 
 // The criterion's icon by column index (JSX can't render COLS[ci].icon inline).
-function ColIcon({ i, className }: { i: number; className?: string }) {
+function ColIcon({ i, size = 14 }: { i: number; size?: number }) {
   const Icon = COLS[i].icon;
-  return <Icon className={className} strokeWidth={1.5} aria-hidden />;
+  return <Icon size={size} color="var(--muted-foreground)" strokeWidth={1.5} aria-hidden />;
 }
 
 export default function Comparison() {
@@ -305,7 +305,7 @@ export default function Comparison() {
   return (
     <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$13" }}>
       <YStack alignSelf="center" maxWidth={1152}>
-        <Reveal className="mx-auto max-w-2xl text-center">
+        <Reveal alignSelf="center" width="100%" maxWidth={672} textAlign="center">
           <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
             Why Hanzo
           </Paragraph>
@@ -322,18 +322,18 @@ export default function Comparison() {
         {/* Legend */}
         <Reveal
           delay={60}
-          className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 font-mono text-[11px] text-muted-foreground"
+          marginTop="$6" flexDirection="row" flexWrap="wrap" alignItems="center" justifyContent="center" columnGap="$4" rowGap="$2"
         >
-          <SizableText alignItems="center" gap="$1.5">
+          <SizableText alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={11} color="$color11">
             <Dot tone="good" /> Advantage
           </SizableText>
-          <SizableText alignItems="center" gap="$1.5">
+          <SizableText alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={11} color="$color11">
             <Dot tone="mid" /> Caveat
           </SizableText>
-          <SizableText alignItems="center" gap="$1.5">
+          <SizableText alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={11} color="$color11">
             <Dot tone="bad" /> Weakness
           </SizableText>
-          <SizableText alignItems="center" gap="$1.5">
+          <SizableText alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={11} color="$color11">
             <Dot tone="na" /> N/A
           </SizableText>
         </Reveal>
@@ -352,7 +352,7 @@ export default function Comparison() {
                   aria-label="Previous criteria"
                   height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" color="$color11" hoverStyle={{ borderColor: "$color", color: "$color" }}
                 >
-                  <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden>
+                  <svg width={16} height={16} viewBox="0 0 16 16" fill="none" aria-hidden>
                     <path d="M10 4L6 8l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </Button>
@@ -362,7 +362,7 @@ export default function Comparison() {
                   aria-label="Next criteria"
                   height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" color="$color11" hoverStyle={{ borderColor: "$color", color: "$color" }}
                 >
-                  <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden>
+                  <svg width={16} height={16} viewBox="0 0 16 16" fill="none" aria-hidden>
                     <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </Button>
@@ -375,9 +375,9 @@ export default function Comparison() {
 
               <YStack
                 ref={scrollRef}
-                overflow="scroll" className="[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                overflow="scroll" className="no-scrollbar"
               >
-                <SizableText textAlign="left" display="flex" flexDirection="column" className="border-separate border-spacing-0">
+                <SizableText textAlign="left" display="flex" flexDirection="column">
                   <thead>
                     <tr>
                       <SizableText position="sticky" left="$0" zIndex={10} width={188} minWidth={188} backgroundColor="$background" paddingBottom="$4" paddingRight="$4" verticalAlign="bottom" />
@@ -386,11 +386,9 @@ export default function Comparison() {
                           key={c.short}
                           width={208} minWidth={208} paddingHorizontal="$4" paddingBottom="$4" verticalAlign="bottom" fontFamily="$mono" fontSize={10} fontWeight="400" textTransform="uppercase" lineHeight={1.25} letterSpacing={1.6} color="$color11"
                         >
-                          <c.icon
-                            className="mb-2 h-4 w-4 text-muted-foreground"
-                            strokeWidth={1.5}
-                            aria-hidden
-  />
+                          <YStack marginBottom="$2">
+                            <c.icon size={16} color="var(--muted-foreground)" strokeWidth={1.5} aria-hidden />
+                          </YStack>
                           {c.full}
                         </SizableText>
                       ))}
@@ -427,8 +425,8 @@ export default function Comparison() {
                                 <Dot tone={r.hanzo ? "good" : cell.t} />
                               </SizableText>
                               <YStack minWidth={0}>
-                                <SizableText alignItems="center" gap="$1.5" fontSize={13} lineHeight={1.375} display="flex" flexDirection="row" className={`${r.hanzo ? "text-foreground" : TEXT[cell.t]}`}>
-                                  <ColIcon i={ci} className="h-3.5 w-3.5 flex-none text-muted-foreground" />
+                                <SizableText alignItems="center" gap="$1.5" fontSize={13} lineHeight={1.375} display="flex" flexDirection="row" color={r.hanzo ? "$color" : TEXT[cell.t]}>
+                                  <ColIcon i={ci} />
                                   {cell.v}
                                 </SizableText>
                                 {cell.d && (
@@ -457,7 +455,7 @@ export default function Comparison() {
               return (
                 <Reveal
                   key={r.name}
-                  className="rounded-2xl border border-emerald-400/25 bg-muted p-5"
+                  borderRadius={16} borderWidth={1} borderColor="rgba(52,211,153,0.25)" backgroundColor="var(--muted)" padding="$4"
                 >
                   <XStack marginBottom="$4" alignItems="center" gap="$2">
                     <H3 fontSize="$6" fontWeight="500" color="$color">{r.name}</H3>
@@ -473,7 +471,7 @@ export default function Comparison() {
                         </SizableText>
                         <YStack minWidth={0}>
                           <SizableText alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.6} color="$color11">
-                            <ColIcon i={ci} className="h-3 w-3 text-muted-foreground" />
+                            <ColIcon i={ci} size={12} />
                             {COLS[ci].short}
                           </SizableText>
                           <SizableText fontSize="$3" color="$color">
@@ -490,11 +488,8 @@ export default function Comparison() {
               );
             }
             return (
-              <details
-                key={r.name}
-                className="group overflow-hidden rounded-2xl border border-border bg-muted"
-              >
-                <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4">
+              <details key={r.name} className="cmp-fold">
+                <summary>
                   <SizableText minWidth={0}>
                     <SizableText fontSize="$4" fontWeight="500" color="$color">
                       {r.name}
@@ -513,7 +508,8 @@ export default function Comparison() {
                       </SizableText>
                     )}
                     <svg
-                      className="h-4 w-4 flex-none text-muted-foreground transition-transform duration-200 group-open:rotate-180"
+                      width={16}
+                      height={16}
                       viewBox="0 0 16 16"
                       fill="none"
                       aria-hidden
@@ -536,10 +532,10 @@ export default function Comparison() {
                       </SizableText>
                       <YStack minWidth={0}>
                         <SizableText alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.6} color="$color11">
-                          <ColIcon i={ci} className="h-3 w-3 text-muted-foreground" />
+                          <ColIcon i={ci} size={12} />
                           {COLS[ci].short}
                         </SizableText>
-                        <SizableText fontSize="$3" className={`${TEXT[cell.t]}`}>
+                        <SizableText fontSize="$3" color={TEXT[cell.t]}>
                           {cell.v}
                           {cell.d && (
                             <SizableText color="$color11"> · {cell.d}</SizableText>
@@ -557,7 +553,7 @@ export default function Comparison() {
         <Reveal
           as="p"
           delay={120}
-          className="mt-10 text-center font-mono text-xs text-muted-foreground"
+          marginTop="$8" textAlign="center" fontFamily="$mono" fontSize={12} color="$color11"
         >
           Every app ships on Hanzo Cloud — database, auth, AI, and storage wired
           in. No lock-in, ever.

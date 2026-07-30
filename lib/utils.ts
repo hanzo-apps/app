@@ -1,9 +1,6 @@
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+// One class-name composer for the whole app: @hanzo/ui's cn (clsx-only —
+// styling lives in gui props/tokens, class names are stable handles).
+export { cn } from "@hanzo/ui";
 
 // Lightweight logger with env-controlled levels
 type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent';

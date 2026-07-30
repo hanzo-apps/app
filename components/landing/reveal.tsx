@@ -5,24 +5,21 @@
 // entrances). Honors prefers-reduced-motion (no transform, instant). Stagger
 // children by passing an incrementing `delay`. DRY: every landing section uses
 // THIS — no per-file animation code.
+//
+// The motion itself lives in assets/globals.css under [data-reveal]; this
+// component only observes intersection and flips the attribute. Layout is the
+// caller's concern: Reveal renders a gui YStack and forwards every stack prop,
+// so callers position it with the same vocabulary as everything else.
 
-import { useEffect, useRef, useState, type ElementType, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ComponentProps } from "react";
+import { YStack } from "@hanzo/gui";
 
-interface RevealProps {
-  children: ReactNode;
+interface RevealProps extends ComponentProps<typeof YStack> {
   /** Stagger offset in ms. */
   delay?: number;
-  /** Render element (default div). */
-  as?: ElementType;
-  className?: string;
 }
 
-export default function Reveal({
-  children,
-  delay = 0,
-  as: Tag = "div",
-  className = "",
-}: RevealProps) {
+export default function Reveal({ children, delay = 0, ...stack }: RevealProps) {
   const ref = useRef<HTMLElement | null>(null);
   const [shown, setShown] = useState(false);
 
@@ -54,14 +51,13 @@ export default function Reveal({
   }, []);
 
   return (
-    <Tag
-      ref={ref}
+    <YStack
+      ref={ref as never}
+      data-reveal={shown ? "shown" : ""}
       style={{ transitionDelay: shown ? `${delay}ms` : "0ms" }}
-      className={`transition-all duration-500 ease-out will-change-[opacity,transform] motion-reduce:transition-none ${
-        shown ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
-      } ${className}`}
+      {...stack}
     >
       {children}
-    </Tag>
+    </YStack>
   );
 }
