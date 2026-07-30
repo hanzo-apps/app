@@ -1,692 +1,468 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useRef } from "react";
-import { useUser } from "@/hooks/useUser";
-import Link from "next/link";
+/**
+ * /chat — the chat mode of the one webapp (chat | dev | work).
+ *
+ * hanzo.chat's product, ported: real streaming completions via the app's
+ * /v1/chat/completions relay (the gateway debits the caller's own hk- key),
+ * conversations persisted in cloud /v1/agents/sessions via the
+ * /v1/chat/conversations BFF (NOT a local store), zen-only model picker,
+ * markdown rendering, stop + regenerate. No simulated responses — a signed-out
+ * visitor gets an honest sign-in prompt.
+ */
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  MessageCircle,
-  Plus,
-  Search,
-  Settings,
-  Code2,
-  Send,
-  Paperclip,
-  MoreVertical,
-  Edit3,
-  Trash2,
-  Copy,
-  Share2,
-  Sparkles,
-  Image as ImageIcon,
-  Mic,
-  StopCircle,
-  PanelLeftClose,
-  PanelLeft,
-  Download,
-  RefreshCw,
-  Zap,
-  Bot,
-  User,
   ArrowUp,
-  MoreHorizontal,
-  Users
-} from "lucide-react";
-import { Button } from "@hanzo/ui";
-import { Input } from "@/components/control";
-import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
-import { ScrollArea } from "@hanzo/ui";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/overlay";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";
-import { Textarea } from "@/components/control";
-import { cn } from "@/lib/utils";
-import { DEFAULT_MODEL } from "@/lib/providers";
-import { useModels } from "@/lib/hooks/use-models";
-import { type BotAgent, TEAM_PRESETS, getBotGateway } from "@/lib/bot-gateway";
+  MessageCircle,
+  PanelLeft,
+  PanelLeftClose,
+  Plus,
+  RefreshCw,
+  Search,
+  Square,
+} from 'lucide-react';
+
+import { Button, ScrollArea } from '@hanzo/ui';
+import { Input, Textarea } from '@/components/control';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/overlay';
+import { AppShell } from '@/components/app-shell';
+import { MarkdownRenderer } from '@/components/markdown-renderer';
+import { useModels } from '@/lib/hooks/use-models';
+import { readSseDeltas } from '@/lib/chat/sse';
+import { cn } from '@/lib/utils';
+
+interface Conversation {
+  id: string;
+  title: string;
+  updatedAt: string;
+  messageCount: number;
+}
 
 interface Message {
-  id: string;
-  role: "user" | "assistant" | "system";
+  role: 'user' | 'assistant' | 'system';
   content: string;
-  timestamp: Date;
-  attachments?: string[];
   model?: string;
-  agentId?: string;
-  agentName?: string;
-  agentEmoji?: string;
-  isStreaming?: boolean;
+  streaming?: boolean;
   error?: boolean;
 }
 
-interface Chat {
-  id: string;
-  title: string;
-  messages: Message[];
-  createdAt: Date;
-  updatedAt: Date;
-  model: string;
-  agentId?: string;
+/** Chat is zen-only by direction; the picker never offers third-party ids. */
+const zenOnly = (models: { value: string; label: string }[]) =>
+  models.filter((m) => /^zen/i.test(m.value));
+
+const CHAT_DEFAULT = 'zen5';
+
+async function api<T>(url: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(url, {
+    credentials: 'same-origin',
+    headers: init?.body ? { 'Content-Type': 'application/json' } : undefined,
+    ...init,
+  });
+  if (!res.ok) throw Object.assign(new Error(`HTTP ${res.status}`), { status: res.status });
+  return res.json() as Promise<T>;
 }
 
 export default function ChatPage() {
-  const { user } = useUser();
-  const [chats, setChats] = useState<Chat[]>([
-    {
-      id: "1",
-      title: "React Performance Optimization",
-      messages: [
-        {
-          id: "1",
-          role: "user",
-          content: "What are the best practices for optimizing React app performance?",
-          timestamp: new Date(Date.now() - 3600000),
-        },
-        {
-          id: "2",
-          role: "assistant",
-          content: "Here are key strategies for optimizing React performance:\n\n1. **Code Splitting & Lazy Loading**\n   - Use React.lazy() and Suspense for route-based splitting\n   - Implement dynamic imports for heavy components\n\n2. **Memoization Techniques**\n   - Use React.memo() for expensive components\n   - Apply useMemo() for costly computations\n   - Utilize useCallback() for function references\n\n3. **Virtual List Rendering**\n   - Implement react-window or react-virtualized for long lists\n   - Only render visible items in viewport\n\n4. **State Management**\n   - Keep state as local as possible\n   - Use context API judiciously\n   - Consider state management libraries for complex apps\n\n5. **Bundle Optimization**\n   - Tree shaking and dead code elimination\n   - Minimize bundle size with tools like webpack-bundle-analyzer\n\nWould you like me to elaborate on any of these techniques?",
-          timestamp: new Date(Date.now() - 3500000),
-          model: DEFAULT_MODEL
-        }
-      ],
-      createdAt: new Date(Date.now() - 86400000),
-      updatedAt: new Date(Date.now() - 3500000),
-      model: DEFAULT_MODEL
-    },
-    {
-      id: "2",
-      title: "TypeScript Best Practices",
-      messages: [],
-      createdAt: new Date(Date.now() - 172800000),
-      updatedAt: new Date(Date.now() - 172800000),
-      model: "gpt-5.2"
-    },
-    {
-      id: "3",
-      title: "Building a REST API",
-      messages: [],
-      createdAt: new Date(Date.now() - 259200000),
-      updatedAt: new Date(Date.now() - 259200000),
-      model: DEFAULT_MODEL
-    }
-  ]);
-
-  const [activeChat, setActiveChat] = useState<Chat | null>(chats[0]);
-  const [inputMessage, setInputMessage] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(
-    () => typeof window !== "undefined" && !window.matchMedia("(min-width:1024px)").matches
-  );
-  // Default and list both come from the one catalog — no literals here.
-  const { models } = useModels();
-  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [isStreaming, setIsStreaming] = useState(false);
-
-  // Agent/bot selection
-  const [agents, setAgents] = useState<BotAgent[]>(TEAM_PRESETS);
-  const [selectedAgentId, setSelectedAgentId] = useState<string>("dev");
-  const [gatewayConnected, setGatewayConnected] = useState(false);
-
-  const selectedAgent = agents.find((a) => a.id === selectedAgentId) ?? agents[0];
-
-  // Load agents from gateway
+  const { models: allModels } = useModels();
+  const models = zenOnly(allModels);
+  const [model, setModel] = useState(CHAT_DEFAULT);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
+  const [search, setSearch] = useState('');
+  const [streaming, setStreaming] = useState(false);
+  const [signedOut, setSignedOut] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
+  // SSR-stable default (closed); opens on mount at lg+ — reading matchMedia in
+  // the initializer would render server/client differently and break hydration.
+  const [railOpen, setRailOpen] = useState(false);
   useEffect(() => {
-    const gw = getBotGateway();
-    gw.listAgents()
-      .then((list) => {
-        if (list.length > 0) setAgents(list);
-        setGatewayConnected(true);
-      })
-      .catch(() => {
-        // Gateway unavailable - use static presets
-        setGatewayConnected(false);
-      });
+    if (window.matchMedia('(min-width:1024px)').matches) setRailOpen(true);
+  }, []);
+  const abortRef = useRef<AbortController | null>(null);
+  const endRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    // Listen for agent streaming events
-    const unsub = gw.on("agent", (payload: unknown) => {
-      const p = payload as { text?: string; runId?: string; done?: boolean };
-      if (!p?.text) return;
-      // Update the streaming message content
-      setActiveChat((prev) => {
-        if (!prev) return prev;
-        const msgs = [...prev.messages];
-        const last = msgs[msgs.length - 1];
-        if (last?.role === "assistant" && last.isStreaming) {
-          msgs[msgs.length - 1] = {
-            ...last,
-            content: last.content + p.text,
-            isStreaming: !p.done,
-          };
-          return { ...prev, messages: msgs, updatedAt: new Date() };
-        }
-        return prev;
-      });
-      if (p.done) setIsStreaming(false);
-    });
+  // Keep the selected model valid once the live zen list lands.
+  useEffect(() => {
+    if (models.length && !models.some((m) => m.value === model)) setModel(models[0].value);
+  }, [models, model]);
 
-    return () => { unsub(); };
+  // Conversation list from cloud (via the BFF). 401 → honest signed-out state.
+  useEffect(() => {
+    api<{ conversations: Conversation[] }>('/v1/chat/conversations')
+      .then((b) => setConversations(b.conversations))
+      .catch((err: { status?: number }) => {
+        if (err.status === 401) setSignedOut(true);
+      });
   }, []);
 
-  // Auto-scroll to bottom
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [activeChat?.messages]);
+    endRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
-  // Auto-resize textarea
   useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+    const el = textareaRef.current;
+    if (el) {
+      el.style.height = 'auto';
+      el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
     }
-  }, [inputMessage]);
+  }, [input]);
 
-  const sendMessage = async () => {
-    if (!inputMessage.trim() || !activeChat || isStreaming) return;
+  const openConversation = useCallback((id: string) => {
+    setActiveId(id);
+    setNotice(null);
+    api<{ messages: Message[] }>(`/v1/chat/conversations/${encodeURIComponent(id)}`)
+      .then((b) => setMessages(b.messages))
+      .catch(() => setNotice('Could not load this conversation.'));
+    if (typeof window !== 'undefined' && !window.matchMedia('(min-width:1024px)').matches) {
+      setRailOpen(false);
+    }
+  }, []);
 
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content: inputMessage,
-      timestamp: new Date(),
-    };
+  const newChat = useCallback(() => {
+    abortRef.current?.abort();
+    setActiveId(null);
+    setMessages([]);
+    setNotice(null);
+  }, []);
 
-    // Update current chat
-    const updatedChat: Chat = {
-      ...activeChat,
-      messages: [...activeChat.messages, newMessage],
-      updatedAt: new Date(),
-      agentId: selectedAgentId,
-    };
+  /** Persist one turn to the cloud log; history failures never break the stream. */
+  const persist = useCallback((id: string, m: Message) => {
+    fetch(`/v1/chat/conversations/${encodeURIComponent(id)}/messages`, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role: m.role, content: m.content, model: m.model }),
+    }).catch(() => {});
+  }, []);
 
-    setActiveChat(updatedChat);
-    setChats(prev => prev.map(c => c.id === activeChat.id ? updatedChat : c));
-    setInputMessage("");
-    setIsStreaming(true);
+  /** Stream a completion for `history` and append the assistant turn. */
+  const complete = useCallback(
+    async (history: Message[], convId: string | null) => {
+      setStreaming(true);
+      setNotice(null);
+      setMessages([...history, { role: 'assistant', content: '', model, streaming: true }]);
 
-    // Create streaming response placeholder
-    const aiResponse: Message = {
-      id: (Date.now() + 1).toString(),
-      role: "assistant",
-      content: "",
-      timestamp: new Date(),
-      model: selectedModel,
-      agentId: selectedAgentId,
-      agentName: selectedAgent?.name,
-      agentEmoji: selectedAgent?.emoji,
-      isStreaming: true
-    };
+      const controller = new AbortController();
+      abortRef.current = controller;
+      let text = '';
+      const paint = (streamingNow: boolean, error = false) =>
+        setMessages([
+          ...history,
+          { role: 'assistant', content: text, model, streaming: streamingNow, error },
+        ]);
 
-    const chatWithStreamingResponse = {
-      ...updatedChat,
-      messages: [...updatedChat.messages, aiResponse],
-      updatedAt: new Date(),
-    };
-
-    setActiveChat(chatWithStreamingResponse);
-    setChats(prev => prev.map(c => c.id === activeChat.id ? chatWithStreamingResponse : c));
-
-    // Try bot gateway first, fall back to simulated response
-    if (gatewayConnected) {
       try {
-        const gw = getBotGateway();
-        await gw.sendMessage({
-          message: inputMessage,
-          agentId: selectedAgentId,
-          sessionKey: `agent:${selectedAgentId}:main`,
+        const res = await fetch('/v1/chat/completions', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model,
+            messages: history.map(({ role, content }) => ({ role, content })),
+          }),
+          signal: controller.signal,
         });
-        // Response will come via the "agent" event listener
-        return;
-      } catch {
-        // Fall through to simulated response
+        if (!res.ok || !res.body) {
+          const body = await res.json().catch(() => ({}) as { message?: string });
+          if (res.status === 401) {
+            setSignedOut(true);
+            setMessages(history);
+          } else {
+            text = '';
+            setNotice(
+              res.status === 402
+                ? body.message || "You're out of credits."
+                : body.message || 'The model is unavailable right now.',
+            );
+            setMessages(history);
+          }
+          return;
+        }
+        await readSseDeltas(res.body, (delta) => {
+          text += delta;
+          paint(true);
+        });
+        paint(false);
+        if (convId && text) persist(convId, { role: 'assistant', content: text, model });
+      } catch (err) {
+        if ((err as Error).name === 'AbortError') {
+          // Stopped by the user — keep the partial turn, honestly persisted.
+          paint(false);
+          if (convId && text) persist(convId, { role: 'assistant', content: text, model });
+        } else {
+          paint(false, true);
+          setNotice('The stream was interrupted.');
+        }
+      } finally {
+        setStreaming(false);
+        abortRef.current = null;
+      }
+    },
+    [model, persist],
+  );
+
+  const send = useCallback(async () => {
+    const content = input.trim();
+    if (!content || streaming) return;
+    setInput('');
+
+    // Lazily create the conversation in cloud on the first turn.
+    let convId = activeId;
+    if (!convId && !signedOut) {
+      try {
+        const b = await api<{ conversation: Conversation }>('/v1/chat/conversations', {
+          method: 'POST',
+          body: JSON.stringify({ title: content.slice(0, 80) }),
+        });
+        convId = b.conversation.id;
+        setActiveId(convId);
+        setConversations((prev) => [b.conversation, ...prev]);
+      } catch (err) {
+        if ((err as { status?: number }).status === 401) setSignedOut(true);
+        // Persistence being down doesn't block the answer; convId stays null.
       }
     }
 
-    // Simulated streaming response (when gateway is unavailable)
-    const fullResponse = `${selectedAgent?.emoji ?? ""} **${selectedAgent?.name ?? "Hanzo"}** here.\n\n${inputMessage.length > 20 ? `I'll help you with that.` : `I'll help you with "${inputMessage}".`}\n\nThis is a simulated response - connect to the bot gateway for real AI responses.\n\nTo start the bot gateway:\n\`\`\`\ncd ~/work/hanzo/bot && make dev\n\`\`\``;
+    const userMsg: Message = { role: 'user', content };
+    if (convId) persist(convId, userMsg);
+    await complete([...messages, userMsg], convId);
+  }, [input, streaming, activeId, signedOut, messages, complete, persist]);
 
-    let currentText = "";
-    const words = fullResponse.split(" ");
-    let wordIndex = 0;
+  const stop = useCallback(() => abortRef.current?.abort(), []);
 
-    const streamInterval = setInterval(() => {
-      if (wordIndex < words.length) {
-        currentText += (wordIndex > 0 ? " " : "") + words[wordIndex];
-        wordIndex++;
+  const regenerate = useCallback(() => {
+    if (streaming) return;
+    // Re-run from the last user turn: drop the trailing assistant message.
+    const history = [...messages];
+    while (history.length && history[history.length - 1].role === 'assistant') history.pop();
+    if (history.length) void complete(history, activeId);
+  }, [messages, streaming, activeId, complete]);
 
-        const updatedResponse = {
-          ...aiResponse,
-          content: currentText
-        };
-
-        const chatWithUpdatedResponse = {
-          ...chatWithStreamingResponse,
-          messages: [...updatedChat.messages, updatedResponse],
-          updatedAt: new Date(),
-        };
-
-        setActiveChat(chatWithUpdatedResponse);
-        setChats(prev => prev.map(c => c.id === activeChat.id ? chatWithUpdatedResponse : c));
-      } else {
-        clearInterval(streamInterval);
-        setIsStreaming(false);
-
-        const finalResponse = {
-          ...aiResponse,
-          content: currentText,
-          isStreaming: false
-        };
-
-        const finalChat = {
-          ...chatWithStreamingResponse,
-          messages: [...updatedChat.messages, finalResponse],
-          updatedAt: new Date(),
-        };
-
-        setActiveChat(finalChat);
-        setChats(prev => prev.map(c => c.id === activeChat.id ? finalChat : c));
-      }
-    }, 50);
-  };
-
-  const selectChat = (chat: Chat) => {
-    setActiveChat(chat);
-    // Below lg the sidebar is an overlay — dismiss it once a chat is chosen
-    if (typeof window !== "undefined" && !window.matchMedia("(min-width:1024px)").matches) {
-      setSidebarCollapsed(true);
-    }
-  };
-
-  const createNewChat = () => {
-    const newChat: Chat = {
-      id: Date.now().toString(),
-      title: "New Chat",
-      messages: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      model: selectedModel
-    };
-
-    setChats([newChat, ...chats]);
-    setActiveChat(newChat);
-  };
-
-  const deleteChat = (chatId: string) => {
-    setChats(prev => prev.filter(c => c.id !== chatId));
-    if (activeChat?.id === chatId) {
-      setActiveChat(chats.find(c => c.id !== chatId) || null);
-    }
-  };
-
-  const duplicateChat = (chatId: string) => {
-    const chatToDuplicate = chats.find(c => c.id === chatId);
-    if (chatToDuplicate) {
-      const newChat: Chat = {
-        ...chatToDuplicate,
-        id: Date.now().toString(),
-        title: `${chatToDuplicate.title} (Copy)`,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      setChats([newChat, ...chats]);
-    }
-  };
-
-  const copyMessage = (content: string) => {
-    navigator.clipboard.writeText(content);
-  };
-
-  // Filter chats based on search
-  const filteredChats = chats.filter(chat =>
-    chat.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    chat.messages.some(m => m.content.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filtered = conversations.filter((c) =>
+    c.title.toLowerCase().includes(search.toLowerCase()),
   );
-
-  // Sort chats by date
-  const sortedChats = [...filteredChats].sort((a, b) =>
-    b.updatedAt.getTime() - a.updatedAt.getTime()
-  );
-
-  // Format relative time
-  const formatRelativeTime = (date: Date) => {
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-
-    if (minutes < 1) return "Just now";
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    if (days < 7) return `${days}d ago`;
-    return date.toLocaleDateString();
-  };
 
   return (
-    <div className="relative h-screen flex bg-background">
-      {/* Sidebar — overlay drawer below lg so it never steals width; in flow at lg+ */}
-      <div className={cn(
-        "absolute inset-y-0 left-0 z-30 flex flex-col bg-card border-r border-border transition-all duration-200 lg:relative lg:z-auto",
-        sidebarCollapsed ? "w-0 overflow-hidden" : "w-64"
-      )}>
-        {/* Sidebar Header */}
-        <div className="p-3 border-b border-border">
-          <Button
-            onClick={createNewChat}
-            className="w-full bg-card hover:bg-muted text-foreground border border-border justify-start gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            New chat
-          </Button>
-        </div>
-
-        {/* Search */}
-        <div className="p-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Search"
-              value={searchQuery}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-card border-border text-foreground placeholder:text-muted-foreground"
-            />
+    <AppShell currentView="chat">
+      <div className="relative flex min-h-0 flex-1">
+        {/* Conversation rail — in flow at lg+, overlay drawer below. */}
+        <div
+          className={cn(
+            'absolute inset-y-0 left-0 z-30 flex flex-col border-r border-border bg-card transition-all duration-200 lg:relative lg:z-auto',
+            railOpen ? 'w-64' : 'w-0 overflow-hidden',
+          )}
+          data-testid="chat-rail"
+        >
+          <div className="border-b border-border p-3">
+            <Button
+              onClick={newChat}
+              className="w-full justify-start gap-2 border border-border bg-card text-foreground hover:bg-muted"
+              data-testid="new-chat"
+            >
+              <Plus className="h-4 w-4" />
+              New chat
+            </Button>
           </div>
-        </div>
-
-        {/* Chat List */}
-        <ScrollArea className="flex-1">
-          <div className="p-2 space-y-1">
-            {sortedChats.map(chat => (
-              <button
-                key={chat.id}
-                onClick={() => selectChat(chat)}
-                className={cn(
-                  "w-full text-left p-3 rounded-lg transition-all group relative",
-                  activeChat?.id === chat.id
-                    ? "bg-muted text-foreground"
-                    : "hover:bg-muted text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <div className="flex items-start gap-3">
-                  <MessageCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{chat.title}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {formatRelativeTime(chat.updatedAt)}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Hover Actions */}
-                <div className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="p-0">
-                        <MoreHorizontal className="w-4 h-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48">
-                      <DropdownMenuItem onClick={() => duplicateChat(chat.id)}>
-                        <Copy className="w-4 h-4 mr-2" />
-                        Duplicate
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Edit3 className="w-4 h-4 mr-2" />
-                        Rename
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Share2 className="w-4 h-4 mr-2" />
-                        Share
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={() => deleteChat(chat.id)}
-                        className="text-red-500"
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </button>
-            ))}
-          </div>
-        </ScrollArea>
-      </div>
-
-      {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Chat Header */}
-        <div className="border-b border-border p-3">
-          <div className="flex items-center justify-between flex-wrap gap-y-2">
-            <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                {sidebarCollapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
-              </Button>
-              <div className="flex items-center gap-2">
-                {/* Agent Selector */}
-                <Select value={selectedAgentId} onValueChange={setSelectedAgentId}>
-                  <SelectTrigger className="min-w-0 flex-1 md:flex-none md:w-[160px] bg-card border-border text-foreground">
-                    <SelectValue>
-                      <span className="flex items-center gap-2">
-                        <span>{selectedAgent?.emoji}</span>
-                        <span>{selectedAgent?.name}</span>
-                      </span>
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <DropdownMenuLabel className="text-muted-foreground text-xs px-2 py-1">
-                      <Users className="w-3 h-3 inline mr-1" />
-                      Team Agents
-                    </DropdownMenuLabel>
-                    {agents.map((agent) => (
-                      <SelectItem key={agent.id} value={agent.id}>
-                        <span className="flex items-center gap-2">
-                          <span>{agent.emoji}</span>
-                          <span>{agent.name}</span>
-                          {agent.description && (
-                            <span className="text-xs text-muted-foreground ml-1">{agent.description}</span>
-                          )}
-                        </span>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                {/* Model Selector */}
-                <Select value={selectedModel} onValueChange={setSelectedModel}>
-                  <SelectTrigger className="min-w-0 flex-1 md:flex-none md:w-[180px] bg-card border-border text-foreground">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {models.map((m) => (
-                      <SelectItem key={m.value} value={m.value}>
-                        {m.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                {/* Gateway status indicator */}
-                <div className={cn(
-                  "w-2 h-2 rounded-full",
-                  gatewayConnected ? "bg-green-500" : "bg-muted-foreground"
-                )} title={gatewayConnected ? "Bot gateway connected" : "Bot gateway offline"} />
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Link href="/playground">
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                  <Code2 className="w-4 h-4 md:mr-2" />
-                  <span className="hidden md:inline">Playground</span>
-                </Button>
-              </Link>
-              <Link href="/agents">
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                  <Bot className="w-4 h-4 md:mr-2" />
-                  <span className="hidden md:inline">Agents</span>
-                </Button>
-              </Link>
-              <Link href="/integrations">
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                  <Settings className="w-4 h-4" />
-                </Button>
-              </Link>
+          <div className="p-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search chats"
+                value={search}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+                className="pl-9"
+              />
             </div>
           </div>
+          <ScrollArea className="flex-1">
+            <div className="space-y-1 p-2" data-testid="conversation-list">
+              {filtered.map((c) => (
+                <button
+                  key={c.id}
+                  onClick={() => openConversation(c.id)}
+                  className={cn(
+                    'flex w-full items-start gap-2 rounded-lg p-2.5 text-left transition-colors',
+                    activeId === c.id
+                      ? 'bg-muted text-foreground'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                  )}
+                >
+                  <MessageCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                  <span className="min-w-0 flex-1 truncate text-sm">{c.title}</span>
+                </button>
+              ))}
+              {!filtered.length && !signedOut && (
+                <p className="px-3 py-2 text-xs text-muted-foreground">No conversations yet.</p>
+              )}
+            </div>
+          </ScrollArea>
         </div>
 
-        {/* Messages */}
-        <ScrollArea className="flex-1">
-          <div className="p-6 max-w-4xl mx-auto">
-            {activeChat ? (
+        {/* Thread */}
+        <div className="flex min-w-0 flex-1 flex-col">
+          <div className="flex items-center gap-2 border-b border-border p-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setRailOpen((o) => !o)}
+              aria-label={railOpen ? 'Hide conversations' : 'Show conversations'}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              {railOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeft className="h-4 w-4" />}
+            </Button>
+            <Select value={model} onValueChange={setModel}>
+              <SelectTrigger
+                className="w-[160px] min-w-0 border-border bg-card text-foreground"
+                data-testid="model-picker"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {(models.length ? models : [{ value: CHAT_DEFAULT, label: 'Zen 5' }]).map((m) => (
+                  <SelectItem key={m.value} value={m.value}>
+                    {m.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <ScrollArea className="flex-1">
+            <div className="mx-auto max-w-3xl p-4 md:p-6">
+              {signedOut && (
+                <div
+                  className="mb-4 rounded-lg border border-border bg-card p-4 text-sm"
+                  data-testid="signin-notice"
+                >
+                  <p className="text-foreground">Sign in to chat</p>
+                  <p className="mt-1 text-muted-foreground">
+                    Answers are metered to your own account, so chatting needs a session.
+                  </p>
+                  <Button asChild size="sm" className="mt-3">
+                    <a href="/login?next=/chat">Sign in</a>
+                  </Button>
+                </div>
+              )}
+              {notice && (
+                <div
+                  className="mb-4 rounded-lg border border-border bg-card p-3 text-sm text-muted-foreground"
+                  data-testid="chat-notice"
+                >
+                  {notice}
+                </div>
+              )}
+              {!messages.length && !signedOut && (
+                <div className="flex flex-col items-center justify-center py-24 text-center">
+                  <h1 className="text-2xl font-medium text-foreground">What can I help with?</h1>
+                  <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+                    Ask anything — answers stream from your Zen models and every chat is saved
+                    to your account.
+                  </p>
+                </div>
+              )}
               <div className="space-y-6">
-                {activeChat.messages.map((message, index) => (
-                  <div key={message.id} className="group">
-                    <div className="flex gap-4">
-                      {message.role === "assistant" ? (
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center flex-shrink-0">
-                          <span className="text-white font-medium text-sm">
-                            {message.agentEmoji ?? "H"}
-                          </span>
-                        </div>
-                      ) : (
-                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-                          <User className="w-4 h-4 text-muted-foreground" />
-                        </div>
-                      )}
-                      <div className="flex-1 space-y-2">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-foreground">
-                            {message.role === "assistant"
-                              ? (message.agentName ?? "Hanzo")
-                              : "You"}
-                          </span>
-                          {message.model && (
-                            <span className="text-xs text-muted-foreground">{message.model}</span>
-                          )}
-                          <span className="text-xs text-muted-foreground">
-                            {formatRelativeTime(message.timestamp)}
-                          </span>
-                        </div>
-                        <div className="text-foreground prose prose-invert max-w-none">
-                          <p className="whitespace-pre-wrap">{message.content}</p>
-                          {message.isStreaming && (
-                            <span className="inline-block w-2 h-4 ml-1 bg-foreground animate-pulse" />
-                          )}
-                        </div>
-                        {message.role === "assistant" && !message.isStreaming && (
-                          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="px-2 text-muted-foreground hover:text-foreground"
-                              onClick={() => copyMessage(message.content)}
-                            >
-                              <Copy className="w-3 h-3 mr-1" />
-                              Copy
-                            </Button>
-                            <Button variant="ghost" size="sm" className="px-2 text-muted-foreground hover:text-foreground">
-                              <RefreshCw className="w-3 h-3 mr-1" />
-                              Regenerate
-                            </Button>
-                            <Button variant="ghost" size="sm" className="px-2 text-muted-foreground hover:text-foreground">
-                              <Share2 className="w-3 h-3" />
-                            </Button>
-                          </div>
-                        )}
+                {messages.map((m, i) =>
+                  m.role === 'user' ? (
+                    <div key={i} className="flex justify-end" data-testid="message-user">
+                      <div className="max-w-[85%] whitespace-pre-wrap rounded-2xl bg-muted px-4 py-2.5 text-sm text-foreground">
+                        {m.content}
                       </div>
                     </div>
-                  </div>
-                ))}
-                <div ref={messagesEndRef} />
+                  ) : (
+                    <div key={i} className="group" data-testid="message-assistant">
+                      <div className="flex items-center gap-2 pb-1">
+                        <span className="text-sm font-medium text-foreground">Hanzo</span>
+                        {m.model && (
+                          <span className="text-xs text-muted-foreground">{m.model}</span>
+                        )}
+                      </div>
+                      <MarkdownRenderer content={m.content} compact />
+                      {m.streaming && (
+                        <span
+                          className="ml-0.5 inline-block h-4 w-2 animate-pulse bg-foreground align-text-bottom"
+                          data-testid="streaming-cursor"
+                        />
+                      )}
+                      {!m.streaming && i === messages.length - 1 && (
+                        <div className="mt-2 opacity-0 transition-opacity group-hover:opacity-100">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={regenerate}
+                            className="px-2 text-muted-foreground hover:text-foreground"
+                            data-testid="regenerate"
+                          >
+                            <RefreshCw className="mr-1 h-3 w-3" />
+                            Regenerate
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ),
+                )}
               </div>
-            ) : (
-              <div className="flex items-center justify-center h-full">
-                <div className="text-center space-y-4">
-                  <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl flex items-center justify-center mx-auto">
-                    <span className="text-white font-medium text-4xl">{selectedAgent?.emoji ?? "H"}</span>
-                  </div>
-                  <h2 className="text-2xl font-medium text-foreground">Chat with {selectedAgent?.name ?? "Hanzo"}</h2>
-                  <p className="text-muted-foreground max-w-md">
-                    {selectedAgent?.description ?? "Start a new chat or select an existing one to continue your conversation"}
-                  </p>
-                  <Button onClick={createNewChat} className="gap-2">
-                    <Plus className="w-4 h-4" />
-                    New Chat
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-        </ScrollArea>
+              <div ref={endRef} />
+            </div>
+          </ScrollArea>
 
-        {/* Input Area */}
-        {activeChat && (
-          <div className="border-t border-border p-4">
-            <div className="max-w-4xl mx-auto">
-              <div className="flex items-end gap-3">
-                <div className="flex gap-1">
-                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                    <Paperclip className="w-4 h-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                    <ImageIcon className="w-4 h-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                    <Mic className="w-4 h-4" />
-                  </Button>
-                </div>
-                <div className="flex-1 relative">
-                  <Textarea
-                    ref={textareaRef}
-                    value={inputMessage}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInputMessage(e.target.value)}
-                    onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        sendMessage();
-                      }
-                    }}
-                    placeholder={`Message ${selectedAgent?.name ?? "Hanzo"}...`}
-                    className="min-h-[44px] max-h-[200px] bg-card border-border text-foreground placeholder:text-muted-foreground resize-none pr-12"
-                    rows={1}
-                  />
+          {/* Composer */}
+          <div className="border-t border-border p-3 md:p-4">
+            <div className="mx-auto max-w-3xl">
+              <div className="relative">
+                <Textarea
+                  ref={textareaRef}
+                  value={input}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInput(e.target.value)}
+                  onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      void send();
+                    }
+                  }}
+                  placeholder="Message Hanzo…"
+                  rows={1}
+                  className="max-h-[200px] min-h-[48px] resize-none pr-12"
+                  data-testid="composer"
+                />
+                {streaming ? (
                   <Button
-                    onClick={sendMessage}
-                    disabled={!inputMessage.trim() || isStreaming}
+                    onClick={stop}
                     size="icon"
-                    className="absolute right-2 bottom-2 p-0 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                    aria-label="Stop generating"
+                    className="absolute bottom-2 right-2 bg-primary p-0 text-primary-foreground hover:bg-primary/90"
+                    data-testid="stop"
                   >
-                    {isStreaming ? (
-                      <StopCircle className="w-4 h-4" />
-                    ) : (
-                      <ArrowUp className="w-4 h-4" />
-                    )}
+                    <Square className="h-3.5 w-3.5" />
                   </Button>
-                </div>
-              </div>
-              <div className="flex items-center justify-between mt-2">
-                <p className="text-xs text-muted-foreground">
-                  {isStreaming ? "Generating..." : "Press Enter to send, Shift+Enter for new line"}
-                </p>
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="sm" className="text-xs text-muted-foreground hover:text-foreground">
-                    <Sparkles className="w-3 h-3 mr-1" />
-                    Enhance prompt
+                ) : (
+                  <Button
+                    onClick={() => void send()}
+                    disabled={!input.trim()}
+                    size="icon"
+                    aria-label="Send"
+                    className="absolute bottom-2 right-2 bg-primary p-0 text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                    data-testid="send"
+                  >
+                    <ArrowUp className="h-4 w-4" />
                   </Button>
-                </div>
+                )}
               </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                {streaming ? 'Generating…' : 'Enter to send, Shift+Enter for a new line'}
+              </p>
             </div>
           </div>
-        )}
+        </div>
       </div>
-    </div>
+    </AppShell>
   );
 }
