@@ -1,8 +1,8 @@
 "use client";
 
 // Hero focal visual — a faithful miniature of the ACTUAL /dev builder chrome:
-// chat rail on the left (with the rounded composer input), the generated app in
-// a rounded browser frame on the right — shown on desktop AND a phone frame side
+// chat rail on the left (with the rounded-md composer input), the generated app in
+// a rounded-md browser frame on the right — shown on desktop AND a phone frame side
 // by side — with the real header affordances (tabs, history, device toggle,
 // Publish) across the top.
 //
@@ -74,11 +74,11 @@ function VibeApp({ v, compact }: { v: number; compact?: boolean }): ReactElement
   return (
     <div className={`flex h-full flex-col ${compact ? "gap-2 p-2.5" : "gap-3 p-4"}`}>
       <div className="flex items-center justify-between">
-        <span className={`font-mono uppercase tracking-[0.2em] text-foreground/75 ${compact ? "text-[8px]" : "text-[10px]"}`}>
+        <span className={`font-mono  text-foreground/75 ${compact ? "text-[8px]" : "text-[10px]"}`}>
           Vibe Check
         </span>
         {v >= 2 && !compact && (
-          <span className="flex items-center gap-1 font-mono text-[8px] uppercase tracking-[0.12em] text-green-400/80">
+          <span className="flex items-center gap-1 font-mono text-[8px]  text-green-400/80">
             <span className="livedot h-1 w-1 rounded-full bg-green-400" />
             realtime · Base
           </span>
@@ -272,7 +272,7 @@ export default function HeroPreview() {
             ].map((tabItem, i) => (
               <span
                 key={tabItem.id}
-                className={`grid h-5 w-6 place-items-center rounded ${i < 2 ? "bg-foreground/10 text-foreground" : "text-foreground/35"}`}
+                className={`grid h-5 w-6 place-items-center rounded-md ${i < 2 ? "bg-foreground/10 text-foreground" : "text-foreground/35"}`}
               >
                 <tabItem.icon className="h-3 w-3" />
               </span>
@@ -284,11 +284,11 @@ export default function HeroPreview() {
               type="button"
               aria-label="Replay the demo build"
               onClick={() => run()}
-              className="grid h-5 w-5 place-items-center rounded text-foreground/35 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+              className="grid h-5 w-5 place-items-center rounded-md text-foreground/35 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
             >
               <RotateCcw className="h-3 w-3" />
             </button>
-            <span className="grid h-5 w-5 place-items-center rounded text-foreground/35">
+            <span className="grid h-5 w-5 place-items-center rounded-md text-foreground/35">
               <Clock className="h-3 w-3" />
             </span>
             <div className="flex items-center rounded-md border border-border p-0.5 lg:hidden">
@@ -297,7 +297,7 @@ export default function HeroPreview() {
                 aria-label="Desktop preview"
                 aria-pressed={device === "desktop"}
                 onClick={() => setDevice("desktop")}
-                className={`grid h-5 w-5 place-items-center rounded ${device === "desktop" ? "bg-foreground/10 text-foreground" : "text-foreground/35"}`}
+                className={`grid h-5 w-5 place-items-center rounded-md ${device === "desktop" ? "bg-foreground/10 text-foreground" : "text-foreground/35"}`}
               >
                 <Monitor className="h-3 w-3" />
               </button>
@@ -306,7 +306,7 @@ export default function HeroPreview() {
                 aria-label="Mobile preview"
                 aria-pressed={device === "mobile"}
                 onClick={() => setDevice("mobile")}
-                className={`grid h-5 w-5 place-items-center rounded ${device === "mobile" ? "bg-foreground/10 text-foreground" : "text-foreground/35"}`}
+                className={`grid h-5 w-5 place-items-center rounded-md ${device === "mobile" ? "bg-foreground/10 text-foreground" : "text-foreground/35"}`}
               >
                 <Smartphone className="h-3 w-3" />
               </button>
@@ -336,11 +336,11 @@ export default function HeroPreview() {
 
         {/* ── Body: chat rail + previews ── */}
         <div className="flex flex-col md:h-[420px] md:flex-row">
-          {/* Chat rail — transcript + the rounded composer input. */}
+          {/* Chat rail — transcript + the rounded-md composer input. */}
           <aside className="flex w-full shrink-0 flex-col border-b border-border bg-background/30 md:w-[248px] md:border-b-0 md:border-r">
             <div className="flex items-center gap-2 px-3.5 pt-3">
               <Sparkles className="h-3 w-3 text-foreground/40" />
-              <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-foreground/40">
+              <span className="font-mono text-[9px]  text-foreground/40">
                 Agent chat
               </span>
             </div>
@@ -372,7 +372,7 @@ export default function HeroPreview() {
               )}
             </div>
 
-            {/* The rounded chat input — mirrors the real composer. */}
+            {/* The rounded-md chat input — mirrors the real composer. */}
             <div className="px-3.5 pb-3.5">
               <div className="flex items-center gap-2 rounded-xl border border-border bg-background/50 px-3 py-2">
                 <span className="min-w-0 flex-1 truncate font-mono text-[10px] text-foreground/55">
@@ -386,7 +386,7 @@ export default function HeroPreview() {
             </div>
           </aside>
 
-          {/* Previews: rounded browser frame (desktop) + phone frame (mobile). */}
+          {/* Previews: rounded-md browser frame (desktop) + phone frame (mobile). */}
           <div className="relative flex min-w-0 flex-1 items-stretch gap-4 bg-card p-4">
             {/* Desktop browser frame */}
             <div
@@ -406,7 +406,7 @@ export default function HeroPreview() {
                   {live ? (
                     <>
                       <span className="livedot h-1.5 w-1.5 rounded-full bg-green-400" />
-                      <span className="hidden font-mono text-[8px] uppercase tracking-[0.14em] text-green-400/80 sm:inline">
+                      <span className="hidden font-mono text-[8px]  text-green-400/80 sm:inline">
                         Live
                       </span>
                     </>
@@ -444,7 +444,7 @@ export default function HeroPreview() {
                   )}
                 </div>
               </div>
-              <span className="mt-2 text-center font-mono text-[8px] uppercase tracking-[0.16em] text-foreground/25">
+              <span className="mt-2 text-center font-mono text-[8px]  text-foreground/25">
                 Mobile
               </span>
             </div>
@@ -477,7 +477,7 @@ export default function HeroPreview() {
       </div>
 
       {/* Honesty microcopy — a demo, simulated client-side. */}
-      <p className="mt-4 text-center font-mono text-[10px] uppercase tracking-[0.14em] text-foreground/25">
+      <p className="mt-4 text-center font-mono text-[10px]  text-foreground/25">
         Demo · watch the builder build, edit &amp; publish an app — desktop and mobile
       </p>
     </div>
@@ -488,7 +488,7 @@ function Generating(): ReactElement {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-2 text-foreground/40">
       <Loader2 className="h-4 w-4 animate-spin" />
-      <span className="font-mono text-[9px] uppercase tracking-[0.14em]">Generating</span>
+      <span className="font-mono text-[9px] ">Generating</span>
     </div>
   );
 }

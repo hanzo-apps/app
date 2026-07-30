@@ -25,7 +25,7 @@ export default function LogoWall() {
   return (
     <section className="relative border-t border-border px-4 py-16 md:px-8 md:py-20">
       <div className="mx-auto max-w-6xl">
-        <Reveal as="p" className="text-center font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+        <Reveal as="p" className="text-center font-mono text-[11px]  text-muted-foreground">
           Backed by Techstars · Built on world-class infrastructure
         </Reveal>
 
