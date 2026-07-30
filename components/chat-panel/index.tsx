@@ -1061,8 +1061,8 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
                       {item.data?.message || JSON.stringify(item.data, null, 2)}
                     </SizableText>
                     {item.data?.stack && (
-                      <details className="mt-2">
-                        <summary className="text-xs text-destructive/70 cursor-pointer hover:text-destructive">
+                      <details className="error-disclosure">
+                        <summary>
                           Stack trace
                         </summary>
                         <SizableText fontSize={10} color="$red9" marginTop="$1" overflow="scroll" fontFamily="$mono" whiteSpace="pre">

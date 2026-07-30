@@ -45,7 +45,7 @@ function AppCell({ app }: { app: AppEntry }) {
     >
       <XStack alignItems="center" gap="$2.5">
         <Icon
-          className="h-6 w-6 flex-shrink-0 text-foreground"
+          size={24}
           strokeWidth={1.5}
           aria-hidden
   />

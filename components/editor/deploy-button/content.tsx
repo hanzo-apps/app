@@ -274,7 +274,7 @@ export const DeployButtonContent = ({
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setConfig({ ...config, title: e.target.value })
             }
-            borderColor="$borderColor" backgroundColor="$color" color="$color" placeholderTextColor="$color11" className="selection:bg-[var(--brand-accent-soft)]"
+            borderColor="$borderColor" backgroundColor="$color" color="$color" placeholderTextColor="$color11"
   />
         </div>
         <Button

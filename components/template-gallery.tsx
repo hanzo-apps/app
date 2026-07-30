@@ -117,7 +117,7 @@ function TemplateCard({ t, showAuthor = false }: { t: TemplateEntry; showAuthor?
       <Link
         href={`/templates/${t.slug}`}
         aria-label={`View ${t.name}`}
-        className="absolute inset-0 z-0"
+        style={{ position: "absolute", inset: 0, zIndex: 0 }}
   />
     </YStack>
   );
@@ -168,7 +168,7 @@ export function TemplateGallery({
       </YStack>
 
       {/* Category rail — instant client-side filtering. */}
-      <XStack marginTop="$6" flexWrap="nowrap" alignItems="center" gap="$2" paddingBottom="$1" overflow="scroll" $sm={{ flexWrap: "wrap" }} className="[scrollbar-width:none]">
+      <XStack marginTop="$6" flexWrap="nowrap" alignItems="center" gap="$2" paddingBottom="$1" overflow="scroll" $sm={{ flexWrap: "wrap" }} className="no-scrollbar">
         <RailPill label="All templates" active={active === ALL} onClick={() => setActive(ALL)} />
         {rail.map((c) => (
           <RailPill

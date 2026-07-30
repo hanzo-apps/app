@@ -77,7 +77,7 @@ export default function CloudIntegration() {
   return (
     <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$13" }}>
       <YStack alignSelf="center" maxWidth={1152}>
-        <Reveal className="mx-auto max-w-2xl text-center">
+        <Reveal alignSelf="center" width="100%" maxWidth={672} textAlign="center">
           <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
             The difference
           </Paragraph>
@@ -94,7 +94,7 @@ export default function CloudIntegration() {
           {capabilities.map((c, i) => {
             const Icon = c.icon;
             return (
-              <Reveal key={c.name} delay={i * 60} className="h-full">
+              <Reveal key={c.name} delay={i * 60} height="100%">
               <Anchor
                 href={c.href}
                 target="_blank"
@@ -126,8 +126,10 @@ export default function CloudIntegration() {
           })}
         </YStack>
 
-        <Reveal as="p" delay={120} className="mt-10 text-center font-mono text-xs text-muted-foreground">
-          The same infrastructure that runs Hanzo, wired into every app you build.
+        <Reveal delay={120} marginTop={40}>
+          <Paragraph fontFamily="$mono" fontSize={12} color="$color11" textAlign="center">
+            The same infrastructure that runs Hanzo, wired into every app you build.
+          </Paragraph>
         </Reveal>
       </YStack>
     </YStack>

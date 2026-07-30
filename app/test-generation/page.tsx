@@ -1354,7 +1354,7 @@ export default function TestGenerationPage() {
                                       const isInvalid = !KNOWN_TOOLS.has(tc.name);
                                       return (
                                         <XStack key={i} alignItems="center" gap="$1.5">
-                                          <SizableText className={`${tc.status === 'success' && !isInvalid ? 'text-green-500' : isInvalid ? 'text-orange-500' : 'text-red-500'}`}>
+                                          <SizableText {...{ color: tc.status === 'success' && !isInvalid ? '#22c55e' : isInvalid ? '#f97316' : '#ef4444' }}>
                                             {tc.status === 'success' && !isInvalid ? '\u2713' : '\u2717'}
                                           </SizableText>
                                           <SizableText fontWeight="500" {...{ color: isInvalid ? "$orange9" : undefined }}>{tc.name}</SizableText>
@@ -1479,7 +1479,7 @@ export default function TestGenerationPage() {
                               })() : r.toolCalls !== undefined ? `${r.toolCalls} tools` : ''}
                             </SizableText>
                             {r.assertionScore !== undefined && (
-                              <SizableText width="$10" textAlign="right" className={`${r.assertionScore === 100 ? 'text-green-500' : r.assertionScore > 0 ? 'text-yellow-500' : 'text-red-500'}`}>
+                              <SizableText width="$10" textAlign="right" {...{ color: r.assertionScore === 100 ? '#22c55e' : r.assertionScore > 0 ? '#eab308' : '#ef4444' }}>
                                 {r.assertionScore.toFixed(0)}%
                               </SizableText>
                             )}
@@ -1523,9 +1523,9 @@ export default function TestGenerationPage() {
                 </thead>
                 <tbody>
                   {aggregatedResults.map(r => (
-                    <YStack key={r.id} borderBottomWidth={1} className="last:border-b-0">
+                    <YStack key={r.id} borderBottomWidth={1} className="last-flat">
                       <SizableText paddingHorizontal="$4" paddingVertical="$2" fontWeight="500">{r.name}</SizableText>
-                      <SizableText paddingHorizontal="$4" paddingVertical="$2" textAlign="right" fontWeight="500" className={`${r.passRate === 100 ? 'text-green-500' : r.passRate > 0 ? 'text-yellow-500' : 'text-red-500'}`}>
+                      <SizableText paddingHorizontal="$4" paddingVertical="$2" textAlign="right" fontWeight="500" color={r.passRate === 100 ? "$green10" : r.passRate > 0 ? "$yellow10" : "$red10"}>
                         {r.passRate.toFixed(0)}%
                         <SizableText fontSize="$1" fontWeight="400" color="$color11" marginLeft="$1">
                           ({r.passCount}/{r.roundCount})
@@ -1546,7 +1546,7 @@ export default function TestGenerationPage() {
                       <SizableText paddingHorizontal="$4" paddingVertical="$2" textAlign="right" color="$color11">
                         {r.avgToolCalls.toFixed(1)}
                       </SizableText>
-                      <SizableText paddingHorizontal="$4" paddingVertical="$2" textAlign="right" className={`${r.avgAssertionScore !== undefined ? r.avgAssertionScore === 100 ? 'text-green-500' : r.avgAssertionScore > 0 ? 'text-yellow-500' : 'text-red-500' : 'text-muted-foreground'}`}>
+                      <SizableText paddingHorizontal="$4" paddingVertical="$2" textAlign="right" {...{ color: r.avgAssertionScore !== undefined ? r.avgAssertionScore === 100 ? '#22c55e' : r.avgAssertionScore > 0 ? '#eab308' : '#ef4444' : '$color11' }}>
                         {r.avgAssertionScore !== undefined ? `${r.avgAssertionScore.toFixed(0)}%` : '-'}
                       </SizableText>
                     </YStack>

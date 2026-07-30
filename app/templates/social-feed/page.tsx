@@ -181,7 +181,7 @@ export default function SocialFeed() {
                     <img
                       src={post.image}
                       alt="Post content"
-                      className="mt-3 rounded-lg w-full"
+                      style={{ marginTop: 12, borderRadius: 8, width: "100%" }}
   />
                   )}
                 </CardContent>

@@ -157,7 +157,7 @@ export function BuildTranscript({ build }: { build: Build }) {
                 const cmd = t.commit ? forkCommand(build.repo, t.commit) : null;
                 const isUser = t.actor === "user" || t.kind === "message" && t.actor === "user";
                 return (
-                  <SizableText key={t.turn} position="relative" paddingBottom="$7" className="last:pb-0">
+                  <SizableText key={t.turn} position="relative" paddingBottom="$7" className="last-flat">
                     <SizableText position="absolute" left={-31} height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background">
                       {isUser ? (
                         <User size={10} color="$color11" />
@@ -177,7 +177,7 @@ export function BuildTranscript({ build }: { build: Build }) {
                           {t.actor}
                         </SizableText>
                       ) : null}
-                      <time className="font-mono text-[11px] text-muted-foreground/70">{t.at}</time>
+                      <SizableText tag="time" fontFamily="$mono" fontSize={11} color="$color11" opacity={0.7}>{t.at}</SizableText>
                     </XStack>
 
                     <YStack marginTop="$2">

@@ -41,7 +41,7 @@ export function GamePlayer({ gameId, title }: GamePlayerProps) {
         src={src}
         title={`${title} — play`}
         onLoad={() => setLoaded(true)}
-        className="h-full w-full"
+        style={{ width: "100%", height: "100%" }}
         sandbox="allow-scripts allow-same-origin"
         allow="autoplay; fullscreen; gamepad"
   />

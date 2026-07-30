@@ -96,8 +96,8 @@ export function ErrorFallback({
                 </YStack>
 
                 {error.stack && (
-                  <details className="text-xs">
-                    <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
+                  <details style={{ fontSize: 12 }}>
+                    <summary style={{ cursor: "pointer", color: "var(--muted-foreground)" }}>
                       View Stack Trace
                     </summary>
                     <SizableText marginTop="$2" backgroundColor="$color3" borderRadius="$2" padding="$3" color="$color11" overflow="scroll" fontFamily="$mono" whiteSpace="pre">

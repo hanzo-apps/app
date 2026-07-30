@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingScreen } from "@/components/ui/loading-screen";
 /**
  * /projects — the "All projects" view, in the SAME app shell as the dashboard.
  *
@@ -10,13 +11,12 @@
  * shell, one look, everywhere.
  */
 
-import { XStack, SizableText, Paragraph, YStack, H1 } from '@hanzo/gui';
+import { YStack, H1 } from '@hanzo/gui';
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { useUser } from "@/hooks/useUser";
 import { AppShell } from "@/components/app-shell";
-import { HanzoLogo } from "@/components/HanzoLogo";
 import { ProjectList } from "@/components/project-manager/ProjectList";
 
 export default function ProjectsPage() {
@@ -29,14 +29,7 @@ export default function ProjectsPage() {
 
   if (loading || !user) {
     return (
-      <XStack minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="$background">
-        <SizableText textAlign="center" display="flex" flexDirection="column">
-          <HanzoLogo className="mx-auto mb-4 h-12 w-12 animate-pulse text-foreground" />
-          <Paragraph color="$color11">
-            {loading ? "Loading your projects…" : "Redirecting to login…"}
-          </Paragraph>
-        </SizableText>
-      </XStack>
+      <LoadingScreen>{loading ? "Loading your projects…" : "Redirecting to login…"}</LoadingScreen>
     );
   }
 

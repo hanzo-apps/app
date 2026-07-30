@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingScreen } from "@/components/ui/loading-screen";
 /**
  * Organization settings — the proper home for the org's identity mark (moved
  * OUT of the OrgSwitcher dropdown, which stays a switcher). Shows the current
@@ -14,7 +15,6 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
 import { AppShell } from "@/components/app-shell";
-import { HanzoLogo } from "@/components/HanzoLogo";
 import { OrgAvatar } from "@/components/org-switcher";
 import { OrgProvider, useOrg } from "@/lib/org/client";
 import { currentOrg, orgDisplayName } from "@/lib/org-scope";
@@ -113,14 +113,7 @@ export default function OrganizationSettingsPage() {
 
   if (loading || !user) {
     return (
-      <XStack minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="$background">
-        <SizableText textAlign="center" display="flex" flexDirection="column">
-          <HanzoLogo className="mx-auto mb-4 h-12 w-12 animate-pulse text-foreground" />
-          <Paragraph color="$color11">
-            {loading ? "Loading settings..." : "Redirecting to login..."}
-          </Paragraph>
-        </SizableText>
-      </XStack>
+      <LoadingScreen>{loading ? "Loading settings..." : "Redirecting to login..."}</LoadingScreen>
     );
   }
 

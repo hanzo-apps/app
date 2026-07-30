@@ -169,7 +169,7 @@ export function EngagementMetrics({ deploymentId }: EngagementMetricsProps) {
               </YStack>
               <SizableText textAlign="right" display="flex" flexDirection="column">
                 <SizableText fontSize="$3" display="flex" flexDirection="column">
-                  <SizableText className={`${landing.bounceRate > 0.7 ? 'text-red-500' : landing.bounceRate > 0.4 ? 'text-orange-500' : 'text-green-500'}`}>
+                  <SizableText {...{ color: landing.bounceRate > 0.7 ? '#ef4444' : landing.bounceRate > 0.4 ? '#f97316' : '#22c55e' }}>
                     {(landing.bounceRate * 100).toFixed(1)}%
                   </SizableText>
                 </SizableText>

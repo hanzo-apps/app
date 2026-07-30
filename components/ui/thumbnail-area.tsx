@@ -60,9 +60,6 @@ export function ThumbnailArea({
 
   const isSm = size === 'sm';
 
-  const btnBase = isSm
-    ? 'h-5 w-5 rounded'
-    : 'h-7 w-7 rounded-md';
 
   const iconSize = isSm ? 'h-3 w-3' : 'h-3.5 w-3.5';
 
@@ -83,7 +80,7 @@ export function ThumbnailArea({
         <Button
           type="button"
           onClick={handleRemove}
-          position="absolute" alignItems="center" justifyContent="center" backgroundColor="$background" color="$color" opacity={0} borderWidth={1} borderColor="$borderColor" elevation={1} $group-hover={{ opacity: 1 }} {...{ top: isSm ? "$0" : "$1.5", right: isSm ? "$0" : "$1.5", y: isSm ? "33.333%" : undefined, x: isSm ? "33.333%" : undefined }} className={`${btnBase}`}
+          position="absolute" alignItems="center" justifyContent="center" backgroundColor="$background" color="$color" opacity={0} borderWidth={1} borderColor="$borderColor" elevation={1} $group-hover={{ opacity: 1 }} {...{ top: isSm ? "$0" : "$1.5", right: isSm ? "$0" : "$1.5", y: isSm ? "33.333%" : undefined, x: isSm ? "33.333%" : undefined }} {...(isSm ? { width: 20, height: 20, borderRadius: 4 } : { width: 28, height: 28, borderRadius: 6 })}
           title="Remove thumbnail"
         >
           <X />

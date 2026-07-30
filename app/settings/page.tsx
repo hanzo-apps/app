@@ -1,14 +1,14 @@
 "use client";
 
+import { LoadingScreen } from "@/components/ui/loading-screen";
 import { XStack, SizableText, Paragraph, YStack, H2, Anchor } from '@hanzo/gui';
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Key, Bell, Palette, Shield, CreditCard } from "lucide-react";
-import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Label, Input } from '@hanzo/ui';
+import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Label, Input, Switch } from '@hanzo/ui';
 import { useUser } from "@/hooks/useUser";
 import { AppShell } from "@/components/app-shell";
-import { HanzoLogo } from "@/components/HanzoLogo";
 import { configManager } from "@/lib/config/storage";
 import { useModels } from "@/lib/hooks/use-models";
 
@@ -54,24 +54,14 @@ export default function SettingsPage() {
   // Show loading state while checking auth
   if (loading) {
     return (
-      <XStack minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="$background">
-        <SizableText textAlign="center" display="flex" flexDirection="column">
-          <HanzoLogo className="w-12 h-12 mx-auto mb-4 animate-pulse" />
-          <Paragraph color="$color11">Loading settings...</Paragraph>
-        </SizableText>
-      </XStack>
+      <LoadingScreen>Loading settings...</LoadingScreen>
     );
   }
 
   // Show loading state while redirecting
   if (!user) {
     return (
-      <XStack minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="$background">
-        <SizableText textAlign="center" display="flex" flexDirection="column">
-          <HanzoLogo className="w-12 h-12 mx-auto mb-4 animate-pulse" />
-          <Paragraph color="$color11">Redirecting to login...</Paragraph>
-        </SizableText>
-      </XStack>
+      <LoadingScreen>Redirecting to login...</LoadingScreen>
     );
   }
 
@@ -196,11 +186,9 @@ export default function SettingsPage() {
                     {["Email notifications", "Push notifications", "Project updates", "Marketing emails"].map((item) => (
                       <Label key={item} alignItems="center" justifyContent="space-between" padding="$4" backgroundColor="$color3" borderRadius="$5" borderWidth={1} borderColor="$borderColor" cursor="pointer">
                         <SizableText fontSize="$3" color="$color11">{item}</SizableText>
-                        <Input
-                          type="checkbox"
-                          className="toggle"
+                        <Switch
                           checked={notifs[item] ?? true}
-                          onChange={(e) => toggleNotif(item, e.target.checked)}
+                          onCheckedChange={(v) => toggleNotif(item, !!v)}
   />
                       </Label>
                     ))}

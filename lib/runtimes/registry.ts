@@ -87,18 +87,22 @@ export function isRuntimeBundled(runtime: ProjectRuntime): boolean {
   return getRuntimeConfig(runtime).bundled;
 }
 
-const BADGE_CLASSES: Record<string, string> = {
-  gray:   'bg-gray-100 text-gray-600 border-gray-300 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600',
-  sky:    'bg-sky-100 text-sky-700 border-sky-200 dark:bg-sky-950 dark:text-sky-400 dark:border-sky-800',
-  purple: 'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-400 dark:border-purple-800',
-  orange: 'bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800',
-  green:  'bg-green-100 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-400 dark:border-green-800',
+/** Badge tones are gui prop bundles — translucent tone-on-surface, so ONE
+ *  value set reads correctly on both themes (no dark: fork to fall out of a
+ *  build). */
+export type BadgeTone = { backgroundColor: string; color: string; borderColor: string };
+const BADGE_TONES: Record<string, BadgeTone> = {
+  gray:   { backgroundColor: 'var(--muted)', color: 'var(--muted-foreground)', borderColor: 'var(--border)' },
+  sky:    { backgroundColor: 'rgba(14,165,233,0.15)', color: '#0ea5e9', borderColor: 'rgba(14,165,233,0.3)' },
+  purple: { backgroundColor: 'rgba(168,85,247,0.15)', color: '#a855f7', borderColor: 'rgba(168,85,247,0.3)' },
+  orange: { backgroundColor: 'rgba(249,115,22,0.15)', color: '#f97316', borderColor: 'rgba(249,115,22,0.3)' },
+  green:  { backgroundColor: 'rgba(34,197,94,0.15)', color: '#22c55e', borderColor: 'rgba(34,197,94,0.3)' },
 };
 
-export function getRuntimeBadge(runtime: ProjectRuntime): { label: string; className: string } {
+export function getRuntimeBadge(runtime: ProjectRuntime): { label: string; tone: BadgeTone } {
   const cfg = getRuntimeConfig(runtime);
   return {
     label: cfg.badge.label,
-    className: BADGE_CLASSES[cfg.badge.color] || BADGE_CLASSES.gray,
+    tone: BADGE_TONES[cfg.badge.color] || BADGE_TONES.gray,
   };
 }

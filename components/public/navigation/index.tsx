@@ -132,7 +132,7 @@ export default function Navigation() {
         </YStack>
         <XStack alignItems="center" justifyContent="flex-end" gap="$2">
           {user ? (
-            <UserMenu className="!pl-3 !pr-4 !py-2 !h-auto !rounded-lg" />
+            <UserMenu />
           ) : (
             <>
               <Link href="/login">

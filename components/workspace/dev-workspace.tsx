@@ -67,7 +67,7 @@ export function DevWorkspace({ projectId }: DevWorkspaceProps) {
   return (
     <YStack height="100%">
       {/* Toolbar */}
-      <YStack borderBottomWidth={1} backgroundColor="$background" backdropFilter="blur(8px)" className="supports-[backdrop-filter]:bg-background/60">
+      <YStack borderBottomWidth={1} backgroundColor="$background" backdropFilter="blur(8px)" className="frosted">
         <XStack alignItems="center" justifyContent="space-between" paddingHorizontal="$4" paddingVertical="$2">
           <XStack alignItems="center" gap="$4">
             <H1 fontSize="$6" fontWeight="500">Hanzo Build</H1>

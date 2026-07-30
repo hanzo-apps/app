@@ -110,7 +110,7 @@ function Card({
       </XStack>
 
       <H3 alignItems="flex-start" gap="$1.5" fontSize={15} fontWeight="500" lineHeight={1.375} letterSpacing={-0.4} color="$color">
-        <Anchor href={href} target="_blank" rel="noreferrer" className="after:absolute after:inset-0">
+        <Anchor href={href} target="_blank" rel="noreferrer" className="stretch-link">
           <SizableText numberOfLines={1}>{e.title || e.name}</SizableText>
         </Anchor>
         <ArrowUpRight

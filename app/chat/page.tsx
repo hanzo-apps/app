@@ -332,7 +332,7 @@ export default function ChatPage() {
   return (
     <XStack position="relative" height="100%" backgroundColor="$background">
       {/* Sidebar — overlay drawer below lg so it never steals width; in flow at lg+ */}
-      <YStack position="absolute" top="$0" bottom="$0" left="$0" zIndex={30} backgroundColor="$background" borderRightWidth={1} borderColor="$borderColor" $lg={{ position: "relative" }} {...{ width: sidebarCollapsed ? "$0" : 256, overflow: sidebarCollapsed ? "hidden" : undefined }} className="lg:z-auto">
+      <YStack position="absolute" top="$0" bottom="$0" left="$0" zIndex={30} backgroundColor="$background" borderRightWidth={1} borderColor="$borderColor" $lg={{ position: "relative", zIndex: 0 }} {...{ width: sidebarCollapsed ? "$0" : 256, overflow: sidebarCollapsed ? "hidden" : undefined }}>
         {/* Sidebar Header */}
         <YStack padding="$3" borderBottomWidth={1} borderColor="$borderColor">
           <Button
@@ -531,7 +531,7 @@ export default function ChatPage() {
                             {formatRelativeTime(message.timestamp)}
                           </SizableText>
                         </XStack>
-                        <SizableText color="$color" maxWidth="none" display="flex" flexDirection="column" className="prose prose-invert">
+                        <SizableText color="$color" maxWidth="none" display="flex" flexDirection="column">
                           <Paragraph whiteSpace="pre-wrap">{message.content}</Paragraph>
                           {message.isStreaming && (
                             <SizableText width="$2" height="$4" marginLeft="$1" backgroundColor="$color" />

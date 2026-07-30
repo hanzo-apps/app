@@ -54,11 +54,11 @@ export function SaveButton({ projectId, className = '', onSave }: SaveButtonProp
     <Button
       onClick={handleSave}
       disabled={isSaving || (!isDirty && !justSaved)}
-      alignItems="center" gap="$2" paddingHorizontal="$4" paddingVertical="$2" borderRadius="$3" fontSize="$3" fontWeight="500" className={`${justSaved ? 'bg-green-600 text-white' : isSaving
-          ? 'bg-muted text-muted-foreground cursor-not-allowed'
-          : isDirty
-          ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-          : 'bg-muted text-muted-foreground cursor-not-allowed'} ${className}`}
+      alignItems="center" gap="$2" paddingHorizontal="$4" paddingVertical="$2" borderRadius="$3" fontSize="$3" fontWeight="500" {...(justSaved
+        ? { backgroundColor: "#16a34a", color: "white" }
+        : isDirty && !isSaving
+          ? { backgroundColor: "var(--primary)", color: "var(--primary-foreground)", hoverStyle: { opacity: 0.9 } }
+          : { backgroundColor: "var(--muted)", color: "var(--muted-foreground)", cursor: "not-allowed" })} className={`${className}`}
     >
       {isSaving ? (
         <>

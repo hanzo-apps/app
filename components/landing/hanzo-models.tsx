@@ -14,7 +14,7 @@ export default function HanzoModels() {
   return (
     <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$13" }}>
       <YStack alignSelf="center" maxWidth={1152}>
-        <Reveal className="mx-auto max-w-2xl text-center">
+        <Reveal alignSelf="center" width="100%" maxWidth={672} textAlign="center">
           <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
             Hanzo models
           </Paragraph>
@@ -30,7 +30,7 @@ export default function HanzoModels() {
 
         <YStack marginTop="$9" gap="$4">
           {/* Enso — proprietary flagship */}
-          <Reveal className="h-full">
+          <Reveal height="100%">
             <Anchor
               href="https://hanzo.ai/enso"
               target="_blank"
@@ -61,7 +61,7 @@ export default function HanzoModels() {
           </Reveal>
 
           {/* Zen — open-source family */}
-          <Reveal delay={80} className="h-full">
+          <Reveal delay={80} height="100%">
             <Anchor
               href="https://hanzo.ai/zen"
               target="_blank"

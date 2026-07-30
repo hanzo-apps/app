@@ -343,10 +343,10 @@ export default function BillingPage() {
         {/* Tabbed Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} width="100%">
           <TabsList width="100%" maxWidth={512} backgroundColor="$background" borderWidth={1} borderColor="$borderColor">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-accent">Overview</TabsTrigger>
-            <TabsTrigger value="add-credits" className="data-[state=active]:bg-accent">Add Credits</TabsTrigger>
-            <TabsTrigger value="history" className="data-[state=active]:bg-accent">History</TabsTrigger>
-            <TabsTrigger value="usage" className="data-[state=active]:bg-accent">Usage</TabsTrigger>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="add-credits">Add Credits</TabsTrigger>
+            <TabsTrigger value="history">History</TabsTrigger>
+            <TabsTrigger value="usage">Usage</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}

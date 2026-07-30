@@ -402,7 +402,7 @@ function NewProjectInner() {
         {/* [&>*]:min-w-0 lets each grid item shrink below its content's
             min-content (long repo/template strings) so the track can't blow the
             column past the viewport — otherwise mobile gets a horizontal scroll. */}
-        <YStack position="relative" marginTop="$10" gap="$5" $lg={{ marginTop: "$11" }} className="[&>*]:min-w-0">
+        <YStack position="relative" marginTop="$10" gap="$5" $lg={{ marginTop: "$11" }} className="shrink-cells">
           {/* Import Git Repository — real connected-account import */}
           <ImportGitPanel />
 
@@ -431,7 +431,7 @@ function NewProjectInner() {
               </SizableText>
             )}
 
-            <YStack marginRight="-2" maxHeight={420} rowGap="$2" paddingRight="$2" overflow="scroll" className="custom-scrollbar">
+            <YStack marginRight="-2" maxHeight={420} rowGap="$2" paddingRight="$2" overflow="scroll" className="thin-scrollbar">
               {galleryLoading
                 ? Array.from({ length: 5 }).map((_, i) => (
                     <YStack

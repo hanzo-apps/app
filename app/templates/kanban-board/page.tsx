@@ -21,7 +21,7 @@ const columns = [
   {
     id: "todo",
     title: "To Do",
-    color: "bg-slate-500",
+    color: "#64748b",
     tasks: [
       {
         id: "1",
@@ -50,7 +50,7 @@ const columns = [
   {
     id: "in-progress",
     title: "In Progress",
-    color: "bg-amber-500",
+    color: "#f59e0b",
     tasks: [
       {
         id: "3",
@@ -79,7 +79,7 @@ const columns = [
   {
     id: "review",
     title: "In Review",
-    color: "bg-sky-500",
+    color: "#0ea5e9",
     tasks: [
       {
         id: "5",
@@ -97,7 +97,7 @@ const columns = [
   {
     id: "done",
     title: "Done",
-    color: "bg-emerald-500",
+    color: "#10b981",
     tasks: [
       {
         id: "6",
@@ -126,9 +126,9 @@ const columns = [
 ];
 
 const priorityColors = {
-  high: "bg-red-500",
-  medium: "bg-amber-500",
-  low: "bg-green-500"
+  high: "#ef4444",
+  medium: "#f59e0b",
+  low: "#22c55e"
 };
 
 const labelColors = {
@@ -223,7 +223,7 @@ export default function KanbanBoard() {
               <CardHeader paddingBottom="$3">
                 <XStack alignItems="center" justifyContent="space-between">
                   <XStack alignItems="center" gap="$2">
-                    <YStack width="$3" height="$3" borderRadius="$10" className={`${column.color}`} />
+                    <YStack width="$3" height="$3" borderRadius="$10" {...{ backgroundColor: column.color }} />
                     <CardTitle fontSize="$4">{column.title}</CardTitle>
                     <Badge variant="secondary" marginLeft="$2">
                       {column.tasks.length}
@@ -274,7 +274,7 @@ export default function KanbanBoard() {
 
                       {/* Priority indicator */}
                       <XStack alignItems="center" gap="$2" marginBottom="$3">
-                        <YStack width="$2" height="$2" borderRadius="$10" className={`${priorityColors[task.priority as keyof typeof priorityColors]}`} />
+                        <YStack width="$2" height="$2" borderRadius="$10" {...{ backgroundColor: priorityColors[task.priority as keyof typeof priorityColors] }} />
                         <SizableText fontSize="$1" color="$color11">
                           {task.priority} priority
                         </SizableText>
@@ -335,7 +335,7 @@ export default function KanbanBoard() {
                   <Calendar size={16} color="$color11" />
                   <SizableText fontSize="$3">Due {selectedTask.dueDate}</SizableText>
                 </XStack>
-                <Badge className={`${priorityColors[selectedTask.priority as keyof typeof priorityColors]}`}>
+                <Badge {...{ backgroundColor: priorityColors[selectedTask.priority as keyof typeof priorityColors], color: "white" }}>
                   {selectedTask.priority}
                 </Badge>
               </XStack>

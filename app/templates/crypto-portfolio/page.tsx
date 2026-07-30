@@ -284,9 +284,9 @@ export default function CryptoPortfolio() {
                   {recentTransactions.map((tx, i) => (
                     <XStack key={i} alignItems="center" justifyContent="space-between">
                       <XStack alignItems="center" gap="$3">
-                        <XStack width="$6" height="$6" borderRadius="$10" alignItems="center" justifyContent="center" className={`${tx.type === "buy" ? "bg-green-100" : tx.type === "sell" ? "bg-red-100" :
-                          tx.type === "receive" ? "bg-[#171717]/10" :
-                          "bg-orange-100"}`}>
+                        <XStack width="$6" height="$6" borderRadius="$10" alignItems="center" justifyContent="center" {...{ backgroundColor: tx.type === "buy" ? "#dcfce7" : tx.type === "sell" ? "#fee2e2" :
+                          tx.type === "receive" ? "rgba(23,23,23,0.1)" :
+                          "#ffedd5" }}>
                           {tx.type === "buy" || tx.type === "receive" ? (
                             <ArrowDownRight size={16} />
                           ) : (

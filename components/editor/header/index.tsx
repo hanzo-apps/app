@@ -139,7 +139,7 @@ export function Header({
 
       {/* CENTER — view switcher + device switcher + refresh + page selector +
           open-in-new-tab, one control cluster. */}
-      <XStack alignItems="center" gap="$2" className="lg:justify-self-center">
+      <XStack alignItems="center" gap="$2">
         <XStack
           role="tablist"
           aria-label="Editor view"
@@ -248,7 +248,7 @@ export function Header({
           (Share · Load · Push) scroll within their own track on tight widths. */}
       <XStack minWidth={0} flex={1} alignItems="center" justifyContent="flex-end" gap="$1.5" $lg={{ flex: 0, gap: "$2" }}>
         {secondary.length > 0 && (
-          <XStack minWidth={0} alignItems="center" gap="$1.5" overflow="scroll" $lg={{ gap: "$2" }} className="[scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <XStack minWidth={0} alignItems="center" gap="$1.5" overflow="scroll" $lg={{ gap: "$2" }} className="no-scrollbar">
             {secondary}
           </XStack>
         )}

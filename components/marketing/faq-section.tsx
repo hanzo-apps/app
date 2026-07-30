@@ -33,25 +33,25 @@ export default function FaqSection({
     <YStack id={id} paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
       <YStack alignSelf="center" maxWidth={768}>
         {(title || eyebrow) && (
-          <Reveal className="mb-10 text-center">
+          <Reveal marginBottom={40} alignItems="center">
             {eyebrow && (
-              <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
+              <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11" textAlign="center">
                 {eyebrow}
               </Paragraph>
             )}
             {title && (
-              <H2 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
+              <H2 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} textAlign="center" $md={{ fontSize: "$11" }}>
                 {title}
               </H2>
             )}
           </Reveal>
         )}
 
-        <Reveal className="divide-y divide-border border-y border-border">
+        <Reveal borderTopWidth={1} borderBottomWidth={1} borderColor="$borderColor">
           {items.map((it, i) => {
             const isOpen = open === i;
             return (
-              <div key={i}>
+              <div key={i} style={i > 0 ? { borderTop: "1px solid var(--border)" } : undefined}>
                 <Button
                   type="button"
                   aria-expanded={isOpen}

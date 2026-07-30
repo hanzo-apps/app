@@ -413,11 +413,13 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
     <Button
       key={model.id}
       onClick={() => handleModelSelect(model.id)}
-      width="100%" textAlign="left" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$5" className={`${mode === 'inline' ? selectedModel === model.id
-            ? "bg-primary/10 border border-primary/30"
-            : "hover:bg-accent border border-transparent" : selectedModel === model.id
-            ? "bg-accent"
-            : "hover:bg-accent hover:text-accent-foreground"}`}
+      width="100%" textAlign="left" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$5" {...(mode === 'inline'
+        ? selectedModel === model.id
+          ? { backgroundColor: "color-mix(in srgb, var(--primary) 10%, transparent)", borderWidth: 1, borderColor: "color-mix(in srgb, var(--primary) 30%, transparent)" }
+          : { borderWidth: 1, borderColor: "transparent", hoverStyle: { backgroundColor: "var(--accent)" } }
+        : selectedModel === model.id
+          ? { backgroundColor: "var(--accent)" }
+          : { hoverStyle: { backgroundColor: "var(--accent)", color: "var(--accent-foreground)" } })}
     >
       <YStack gap="$0.5">
         <XStack alignItems="center" gap="$2">

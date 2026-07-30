@@ -1,7 +1,6 @@
 'use client';
 
 import { SizableText, Paragraph } from '@hanzo/gui';
-import { cn } from '@/lib/utils';
 import { ItemSyncStatus } from '@/lib/vfs/sync-types';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@hanzo/ui';
 import {
@@ -19,74 +18,75 @@ interface SyncStatusBadgeProps {
   status: ItemSyncStatus;
   showLabel?: boolean;
   size?: 'sm' | 'md';
-  className?: string;
 }
 
+// Status → value: label, copy, icon, and the gui color pair (text on a soft
+// wash of the same hue). Colors are theme tokens, so dark mode is free.
 const STATUS_CONFIG: Record<
   ItemSyncStatus,
   {
     label: string;
     description: string;
     icon: typeof CheckCircle;
-    colorClass: string;
-    bgClass: string;
+    color: string;
+    background: string;
   }
 > = {
   synced: {
     label: 'Synced',
     description: 'Local and server are in sync. No action needed.',
     icon: CheckCircle,
-    colorClass: 'text-green-600 dark:text-green-400',
-    bgClass: 'bg-green-500/10',
+    color: '$green10',
+    background: '$green3',
   },
   'local-newer': {
     label: 'Local newer',
     description: 'You have local changes not yet on the server. Push to sync.',
     icon: ArrowUp,
-    colorClass: 'text-blue-600 dark:text-blue-400',
-    bgClass: 'bg-blue-500/10',
+    color: '$blue10',
+    background: '$blue3',
   },
   'server-newer': {
     label: 'Server newer',
     description: 'Server has updates you don\'t have locally. Pull to get latest.',
     icon: ArrowDown,
-    colorClass: 'text-orange-600 dark:text-orange-400',
-    bgClass: 'bg-orange-500/10',
+    color: '$orange10',
+    background: '$orange3',
   },
   conflict: {
     label: 'Conflict',
     description: 'Both local and server have changes. Push to overwrite server, or pull to discard local changes.',
     icon: AlertTriangle,
-    colorClass: 'text-red-600 dark:text-red-400',
-    bgClass: 'bg-red-500/10',
+    color: '$red10',
+    background: '$red3',
   },
   'local-only': {
     label: 'Local only',
     description: 'Only exists in your browser. Push to save to server.',
     icon: HardDrive,
-    colorClass: 'text-neutral-600 dark:text-neutral-400',
-    bgClass: 'bg-neutral-500/10',
+    color: '$color11',
+    background: '$color3',
   },
   'server-only': {
     label: 'Server only',
     description: 'Only exists on server. Pull to download locally.',
     icon: Cloud,
-    colorClass: 'text-purple-600 dark:text-purple-400',
-    bgClass: 'bg-purple-500/10',
+    color: '$purple10',
+    background: '$purple3',
   },
   syncing: {
     label: 'Syncing...',
     description: 'Currently syncing with server.',
     icon: RefreshCw,
-    colorClass: 'text-blue-600 dark:text-blue-400',
-    bgClass: 'bg-blue-500/10',
+    color: '$blue10',
+    background: '$blue3',
   },
   error: {
     label: 'Error',
     description: 'Sync failed. Try again.',
     icon: XCircle,
-    colorClass: 'text-red-600 dark:text-red-400',
-    bgClass: 'bg-red-500/10',
+    color: '$red10',
+    background: '$red3',
   },
 };
 
@@ -94,22 +94,25 @@ export function SyncStatusBadge({
   status,
   showLabel = true,
   size = 'sm',
-  className,
 }: SyncStatusBadgeProps) {
   const config = STATUS_CONFIG[status];
   const Icon = config.icon;
-
-  const iconSize = size === 'sm' ? 'w-3.5 h-3.5' : 'w-4 h-4';
-  const textSize = size === 'sm' ? 'text-xs' : 'text-sm';
-  const padding = size === 'sm' ? 'px-1.5 py-0.5' : 'px-2 py-1';
+  const sm = size === 'sm';
 
   const badge = (
     <SizableText
-      alignItems="center" gap="$1" borderRadius="$10" fontWeight="500" cursor="help" className={`${padding} ${config.bgClass} ${config.colorClass} ${textSize} ${className}`}
+      alignItems="center"
+      gap="$1"
+      borderRadius="$10"
+      fontWeight="500"
+      cursor="help"
+      fontSize={sm ? '$2' : '$3'}
+      paddingHorizontal={sm ? '$1.5' : '$2'}
+      paddingVertical={sm ? '$0.5' : '$1'}
+      color={config.color}
+      backgroundColor={config.background}
     >
-      <Icon
-        className={cn(iconSize, status === 'syncing' && 'animate-spin')}
-  />
+      <Icon size={sm ? 14 : 16} className={status === 'syncing' ? 'spin' : undefined} />
       {showLabel && <span>{config.label}</span>}
     </SizableText>
   );

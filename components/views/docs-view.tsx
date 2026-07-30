@@ -247,7 +247,7 @@ function DocsViewContent() {
               {/* Document Title */}
               <YStack marginBottom="$5" paddingBottom="$4" borderBottomWidth={1}>
                 <XStack alignItems="center" gap="$3" marginBottom="$2">
-                  <selectedDoc.icon className="h-8 w-8 text-primary" />
+                  <selectedDoc.icon size={32} color="var(--primary)" />
                   <H1 fontSize="$10" fontWeight="500">{selectedDoc.title}</H1>
                 </XStack>
               </YStack>

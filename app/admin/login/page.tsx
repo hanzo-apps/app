@@ -65,7 +65,9 @@ export default function LoginPage() {
         {/* Logo */}
         <YStack marginBottom="$6">
           <svg
-            className="w-24 h-24 mx-auto"
+            width={96}
+            height={96}
+            style={{ margin: "0 auto" }}
             version="1.0"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 256 256"
@@ -122,7 +124,9 @@ export default function LoginPage() {
         <SizableText marginTop="$8" paddingTop="$5" borderTopWidth={1} borderColor="$borderColor" alignItems="center" justifyContent="center" gap="$2" fontSize="$3" color="$color11" display="flex" flexDirection="row">
           <span>Powered by</span>
           <svg
-            className="w-5 h-5 opacity-80"
+            width={20}
+            height={20}
+            opacity={0.8}
             version="1.0"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 256 256"

@@ -84,8 +84,13 @@ export function ProjectThumb({
           onError={() => setFailed(true)}
           // Absolute + fixed logical size + transform scale → never affects the
           // grid track width; visually fills the box via the ResizeObserver scale.
-          className="pointer-events-none absolute left-0 top-0 border-0 bg-white"
           style={{
+            pointerEvents: "none",
+            position: "absolute",
+            left: 0,
+            top: 0,
+            border: 0,
+            background: "#fff",
             width: LOGICAL_W,
             height: box.h,
             transform: `scale(${box.scale})`,

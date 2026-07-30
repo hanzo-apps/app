@@ -310,8 +310,7 @@ export function HeatmapViewer({ deploymentId, pages }: HeatmapViewerProps) {
               <YStack backgroundColor="$color3" padding="$4" overflow="scroll" style={{ maxHeight: '70vh' }}>
                 <canvas
                   ref={canvasRef}
-                  className="mx-auto"
-                  style={{ maxWidth: '100%', height: 'auto' }}
+                  style={{ maxWidth: '100%', height: 'auto', margin: '0 auto', display: 'block' }}
   />
               </YStack>
 

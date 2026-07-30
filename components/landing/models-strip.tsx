@@ -26,7 +26,7 @@ const providers = [
 export default function ModelsStrip() {
   return (
     <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
-      <YStack alignSelf="center" maxWidth={1152} alignItems="center" gap="$8" $lg={{ gap: "$10" }} className="[&>*]:min-w-0">
+      <YStack alignSelf="center" maxWidth={1152} alignItems="center" gap="$8" $lg={{ gap: "$10" }} className="shrink-cells">
         <Reveal>
           <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
             Hanzo AI
@@ -52,7 +52,7 @@ export default function ModelsStrip() {
           </Anchor>
         </Reveal>
 
-        <Reveal delay={100} className="rounded-2xl border border-border bg-card p-5">
+        <Reveal delay={100} borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$5">
           <XStack marginBottom="$4" alignItems="center" gap="$1.5">
             <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
             <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />

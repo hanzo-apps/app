@@ -200,9 +200,9 @@ export function Console({
             entries.map((entry) => (
               <Paragraph
                 key={entry.id}
-                whiteSpace="pre-wrap" wordBreak="break-word" className={`${entry.level === "error" ? "text-destructive" : entry.level === "warn"
-                      ? "text-foreground"
-                      : "text-muted-foreground"}`}
+                whiteSpace="pre-wrap" wordBreak="break-word" {...{ color: entry.level === "error" ? "var(--destructive)" : entry.level === "warn"
+                      ? "$color"
+                      : "$color11" }}
               >
                 {entry.text}
               </Paragraph>

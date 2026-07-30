@@ -32,7 +32,7 @@ export function HeaderSearch({ className }: { className?: string }) {
       >
         <Search size={16} />
         <SizableText display="none">Search</SizableText>
-        <kbd className="ml-1 hidden items-center rounded border border-border bg-muted px-1.5 font-mono text-[10px] text-muted-foreground lg:inline-flex">
+        <kbd className="hs-kbd">
           ⌘K
         </kbd>
       </Button>

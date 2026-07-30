@@ -418,7 +418,7 @@ export default function PlaygroundPage() {
                   {activeResult ? (
                     <YStack rowGap="$4">
                       <ScrollArea height={400}>
-                        <YStack maxWidth="none" className="prose prose-invert">
+                        <YStack maxWidth="none">
                           <Paragraph whiteSpace="pre-wrap" fontSize="$3" color="$color11">
                             {activeResult.models[0]?.response || "No response"}
                           </Paragraph>
@@ -501,7 +501,7 @@ export default function PlaygroundPage() {
                     {activeResult && activeResult.models[1] ? (
                       <YStack rowGap="$4">
                         <ScrollArea height={400}>
-                          <YStack maxWidth="none" className="prose prose-invert">
+                          <YStack maxWidth="none">
                             <Paragraph whiteSpace="pre-wrap" fontSize="$3" color="$color11">
                               {activeResult.models[1].response}
                             </Paragraph>

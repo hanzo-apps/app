@@ -804,19 +804,19 @@ export function DashboardView({ onNavigate, onProjectSelect, onStartTour }: Dash
         <QuickActionsBar onStartTour={handleStartTour} />
 
         {/* Row 1: System Overview + What's New */}
-        <YStack gap="$4" marginBottom="$4" className="[&>*]:min-h-[160px]">
+        <YStack gap="$4" marginBottom="$4" className="tile-row">
           <CompactOverview data={serverData} loading={loading} onRefresh={fetchData} />
           {hasWhatsNew && <WhatsNewCard whatsNew={serverData.whatsNew} />}
         </YStack>
 
         {/* Row 2: Recent Projects + Recent Deployments */}
-        <YStack gap="$4" marginBottom="$4" className="[&>*]:min-h-[160px]">
+        <YStack gap="$4" marginBottom="$4" className="tile-row">
           <RecentProjectsCard projects={serverData.recentProjects} />
           <RecentDeploymentsCard deployments={serverData.recentDeployments} />
         </YStack>
 
         {/* Row 3: Top Deployments + Recent Errors */}
-        <YStack className="[&>*>*]:min-h-[140px]">
+        <YStack className="tile-row-nested">
           <TrafficLists data={serverData} />
         </YStack>
       </YStack>
@@ -845,7 +845,7 @@ export function DashboardView({ onNavigate, onProjectSelect, onStartTour }: Dash
         <QuickActionsBar onStartTour={handleStartTour} onNavigate={onNavigate} />
 
         {/* Row 1: Content Overview + What's New */}
-        <YStack gap="$4" marginBottom="$4" className="[&>*]:min-h-[160px]">
+        <YStack gap="$4" marginBottom="$4" className="tile-row">
           <BrowserOverview data={browserData} loading={loading} onRefresh={fetchData} />
           {hasWhatsNew && (
             <WhatsNewCard

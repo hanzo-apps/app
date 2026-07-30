@@ -619,6 +619,23 @@ kbd {
 
 /* cmdk (the command palette) exposes attribute hooks, not components — the
    two rules its chrome needs live here. */
+/* Header-search keycap — the kbd element rule above styles it; this only
+   gates visibility: the ⌘K hint is desktop chrome, hidden below lg. */
+.hs-kbd { display: none; margin-left: 4px; }
+@media (min-width: 1024px) { .hs-kbd { display: inline-flex; } }
+
+/* How-it-works step grid — hairline-gap card row (marketing landing). */
+.hiw-grid { display: grid; gap: 1px; overflow: hidden; border-radius: 16px; border: 1px solid var(--border); background: var(--muted); }
+@media (min-width: 768px) { .hiw-grid { grid-template-columns: repeat(3, 1fr); } }
+
+/* Mobile-only chrome — hidden from md up. !important so the gate beats
+   runtime-injected atomic display classes regardless of sheet order. */
+@media (min-width: 768px) { .md-hidden { display: none !important; } }
+
+/* Project-card preview frame — fills the card, dims on card hover. */
+.thumb-frame { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; border: 0; transition: filter 0.2s; }
+a:hover .thumb-frame { filter: brightness(0.75); }
+
 [cmdk-group-heading] {
   color: var(--muted-foreground);
 }
@@ -823,11 +840,110 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
   }
 }
 
+/* GridPattern base — a full-bleed, non-interactive svg backdrop behind its
+   parent's content. Squares fill with a faint wash; grid lines take the
+   border hairline. */
+.grid-pattern {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  fill: color-mix(in oklab, var(--muted-foreground) 30%, transparent);
+  stroke: var(--border);
+}
+
 /* The preview stage's dotted grid fades out radially so it reads as a floor,
    not wallpaper. Mask on the GridPattern svg. */
 .preview-grid {
   -webkit-mask-image: radial-gradient(900px circle at center, white, transparent);
   mask-image: radial-gradient(900px circle at center, white, transparent);
+}
+
+/* Child guards — a parent stack can't reach into arbitrary children with
+   props, so these one-liners live here. shrink-cells lets flex children
+   ellipsize instead of overflowing; the tile floors keep dashboard rows from
+   collapsing while their cards load. */
+.shrink-cells > * {
+  min-width: 0;
+}
+.tile-row > * {
+  min-height: 160px;
+}
+.tile-row-nested > * > * {
+  min-height: 140px;
+}
+
+/* Scroll fades — content dissolves at the container edge instead of clipping.
+   Masks are CSS-only; gui has no prop vocabulary for them. */
+.scroll-fade-b {
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent);
+}
+.scroll-fade-r {
+  -webkit-mask-image: linear-gradient(to right, #000 88%, transparent);
+  mask-image: linear-gradient(to right, #000 88%, transparent);
+}
+
+/* Thin scrollbar for dense panes (editors, history) — the one non-hidden
+   scrollbar treatment. */
+.thin-scrollbar {
+  scrollbar-width: thin;
+}
+
+/* Repeated rows: the LAST one drops its divider and tail spacing. !important
+   because gui emits atomic classes for the per-row border. */
+.last-flat:last-child {
+  border-bottom-width: 0 !important;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+/* Same idea along the row axis — the last cell drops its right divider. */
+.last-flat-r:last-child {
+  border-right-width: 0 !important;
+}
+
+/* Frosted toolbar — goes translucent only when the browser can actually blur
+   what's behind it; stays opaque otherwise. !important beats the gui atomic
+   background class. */
+@supports (backdrop-filter: blur(8px)) {
+  .frosted {
+    background-color: color-mix(in oklab, var(--background) 60%, transparent) !important;
+  }
+}
+
+/* Stretched link — the whole positioned ancestor becomes the anchor's hit
+   area (catalog cards). */
+.stretch-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+/* Console error disclosure — native <details> so the browser provides the
+   toggle; the summary reads as a quiet destructive link. */
+.error-disclosure {
+  margin-top: 8px;
+}
+.error-disclosure summary {
+  font-size: 12px;
+  cursor: pointer;
+  color: color-mix(in oklab, var(--destructive) 70%, transparent);
+}
+.error-disclosure summary:hover {
+  color: var(--destructive);
+}
+
+/* The hero heading's line break only exists at sm+ — mobile reads it as one
+   sentence. */
+.break-sm {
+  display: none;
+}
+@media (min-width: 640px) {
+  .break-sm {
+    display: block;
+  }
 }
 
 /* Card grids — a hairline-gap grid of equal cells (template highlights,
