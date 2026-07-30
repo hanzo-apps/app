@@ -1,7 +1,7 @@
 // VERIFIED — catalog templates with a real, live demo at `<slug>.hanzo.app`.
 //
 // The gallery deploys curated templates as static sites through the ONE serve
-// (POST /v1/sites/deploy → clients/sites → `<slug>.hanzo.app`). Deploying is not
+// (POST /v1/projects/deploy → clients/sites → `<slug>.hanzo.app`). Deploying is not
 // the same as WORKING, so a slug earns a place here only after being rendered in
 // a real browser and judged on what a visitor actually SEES. A 200 is not enough:
 // the deployed set also contains raw file-index scaffolding ("Index Page" / "Page
