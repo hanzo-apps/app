@@ -16,9 +16,9 @@ export default function NotFound() {
       <SizableText width="100%" maxWidth={448} textAlign="center" display="flex" flexDirection="column">
         <XStack justifyContent="center" marginBottom="$7">
           <HanzoBrand
-            className="text-foreground"
-            markClassName="w-11 h-11"
-            wordmarkClassName="text-3xl"
+            color="var(--foreground)"
+            markSize={44}
+            wordmarkSize={30}
   />
         </XStack>
 

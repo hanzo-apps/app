@@ -313,7 +313,7 @@ function QuickActionsBar({
         </Button>
         <Button variant="outline" size="sm" asChild gap="$1.5">
           <a href="https://discord.gg/mAJ8Ss4u" target="_blank" rel="noopener noreferrer">
-            <DiscordIcon className="w-4 h-4" />
+            <DiscordIcon size={16} />
             Discord
           </a>
         </Button>

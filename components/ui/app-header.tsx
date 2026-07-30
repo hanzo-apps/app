@@ -109,7 +109,7 @@ export function AppHeader({
                   gap="$2" className={`${index === 0 ? 'rounded-r-none rounded-l-full' : index === viewTabs.length - 1 ? 'rounded-l-none rounded-r-full' :
                     'rounded-none'}`}
                 >
-                  {tab.icon && <tab.icon className="h-4 w-4" />}
+                  {tab.icon && <tab.icon size={16} />}
                   {tab.label}
                 </Button>
               ))}

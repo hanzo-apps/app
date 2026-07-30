@@ -203,7 +203,7 @@ export function TemplateDetail({
                       backgroundColor="$background" padding={28} hoverStyle={{ backgroundColor: "$color3" }} $md={{ padding: "$6" }}
                     >
                       <SizableText height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
-                        <Icon className="h-4 w-4 text-foreground" strokeWidth={1.5} />
+                        <Icon size={16} color="var(--foreground)" strokeWidth={1.5} />
                       </SizableText>
                       <H3 marginTop="$4.5" fontSize="$4" fontWeight="500" color="$color">{h.title}</H3>
                       <Paragraph marginTop="$2" fontSize="$3" lineHeight={1.625} color="$color11">{h.body}</Paragraph>

@@ -129,7 +129,7 @@ export const LoadProject = ({
                 <SizableText width={44} height={44} borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$8" display="flex" flexDirection="row">
                   🎨
                 </SizableText>
-                <SizableText borderRadius="$10" backgroundColor="$color4" borderWidth={1} borderColor="$borderColor" elevation={4} alignItems="center" justifyContent="center" fontSize="$10" zIndex={2} display="flex" flexDirection="row" className="size-13">
+                <SizableText borderRadius="$10" backgroundColor="$color4" borderWidth={1} borderColor="$borderColor" elevation={4} alignItems="center" justifyContent="center" fontSize="$10" zIndex={2} display="flex" flexDirection="row" height={52} width={52}>
                   🥳
                 </SizableText>
                 <SizableText width={44} height={44} borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$8" display="flex" flexDirection="row">
@@ -179,10 +179,7 @@ export const LoadProject = ({
                 >
                   {isLoading ? (
                     <>
-                      <Loading
-                        overlay={false}
-                        className="ml-2 size-4 animate-spin"
-  />
+                      <Loading overlay={false} size={16} />
                       Fetching your Space...
                     </>
                   ) : (

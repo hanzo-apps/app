@@ -286,7 +286,7 @@ export const DeployButtonContent = ({
         >
           {loading ? (
             <>
-              <Loading className="size-4 animate-spin" /> Publishing…
+              <Loading overlay={false} size={16} /> Publishing…
             </>
           ) : (
             <>

@@ -108,7 +108,7 @@ export const Uploader = ({
           side="top"
           align="start"
           sideOffset={8}
-          overflow="hidden" padding="$0" textAlign="center" className="min-w-xs"
+          overflow="hidden" padding="$0" textAlign="center" minWidth={320}
         >
           {project?.space_id ? (
             <>
@@ -184,10 +184,7 @@ export const Uploader = ({
                       disabled={generating || !prompt.trim()}
                     >
                       {generating ? (
-                        <Loading
-                          overlay={false}
-                          className="size-4 animate-spin"
-  />
+                        <Loading overlay={false} size={16} />
                       ) : (
                         <Sparkles size={16} />
                       )}
@@ -210,10 +207,7 @@ export const Uploader = ({
                   >
                     {isLoading ? (
                       <>
-                        <Loading
-                          overlay={false}
-                          className="ml-2 size-4 animate-spin"
-  />
+                        <Loading overlay={false} size={16} />
                         Uploading image(s)...
                       </>
                     ) : (

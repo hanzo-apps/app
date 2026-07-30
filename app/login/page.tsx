@@ -66,7 +66,7 @@ export default function LoginPage() {
       <YStack position="absolute" top="$0" left="$0" right="$0" zIndex={50}>
         <XStack maxWidth={1400} alignSelf="center" paddingHorizontal="$5" paddingVertical="$4.5" alignItems="center" justifyContent="space-between">
           <Link href="/"><XStack alignItems="center">
-            <HanzoBrand className="text-foreground" markClassName="w-8 h-8" />
+            <HanzoBrand color="var(--foreground)" markSize={32} />
           </XStack></Link>
         </XStack>
       </YStack>
@@ -78,9 +78,9 @@ export default function LoginPage() {
           <SizableText width="100%" maxWidth={448} textAlign="center" display="flex" flexDirection="column">
             <XStack justifyContent="center" marginBottom="$7">
               <HanzoBrand
-                className="text-foreground"
-                markClassName="w-11 h-11"
-                wordmarkClassName="text-3xl"
+                color="var(--foreground)"
+                markSize={44}
+                wordmarkSize={30}
   />
             </XStack>
 

@@ -68,7 +68,7 @@ export function ReImagine({
           side="top"
           align="start"
           sideOffset={8}
-          overflow="hidden" padding="$0" textAlign="center" className="min-w-xs"
+          overflow="hidden" padding="$0" textAlign="center" minWidth={320}
         >
           <YStack backgroundColor="$color3" padding="$5" borderBottomWidth={1} borderColor="$borderColor">
             <XStack alignItems="center" justifyContent="center" columnGap="$4" marginBottom="$3">
@@ -124,10 +124,7 @@ export function ReImagine({
               >
                 {isLoading ? (
                   <>
-                    <Loading
-                      overlay={false}
-                      className="ml-2 size-4 animate-spin"
-  />
+                    <Loading overlay={false} size={16} />
                     Fetching your site...
                   </>
                 ) : (

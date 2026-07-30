@@ -206,7 +206,7 @@ export function CommandPalette({
                     }}
                     gap="$2" color="$color" className="data-[selected=true]:bg-accent data-[selected=true]:text-foreground"
                   >
-                    <c.icon className="h-4 w-4 text-muted-foreground" />
+                    <c.icon size={16} color="var(--muted-foreground)" />
                     <span>{c.label}</span>
                   </CommandItem>
                 ))}

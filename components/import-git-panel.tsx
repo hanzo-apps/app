@@ -282,7 +282,7 @@ export function ImportGitPanel() {
                 {(() => {
                   const Icon =
                     PROVIDER_META[activeAccount?.provider ?? "github"]?.Icon ?? Github;
-                  return <Icon className="h-4 w-4 shrink-0 text-foreground" />;
+                  return <Icon size={16} color="var(--foreground)" />;
                 })()}
                 {activeAccount?.avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -316,7 +316,7 @@ export function ImportGitPanel() {
                             // eslint-disable-next-line @next/next/no-img-element
                             <Image src={a.avatarUrl} alt="" height="$4.5" width="$4.5" borderRadius="$10" />
                           ) : (
-                            <Icon className="h-4 w-4 text-muted-foreground" />
+                            <Icon size={16} color="var(--muted-foreground)" />
                           )}
                           <SizableText numberOfLines={1}>{a.login}</SizableText>
                           <SizableText marginLeft="auto" fontSize={11} color="$color11">
@@ -429,7 +429,7 @@ export function ImportGitPanel() {
                   <SizableText height="$6" width="$6" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" color="$color11" display="flex" flexDirection="row">
                     {(() => {
                       const Icon = PROVIDER_META[r.provider]?.Icon ?? Github;
-                      return <Icon className="h-4 w-4" />;
+                      return <Icon size={16} />;
                     })()}
                   </SizableText>
                   <YStack minWidth={0} flex={1}>

@@ -110,7 +110,7 @@ export default function GameDetail() {
                   const Icon = TARGET_ICON[t];
                   return (
                     <SizableText key={t} alignItems="center" gap="$1" fontSize="$3">
-                      <Icon className="h-4 w-4" />
+                      <Icon size={16} />
                       {t}
                     </SizableText>
                   );

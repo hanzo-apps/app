@@ -239,7 +239,7 @@ export function BuildComposer({
                     type="button"
                     alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$1.5" fontSize="$1" color="$color" hoverStyle={{ borderColor: "$borderColor", color: "$color" }}
                   >
-                    <CurrentMode.icon className="h-3.5 w-3.5" />
+                    <CurrentMode.icon size={14} />
                     {CurrentMode.label}
                     <ChevronDown size={12} color="$color11" />
                   </Button>
@@ -255,7 +255,7 @@ export function BuildComposer({
                       flexDirection="column" alignItems="flex-start" gap="$0.5"
                     >
                       <SizableText alignItems="center" gap="$2" fontWeight="500">
-                        <m.icon className="h-4 w-4" />
+                        <m.icon size={16} />
                         {m.label}
                       </SizableText>
                       <SizableText paddingLeft="$5" fontSize="$1" color="$color11">{m.hint}</SizableText>

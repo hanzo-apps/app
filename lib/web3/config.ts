@@ -1,6 +1,7 @@
-import { http, createConfig } from 'wagmi'
+// `injected` comes from the main entry: the `wagmi/connectors` barrel drags in
+// every third-party wallet SDK (tempo, base-account, cdp) we never ship.
+import { http, createConfig, injected } from 'wagmi'
 import { base, mainnet, arbitrum } from 'wagmi/chains'
-import { injected } from 'wagmi/connectors'
 
 // Hanzo treasury wallet for receiving payments
 export const TREASURY_ADDRESS = '0xda93811b968ba9d3b69eef9b0178da651006cf5c' as const

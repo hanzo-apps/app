@@ -368,7 +368,7 @@ function ConnectorRow({
       alignItems="center" gap="$4" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$4" paddingVertical="$3.5" {...{ opacity: muted ? 0.6 : undefined }}
     >
       <SizableText width="$7" height="$7" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" color="$color" display="flex" flexDirection="row">
-        <Icon className="size-5" />
+        <Icon size={20} />
       </SizableText>
 
       <YStack minWidth={0} flex={1}>

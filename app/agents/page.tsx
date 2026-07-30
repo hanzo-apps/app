@@ -230,7 +230,7 @@ export default function AgentsPage() {
           <YStack gap="$4" $sm={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
             <XStack flexWrap="wrap" alignItems="center" gap="$3">
               <Link href="/"><XStack alignItems="center" gap="$2">
-                <HanzoLogo className="w-8 h-8 text-purple-500" />
+                <HanzoLogo size={32} color="var(--brand-accent)" />
                 <SizableText fontSize="$7" fontWeight="500" color="$color">Agents</SizableText>
               </XStack></Link>
               {state.kind === "ready" && (
