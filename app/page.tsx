@@ -170,7 +170,7 @@ export default function LandingPage() {
             <Reveal>
               <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-foreground/[0.03] px-3 py-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-foreground/70" />
-                <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-foreground/55">
+                <span className="font-mono text-[11px]  text-foreground/55">
                   Sites, wired to real data &amp; AI
                 </span>
               </div>
@@ -209,7 +209,7 @@ export default function LandingPage() {
                     into the builder, seeded from that template. */}
                 {starterTemplates.length > 0 && (
                   <div className="mt-6">
-                    <div className="mb-3 flex items-center justify-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/50">
+                    <div className="mb-3 flex items-center justify-center gap-2.5 font-mono text-[11px]  text-foreground/50">
                       <span className="h-px w-6 bg-border" />
                       or start from a template
                       <span className="h-px w-6 bg-border" />

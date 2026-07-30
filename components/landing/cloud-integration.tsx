@@ -75,7 +75,7 @@ export default function CloudIntegration() {
     <section className="relative border-t border-border px-4 py-20 md:px-8 md:py-28">
       <div className="mx-auto max-w-6xl">
         <Reveal className="mx-auto max-w-2xl text-center">
-          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+          <p className="font-mono text-[11px]  text-muted-foreground">
             The difference
           </p>
           <h2 className="mt-4 text-3xl font-medium tracking-tight md:text-[2.75rem] md:leading-[1.1]">
@@ -106,7 +106,7 @@ export default function CloudIntegration() {
                   <span className="flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-muted">
                     <Icon className="h-5 w-5 text-foreground" strokeWidth={1.5} />
                   </span>
-                  <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+                  <span className="font-mono text-[10px]  text-muted-foreground">
                     {c.product}
                   </span>
                 </div>

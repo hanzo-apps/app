@@ -93,11 +93,24 @@ export function popularTemplates(templates: GalleryTemplate[], count = 6): Galle
   // Prefer templates with a REAL self-hosted preview shot so the surfaced cards
   // show a genuine picture, not the generated tile. Fall back to any with the
   // legacy screenshot flag, then to all — never return empty.
-  const real = templates.filter((t) => TEMPLATE_SHOTS.has(t.slug));
-  const pool = real.length >= count ? real : templates.filter((t) => t.hasScreenshot);
-  const byRating = [...(pool.length ? pool : templates)].sort(
+  // Component libraries and kits are gallery inventory, not apps — they never
+  // belong in the hero strip, whatever their rating.
+  const apps = templates.filter(
+    (t) => !/component|library|blocks|ui kit|starter kit/i.test(`${t.name} ${t.category}`),
+  );
+  const real = apps.filter((t) => TEMPLATE_SHOTS.has(t.slug));
+  const pool = real.length >= count ? real : apps.filter((t) => t.hasScreenshot);
+  const byRating = [...(pool.length ? pool : apps)].sort(
     (a, b) => b.rating - a.rating || a.tier - b.tier,
   );
+  // Rotate among the top shelf: shuffle the best 3×count so the strip stays
+  // fresh between visits while never dipping below the quality bar.
+  const shelf = byRating.slice(0, count * 3);
+  for (let i = shelf.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shelf[i], shelf[j]] = [shelf[j], shelf[i]];
+  }
+  byRating.splice(0, shelf.length, ...shelf);
   const picked: GalleryTemplate[] = [];
   const usedCategory = new Set<string>();
   for (const t of byRating) {
