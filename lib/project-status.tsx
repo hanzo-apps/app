@@ -9,18 +9,18 @@
 import type { ProjectStatus } from '@/lib/api/projects';
 
 export interface StatusPresentation {
-  /** Tailwind text color for the label. */
+  /** Label color (CSS color value). */
   text: string;
-  /** Tailwind fill/bg color for the status dot. */
+  /** Status-dot fill (CSS color value). */
   dot: string;
   label: string;
 }
 
 export const STATUS_CONFIG: Record<ProjectStatus, StatusPresentation> = {
-  draft: { text: 'text-white/40', dot: 'bg-neutral-500', label: 'Draft' },
-  building: { text: 'text-amber-400', dot: 'bg-amber-500', label: 'Building' },
-  live: { text: 'text-green-400', dot: 'bg-green-500', label: 'Live' },
-  error: { text: 'text-red-400', dot: 'bg-red-500', label: 'Error' },
+  draft: { text: 'rgba(255,255,255,0.4)', dot: '#737373', label: 'Draft' },
+  building: { text: '#fbbf24', dot: '#f59e0b', label: 'Building' },
+  live: { text: '#4ade80', dot: '#22c55e', label: 'Live' },
+  error: { text: '#f87171', dot: '#ef4444', label: 'Error' },
 };
 
 /** Presentation for any status string, falling back to draft. */

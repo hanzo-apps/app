@@ -252,7 +252,7 @@ function ProjectGrid({
               <H3 numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{p.name}</H3>
               <XStack marginTop="$1.5" alignItems="center" gap="$3">
                 <SizableText
-                  alignItems="center" gap="$1" fontSize={11} textTransform="uppercase" letterSpacing={0.4} className={`${st.text}`}
+                  alignItems="center" gap="$1" fontSize={11} textTransform="uppercase" letterSpacing={0.4} color={st.text}
                 >
                   <Circle size={6} />
                   {st.label}

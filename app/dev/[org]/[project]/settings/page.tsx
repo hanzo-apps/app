@@ -145,7 +145,7 @@ export default function ProjectSettingsPage() {
                 <H1 numberOfLines={1} fontSize="$8" fontWeight="500" letterSpacing={-0.4} color="$color">
                   {project.name}
                 </H1>
-                <SizableText alignItems="center" gap="$1" fontSize={11} textTransform="uppercase" letterSpacing={0.4} className={`${st.text}`}>
+                <SizableText alignItems="center" gap="$1" fontSize={11} textTransform="uppercase" letterSpacing={0.4} color={st.text}>
                   <Circle size={6} />
                   {st.label}
                 </SizableText>
@@ -308,7 +308,7 @@ function Section({
       borderRadius="$8" borderWidth={1} padding="$4.5" {...{ borderColor: danger ? "$red9" : "$borderColor", backgroundColor: danger ? "$red9" : "$color3" }}
     >
       <XStack marginBottom="$4" alignItems="center" gap="$2">
-        <Icon className={`h-4 w-4 ${danger ? "text-red-400/70" : "text-muted-foreground"}`} />
+        <Icon size={16} color={danger ? "rgba(248,113,113,0.7)" : "var(--muted-foreground)"} />
         <H2 fontSize="$3" fontWeight="500" color="$color">{title}</H2>
       </XStack>
       <YStack rowGap="$3">{children}</YStack>
@@ -381,7 +381,7 @@ function DeploymentStatus({ slug }: { slug: string }) {
   return (
     <XStack marginTop="$3" flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$3" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2.5">
       <XStack flexWrap="wrap" alignItems="center" columnGap="$3" rowGap="$1">
-        <SizableText alignItems="center" gap="$1.5" fontSize="$1" className={`${c.text}`}>
+        <SizableText alignItems="center" gap="$1.5" fontSize="$1" color={c.text}>
           <Circle size={8} />
           {c.label}
         </SizableText>
@@ -409,22 +409,22 @@ function deployStatusStyle(status: string): {
 } {
   switch (status) {
     case "live":
-      return { dot: "fill-green-500", text: "text-green-400", label: "Live", pulse: false };
+      return { dot: "#22c55e", text: "#4ade80", label: "Live", pulse: false };
     case "error":
-      return { dot: "fill-red-500", text: "text-red-400", label: "Failed", pulse: false };
+      return { dot: "#ef4444", text: "#f87171", label: "Failed", pulse: false };
     case "queued":
     case "building":
     case "uploading":
       return {
-        dot: "fill-amber-500",
-        text: "text-amber-400",
+        dot: "#f59e0b",
+        text: "#fbbf24",
         label: status.charAt(0).toUpperCase() + status.slice(1),
         pulse: true,
       };
     default:
       return {
-        dot: "fill-muted-foreground",
-        text: "text-muted-foreground",
+        dot: "var(--muted-foreground)",
+        text: "var(--muted-foreground)",
         label: status ? status.charAt(0).toUpperCase() + status.slice(1) : "Unknown",
         pulse: false,
       };

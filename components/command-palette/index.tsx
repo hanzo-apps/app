@@ -167,7 +167,7 @@ export function CommandPalette({
           value={activeValue}
           onValueChange={setActiveValue}
           onKeyDown={handleKeyDown}
-          backgroundColor="transparent" className="[&_[cmdk-group-heading]]:text-muted-foreground"
+          backgroundColor="transparent"
         >
           <CommandInput
             placeholder="Search projects and commands…"
@@ -185,11 +185,11 @@ export function CommandPalette({
                       key={p.slug}
                       value={`project:${p.slug}`}
                       onSelect={() => openProject(p)}
-                      gap="$2" color="$color" className="data-[selected=true]:bg-accent data-[selected=true]:text-foreground"
+                      gap="$2" color="$color"
                     >
                       <FolderOpen size={16} color="$color11" />
                       <SizableText numberOfLines={1}>{p.name}</SizableText>
-                      <StatusDot status={p.status} className="ml-auto" />
+                      <StatusDot status={p.status} alignEnd />
                     </CommandItem>
                   ))}
                 </CommandGroup>
@@ -204,7 +204,7 @@ export function CommandPalette({
                       onOpenChange(false);
                       router.push(c.route);
                     }}
-                    gap="$2" color="$color" className="data-[selected=true]:bg-accent data-[selected=true]:text-foreground"
+                    gap="$2" color="$color"
                   >
                     <c.icon size={16} color="var(--muted-foreground)" />
                     <span>{c.label}</span>
@@ -223,14 +223,14 @@ export function CommandPalette({
           <SizableText alignItems="center" gap="$4" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$2" fontSize={11} color="$color11" display="flex" flexDirection="row">
             <SizableText alignItems="center" gap="$1.5">
               Open published project
-              <kbd className="inline-flex items-center gap-0.5 rounded border border-border bg-muted px-1 py-0.5">
+              <kbd>
                 <CommandIcon size={12} />
                 <CornerDownLeft size={12} />
               </kbd>
             </SizableText>
             <SizableText alignItems="center" gap="$1.5">
               Open project
-              <kbd className="inline-flex items-center rounded border border-border bg-muted px-1 py-0.5">
+              <kbd>
                 <CornerDownLeft size={12} />
               </kbd>
             </SizableText>
@@ -241,11 +241,12 @@ export function CommandPalette({
   );
 }
 
-function StatusDot({ status, className }: { status: string; className?: string }) {
+function StatusDot({ status, alignEnd = false }: { status: string; alignEnd?: boolean }) {
   const st = statusOf(status);
   return (
     <SizableText
-      alignItems="center" gap="$1" fontSize={10} textTransform="uppercase" letterSpacing={0.4} className={`${st.text} ${className ?? ''}`}
+      alignItems="center" gap="$1" fontSize={10} textTransform="uppercase" letterSpacing={0.4} color={st.text}
+      {...(alignEnd ? { marginLeft: "auto" } : null)}
     >
       <Circle size={6} />
       {st.label}

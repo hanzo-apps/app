@@ -54,7 +54,7 @@
     "html2canvas": "^1.4.1",
     "jose": "^6.2.5",
     "jszip": "^3.10.1",
-    "lucide-react": "^1.27.0",
+    "lucide-react": "^0.577.0",
     "lz-string": "^1.5.0",
     "next": "^16.2.12",
     "next-themes": "^0.4.6",

@@ -42,12 +42,14 @@ import { resolveOrgLogo, isEmoji, isImageUrl } from '@/lib/avatar';
 export function OrgAvatar({
   name,
   logo,
-  className = "h-5 w-5 text-[11px]",
+  size = 20,
 }: {
   name: string;
   logo?: string;
-  className?: string;
+  /** Square box in px; the initial scales with it. */
+  size?: number;
 }) {
+  const box = { width: size, height: size, fontSize: Math.round(size * 0.55) } as const;
   const resolved = resolveOrgLogo(name, logo);
   const [imgError, setImgError] = useState(false);
   // Reset the image-failed flag when the mark changes (list rows reuse instances).
@@ -62,7 +64,7 @@ export function OrgAvatar({
         alt=""
         aria-hidden="true"
         onError={() => setImgError(true)}
-        flexShrink={0} borderRadius="$3" borderWidth={1} borderColor="$borderColor" objectFit="cover" className={`${className}`}
+        flexShrink={0} borderRadius="$3" borderWidth={1} borderColor="$borderColor" objectFit="cover" width={box.width} height={box.height}
   />
     );
   }
@@ -71,7 +73,7 @@ export function OrgAvatar({
   if (resolved && isEmoji(resolved)) {
     return (
       <SizableText
-        flexShrink={0} alignItems="center" justifyContent="center" lineHeight={1} className={`${className}`}
+        flexShrink={0} alignItems="center" justifyContent="center" lineHeight={1} width={box.width} height={box.height}
         style={{ fontSize: "1.05rem" }}
         aria-hidden="true"
       >
@@ -83,7 +85,7 @@ export function OrgAvatar({
   const initial = (name || "").trim().charAt(0).toUpperCase() || "•";
   return (
     <SizableText
-      flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" fontWeight="600" color="$color" className={`${className}`}
+      flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" fontWeight="600" color="$color" width={box.width} height={box.height} fontSize={box.fontSize}
       aria-hidden="true"
     >
       {initial}

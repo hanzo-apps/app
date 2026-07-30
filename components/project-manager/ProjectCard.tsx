@@ -30,7 +30,7 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
       <YStack padding="$4" paddingBottom="$3">
         <XStack alignItems="flex-start" justifyContent="space-between" gap="$2">
           <XStack alignItems="center" gap="$2" minWidth={0} flex={1}>
-            <SizableText height="$2.5" width="$2.5" borderRadius="$10" flexShrink={0} className={`${status.dot}`} title={status.label} />
+            <SizableText height="$2.5" width="$2.5" borderRadius="$10" flexShrink={0} backgroundColor={status.dot} title={status.label} />
             <H3 fontWeight="500" fontSize="$4" numberOfLines={1}>{project.name}</H3>
           </XStack>
 
