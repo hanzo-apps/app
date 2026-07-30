@@ -56,7 +56,7 @@ function OrganizationSettingsInner() {
         <YStack marginTop="$6" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$5">
           {/* Current org — avatar live-previews the picked emoji. */}
           <XStack alignItems="center" gap="$4">
-            <OrgAvatar name={name} logo={serverLogo} className="h-12 w-12 text-lg" />
+            <OrgAvatar name={name} logo={serverLogo} size={48} />
             <YStack minWidth={0}>
               <SizableText numberOfLines={1} fontWeight="500" color="$color" display="flex" flexDirection="column">{name}</SizableText>
               {currentId && (

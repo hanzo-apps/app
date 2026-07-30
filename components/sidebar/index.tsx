@@ -255,17 +255,13 @@ function SidebarContent({
       <Button
         key={item.id}
         variant="ghost"
-        width="100%" {...{ justifyContent: collapsed ? "center" : "flex-start", paddingHorizontal: collapsed ? "$2" : undefined, backgroundColor: isActive ? "var(--brand-accent-soft)" : undefined, color: isActive ? "var(--brand-accent-muted)" : "$color11", hoverStyle: isActive ? {"backgroundColor":"var(--brand-accent-soft)","color":"var(--brand-accent-muted)"} : {"backgroundColor":"$color3","color":"$color"} }}
+        width="100%" gap="$2" {...{ justifyContent: collapsed ? "center" : "flex-start", paddingHorizontal: collapsed ? "$2" : undefined, backgroundColor: isActive ? "var(--brand-accent-soft)" : undefined, color: isActive ? "var(--brand-accent-muted)" : "$color11", hoverStyle: isActive ? {"backgroundColor":"var(--brand-accent-soft)","color":"var(--brand-accent-muted)"} : {"backgroundColor":"$color3","color":"$color"} }}
         onClick={() => handleItemAction(item)}
         title={collapsed ? item.label : undefined}
       >
-        <Icon className={cn('h-4 w-4', !collapsed && 'mr-2')} />
+        <Icon size={16} />
         {!collapsed && <SizableText flex={1} textAlign="left">{item.label}</SizableText>}
-        {!collapsed && item.kbd && (
-          <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
-            {item.kbd}
-          </kbd>
-        )}
+        {!collapsed && item.kbd && <kbd>{item.kbd}</kbd>}
       </Button>
     );
   };
@@ -285,7 +281,7 @@ function SidebarContent({
       )}
 
       <YStack
-        height="100%" backgroundColor="$background" position="fixed" right="$0" top="$0" zIndex={50} width={256} borderLeftWidth={1} {...{ $md: mobileOpen ? collapsed ? {"width":"$9"} : {"width":240} : {"x":"$0"}, x: mobileOpen ? "$0" : "100%" }} className="md:z-auto"
+        height="100%" backgroundColor="$background" position="fixed" right="$0" top="$0" zIndex={50} width={256} borderLeftWidth={1} {...{ $md: mobileOpen ? collapsed ? {"width":"$9"} : {"width":240} : {"x":"$0"}, x: mobileOpen ? "$0" : "100%" }}
       >
         {/* Top: brand mark + collapse toggle. */}
         <XStack
@@ -346,7 +342,7 @@ function SidebarContent({
           )}
 
           {/* Scrollable nav */}
-          <YStack flex={1} rowGap="$0.5" padding="$2" paddingBottom="$4" overflow="scroll" className="[mask-image:linear-gradient(to_bottom,#000_calc(100%-1.5rem),transparent)]">
+          <YStack flex={1} rowGap="$0.5" padding="$2" paddingBottom="$4" overflow="scroll" className="scroll-fade-b">
             {/* Primary */}
             {PRIMARY_ITEMS.map(renderNavButton)}
 
@@ -466,11 +462,11 @@ function SidebarContent({
                     key={item.id}
                     variant="ghost"
                     size="sm"
-                    position="relative" width="100%" {...{ justifyContent: collapsed ? "center" : "flex-start", paddingHorizontal: collapsed ? "$2" : undefined, color: isLogout ? "$red9" : undefined, hoverStyle: isLogout ? {"backgroundColor":"$red9","color":"$red9"} : undefined }}
+                    position="relative" width="100%" gap="$2" {...{ justifyContent: collapsed ? "center" : "flex-start", paddingHorizontal: collapsed ? "$2" : undefined, color: isLogout ? "$red9" : undefined, hoverStyle: isLogout ? {"backgroundColor":"$red9","color":"$red9"} : undefined }}
                     onClick={() => handleItemAction(item)}
                     title={collapsed ? item.label : undefined}
                   >
-                    <Icon className={cn('h-4 w-4', !collapsed && 'mr-2')} />
+                    <Icon size={16} />
                     {!collapsed && item.label}
                     {showSyncIndicator && (
                       <SizableText position="absolute" right="$1" top="$1" height="$2" width="$2" borderRadius="$10" backgroundColor="var(--brand-accent)" />

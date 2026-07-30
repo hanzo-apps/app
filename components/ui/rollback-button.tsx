@@ -119,7 +119,7 @@ export function CheckpointList({
             checkpointId={checkpoint.id}
             description={checkpoint.description}
             onRestore={(success) => handleRestore(checkpoint.id, success)}
-            className="ml-2 flex-shrink-0"
+            marginLeft="$2"
   />
         </XStack>
       ))}
