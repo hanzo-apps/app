@@ -1,5 +1,7 @@
 import type { NextConfig } from 'next';
 
+import { withGui } from '@hanzogui/next-plugin';
+
 import { transpiled } from './transpile';
 
 const nextConfig: NextConfig = {
@@ -38,6 +40,8 @@ const nextConfig: NextConfig = {
   },
 
   experimental: {
+    // TEMP: readable server stacks while tracking the Tamagui prerender crash.
+    serverMinification: false,
     serverActions: {
       bodySizeLimit: '10mb',
     },
@@ -94,4 +98,26 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// Tamagui's Next plugin. It is what makes @hanzo/ui render on the SERVER: without
+// it the config module never evaluates in the server bundle, so useMedia proxied an
+// undefined media state and `next build` died on every page with "Cannot create
+// proxy with a non-object as target or handler" — and forcing prerendering off only
+// moved that same 500 to request time.
+//
+// It could not be installed until now: @hanzogui/next-plugin@7.3.1 depends on
+// hanzogui-loader@7.3.0, a version that was never published (only 2.0.0-rc.41 and
+// 102.0.0-rc.41 exist). The pnpm override in package.json pins the published one.
+// Drop the override once a matching loader ships.
+export default withGui({
+  config: './lib/gui.config.ts',
+  // Every package whose components the loader must process. @hanzogui/shell is
+  // here because SiteFooter renders HanzoFooter from a SERVER component, so it
+  // is the one Tamagui surface the plugin has to handle for a page to prerender
+  // — without it /templates/[slug] was the last route still failing.
+  // EVERY package whose Tamagui components can reach a render. Missing one does
+  // not fail loudly — the page just dies in useMedia with "Cannot create proxy
+  // with a non-object". @hanzo/usage is here because UsageLimitProvider sits in
+  // the ROOT layout, so it reaches pages that import nothing themselves.
+  components: ['@hanzo/ui', '@hanzo/gui', '@hanzo/usage', '@hanzogui/shell'],
+  appDir: true,
+})(nextConfig);
