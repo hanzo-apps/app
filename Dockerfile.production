@@ -11,7 +11,7 @@ RUN corepack enable && corepack prepare pnpm@10.17.1 --activate
 RUN apk add --no-cache libc6-compat python3 make g++
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml* ./
+COPY package.json pnpm-lock.yaml* .npmrc ./
 RUN pnpm install --no-frozen-lockfile
 
 COPY . .
