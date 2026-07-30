@@ -7,16 +7,7 @@ import { ErrorBoundary } from '@/components/error-boundary';
 import IamClientProvider from '@/components/providers/IamClientProvider';
 import { AnalyticsRoot } from '@/components/providers/analytics';
 import { UsageLimitProvider } from '@/components/usage/usage-limit';
-import dynamic from 'next/dynamic';
-
-// CLIENT-ONLY. The toast viewport is always mounted in the ROOT providers, and
-// @hanzo/ui's Tamagui internals run DialogSheetController -> useAdaptIsActive ->
-// useMedia on render, which throws while prerendering. Verified by removing this:
-// /resources, /auth/callback, /connectors and /_not-found all fail again without
-// it. A toast surface has nothing to show on a first paint anyway.
-const Toaster = dynamic(() => import('@hanzo/ui').then((m) => m.Toaster), {
-  ssr: false,
-});
+import { Toaster } from '@hanzo/ui';
 import { TooltipProvider } from '@/components/overlay';
 import { ReactNode } from 'react';
 
