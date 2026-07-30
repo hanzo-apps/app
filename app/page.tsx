@@ -223,14 +223,14 @@ export default function LandingPage() {
                             key={t.slug}
                             type="button"
                             onClick={() => startFromTemplate(t)}
-                            group overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" textAlign="left" hoverStyle={{ borderColor: "$color", backgroundColor: "$color" }}
+                            group className="zoom-scope" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" textAlign="left" hoverStyle={{ borderColor: "$color", backgroundColor: "$color" }}
                           >
                             <YStack position="relative" overflow="hidden" backgroundColor="$color">
                               <TemplateThumb
                                 name={t.displayName}
                                 category={t.category}
                                 slug={t.slug}
-                                className="transition-transform duration-300 group-hover:scale-[1.04]"
+                                className="zoom-target"
   />
                             </YStack>
                             <YStack paddingHorizontal="$2.5" paddingVertical="$2">

@@ -52,14 +52,14 @@ function RailPill({
 
 function TemplateCard({ t, showAuthor = false }: { t: TemplateEntry; showAuthor?: boolean }) {
   return (
-    <YStack group position="relative" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" hoverStyle={{ y: "-1", borderColor: "$color", backgroundColor: "$color3" }}>
+    <YStack group className="zoom-scope" position="relative" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" hoverStyle={{ y: "-1", borderColor: "$color", backgroundColor: "$color3" }}>
       {/* Preview — image-first via TemplateThumb; on-brand tile when no real shot. */}
       <YStack position="relative" overflow="hidden" backgroundColor="$background">
         <TemplateThumb
           name={t.name}
           category={t.category}
           slug={t.slug}
-          className="transition-transform duration-500 group-hover:scale-[1.03]"
+          className="zoom-target"
   />
         {/* Left rail: what this is, and who published it. The "Hanzo Example" badge
             rides beside the category rather than opposite it, because top-right is

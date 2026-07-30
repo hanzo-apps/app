@@ -478,20 +478,20 @@ export function VisualEditor({
 
   // Anchor the dock to the chosen edge: bottom/top → horizontal pill centered on
   // the X axis; left/right → vertical pill centered on the Y axis.
-  const anchorClass: Record<DockPosition, string> = {
-    bottom: "bottom-3 left-1/2 -translate-x-1/2",
-    top: "top-3 left-1/2 -translate-x-1/2",
-    left: "left-3 top-1/2 -translate-y-1/2",
-    right: "right-3 top-1/2 -translate-y-1/2"
+  const anchorProps: Record<DockPosition, object> = {
+    bottom: { bottom: 12, left: "50%", x: "-50%" },
+    top: { top: 12, left: "50%", x: "-50%" },
+    left: { left: 12, top: "50%", y: "-50%" },
+    right: { right: 12, top: "50%", y: "-50%" }
   };
   // Keep the bottom edge clear of the mobile safe-area inset.
   const anchorStyle: React.CSSProperties | undefined =
     position === "bottom" ? { bottom: "max(0.75rem, env(safe-area-inset-bottom))" } : undefined;
-  const dividerClass = cn("shrink-0 bg-border", isVertical ? "my-0.5 h-px w-5" : "mx-0.5 h-5 w-px");
+  const dividerProps = isVertical
+    ? { marginVertical: "$0.5", height: 1, width: 20 }
+    : { marginHorizontal: "$0.5", height: 20, width: 1 };
   const menuSide =
     position === "bottom" ? "top" : position === "top" ? "bottom" : position === "left" ? "right" : "left";
-  const menuItemClass =
-    "gap-2 text-foreground focus:bg-muted focus:text-foreground data-[highlighted]:bg-muted data-[highlighted]:text-foreground";
 
   const dockPositionOptions: { value: DockPosition; label: string; icon: typeof PanelBottom }[] = [
     { value: "bottom", label: "Bottom", icon: PanelBottom },
@@ -522,17 +522,17 @@ export function VisualEditor({
         minWidth={224}
       >
         <DropdownMenuSub>
-          <DropdownMenuSubTrigger className={menuItemClass}>
+          <DropdownMenuSubTrigger>
             <PanelBottom size={16} />
             <span>Dock</span>
           </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent className="min-w-40">
+          <DropdownMenuSubContent minWidth={160}>
             <DropdownMenuRadioGroup
               value={dockPosition}
               onValueChange={(v) => setDockPosition(v as DockPosition)}
             >
               {dockPositionOptions.map(({ value, label, icon: Icon }) => (
-                <DropdownMenuRadioItem key={value} value={value} className={menuItemClass}>
+                <DropdownMenuRadioItem key={value} value={value}>
                   <Icon size={16} />
                   <span>{label}</span>
                   {value === "bottom" && (
@@ -547,7 +547,7 @@ export function VisualEditor({
         <DropdownMenuCheckboxItem
           checked={isMinimized}
           onCheckedChange={(c) => setIsMinimized(c === true)}
-          className={menuItemClass}
+         
         >
           <Minimize2 size={16} />
           <span>Minimize</span>
@@ -556,7 +556,7 @@ export function VisualEditor({
         <DropdownMenuCheckboxItem
           checked={isHidden}
           onCheckedChange={(c) => setIsHidden(c === true)}
-          className={menuItemClass}
+         
         >
           <EyeOff size={16} />
           <span>Hide</span>
@@ -570,15 +570,15 @@ export function VisualEditor({
           value={previewTheme}
           onValueChange={(v) => setPreviewTheme(v as PreviewTheme)}
         >
-          <DropdownMenuRadioItem value="auto" className={menuItemClass}>
+          <DropdownMenuRadioItem value="auto">
             <Monitor size={16} />
             <span>Auto</span>
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="light" className={menuItemClass}>
+          <DropdownMenuRadioItem value="light">
             <Sun size={16} />
             <span>Light</span>
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="dark" className={menuItemClass}>
+          <DropdownMenuRadioItem value="dark">
             <Moon size={16} />
             <span>Dark</span>
           </DropdownMenuRadioItem>
@@ -617,7 +617,7 @@ export function VisualEditor({
         </Button>
       ) : isMinimized ? (
         // Collapsed to a single grip; click to restore the full dock.
-        <YStack position="absolute" zIndex={50} className={`${anchorClass[position]}`} style={anchorStyle}>
+        <YStack position="absolute" zIndex={50} {...anchorProps[position]} style={anchorStyle}>
           <Button
             type="button"
             onClick={() => setIsMinimized(false)}
@@ -633,7 +633,7 @@ export function VisualEditor({
           role="toolbar"
           aria-label="Visual editor"
           aria-orientation={isVertical ? "vertical" : "horizontal"}
-          position="absolute" zIndex={50} alignItems="center" gap="$1" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$1" elevation={4} backdropFilter="blur(8px)" {...{ maxHeight: isVertical ? "calc(100%-1.5rem)" : undefined, flexDirection: isVertical ? "column" : "row", borderRadius: isVertical ? "$8" : "$10", maxWidth: isVertical ? undefined : "calc(100%-1.5rem)" }} className={`${anchorClass[position]}`}
+          position="absolute" zIndex={50} alignItems="center" gap="$1" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$1" elevation={4} backdropFilter="blur(8px)" {...{ maxHeight: isVertical ? "calc(100% - 1.5rem)" : undefined, flexDirection: isVertical ? "column" : "row", borderRadius: isVertical ? "$8" : "$10", maxWidth: isVertical ? undefined : "calc(100% - 1.5rem)" }} {...anchorProps[position]}
           style={anchorStyle}
         >
           {/* Master arm/disarm — turns the visual editor on for the preview. */}
@@ -650,7 +650,7 @@ export function VisualEditor({
 
           {isEnabled && (
             <>
-              <YStack className={`${dividerClass}`} />
+              <YStack flexShrink={0} backgroundColor="$borderColor" {...dividerProps} />
               <Button
                 variant={editMode === "select" ? "secondary" : "ghost"}
                 size="sm"
@@ -681,7 +681,7 @@ export function VisualEditor({
               >
                 <Move size={16} />
               </Button>
-              <YStack className={`${dividerClass}`} />
+              <YStack flexShrink={0} backgroundColor="$borderColor" {...dividerProps} />
               <Button
                 variant={showPanel ? "secondary" : "ghost"}
                 size="sm"
@@ -695,7 +695,7 @@ export function VisualEditor({
             </>
           )}
 
-          <YStack className={`${dividerClass}`} />
+          <YStack flexShrink={0} backgroundColor="$borderColor" {...dividerProps} />
           {overflowMenu}
         </XStack>
       )}
@@ -821,7 +821,7 @@ export function VisualEditor({
                   <select
                     value={elementStyles.fontWeight}
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => applyStyleChange("fontWeight", e.target.value)}
-                    className="w-full bg-muted border border-border text-foreground text-sm rounded px-3 py-1 mt-1"
+                    className="ve-input"
                   >
                     <option value="normal">Normal</option>
                     <option value="bold">Bold</option>
@@ -885,7 +885,7 @@ export function VisualEditor({
                   <select
                     value={elementStyles.display}
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => applyStyleChange("display", e.target.value)}
-                    className="w-full bg-muted border border-border text-foreground text-sm rounded px-3 py-1 mt-1"
+                    className="ve-input"
                   >
                     <option value="block">Block</option>
                     <option value="inline">Inline</option>
@@ -901,7 +901,7 @@ export function VisualEditor({
                   <select
                     value={elementStyles.position}
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => applyStyleChange("position", e.target.value)}
-                    className="w-full bg-muted border border-border text-foreground text-sm rounded px-3 py-1 mt-1"
+                    className="ve-input"
                   >
                     <option value="static">Static</option>
                     <option value="relative">Relative</option>

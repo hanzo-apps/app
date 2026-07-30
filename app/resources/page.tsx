@@ -209,7 +209,7 @@ function ResourceCard({
     <Button
       type="button"
       onClick={() => onOpen(item)}
-      group flexDirection="column" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" textAlign="left" hoverStyle={{ y: "-1", borderColor: "$color" }}
+      group className="zoom-scope" flexDirection="column" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" textAlign="left" hoverStyle={{ y: "-1", borderColor: "$color" }}
     >
       <YStack position="relative" overflow="hidden" backgroundColor="$background">
         {item.hasImage ? (
@@ -218,7 +218,7 @@ function ResourceCard({
             src={item.image}
             alt={`${item.title} preview`}
             loading="lazy"
-            height="100%" width="100%" objectFit="cover" objectPosition="top" className="group-hover:scale-[1.03]"
+            height="100%" width="100%" objectFit="cover" objectPosition="top" className="zoom-target"
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).style.display = 'none';
             }}

@@ -43,8 +43,9 @@ import type { BuildSummary } from "@/lib/builds";
 // visual rhythm — never a fabricated claim.
 const HIGHLIGHT_ICONS: LucideIcon[] = [Sparkles, Layers, Zap, Boxes, Gauge, Blocks];
 
-const EYEBROW = "font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground";
-const SECTION = "border-t border-border px-4 py-20 md:px-8 md:py-24";
+// Shared section / eyebrow registers — gui prop bundles, spread at call sites.
+const EYEBROW = { fontFamily: "$mono", fontSize: 11, textTransform: "uppercase", letterSpacing: 2.2, color: "$color11" } as const;
+const SECTION = { borderTopWidth: 1, borderColor: "$borderColor", paddingHorizontal: "$4", paddingVertical: "$11", $md: { paddingHorizontal: "$8", paddingVertical: "$13" } } as const;
 
 export function TemplateDetail({
   template: t,
@@ -152,7 +153,7 @@ export function TemplateDetail({
                 <Link
                   href={t.fork}
                   aria-label={`Use the ${t.name} template`}
-                ><XStack group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" elevation={6} hoverStyle={{ borderColor: "$color" }}>
+                ><XStack group className="zoom-scope" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" elevation={6} hoverStyle={{ borderColor: "$color" }}>
                   <YStack position="relative" overflow="hidden" backgroundColor="$color3">
                     <ProjectThumb
                       name={t.name}
@@ -163,7 +164,7 @@ export function TemplateDetail({
                           name={t.name}
                           category={t.category}
                           slug={t.slug}
-                          className="transition-transform duration-500 group-hover:scale-[1.03]"
+                          className="zoom-target"
   />
                       }
   />
@@ -182,10 +183,10 @@ export function TemplateDetail({
 
         {/* ── Key highlights ────────────────────────────────────── */}
         {t.keyHighlights.length > 0 && (
-          <YStack marginTop="$6" $md={{ marginTop: "$8" }} className={`${SECTION}`}>
+          <YStack marginTop="$6" $md={{ marginTop: "$8" }} {...SECTION}>
             <YStack alignSelf="center" maxWidth={1152}>
               <Reveal>
-                <Paragraph className={`${EYEBROW}`}>Key highlights</Paragraph>
+                <Paragraph {...EYEBROW}>Key highlights</Paragraph>
                 <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
                   What you get out of the box.
                 </H2>
@@ -193,7 +194,8 @@ export function TemplateDetail({
 
               <Reveal
                 delay={80}
-                className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-border bg-muted sm:grid-cols-2 lg:grid-cols-3"
+                marginTop="$9" overflow="hidden" borderRadius={16} borderWidth={1} borderColor="$borderColor" backgroundColor="var(--muted)"
+                className="card-grid card-grid-sm-2 card-grid-lg-3"
               >
                 {t.keyHighlights.map((h, i) => {
                   const Icon = HIGHLIGHT_ICONS[i % HIGHLIGHT_ICONS.length];
@@ -216,10 +218,10 @@ export function TemplateDetail({
         )}
 
         {/* ── About + Perfect for ───────────────────────────────── */}
-        <YStack className={`${SECTION}`}>
+        <YStack {...SECTION}>
           <YStack alignSelf="center" maxWidth={1152} gap="$8" $lg={{ gap: "$10" }}>
             <Reveal>
-              <Paragraph className={`${EYEBROW}`}>About this template</Paragraph>
+              <Paragraph {...EYEBROW}>About this template</Paragraph>
               <H2 marginTop="$4" fontSize="$8" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$10" }}>
                 {t.name}
               </H2>
@@ -230,7 +232,7 @@ export function TemplateDetail({
             {t.perfectFor.length > 0 && (
               <Reveal delay={80}>
                 <YStack borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding={28} $md={{ padding: "$6" }}>
-                  <Paragraph className={`${EYEBROW}`}>Perfect for</Paragraph>
+                  <Paragraph {...EYEBROW}>Perfect for</Paragraph>
                   <YStack marginTop="$4.5" rowGap="$3.5">
                     {t.perfectFor.map((p) => (
                       <SizableText key={p} alignItems="flex-start" gap="$3" fontSize="$3" color="$color">
@@ -249,11 +251,11 @@ export function TemplateDetail({
 
         {/* ── Related templates ─────────────────────────────────── */}
         {related.length > 0 && (
-          <YStack className={`${SECTION}`}>
+          <YStack {...SECTION}>
             <YStack alignSelf="center" maxWidth={1152}>
-              <Reveal className="flex items-end justify-between gap-4">
+              <Reveal flexDirection="row" alignItems="flex-end" justifyContent="space-between" gap="$4">
                 <div>
-                  <Paragraph className={`${EYEBROW}`}>Related templates</Paragraph>
+                  <Paragraph {...EYEBROW}>Related templates</Paragraph>
                   <H2 marginTop="$4" fontSize="$8" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$10" }}>
                     More in {t.category}.
                   </H2>
@@ -270,13 +272,13 @@ export function TemplateDetail({
                   <Link
                     key={r.slug}
                     href={`/templates/${r.slug}`}
-                  ><YStack group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" hoverStyle={{ y: "-0.5", borderColor: "$color", backgroundColor: "$color3" }}>
+                  ><YStack group className="zoom-scope" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" hoverStyle={{ y: "-0.5", borderColor: "$color", backgroundColor: "$color3" }}>
                     <YStack position="relative" overflow="hidden" backgroundColor="$color3">
                       <TemplateThumb
                         name={r.name}
                         category={r.category}
                         slug={r.slug}
-                        className="transition-transform duration-300 group-hover:scale-[1.04]"
+                        className="zoom-target"
   />
                     </YStack>
                     <YStack flex={1} padding="$4">
@@ -294,7 +296,7 @@ export function TemplateDetail({
 
         {/* ── Final CTA ─────────────────────────────────────────── */}
         <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$12" $md={{ paddingHorizontal: "$6", paddingVertical: "$13" }}>
-          <Reveal className="mx-auto max-w-2xl text-center">
+          <Reveal alignSelf="center" width="100%" maxWidth={672} textAlign="center">
             <H2 fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
               Make {t.name} yours.
             </H2>

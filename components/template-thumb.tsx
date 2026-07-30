@@ -152,7 +152,7 @@ export function TemplateThumb({
       {/* category icon */}
       <XStack position="absolute" top={0} right={0} bottom={0} left={0} alignItems="center" justifyContent="center">
         <Icon
-          className="h-14 w-14 text-foreground/20"
+          size={56} color="var(--foreground)" opacity={0.2}
           strokeWidth={1.1}
           style={{ transform: `rotate(${rot}deg)` }}
   />

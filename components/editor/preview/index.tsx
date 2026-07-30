@@ -24,15 +24,15 @@ function PreviewOverlay({ building }: { building: boolean }) {
       {building ? (
         <YStack width="100%" maxWidth={672} paddingHorizontal="$6">
           <YStack alignSelf="center" gap="$3">
-            <YStack height="$6" width="33.333%" borderRadius="$3" backgroundColor="$color" />
-            <YStack height="$13" width="100%" borderRadius="$5" backgroundColor="$color" className="[animation-delay:120ms]" />
+            <YStack height="$6" width="33.333%" borderRadius="$3" backgroundColor="$color" className="skeleton" />
+            <YStack height="$13" width="100%" borderRadius="$5" backgroundColor="$color" className="skeleton" style={{ animationDelay: "120ms" }} />
             <YStack gap="$3">
-              <YStack height="$11" borderRadius="$5" backgroundColor="$color" className="[animation-delay:200ms]" />
-              <YStack height="$11" borderRadius="$5" backgroundColor="$color" className="[animation-delay:280ms]" />
-              <YStack height="$11" borderRadius="$5" backgroundColor="$color" className="[animation-delay:360ms]" />
+              <YStack height="$11" borderRadius="$5" backgroundColor="$color" className="skeleton" style={{ animationDelay: "200ms" }} />
+              <YStack height="$11" borderRadius="$5" backgroundColor="$color" className="skeleton" style={{ animationDelay: "280ms" }} />
+              <YStack height="$11" borderRadius="$5" backgroundColor="$color" className="skeleton" style={{ animationDelay: "360ms" }} />
             </YStack>
-            <YStack height="$4" width="66.667%" borderRadius="$2" backgroundColor="$color" className="[animation-delay:440ms]" />
-            <YStack height="$4" width="50%" borderRadius="$2" backgroundColor="$color" className="[animation-delay:520ms]" />
+            <YStack height="$4" width="66.667%" borderRadius="$2" backgroundColor="$color" className="skeleton" style={{ animationDelay: "440ms" }} />
+            <YStack height="$4" width="50%" borderRadius="$2" backgroundColor="$color" className="skeleton" style={{ animationDelay: "520ms" }} />
           </YStack>
           <Paragraph marginTop="$5" textAlign="center" fontSize={13}>
             <SizableText className="thread-shimmer-text">Building your app…</SizableText>
@@ -310,7 +310,7 @@ export const Preview = ({
   return (
     <XStack
       ref={ref}
-      width="100%" position="relative" zIndex={0} alignItems="center" justifyContent="center" backgroundColor="$background" {...{ $lg: currentTab === "preview" ? {"height":"100%"} : currentTab === "chat" && !isFullscreen ? {"height":"$0"} : undefined, height: isFullscreen ? "100%" : "100%", padding: isFullscreen ? "$0" : undefined }} className="group/preview"
+      width="100%" position="relative" zIndex={0} alignItems="center" justifyContent="center" backgroundColor="$background" {...{ $lg: currentTab === "preview" ? {"height":"100%"} : currentTab === "chat" && !isFullscreen ? {"height":"$0"} : undefined, height: isFullscreen ? "100%" : "100%", padding: isFullscreen ? "$0" : undefined }}
       onClick={(e) => {
         if (isAiWorking) {
           e.preventDefault();
@@ -339,9 +339,7 @@ export const Preview = ({
         x={-1}
         y={-1}
         strokeDasharray={"4 2"}
-        className={cn(
-          "[mask-image:radial-gradient(900px_circle_at_center,white,transparent)]"
-        )}
+        className="preview-grid"
   />
       {!isAiWorking && hoveredElement && selectedElement && (
         <YStack
