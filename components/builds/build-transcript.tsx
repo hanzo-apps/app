@@ -60,7 +60,7 @@ const EYEBROW = "font-mono text-[11px] uppercase tracking-[0.2em] text-muted-for
 // Shown whole, never truncated: an elided transcript is the thing this feature
 // exists to replace.
 function TurnBody({ text }: { text: string }) {
-  return <MarkdownRenderer content={text} compact color="var(--muted-foreground)" />;
+  return <MarkdownRenderer content={text} compact muted />;
 }
 
 // forkCommand is the real, runnable way to leave from this turn. It is built

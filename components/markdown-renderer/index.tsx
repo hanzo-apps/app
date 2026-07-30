@@ -1,7 +1,6 @@
 'use client';
 
-import { Separator } from '@hanzo/ui';
-import { YStack, H1, H2, H3, H4, Paragraph, SizableText, Anchor } from '@hanzo/gui';
+import { YStack, SizableText, Anchor } from '@hanzo/gui';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -24,7 +23,8 @@ function slugify(text: string): string {
 
 interface MarkdownRendererProps {
   content: string;
-  className?: string;
+  /** Render the whole block in the muted register (transcript summaries). */
+  muted?: boolean;
   skipNormalization?: boolean;
   /**
    * Compact density — the tight monochrome treatment for inline surfaces like the
@@ -36,46 +36,14 @@ interface MarkdownRendererProps {
   compact?: boolean;
 }
 
-export function MarkdownRenderer({ content, className, skipNormalization = false, compact = false }: MarkdownRendererProps) {
+export function MarkdownRenderer({ content, muted = false, skipNormalization = false, compact = false }: MarkdownRendererProps) {
   const router = useRouter();
 
   // Normalize content to fix common LLM formatting issues
   const processedContent = skipNormalization ? content : normalizeContent(content);
 
-  // Per-element class sets — the ONLY thing density changes. `prose` uses
-  // :where() (0 specificity), so these explicit classes always win.
-  const S = compact
-    ? {
-        wrap: 'prose prose-sm dark:prose-invert max-w-none text-[13px] leading-relaxed',
-        h1: 'text-[15px] font-semibold mt-3 mb-1.5 first:mt-0',
-        h2: 'text-[14px] font-semibold mt-3 mb-1 first:mt-0',
-        h3: 'text-[13px] font-semibold mt-2.5 mb-1',
-        h4: 'text-[13px] font-medium mt-2 mb-1 text-muted-foreground',
-        p: 'my-1.5 leading-relaxed first:mt-0 last:mb-0',
-        ul: 'list-disc pl-5 my-1.5 space-y-1',
-        ol: 'list-decimal pl-5 my-1.5 space-y-1',
-        li: 'leading-relaxed',
-        preWrap: 'relative my-2 group',
-        pre: 'p-3 rounded-lg bg-muted/60 border border-border/60 overflow-x-auto text-[12px]',
-        hr: 'my-3 border-border',
-        blockquote: 'border-l-2 border-border pl-3 pr-3 py-1 my-2 italic text-muted-foreground',
-      }
-    : {
-        wrap: 'prose prose-sm dark:prose-invert max-w-none',
-        h1: 'text-3xl font-medium mb-4 mt-8 first:mt-0',
-        h2: 'text-2xl font-medium mb-3 mt-8 pb-2 border-b border-border/50 first:mt-0',
-        h3: 'text-xl font-medium mb-2 mt-6',
-        h4: 'text-lg font-medium mb-2 mt-4',
-        p: 'mb-4 leading-relaxed last:mb-0',
-        ul: 'list-disc pl-6 mb-4 space-y-2',
-        ol: 'list-decimal pl-6 mb-4 space-y-2',
-        li: 'text-sm leading-relaxed',
-        preWrap: 'relative mb-4 group',
-        pre: 'p-4 rounded-lg bg-muted/50 border border-border/50 overflow-x-auto',
-        hr: 'my-8 border-border',
-        blockquote: 'border-l-4 border-primary/30 bg-muted/30 pl-4 pr-4 py-3 mb-4 italic text-muted-foreground rounded-r',
-      };
-
+  // Typography lives in assets/globals.css under the `.md` scope — the ONE
+  // prose register. Density is the only knob, and it is one class.
   // Pre-calculate all heading data from the markdown
   // This runs once per content change and is stable across re-renders
   const headingData = React.useMemo(() => {
@@ -111,14 +79,14 @@ export function MarkdownRenderer({ content, className, skipNormalization = false
   }, [headingData]);
 
   return (
-    <YStack className={`${S.wrap} ${className}`}>
+    <YStack className={compact ? "md md-compact" : "md"} {...(muted ? { color: "$color11" } : null)}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
         h1: ({ children }) => {
           const text = children?.toString() || '';
           const id = slugify(text);
-          return <H1 id={id} className={`${S.h1}`}>{children}</H1>;
+          return <h1 id={id}>{children}</h1>;
         },
         h2: ({ children }) => {
           const text = children?.toString() || '';
@@ -126,9 +94,9 @@ export function MarkdownRenderer({ content, className, skipNormalization = false
           const key = `2-${text}`;
           const index = headingIndexMap.get(key);
           return (
-            <H2 id={id} data-heading-index={index} className={`${S.h2}`}>
+            <h2 id={id} data-heading-index={index}>
               {children}
-            </H2>
+            </h2>
           );
         },
         h3: ({ children }) => {
@@ -137,9 +105,9 @@ export function MarkdownRenderer({ content, className, skipNormalization = false
           const key = `3-${text}`;
           const index = headingIndexMap.get(key);
           return (
-            <H3 id={id} data-heading-index={index} className={`${S.h3}`}>
+            <h3 id={id} data-heading-index={index}>
               {children}
-            </H3>
+            </h3>
           );
         },
         h4: ({ children }) => {
@@ -148,17 +116,11 @@ export function MarkdownRenderer({ content, className, skipNormalization = false
           const key = `4-${text}`;
           const index = headingIndexMap.get(key);
           return (
-            <H4 id={id} data-heading-index={index} className={`${S.h4}`}>
+            <h4 id={id} data-heading-index={index}>
               {children}
-            </H4>
+            </h4>
           );
         },
-
-        p: ({ children }) => <Paragraph className={`${S.p}`}>{children}</Paragraph>,
-
-        ul: ({ children }) => <YStack className={`${S.ul}`}>{children}</YStack>,
-        ol: ({ children }) => <YStack className={`${S.ol}`}>{children}</YStack>,
-        li: ({ children }) => <SizableText className={`${S.li}`}>{children}</SizableText>,
 
         pre: ({ children, ...props }) => {
           // Extract language from code block if present
@@ -171,15 +133,13 @@ export function MarkdownRenderer({ content, className, skipNormalization = false
           const language = match ? match[1] : null;
 
           return (
-            <YStack className={`${S.preWrap}`}>
+            <YStack position="relative">
               {language && (
                 <SizableText position="absolute" top="$2" right="$2" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" color="$color11" backgroundColor="$background" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backdropFilter="blur(4px)" display="flex" flexDirection="column">
                   {language}
                 </SizableText>
               )}
-              <SizableText fontFamily="$mono" whiteSpace="pre" className={`${S.pre}`} {...props}>
-                {children}
-              </SizableText>
+              <pre {...props}>{children}</pre>
             </YStack>
           );
         },
@@ -203,12 +163,6 @@ export function MarkdownRenderer({ content, className, skipNormalization = false
             </SizableText>
           );
         },
-
-        blockquote: ({ children }) => (
-          <SizableText className={`rounded-r ${S.blockquote}`}>
-            {children}
-          </SizableText>
-        ),
 
         a: ({ href, children }) => {
           if (!href) return <a>{children}</a>;
@@ -260,8 +214,6 @@ export function MarkdownRenderer({ content, className, skipNormalization = false
         strong: ({ children }) => <SizableText fontWeight="600" color="$color">{children}</SizableText>,
 
         em: ({ children }) => <SizableText fontStyle="italic">{children}</SizableText>,
-
-        hr: () => <Separator className={`${S.hr}`} />,
 
         table: ({ children }) => (
           <YStack borderRadius="$5" borderWidth={1} borderColor="$borderColor" overflow="scroll" {...{ marginVertical: compact ? "$2" : undefined, marginBottom: compact ? undefined : "$5" }}>

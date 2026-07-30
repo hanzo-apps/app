@@ -198,7 +198,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                 <Button
                   key={template.slug}
                   onClick={() => handleTemplateSelect(template)}
-                  flexDirection="column" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" textAlign="left" group hoverStyle={{ borderColor: "$color", y: "-0.5" }}
+                  flexDirection="column" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" textAlign="left" group className="zoom-scope" hoverStyle={{ borderColor: "$color", y: "-0.5" }}
                 >
                   <YStack position="relative" backgroundColor="$background" overflow="hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -206,7 +206,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                       src={template.screenshotUrl}
                       alt={`${template.displayName} preview`}
                       loading="lazy"
-                      width="100%" height="100%" objectFit="cover" objectPosition="top" className="group-hover:scale-[1.03]"
+                      width="100%" height="100%" objectFit="cover" objectPosition="top" className="zoom-target"
                       onError={(e) => {
                         (e.currentTarget as HTMLImageElement).style.display = "none";
                       }}

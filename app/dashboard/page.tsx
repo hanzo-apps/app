@@ -194,14 +194,14 @@ export default function DashboardPage() {
                       <Link
                         key={t.slug}
                         href="/resources"
-                      ><XStack group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "-0.5", borderColor: "$color" }}>
+                      ><XStack group className="zoom-scope" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "-0.5", borderColor: "$color" }}>
                         <YStack position="relative" overflow="hidden" backgroundColor="$background">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <Image
                             src={t.screenshotUrl}
                             alt={`${t.displayName} preview`}
                             loading="lazy"
-                            height="100%" width="100%" objectFit="cover" objectPosition="top" className="group-hover:scale-[1.04]"
+                            height="100%" width="100%" objectFit="cover" objectPosition="top" className="zoom-target"
                             onError={(e) => {
                               (e.currentTarget as HTMLImageElement).style.opacity = "0";
                             }}
