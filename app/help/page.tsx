@@ -173,7 +173,7 @@ export default function HelpPage() {
 
         {/* ── Contact CTA ──────────────────────────────────────── */}
         <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
-          <Reveal className="mx-auto max-w-6xl">
+          <Reveal alignSelf="center" width="100%" maxWidth={1152}>
             <YStack alignItems="flex-start" justifyContent="space-between" gap="$4.5" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$6" $sm={{ flexDirection: "row", alignItems: "center" }} $md={{ padding: "$7" }}>
               <div>
                 <H2 fontSize="$8" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$10" }}>

@@ -122,7 +122,7 @@ export function AppSwitcher({ currentApp = 'app' }: { currentApp?: string }) {
             const apps = HANZO_APPS.filter((a) => a.group === group);
             if (apps.length === 0) return null;
             return (
-              <YStack key={group} marginBottom="$1.5" className="last:mb-0">
+              <YStack key={group} marginBottom="$1.5">
                 <SizableText paddingHorizontal="$2" paddingBottom="$1" paddingTop="$1.5" fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.4} color="$color11" display="flex" flexDirection="column">
                   {group}
                 </SizableText>

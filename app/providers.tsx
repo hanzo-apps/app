@@ -6,6 +6,7 @@ import { ThemeProvider } from '@/components/providers/theme-provider';
 import { ErrorBoundary } from '@/components/error-boundary';
 import IamClientProvider from '@/components/providers/IamClientProvider';
 import { AnalyticsRoot } from '@/components/providers/analytics';
+import { captureError } from '@hanzogui/telemetry';
 import { UsageLimitProvider } from '@/components/usage/usage-limit';
 import { Toaster, TooltipProvider } from '@hanzo/ui';
 import { ReactNode } from 'react';
@@ -53,10 +54,18 @@ export function Providers({ children }: ProvidersProps) {
           <Toaster richColors position="bottom-center" />
           <AnalyticsRoot>
             <ErrorBoundary
+              // This boundary is INSIDE AnalyticsRoot, so it catches a render
+              // error before the telemetry provider's own boundary can see it —
+              // which is why reporting has to happen here. `captureError` is the
+              // ambient telemetry API: module-scope and the provider share ONE
+              // client, so this lands on the same stream as an unhandled error.
+              // React render errors are the one class `window.onerror` never
+              // sees, so a boundary is the only way to observe them at all.
               onError={(error, errorInfo) => {
-                if (process.env.NODE_ENV === 'production') {
-                  console.error('Uncaught error:', error, errorInfo);
-                }
+                captureError(error, {
+                  handled: false,
+                  properties: { componentStack: errorInfo?.componentStack, react: true },
+                });
               }}
             >
               <UsageLimitProvider>

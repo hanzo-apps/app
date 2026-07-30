@@ -111,7 +111,7 @@ export function TemplateCard({
             {/* Metadata */}
             <SizableText flexWrap="wrap" alignItems="center" columnGap="$2" rowGap="$1" fontSize="$1" color="$color11" display="flex" flexDirection="row">
               {runtimeBadge && (
-                <Badge fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0" height="auto" className={`${runtimeBadge.className}`}>{runtimeBadge.label}</Badge>
+                <Badge fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0" height="auto" {...runtimeBadge.tone}>{runtimeBadge.label}</Badge>
               )}
               {hasBackendFeatures && (
                 <Badge fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0" height="auto" backgroundColor="$orange2" color="$orange11" borderColor="$orange3" $theme-dark={{ backgroundColor: "$orange12", color: "$orange8", borderColor: "$orange11" }}>
@@ -343,7 +343,7 @@ export function TemplateCard({
           {((customTemplate?.metadata.tags || template.metadata?.tags || []).length > 0 || (isBuiltIn && 'runtime' in template) || hasBackendFeatures) && (
             <XStack flexWrap="wrap" gap="$1">
               {runtimeBadge && (
-                <Badge fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0.5" className={`${runtimeBadge.className}`}>{runtimeBadge.label}</Badge>
+                <Badge fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0.5" {...runtimeBadge.tone}>{runtimeBadge.label}</Badge>
               )}
               {hasBackendFeatures && (
                 <Badge fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0.5" backgroundColor="$orange2" color="$orange11" borderColor="$orange3" $theme-dark={{ backgroundColor: "$orange12", color: "$orange8", borderColor: "$orange11" }}>

@@ -67,13 +67,13 @@ type LoadState =
 function statusColor(status: string) {
   switch (status) {
     case "ready":
-      return "text-green-500";
+      return "#22c55e";
     case "running":
-      return "text-blue-500";
+      return "#3b82f6";
     case "error":
-      return "text-red-500";
+      return "#ef4444";
     default:
-      return "text-muted-foreground";
+      return "var(--muted-foreground)";
   }
 }
 
@@ -487,7 +487,7 @@ export default function AgentsPage() {
                             </CardDescription>
                           </YStack>
                           <XStack
-                            alignItems="center" gap="$1" flexShrink={0} className={`${statusColor(agent.status)}`}
+                            alignItems="center" gap="$1" flexShrink={0} {...{ color: statusColor(agent.status) }}
                           >
                             {statusIcon(agent.status)}
                             <SizableText fontSize="$1" fontWeight="500" textTransform="capitalize">
@@ -581,9 +581,9 @@ export default function AgentsPage() {
                               )}
                               Latest run
                               <SizableText
-                                marginLeft="$1" className={`${statusColor(
+                                marginLeft="$1" {...{ color: statusColor(
                                     result.status === "ok" ? "ready" : "error"
-                                  )}`}
+                                  ) }}
                               >
                                 ({result.status}, {result.durationMs}ms)
                               </SizableText>

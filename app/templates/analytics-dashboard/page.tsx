@@ -179,7 +179,7 @@ export default function AnalyticsDashboard() {
                       <SizableText fontSize="$3">Rate</SizableText>
                       <SizableText fontSize="$3" fontWeight="500">3.2%</SizableText>
                     </XStack>
-                    <Progress value={32} height="$2" className="[&>div]:bg-[#171717]" />
+                    <Progress value={32} height="$2" />
                     <Paragraph fontSize="$1" color="$color11">
                       +0.5% from last month
                     </Paragraph>

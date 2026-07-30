@@ -870,7 +870,7 @@ export function AskAI({
     // composer is pinned at the bottom. With an empty thread (ChatThread returns
     // null) the composer's `mt-auto` keeps it docked exactly as before.
     <YStack ref={rootRef} alignSelf="center" height="100%" minHeight={0} width="100%" maxWidth={672}>
-      <ChatThread messages={messages} className="min-h-0 flex-1" />
+      <ChatThread messages={messages} />
       <YStack marginTop="auto" paddingHorizontal="$3" paddingBottom="calc(0.75rem+env(safe-area-inset-bottom))">
       {/* Stacked Message Queue Cards */}
       {messageQueue.length > 0 && (
@@ -901,7 +901,7 @@ export function AskAI({
                     onClick={() => setMessageQueue(prev => prev.filter(m => m.id !== msg.id))}
                     color="$color11" hoverStyle={{ color: "$color" }}
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg width={16} height={16} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </Button>
@@ -943,7 +943,7 @@ export function AskAI({
           horizontally scrollable on mobile, with the Plan-mode tip. */}
       {remixPending.length > 0 && (
         <YStack marginBottom="$2" rowGap="$1.5">
-          <XStack alignItems="center" gap="$1.5" overflow="scroll" className="[&::-webkit-scrollbar]:hidden">
+          <XStack alignItems="center" gap="$1.5" overflow="scroll" className="no-scrollbar">
             {remixPending.map((p) => (
               <SizableText
                 key={p.name}
@@ -984,7 +984,7 @@ export function AskAI({
           Hidden while the AI is working and once dismissed for this project. */}
       {!suggestionsDismissed && !isAiWorking && (
         <XStack marginBottom="$2" alignItems="center" gap="$1.5">
-          <XStack flex={1} alignItems="center" gap="$1.5" overflow="scroll" className="scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,#000_88%,transparent)]">
+          <XStack flex={1} alignItems="center" gap="$1.5" overflow="scroll" className="no-scrollbar scroll-fade-r">
             {SUGGESTIONS.map((s) => (
               <Button
                 key={s}
@@ -1175,7 +1175,7 @@ export function AskAI({
   />
         </XStack>
         <XStack alignItems="center" justifyContent="space-between" gap="$2" paddingHorizontal="$4" paddingBottom="$3" marginTop="$2">
-          <XStack minWidth={0} flex={1} alignItems="center" justifyContent="flex-start" gap="$1.5" overflow="scroll" className="[&::-webkit-scrollbar]:hidden">
+          <XStack minWidth={0} flex={1} alignItems="center" justifyContent="flex-start" gap="$1.5" overflow="scroll" className="no-scrollbar">
             <Uploader
               pages={pages}
               onLoading={setIsUploading}
@@ -1301,7 +1301,7 @@ export function AskAI({
           onClose={() => setOpenProModal(false)}
   />
       </YStack>
-      <audio ref={hookAudio} id="audio" className="hidden">
+      <audio ref={hookAudio} id="audio">
         <source src="/success.mp3" type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>

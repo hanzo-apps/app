@@ -53,7 +53,7 @@ export function ChatThread({
   if (messages.length === 0) return null;
 
   return (
-    <YStack ref={scrollRef} paddingHorizontal="$3" paddingTop="$2" overflow="scroll" className={`${className}`}>
+    <YStack ref={scrollRef} minHeight={0} flex={1} paddingHorizontal="$3" paddingTop="$2" overflow="scroll" className={`${className}`}>
       <YStack
         gap="$2" paddingBottom="$2" {...{ minHeight: messages.length <= 1 ? "100%" : undefined, justifyContent: messages.length <= 1 ? "center" : undefined }}
       >

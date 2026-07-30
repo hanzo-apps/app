@@ -1072,7 +1072,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
                 setIframeReady(false);
               }
             }}
-            className="w-full h-full rounded-lg"
+            style={{ width: "100%", height: "100%", borderRadius: 8 }}
             sandbox="allow-scripts allow-same-origin allow-forms"
             title="Preview"
   />

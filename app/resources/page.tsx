@@ -127,7 +127,7 @@ export default function ResourcesPage() {
                 width="100%" borderColor="$borderColor" backgroundColor="$background" paddingLeft={36} color="$color" $sm={{ width: 256 }}
   />
             </YStack>
-            <XStack flexWrap="nowrap" alignItems="center" gap="$1.5" overflow="scroll" $sm={{ flexWrap: "wrap" }} className="[scrollbar-width:none]">
+            <XStack flexWrap="nowrap" alignItems="center" gap="$1.5" overflow="scroll" $sm={{ flexWrap: "wrap" }} className="no-scrollbar">
               {categories.map((cat) => (
                 <Button
                   key={cat}

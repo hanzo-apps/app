@@ -425,7 +425,7 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
       ) : (
         <>
       <YStack borderBottomWidth={1} backgroundColor="$color3">
-        <XStack alignItems="center" overflow="scroll" className="scrollbar-thin">
+        <XStack alignItems="center" overflow="scroll" className="thin-scrollbar">
           {Array.from(openFiles.entries()).map(([path, file]) => (
             <XStack
               key={path}

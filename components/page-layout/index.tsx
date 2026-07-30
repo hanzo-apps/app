@@ -117,7 +117,7 @@ export function PageLayout({
           onMobileMenuClick={() => setMobileSidebarOpen(true)}
           hideActionsOnMobile={true}
           pageName={currentView.charAt(0).toUpperCase() + currentView.slice(1)}
-          className="md:hidden"
+          className="md-hidden"
   />
         {/* Content area */}
         <YStack flex={1} overflow="hidden">

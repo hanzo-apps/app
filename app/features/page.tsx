@@ -156,7 +156,7 @@ export default function FeaturesPage() {
       <XStack position="relative" zIndex={20} alignItems="center" justifyContent="space-between" paddingHorizontal="$4" paddingVertical="$4" borderBottomWidth={1} borderColor="$borderColor" $md={{ paddingHorizontal: "$6", paddingVertical: "$4.5" }}>
         <XStack alignItems="center" gap="$5" $md={{ gap: "$7" }}>
           <Link href="/"><XStack alignItems="center" gap="$2.5">
-            <HanzoLogo className="w-8 md:w-9 h-8 md:h-9 text-foreground" />
+            <HanzoLogo size={32} />
             <SizableText fontSize="$7" fontWeight="500" $md={{ fontSize: "$8" }}>Hanzo</SizableText>
           </XStack></Link>
 

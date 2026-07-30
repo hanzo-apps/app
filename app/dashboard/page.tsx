@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingScreen } from "@/components/ui/loading-screen";
 import { XStack, SizableText, Paragraph, YStack, Image, H3, Anchor } from '@hanzo/gui';
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -17,7 +18,6 @@ import {
 import { useUser } from "@/hooks/useUser";
 import { useProjects } from "@/hooks/useProjects";
 import { AppShell } from "@/components/app-shell";
-import { HanzoLogo } from "@/components/HanzoLogo";
 import { BuildComposer } from "@/components/build-composer";
 import { ProjectThumb } from "@/components/project-thumb";
 import { builderLink, liveUrlOf } from "@/lib/api/projects";
@@ -85,14 +85,7 @@ export default function DashboardPage() {
 
   if (loading || !user) {
     return (
-      <XStack minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="$background">
-        <SizableText textAlign="center" display="flex" flexDirection="column">
-          <HanzoLogo className="mx-auto mb-4 h-12 w-12 animate-pulse text-foreground" />
-          <Paragraph color="$color11">
-            {loading ? "Loading your workspace…" : "Redirecting to login…"}
-          </Paragraph>
-        </SizableText>
-      </XStack>
+      <LoadingScreen>{loading ? "Loading your workspace…" : "Redirecting to login…"}</LoadingScreen>
     );
   }
 
@@ -129,16 +122,16 @@ export default function DashboardPage() {
               <Tabs value={tab} onValueChange={setTab} width="100%">
                 <XStack marginBottom="$4.5" flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$3" borderBottomWidth={1} borderColor="$borderColor" paddingBottom="$3">
                   <TabsList backgroundColor="transparent" padding="$0">
-                    <TabsTrigger value="mine" className="data-[state=active]:bg-accent">
+                    <TabsTrigger value="mine">
                       My projects
                     </TabsTrigger>
-                    <TabsTrigger value="recent" className="data-[state=active]:bg-accent">
+                    <TabsTrigger value="recent">
                       Recently viewed
                     </TabsTrigger>
-                    <TabsTrigger value="visitors" className="data-[state=active]:bg-accent">
+                    <TabsTrigger value="visitors">
                       Most visitors today
                     </TabsTrigger>
-                    <TabsTrigger value="templates" className="data-[state=active]:bg-accent">
+                    <TabsTrigger value="templates">
                       Templates
                     </TabsTrigger>
                   </TabsList>

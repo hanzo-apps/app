@@ -551,7 +551,7 @@ export function HistoryPanel({
         </SizableText>
       )}
 
-      <YStack minHeight={0} flex={1} paddingHorizontal="$2" paddingBottom="$3" overflow="scroll" className="[scrollbar-width:thin]">
+      <YStack minHeight={0} flex={1} paddingHorizontal="$2" paddingBottom="$3" overflow="scroll" className="thin-scrollbar">
         {nothing ? (
           <EmptyState bookmarks={showBookmarksOnly} />
         ) : (
@@ -638,13 +638,15 @@ function RevCard({
   const canDetails = isCommit || rev.kind === "edit";
   return (
     <YStack
-      borderRadius="$6" borderWidth={1} paddingHorizontal="$3" paddingVertical="$2.5" className={`${isPreviewing ? "border-amber-400/30 bg-amber-400/[0.04]" : isActive
-            ? "border-border bg-white/[0.05]"
-            : "border-border bg-white/[0.02] hover:border-border hover:bg-white/[0.04]"}`}
+      borderRadius="$6" borderWidth={1} paddingHorizontal="$3" paddingVertical="$2.5" {...(isPreviewing
+        ? { borderColor: "rgba(251,191,36,0.3)", backgroundColor: "rgba(251,191,36,0.04)" }
+        : isActive
+          ? { borderColor: "$borderColor", backgroundColor: "rgba(255,255,255,0.05)" }
+          : { borderColor: "$borderColor", backgroundColor: "rgba(255,255,255,0.02)", hoverStyle: { backgroundColor: "rgba(255,255,255,0.04)" } })}
     >
       <XStack alignItems="flex-start" gap="$2">
         {Icon ? (
-          <Icon className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
+          <Icon size={14} style={{ marginTop: 2, flexShrink: 0, color: "var(--muted-foreground)" }} />
         ) : (
           <SizableText
             marginTop="$1" width="$1.5" height="$1.5" flexShrink={0} borderRadius="$10" {...{ backgroundColor: isActive ? "white" : "white" }}
@@ -705,7 +707,7 @@ function RevCard({
               <Button
                 type="button"
                 title="More"
-                width="$5" height="$5" alignItems="center" justifyContent="center" borderRadius="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }} className="data-[state=open]:bg-muted"
+                width="$5" height="$5" alignItems="center" justifyContent="center" borderRadius="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
               >
                 <MoreVertical size={14} />
               </Button>

@@ -150,7 +150,7 @@ export function SchemaViewer({ deploymentId, schemaEndpoint, showSystemTablesTog
                       </thead>
                       <tbody>
                         {table.columns.map(col => (
-                          <YStack key={col.name} borderBottomWidth={1} className="last:border-0">
+                          <YStack key={col.name} borderBottomWidth={1} className="last-flat">
                             <SizableText padding="$2" fontFamily="$mono" alignItems="center" gap="$1.5">
                               {col.primaryKey && (
                                 <KeyRound size={12} color="$yellow9" />

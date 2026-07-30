@@ -55,14 +55,14 @@ export function MemoryMonitor() {
 
   // Color based on memory usage
   const getColor = () => {
-    if (memory.percent > 80) return 'text-red-500';
-    if (memory.percent > 60) return 'text-yellow-500';
-    return 'text-muted-foreground';
+    if (memory.percent > 80) return '#ef4444';
+    if (memory.percent > 60) return '#eab308';
+    return 'var(--muted-foreground)';
   };
 
   return (
     <SizableText
-      fontSize="$1" fontFamily="$mono" alignItems="center" gap="$1" display="flex" flexDirection="row" className={`${getColor()}`}
+      fontSize="$1" fontFamily="$mono" alignItems="center" gap="$1" display="flex" flexDirection="row" {...{ color: getColor() }}
       title={`JS Heap: ${memory.usedMB}MB used / ${memory.totalMB}MB limit (${memory.percent}%)`}
     >
       <SizableText opacity={0.6}>MEM:</SizableText>

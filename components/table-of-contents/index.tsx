@@ -52,9 +52,9 @@ export function TableOfContents({ items, activeId, visibleIds = [], onItemClick 
               href={`#${item.id}`}
               data-toc-id={item.index}
               onClick={(e) => handleClick(e, item)}
-              paddingVertical="$1" color="$color11" borderLeftWidth={2} paddingLeft="$3" hoverStyle={{ color: "$color" }} className={`${activeId === item.index.toString() ? 'border-primary text-foreground font-medium' : visibleIds.includes(item.index.toString())
-                  ? 'border-blue-400/50 text-foreground/80'
-                  : 'border-transparent'}`}
+              paddingVertical="$1" color="$color11" borderLeftWidth={2} paddingLeft="$3" hoverStyle={{ color: "$color" }} {...(activeId === item.index.toString() ? { borderColor: "var(--primary)", color: "$color", fontWeight: "500" } : visibleIds.includes(item.index.toString())
+                  ? { borderColor: "rgba(96,165,250,0.5)", color: "color-mix(in srgb, var(--foreground) 80%, transparent)" }
+                  : { borderColor: "transparent" })}
             >
               {item.text}
             </Anchor>
@@ -66,9 +66,9 @@ export function TableOfContents({ items, activeId, visibleIds = [], onItemClick 
                       href={`#${child.id}`}
                       data-toc-id={child.index}
                       onClick={(e) => handleClick(e, child)}
-                      paddingVertical="$1" fontSize="$1" color="$color11" borderLeftWidth={2} hoverStyle={{ color: "$color" }} className={`${activeId === child.index.toString() ? 'border-primary text-foreground font-medium' : visibleIds.includes(child.index.toString())
-                          ? 'border-blue-400/50 text-foreground/80'
-                          : 'border-transparent'}`}
+                      paddingVertical="$1" fontSize="$1" color="$color11" borderLeftWidth={2} hoverStyle={{ color: "$color" }} {...(activeId === child.index.toString() ? { borderColor: "var(--primary)", color: "$color", fontWeight: "500" } : visibleIds.includes(child.index.toString())
+                          ? { borderColor: "rgba(96,165,250,0.5)", color: "color-mix(in srgb, var(--foreground) 80%, transparent)" }
+                          : { borderColor: "transparent" })}
                       style={{ paddingLeft: 'calc(0.75rem * 1.67)' }}
                     >
                       {child.text}

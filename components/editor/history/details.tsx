@@ -196,7 +196,7 @@ export function RevisionDetails({
         </XStack>
       </XStack>
 
-      <YStack minHeight={0} flex={1} overflow="scroll" className="[scrollbar-width:thin]">
+      <YStack minHeight={0} flex={1} overflow="scroll" className="thin-scrollbar">
         {view === "timeline" ? (
           <Timeline rev={rev} commit={commit} />
         ) : (
@@ -401,13 +401,13 @@ function Timeline({ rev, commit }: { rev: DetailsRev; commit: GitCommit | null }
 function StatusBadge({ status }: { status: GitCommitFile["status"] }) {
   const tone =
     status === "added"
-      ? "border-emerald-400/20 text-emerald-300/90"
+      ? { borderColor: "rgba(52,211,153,0.2)", color: "rgba(110,231,183,0.9)" }
       : status === "removed"
-        ? "border-red-400/20 text-red-300/90"
-        : "border-border text-muted-foreground";
+        ? { borderColor: "rgba(248,113,113,0.2)", color: "rgba(252,165,165,0.9)" }
+        : { borderColor: "$borderColor", color: "$color11" };
   return (
     <SizableText
-      flexShrink={0} borderRadius="$3" borderWidth={1} paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.4} className={`${tone}`}
+      flexShrink={0} borderRadius="$3" borderWidth={1} paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.4} {...tone}
     >
       {STATUS_LABEL[status]}
     </SizableText>

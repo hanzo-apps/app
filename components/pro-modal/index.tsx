@@ -48,7 +48,7 @@ export const ProModal = ({
           </Paragraph>
           <Separator borderColor="$borderColor" width="100%" maxWidth={150} marginVertical="$5" />
           <Paragraph fontSize="$6" marginTop="$3" color="$color" fontWeight="500">
-            Upgrade to a <ProTag className="mx-1" /> Account, and unlock your
+            Upgrade to a <ProTag /> Account, and unlock your
             Hanzo high quota access ⚡
           </Paragraph>
           <SizableText marginTop="$3" rowGap="$1" color="$color11" display="flex" flexDirection="column">
@@ -84,9 +84,9 @@ export const ProModal = ({
   );
 };
 
-const ProTag = ({ className }: { className?: string }) => (
+const ProTag = () => (
   <SizableText
-    borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="var(--brand-accent-soft)" paddingHorizontal="$2.5" paddingVertical="$0.5" fontSize="$1" fontWeight="500" color="var(--brand-accent-muted)" className={`${className}`}
+    borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="var(--brand-accent-soft)" marginHorizontal="$1" paddingHorizontal="$2.5" paddingVertical="$0.5" fontSize="$1" fontWeight="500" color="var(--brand-accent-muted)"
   >
     PRO
   </SizableText>

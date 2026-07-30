@@ -192,10 +192,10 @@ export function FunctionsManager({ deploymentId, dataProvider, hideRuntimeFeatur
                     <XStack alignItems="center" gap="$2" flexWrap="wrap">
                       <Code2 size={16} color="$blue9" />
                       <SizableText fontFamily="$mono" fontWeight="500" numberOfLines={1}>{fn.name}</SizableText>
-                      <SizableText fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0.5" borderRadius="$2" flexShrink={0} className={`${fn.method === 'ANY' ? "bg-purple-500/20 text-purple-600" : fn.method === 'GET' ? "bg-green-500/20 text-green-600" :
-                        fn.method === 'POST' ? "bg-blue-500/20 text-blue-600" :
-                        fn.method === 'PUT' ? "bg-yellow-500/20 text-yellow-600" :
-                        "bg-red-500/20 text-red-600"}`}>
+                      <SizableText fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0.5" borderRadius="$2" flexShrink={0} {...(fn.method === 'ANY' ? { backgroundColor: "rgba(168,85,247,0.2)", color: "#9333ea" } : fn.method === 'GET' ? { backgroundColor: "rgba(34,197,94,0.2)", color: "#16a34a" } :
+                        fn.method === 'POST' ? { backgroundColor: "rgba(59,130,246,0.2)", color: "#2563eb" } :
+                        fn.method === 'PUT' ? { backgroundColor: "rgba(234,179,8,0.2)", color: "#ca8a04" } :
+                        { backgroundColor: "rgba(239,68,68,0.2)", color: "#dc2626" })}>
                         {fn.method}
                       </SizableText>
                       {!fn.enabled && (

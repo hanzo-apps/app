@@ -288,12 +288,7 @@ export function BuildComposer({
             <XStack alignItems="center" gap="$1">
               <Voice
                 voice={voice}
-                className={cn(
-                  'rounded-lg p-2 text-muted-foreground transition-colors',
-                  'hover:bg-muted hover:text-foreground disabled:opacity-40',
-                  'data-[state=listening]:bg-accent data-[state=listening]:text-foreground',
-                  '[&_svg]:h-4 [&_svg]:w-4',
-                )}
+                className="voice-control"
               >
                 {(state) => (
                   <Mic size={16} />

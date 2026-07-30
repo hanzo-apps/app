@@ -184,7 +184,7 @@ export default function LandingPage() {
                     and the <br> is hidden below sm — without it the mobile heading
                     reads "Describe your app.Hanzo builds and ships it." */}
                 Describe your app.{' '}
-                <br className="hidden sm:block" />
+                <br className="break-sm" />
                 Hanzo builds and ships it.
               </H1>
             </Reveal>
@@ -339,7 +339,7 @@ export default function LandingPage() {
 
         {/* ── Final CTA — the SAME composer as the hero, ready to type ── */}
         <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$12" $md={{ paddingHorizontal: "$6", paddingVertical: "$14" }}>
-          <Reveal className="mx-auto max-w-2xl">
+          <Reveal alignSelf="center" width="100%" maxWidth={672}>
             <SizableText textAlign="center" display="flex" flexDirection="column">
               <H2 fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$12" }}>
                 Ship your first app today.

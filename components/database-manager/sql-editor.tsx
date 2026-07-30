@@ -144,7 +144,7 @@ export function SqlEditor({ deploymentId, queryEndpoint }: SqlEditorProps) {
                   setSql(query);
                   setShowHistory(false);
                 }}
-                width="100%" textAlign="left" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3" fontFamily="$mono" borderBottomWidth={1} numberOfLines={1} hoverStyle={{ backgroundColor: "$color3" }} className="last:border-0"
+                width="100%" textAlign="left" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3" fontFamily="$mono" borderBottomWidth={1} numberOfLines={1} hoverStyle={{ backgroundColor: "$color3" }} className="last-flat"
               >
                 {query}
               </Button>
@@ -198,7 +198,7 @@ export function SqlEditor({ deploymentId, queryEndpoint }: SqlEditorProps) {
                   <YStack position="sticky" top="$0" backgroundColor="$color3">
                     <tr>
                       {result.columns.map((col, i) => (
-                        <SizableText key={i} textAlign="left" padding="$2" fontWeight="500" borderRightWidth={1} className="last:border-0">
+                        <SizableText key={i} textAlign="left" padding="$2" fontWeight="500" borderRightWidth={1} className="last-flat-r">
                           {col}
                         </SizableText>
                       ))}
@@ -208,7 +208,7 @@ export function SqlEditor({ deploymentId, queryEndpoint }: SqlEditorProps) {
                     {result.rows.map((row, i) => (
                       <YStack key={i} borderTopWidth={1} hoverStyle={{ backgroundColor: "$color3" }}>
                         {row.map((cell, j) => (
-                          <SizableText key={j} padding="$2" fontFamily="$mono" fontSize="$1" borderRightWidth={1} maxWidth={320} numberOfLines={1} className="last:border-0">
+                          <SizableText key={j} padding="$2" fontFamily="$mono" fontSize="$1" borderRightWidth={1} maxWidth={320} numberOfLines={1} className="last-flat-r">
                             {cell === null ? (
                               <SizableText color="$color11" fontStyle="italic">NULL</SizableText>
                             ) : typeof cell === 'object' ? (

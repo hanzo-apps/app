@@ -142,7 +142,7 @@ export function RemixProgress({
         <DialogTitle position="absolute" width={1} height={1} overflow="hidden">Remixing project</DialogTitle>
 
         <SizableText flexDirection="column" alignItems="center" paddingBottom="$1" paddingTop="$2" textAlign="center" display="flex">
-          <HanzoLogo animated className="mb-3 h-8 w-8 text-foreground" />
+          <HanzoLogo animated size={32} style={{ marginBottom: 12 }} />
           <H2 fontSize="$4" fontWeight="500">Remixing project</H2>
           <Paragraph marginTop="$1" fontSize="$1" color="$color11">This may take a few moments.</Paragraph>
         </SizableText>

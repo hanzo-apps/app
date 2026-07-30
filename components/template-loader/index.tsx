@@ -14,7 +14,6 @@ import {
   Check,
   type LucideIcon,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { resolveTemplateSeedMeta, type TemplateSeedMeta } from "@/lib/api/templates";
 
 type StartMode = "fork" | "edit" | "deploy";
@@ -162,11 +161,13 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
                   group width="100%" alignItems="flex-start" gap="$3.5" borderRadius="$6" borderWidth={1} padding="$3.5" textAlign="left" {...{ borderColor: active ? "$color" : "$borderColor", backgroundColor: active ? "$color3" : "$color3", hoverStyle: active ? undefined : {"borderColor":"$color","backgroundColor":"$color3"} }}
                 >
                   <XStack
-                    height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} className={`${opt.mode === "deploy" ? "border-green-500/25 bg-green-500/10" : active
-                          ? "border-foreground/20 bg-accent"
-                          : "border-border bg-muted"}`}
+                    height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} {...(opt.mode === "deploy"
+                      ? { borderColor: "$green7", backgroundColor: "$green3", color: "$green10" }
+                      : active
+                        ? { borderColor: "$color7", backgroundColor: "$color4", color: "$color" }
+                        : { borderColor: "$borderColor", backgroundColor: "$color3", color: "$color" })}
                   >
-                    <opt.icon className={cn("h-4 w-4", opt.mode === "deploy" ? "text-green-400" : "text-foreground")} />
+                    <opt.icon size={16} />
                   </XStack>
                   <YStack minWidth={0} flex={1}>
                     <XStack alignItems="center" justifyContent="space-between" gap="$2">

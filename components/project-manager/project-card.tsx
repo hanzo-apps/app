@@ -244,7 +244,7 @@ export function ProjectCard({
                   {/* Title row */}
                   <XStack alignItems="center" gap="$2">
                     <H3 fontWeight="500" numberOfLines={1}>{project.name}</H3>
-                    <Badge fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0" height="auto" flexShrink={0} className={`${runtimeBadge.className}`}>{runtimeBadge.label}</Badge>
+                    <Badge fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0" height="auto" flexShrink={0} {...runtimeBadge.tone}>{runtimeBadge.label}</Badge>
                     <Button
                       size="icon"
                       variant="ghost"
@@ -407,7 +407,7 @@ export function ProjectCard({
           size="md"
   />
         <YStack position="absolute" bottom="$2" left="$2">
-          <Badge fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0.5" elevation={1} className={`${runtimeBadge.className}`}>{runtimeBadge.label}</Badge>
+          <Badge fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0.5" elevation={1} {...runtimeBadge.tone}>{runtimeBadge.label}</Badge>
         </YStack>
       </YStack>
 

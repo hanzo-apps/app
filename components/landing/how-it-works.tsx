@@ -29,7 +29,7 @@ export default function HowItWorks() {
   return (
     <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$13" }}>
       <YStack alignSelf="center" maxWidth={1152}>
-        <Reveal className="mx-auto max-w-2xl text-center">
+        <Reveal alignSelf="center" width="100%" maxWidth={672} textAlign="center">
           <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
             How it works
           </Paragraph>
@@ -38,7 +38,8 @@ export default function HowItWorks() {
           </H2>
         </Reveal>
 
-        <Reveal delay={80} className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-border bg-muted md:grid-cols-3">
+        <Reveal delay={80} marginTop={56}>
+          <div className="hiw-grid">
           {steps.map((s) => (
             <YStack
               key={s.n}
@@ -53,6 +54,7 @@ export default function HowItWorks() {
               </Paragraph>
             </YStack>
           ))}
+          </div>
         </Reveal>
       </YStack>
     </YStack>

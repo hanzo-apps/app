@@ -223,7 +223,7 @@ export default function PricingPage() {
 
         {/* ── Free-to-start note ───────────────────────────────── */}
         <YStack paddingHorizontal="$4" $md={{ paddingHorizontal: "$6" }}>
-          <Reveal className="mx-auto max-w-6xl">
+          <Reveal alignSelf="center" width="100%" maxWidth={1152}>
             <YStack alignItems="flex-start" justifyContent="space-between" gap="$4" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$5" $sm={{ flexDirection: "row", alignItems: "center" }} $md={{ padding: 28 }}>
               <div>
                 <H3 fontSize="$4" fontWeight="500" color="$color">
@@ -247,7 +247,7 @@ export default function PricingPage() {
 
         {/* ── Enterprise note ──────────────────────────────────── */}
         <YStack paddingHorizontal="$4" paddingTop="$6" $md={{ paddingHorizontal: "$6" }}>
-          <Reveal className="mx-auto max-w-6xl">
+          <Reveal alignSelf="center" width="100%" maxWidth={1152}>
             <YStack alignItems="flex-start" justifyContent="space-between" gap="$4" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$5" $sm={{ flexDirection: "row", alignItems: "center" }} $md={{ padding: 28 }}>
               <div>
                 <H3 fontSize="$4" fontWeight="500" color="$color">

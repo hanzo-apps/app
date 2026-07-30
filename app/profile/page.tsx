@@ -1,12 +1,12 @@
 "use client";
 
+import { LoadingScreen } from "@/components/ui/loading-screen";
 import { XStack, SizableText, Paragraph, YStack, H1, H2, H3 } from '@hanzo/gui';
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Save, Camera, Twitter, Github, Globe } from "lucide-react";
 import { Button, Avatar, AvatarFallback, AvatarImage, toast, Input, Label, Textarea } from '@hanzo/ui';
 import { useUser } from "@/hooks/useUser";
-import { HanzoLogo } from "@/components/HanzoLogo";
 import { MyBuilds } from "@/components/builds/my-builds";
 
 export default function ProfilePage() {
@@ -30,24 +30,14 @@ export default function ProfilePage() {
   // Show loading state while checking auth
   if (loading) {
     return (
-      <XStack minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="$background">
-        <SizableText textAlign="center" display="flex" flexDirection="column">
-          <HanzoLogo className="w-12 h-12 mx-auto mb-4 animate-pulse" />
-          <Paragraph color="$color11">Loading profile...</Paragraph>
-        </SizableText>
-      </XStack>
+      <LoadingScreen>Loading profile...</LoadingScreen>
     );
   }
 
   // Show loading state while redirecting
   if (!user) {
     return (
-      <XStack minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="$background">
-        <SizableText textAlign="center" display="flex" flexDirection="column">
-          <HanzoLogo className="w-12 h-12 mx-auto mb-4 animate-pulse" />
-          <Paragraph color="$color11">Redirecting to login...</Paragraph>
-        </SizableText>
-      </XStack>
+      <LoadingScreen>Redirecting to login...</LoadingScreen>
     );
   }
 

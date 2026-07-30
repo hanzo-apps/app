@@ -76,7 +76,7 @@ export default function FaqPage() {
 
         {/* ── CTA ──────────────────────────────────────────────── */}
         <SizableText borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" textAlign="center" display="flex" flexDirection="column" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
-          <Reveal className="mx-auto max-w-2xl">
+          <Reveal alignSelf="center" width="100%" maxWidth={672}>
             <H2 fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
               Ready to build?
             </H2>
