@@ -42,6 +42,7 @@ overrides:
   brace-expansion@1: '>=1.1.16'
   brace-expansion@2: '>=2.1.2'
   axios: '>=1.18.0'
+  '@hanzogui/web': 7.3.3
 
 importers:
 
@@ -96,8 +97,8 @@ importers:
         specifier: ^0.1.0
         version: 0.1.0(react@19.2.4)
       '@hanzo/ui':
-        specifier: ^8.0.31
-        version: 8.0.31(a4c65431bb5d57eb7457afd7a769198a)
+        specifier: ^8.0.32
+        version: 8.0.33(5vwuf4p364mwhvpxl4ey7ujgom)
       '@hanzo/usage':
         specifier: ^0.1.6
         version: 0.1.6(@hanzo/gui@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native-web@0.21.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0))(@hanzogui/lucide-icons-2@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native-svg@15.15.5(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0))(react@19.2.4)
@@ -269,9 +270,6 @@ importers:
       react-native-web:
         specifier: 0.21.2
         version: 0.21.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      react-resizable-panels:
-        specifier: ^4.7.4
-        version: 4.7.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react-use:
         specifier: ^17.6.0
         version: 17.6.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -304,7 +302,7 @@ importers:
         version: 2.47.6(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.3.6)
       wagmi:
         specifier: ^3.5.0
-        version: 3.5.0(63a4b52f9ffc3f2009459c5a042550a2)
+        version: 3.5.0(sbcrt66vlesndu5zz4dwu5sio4)
       workbox-window:
         specifier: ^7.4.1
         version: 7.4.1
@@ -1302,8 +1300,8 @@ packages:
   '@hanzo/tokens@1.0.0':
     resolution: {integrity: sha512-My8shZPFXATfl81XdaN8QVqFgFxD82rzZOXkna7tMNC9I9Bof+qG8Chc48GO5pWMJvc6YpApRSqbvLY1vG68Dw==}
 
-  '@hanzo/ui@8.0.31':
-    resolution: {integrity: sha512-Ook7poF/LKVWw3d2jKwcOCSfgakZmj4SaoiMnzfopDBsSn4LmsEnU20PHilrTuPTkmU5jJszUmxRXddfqJKh1g==}
+  '@hanzo/ui@8.0.33':
+    resolution: {integrity: sha512-x4INik1nKgwLrwSv4FCqPeYNl97UW1xtiFCfFgEnbxk8nf/QGMkJUzsk4BycG8JIzFeU0b+GKQKAboFtNZr0mQ==}
     peerDependencies:
       '@hanzo/canvas': '>=0.1.0'
       '@hanzo/cd': '>=0.1.0'
@@ -1458,6 +1456,11 @@ packages:
     peerDependencies:
       react: '>=19'
 
+  '@hanzogui/compose-refs@7.3.1':
+    resolution: {integrity: sha512-s0O9SwwhGZwUKkNM94CZIrPaBSPdFrYUnr8OM83J+aZQFpEdpJdfM49duNhmxVmmTqGfqVBH751ozsPpx7Ewcw==}
+    peerDependencies:
+      react: '>=19'
+
   '@hanzogui/config-default@7.3.0':
     resolution: {integrity: sha512-ISFm5nGsk5li0EkTqdazmbDoe1A7EKmlyXRP5GTSfpscKwMw1O/F2cnetOev+f/1cKwtHOPMcWfk0V3JfrSxCg==}
 
@@ -1474,6 +1477,15 @@ packages:
     peerDependencies:
       react: '>=19'
       react-native: '*'
+
+  '@hanzogui/constants@7.3.1':
+    resolution: {integrity: sha512-pll+3NdFtWO5ThwAMfaeCaOkfC0Ihp97eCCE7FRDo2tW2y+kCzkH7odc746DAH1E2778u0t1l6bacmrGp2iEMw==}
+    peerDependencies:
+      react: '>=19'
+      react-native: '*'
+    peerDependenciesMeta:
+      react-native:
+        optional: true
 
   '@hanzogui/context-menu@7.3.0':
     resolution: {integrity: sha512-6SiMYoRWErDjibwXfVdlBMN9y+4ry6duwWhhDcwBLIKdTkIZ3sjJmBqA7iRfGQKlzdCtVA4bsNYB9sSX5L1OjQ==}
@@ -1598,6 +1610,11 @@ packages:
     peerDependencies:
       react: '>=19'
 
+  '@hanzogui/helpers@7.3.1':
+    resolution: {integrity: sha512-UFeVvKbBhTD2StG4CGiSDTpkju1rMTvH7Q1kxj6pmhUVMx8f8Ds4u2R/twkYVXxNeaJ5hOu4h6loKDqwYKBTJg==}
+    peerDependencies:
+      react: '>=19'
+
   '@hanzogui/image@7.3.0':
     resolution: {integrity: sha512-NoX97O0x2cmmm10IGT3DcRlhNOCHig1i7PH+pa4C0cnTRmhcvEihguqddT/Ldcnt5XJqCWHVxgzHamCC8LxxxQ==}
     peerDependencies:
@@ -1612,6 +1629,11 @@ packages:
 
   '@hanzogui/is-equal-shallow@7.3.0':
     resolution: {integrity: sha512-9a0fksL6nG6k06/4jICxGAUv3R1oVfcOvb4MXEfM6bNuPbPWySEq7yIDyE3tNnVQ5u7hMUfoWuP6S+wvI11qmA==}
+    peerDependencies:
+      react: '>=19'
+
+  '@hanzogui/is-equal-shallow@7.3.1':
+    resolution: {integrity: sha512-c/OlgpmoxPodEjhGjaLGveGgdaMkIhu+Rcaje/pfbcEXkFuvOPfja2lF3hNIZ8hjhC1M0ctaRkABBiGzNHCUoQ==}
     peerDependencies:
       react: '>=19'
 
@@ -1683,8 +1705,50 @@ packages:
       zeego:
         optional: true
 
-  '@hanzogui/normalize-css-color@7.3.0':
-    resolution: {integrity: sha512-+BlQLjCCmdod3In6mLr1aDlXaYYk3CZserAvNG0Jq3Tb/yL8jfxB8ytsHeXF+H8D5JP19BMIz1EqAhnWy569BA==}
+  '@hanzogui/native@7.3.1':
+    resolution: {integrity: sha512-4kjylh5rAzJCv4yMoW0F7eIhZ+D3Dj4k6PNYrAAhXxGNAv8tONEBgeHrA1jA1P3uLLpHFhaHqjeYwwW/XNCgaA==}
+    peerDependencies:
+      '@react-native-menu/menu': '>=2.0.0'
+      burnt: '>=0.12.0'
+      react: '*'
+      react-native: '*'
+      react-native-gesture-handler: '>=2.0.0'
+      react-native-ios-context-menu: '>=3.0.0'
+      react-native-ios-utilities: '>=5.0.0'
+      react-native-keyboard-controller: '>=1.0.0'
+      react-native-safe-area-context: '>=4.0.0'
+      react-native-teleport: '>=0.5.0'
+      react-native-worklets-core: '>=1.0.0'
+      sf-symbols-typescript: '*'
+      zeego: '>=3.0.0'
+    peerDependenciesMeta:
+      '@react-native-menu/menu':
+        optional: true
+      burnt:
+        optional: true
+      react-native:
+        optional: true
+      react-native-gesture-handler:
+        optional: true
+      react-native-ios-context-menu:
+        optional: true
+      react-native-ios-utilities:
+        optional: true
+      react-native-keyboard-controller:
+        optional: true
+      react-native-safe-area-context:
+        optional: true
+      react-native-teleport:
+        optional: true
+      react-native-worklets-core:
+        optional: true
+      sf-symbols-typescript:
+        optional: true
+      zeego:
+        optional: true
+
+  '@hanzogui/normalize-css-color@7.3.1':
+    resolution: {integrity: sha512-ue4lso399D80yWBiRh4BrH8kd5wdVMLOcuPvJ5OeL09gZ+Ot1DxQaMkcUuJka4AkGMpomw61qewmqvEhgB8bIg==}
 
   '@hanzogui/polyfill-dev@7.3.0':
     resolution: {integrity: sha512-6VXPA1pkg6CYI6ktKOfH4OBYDxUiCUtdQy7iQ3IztxUHJwwEiBcSTdb9PDKqv/9+bafXJkFeXDNvJIKv+jsq2A==}
@@ -1791,6 +1855,9 @@ packages:
   '@hanzogui/simple-hash@7.3.0':
     resolution: {integrity: sha512-NIW41FQnPvaKbqUPIdL7X8zkmxUaTE/lv9E9H1ASXMu5UaArLPUbDYzDgNunLsz1WzIwAlNqyyva4TC4j2RWJw==}
 
+  '@hanzogui/simple-hash@7.3.1':
+    resolution: {integrity: sha512-Wqw6Bh64rlZ1tUe5JEpx2ZbWR+xEsQTP0cMo8908jqbCR46TWoApNIS7Mq4MhCsBUiBQGdEQ8GF7+XWt+O1sbw==}
+
   '@hanzogui/sizable-context@7.3.0':
     resolution: {integrity: sha512-VuzvZ7AQQqtUYr3uJAaM8keusRK5Q8RN1FgsC3rd33738F+B07DhZQqDss9KLrL0xyuFXm7KZT79qrDvNa+7jA==}
     peerDependencies:
@@ -1863,8 +1930,8 @@ packages:
   '@hanzogui/themes@7.3.0':
     resolution: {integrity: sha512-FA/7+aOvQa9kKfzgyfon7evekDGwkL6dC07uEbDGhUvftILW1Tb0J1H4lWvnLgASsEcqmKOLnN3E/mKIZknlPw==}
 
-  '@hanzogui/timer@7.3.0':
-    resolution: {integrity: sha512-mkD+hTbpSKIjOdtlTtGmxVfRlmLar4fe9Y2eWHbb6m5diJFr2WIoOa3Tvp2aDFDbZPj27BEr4ITj8LKDKy2qhg==}
+  '@hanzogui/timer@7.3.1':
+    resolution: {integrity: sha512-OzPvSHfC9XCiTPzxs3kvy1ZZSPxjJFNy15x08if4rrKcv3loH3ftMdNwVru9RGm9XXReZRTEUo8hnAYkppSoYQ==}
 
   '@hanzogui/toast@7.3.0':
     resolution: {integrity: sha512-sEDZg6hJ8IRh13fpSpQqYk8XscbyeAMFq+oCXedfRaF8D6oWfBVLzgUKDpHXFtUOaCQ8zgoNxSGUlIfBmAO65g==}
@@ -1916,6 +1983,11 @@ packages:
     peerDependencies:
       react: '>=19'
 
+  '@hanzogui/use-did-finish-ssr@7.3.1':
+    resolution: {integrity: sha512-MnJIuZj0LGTiBifEi8Z+RwZe1nzzpWcmPaGvx58+lFGHuTfzu+hDcPx2STaG6uj0R8lD+uqU1+og0anwpaCg3Q==}
+    peerDependencies:
+      react: '>=19'
+
   '@hanzogui/use-direction@7.3.0':
     resolution: {integrity: sha512-G54huPFu4i+pODPjHtHRawDAzdifNdw0AFG7BVHpGB1wUmYOYTNFb4/BjjUO0kZn88xxPQIavjQLhy1FRWbi2Q==}
     peerDependencies:
@@ -1936,8 +2008,18 @@ packages:
     peerDependencies:
       react: '>=19'
 
+  '@hanzogui/use-event@7.3.1':
+    resolution: {integrity: sha512-7Ib9cyQINGxmb1qyqNAU1GKMhfjHI+XkyxOf4zsoqvx8uADtMAMNIgZEcvguHYr2uCr3CUFCT9j1meNK2sexgg==}
+    peerDependencies:
+      react: '>=19'
+
   '@hanzogui/use-force-update@7.3.0':
     resolution: {integrity: sha512-mmLb2dY5A5hqjsJjNUWk80B0PNNsKyEZ0lT6inW1cBDfdvE2zUnYjACuKQ+taQlFf/lmU2yYD6x4TRxvCRIvFw==}
+    peerDependencies:
+      react: '>=19'
+
+  '@hanzogui/use-force-update@7.3.1':
+    resolution: {integrity: sha512-1vpwQ+rAJjK4E1FqjvDoQ3lVwUuBuJT18a0XU5V5w9Rnz4V9ryCrrYjRpxad+o/MbkMG7u42CSH4FLY1oviB5g==}
     peerDependencies:
       react: '>=19'
 
@@ -1968,12 +2050,15 @@ packages:
     peerDependencies:
       react: '>=19'
 
-  '@hanzogui/web@7.3.0':
-    resolution: {integrity: sha512-ET7Oy9P3gY+MPXgotnAbX8yvoQTVs2TzuZiLp+hCa79SN/VGRd54p2pPdRhZKM+TwHdKyUM82ZTFWNmhAH0p9w==}
+  '@hanzogui/web@7.3.3':
+    resolution: {integrity: sha512-zTc/mEi97gPvE6d6gzjn4YAVQuuUUchvx6m4rXjejzoijrlngqpJAUZCUh2j/0Vkayx2q0cUUHQLyIfmGLoedw==}
     peerDependencies:
       react: '>=19'
       react-dom: '*'
       react-native: '*'
+    peerDependenciesMeta:
+      react-native:
+        optional: true
 
   '@hanzogui/z-index-stack@7.3.0':
     resolution: {integrity: sha512-sCuuu3JazKoCTSHS37+avZvEgJw2leu/9x3MTSW7ZN0wOKH2VVOxhNdECpWmI1QQQ+elflAnnl9GvWpq9tWyoQ==}
@@ -2541,12 +2626,15 @@ packages:
 
   '@oslojs/asn1@1.0.0':
     resolution: {integrity: sha512-zw/wn0sj0j0QKbIXfIlnEcTviaCzYOY3V5rAyjR6YtOByFtJiT574+8p9Wlach0lZH9fddD4yb9laEAIl4vXQA==}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   '@oslojs/binary@1.0.0':
     resolution: {integrity: sha512-9RCU6OwXU6p67H4NODbuxv2S3eenuQ4/WFLrsq+K/k682xrznH5EVWA7N4VFk9VYVcbFtKqur5YQQZc0ySGhsQ==}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   '@oslojs/crypto@1.0.1':
     resolution: {integrity: sha512-7n08G8nWjAr/Yu3vu9zzrd0L9XnrJfpMioQcvCMxBIiF5orECHe5/3J0jmXRVvgfqMm/+4oxlQ+Sq39COYLcNQ==}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   '@oslojs/encoding@0.4.1':
     resolution: {integrity: sha512-hkjo6MuIK/kQR5CrGNdAPZhS01ZCXuWDRJ187zh6qqF2+yMHZpD9fAYpX8q2bOO6Ryhl3XpCT6kUX76N8hhm4Q==}
@@ -2556,6 +2644,7 @@ packages:
 
   '@oslojs/jwt@0.2.0':
     resolution: {integrity: sha512-bLE7BtHrURedCn4Mco3ma9L4Y1GR2SMBuIvjWr7rmQ4/W/4Jy70TIAgZ+0nIlk0xHz1vNP8x8DCns45Sb2XRbg==}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   '@paulmillr/qr@0.2.1':
     resolution: {integrity: sha512-IHnV6A+zxU7XwmKFinmYjUcwlyK9+xkG3/s9KcQhI9BjQKycrJ1JRO+FbNYPwZiPKW3je/DR0k7w8/gLa5eaxQ==}
@@ -4338,6 +4427,7 @@ packages:
 
   arctic@2.3.4:
     resolution: {integrity: sha512-+p30BOWsctZp+CVYCt7oAean/hWGW42sH5LAcRQX56ttEkFJWbzXBhmSpibbzwSJkRrotmsA+oAoJoVsU0f5xA==}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   arg@4.1.3:
     resolution: {integrity: sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==}
@@ -7846,12 +7936,6 @@ packages:
       '@types/react':
         optional: true
 
-  react-resizable-panels@4.7.4:
-    resolution: {integrity: sha512-1sehMbUJxZFj4imu1TuH+RS7Xe5Jo+3HyxBYafCEdxPmDeLAQNmKEByyxCQRl7xCLa5cLXSJ9T8acQyyiPsNdQ==}
-    peerDependencies:
-      react: ^18.0.0 || ^19.0.0
-      react-dom: ^18.0.0 || ^19.0.0
-
   react-style-singleton@2.2.3:
     resolution: {integrity: sha512-b6jSvxvVnyptAiLjbkWLE/lOnR4lfTtDAl+eUC7RZy+QQWc6wRzIV2CE6xBuMmDxc2qIihtDCZD5NPOFl7fRBQ==}
     engines: {node: '>=10'}
@@ -10543,6 +10627,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -10582,7 +10667,7 @@ snapshots:
 
   '@hanzo/tokens@1.0.0': {}
 
-  '@hanzo/ui@8.0.31(a4c65431bb5d57eb7457afd7a769198a)':
+  '@hanzo/ui@8.0.33(5vwuf4p364mwhvpxl4ey7ujgom)':
     dependencies:
       '@hanzo/data': 1.2.2(@hanzo/gui@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native-web@0.21.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0))(react@19.2.4)
       '@hanzo/gui': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native-web@0.21.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
@@ -10603,6 +10688,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-native
       - react-native-gesture-handler
@@ -10644,6 +10730,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -10668,6 +10755,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -10703,6 +10791,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -10722,11 +10811,12 @@ snapshots:
       '@hanzogui/use-constant': 7.3.0(react@19.2.4)
       '@hanzogui/use-force-update': 7.3.0(react@19.2.4)
       '@hanzogui/use-presence': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -10747,6 +10837,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -10768,12 +10859,13 @@ snapshots:
       '@hanzogui/constants': 7.3.0(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)
       '@hanzogui/cubic-bezier-animator': 7.3.0
       '@hanzogui/use-presence': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-native
       - react-native-gesture-handler
@@ -10790,13 +10882,14 @@ snapshots:
     dependencies:
       '@hanzogui/animation-helpers': 7.3.0
       '@hanzogui/use-presence': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       motion: 12.42.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react: 19.2.4
     transitivePeerDependencies:
       - '@emotion/is-prop-valid'
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -10815,12 +10908,13 @@ snapshots:
       '@hanzogui/animation-helpers': 7.3.0
       '@hanzogui/constants': 7.3.0(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)
       '@hanzogui/use-presence': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
       react-native: 0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -10844,6 +10938,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -10870,6 +10965,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -10894,11 +10990,12 @@ snapshots:
       '@hanzogui/spacer': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/stacks': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/text': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -10917,12 +11014,13 @@ snapshots:
       '@hanzogui/create-context': 7.3.0(react@19.2.4)
       '@hanzogui/helpers': 7.3.0(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)
       '@hanzogui/stacks': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
       react-native: 0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -10945,12 +11043,13 @@ snapshots:
       '@hanzogui/label': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/use-controllable-state': 7.3.0(react@19.2.4)
       '@hanzogui/use-previous': 7.3.0(react@19.2.4)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
       react-native: 0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -10983,6 +11082,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -11006,11 +11106,12 @@ snapshots:
       '@hanzogui/polyfill-dev': 7.3.0
       '@hanzogui/stacks': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/use-controllable-state': 7.3.0(react@19.2.4)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -11037,6 +11138,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -11055,12 +11157,13 @@ snapshots:
   '@hanzogui/component-helpers@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)':
     dependencies:
       '@hanzogui/helpers': 7.3.0(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
       react-native: 0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -11077,16 +11180,21 @@ snapshots:
     dependencies:
       react: 19.2.4
 
+  '@hanzogui/compose-refs@7.3.1(react@19.2.4)':
+    dependencies:
+      react: 19.2.4
+
   '@hanzogui/config-default@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)':
     dependencies:
       '@hanzogui/animations-css': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/animations-react-native': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/core': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/shorthands': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react
       - react-dom
@@ -11115,11 +11223,12 @@ snapshots:
       '@hanzogui/shorthands': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/theme-builder': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/themes': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
     transitivePeerDependencies:
       - '@emotion/is-prop-valid'
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react
       - react-dom
@@ -11140,17 +11249,24 @@ snapshots:
       react: 19.2.4
       react-native: 0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6)
 
+  '@hanzogui/constants@7.3.1(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)':
+    dependencies:
+      react: 19.2.4
+    optionalDependencies:
+      react-native: 0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6)
+
   '@hanzogui/context-menu@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native-web@0.21.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)':
     dependencies:
       '@hanzogui/create-menu': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native-web@0.21.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)
       '@hanzogui/popover': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/use-callback-ref': 7.3.0(react@19.2.4)
       '@hanzogui/use-controllable-state': 7.3.0(react@19.2.4)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -11172,12 +11288,13 @@ snapshots:
       '@hanzogui/react-native-use-pressable': 7.3.0(react@19.2.4)
       '@hanzogui/use-element-layout': 7.3.0(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)
       '@hanzogui/use-event': 7.3.0(react@19.2.4)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
       react-native: 0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -11214,13 +11331,14 @@ snapshots:
       '@hanzogui/text': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/use-callback-ref': 7.3.0(react@19.2.4)
       '@hanzogui/use-direction': 7.3.0(react@19.2.4)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
       react-native: 0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6)
       sf-symbols-typescript: 2.2.0
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -11235,10 +11353,11 @@ snapshots:
 
   '@hanzogui/create-theme@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)':
     dependencies:
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react
       - react-dom
@@ -11280,6 +11399,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -11304,6 +11424,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-native
       - react-native-gesture-handler
@@ -11329,6 +11450,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -11374,11 +11496,12 @@ snapshots:
   '@hanzogui/focusable@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)':
     dependencies:
       '@hanzogui/compose-refs': 7.3.0(react@19.2.4)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -11398,6 +11521,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react
       - react-dom
@@ -11418,6 +11542,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react
       - react-dom
@@ -11439,6 +11564,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -11460,6 +11586,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -11476,11 +11603,12 @@ snapshots:
   '@hanzogui/get-button-sized@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)':
     dependencies:
       '@hanzogui/get-token': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -11497,11 +11625,12 @@ snapshots:
   '@hanzogui/get-font-sized@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)':
     dependencies:
       '@hanzogui/constants': 7.3.0(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -11517,11 +11646,12 @@ snapshots:
 
   '@hanzogui/get-token@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)':
     dependencies:
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -11548,6 +11678,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -11569,6 +11700,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -11590,17 +11722,26 @@ snapshots:
     transitivePeerDependencies:
       - react-native
 
+  '@hanzogui/helpers@7.3.1(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)':
+    dependencies:
+      '@hanzogui/constants': 7.3.1(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)
+      '@hanzogui/simple-hash': 7.3.1
+      react: 19.2.4
+    transitivePeerDependencies:
+      - react-native
+
   '@hanzogui/image@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native-web@0.21.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)':
     dependencies:
       '@hanzogui/constants': 7.3.0(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)
       '@hanzogui/core': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       expo-image: 55.0.11(expo@57.0.6)(react-native-web@0.21.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)
       react: 19.2.4
       react-native: 0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -11627,12 +11768,13 @@ snapshots:
       '@hanzogui/helpers': 7.3.0(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)
       '@hanzogui/stacks': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/text': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
       react-native: 0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -11649,6 +11791,10 @@ snapshots:
     dependencies:
       react: 19.2.4
 
+  '@hanzogui/is-equal-shallow@7.3.1(react@19.2.4)':
+    dependencies:
+      react: 19.2.4
+
   '@hanzogui/label@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)':
     dependencies:
       '@hanzogui/compose-refs': 7.3.0(react@19.2.4)
@@ -11658,12 +11804,13 @@ snapshots:
       '@hanzogui/get-button-sized': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/get-font-sized': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/text': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
       react-native: 0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -11686,6 +11833,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -11707,11 +11855,12 @@ snapshots:
       '@hanzogui/helpers': 7.3.0(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)
       '@hanzogui/stacks': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/text': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -11734,6 +11883,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -11755,11 +11905,12 @@ snapshots:
       '@hanzogui/popover': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/popper': 7.3.0(expo@57.0.6)(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/use-controllable-state': 7.3.0(react@19.2.4)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -11784,7 +11935,20 @@ snapshots:
     transitivePeerDependencies:
       - expo
 
-  '@hanzogui/normalize-css-color@7.3.0':
+  '@hanzogui/native@7.3.1(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)':
+    dependencies:
+      expo-linear-gradient: 55.0.16(expo@57.0.6)(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)
+      react: 19.2.4
+      react-native-web: 0.21.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+    optionalDependencies:
+      react-native: 0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6)
+      sf-symbols-typescript: 2.2.0
+    transitivePeerDependencies:
+      - encoding
+      - expo
+      - react-dom
+
+  '@hanzogui/normalize-css-color@7.3.1':
     dependencies:
       '@react-native/normalize-color': 2.1.0
 
@@ -11817,6 +11981,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -11845,6 +12010,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-native-gesture-handler
       - react-native-ios-context-menu
@@ -11863,7 +12029,7 @@ snapshots:
       '@hanzogui/native': 7.3.0(expo@57.0.6)(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/start-transition': 7.3.0(react@19.2.4)
       '@hanzogui/use-event': 7.3.0(react@19.2.4)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/z-index-stack': 7.3.0(react@19.2.4)
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
@@ -11871,6 +12037,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-native-gesture-handler
       - react-native-ios-context-menu
@@ -11895,6 +12062,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -11926,6 +12094,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -11949,12 +12118,13 @@ snapshots:
       '@hanzogui/label': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/use-controllable-state': 7.3.0(react@19.2.4)
       '@hanzogui/use-previous': 7.3.0(react@19.2.4)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
       react-native: 0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -11969,11 +12139,12 @@ snapshots:
 
   '@hanzogui/react-native-media-driver@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)':
     dependencies:
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react-native: 0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react
       - react-dom
@@ -12010,6 +12181,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -12026,12 +12198,13 @@ snapshots:
   '@hanzogui/scroll-view@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)':
     dependencies:
       '@hanzogui/stacks': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
       react-native: 0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -12077,6 +12250,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-native-gesture-handler
       - react-native-ios-context-menu
@@ -12096,6 +12270,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -12112,11 +12287,12 @@ snapshots:
   '@hanzogui/shapes@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)':
     dependencies:
       '@hanzogui/stacks': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -12155,6 +12331,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-ios-context-menu
@@ -12174,10 +12351,11 @@ snapshots:
 
   '@hanzogui/shorthands@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)':
     dependencies:
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react
       - react-dom
@@ -12194,6 +12372,8 @@ snapshots:
 
   '@hanzogui/simple-hash@7.3.0': {}
 
+  '@hanzogui/simple-hash@7.3.1': {}
+
   '@hanzogui/sizable-context@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)':
     dependencies:
       '@hanzogui/core': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
@@ -12201,6 +12381,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -12231,6 +12412,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -12245,12 +12427,13 @@ snapshots:
 
   '@hanzogui/spacer@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)':
     dependencies:
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
       react-native: 0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -12272,6 +12455,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -12288,11 +12472,12 @@ snapshots:
     dependencies:
       '@hanzogui/core': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/get-button-sized': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -12322,6 +12507,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -12352,6 +12538,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -12379,12 +12566,13 @@ snapshots:
       '@hanzogui/stacks': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/use-controllable-state': 7.3.0(react@19.2.4)
       '@hanzogui/use-direction': 7.3.0(react@19.2.4)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
       react-native: 0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -12407,11 +12595,12 @@ snapshots:
     dependencies:
       '@hanzogui/component-helpers': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/get-font-sized': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -12428,11 +12617,12 @@ snapshots:
   '@hanzogui/theme-builder@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)':
     dependencies:
       '@hanzogui/create-theme': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       color2k: 2.0.4
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react
       - react-dom
@@ -12451,11 +12641,12 @@ snapshots:
     dependencies:
       '@hanzogui/constants': 7.3.0(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)
       '@hanzogui/start-transition': 7.3.0(react@19.2.4)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -12474,11 +12665,12 @@ snapshots:
       '@hanzogui/colors': 7.3.0
       '@hanzogui/create-theme': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/theme-builder': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       color2k: 2.0.4
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react
       - react-dom
@@ -12493,7 +12685,7 @@ snapshots:
       - sf-symbols-typescript
       - zeego
 
-  '@hanzogui/timer@7.3.0': {}
+  '@hanzogui/timer@7.3.1': {}
 
   '@hanzogui/toast@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)':
     dependencies:
@@ -12518,6 +12710,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -12544,11 +12737,12 @@ snapshots:
       '@hanzogui/stacks': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       '@hanzogui/use-controllable-state': 7.3.0(react@19.2.4)
       '@hanzogui/use-direction': 7.3.0(react@19.2.4)
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -12581,6 +12775,7 @@ snapshots:
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native-gesture-handler
@@ -12621,6 +12816,10 @@ snapshots:
     dependencies:
       react: 19.2.4
 
+  '@hanzogui/use-did-finish-ssr@7.3.1(react@19.2.4)':
+    dependencies:
+      react: 19.2.4
+
   '@hanzogui/use-direction@7.3.0(react@19.2.4)':
     dependencies:
       react: 19.2.4
@@ -12642,7 +12841,15 @@ snapshots:
     dependencies:
       react: 19.2.4
 
+  '@hanzogui/use-event@7.3.1(react@19.2.4)':
+    dependencies:
+      react: 19.2.4
+
   '@hanzogui/use-force-update@7.3.0(react@19.2.4)':
+    dependencies:
+      react: 19.2.4
+
+  '@hanzogui/use-force-update@7.3.1(react@19.2.4)':
     dependencies:
       react: 19.2.4
 
@@ -12653,11 +12860,12 @@ snapshots:
 
   '@hanzogui/use-presence@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)':
     dependencies:
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -12683,11 +12891,12 @@ snapshots:
 
   '@hanzogui/visually-hidden@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)':
     dependencies:
-      '@hanzogui/web': 7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/web': 7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
       react: 19.2.4
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-dom
       - react-native
@@ -12701,25 +12910,27 @@ snapshots:
       - sf-symbols-typescript
       - zeego
 
-  '@hanzogui/web@7.3.0(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)':
+  '@hanzogui/web@7.3.3(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)':
     dependencies:
-      '@hanzogui/compose-refs': 7.3.0(react@19.2.4)
-      '@hanzogui/constants': 7.3.0(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)
-      '@hanzogui/helpers': 7.3.0(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)
-      '@hanzogui/is-equal-shallow': 7.3.0(react@19.2.4)
-      '@hanzogui/native': 7.3.0(expo@57.0.6)(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
-      '@hanzogui/normalize-css-color': 7.3.0
-      '@hanzogui/timer': 7.3.0
+      '@hanzogui/compose-refs': 7.3.1(react@19.2.4)
+      '@hanzogui/constants': 7.3.1(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)
+      '@hanzogui/helpers': 7.3.1(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)
+      '@hanzogui/is-equal-shallow': 7.3.1(react@19.2.4)
+      '@hanzogui/native': 7.3.1(expo@57.0.6)(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)(sf-symbols-typescript@2.2.0)
+      '@hanzogui/normalize-css-color': 7.3.1
+      '@hanzogui/timer': 7.3.1
       '@hanzogui/types': 7.3.0
-      '@hanzogui/use-did-finish-ssr': 7.3.0(react@19.2.4)
-      '@hanzogui/use-event': 7.3.0(react@19.2.4)
-      '@hanzogui/use-force-update': 7.3.0(react@19.2.4)
+      '@hanzogui/use-did-finish-ssr': 7.3.1(react@19.2.4)
+      '@hanzogui/use-event': 7.3.1(react@19.2.4)
+      '@hanzogui/use-force-update': 7.3.1(react@19.2.4)
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
+    optionalDependencies:
       react-native: 0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - '@react-native-menu/menu'
       - burnt
+      - encoding
       - expo
       - react-native-gesture-handler
       - react-native-ios-context-menu
@@ -15390,7 +15601,7 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
 
-  '@wagmi/connectors@7.2.1(df29c5ff10e818f691871fb570f0e92a)':
+  '@wagmi/connectors@7.2.1(cbqukqlrm32oj4yx5iwuixciie)':
     dependencies:
       '@wagmi/core': 3.4.0(@tanstack/query-core@5.94.5)(@types/react@19.2.14)(ox@0.14.32(typescript@5.9.3)(zod@4.3.6))(react@19.2.4)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.2.4))(viem@2.47.6(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.3.6))
       viem: 2.47.6(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.3.6)
@@ -20344,7 +20555,7 @@ snapshots:
       react: 19.2.4
       react-native: 0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6)
       typescript: 5.9.3
-      wagmi: 3.5.0(63a4b52f9ffc3f2009459c5a042550a2)
+      wagmi: 3.5.0(sbcrt66vlesndu5zz4dwu5sio4)
     transitivePeerDependencies:
       - '@types/react'
       - immer
@@ -20699,11 +20910,6 @@ snapshots:
       use-sidecar: 1.1.3(@types/react@19.2.14)(react@19.2.4)
     optionalDependencies:
       '@types/react': 19.2.14
-
-  react-resizable-panels@4.7.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
-    dependencies:
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
 
   react-style-singleton@2.2.3(@types/react@19.2.14)(react@19.2.4):
     dependencies:
@@ -21898,10 +22104,10 @@ snapshots:
     dependencies:
       xml-name-validator: 4.0.0
 
-  wagmi@3.5.0(63a4b52f9ffc3f2009459c5a042550a2):
+  wagmi@3.5.0(sbcrt66vlesndu5zz4dwu5sio4):
     dependencies:
       '@tanstack/react-query': 5.94.5(react@19.2.4)
-      '@wagmi/connectors': 7.2.1(df29c5ff10e818f691871fb570f0e92a)
+      '@wagmi/connectors': 7.2.1(cbqukqlrm32oj4yx5iwuixciie)
       '@wagmi/core': 3.4.0(@tanstack/query-core@5.94.5)(@types/react@19.2.14)(ox@0.14.32(typescript@5.9.3)(zod@4.3.6))(react@19.2.4)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.2.4))(viem@2.47.6(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(zod@4.3.6))
       react: 19.2.4
       use-sync-external-store: 1.4.0(react@19.2.4)
