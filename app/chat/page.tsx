@@ -29,7 +29,8 @@ import {
   User,
   ArrowUp,
   MoreHorizontal,
-  Users
+  Users,
+  Globe
 } from "lucide-react";
 import { Button } from "@hanzo/ui";
 import { Input } from "@/components/control";
@@ -42,6 +43,7 @@ import { cn } from "@/lib/utils";
 import { DEFAULT_MODEL } from "@/lib/providers";
 import { useModels } from "@/lib/hooks/use-models";
 import { type BotAgent, TEAM_PRESETS, getBotGateway } from "@/lib/bot-gateway";
+import { type WebSource, webSearch, citedAnswer, sourceHost } from "@/lib/websearch";
 
 interface Message {
   id: string;
@@ -55,6 +57,8 @@ interface Message {
   agentEmoji?: string;
   isStreaming?: boolean;
   error?: boolean;
+  /** Web sources backing this message; rendered as numbered pills above it. */
+  sources?: WebSource[];
 }
 
 interface Chat {
@@ -122,6 +126,9 @@ export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isStreaming, setIsStreaming] = useState(false);
+  // Web search mode — the composer's globe. When on, a send round-trips
+  // /v1/websearch (cloud's native meta-search) instead of the agent.
+  const [searchWeb, setSearchWeb] = useState(false);
 
   // Agent/bot selection
   const [agents, setAgents] = useState<BotAgent[]>(TEAM_PRESETS);
@@ -225,6 +232,38 @@ export default function ChatPage() {
 
     setActiveChat(chatWithStreamingResponse);
     setChats(prev => prev.map(c => c.id === activeChat.id ? chatWithStreamingResponse : c));
+
+    // Web search mode: the query round-trips /v1/websearch and the reply IS
+    // the cited answer — numbered [n] claims under the source pills.
+    if (searchWeb) {
+      const query = newMessage.content.trim();
+      let searched: Message;
+      try {
+        const sources = await webSearch(query);
+        searched = {
+          ...aiResponse,
+          content: citedAnswer(query, sources),
+          sources,
+          isStreaming: false,
+        };
+      } catch {
+        searched = {
+          ...aiResponse,
+          content: `Web search is unavailable right now — try again, or turn off search to ask ${selectedAgent?.name ?? "Hanzo"} directly.`,
+          error: true,
+          isStreaming: false,
+        };
+      }
+      const searchedChat = {
+        ...chatWithStreamingResponse,
+        messages: [...updatedChat.messages, searched],
+        updatedAt: new Date(),
+      };
+      setActiveChat(searchedChat);
+      setChats(prev => prev.map(c => c.id === activeChat.id ? searchedChat : c));
+      setIsStreaming(false);
+      return;
+    }
 
     // Try bot gateway first, fall back to simulated response
     if (gatewayConnected) {
@@ -575,6 +614,25 @@ export default function ChatPage() {
                             {formatRelativeTime(message.timestamp)}
                           </span>
                         </div>
+                        {!!message.sources?.length && (
+                          <div className="flex flex-wrap gap-1.5" data-testid="search-sources">
+                            {message.sources.map((source, i) => (
+                              <a
+                                key={source.url}
+                                href={source.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title={source.title}
+                                className="inline-flex max-w-[220px] items-center gap-1.5 rounded-full border border-border bg-muted px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:border-border hover:text-foreground"
+                              >
+                                <span className="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-accent text-[10px] font-medium text-foreground">
+                                  {i + 1}
+                                </span>
+                                <span className="truncate">{sourceHost(source.url)}</span>
+                              </a>
+                            ))}
+                          </div>
+                        )}
                         <div className="text-foreground prose prose-invert max-w-none">
                           <p className="whitespace-pre-wrap">{message.content}</p>
                           {message.isStreaming && (
@@ -633,6 +691,21 @@ export default function ChatPage() {
             <div className="max-w-4xl mx-auto">
               <div className="flex items-end gap-3">
                 <div className="flex gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSearchWeb(v => !v)}
+                    aria-pressed={searchWeb}
+                    aria-label="Search the web"
+                    title="Search the web"
+                    className={cn(
+                      searchWeb
+                        ? "bg-accent text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <Globe className="w-4 h-4" />
+                  </Button>
                   <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                     <Paperclip className="w-4 h-4" />
                   </Button>
@@ -654,7 +727,7 @@ export default function ChatPage() {
                         sendMessage();
                       }
                     }}
-                    placeholder={`Message ${selectedAgent?.name ?? "Hanzo"}...`}
+                    placeholder={searchWeb ? "Search the web..." : `Message ${selectedAgent?.name ?? "Hanzo"}...`}
                     className="min-h-[44px] max-h-[200px] bg-card border-border text-foreground placeholder:text-muted-foreground resize-none pr-12"
                     rows={1}
                   />
@@ -674,7 +747,9 @@ export default function ChatPage() {
               </div>
               <div className="flex items-center justify-between mt-2">
                 <p className="text-xs text-muted-foreground">
-                  {isStreaming ? "Generating..." : "Press Enter to send, Shift+Enter for new line"}
+                  {isStreaming
+                    ? (searchWeb ? "Searching the web..." : "Generating...")
+                    : (searchWeb ? "Web search on — results arrive as cited sources" : "Press Enter to send, Shift+Enter for new line")}
                 </p>
                 <div className="flex items-center gap-2">
                   <Button variant="ghost" size="sm" className="text-xs text-muted-foreground hover:text-foreground">
