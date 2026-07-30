@@ -298,7 +298,7 @@ function SidebarContent({
               aria-label="Expand sidebar"
               height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$3" hoverStyle={{ backgroundColor: "$color3" }}
             >
-              <HanzoLogo className="h-5 w-5 text-foreground" />
+              <HanzoLogo size={20} color="var(--foreground)" />
             </Button>
           ) : (
             <>
@@ -307,7 +307,7 @@ function SidebarContent({
                 minWidth={0} alignItems="center" gap="$2" borderRadius="$3" padding="$1" hoverStyle={{ backgroundColor: "$color3" }}
                 title="Hanzo App"
               >
-                <HanzoLogo className="h-5 w-5 shrink-0 text-foreground" />
+                <HanzoLogo size={20} color="var(--foreground)" />
                 <SizableText minWidth={0} flexDirection="column" textAlign="left">
                   <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" lineHeight={1}>Hanzo&nbsp;App</SizableText>
                   <SizableText marginTop="$0.5" fontSize={10} lineHeight={10} color="$color11">

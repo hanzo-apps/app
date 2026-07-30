@@ -103,7 +103,7 @@ export default function CloudIntegration() {
               >
                 <XStack alignItems="center" justifyContent="space-between">
                   <SizableText height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
-                    <Icon className="h-5 w-5 text-foreground" strokeWidth={1.5} />
+                    <Icon size={20} color="var(--foreground)" strokeWidth={1.5} />
                   </SizableText>
                   <SizableText fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={2.4} color="$color11">
                     {c.product}

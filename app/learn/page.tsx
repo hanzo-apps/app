@@ -136,7 +136,7 @@ export default function LearnPage() {
             {learningPaths.map(path => (
               <YStack key={path.title} backgroundColor="$color3" borderRadius="$8" padding="$5" borderWidth={1} borderColor="$borderColor" cursor="pointer" hoverStyle={{ backgroundColor: "$color3", borderColor: "$purple9" }}>
                 <XStack borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$2" marginBottom="$4">
-                  <path.icon className="w-6 h-6" />
+                  <path.icon size={24} />
                 </XStack>
                 <H3 fontSize="$6" fontWeight="500" marginBottom="$2">{path.title}</H3>
                 <Paragraph fontSize="$3" color="$color11" marginBottom="$4">{path.description}</Paragraph>

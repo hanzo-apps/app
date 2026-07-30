@@ -7,17 +7,21 @@ import { HanzoLogo as BrandMotion } from "@hanzo/logo/react"
 
 interface HanzoLogoProps extends SVGProps<SVGSVGElement> {
   animated?: boolean
+  /** Rendered box in px (square). */
+  size?: number
 }
 
 interface HanzoBrandProps {
-  /** Wrapper classes — set the text color here; the mark inherits currentColor. */
-  className?: string
-  /** Size/position of the logomark. Defaults to the ONE canonical 32×32 chrome
+  /** Lockup color — the mark inherits currentColor. */
+  color?: string
+  /** Size of the logomark in px. Defaults to the ONE canonical 32×32 chrome
    *  size (matches the dashboard sidebar) — pass a size only for a deliberate
    *  exception, never to re-tune the default. */
-  markClassName?: string
-  /** Extra classes for the wordmark text. */
-  wordmarkClassName?: string
+  markSize?: number
+  /** Wordmark type size in px (defaults to the lockup register). */
+  wordmarkSize?: number
+  /** Hide the wordmark on small screens (compact mobile chrome). */
+  wordmarkFromSm?: boolean
   /** Hide the wordmark to show the mark alone (compact/collapsed chrome). */
   showWordmark?: boolean
   /** Label — the product surface reads "Hanzo App", "Hanzo Dev", etc. */
@@ -38,9 +42,10 @@ interface HanzoBrandProps {
  * whole lockup monochrome with no per-call color plumbing.
  */
 export function HanzoBrand({
-  className = "",
-  markClassName = "h-8 w-8",
-  wordmarkClassName = "",
+  color,
+  markSize = 32,
+  wordmarkSize,
+  wordmarkFromSm = false,
   showWordmark = true,
   label = "Hanzo App",
   collapse = false,
@@ -49,16 +54,20 @@ export function HanzoBrand({
     // The animated reveal is the @hanzo/logo motion shell (flip + breathe +
     // wordmark collapse) — package CSS, not a local keyframe.
     return (
-      <SizableText alignItems="center" fontSize="$6" letterSpacing={-0.4} className={`${className}`}>
+      <SizableText alignItems="center" fontSize="$6" letterSpacing={-0.4} color={color}>
         <BrandMotion animated size={32} wordmark={label} />
       </SizableText>
     )
   }
   return (
-    <SizableText alignItems="center" gap="$2" className={`${className}`}>
-      <HanzoLogo className={markClassName} />
+    <SizableText alignItems="center" gap="$2" color={color}>
+      <HanzoLogo size={markSize} />
       {showWordmark && (
-        <SizableText overflow="hidden" whiteSpace="nowrap" fontSize="$6" fontWeight="500" letterSpacing={-0.4} className={`${wordmarkClassName}`}>
+        <SizableText
+          overflow="hidden" whiteSpace="nowrap" fontWeight="500" letterSpacing={-0.4}
+          fontSize={wordmarkSize ?? "$6"}
+          {...(wordmarkFromSm ? { display: "none", $sm: { display: "inline" } } : null)}
+        >
           {label}
         </SizableText>
       )}
@@ -73,20 +82,20 @@ export function HanzoBrand({
  * keeps the subtle idle breathe (`hanzo-logo-idle` in globals.css, reduced-motion
  * gated) for mark-only chrome; the full brand motion is `HanzoBrand collapse`.
  */
-export function HanzoLogo({ animated = false, ...props }: HanzoLogoProps) {
+export function HanzoLogo({ animated = false, size = 32, ...props }: HanzoLogoProps) {
   const paths = <g dangerouslySetInnerHTML={{ __html: MARK_PATHS }} />
 
   if (!animated) {
     return (
-      <svg viewBox={MARK_VIEWBOX} xmlns="http://www.w3.org/2000/svg" fill="currentColor" {...props}>
+      <svg viewBox={MARK_VIEWBOX} width={size} height={size} xmlns="http://www.w3.org/2000/svg" fill="currentColor" {...props}>
         {paths}
       </svg>
     )
   }
 
   return (
-    <svg viewBox={MARK_VIEWBOX} xmlns="http://www.w3.org/2000/svg" fill="currentColor" {...props}>
-      <g className="hanzo-logo-idle origin-center">{paths}</g>
+    <svg viewBox={MARK_VIEWBOX} width={size} height={size} xmlns="http://www.w3.org/2000/svg" fill="currentColor" {...props}>
+      <g className="hanzo-logo-idle">{paths}</g>
     </svg>
   )
 }

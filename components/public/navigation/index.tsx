@@ -84,7 +84,7 @@ export default function Navigation() {
     >
       <YStack padding="$4" maxWidth={1280} alignSelf="center" paddingHorizontal="$4" $sm={{ paddingHorizontal: "$5" }}>
         <Link href="/"><XStack alignItems="center" gap="$2">
-          <HanzoLogo className="w-9 h-9 text-foreground" />
+          <HanzoLogo size={36} color="var(--foreground)" />
           <Paragraph fontFamily="$body" color="$color" fontSize="$7" fontWeight="500">Hanzo</Paragraph>
         </XStack></Link>
         <YStack alignItems="center" justifyContent="center" gap="$5" display="none">

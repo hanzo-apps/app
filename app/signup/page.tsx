@@ -37,7 +37,7 @@ export default function SignupPage() {
       <YStack borderBottomWidth={1} borderColor="$borderColor">
         <XStack maxWidth={1280} alignSelf="center" paddingHorizontal="$4" paddingVertical="$4" alignItems="center" justifyContent="space-between" $md={{ paddingHorizontal: "$6" }}>
           <Link href="/"><XStack alignItems="center" gap="$2.5">
-            <HanzoLogo className="w-8 h-8 text-foreground" />
+            <HanzoLogo size={32} color="var(--foreground)" />
             <SizableText fontSize="$7" fontWeight="500">Hanzo</SizableText>
           </XStack></Link>
           <Link href="/login">
@@ -55,7 +55,7 @@ export default function SignupPage() {
             <CardHeader rowGap="$1" textAlign="center" paddingBottom="$6">
               <XStack justifyContent="center" marginBottom="$5">
                 <XStack width="$10" height="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" borderRadius="$8" alignItems="center" justifyContent="center" position="relative">
-                  <HanzoLogo className="w-10 h-10 text-foreground" />
+                  <HanzoLogo size={40} color="var(--foreground)" />
                   <Badge position="absolute" top="-2" right="-2" backgroundColor="$color12" color="$background" borderWidth={0}>
                     Free
                   </Badge>

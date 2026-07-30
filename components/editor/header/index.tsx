@@ -116,7 +116,7 @@ export function Header({
           href="/"
           aria-label="Hanzo home"
         ><SizableText marginRight="$0.5" width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" color="$color" hoverStyle={{ backgroundColor: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}>
-          <HanzoLogo className="size-5" />
+          <HanzoLogo size={20} />
         </SizableText></Link>
         <YStack minWidth={0}>
           <WorkspaceMenu project={project} onRenamed={onRenamed} />
@@ -157,7 +157,7 @@ export function Header({
                 onClick={() => onNewTab(item.value)}
                 alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$1.5" fontSize="$3" fontWeight="500" focusVisibleStyle={{ outlineWidth: 0 }} {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, backgroundColor: active ? "$color3" : undefined, color: active ? "$color" : "$color11", elevation: active ? 1 : undefined, hoverStyle: active ? undefined : {"backgroundColor":"$color","color":"$color"} }}
               >
-                <item.icon className="size-4 shrink-0" />
+                <item.icon size={16} />
                 <SizableText display="none">{item.label}</SizableText>
               </Button>
             );
@@ -184,7 +184,7 @@ export function Header({
                   onClick={() => setDevice(d.name as "desktop" | "mobile")}
                   width={28} height={28} alignItems="center" justifyContent="center" borderRadius="$3" fontSize="$3" focusVisibleStyle={{ outlineWidth: 0 }} {...{ backgroundColor: active ? "$color3" : undefined, color: active ? "$color" : "$color11", elevation: active ? 1 : undefined, hoverStyle: active ? undefined : {"backgroundColor":"$color","color":"$color"} }}
                 >
-                  <d.icon className="size-4" />
+                  <d.icon size={16} />
                 </Button>
               );
             })}

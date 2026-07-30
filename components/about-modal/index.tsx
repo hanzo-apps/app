@@ -57,7 +57,7 @@ export function AboutModal({ open, onOpenChange }: AboutModalProps) {
                 rel="noopener noreferrer"
                 alignItems="center" gap="$2" fontSize="$3" color="$blue10" $theme-dark={{ color: "$blue8" }} hoverStyle={{ textDecorationLine: "underline" }}
               >
-                <DiscordIcon className="h-4 w-4" />
+                <DiscordIcon size={16} />
                 Discord Community
                 <ExternalLink size={12} />
               </Anchor>

@@ -310,7 +310,7 @@ function EmptyState({
   return (
     <SizableText borderRadius="$8" borderWidth={1} borderStyle="dashed" borderColor="$borderColor" backgroundColor="$background" padding="$8" textAlign="center" display="flex" flexDirection="column">
       <XStack alignSelf="center" marginBottom="$4" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$6" backgroundColor="$color3">
-        <Icon className="h-6 w-6 text-muted-foreground" />
+        <Icon size={24} color="var(--muted-foreground)" />
       </XStack>
       <H3 fontWeight="500" color="$color">{title}</H3>
       <Paragraph alignSelf="center" marginTop="$1" maxWidth={448} fontSize="$3" color="$color11">{body}</Paragraph>

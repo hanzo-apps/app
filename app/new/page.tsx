@@ -198,7 +198,7 @@ function NewProjectInner() {
         <XStack alignSelf="center" height="$9" maxWidth={1152} alignItems="center" justifyContent="space-between" paddingHorizontal="$4" $sm={{ paddingHorizontal: "$5" }}>
           <XStack alignItems="center" gap="$5">
             <Link href="/"><XStack alignItems="center" gap="$2">
-              <HanzoBrand markClassName="h-7 w-7" wordmarkClassName="hidden sm:inline" />
+              <HanzoBrand markSize={28} wordmarkFromSm />
             </XStack></Link>
             <YStack display="none" alignItems="center" gap="$1">
               {[
@@ -389,7 +389,7 @@ function NewProjectInner() {
                     }}
                     alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$1.5" fontSize="$3" color="$color" hoverStyle={{ y: -1, borderColor: "$color", backgroundColor: "$color3", color: "$color" }}
                   >
-                    <Icon className="h-4 w-4 text-muted-foreground" />
+                    <Icon size={16} color="var(--muted-foreground)" />
                     {q.label}
                   </Button>
                 );

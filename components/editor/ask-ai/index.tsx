@@ -1064,7 +1064,7 @@ export function AskAI({
           {(isAiWorking || isUploading) && (
             <XStack position="absolute" top="$0" left="$4" right="$8" height="$6" zIndex={10} alignItems="center" justifyContent="space-between" pointerEvents="none">
               <XStack alignItems="center" justifyContent="flex-start" gap="$2" backgroundColor="$color3" paddingHorizontal="$2" paddingVertical="$1" borderRadius="$3">
-                <Loading overlay={false} className="!size-3 opacity-50" />
+                <Loading overlay={false} size={12} />
                 <Paragraph color="$color11" fontSize="$1">
                   {isUploading ? (
                     "Uploading images..."

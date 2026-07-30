@@ -533,7 +533,7 @@ export function VisualEditor({
             >
               {dockPositionOptions.map(({ value, label, icon: Icon }) => (
                 <DropdownMenuRadioItem key={value} value={value} className={menuItemClass}>
-                  <Icon className="size-4" />
+                  <Icon size={16} />
                   <span>{label}</span>
                   {value === "bottom" && (
                     <SizableText marginLeft="auto" fontSize={10} color="$color11">Default</SizableText>

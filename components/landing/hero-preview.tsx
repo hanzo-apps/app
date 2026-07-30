@@ -258,7 +258,7 @@ export default function HeroPreview() {
             <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
             <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
           </XStack>
-          <HMark className="h-3.5 w-3.5 shrink-0 text-foreground" />
+          <HMark size={14} color="var(--foreground)" />
           <SizableText display="none" numberOfLines={1} fontFamily="$mono" fontSize={10} color="$color">
             maxpower / vibe-check
           </SizableText>
@@ -274,7 +274,7 @@ export default function HeroPreview() {
                 key={tabItem.id}
                 height="$4.5" width="$5" alignItems="center" justifyContent="center" borderRadius="$2" {...{ backgroundColor: i < 2 ? "$color" : undefined, color: i < 2 ? "$color" : "$color" }}
               >
-                <tabItem.icon className="h-3 w-3" />
+                <tabItem.icon size={12} />
               </SizableText>
             ))}
           </YStack>
@@ -486,9 +486,9 @@ function Generating(): ReactElement {
 }
 
 /* ── Inline Hanzo mark (currentColor) ───────────────────────────────────────*/
-function HMark({ className }: { className?: string }) {
+function HMark({ size = 14, color }: { size?: number; color?: string }) {
   return (
-    <svg viewBox="0 0 67 67" className={className} fill="currentColor" aria-hidden>
+    <svg viewBox="0 0 67 67" width={size} height={size} color={color} fill="currentColor" aria-hidden>
       <path d="M22.21 67V44.64H0V67h22.21ZM66.72 22.32H22.25L.09 44.64h44.37l22.26-22.32ZM22.21 0H0v22.32h22.21V0ZM66.72 0H44.51v22.32h22.21V0ZM66.72 67V44.64H44.51V67h22.21Z" />
     </svg>
   );

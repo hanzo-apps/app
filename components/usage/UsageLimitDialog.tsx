@@ -86,7 +86,7 @@ function OptionCard({
       group width="100%" alignItems="flex-start" gap="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4" textAlign="left" outlineWidth={0} hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}
     >
       <SizableText height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color" color="$color">
-        <Icon className="h-5 w-5" />
+        <Icon size={20} />
       </SizableText>
       <SizableText minWidth={0} flex={1}>
         <SizableText alignItems="center" justifyContent="space-between" gap="$2">

@@ -117,6 +117,7 @@ textarea {
 
 .hanzo-logo-idle {
   opacity: 1;
+  transform-origin: center;
 }
 
 @media (prefers-reduced-motion: no-preference) {

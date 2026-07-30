@@ -79,7 +79,7 @@ export function AppShell({ children, currentView = 'templates' }: AppShellProps)
           >
             <Menu size={20} />
           </Button>
-          <HanzoLogo className="h-5 w-5 text-foreground" />
+          <HanzoLogo size={20} color="var(--foreground)" />
           <SizableText fontSize="$3" fontWeight="500">Hanzo App</SizableText>
           <Button
             onClick={() => setPaletteOpen(true)}

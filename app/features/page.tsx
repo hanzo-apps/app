@@ -235,7 +235,7 @@ export default function FeaturesPage() {
           <YStack height="100%">
             <XStack alignItems="center" justifyContent="space-between" padding="$4" borderBottomWidth={1} borderColor="$borderColor">
               <Link href="/"><XStack alignItems="center" gap="$2.5">
-                <HanzoLogo className="w-8 h-8 text-foreground" />
+                <HanzoLogo size={32} color="var(--foreground)" />
                 <SizableText fontSize="$7" fontWeight="500">Hanzo</SizableText>
               </XStack></Link>
               <Button

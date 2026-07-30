@@ -84,7 +84,7 @@ export default function AuthCallback() {
     <SizableText minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="$background" color="$color" paddingHorizontal="$5" display="flex" flexDirection="row">
       <SizableText width="100%" maxWidth={384} textAlign="center" display="flex" flexDirection="column">
         <XStack justifyContent="center" marginBottom="$7">
-          <HanzoLogo className="w-11 h-11 text-foreground" />
+          <HanzoLogo size={44} color="var(--foreground)" />
         </XStack>
 
         {error ? (

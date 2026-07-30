@@ -64,7 +64,7 @@ export function GameCard({ game }: { game: GameEntry }) {
           <SizableText alignItems="center" gap="$1.5" color="$color11" display="flex" flexDirection="row">
             {families.map((f) => {
               const Icon = FAMILY_ICON[f];
-              return <Icon key={f} className="h-3.5 w-3.5" aria-label={f} />;
+              return <Icon key={f} size={14} aria-label={f} />;
             })}
           </SizableText>
           <SizableText fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={0.4} color="$color11">

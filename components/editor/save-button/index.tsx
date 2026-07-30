@@ -68,7 +68,7 @@ export function SaveButton({
       >
         <Save size={14} />
         {loading ? "Publishing…" : "Publish"}
-        {loading && <Loading className="ml-1 size-3.5 animate-spin" />}
+        {loading && <Loading overlay={false} size={14} />}
       </Button>
       <Button
         variant="default"
@@ -78,7 +78,7 @@ export function SaveButton({
         disabled={loading}
       >
         {loading ? "Publishing…" : "Publish"}
-        {loading && <Loading className="ml-1 size-3.5 animate-spin" />}
+        {loading && <Loading overlay={false} size={14} />}
       </Button>
     </>
   );

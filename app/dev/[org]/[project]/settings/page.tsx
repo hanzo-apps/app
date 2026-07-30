@@ -102,7 +102,7 @@ export default function ProjectSettingsPage() {
   if (loading) {
     return (
       <XStack minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="$background">
-        <HanzoLogo className="h-10 w-10 animate-pulse text-foreground" />
+        <HanzoLogo size={40} color="var(--foreground)" className="skeleton" />
       </XStack>
     );
   }

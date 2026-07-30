@@ -159,7 +159,7 @@ export const UserMenu = ({ className }: { className?: string }) => {
                   aria-pressed={activeTheme === v}
                   alignItems="center" justifyContent="center" borderRadius="$2" padding="$1.5" {...{ backgroundColor: activeTheme === v ? "$background" : undefined, color: activeTheme === v ? "$color" : "$color11", elevation: activeTheme === v ? 1 : undefined, hoverStyle: activeTheme === v ? undefined : {"color":"$color"} }}
                 >
-                  <Icon className="size-4" />
+                  <Icon size={16} />
                 </Button>
               ))}
             </XStack>

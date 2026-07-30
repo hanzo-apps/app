@@ -343,7 +343,7 @@ export function GitSyncButton({
         {needsConnect ? (
           <SizableText flexDirection="column" alignItems="center" paddingHorizontal="$5" paddingVertical="$6" textAlign="center" display="flex">
             <XStack marginBottom="$4" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color">
-              <ProviderIcon className="h-6 w-6 text-foreground" />
+              <ProviderIcon size={24} color="var(--foreground)" />
             </XStack>
             <Paragraph fontSize="$3" fontWeight="500">Connect {providerName}</Paragraph>
             <Paragraph alignSelf="center" marginTop="$1.5" maxWidth={320} fontSize="$3" color="$color11">
@@ -354,7 +354,7 @@ export function GitSyncButton({
               onClick={connect}
               marginTop="$4.5" alignItems="center" gap="$2" borderRadius="$5" backgroundColor="$color12" paddingHorizontal="$4" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
             >
-              <ProviderIcon className="h-4 w-4" />
+              <ProviderIcon size={16} />
               Connect {providerName}
             </Button>
             <Button
@@ -378,7 +378,7 @@ export function GitSyncButton({
               <XStack alignItems="center" gap="$2">
                 {(() => {
                   const I = providerMeta(result.provider || provider).Icon;
-                  return <I className="h-4 w-4 shrink-0 text-foreground" />;
+                  return <I size={16} color="var(--foreground)" />;
                 })()}
                 <Anchor
                   href={result.htmlUrl}
@@ -456,7 +456,7 @@ export function GitSyncButton({
               <XStack alignItems="center" gap="$2">
                 {(() => {
                   const I = providerMeta(linked.provider).Icon;
-                  return <I className="h-4 w-4 shrink-0 text-foreground" />;
+                  return <I size={16} color="var(--foreground)" />;
                 })()}
                 <Anchor
                   href={linked.htmlUrl}
@@ -544,7 +544,7 @@ export function GitSyncButton({
                     onClick={() => setProvider(id)}
                     height={36} alignItems="center" justifyContent="center" gap="$1.5" borderRadius="$5" borderWidth={1} fontSize="$3" {...{ borderColor: activeP ? "$borderColor" : "$borderColor", backgroundColor: activeP ? "$color3" : "transparent", color: activeP ? "$color" : "$color11", hoverStyle: activeP ? undefined : {"borderColor":"$borderColor","color":"$color"} }}
                   >
-                    <Icon className="h-4 w-4" />
+                    <Icon size={16} />
                     {label}
                   </Button>
                 );

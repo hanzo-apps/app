@@ -129,7 +129,6 @@
       "brace-expansion@1": ">=1.1.16",
       "brace-expansion@2": ">=2.1.2",
       "axios": ">=1.18.0",
-      "@coinbase/cdp-sdk": "1.51.2",
       "@hanzogui/web": "7.3.1",
       "@hanzogui/core": "7.3.1",
       "@hanzogui/toast": "7.3.1",

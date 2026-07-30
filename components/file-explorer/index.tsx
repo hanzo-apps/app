@@ -596,7 +596,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
               </ContextMenuItem>
               <ContextMenuItem
                 onClick={() => handleDelete(item.path, item.type)}
-                className="text-destructive"
+                color="var(--destructive)"
               >
                 Delete
               </ContextMenuItem>
