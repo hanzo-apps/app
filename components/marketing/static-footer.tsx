@@ -8,13 +8,12 @@
 //
 // Marketing shells import THIS footer; app chrome keeps the shell HanzoFooter.
 
-import {
-  ACCENT,
-  CHROME,
-  FS,
-  HANZO_FOOTER_BOTTOM,
-  HANZO_FOOTER_COLUMNS,
-} from "@hanzogui/shell";
+// Subpath imports (shell >= 7.6.5), NOT the barrel: the barrel re-exports the
+// 'use client' shell components, and a server import of it registers them all
+// as client references — 116KB of client JS for a page that uses none of it.
+// /registry and /theme are pure data modules, so the page graph stays serverside.
+import { HANZO_FOOTER_BOTTOM, HANZO_FOOTER_COLUMNS } from "@hanzogui/shell/registry";
+import { ACCENT, CHROME, FS } from "@hanzogui/shell/theme";
 import { HanzoLogo } from "@/components/HanzoLogo";
 
 const css = `
