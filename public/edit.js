@@ -48,8 +48,40 @@
     return el ? (el.getAttribute('content') || '').trim() : '';
   }
 
-  var REPO = meta('hanzo:repo');
-  if (!REPO) return; // page does not declare a repo → nothing to do
+  // ---- Which repo is this page? ---------------------------------------------
+  //
+  // The tag is byte-identical on every property:
+  //   <script async src="https://hanzo.app/edit.js"></script>
+  // so a page that never declares `hanzo:repo` still resolves, from the ONE
+  // registry below (host → repo). Keeping the map here — in the single file every
+  // site already loads — is why the include needs no per-site thought: adding a
+  // property is one line HERE, not a commit in that property's repo.
+  //
+  // The meta ALWAYS wins when present: a repo knows its own name better than this
+  // table does, and a site served on a host we don't list (previews, branch
+  // deploys, a new domain) declares itself and works immediately.
+  var SITES = {
+    'hanzo.ai': 'hanzoai/hanzo.ai',
+    'hanzo.app': 'hanzoai/app',
+    'hanzo.chat': 'hanzoai/chat',
+    'world.hanzo.ai': 'hanzoai/world',
+    'docs.hanzo.ai': 'hanzoai/docs',
+    'insights.hanzo.ai': 'hanzoai/insights',
+    'platform.hanzo.ai': 'hanzoai/platform',
+    'cloud.hanzo.ai': 'hanzoai/cloud',
+    'ui.hanzo.ai': 'hanzoai/ui',
+  };
+
+  // `www.` is never its own property, and an unknown subdomain falls back to the
+  // apex's repo only when the apex is one we know.
+  function repoForHost(host) {
+    host = String(host || '').toLowerCase().replace(/^www\./, '');
+    if (SITES[host]) return SITES[host];
+    var apex = host.split('.').slice(-2).join('.');
+    return SITES[apex] || '';
+  }
+
+  var REPO = meta('hanzo:repo') || repoForHost(location.hostname);
 
   var PATH = meta('hanzo:path');
   var BRANCH = meta('hanzo:branch') || 'main';
@@ -121,14 +153,193 @@
     }
   }
 
-  // Session-replay lives on Hanzo Insights. Replay INGEST is a separate, not-yet-
-  // live workstream, so this is a present-when-available attachment: the deep-link
-  // is well-formed now and simply "lights up" once ingest lands. Never blocks.
+  // ---- Session replay (rrweb → Hanzo Insights) ------------------------------
+  //
+  // The recorder is deliberately NOT bundled here. We load the one Insights
+  // itself serves — `<insights>/static/recorder.js` — so the rrweb build that
+  // RECORDS is by construction the build the player REPLAYS. Vendoring our own
+  // copy would fork that pair and let it drift silently: a recording that the
+  // player of the day cannot read is worse than no recording, because it looks
+  // like it worked. Same reasoning as the route manifest — prefer the signal
+  // derived from the same source as the consumer.
+  //
+  // Batches ride the documented recordings route (`POST /v1/s`) as the PostHog-
+  // shaped `$snapshot` envelope insights-capture parses (its `RawRecording`), and
+  // are keyed on the SAME session id the edit payload reports — so a filed fix and
+  // its recording are one session and `replayRef`'s deep-link actually resolves.
+  var REPLAY = {
+    started: false,
+    live: false,
+    host: 'https://insights.hanzo.ai',
+    key: '',
+    win: 'w' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+    buf: [],
+    stop: null,
+  };
+
+  // Consent & opt-out. Replay is off for anyone who asked not to be measured, and
+  // any page can veto it before this script runs (`window.__hanzoNoReplay = true`).
+  function replayOptedOut() {
+    try {
+      if (window.__hanzoNoReplay) return true;
+      var dnt = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      if (dnt === '1' || dnt === 'yes') return true;
+      if (window.localStorage && localStorage.getItem('hz_replay_off') === '1') return true;
+    } catch (e) {
+      /* storage blocked → fall through and record */
+    }
+    return false;
+  }
+
+  // Ship a batch. `closing` is the page-going-away path, which uses `keepalive`
+  // so the request outlives the document — losing the tail of a session costs
+  // exactly the part a bug report needs most.
+  //
+  // Deliberately NOT sendBeacon: capture 502s on a `text/plain` body, so the
+  // envelope must be `application/json`, which is not a CORS-safelisted content
+  // type and therefore preflights. `keepalive` fetch preflights cleanly (and the
+  // preflight is cached for a day); a beacon's is far less certain. One path,
+  // both cases.
+  function flushReplay(closing) {
+    if (!REPLAY.key || !REPLAY.buf.length) return;
+    var batch = REPLAY.buf;
+    REPLAY.buf = [];
+    var sid = sessionId();
+    var body = JSON.stringify([
+      {
+        event: '$snapshot',
+        api_key: REPLAY.key,
+        distinct_id: sid,
+        properties: {
+          $session_id: sid,
+          $window_id: REPLAY.win,
+          $snapshot_source: 'web',
+          $lib: 'hanzo-edit',
+          $snapshot_data: batch,
+        },
+      },
+    ]);
+    // credentials omitted: the recording is keyed by the publishable ingest key,
+    // never by the viewer's Hanzo cookie.
+    var opts = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: body,
+      credentials: 'omit',
+    };
+    // `keepalive` caps the body at 64KB, so it is used ONLY when the page is
+    // going away and a normal request would be cancelled. An over-size closing
+    // batch is dropped rather than silently truncated — the 5s timer means at
+    // most that much is ever at risk.
+    if (closing) {
+      if (body.length > 60000) return;
+      opts.keepalive = true;
+    }
+    fetch(REPLAY.host + '/v1/s', opts).catch(function () {
+      /* a dropped batch must never surface on the page being recorded */
+    });
+  }
+
+  function loadScript(src, cb) {
+    var s = document.createElement('script');
+    s.src = src;
+    s.async = true;
+    s.crossOrigin = 'anonymous';
+    s.onload = cb;
+    s.onerror = function () {
+      /* recorder unavailable → the page is untouched, editing still works */
+    };
+    (document.head || document.documentElement).appendChild(s);
+  }
+
+  function startRecorder() {
+    var rr = window.rrweb || (window.__InsightsExtensions__ && window.__InsightsExtensions__.rrweb);
+    if (!rr || typeof rr.record !== 'function') return;
+    REPLAY.live = true;
+    REPLAY.stop = rr.record({
+      emit: function (ev) {
+        REPLAY.buf.push(ev);
+        // Cap the hold when the key hasn't landed yet, so a page that never gets
+        // config can't grow a buffer without bound.
+        if (!REPLAY.key && REPLAY.buf.length > 400) REPLAY.buf.splice(0, REPLAY.buf.length - 400);
+        else if (REPLAY.buf.length >= 100) flushReplay(false);
+      },
+      // Privacy is the DEFAULT, not a deployment option: every input value is
+      // masked before it leaves the page, so a recording can never carry a
+      // password, a card number, or anything else somebody typed. Opt an element
+      // back in with `.hz-unmask`; hide any subtree entirely with `.hz-no-record`.
+      maskAllInputs: true,
+      maskTextClass: 'hz-mask',
+      unmaskTextClass: 'hz-unmask',
+      blockClass: 'hz-no-record',
+      ignoreClass: 'hz-no-ignore',
+      // Never record our own widget: replaying the editor on top of the page it
+      // edits is noise, and its panel can hold the user's unsent prose.
+      blockSelector: '[data-hanzo-edit]',
+      collectFonts: false,
+      recordCanvas: false,
+      recordCrossOriginIframes: false,
+      // A viewer scrubbing into the middle of a long session still needs a full
+      // DOM to start from.
+      checkoutEveryNms: 300000,
+    });
+
+    setInterval(function () {
+      flushReplay(false);
+    }, 5000);
+    // `pagehide` fires where `unload` is unreliable (bfcache, mobile Safari).
+    window.addEventListener('pagehide', function () {
+      flushReplay(true);
+    });
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'hidden') flushReplay(true);
+    });
+  }
+
+  // Boot replay. Orthogonal to editing: it runs on every page carrying the tag,
+  // including pages that map to no repo, because a recording is worth having
+  // whether or not this page happens to be editable.
+  function bootReplay() {
+    if (REPLAY.started || replayOptedOut()) return;
+    REPLAY.started = true;
+    fetch(BASE + '/v1/edit/config', { credentials: 'omit' })
+      .then(function (r) {
+        return r.ok ? r.json() : null;
+      })
+      .then(function (cfg) {
+        var ins = (cfg && cfg.insights) || null;
+        if (!ins || !ins.enabled || !ins.key) return;
+        if (typeof ins.sampleRate === 'number' && ins.sampleRate < 1 && Math.random() > ins.sampleRate) return;
+        REPLAY.key = String(ins.key);
+        if (ins.host) REPLAY.host = String(ins.host).replace(/\/+$/, '');
+        loadScript(REPLAY.host + '/static/recorder.js', startRecorder);
+      })
+      .catch(function () {
+        /* no config → no recording; never a page error */
+      });
+  }
+
+  // The replay reference attached to every submission. `recording` states whether
+  // this session is actually being captured, so a reviewer knows whether the
+  // deep-link will have anything behind it rather than guessing.
   function replayRef() {
     var sid = sessionId();
     if (!sid) return undefined;
-    return { sessionId: sid, deepLink: 'https://insights.hanzo.ai/replay/' + encodeURIComponent(sid) };
+    return {
+      sessionId: sid,
+      deepLink: REPLAY.host + '/replay/' + encodeURIComponent(sid),
+      recording: REPLAY.live || undefined,
+    };
   }
+
+  // Recording starts here — BEFORE the repo gate below, because replay and
+  // editing are independent capabilities that happen to share one tag. A page we
+  // cannot map to a repo is still a page worth being able to watch back.
+  bootReplay();
+
+  // Past this line everything is the EDIT widget, which is meaningless without a
+  // repo to open the change against.
+  if (!REPO) return;
 
   // A short ring buffer of recent route events, captured from load. Degrades to
   // just the initial view when the page never client-navigates.
