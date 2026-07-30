@@ -35,7 +35,7 @@ function GuiThemeBridge({ children }: { children: ReactNode }) {
   const { resolvedTheme } = useTheme();
   const theme = resolvedTheme === 'light' ? 'light' : 'dark';
   return (
-    <GuiProvider config={guiConfig} defaultTheme={theme}>
+    <GuiProvider config={guiConfig} defaultTheme={theme} disableInjectCSS>
       {children}
     </GuiProvider>
   );

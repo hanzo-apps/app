@@ -7,6 +7,10 @@ import TanstackProvider from "@/components/providers/tanstack-query-provider";
 // come after and win on any overlap — preserving the tuned palette AND the
 // Tamagui `--background !important` fix. One import, at the root, once.
 import "@hanzo/brand/styles/variables.css";
+// The full @hanzo/gui atomic sheet as a REAL stylesheet. Generated from
+// lib/gui.config.ts (config.getCSS()); GuiProvider gets disableInjectCSS so the
+// same 350KB is no longer inlined into every HTML document, uncacheable.
+import "./gui.css";
 import "@/assets/globals.css";
 import { SITE_URL } from "@/lib/site";
 import AppContext from "@/components/contexts/app-context";
