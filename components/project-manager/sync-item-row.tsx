@@ -53,11 +53,7 @@ export function SyncItemRow({
       </div>
 
       {/* Status Badge */}
-      <SyncStatusBadge
-        status={syncing ? 'syncing' : item.status}
-        showLabel={true}
-        size="sm"
-      />
+      <SyncStatusBadge status={syncing ? 'syncing' : item.status} showLabel />
 
       {/* Actions */}
       <div className="flex items-center gap-1">

@@ -1,5 +1,6 @@
 'use client';
 
+import { Badge } from '@hanzo/ui';
 import { cn } from '@/lib/utils';
 import { ItemSyncStatus } from '@/lib/vfs/sync-types';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/overlay';
@@ -17,112 +18,73 @@ import {
 interface SyncStatusBadgeProps {
   status: ItemSyncStatus;
   showLabel?: boolean;
-  size?: 'sm' | 'md';
   className?: string;
 }
 
+/**
+ * Status is carried by the ICON and the LABEL, never by hue. The eight states
+ * used to be eight colours (green/blue/orange/red/purple/neutral), which is both
+ * off-palette and the least accessible way to encode a distinction the text
+ * already makes. `outline` is the one badge every state wears.
+ */
 const STATUS_CONFIG: Record<
   ItemSyncStatus,
-  {
-    label: string;
-    description: string;
-    icon: typeof CheckCircle;
-    colorClass: string;
-    bgClass: string;
-  }
+  { label: string; description: string; icon: typeof CheckCircle }
 > = {
   synced: {
     label: 'Synced',
     description: 'Local and server are in sync. No action needed.',
     icon: CheckCircle,
-    colorClass: 'text-green-600 dark:text-green-400',
-    bgClass: 'bg-green-500/10',
   },
   'local-newer': {
     label: 'Local newer',
     description: 'You have local changes not yet on the server. Push to sync.',
     icon: ArrowUp,
-    colorClass: 'text-blue-600 dark:text-blue-400',
-    bgClass: 'bg-blue-500/10',
   },
   'server-newer': {
     label: 'Server newer',
     description: 'Server has updates you don\'t have locally. Pull to get latest.',
     icon: ArrowDown,
-    colorClass: 'text-orange-600 dark:text-orange-400',
-    bgClass: 'bg-orange-500/10',
   },
   conflict: {
     label: 'Conflict',
     description: 'Both local and server have changes. Push to overwrite server, or pull to discard local changes.',
     icon: AlertTriangle,
-    colorClass: 'text-red-600 dark:text-red-400',
-    bgClass: 'bg-red-500/10',
   },
   'local-only': {
     label: 'Local only',
     description: 'Only exists in your browser. Push to save to server.',
     icon: HardDrive,
-    colorClass: 'text-neutral-600 dark:text-neutral-400',
-    bgClass: 'bg-neutral-500/10',
   },
   'server-only': {
     label: 'Server only',
     description: 'Only exists on server. Pull to download locally.',
     icon: Cloud,
-    colorClass: 'text-purple-600 dark:text-purple-400',
-    bgClass: 'bg-purple-500/10',
   },
   syncing: {
     label: 'Syncing...',
     description: 'Currently syncing with server.',
     icon: RefreshCw,
-    colorClass: 'text-blue-600 dark:text-blue-400',
-    bgClass: 'bg-blue-500/10',
   },
   error: {
     label: 'Error',
     description: 'Sync failed. Try again.',
     icon: XCircle,
-    colorClass: 'text-red-600 dark:text-red-400',
-    bgClass: 'bg-red-500/10',
   },
 };
 
-export function SyncStatusBadge({
-  status,
-  showLabel = true,
-  size = 'sm',
-  className,
-}: SyncStatusBadgeProps) {
+export function SyncStatusBadge({ status, showLabel = true, className }: SyncStatusBadgeProps) {
   const config = STATUS_CONFIG[status];
   const Icon = config.icon;
 
-  const iconSize = size === 'sm' ? 'w-3.5 h-3.5' : 'w-4 h-4';
-  const textSize = size === 'sm' ? 'text-xs' : 'text-sm';
-  const padding = size === 'sm' ? 'px-1.5 py-0.5' : 'px-2 py-1';
-
-  const badge = (
-    <span
-      className={cn(
-        'inline-flex items-center gap-1 rounded-full font-medium cursor-help',
-        padding,
-        config.bgClass,
-        config.colorClass,
-        textSize,
-        className
-      )}
-    >
-      <Icon
-        className={cn(iconSize, status === 'syncing' && 'animate-spin')}
-      />
-      {showLabel && <span>{config.label}</span>}
-    </span>
-  );
-
   return (
     <Tooltip>
-      <TooltipTrigger asChild>{badge}</TooltipTrigger>
+      <TooltipTrigger asChild>
+        <Badge variant="outline" className={cn('cursor-help', className)}>
+          <Icon className={cn('h-3.5 w-3.5', status === 'syncing' && 'animate-spin')} />
+          {showLabel && config.label}
+        </Badge>
+      </TooltipTrigger>
       <TooltipContent side="top" className="max-w-xs">
         <p className="text-sm">{config.description}</p>
       </TooltipContent>
