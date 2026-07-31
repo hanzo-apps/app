@@ -30,7 +30,7 @@ function DocsViewContent() {
       setError(null);
 
       try {
-        const response = await fetch(`/api/docs/${selectedDoc.file}`);
+        const response = await fetch(`/v1/docs/${selectedDoc.file}`);
         if (!response.ok) {
           throw new Error(`Failed to load document: ${response.statusText}`);
         }

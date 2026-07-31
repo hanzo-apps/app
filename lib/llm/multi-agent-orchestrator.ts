@@ -1234,8 +1234,8 @@ write: { "file_path": "${filePath}", "operations": [{"type": "rewrite", "content
     const tools = toolRegistry.getDefinitions(agent.tools);
 
     const apiUrl = typeof window !== 'undefined'
-      ? `${window.location.origin}/api/generate`
-      : '/api/generate';
+      ? `${window.location.origin}/v1/generate`
+      : '/v1/generate';
 
     // Strip ui_metadata from messages
     let sanitizedMessages = messages.map(msg => {

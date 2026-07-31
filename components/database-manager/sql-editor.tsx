@@ -60,7 +60,7 @@ export function SqlEditor({ deploymentId, queryEndpoint }: SqlEditorProps) {
     const startTime = Date.now();
 
     try {
-      const endpoint = queryEndpoint || `/api/admin/deployments/${deploymentId}/database/query`;
+      const endpoint = queryEndpoint || `/v1/admin/deployments/${deploymentId}/database/query`;
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

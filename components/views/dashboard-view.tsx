@@ -152,7 +152,7 @@ async function fetchBrowserModeData(): Promise<BrowserDashboardData> {
   let whatsNew: BrowserDashboardData['whatsNew'] = null;
 
   try {
-    const response = await fetch('/api/docs/WHATS_NEW.md');
+    const response = await fetch('/v1/docs/WHATS_NEW.md');
     if (response.ok) {
       const content = await response.text();
       // Find first version heading: ## v{version} - {title}
@@ -723,7 +723,7 @@ export function DashboardView({ onNavigate, onProjectSelect, onStartTour }: Dash
     try {
       if (isServerMode) {
         // Server mode: fetch from API
-        const response = await fetch('/api/admin/dashboard');
+        const response = await fetch('/v1/admin/dashboard');
         if (!response.ok) {
           throw new Error('Failed to fetch dashboard data');
         }

@@ -23,9 +23,9 @@ export const BASE_SYSTEM_PROMPT = `
 HANZO BASE BACKEND (enabled for this app):
 This app has a persistent data backend (Hanzo Base). Wire ALL forms and dynamic data through it — do not fake persistence with localStorage.
 - Records API (same-origin proxy, already authenticated):
-  - List:   fetch('/api/base/collections/<collection>/records?sort=-created').then(r=>r.json()) → { items: [...] }
-  - Create: fetch('/api/base/collections/<collection>/records', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(fields) })
-  - Delete: fetch('/api/base/collections/<collection>/records/<id>', { method:'DELETE' })
+  - List:   fetch('/v1/base/collections/<collection>/records?sort=-created').then(r=>r.json()) → { items: [...] }
+  - Create: fetch('/v1/base/collections/<collection>/records', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(fields) })
+  - Delete: fetch('/v1/base/collections/<collection>/records/<id>', { method:'DELETE' })
 - Choose short plural collection names (e.g. messages, votes, signups) and use the SAME names consistently across pages.
 - Realtime: after a successful create, refresh the list; ALSO poll the list every 5s (setInterval) so other visitors' records appear live, and show a small unobtrusive toast/notification when new records arrive.
 - Handle errors honestly: if a request fails, show an inline error state — never pretend it saved.

@@ -57,7 +57,7 @@ Reply with ONLY a JSON array of skill numbers that are relevant. Multiple skills
   const timeout = setTimeout(() => controller.abort(), 5000);
 
   try {
-    const response = await fetch('/api/generate', {
+    const response = await fetch('/v1/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       signal: controller.signal,

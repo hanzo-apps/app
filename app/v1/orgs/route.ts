@@ -10,7 +10,7 @@
  * mechanism. The server honors it only for a global admin (a normal user is
  * pinned to their bearer owner), so switching needs no server round-trip.
  *
- * No `/api/` prefix (CTO law: same-origin `/v1/*`).
+ * No `/v1/` prefix (CTO law: same-origin `/v1/*`).
  */
 import { type NextRequest, NextResponse } from 'next/server';
 

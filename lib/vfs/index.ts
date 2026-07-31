@@ -326,7 +326,7 @@ export class VirtualFileSystem {
       } else {
         // Client side: fetch schema from API
         try {
-          const response = await fetch(`/api/admin/deployments/${deploymentId}/server-context`);
+          const response = await fetch(`/v1/admin/deployments/${deploymentId}/server-context`);
           if (response.ok) {
             const data = await response.json();
             const schemaFile = data.files?.find((f: { path: string }) => f.path === '/.server/db/schema.sql');

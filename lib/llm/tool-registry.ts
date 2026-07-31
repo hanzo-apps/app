@@ -116,7 +116,7 @@ Execute ONE command at a time as a single string.`,
           if (serverCommands.includes(command) && deploymentId) {
             // Proxy to server API for server-side execution
             try {
-              const response = await fetch('/api/shell/execute', {
+              const response = await fetch('/v1/shell/execute', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ deploymentId, cmd: cmdArray })

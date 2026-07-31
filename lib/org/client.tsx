@@ -92,8 +92,8 @@ export function OrgProvider({ children }: { children: React.ReactNode }) {
     //
     // Re-auth through the ONE active path (`@hanzo/iam` PKCE at `/login` →
     // registered `/auth/callback`). The callback restores `redirectAfterLogin`,
-    // so stash where we were. Never the legacy `/api/auth/login` BFF — its
-    // `/api/auth/callback` redirect_uri is unregistered and bounces the user.
+    // so stash where we were. Never the legacy `/v1/auth/login` BFF — its
+    // `/v1/auth/callback` redirect_uri is unregistered and bounces the user.
     if (!data.additional && typeof window !== 'undefined') {
       const here = window.location.pathname + window.location.search;
       try {

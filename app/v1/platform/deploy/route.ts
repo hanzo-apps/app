@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         ...result,
-        statusUrl: `/api/platform/deploy?project=${encodeURIComponent(
+        statusUrl: `/v1/platform/deploy?project=${encodeURIComponent(
           result.project.slug,
         )}&app=${encodeURIComponent(result.app.slug)}`,
       },

@@ -22,7 +22,7 @@ export interface HFCapabilities {
  * and whether Codex auth is supported (not on HF Spaces — cookies blocked).
  */
 export async function checkHFCapabilities(): Promise<HFCapabilities> {
-  const res = await fetch('/api/auth/hf/capabilities', {
+  const res = await fetch('/v1/auth/hf/capabilities', {
     credentials: 'same-origin',
   });
   if (!res.ok) return { oauthAvailable: false, clientId: null, scopes: 'openid profile', codexAvailable: true };
