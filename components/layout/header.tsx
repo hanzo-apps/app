@@ -118,7 +118,7 @@ export default function Header() {
         <AppSwitcher currentApp="app" />
 
         {/* One nav */}
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
+        <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
           {NAV.map((link) => (
             <Link
               key={link.href}
@@ -141,7 +141,7 @@ export default function Header() {
         <HeaderSearch />
 
         {/* Auth (desktop) */}
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="hidden items-center gap-2 lg:flex">
           {isAuthenticated && user ? accountMenu : signedOutCTAs}
         </div>
 
@@ -151,7 +151,7 @@ export default function Header() {
           onClick={() => setMobileOpen((v) => !v)}
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
           aria-expanded={mobileOpen}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-foreground hover:bg-card md:hidden"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-foreground hover:bg-card lg:hidden"
         >
           {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
@@ -159,7 +159,7 @@ export default function Header() {
 
       {/* Mobile sheet */}
       {mobileOpen && (
-        <div className="border-t border-border bg-background px-4 py-3 md:hidden">
+        <div className="border-t border-border bg-background px-4 py-3 lg:hidden">
           <nav className="flex flex-col" aria-label="Primary">
             {NAV.map((link) => (
               <Link
