@@ -1,10 +1,11 @@
 // The live coding-session roster: what the org's machines are working on right
 // now, and a terminal for each one.
 //
-// The data comes from api.hanzo.ai/v1/sessions, read AS the signed-in user. There
-// is deliberately no route of our own in between: the roster, its TTL, and its
-// org scoping all live in the control plane, and a local endpoint here would be a
-// second place for them to disagree.
+// The data comes from api.hanzo.ai/v1/agents/sessions, read AS the signed-in
+// user — the same registry `hanzo code` registers into. There is deliberately no
+// route of our own in between: the registry and its org scoping live in the
+// control plane, and a local endpoint would be a second place for them to
+// disagree.
 
 import { headers } from 'next/headers';
 import { session } from '@/lib/iam';
@@ -39,7 +40,7 @@ export default async function SessionsPage() {
   } catch (e) {
     // A roster that cannot be read is reported as such. Rendering an empty list
     // would say "nothing is running", which is a different and wrong claim.
-    error = e instanceof Error ? e.message : 'could not reach the session roster';
+    error = e instanceof Error ? e.message : 'could not reach the session registry';
   }
 
   return (
@@ -53,14 +54,11 @@ export default async function SessionsPage() {
 
       {error ? (
         <div className="rounded-lg border border-destructive/40 bg-destructive/5 px-4 py-3 text-sm">
-          <p className="font-medium">The session roster is unavailable.</p>
+          <p className="font-medium">The session registry is unavailable.</p>
           <p className="mt-1 text-muted-foreground">{error}</p>
         </div>
       ) : (
-        <SessionBoard
-          sessions={roster!.sessions}
-          ttlSeconds={roster!.ttlSeconds}
-        />
+        <SessionBoard sessions={roster!.sessions} />
       )}
     </main>
   );
