@@ -14,7 +14,7 @@ export function ProjectCard({ project }: { project: Project }) {
         className="relative bg-card rounded-2xl overflow-hidden h-44 w-full flex items-center justify-end flex-col px-3 border border-border"
       >
         <iframe
-          src={`/api/preview/${project.space_id}`}
+          src={`/v1/preview/${project.space_id}`}
           frameBorder="0"
           className="absolute inset-0 w-full h-full top-0 left-0 group-hover:brightness-75 transition-all duration-200 pointer-events-none"
         ></iframe>

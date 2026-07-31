@@ -14,7 +14,7 @@ import { User } from "@/types";
  * reshapes the SDK user into the app `User` type and preserves the legacy
  * `useUser()` return surface so the 20+ existing consumers stay untouched.
  *
- * - No hand-rolled OAuth, no `/oauth/*`, no `/api/me` / `/api/auth/me`, no
+ * - No hand-rolled OAuth, no `/oauth/*`, no `/v1/me` / `/v1/auth/me`, no
  *   second token store: `lib/iam.ts` is the server's one verified reader and
  *   this is the client's one view of the same session.
  * - `openLoginWindow` starts the PKCE redirect; `login*` helpers delegate to

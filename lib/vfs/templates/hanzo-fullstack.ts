@@ -69,7 +69,7 @@ li .del { background: none; color: #777; border: 0; cursor: pointer; font-size: 
 // Talks to Base through the builder-origin proxy (/api/base) and to the LLM
 // edge function (functions/ask). In preview, the proxy uses the developer's
 // session; when deployed, each visitor's Hanzo session.
-const APP_JS = `const BASE = '/api/base';
+const APP_JS = `const BASE = '/v1/base';
 const COLLECTION = 'notes';
 const notesEl = document.getElementById('notes');
 const noteEl = document.getElementById('note');
@@ -78,7 +78,7 @@ const improveBtn = document.getElementById('improve');
 
 async function me() {
   try {
-    const r = await fetch('/api/me');
+    const r = await fetch('/v1/me');
     if (!r.ok) return;
     const { user } = await r.json();
     if (user && (user.fullname || user.name)) {

@@ -423,7 +423,7 @@ export class VirtualServer {
       return false;
     }
     // Skip if already an API path
-    if (url.startsWith('/api/')) return false;
+    if (url.startsWith('/v1/')) return false;
     // Skip if it has a file extension (likely an asset)
     const pathWithoutQuery = url.split('?')[0].split('#')[0];
     const lastSegment = pathWithoutQuery.split('/').pop() || '';
@@ -441,7 +441,7 @@ export class VirtualServer {
     // Remove leading slash for the function name
     const functionPath = path.substring(1);
     // Return the API endpoint URL
-    return '/api/deployments/' + deploymentId + '/functions/' + functionPath;
+    return '/v1/deployments/' + deploymentId + '/functions/' + functionPath;
   }
   
   // Intercept Image src setter to handle ALL image loading

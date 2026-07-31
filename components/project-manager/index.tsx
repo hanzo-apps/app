@@ -360,7 +360,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
           // generated app gets a persistent, IAM-native data layer.
           if (process.env.NEXT_PUBLIC_SERVER_MODE === 'true' && backendFeatures.databaseSchema) {
             try {
-              const res = await fetch(`/api/projects/${finalProject.id}/base`, {
+              const res = await fetch(`/v1/builder/${finalProject.id}/base`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ schema: backendFeatures.databaseSchema }),

@@ -19,7 +19,7 @@ export function SchemaViewer({ deploymentId, schemaEndpoint, showSystemTablesTog
   const [expandedTables, setExpandedTables] = useState<Set<string>>(new Set());
   const [showSystemTables, setShowSystemTables] = useState(false);
 
-  const endpoint = schemaEndpoint || `/api/admin/deployments/${deploymentId}/database/schema`;
+  const endpoint = schemaEndpoint || `/v1/admin/deployments/${deploymentId}/database/schema`;
 
   useEffect(() => {
     loadSchema();

@@ -43,8 +43,8 @@ export function ScheduledFunctionsManager({ deploymentId, dataProvider }: Schedu
         setEdgeFunctions(fns);
       } else if (deploymentId) {
         const [schedRes, fnRes] = await Promise.all([
-          fetch(`/api/admin/deployments/${deploymentId}/scheduled-functions`),
-          fetch(`/api/admin/deployments/${deploymentId}/functions`),
+          fetch(`/v1/admin/deployments/${deploymentId}/scheduled-functions`),
+          fetch(`/v1/admin/deployments/${deploymentId}/functions`),
         ]);
         if (!schedRes.ok) {
           const data = await schedRes.json();
@@ -71,7 +71,7 @@ export function ScheduledFunctionsManager({ deploymentId, dataProvider }: Schedu
       if (dataProvider) {
         await dataProvider.toggle(fn.id, !fn.enabled);
       } else if (deploymentId) {
-        const res = await fetch(`/api/admin/deployments/${deploymentId}/scheduled-functions/${fn.id}`, {
+        const res = await fetch(`/v1/admin/deployments/${deploymentId}/scheduled-functions/${fn.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ enabled: !fn.enabled }),
@@ -94,7 +94,7 @@ export function ScheduledFunctionsManager({ deploymentId, dataProvider }: Schedu
       if (dataProvider) {
         await dataProvider.remove(fn.id);
       } else if (deploymentId) {
-        const res = await fetch(`/api/admin/deployments/${deploymentId}/scheduled-functions/${fn.id}`, {
+        const res = await fetch(`/v1/admin/deployments/${deploymentId}/scheduled-functions/${fn.id}`, {
           method: 'DELETE',
         });
         if (!res.ok) throw new Error('Failed to delete scheduled function');
@@ -115,7 +115,7 @@ export function ScheduledFunctionsManager({ deploymentId, dataProvider }: Schedu
       } else if (!deploymentId) {
         throw new Error('No deployment ID available');
       } else if (editingFunction) {
-        const res = await fetch(`/api/admin/deployments/${deploymentId}/scheduled-functions/${editingFunction.id}`, {
+        const res = await fetch(`/v1/admin/deployments/${deploymentId}/scheduled-functions/${editingFunction.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
@@ -125,7 +125,7 @@ export function ScheduledFunctionsManager({ deploymentId, dataProvider }: Schedu
           throw new Error(err.error || 'Failed to update scheduled function');
         }
       } else {
-        const res = await fetch(`/api/admin/deployments/${deploymentId}/scheduled-functions`, {
+        const res = await fetch(`/v1/admin/deployments/${deploymentId}/scheduled-functions`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),

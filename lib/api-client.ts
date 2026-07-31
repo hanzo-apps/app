@@ -215,7 +215,7 @@ class ApiClient {
   // Health check method
   async healthCheck(): Promise<boolean> {
     try {
-      await this.get('/api/health', { skipRetry: true, timeout: 5000 });
+      await this.get('/v1/health', { skipRetry: true, timeout: 5000 });
       return true;
     } catch {
       return false;

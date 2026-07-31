@@ -14,7 +14,7 @@ import { configManager } from '@/lib/config/storage';
  * refresh_token in an HttpOnly cookie and returns the non-sensitive fields.
  */
 export async function connectCodex(auth: CodexAuthData): Promise<CodexAuthData> {
-  const res = await fetch('/api/auth/codex/connect', {
+  const res = await fetch('/v1/auth/codex/connect', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'same-origin',
@@ -34,7 +34,7 @@ export async function connectCodex(auth: CodexAuthData): Promise<CodexAuthData> 
  * Delete the HttpOnly refresh token cookie and clear localStorage.
  */
 export async function disconnectCodex(): Promise<void> {
-  const res = await fetch('/api/auth/codex/disconnect', {
+  const res = await fetch('/v1/auth/codex/disconnect', {
     method: 'POST',
     credentials: 'same-origin',
   });
@@ -48,7 +48,7 @@ export async function disconnectCodex(): Promise<void> {
  * Check whether the server has a refresh token cookie set.
  */
 export async function checkCodexStatus(): Promise<boolean> {
-  const res = await fetch('/api/auth/codex/status', {
+  const res = await fetch('/v1/auth/codex/status', {
     credentials: 'same-origin',
   });
   if (!res.ok) return false;
@@ -61,7 +61,7 @@ export async function checkCodexStatus(): Promise<boolean> {
  * token — the server reads it from the cookie automatically.
  */
 export async function refreshAccessToken(): Promise<CodexAuthData> {
-  const res = await fetch('/api/auth/codex/token', {
+  const res = await fetch('/v1/auth/codex/token', {
     method: 'POST',
     credentials: 'same-origin',
   });

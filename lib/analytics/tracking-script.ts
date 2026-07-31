@@ -50,8 +50,8 @@ export interface TrackingScriptOptions {
 export function generateTrackingScript(options: TrackingScriptOptions): string {
   const {
     deploymentId,
-    apiEndpoint = '/api/analytics/track',
-    interactionEndpoint = '/api/analytics/interaction',
+    apiEndpoint = '/v1/analytics/track',
+    interactionEndpoint = '/v1/analytics/interaction',
     features = {
       basicTracking: true,
       heatmaps: false,

@@ -30,7 +30,7 @@ export function LogsViewer({ deploymentId }: LogsViewerProps) {
     try {
       setLoading(true);
       setError(null);
-      const res = await fetch(`/api/admin/deployments/${deploymentId}/database/logs?limit=200`);
+      const res = await fetch(`/v1/admin/deployments/${deploymentId}/database/logs?limit=200`);
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.error || 'Failed to load logs');
@@ -48,7 +48,7 @@ export function LogsViewer({ deploymentId }: LogsViewerProps) {
     if (!confirm('Clear all function execution logs? This cannot be undone.')) return;
 
     try {
-      const res = await fetch(`/api/admin/deployments/${deploymentId}/database/logs`, {
+      const res = await fetch(`/v1/admin/deployments/${deploymentId}/database/logs`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('Failed to clear logs');

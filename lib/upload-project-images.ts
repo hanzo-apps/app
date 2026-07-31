@@ -21,7 +21,7 @@ export const uploadProjectImages = async (
   if (!spaceId || images.length === 0) return [];
   const data = new FormData();
   images.forEach((image) => data.append("images", image));
-  const res = await fetch(`/api/me/projects/${spaceId}/images`, {
+  const res = await fetch(`/v1/me/projects/${spaceId}/images`, {
     method: "POST",
     body: data,
   });

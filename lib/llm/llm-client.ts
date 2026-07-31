@@ -7,7 +7,7 @@ export async function validateApiKey(apiKey: string, provider: ProviderId): Prom
   if (!apiKey) return false;
 
   try {
-    const response = await fetch('/api/validate-key', {
+    const response = await fetch('/v1/validate-key', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -39,7 +39,7 @@ export async function getAvailableModels(apiKey?: string, provider?: ProviderId)
   }
 
   try {
-    const response = await fetch('/api/models', {
+    const response = await fetch('/v1/models', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

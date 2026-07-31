@@ -38,7 +38,7 @@ export function DeploymentSelector({
         setLoading(true);
         setError(null);
 
-        const response = await fetch(`/api/projects/${projectId}/deployments`);
+        const response = await fetch(`/v1/projects/${projectId}/deployments`);
         if (!response.ok) {
           throw new Error('Failed to fetch deployments');
         }
