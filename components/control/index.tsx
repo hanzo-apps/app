@@ -35,8 +35,6 @@
  */
 
 import * as React from 'react';
-import * as SwitchPrimitive from '@radix-ui/react-switch';
-import * as LabelPrimitive from '@radix-ui/react-label';
 
 import { cn } from '@/lib/utils';
 
@@ -99,60 +97,14 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
 );
 Textarea.displayName = 'Textarea';
 
-/** The field's name. Dims with its control via Radix's peer wiring. */
-export const Label = React.forwardRef<
-  React.ElementRef<typeof LabelPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
->(({ className, ...props }, ref) => (
-  <LabelPrimitive.Root
-    ref={ref}
-    data-slot="label"
-    className={cn(
-      'text-[var(--control-fs)] leading-none font-medium text-foreground select-none',
-      'peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
-      className,
-    )}
-    {...props}
-  />
-));
-Label.displayName = 'Label';
-
 /**
- * A toggle that says which way it is.
+ * Label and Switch come from @hanzo/ui — they are not reimplemented here.
  *
- * Both halves of the state are carried TWICE over, so the answer survives losing
- * either channel: the track inverts (muted -> primary, i.e. near-black -> white in
- * dark, near-white -> near-black in light) AND the knob slides 16px. The knob is
- * always the track's own foreground, so it stays legible against whichever fill is
- * under it rather than vanishing into it.
+ * The local Switch was a Radix + Tailwind copy of a component @hanzo/ui already
+ * ships on the gui substrate with the SAME geometry (36x20 track, 16px thumb),
+ * plus the 44px touch floor this copy never had. Consumers pass only
+ * `checked`/`onCheckedChange`, which both accept, so the swap is transparent —
+ * and it removes @radix-ui/react-switch and @radix-ui/react-label entirely.
  */
-export const Switch = React.forwardRef<
-  React.ElementRef<typeof SwitchPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof SwitchPrimitive.Root>
->(({ className, ...props }, ref) => (
-  <SwitchPrimitive.Root
-    ref={ref}
-    data-slot="switch"
-    className={cn(
-      // 36x20 outside, 2px border -> a 32x16 track; the 16px knob travels exactly
-      // 16px and lands flush. Geometry that adds up, so neither end clips.
-      'peer inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2',
-      'transition-colors duration-150',
-      'data-[state=unchecked]:bg-muted data-[state=unchecked]:border-border',
-      'data-[state=checked]:bg-primary data-[state=checked]:border-primary',
-      'disabled:cursor-not-allowed disabled:opacity-50',
-      className,
-    )}
-    {...props}
-  >
-    <SwitchPrimitive.Thumb
-      className={cn(
-        'pointer-events-none block size-4 rounded-full ring-0 shadow-sm',
-        'transition-transform duration-150',
-        'data-[state=unchecked]:translate-x-0 data-[state=unchecked]:bg-muted-foreground',
-        'data-[state=checked]:translate-x-4 data-[state=checked]:bg-primary-foreground',
-      )}
-    />
-  </SwitchPrimitive.Root>
-));
-Switch.displayName = 'Switch';
+export { Label, Switch } from '@hanzo/ui';
+export type { LabelProps, SwitchProps } from '@hanzo/ui';
