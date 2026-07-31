@@ -77,14 +77,10 @@
 
 /* ── Build-composer living gradient ──────────────────────────────────────────
    A slow-drifting conic ring + soft glow on the "Ask Hanzo to build…" bubble,
-   ~10s loop. This is the ONE place colour is allowed to be saturated: the
-   composer is where you talk to Hanzo, so it is the thing that should look
-   alive. Chrome, shell and every control stay monochrome — colour marks the
-   input, it does not decorate the frame.
-
-   Full spectrum rather than a single hue, so it reads as "all of it" instead of
-   one product's accent — the same reason console.cloud.hanzo.ai colours by app
-   category rather than picking a house colour.
+   ~10s loop. The composer is where you talk to Hanzo, so it is the thing that
+   should look alive — but it earns that with MOTION and LIGHT, not with hue.
+   There is no saturated exemption here: a violet ring, and later a full-wheel
+   rainbow, each made this the only colour on any Hanzo surface.
 
    The stops are declared ONCE in --hz-spectrum and referenced by both the ring
    and the glow. They were duplicated, which meant every palette change had to be
@@ -103,10 +99,13 @@
 }
 
 :root {
-  /* The one spectrum. Anchored on the brand violet so the loop passes through
-     Hanzo's own accent, then travels the full wheel and closes on itself — a
-     conic gradient whose first and last stop differ shows a hard seam. */
-  --hz-spectrum: #8b5cf6, #ec4899, #f59e0b, #22c55e, #06b6d4, #3b82f6, #8b5cf6;
+  /* The one sweep, declared once and closing on the stop it opened with — a
+     conic gradient whose first and last stop differ shows a hard seam. It is
+     MONOCHROME: a travelling white highlight, bright at its crest and nearly
+     out at its trough, which is what gives the ring motion without giving it a
+     hue. Hanzo is monochrome everywhere, and the composer is not an exemption. */
+  --hz-spectrum: rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.75),
+    rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.3);
 }
 
 @keyframes hzComposerSpin {
