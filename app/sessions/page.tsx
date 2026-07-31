@@ -10,6 +10,7 @@
 import { headers } from 'next/headers';
 import { session } from '@/lib/iam';
 import { listSessions } from '@/lib/sessions';
+import { listMachines } from '@/lib/machines';
 import { SessionBoard } from '@/components/sessions/board';
 
 export const dynamic = 'force-dynamic';
@@ -34,9 +35,15 @@ export default async function SessionsPage() {
   }
 
   let roster;
+  let machines;
   let error: string | null = null;
   try {
-    roster = await listSessions(me.token);
+    // Both planes, together: machines are the layout and sessions are what is on
+    // them, so one failing makes the board wrong rather than partial.
+    [roster, machines] = await Promise.all([
+      listSessions(me.token),
+      listMachines(me.token),
+    ]);
   } catch (e) {
     // A roster that cannot be read is reported as such. Rendering an empty list
     // would say "nothing is running", which is a different and wrong claim.
@@ -48,7 +55,7 @@ export default async function SessionsPage() {
       <header className="mb-8">
         <h1 className="text-2xl font-semibold tracking-tight">Sessions</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Coding sessions running on {me.orgDisplay || me.org}&rsquo;s machines right now.
+          Everything running on {me.orgDisplay || me.org}&rsquo;s machines, by machine.
         </p>
       </header>
 
@@ -58,7 +65,7 @@ export default async function SessionsPage() {
           <p className="mt-1 text-muted-foreground">{error}</p>
         </div>
       ) : (
-        <SessionBoard sessions={roster!.sessions} />
+        <SessionBoard sessions={roster!.sessions} machines={machines!.targets} />
       )}
     </main>
   );
