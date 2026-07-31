@@ -90,6 +90,10 @@ export function SessionBoard({
     sessions.find((s) => s.terminal)?.id ?? sessions[0]?.id ?? null,
   );
   const active = sessions.find((s) => s.id === selected);
+  // On a narrow screen the roster and the terminal cannot share the viewport, so
+  // choosing a session moves to it and a back control returns. On a wide one both
+  // are visible and this never engages.
+  const [onTerminal, setOnTerminal] = useState(false);
 
   if (groups.length === 0) {
     return (
@@ -104,7 +108,7 @@ export function SessionBoard({
 
   return (
     <div className="grid gap-6 lg:grid-cols-[22rem_1fr]">
-      <div className="flex flex-col gap-5">
+      <div className={`flex-col gap-5 ${onTerminal ? 'hidden lg:flex' : 'flex'}`}>
         {groups.map((g) => (
           <section key={g.key}>
             <header className="mb-2 flex items-baseline gap-2">
@@ -146,7 +150,10 @@ export function SessionBoard({
                   <li key={s.id}>
                     <button
                       type="button"
-                      onClick={() => setSelected(s.id)}
+                      onClick={() => {
+                        setSelected(s.id);
+                        setOnTerminal(true);
+                      }}
                       aria-current={on}
                       className={`w-full rounded-md border px-3 py-2 text-left transition-colors ${
                         on ? 'border-foreground/30 bg-muted' : 'hover:bg-muted/50'
@@ -178,10 +185,17 @@ export function SessionBoard({
         ))}
       </div>
 
-      <section className="min-w-0">
+      <section className={`min-w-0 ${onTerminal ? '' : 'hidden lg:block'}`}>
         {active ? (
           <>
             <div className="mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <button
+                type="button"
+                onClick={() => setOnTerminal(false)}
+                className="lg:hidden text-sm underline underline-offset-4"
+              >
+                ← Machines
+              </button>
               <h2 className="text-sm font-medium">{active.host || active.agent}</h2>
               <span className="truncate font-mono text-xs text-muted-foreground">
                 {active.cwd || active.repo}
@@ -203,14 +217,14 @@ export function SessionBoard({
                 key={active.id}
                 src={active.terminal}
                 title={`Terminal on ${active.host || active.agent}`}
-                className="h-[70vh] w-full rounded-lg border bg-black"
+                className="h-[calc(100dvh-13rem)] w-full rounded-lg border bg-black lg:h-[70vh]"
                 // The frame runs a shell on someone's machine. It gets scripts (a
                 // terminal is one) but not same-origin, so it cannot reach this
                 // page's session.
                 sandbox="allow-scripts allow-same-origin allow-forms"
               />
             ) : (
-              <div className="flex h-[70vh] w-full items-center justify-center rounded-lg border border-dashed px-6 text-center">
+              <div className="flex h-[calc(100dvh-13rem)] w-full items-center justify-center rounded-lg border border-dashed px-6 text-center lg:h-[70vh]">
                 <p className="max-w-sm text-sm text-muted-foreground">
                   This session is not publishing a terminal, so there is nothing to drive
                   here.
@@ -219,7 +233,7 @@ export function SessionBoard({
             )}
           </>
         ) : (
-          <div className="flex h-[70vh] w-full items-center justify-center rounded-lg border border-dashed px-6 text-center">
+          <div className="flex h-[calc(100dvh-13rem)] w-full items-center justify-center rounded-lg border border-dashed px-6 text-center lg:h-[70vh]">
             <p className="max-w-sm text-sm text-muted-foreground">
               Select a session to drive it.
             </p>
