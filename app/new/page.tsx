@@ -428,7 +428,7 @@ function NewProjectInner() {
             </div>
 
             {!galleryLoading && !galleryLive && (
-              <div className="mb-4 flex items-start gap-2 rounded-lg border border-amber-500/25 bg-amber-500/10 px-3 py-2.5 text-xs text-amber-300/90">
+              <div className="mb-4 flex items-start gap-2 rounded-lg border border-border bg-muted px-3 py-2.5 text-xs text-muted-foreground">
                 <CloudOff className="mt-0.5 h-4 w-4 shrink-0" />
                 <span>Showing built-in starters — the live gallery is unreachable right now.</span>
               </div>

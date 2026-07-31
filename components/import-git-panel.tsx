@@ -16,6 +16,16 @@ import {
   Search,
 } from "lucide-react";
 
+import { Badge, Button } from "@hanzo/ui";
+import { Input } from "@/components/control";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/overlay";
+
 import {
   fetchGitAccounts,
   fetchGitRepos,
@@ -60,7 +70,6 @@ export function ImportGitPanel() {
   const [accounts, setAccounts] = useState<GitAccount[]>([]);
   const [providers, setProviders] = useState<GitProviderStatus[]>([]);
   const [active, setActive] = useState<string>("");
-  const [menuOpen, setMenuOpen] = useState(false);
   const [showProviders, setShowProviders] = useState(false);
 
   const [repos, setRepos] = useState<GitRepo[]>([]);
@@ -70,7 +79,6 @@ export function ImportGitPanel() {
 
   const [pasteUrl, setPasteUrl] = useState("");
 
-  const menuRef = useRef<HTMLDivElement>(null);
   // True while the user is off linking GitHub in the hanzo.id account tab, so a
   // return to this tab re-checks the connection (idle refocus stays a no-op).
   const linkPendingRef = useRef(false);
@@ -133,18 +141,6 @@ export function ImportGitPanel() {
       alive = false;
     };
   }, [connected, active, accounts]);
-
-  // Close the account menu on outside click.
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onClick = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
-  }, [menuOpen]);
 
   // Connect GitHub — two honest paths, one per auth state:
   //
@@ -272,136 +268,114 @@ export function ImportGitPanel() {
         <>
           {/* Account dropdown + repo search */}
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <div ref={menuRef} className="relative sm:w-[46%]">
-              <button
-                type="button"
-                onClick={() => setMenuOpen((o) => !o)}
-                className="flex h-10 w-full items-center gap-2 rounded-lg border border-border bg-background px-3 text-sm text-foreground transition-colors hover:border-foreground/30"
-              >
-                {(() => {
-                  const Icon =
-                    PROVIDER_META[activeAccount?.provider ?? "github"]?.Icon ?? Github;
-                  return <Icon className="h-4 w-4 shrink-0 text-foreground" />;
-                })()}
-                {activeAccount?.avatarUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={activeAccount.avatarUrl}
-                    alt=""
-                    className="h-5 w-5 shrink-0 rounded-full"
-                  />
-                ) : null}
-                <span className="truncate">{active || "Select account"}</span>
-                <ChevronDown className="ml-auto h-4 w-4 shrink-0 text-muted-foreground" />
-              </button>
+            <div className="sm:w-[46%]">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="lg" className="w-full">
+                    {(() => {
+                      const Icon =
+                        PROVIDER_META[activeAccount?.provider ?? "github"]?.Icon ?? Github;
+                      return <Icon className="h-4 w-4 shrink-0" />;
+                    })()}
+                    {activeAccount?.avatarUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={activeAccount.avatarUrl}
+                        alt=""
+                        className="h-5 w-5 shrink-0 rounded-full"
+                      />
+                    ) : null}
+                    <span className="truncate">{active || "Select account"}</span>
+                    <ChevronDown className="ml-auto h-4 w-4 shrink-0" />
+                  </Button>
+                </DropdownMenuTrigger>
 
-              {menuOpen && (
-                <div className="absolute z-30 mt-1.5 w-full min-w-[240px] overflow-hidden rounded-xl border border-border bg-card shadow-2xl shadow-black/60">
-                  <div className="max-h-64 overflow-y-auto py-1">
-                    {accounts.map((a) => {
-                      const Icon = PROVIDER_META[a.provider]?.Icon ?? Github;
-                      return (
-                        <button
-                          key={`${a.provider}:${a.login}`}
-                          type="button"
-                          onClick={() => {
-                            setActive(a.login);
-                            setSearch("");
-                            setMenuOpen(false);
-                          }}
-                          className={`flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm transition-colors hover:bg-muted ${
-                            a.login === active ? "text-foreground" : "text-muted-foreground"
-                          }`}
-                        >
-                          {a.avatarUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={a.avatarUrl} alt="" className="h-5 w-5 rounded-full" />
-                          ) : (
-                            <Icon className="h-4 w-4 text-muted-foreground" />
-                          )}
-                          <span className="truncate">{a.login}</span>
-                          <span className="ml-auto text-[11px] text-muted-foreground">
-                            {a.provider === "gitlab"
-                              ? "GitLab"
-                              : a.type === "org"
-                                ? "Org"
-                                : "Personal"}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                  <div className="border-t border-border">
-                    <button
-                      type="button"
-                      onClick={connectGithub}
-                      className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                    >
-                      <Plus className="h-4 w-4" />
-                      Add GitHub Account
-                    </button>
-                    <button
-                      type="button"
-                      onClick={connectGitlab}
-                      className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                    >
-                      <GitlabIcon className="h-4 w-4" />
-                      Add GitLab Account
-                      {!gitlabConnectable && (
-                        <span className="ml-auto rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-300/90">
-                          Needs setup
-                        </span>
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShowProviders((s) => !s)}
-                      className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                    >
-                      <RefreshCw className="h-4 w-4" />
-                      Providers
-                    </button>
-                    {showProviders && (
-                      <div className="grid grid-cols-2 gap-1.5 border-t border-border px-2 py-2">
-                        <span className="col-span-2 px-1 text-[11px] uppercase tracking-wide text-muted-foreground">
-                          Providers
-                        </span>
-                        <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-muted px-2 py-1.5 text-xs text-foreground">
-                          <Github className="h-3.5 w-3.5" /> GitHub
-                        </span>
-                        {gitlabConnectable ? (
-                          <button
-                            type="button"
-                            onClick={connectGitlab}
-                            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-muted px-2 py-1.5 text-xs text-foreground transition-colors hover:border-foreground/30"
-                          >
-                            <GitlabIcon className="h-3.5 w-3.5" /> GitLab
-                          </button>
+                {/* Sized by its content, not by the trigger: the module's `fit`
+                    already caps height to the room Radix measured and width to
+                    the phone, so pinning the trigger width only forced wraps. */}
+                <DropdownMenuContent align="start" className="min-w-[240px]">
+                  {accounts.map((a) => {
+                    const Icon = PROVIDER_META[a.provider]?.Icon ?? Github;
+                    return (
+                      <DropdownMenuItem
+                        key={`${a.provider}:${a.login}`}
+                        onSelect={() => {
+                          setActive(a.login);
+                          setSearch("");
+                        }}
+                      >
+                        {a.avatarUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={a.avatarUrl} alt="" className="h-5 w-5 rounded-full" />
                         ) : (
-                          <span
-                            className="inline-flex items-center gap-1.5 rounded-md border border-border px-2 py-1.5 text-xs text-muted-foreground"
-                            title="GitLab connect is being set up"
-                          >
-                            <GitlabIcon className="h-3.5 w-3.5" /> GitLab · Setup
-                          </span>
+                          <Icon className="h-4 w-4" />
                         )}
-                        <span className="inline-flex items-center gap-1.5 rounded-md border border-border px-2 py-1.5 text-xs text-muted-foreground">
-                          <Globe className="h-3.5 w-3.5" /> Bitbucket · Soon
+                        <span className="truncate">{a.login}</span>
+                        <span className="ml-auto text-[11px] text-muted-foreground">
+                          {a.provider === "gitlab"
+                            ? "GitLab"
+                            : a.type === "org"
+                              ? "Org"
+                              : "Personal"}
                         </span>
-                      </div>
+                      </DropdownMenuItem>
+                    );
+                  })}
+
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem onSelect={connectGithub}>
+                    <Plus className="h-4 w-4" />
+                    Add GitHub Account
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={connectGitlab}>
+                    <GitlabIcon className="h-4 w-4" />
+                    Add GitLab Account
+                    {!gitlabConnectable && (
+                      <Badge variant="outline" className="ml-auto">
+                        Needs setup
+                      </Badge>
                     )}
-                  </div>
-                </div>
-              )}
+                  </DropdownMenuItem>
+                  {/* Stays open: this row reveals the provider list in place, so
+                      selecting it must not dismiss the surface it reveals. */}
+                  <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setShowProviders((s) => !s); }}>
+                    <RefreshCw className="h-4 w-4" />
+                    Providers
+                  </DropdownMenuItem>
+                  {showProviders && (
+                    <div className="grid grid-cols-2 gap-1.5 border-t border-border px-2 py-2">
+                      <span className="col-span-2 px-1 text-[11px] uppercase tracking-wide text-muted-foreground">
+                        Providers
+                      </span>
+                      <Badge variant="outline" className="gap-1.5">
+                        <Github className="h-3.5 w-3.5" /> GitHub
+                      </Badge>
+                      {gitlabConnectable ? (
+                        <Button variant="outline" size="sm" onClick={connectGitlab}>
+                          <GitlabIcon className="h-3.5 w-3.5" /> GitLab
+                        </Button>
+                      ) : (
+                        <Badge variant="outline" className="gap-1.5" title="GitLab connect is being set up">
+                          <GitlabIcon className="h-3.5 w-3.5" /> GitLab · Setup
+                        </Badge>
+                      )}
+                      <Badge variant="outline" className="gap-1.5">
+                        <Globe className="h-3.5 w-3.5" /> Bitbucket · Soon
+                      </Badge>
+                    </div>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
 
             <div className="relative flex-1">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <input
+              <Search className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search repositories…"
-                className="h-10 w-full rounded-lg border border-border bg-background pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground/30 focus:outline-none"
+                className="h-10 pl-9"
               />
             </div>
           </div>
@@ -448,11 +422,11 @@ export function ImportGitPanel() {
                         .join(" · ") || "Repository"}
                     </div>
                   </div>
-                  <button
-                    type="button"
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => importRepo(r.cloneUrl)}
                     disabled={Boolean(importing)}
-                    className="inline-flex h-8 shrink-0 items-center gap-1 rounded-lg border border-border bg-muted px-3 text-xs font-medium text-foreground transition-colors hover:border-foreground/30 hover:bg-accent disabled:opacity-50"
                   >
                     {importing === r.cloneUrl ? (
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -462,7 +436,7 @@ export function ImportGitPanel() {
                         <ArrowRight className="h-3.5 w-3.5" />
                       </>
                     )}
-                  </button>
+                  </Button>
                 </div>
               ))
             )}
@@ -479,7 +453,7 @@ export function ImportGitPanel() {
           Your <span className="font-medium text-foreground">git.hanzo.ai</span> repos, GitHub, GitLab, or any git remote — clone, edit, and Push to Git.
         </p>
         <div className="flex items-center gap-2">
-          <input
+          <Input
             type="url"
             value={pasteUrl}
             onChange={(e) => setPasteUrl(e.target.value)}
@@ -487,16 +461,14 @@ export function ImportGitPanel() {
               if (e.key === "Enter") submitPaste();
             }}
             placeholder="git.hanzo.ai/hanzoai/app  ·  github.com/org/repo  ·  git@…"
-            className="h-9 flex-1 rounded-lg border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground/30 focus:outline-none"
+            className="h-9 flex-1"
           />
-          <button
-            type="button"
+          <Button
             onClick={submitPaste}
             disabled={!isGitUrl(pasteUrl) || Boolean(importing)}
-            className="inline-flex h-9 shrink-0 items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-40"
           >
             Import
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -523,27 +495,15 @@ function ConnectCta({
         with automatic builds on every push.
       </p>
       <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
-        <button
-          type="button"
-          onClick={onConnect}
-          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-        >
+        <Button onClick={onConnect}>
           <Github className="h-4 w-4" />
           Connect GitHub
-        </button>
-        <button
-          type="button"
-          onClick={onConnectGitlab}
-          className="inline-flex items-center gap-2 rounded-lg border border-border bg-muted px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:border-foreground/30 hover:bg-accent"
-        >
+        </Button>
+        <Button variant="outline" onClick={onConnectGitlab}>
           <GitlabIcon className="h-4 w-4" />
           Connect GitLab
-          {!gitlabConnectable && (
-            <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-300/90">
-              Needs setup
-            </span>
-          )}
-        </button>
+          {!gitlabConnectable && <Badge variant="outline">Needs setup</Badge>}
+        </Button>
       </div>
     </div>
   );
