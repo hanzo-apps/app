@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button } from '@hanzo/ui';
+import { Button, Dialog, DialogContent, DialogTitle, DialogDescription } from '@hanzo/ui';
 import { Input } from '@/components/control';
-import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/overlay';
@@ -15,46 +14,9 @@ import {
   type Project,
 } from '@/lib/api/projects';
 
-// --- Radix wrappers (matching project conventions) ---
-
-const Dialog = DialogPrimitive.Root;
-const DialogPortal = DialogPrimitive.Portal;
-
-const DialogOverlay = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Overlay>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
->(({ className, ...props }, ref) => (
-  <DialogPrimitive.Overlay
-    ref={ref}
-    className={cn(
-      'fixed inset-0 z-50 bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
-      className
-    )}
-    {...props}
-  />
-));
-DialogOverlay.displayName = 'DialogOverlay';
-
-const DialogContent = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(({ className, children, ...props }, ref) => (
-  <DialogPortal>
-    <DialogOverlay />
-    <DialogPrimitive.Content
-      ref={ref}
-      className={cn(
-        'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-card p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg',
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </DialogPrimitive.Content>
-  </DialogPortal>
-));
-DialogContent.displayName = 'DialogContent';
-
+// Dialog comes from @hanzo/ui. The wrappers that used to live here rebuilt what
+// it already does — DialogContent self-portals and renders its own overlay — so
+// they were a Radix copy of a component the design system ships.
 // --- CreateProject Component ---
 
 interface CreateProjectProps {
@@ -113,12 +75,12 @@ export function CreateProject({ open, onOpenChange, onCreated }: CreateProjectPr
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent>
         <div className="flex flex-col space-y-1.5 text-center sm:text-left">
-          <DialogPrimitive.Title className="text-lg font-medium leading-none tracking-tight">
+          <DialogTitle className="text-lg font-medium leading-none tracking-tight">
             Create New Project
-          </DialogPrimitive.Title>
-          <DialogPrimitive.Description className="text-sm text-muted-foreground">
+          </DialogTitle>
+          <DialogDescription className="text-sm text-muted-foreground">
             Configure your new project and deploy it to the Hanzo platform.
-          </DialogPrimitive.Description>
+          </DialogDescription>
         </div>
 
         <div className="space-y-4">
