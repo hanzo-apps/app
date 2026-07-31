@@ -97,8 +97,8 @@ importers:
         specifier: ^0.1.0
         version: 0.1.0(react@19.2.4)
       '@hanzo/ui':
-        specifier: ^8.0.36
-        version: 8.0.36(2e5d80f4e6771bfd325a0ac867d7431f)
+        specifier: ^8.0.37
+        version: 8.0.37(2e5d80f4e6771bfd325a0ac867d7431f)
       '@hanzo/usage':
         specifier: ^0.1.6
         version: 0.1.6(@hanzo/gui@8.0.0(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4))(@hanzogui/lucide-icons-2@8.0.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
@@ -1427,8 +1427,8 @@ packages:
   '@hanzo/tokens@1.0.0':
     resolution: {integrity: sha512-My8shZPFXATfl81XdaN8QVqFgFxD82rzZOXkna7tMNC9I9Bof+qG8Chc48GO5pWMJvc6YpApRSqbvLY1vG68Dw==}
 
-  '@hanzo/ui@8.0.36':
-    resolution: {integrity: sha512-uzBAmjyk98WiGJFI1Gb/7T0nDxqGJcCou1GWyQQKNX192KxN5iLbM7xQ8eWokiLjE/krUEd9V9Wlnxpjx1MLaQ==}
+  '@hanzo/ui@8.0.37':
+    resolution: {integrity: sha512-n5q4z5aRyX87lWyowUidPxokAJYJB5ObwpRc314QxzWYq/tMSkwiTRBFeqont1C8nA8yjQ0qk5yJn0Xz8T037g==}
     peerDependencies:
       '@hanzo/canvas': '>=0.1.0'
       '@hanzo/cd': '>=0.1.0'
@@ -10556,7 +10556,7 @@ snapshots:
 
   '@hanzo/tokens@1.0.0': {}
 
-  '@hanzo/ui@8.0.36(2e5d80f4e6771bfd325a0ac867d7431f)':
+  '@hanzo/ui@8.0.37(2e5d80f4e6771bfd325a0ac867d7431f)':
     dependencies:
       '@hanzo/data': 1.2.2(@hanzo/gui@8.0.0(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4))(react@19.2.4)
       '@hanzo/gui': 8.0.0(react-dom@19.2.4(react@19.2.4))(react-native@0.83.9(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0)(utf-8-validate@6.0.6))(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.4)(utf-8-validate@6.0.6))(react@19.2.4)

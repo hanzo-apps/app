@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { useUser } from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
+import Header from "@/components/layout/header";
 
 export default function FeaturesPage() {
   const { openLoginWindow, user } = useUser();
@@ -178,121 +179,11 @@ export default function FeaturesPage() {
         <div className="absolute top-[20%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-gradient-radial from-violet-500/10 via-purple-500/5 to-transparent blur-3xl" />
       </div>
 
-      {/* Navigation */}
-      <nav className="relative z-20 flex items-center justify-between px-4 md:px-8 py-4 md:py-5 border-b border-border">
-        <div className="flex items-center gap-6 md:gap-10">
-          <Link href="/" className="flex items-center gap-2.5">
-            <HanzoLogo className="w-8 md:w-9 h-8 md:h-9 text-foreground" />
-            <span className="text-xl md:text-2xl font-medium">Hanzo</span>
-          </Link>
-
-          <div className="hidden md:flex items-center gap-8">
-            <Link href="/features" className="text-foreground font-medium text-sm transition-colors">
-              Features
-            </Link>
-            <Link href="/community" className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors">
-              Community
-            </Link>
-            <Link href="/pricing" className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors">
-              Pricing
-            </Link>
-            <Link href="/enterprise" className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors">
-              Enterprise
-            </Link>
-            <Link href="/docs" className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors">
-              Docs
-            </Link>
-          </div>
-        </div>
-
-        {/* Desktop Nav Actions */}
-        <div className="hidden md:flex items-center gap-4">
-          {user ? (
-            <>
-              <Button
-                onClick={() => router.push('/projects')}
-                variant="ghost"
-                className="text-muted-foreground hover:text-foreground text-sm font-medium"
-              >
-                Dashboard
-              </Button>
-              <Button
-                onClick={() => router.push('/dev')}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-medium px-5 py-2.5 rounded-xl"
-              >
-                Get started
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                onClick={openLoginWindow}
-                variant="ghost"
-                className="text-muted-foreground hover:text-foreground text-sm font-medium"
-              >
-                Log in
-              </Button>
-              <Button
-                onClick={openLoginWindow}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-medium px-5 py-2.5 rounded-xl"
-              >
-                Get started
-              </Button>
-            </>
-          )}
-        </div>
-
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-2 hover:bg-accent rounded-lg transition-colors"
-        >
-          {mobileMenuOpen ? (
-            <X className="w-6 h-6" />
-          ) : (
-            <Menu className="w-6 h-6" />
-          )}
-        </button>
-      </nav>
-
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 bg-background/95 backdrop-blur-xl z-50 md:hidden">
-          <div className="flex flex-col h-full">
-            <div className="flex items-center justify-between p-4 border-b border-border">
-              <Link href="/" className="flex items-center gap-2.5">
-                <HanzoLogo className="w-8 h-8 text-foreground" />
-                <span className="text-xl font-medium">Hanzo</span>
-              </Link>
-              <button
-                onClick={() => setMobileMenuOpen(false)}
-                className="p-2 hover:bg-accent rounded-lg transition-colors"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto py-8 px-4">
-              <div className="space-y-6">
-                <Link href="/features" className="block text-2xl font-medium text-foreground transition-colors">
-                  Features
-                </Link>
-                <Link href="/community" className="block text-2xl font-medium text-muted-foreground hover:text-foreground transition-colors">
-                  Community
-                </Link>
-                <Link href="/pricing" className="block text-2xl font-medium text-muted-foreground hover:text-foreground transition-colors">
-                  Pricing
-                </Link>
-                <Link href="/enterprise" className="block text-2xl font-medium text-muted-foreground hover:text-foreground transition-colors">
-                  Enterprise
-                </Link>
-                <Link href="/docs" className="block text-2xl font-medium text-muted-foreground hover:text-foreground transition-colors">
-                  Docs
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* The ONE header. This page hand-rolled its own nav and mobile sheet —
+          a second header with different links, different labels ("Log in" vs
+          "Sign In") and no search, on the only page in the app that did not use
+          the shared one. */}
+      <Header />
 
       <main className="relative z-10">
         {/* Hero Section */}
