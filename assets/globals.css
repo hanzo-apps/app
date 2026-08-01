@@ -414,20 +414,25 @@
   --control-radius: var(--radius-control);  /* 10px — one soft radius for every control */
   --control-fs: 0.8125rem;        /* 13px */
   /* ── Builder v2 IDE tokens ───────────────────────────────────────────────
-     INTERIM — the layered-black surfaces, the ONE purple accent, and the
-     radius scale below are the app-local staging of what @hanzogui/shell is
-     encoding as its theme in parallel. When that version ships, these point at
-     the shell theme (do NOT keep two forks of the numbers). ONE accent: purple.
-     Palette = white + gray + purple only. */
-  /* The ONE accent — purple. Mirrors @hanzo/brand@1.4.4 (--hanzo-accent);
-     consumed via var() with the canonical value as fallback. Purple is
-     links / active / focus / selection ONLY — the primary action stays WHITE
-     (monochrome), see --primary below. */
-  --brand-accent: var(--hanzo-accent, #8b5cf6);
-  --brand-accent-hover: var(--hanzo-accent-hover, #7c3aed);
-  --brand-accent-muted: var(--hanzo-accent-muted, #a78bfa);
-  --brand-accent-soft: var(--hanzo-accent-soft, rgba(139, 92, 246, 0.12));
-  --brand-accent-fg: #ffffff;
+     INTERIM — the layered-black surfaces, the accent ramp, and the radius scale
+     below are the app-local staging of what @hanzogui/shell is encoding as its
+     theme in parallel. When that version ships, these point at the shell theme
+     (do NOT keep two forks of the numbers). Palette = white + gray. */
+  /* There is NO accent hue. STRICT MONOCHROME: the "accent" is the brightest
+     neutral — white on the black ground — and every state under it is a step
+     down in LIGHTNESS, never a change in hue. Links, active state, the focus
+     ring (--ring) and ::selection (--brand-accent-soft) all read from here, so
+     this block is the ONE place the whole app's emphasis is set.
+
+     The values live in the `html.dark` block further down, NOT here — see the
+     note there for why the override has to outrank `:root`. */
+  --brand-accent: var(--hanzo-accent, #ffffff);
+  --brand-accent-hover: var(--hanzo-accent-hover, #d4d4d4);
+  --brand-accent-muted: var(--hanzo-accent-muted, #a3a3a3);
+  --brand-accent-soft: var(--hanzo-accent-soft, rgba(255, 255, 255, 0.12));
+  /* Text ON the accent fill. The accent is white, so its foreground is the
+     ground — not white-on-white. */
+  --brand-accent-fg: #0a0a0a;
   /* The lift — the one neutral a raised surface is tinted with.
      ────────────────────────────────────────────────────────────
      Bare channels, so the call site owns the alpha: `rgb(var(--tint) / .01)`
@@ -454,10 +459,10 @@
 
      Eleven names, two values. The four panel triples were one neutral and the
      five button names were one accent, so they are now one neutral and
-     `--brand-accent` — which already reads `--hanzo-accent` from @hanzo/brand
-     and therefore follows the host with no change at any call site. Five
-     per-panel hues would have meant five brand values invented in the consumer,
-     which is how one question ends up with three answers on three surfaces.
+     `--brand-accent` — declared once above, so the app's emphasis moves from
+     ONE place with no change at any call site. Five per-panel hues would have
+     meant five brand values invented in the consumer, which is how one question
+     ends up with three answers on three surfaces.
      `tests/unit/token-resolution.test.ts` fails if a name goes undeclared again. */
   --tint: 0 0 0;
   /* Radius scale (v2): card 8 / control 10 / panel·preview 12. */
@@ -621,24 +626,51 @@
   --sidebar-border: rgba(255, 255, 255, 0.06);
   --sidebar-ring: var(--brand-accent);
   /* The lift inverts with the ground: white on black, black on white. The accent
-     does not — it is one value in both themes, set once in :root. */
+     does not — it is one value, and the app has one ground. */
   --tint: 255 255 255;
 }
 
-/* Post-Phase-3 (GuiThemeBridge): Tamagui's root theme now FOLLOWS next-themes
-   (t_light in light, t_dark in dark) — no longer pinned. So this is NOT the old
-   "unfreeze the pinned-dark background" workaround; it is a TOKEN-VALUE precedence.
-   Tamagui's theme sets its own `--background` (light hsla(0,0%,97%) ≈ #f7f7f7, dark
-   hsla(0,0%,8%) ≈ #141414) and its runtime-injected CSS wins source-order over this
-   palette (verified: removing this → bg becomes #f7f7f7 / #141414). We want the v2
-   layered-black spec (#080808) and pure white, so re-assert --background per theme.
-   !important is the clean win over Tamagui's runtime CSS; --background is a root
-   palette token never overridden per-element, so it is safe. */
+/* The app is dark-only — `dark` is a literal class the server renders onto <html>
+   (app/layout.tsx), so this block is simply "the app's palette", and there is no
+   light counterpart because there is no light theme to serve one.
+
+   It exists because of TOKEN-VALUE precedence, not theming: Tamagui's runtime CSS
+   sets its own `--background` (dark hsla(0,0%,8%) ≈ #141414) and wins source-order
+   over this palette (verified: removing this → bg becomes #141414). We want the v2
+   layered-black spec (#080808), so re-assert it here. `!important` is the clean win
+   over Tamagui's runtime CSS; --background is a root palette token never overridden
+   per-element, so it is safe. */
 html.dark {
   --background: #080808 !important;
-}
-html:not(.dark) {
-  --background: oklch(1 0 0) !important;
+
+  /* The ONE accent, and it has no hue. hanzo.app is the white-label monochrome
+     override of @hanzo/brand's violet — the brand package documents
+     `--hanzo-accent` as the per-host knob, so overriding THAT (rather than only
+     the app's own `--brand-accent`) is what also reaches the accent's readers
+     inside node_modules: @hanzo/ui's product menu renders
+     `style="color: var(--hanzo-accent, #fff)"` INLINE, which no app-side class
+     or token rename can touch — the nav's "Hanzo App" link painted #8b5cf6
+     (measured, /pricing) while every app token was already neutral.
+
+     `html.dark` (0,1,1) and NOT `:root` (0,1,0) on purpose: @hanzo/brand's
+     variables.css also declares these at `:root`, and it is pulled in by more
+     than one package, so at least one copy lands AFTER this file and an equal-
+     specificity override loses the source-order tie (measured: --brand-accent
+     still resolved #8b5cf6 with the override sitting in :root). Outranking the
+     selector makes the result independent of bundling order. */
+  --hanzo-accent: #ffffff;
+  --hanzo-accent-hover: #d4d4d4;                 /* neutral-300 */
+  --hanzo-accent-muted: #a3a3a3;                 /* neutral-400 */
+  --hanzo-accent-soft: rgba(255, 255, 255, 0.12);
+  --hanzo-accent-rgb: 255, 255, 255;
+
+  /* The gui sheet ships `.is_Input::selection, .is_TextArea::selection {
+     background-color: var(--selectionColor) }` and declares --selectionColor
+     NOWHERE — an unresolved var() is invalid at computed-value time, so that
+     rule dropped entirely. Point it at the same value the global ::selection
+     rule uses: text selects the same way in a field as anywhere else, from ONE
+     number. (tests/unit/token-resolution.test.ts catches exactly this.) */
+  --selectionColor: var(--brand-accent-soft);
 }
 
 @layer base {
@@ -670,11 +702,20 @@ html:not(.dark) {
   [role="button"]:not([aria-disabled="true"]) {
     cursor: pointer;
   }
-  /* Selection = the one purple accent (soft). */
-  ::selection {
-    background-color: var(--brand-accent-soft);
-    color: var(--foreground);
-  }
+}
+
+/* Selection = the accent at its soft alpha — white @ 12%, no hue.
+   ────────────────────────────────────────────────────────────────
+   UNLAYERED, and qualified `html.dark`, both on purpose. Tamagui's runtime sheet
+   ships `.t_dark ::selection { background: var(--color5) }` with NO cascade layer,
+   and an unlayered rule beats every layered one no matter how specific — so this
+   lived in `@layer base` as a bare `::selection` and was simply DEAD: selection
+   painted Tamagui's #333333 (measured). Leaving `@layer base` is what makes it
+   reachable; `html.dark` (0,1,2) is what then beats `.t_dark ::selection` (0,1,1)
+   on specificity. Same reason and same shape as the `html.dark` block above. */
+html.dark ::selection {
+  background-color: var(--brand-accent-soft);
+  color: var(--foreground);
 }
 
 /* ONE visible keyboard focus, everywhere (keyboard-only via :focus-visible).

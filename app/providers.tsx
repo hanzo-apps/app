@@ -1,8 +1,6 @@
 'use client';
 
 import { GuiProvider } from '@hanzo/gui';
-import { useTheme } from 'next-themes';
-import { ThemeProvider } from '@/components/providers/theme-provider';
 import { ErrorBoundary } from '@/components/error-boundary';
 import IamClientProvider from '@/components/providers/IamClientProvider';
 import { AnalyticsRoot } from '@/components/providers/analytics';
@@ -18,61 +16,50 @@ interface ProvidersProps {
 }
 
 /**
- * Phase 3 — ONE theme controller. `next-themes` (ThemeProvider) owns the resolved
- * theme (the `.dark`/`.light` class on <html>). GuiProvider's Tamagui root theme
- * now FOLLOWS it via a dynamic `defaultTheme` (the `useRootTheme` pattern) instead
- * of pinning `t_dark` permanently — so every @hanzo/gui surface (menus, the v8
- * product components, the usage panel) renders light in light mode and dark in dark,
- * and the Tamagui-vs-app theme conflict (the `--background !important` workaround +
- * the `--surface-0`-stale-in-light landmine) is gone.
+ * ONE theme, ONE authority: the literal `dark` class the server renders onto
+ * <html> (app/layout.tsx). hanzo.app is dark-only — true black ground, white and
+ * neutral type, hairline borders — so the theme is a constant, and a constant does
+ * not need a controller. Everything here just STATES it: `defaultTheme="dark"` for
+ * @hanzo/gui's Tamagui root, `theme="dark"` for the toaster (@hanzo/ui defaults it
+ * to `system`, which was the one surface still asking the OS).
  *
- * Must be a child of ThemeProvider to read `useTheme()`. Server + first paint have
- * no resolved theme yet → default to the brand's "dark" (matches ThemeProvider's
- * defaultTheme, so there is no hydration flip); the client then follows the resolved
- * value.
+ * The next-themes provider that used to wrap this is gone. With `enableSystem` it
+ * was a SECOND authority that disagreed with the first — it dropped `.dark` when
+ * the OS preferred light while the gui root class stayed `t_dark`, and /catalog
+ * and /gallery painted WHITE (measured). Forcing it to dark would have papered
+ * over that, but a client controller still resolves after first paint and nothing
+ * in the app called `useTheme()` any more, so the whole layer was cost with no
+ * payer. No app code imports next-themes now.
+ *
+ * Consequence, deliberately: the light/system theme pickers are gone from Settings
+ * and the user menu. A control that writes a preference nothing can honor is a lie
+ * in the UI, not a feature.
  */
-function GuiThemeBridge({ children }: { children: ReactNode }) {
-  const { resolvedTheme } = useTheme();
-  const theme = resolvedTheme === 'light' ? 'light' : 'dark';
-  return (
-    <GuiProvider config={guiConfig} defaultTheme={theme} disableInjectCSS>
-      {children}
-    </GuiProvider>
-  );
-}
-
 export function Providers({ children }: ProvidersProps) {
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="dark"
-      enableSystem={true}
-      storageKey="hanzo-app-theme"
-    >
-      <GuiThemeBridge>
-        <IamClientProvider>
-          <Toaster richColors position="bottom-center" />
-          <AnalyticsRoot>
-            <ErrorBoundary
-              onError={(error, errorInfo) => {
-                if (process.env.NODE_ENV === 'production') {
-                  console.error('Uncaught error:', error, errorInfo);
-                }
-              }}
-            >
-              <UsageLimitProvider>
-                {/* ONE tooltip clock for the whole app: hover delay and the grouped
-                    skip-delay are a property of the SESSION, not of each button, so
-                    adjacent controls in a toolbar share it instead of each mounting
-                    a provider with its own timing. */}
-                <TooltipProvider delayDuration={200} skipDelayDuration={300}>
-                  {children}
-                </TooltipProvider>
-              </UsageLimitProvider>
-            </ErrorBoundary>
-          </AnalyticsRoot>
-        </IamClientProvider>
-      </GuiThemeBridge>
-    </ThemeProvider>
+    <GuiProvider config={guiConfig} defaultTheme="dark" disableInjectCSS>
+      <IamClientProvider>
+        <Toaster theme="dark" richColors position="bottom-center" />
+        <AnalyticsRoot>
+          <ErrorBoundary
+            onError={(error, errorInfo) => {
+              if (process.env.NODE_ENV === 'production') {
+                console.error('Uncaught error:', error, errorInfo);
+              }
+            }}
+          >
+            <UsageLimitProvider>
+              {/* ONE tooltip clock for the whole app: hover delay and the grouped
+                  skip-delay are a property of the SESSION, not of each button, so
+                  adjacent controls in a toolbar share it instead of each mounting
+                  a provider with its own timing. */}
+              <TooltipProvider delayDuration={200} skipDelayDuration={300}>
+                {children}
+              </TooltipProvider>
+            </UsageLimitProvider>
+          </ErrorBoundary>
+        </AnalyticsRoot>
+      </IamClientProvider>
+    </GuiProvider>
   );
 }

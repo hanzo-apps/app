@@ -1333,7 +1333,7 @@ export function AskAI({
                   className={classNames(
                     "rounded-full px-2.5 py-1 font-medium capitalize transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     mode === m
-                      ? "bg-[var(--brand-accent)] text-white"
+                      ? "bg-[var(--brand-accent)] text-[var(--brand-accent-fg)]"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
