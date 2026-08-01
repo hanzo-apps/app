@@ -27,6 +27,7 @@ import { Menu, Search } from 'lucide-react';
 
 import { Sidebar } from '@/components/sidebar';
 import { OrgProvider } from '@/lib/org/client';
+import { ModeSwitcher } from '@/components/mode-switcher';
 import { HanzoLogo } from '@/components/HanzoLogo';
 import { CommandPalette } from '@/components/command-palette';
 import { useCommandK } from '@/hooks/useCommandK';
@@ -78,7 +79,7 @@ export function AppShell({ children, currentView = 'templates' }: AppShellProps)
             <Menu className="h-5 w-5" />
           </button>
           <HanzoLogo className="h-5 w-5 text-foreground" />
-          <span className="text-sm font-medium">Hanzo App</span>
+          <ModeSwitcher className="ml-1" />
           <button
             onClick={() => setPaletteOpen(true)}
             aria-label="Search"
@@ -86,6 +87,12 @@ export function AppShell({ children, currentView = 'templates' }: AppShellProps)
           >
             <Search className="h-5 w-5" />
           </button>
+        </div>
+
+        {/* Desktop mode bar — the one webapp's chat | dev | work switcher
+            (mobile carries it in the top bar above). */}
+        <div className="hidden h-11 items-center border-b border-border bg-background px-4 md:flex">
+          <ModeSwitcher />
         </div>
 
         {children}
