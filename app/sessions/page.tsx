@@ -12,6 +12,7 @@ import { session } from '@/lib/iam';
 import { listSessions } from '@/lib/sessions';
 import { listMachines } from '@/lib/machines';
 import { SessionBoard } from '@/components/sessions/board';
+import { AppShell } from '@/components/app-shell';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,12 +26,14 @@ export default async function SessionsPage() {
 
   if (!me) {
     return (
+      <AppShell currentView="sessions">
       <main className="mx-auto max-w-5xl px-6 py-16">
         <h1 className="text-2xl font-semibold tracking-tight">Sessions</h1>
         <p className="mt-3 text-sm text-muted-foreground">
           Sign in to see the coding sessions running on your machines.
         </p>
       </main>
+      </AppShell>
     );
   }
 
@@ -51,6 +54,7 @@ export default async function SessionsPage() {
   }
 
   return (
+    <AppShell currentView="sessions">
     <main className="mx-auto max-w-6xl px-6 py-10">
       <header className="mb-8">
         <h1 className="text-2xl font-semibold tracking-tight">Sessions</h1>
@@ -68,5 +72,6 @@ export default async function SessionsPage() {
         <SessionBoard sessions={roster!.sessions} machines={machines!.targets} />
       )}
     </main>
+    </AppShell>
   );
 }

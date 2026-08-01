@@ -46,6 +46,21 @@ function shortPath(p: string | undefined): string {
   return parts.length > 3 ? `…/${parts.slice(-2).join('/')}` : home;
 }
 
+/** How long after its last update a "running" session stops counting as live.
+ *
+ * The plane has no heartbeat: status only changes if a client says so, and a client
+ * that loses power never does. So a row claiming to run is evidence only when it is
+ * RECENT — without this the roster fills with rows that have been "running" for days
+ * and a genuinely live session is indistinguishable from a corpse.
+ */
+const LIVE_WINDOW_MS = 10 * 60 * 1000;
+
+function isLive(s: AgentSession, now: number): boolean {
+  if (s.status !== 'running' && s.status !== 'paused') return false;
+  const t = Date.parse(s.updatedAt);
+  return Number.isNaN(t) ? false : now - t <= LIVE_WINDOW_MS;
+}
+
 interface Group {
   key: string;
   machine?: Machine;
@@ -81,10 +96,20 @@ export function SessionBoard({
       g.sessions.push(s);
       byKey.set(key, g);
     }
+    // Live work first, then machines with only history. Within a machine the newest
+    // update leads, so the thing you just started is at the top rather than buried
+    // behind whichever box happens to hold the most corpses.
+    for (const g of byKey.values()) {
+      g.sessions.sort((x, y) => (y.updatedAt || '').localeCompare(x.updatedAt || ''));
+    }
+    const liveCount = (g: Group) => g.sessions.filter((x) => isLive(x, now)).length;
     return [...byKey.values()].sort(
-      (a, b) => b.sessions.length - a.sessions.length || a.label.localeCompare(b.label),
+      (a, b) =>
+        liveCount(b) - liveCount(a) ||
+        b.sessions.length - a.sessions.length ||
+        a.label.localeCompare(b.label),
     );
-  }, [sessions, machines]);
+  }, [sessions, machines, now]);
 
   const [selected, setSelected] = useState<string | null>(
     sessions.find((s) => s.terminal)?.id ?? sessions[0]?.id ?? null,
@@ -94,6 +119,8 @@ export function SessionBoard({
   // choosing a session moves to it and a back control returns. On a wide one both
   // are visible and this never engages.
   const [onTerminal, setOnTerminal] = useState(false);
+  // Per machine, whether its finished sessions are expanded.
+  const [showAll, setShowAll] = useState<Record<string, boolean>>({});
 
   if (groups.length === 0) {
     return (
@@ -125,7 +152,7 @@ export function SessionBoard({
                 </span>
               ) : null}
               <span className="ml-auto shrink-0 text-xs tabular-nums text-muted-foreground">
-                {g.sessions.length || (g.machine ? 'idle' : '')}
+                {g.sessions.filter((x) => isLive(x, now)).length || (g.machine ? 'idle' : '')}
               </span>
             </header>
 
@@ -144,7 +171,7 @@ export function SessionBoard({
             ) : null}
 
             <ul className="flex flex-col gap-1.5">
-              {g.sessions.map((s) => {
+              {(showAll[g.key] ? g.sessions : g.sessions.filter((x) => isLive(x, now))).map((s) => {
                 const on = s.id === active?.id;
                 return (
                   <li key={s.id}>
@@ -162,7 +189,9 @@ export function SessionBoard({
                       <span className="flex items-center gap-2">
                         <span
                           aria-hidden
-                          className={`size-1.5 shrink-0 rounded-full ${DOT[s.status]}`}
+                          className={`size-1.5 shrink-0 rounded-full ${
+                            isLive(s, now) ? DOT[s.status] : DOT.done
+                          }`}
                         />
                         <span className="truncate text-sm">{s.agent}</span>
                         <span className="ml-auto shrink-0 text-xs tabular-nums text-muted-foreground">
@@ -177,9 +206,38 @@ export function SessionBoard({
                   </li>
                 );
               })}
-              {g.sessions.length === 0 ? (
-                <li className="px-3 py-2 text-xs text-muted-foreground">nothing running</li>
-              ) : null}
+              {(() => {
+                const hidden = g.sessions.filter((x) => !isLive(x, now)).length;
+                if (g.sessions.length === 0) {
+                  return <li className="px-3 py-2 text-xs text-muted-foreground">nothing running</li>;
+                }
+                if (hidden === 0 || showAll[g.key]) {
+                  return hidden > 0 ? (
+                    <li>
+                      <button
+                        type="button"
+                        onClick={() => setShowAll((v) => ({ ...v, [g.key]: false }))}
+                        className="px-3 py-2 text-xs text-muted-foreground underline underline-offset-4"
+                      >
+                        Hide {hidden} finished
+                      </button>
+                    </li>
+                  ) : null;
+                }
+                // Finished sessions are history, not noise to scroll past — one line
+                // says how much there is and opens it on demand.
+                return (
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => setShowAll((v) => ({ ...v, [g.key]: true }))}
+                      className="px-3 py-2 text-xs text-muted-foreground underline underline-offset-4"
+                    >
+                      {hidden} finished
+                    </button>
+                  </li>
+                );
+              })()}
             </ul>
           </section>
         ))}

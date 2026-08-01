@@ -8,6 +8,7 @@ import { HanzoLogo } from '@/components/HanzoLogo';
 import { usePlan, unpaid } from '@/lib/billing/entitlements';
 import {
   Activity,
+  TerminalSquare,
   FolderOpen,
   Folder,
   FolderPlus,
@@ -75,6 +76,7 @@ const PRIMARY_ITEMS: SidebarItem[] = [
   { id: 'resources', label: 'Resources', icon: Sparkles, route: '/resources' },
   { id: 'connectors', label: 'Connectors', icon: Plug, route: '/connectors' },
   { id: 'agents', label: 'Agents', icon: Bot, route: '/agents' },
+  { id: 'sessions', label: 'Sessions', icon: TerminalSquare, route: '/sessions' },
 ];
 
 // ── Projects group ──────────────────────────────────────────────────────────
