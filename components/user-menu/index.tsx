@@ -10,13 +10,8 @@ import {
   Sparkles,
   User,
   DollarSign,
-  Sun,
-  Moon,
-  Monitor,
 } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { useTheme } from "next-themes";
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/overlay";
 import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
@@ -25,11 +20,6 @@ import { useUser } from "@/hooks/useUser";
 
 export const UserMenu = ({ className }: { className?: string }) => {
   const { logout, user } = useUser();
-  // Theme via the ONE controller (next-themes) — same source as settings + sonner.
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  const activeTheme = mounted ? theme ?? "system" : "system";
 
   // Identity is resolved ONCE, in useUser — never re-derived per surface.
   const displayName = user?.name || "User";
@@ -138,38 +128,8 @@ export const UserMenu = ({ className }: { className?: string }) => {
 
         <DropdownMenuSeparator />
 
-        {/* Theme — discoverable light/dark/system here instead of only buried in
-            Settings. Drives the ONE next-themes source (consistent app-wide). */}
-        <div className="px-2 py-1.5">
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-xs text-muted-foreground">Theme</span>
-            <div className="flex items-center gap-0.5 rounded-md bg-muted/50 p-0.5">
-              {([
-                { v: "light", Icon: Sun, label: "Light" },
-                { v: "dark", Icon: Moon, label: "Dark" },
-                { v: "system", Icon: Monitor, label: "System" },
-              ] as const).map(({ v, Icon, label }) => (
-                <button
-                  key={v}
-                  type="button"
-                  onClick={() => setTheme(v)}
-                  title={`${label} theme`}
-                  aria-label={`${label} theme`}
-                  aria-pressed={activeTheme === v}
-                  className={`flex items-center justify-center rounded p-1.5 transition-colors ${
-                    activeTheme === v
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <Icon className="size-4" />
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <DropdownMenuSeparator />
+        {/* No theme switcher: hanzo.app is dark-only, forced in app/providers.tsx.
+            A light/system toggle here would change nothing on screen. */}
 
         <DropdownMenuItem
           onClick={() => {

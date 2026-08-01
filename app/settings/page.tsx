@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
 import { Key, Bell, Palette, Shield, CreditCard } from "lucide-react";
 import { Button } from "@hanzo/ui";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/overlay";
@@ -18,16 +17,11 @@ export default function SettingsPage() {
   const { user, loading } = useUser();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("general");
-  // Theme is owned by the ONE controller (next-themes); this select drives it
-  // directly — same source the in-app settings panel + sonner read.
-  const { theme, setTheme } = useTheme();
   const { models } = useModels();
   const plan = usePlan();
-  const [mounted, setMounted] = useState(false);
   const [defaultModel, setDefaultModelState] = useState("");
   const [notifs, setNotifs] = useState<Record<string, boolean>>({});
   useEffect(() => {
-    setMounted(true);
     setDefaultModelState(configManager.getDefaultModel());
     setNotifs(configManager.getSettings().notifications ?? {});
   }, []);
@@ -109,27 +103,10 @@ export default function SettingsPage() {
                 <div className="space-y-6">
                   <h2 className="text-xl font-medium text-foreground mb-4">General Settings</h2>
 
+                  {/* No theme picker: hanzo.app is dark-only and the theme is
+                      FORCED in app/providers.tsx. A select offering Light and
+                      System would write a preference nothing can honor. */}
                   <div className="space-y-4 max-w-md">
-                    <div>
-                      <label htmlFor="theme-select" className="block text-sm font-medium text-muted-foreground mb-2">
-                        Theme
-                      </label>
-                      <Select
-                        value={mounted ? (theme ?? "system") : "system"}
-                        onValueChange={setTheme}
-                      >
-                        <SelectTrigger id="theme-select">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="light">Light</SelectItem>
-                          <SelectItem value="dark">Dark</SelectItem>
-                          <SelectItem value="system">System</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <p className="mt-1.5 text-xs text-muted-foreground">Applies instantly across the app.</p>
-                    </div>
-
                     <div>
                       <label htmlFor="model-select" className="block text-sm font-medium text-muted-foreground mb-2">
                         Default AI Model

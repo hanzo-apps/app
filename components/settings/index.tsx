@@ -2,12 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { configManager, AppSettings, CostSettings } from '@/lib/config/storage';
-import { Button, Tabs, TabsList, TabsTrigger } from '@hanzo/ui';
+import { Button } from '@hanzo/ui';
 import { Input } from '@/components/control';
 import { Label } from '@/components/control';
 import { Switch } from '@/components/control';
 import { toast } from '@hanzo/ui';
-import { useTheme } from 'next-themes';
 import { DollarSign, AlertTriangle, Info, Download, Upload, Database, ChevronDown, Palette } from 'lucide-react';
 import { CostCalculator } from '@/lib/llm/cost-calculator';
 import { AboutModal } from '@/components/about-modal';
@@ -22,8 +21,6 @@ interface SettingsPanelProps {
 export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
   const [_settings, setSettings] = useState<AppSettings>({});
   const [costSettings, setCostSettings] = useState<CostSettings>({});
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
   const [aboutModalOpen, setAboutModalOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
@@ -42,7 +39,6 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
     // Load settings on mount
     setSettings(configManager.getSettings());
     setCostSettings(configManager.getCostSettings());
-    setMounted(true);
   }, []);
 
   const updateSetting = <K extends keyof AppSettings>(
@@ -162,26 +158,9 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
               Configure your preferences and display options
             </p>
             <div className="space-y-4">
-              {/* Theme */}
-              <div>
-                <Label htmlFor="theme">Theme</Label>
-                <Tabs
-                  value={mounted ? (theme || 'dark') : 'dark'}
-                  onValueChange={(value: string) => {
-                    if (value) {
-                      setTheme(value);
-                      updateSetting('theme', value as 'light' | 'dark' | 'system');
-                    }
-                  }}
-                  className="w-full mt-2"
-                >
-                  <TabsList className="w-full">
-                    <TabsTrigger value="dark" className="flex-1">Dark</TabsTrigger>
-                    <TabsTrigger value="light" className="flex-1">Light</TabsTrigger>
-                    <TabsTrigger value="system" className="flex-1">System</TabsTrigger>
-                  </TabsList>
-                </Tabs>
-              </div>
+              {/* No theme tabs: hanzo.app is dark-only and the theme is FORCED in
+                  app/providers.tsx, so Light/System could only write a preference
+                  nothing reads. */}
 
               {/* Telemetry */}
               <div className="flex items-center justify-between">

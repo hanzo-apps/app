@@ -13,7 +13,6 @@
 // Tailwind). Honest by construction: an unreachable ledger renders a typed error with
 // retry, an empty window its empty state — NEVER fabricated spend, tokens, or trend.
 import { useCallback, useEffect, useState } from 'react'
-import { useTheme } from 'next-themes'
 import { GuiProvider, Text, YStack } from '@hanzo/gui'
 import { UsagePanel } from '@hanzo/usage/panel'
 import { ConnectedUsage } from '@hanzo/usage/connected'
@@ -121,12 +120,11 @@ function Panels({ token }: { token: string }) {
 // THIS surface's IAM access token (the same one it already carries for /v1 calls).
 export default function CloudUsagePanel() {
   const { token } = useIamToken()
-  // Follow the app's resolved theme (Phase 3) so the panel renders light in light
-  // mode and dark in dark — no longer pinned dark.
-  const { resolvedTheme } = useTheme()
-  const theme = resolvedTheme === 'light' ? 'light' : 'dark'
+  // Dark, like the rest of the app — the ONE authority is the forced theme in
+  // app/providers.tsx, so this scoped provider states the same literal rather
+  // than re-deriving it from a hook that can only ever answer 'dark'.
   return (
-    <GuiProvider config={guiConfig} defaultTheme={theme}>
+    <GuiProvider config={guiConfig} defaultTheme="dark">
       {token ? (
         <Panels token={token} />
       ) : (

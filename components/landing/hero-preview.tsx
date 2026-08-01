@@ -78,13 +78,13 @@ function VibeApp({ v, compact }: { v: number; compact?: boolean }): ReactElement
           Vibe Check
         </span>
         {v >= 2 && !compact && (
-          <span className="flex items-center gap-1 font-mono text-[8px]  text-green-400/80">
-            <span className="livedot h-1 w-1 rounded-full bg-green-400" />
+          <span className="flex items-center gap-1 font-mono text-[8px]  text-foreground/70">
+            <span className="livedot h-1 w-1 rounded-full bg-foreground" />
             realtime · Base
           </span>
         )}
         {v >= 2 && compact && (
-          <span className="livedot h-1.5 w-1.5 rounded-full bg-green-400" />
+          <span className="livedot h-1.5 w-1.5 rounded-full bg-foreground" />
         )}
       </div>
 
@@ -314,7 +314,7 @@ export default function HeroPreview() {
             <span
               className={`flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-semibold ${
                 live
-                  ? "bg-green-400/10 text-green-400/90 ring-1 ring-green-400/25"
+                  ? "bg-foreground/10 text-foreground/90 ring-1 ring-foreground/25"
                   : "bg-primary text-primary-foreground"
               }`}
             >
@@ -405,8 +405,8 @@ export default function HeroPreview() {
                 <span className="flex shrink-0 items-center gap-1">
                   {live ? (
                     <>
-                      <span className="livedot h-1.5 w-1.5 rounded-full bg-green-400" />
-                      <span className="hidden font-mono text-[8px]  text-green-400/80 sm:inline">
+                      <span className="livedot h-1.5 w-1.5 rounded-full bg-foreground" />
+                      <span className="hidden font-mono text-[8px]  text-foreground/70 sm:inline">
                         Live
                       </span>
                     </>
@@ -461,8 +461,8 @@ export default function HeroPreview() {
           <span className="ml-auto flex shrink-0 items-center gap-1.5">
             {live ? (
               <>
-                <span className="livedot h-1.5 w-1.5 rounded-full bg-green-400" />
-                <span className="text-green-400/80">Live at {SLUG}</span>
+                <span className="livedot h-1.5 w-1.5 rounded-full bg-foreground" />
+                <span className="text-foreground/70">Live at {SLUG}</span>
               </>
             ) : phase === "publishing" ? (
               <>

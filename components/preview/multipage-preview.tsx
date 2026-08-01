@@ -958,7 +958,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
             disabled={!iframeReady}
             style={{
               backgroundColor: selectorActive ? 'var(--brand-accent)' : undefined,
-              color: selectorActive ? 'white' : undefined
+              color: selectorActive ? 'var(--brand-accent-fg)' : undefined
             }}
             title={selectorActive ? 'Cancel element focus' : 'Select element'}
             data-tour-id="focus-crosshair-button"
@@ -1004,7 +1004,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
             className="rounded-sm"
             style={{
               backgroundColor: deviceSize === 'mobile' ? 'var(--brand-accent)' : undefined,
-              color: deviceSize === 'mobile' ? 'white' : undefined
+              color: deviceSize === 'mobile' ? 'var(--brand-accent-fg)' : undefined
             }}
             onClick={() => setDeviceSize('mobile')}
           >
@@ -1016,7 +1016,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
             className="rounded-sm"
             style={{
               backgroundColor: deviceSize === 'tablet' ? 'var(--brand-accent)' : undefined,
-              color: deviceSize === 'tablet' ? 'white' : undefined
+              color: deviceSize === 'tablet' ? 'var(--brand-accent-fg)' : undefined
             }}
             onClick={() => setDeviceSize('tablet')}
           >
@@ -1028,7 +1028,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
             className="rounded-sm"
             style={{
               backgroundColor: deviceSize === 'desktop' ? 'var(--brand-accent)' : undefined,
-              color: deviceSize === 'desktop' ? 'white' : undefined
+              color: deviceSize === 'desktop' ? 'var(--brand-accent-fg)' : undefined
             }}
             onClick={() => setDeviceSize('desktop')}
           >

@@ -1267,7 +1267,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   }`}
                   style={{
                     backgroundColor: showChat ? 'var(--brand-accent)' : undefined,
-                    color: showChat ? 'white' : undefined
+                    color: showChat ? 'var(--brand-accent-fg)' : undefined
                   }}
                   onClick={() => setShowChat(!showChat)}
                 >
@@ -1289,7 +1289,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   }`}
                   style={{
                     backgroundColor: showFiles ? 'var(--brand-accent)' : undefined,
-                    color: showFiles ? 'white' : undefined
+                    color: showFiles ? 'var(--brand-accent-fg)' : undefined
                   }}
                   onClick={() => setShowFiles(!showFiles)}
                 >
@@ -1311,7 +1311,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   }`}
                   style={{
                     backgroundColor: showEditor ? 'var(--brand-accent)' : undefined,
-                    color: showEditor ? 'white' : undefined
+                    color: showEditor ? 'var(--brand-accent-fg)' : undefined
                   }}
                   onClick={() => setShowEditor(!showEditor)}
                 >
@@ -1333,7 +1333,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   }`}
                   style={{
                     backgroundColor: showPreview ? 'var(--brand-accent)' : undefined,
-                    color: showPreview ? 'white' : undefined
+                    color: showPreview ? 'var(--brand-accent-fg)' : undefined
                   }}
                   onClick={() => setShowPreview(!showPreview)}
                 >
@@ -1355,7 +1355,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   }`}
                   style={{
                     backgroundColor: showCheckpoints ? 'var(--brand-accent)' : undefined,
-                    color: showCheckpoints ? 'white' : undefined
+                    color: showCheckpoints ? 'var(--brand-accent-fg)' : undefined
                   }}
                   onClick={() => setShowCheckpoints(!showCheckpoints)}
                 >
@@ -1618,7 +1618,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
               <button
                 className={`flex items-center justify-center py-2 px-2 rounded-lg transition-all shadow-sm ${
                   activeMobilePanel === 'chat'
-                    ? 'text-white'
+                    ? 'text-[var(--brand-accent-fg)]'
                     : 'bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground'
                 }`}
                 style={{
@@ -1632,7 +1632,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
               <button
                 className={`flex items-center justify-center py-2 px-2 rounded-lg transition-all shadow-sm ${
                   activeMobilePanel === 'files'
-                    ? 'text-white'
+                    ? 'text-[var(--brand-accent-fg)]'
                     : 'bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground'
                 }`}
                 style={{
@@ -1646,7 +1646,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
               <button
                 className={`flex items-center justify-center py-2 px-2 rounded-lg transition-all shadow-sm ${
                   activeMobilePanel === 'editor'
-                    ? 'text-white'
+                    ? 'text-[var(--brand-accent-fg)]'
                     : 'bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground'
                 }`}
                 style={{
@@ -1660,7 +1660,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
               <button
                 className={`flex items-center justify-center py-2 px-2 rounded-lg transition-all shadow-sm ${
                   activeMobilePanel === 'preview'
-                    ? 'text-white'
+                    ? 'text-[var(--brand-accent-fg)]'
                     : 'bg-transparent text-muted-foreground hover:bg-muted/80 hover:text-foreground'
                 }`}
                 style={{

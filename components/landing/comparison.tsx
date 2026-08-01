@@ -406,7 +406,7 @@ export default function Comparison() {
                           <span className="flex items-center gap-2">
                             {r.name}
                             {r.hanzo && (
-                              <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 font-mono text-[9px]  text-emerald-300">
+                              <span className="rounded-full border border-foreground/25 bg-foreground/10 px-2 py-0.5 font-mono text-[9px]  text-foreground">
                                 Best
                               </span>
                             )}
@@ -459,11 +459,11 @@ export default function Comparison() {
               return (
                 <Reveal
                   key={r.name}
-                  className="rounded-2xl border border-emerald-400/25 bg-muted p-5"
+                  className="rounded-2xl border border-foreground/25 bg-muted p-5"
                 >
                   <div className="mb-4 flex items-center gap-2">
                     <h3 className="text-lg font-medium text-foreground">{r.name}</h3>
-                    <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 font-mono text-[9px]  text-emerald-300">
+                    <span className="rounded-full border border-foreground/25 bg-foreground/10 px-2 py-0.5 font-mono text-[9px]  text-foreground">
                       Best overall
                     </span>
                   </div>
