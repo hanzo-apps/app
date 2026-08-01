@@ -51,13 +51,36 @@ function Pageview() {
   return null;
 }
 
+/** The user attributes worth carrying alongside the id, off the same OIDC claims
+ *  `useUser` already reshaped to get it. A key is OMITTED rather than sent
+ *  undefined, so an absent claim never blanks a trait an earlier identify set. */
+export function identityTraits(user: {
+  email?: string;
+  fullname?: string;
+  name?: string;
+}): Record<string, unknown> {
+  const traits: Record<string, unknown> = {};
+  if (user.email) traits.email = user.email;
+  const name = user.fullname || user.name;
+  if (name) traits.name = name;
+  return traits;
+}
+
 function Identity() {
   // Through the ONE user facade (useUser) — its `id` IS the OIDC subject.
   const { user } = useUser();
   const analytics = useAnalytics();
-  // Stable OIDC subject, never email/PII.
+  // The stable OIDC subject, plus the attributes that make it legible. A bare
+  // identify(id) wrote an opaque subject: the warehouse could count users and
+  // never say which one. Email and name are first-party facts about our own
+  // users that useUser already decoded off the same claims as the id — they
+  // were dropped on the floor rather than withheld for any reason.
   useEffect(() => {
-    if (user?.id) analytics.identify(user.id);
+    if (user?.id) analytics.identify(user.id, identityTraits(user));
+    // The traits ride the id: re-running on every `user` identity would re-send
+    // on each render that reshapes it, and the id is what changes when the
+    // person does.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, analytics]);
   // The org. Cloud already resolves the tenant server-side for billing; group()
   // is what makes ORG-level funnels queryable ("which orgs stalled before their
