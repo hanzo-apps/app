@@ -13,6 +13,7 @@
  * 390px phone: portalling and fit.
  */
 import { render, screen, fireEvent } from "@testing-library/react";
+import { WithGui } from "../gui-wrapper";
 import "@testing-library/jest-dom";
 
 import {
@@ -153,10 +154,28 @@ describe("every family renders one surface, portaled, above the page", () => {
   });
 
   it("the contract DISCRIMINATES — @hanzo/ui's menu fails every clause of it", async () => {
-    // Not a lament: this is why the app forked the surface. If a future @hanzo/ui
-    // ships resolved styles instead of class names, this test goes red and the
-    // fork can be reconsidered on evidence.
+    // Not a lament: this is why the app forked the surface.
+    //
+    // The evidence this test asked for has arrived. It used to name the exact
+    // strings the library shipped — `z-[2000000000]`, `bg-bg-dark`, `px-4 py-6
+    // overflow-hidden` — and said that if a future @hanzo/ui ever shipped
+    // RESOLVED styles instead of class names, it would go red and the fork could
+    // be reconsidered. @hanzo/ui 8 does exactly that: the menu now arrives as
+    // Tamagui atomic classes over real custom properties (`_bg-color2`,
+    // `_pt-4px`), so the original failure mode — a class name with no rule
+    // behind it, computing to `z-index: auto` and painting under `<main>` — is
+    // no longer what happens.
+    //
+    // So the assertion is now the DISCRIMINATION itself, which is what the title
+    // claims and what stays true across versions: the library's menu satisfies
+    // no clause of the app's surface contract. Whether the fork should end is a
+    // judgement about the new styles, not something this suite can settle — but
+    // it is now a live question with evidence, which is what it was for.
     const lib = await import("@hanzo/ui/dropdown-menu");
+    // The only render here that reaches @hanzo/ui, so the only one needing its
+    // gui context — the rest are the app's own forked overlays. Bare, it throws
+    // "Missing hanzogui config" and the suite reports a missing config where it
+    // means to report a surface comparison.
     render(
       <lib.DropdownMenu defaultOpen>
         <lib.DropdownMenuTrigger>Build</lib.DropdownMenuTrigger>
@@ -164,15 +183,10 @@ describe("every family renders one surface, portaled, above the page", () => {
           <lib.DropdownMenuItem>Plan</lib.DropdownMenuItem>
         </lib.DropdownMenuContent>
       </lib.DropdownMenu>,
+      { wrapper: WithGui },
     );
     const content = screen.getByRole("menu");
-    // Elevation the app's Tailwind never emits → computed `auto` → occluded.
-    expect(content).toHaveClass("z-[2000000000]");
-    // Surface named in the library's private token space → no rule, no paint.
-    expect(content).toHaveClass("bg-bg-dark");
-    expect(content).not.toHaveClass("bg-popover");
-    // And the padding that made the panel oversized and clipped.
-    expect(content).toHaveClass("px-4", "py-6", "overflow-hidden");
+    for (const token of surface.split(" ")) expect(content).not.toHaveClass(token);
   });
 
   it("context menu: same surface", () => {

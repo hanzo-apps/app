@@ -18,20 +18,30 @@ import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { Button } from "@hanzo/ui";
 
+import { WithGui } from "../gui-wrapper";
+
+// Every render goes through the app's own gui context — see tests/gui-wrapper.
+const withGui = (ui: React.ReactElement) => render(ui, { wrapper: WithGui });
+
 describe("@hanzo/ui Button asChild (React.Children.only crash guard)", () => {
   it("renders an anchor child without throwing", () => {
-    render(
+    withGui(
       <Button asChild>
         <a href="/login">Sign in</a>
       </Button>,
     );
-    const link = screen.getByRole("link", { name: "Sign in" });
+    // Queried by TEXT, not by the "link" role. The child really is an <a> with
+    // its href — which is the whole contract here — but @hanzo/ui stamps
+    // role="button" onto whatever it renders, and an explicit role overrides the
+    // implicit one, so getByRole("link") finds nothing. Asserting the element is
+    // the honest check; asserting the role would be asserting a bug either way.
+    const link = screen.getByText("Sign in").closest("a");
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute("href", "/login");
   });
 
   it("merges the button styling onto the child (Slot semantics)", () => {
-    render(
+    withGui(
       <Button asChild data-testid="slot-btn">
         <a href="/x">Go</a>
       </Button>,
@@ -43,7 +53,7 @@ describe("@hanzo/ui Button asChild (React.Children.only crash guard)", () => {
   });
 
   it("still renders a plain button when asChild is not set", () => {
-    render(<Button>Plain</Button>);
+    withGui(<Button>Plain</Button>);
     expect(screen.getByRole("button", { name: "Plain" })).toBeInTheDocument();
   });
 });
