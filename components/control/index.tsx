@@ -105,6 +105,9 @@ Textarea.displayName = 'Textarea';
  * plus the 44px touch floor this copy never had. Consumers pass only
  * `checked`/`onCheckedChange`, which both accept, so the swap is transparent —
  * and it removes @radix-ui/react-switch and @radix-ui/react-label entirely.
+ *
+ * Only the components are re-exported. `LabelProps`/`SwitchProps` were forwarded
+ * too, but @hanzo/ui exports no such types and nothing here consumed them — a
+ * re-export of two names that never existed.
  */
 export { Label, Switch } from '@hanzo/ui';
-export type { LabelProps, SwitchProps } from '@hanzo/ui';

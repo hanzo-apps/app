@@ -52,6 +52,7 @@ function transpiled() {
     '@hanzo/ui',
     '@hanzo/usage',
     '@hanzo/brand',
+    '@hanzo/base',
     'react-native-web',
     ...[...scoped].sort(),
     'jose',

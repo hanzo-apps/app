@@ -43,6 +43,12 @@ const customJestConfig = {
   ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
+    // @hanzo/base is `"type": "module"` and its exports map offers only `import`
+    // — no `require` — so Jest's CJS resolver finds no condition it can take and
+    // reports "Cannot find module" for a package that is installed and correct.
+    // Naming the entry directly is the resolution half; `transpile.js` carries
+    // the transform half, so Next and the tests still agree on one list.
+    '^@hanzo/base$': '<rootDir>/node_modules/@hanzo/base/dist/core/index.js',
     '\.(css|less|scss|sass)$': '<rootDir>/mocks/style-mock.js',
     '\.(jpg|jpeg|png|gif|webp|avif|svg)$': '<rootDir>/mocks/file-mock.js',
   },
@@ -75,6 +81,9 @@ const customJestConfig = {
       displayName: 'unit',
       testMatch: ['<rootDir>/tests/unit/**/*.test.{js,jsx,ts,tsx}'],
       testEnvironment: 'jest-environment-jsdom',
+      // A project inherits NOTHING from the root config — it IS a config — so
+      // the jsdom polyfills have to be named here or they run nowhere.
+      setupFiles: ['<rootDir>/jest.setup.jsdom.js'],
     },
     {
       displayName: 'integration',

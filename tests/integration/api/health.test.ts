@@ -1,6 +1,6 @@
-import { GET, HEAD } from '@/app/api/health/route';
+import { GET, HEAD } from '@/app/v1/health/route';
 
-describe('API: /api/health', () => {
+describe('API: /v1/health', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     // Use Object.defineProperty to modify NODE_ENV
@@ -12,7 +12,7 @@ describe('API: /api/health', () => {
 
   describe('GET', () => {
     it('returns 200 OK with health check data', async () => {
-      const request = new Request('http://localhost:3000/api/health');
+      const request = new Request('http://localhost:3000/v1/health');
       const response = await GET(request);
       const data = await response.json();
 
@@ -31,7 +31,7 @@ describe('API: /api/health', () => {
     });
 
     it('includes correct timestamp format', async () => {
-      const request = new Request('http://localhost:3000/api/health');
+      const request = new Request('http://localhost:3000/v1/health');
       const response = await GET(request);
       const data = await response.json();
 
@@ -41,7 +41,7 @@ describe('API: /api/health', () => {
     it('includes memory info when authenticated', async () => {
       process.env.HEALTH_CHECK_SECRET = 'test-secret';
 
-      const request = new Request('http://localhost:3000/api/health', {
+      const request = new Request('http://localhost:3000/v1/health', {
         headers: {
           'authorization': 'Bearer test-secret',
         },
@@ -61,7 +61,7 @@ describe('API: /api/health', () => {
     it('excludes memory info when not authenticated', async () => {
       process.env.HEALTH_CHECK_SECRET = 'test-secret';
 
-      const request = new Request('http://localhost:3000/api/health', {
+      const request = new Request('http://localhost:3000/v1/health', {
         headers: {
           'authorization': 'Bearer wrong-secret',
         },
@@ -82,7 +82,7 @@ describe('API: /api/health', () => {
     it('withholds memory info when NO secret is configured', async () => {
       delete process.env.HEALTH_CHECK_SECRET;
 
-      const request = new Request('http://localhost:3000/api/health');
+      const request = new Request('http://localhost:3000/v1/health');
       const response = await GET(request);
       const data = await response.json();
 
@@ -94,14 +94,14 @@ describe('API: /api/health', () => {
       process.env.HEALTH_CHECK_SECRET = 'shh';
 
       const authed = await GET(
-        new Request('http://localhost:3000/api/health', {
+        new Request('http://localhost:3000/v1/health', {
           headers: { authorization: 'Bearer shh' },
         }),
       );
       expect((await authed.json()).memory).toBeDefined();
 
       const wrong = await GET(
-        new Request('http://localhost:3000/api/health', {
+        new Request('http://localhost:3000/v1/health', {
           headers: { authorization: 'Bearer nope' },
         }),
       );
@@ -116,7 +116,7 @@ describe('API: /api/health', () => {
         configurable: true,
       });
 
-      const request = new Request('http://localhost:3000/api/health');
+      const request = new Request('http://localhost:3000/v1/health');
       const response = await GET(request);
       const data = await response.json();
 
@@ -126,7 +126,7 @@ describe('API: /api/health', () => {
     it('uses default version when npm_package_version not set', async () => {
       delete process.env.npm_package_version;
 
-      const request = new Request('http://localhost:3000/api/health');
+      const request = new Request('http://localhost:3000/v1/health');
       const response = await GET(request);
       const data = await response.json();
 
@@ -136,7 +136,7 @@ describe('API: /api/health', () => {
     it('uses npm_package_version when available', async () => {
       process.env.npm_package_version = '2.0.0';
 
-      const request = new Request('http://localhost:3000/api/health');
+      const request = new Request('http://localhost:3000/v1/health');
       const response = await GET(request);
       const data = await response.json();
 
@@ -146,7 +146,7 @@ describe('API: /api/health', () => {
     });
 
     it('returns valid JSON response', async () => {
-      const request = new Request('http://localhost:3000/api/health');
+      const request = new Request('http://localhost:3000/v1/health');
       const response = await GET(request);
       const contentType = response.headers.get('content-type');
 
@@ -157,7 +157,7 @@ describe('API: /api/health', () => {
     });
 
     it('includes positive uptime value', async () => {
-      const request = new Request('http://localhost:3000/api/health');
+      const request = new Request('http://localhost:3000/v1/health');
       const response = await GET(request);
       const data = await response.json();
 

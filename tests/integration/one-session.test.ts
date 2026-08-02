@@ -21,12 +21,20 @@ import { server } from '../../jest.setup';
 import { IAM, CLIENT_ID, iamHandlers, mint, forge, selfSigned } from '../iam-fixture';
 
 import { GET as wallet } from '@/app/v1/wallet/route';
-import { GET as projects } from '@/app/api/projects/route';
+import { GET as projects } from '@/app/v1/me/projects/route';
 import { GET as orgs } from '@/app/v1/orgs/route';
 import { session } from '@/lib/iam';
 import { subjectOf } from '@/lib/security/rate-limiter';
 
 const GATEWAY = 'https://api.hanzo.ai';
+
+// The Base data plane `/v1/me/projects` reads once a caller is authenticated.
+//
+// This is lib/base.ts's DEFAULT — the in-cluster companion — and not an origin
+// chosen here, because that module reads HANZO_BASE_URL once at module scope and
+// imports are hoisted above any assignment a test could make. Naming the value
+// the code actually resolves to is the honest way to say which host is expected.
+const BASE = 'http://hanzo-app-base.hanzo.svc:8090';
 
 function bearer(url: string, token?: string, init: RequestInit = {}) {
   const headers = new Headers(init.headers);
@@ -151,18 +159,26 @@ describe('protected routes refuse anything that is not a verified caller', () =>
     expect(res.status).toBe(401);
   });
 
-  it.each(cases)('/api/projects refuses %s', async (_label, make) => {
-    const res = await projects(bearer('http://localhost/api/projects', await make()));
+  it.each(cases)('/v1/me/projects refuses %s', async (_label, make) => {
+    const res = await projects(bearer('http://localhost/v1/me/projects', await make()));
     expect(res.status).toBe(401);
   });
 });
 
 describe('the routes stranded behind the self-issued session are on the IAM one', () => {
   // `requireAuth()` read an HS256 `osw_session` cookie that NOTHING in the repo
-  // ever minted, so /api/projects answered 401 to a fully signed-in user. It now
+  // ever minted, so /v1/me/projects answered 401 to a fully signed-in user. It now
   // answers to the same session as everything else.
-  it('/api/projects serves a signed-in IAM caller', async () => {
-    const res = await projects(bearer('http://localhost/api/projects', await mint()));
+  it('/v1/me/projects serves a signed-in IAM caller', async () => {
+    // Past the gate the route really reads Base, so Base has to answer. What is
+    // under test is the SESSION, not the projects — an empty list is a complete
+    // answer, and MSW refusing an unmocked call is what makes that explicit.
+    server.use(
+      http.get(`${BASE}/v1/collections/projects/records`, () =>
+        HttpResponse.json({ items: [], page: 1, perPage: 100, totalItems: 0, totalPages: 0 }),
+      ),
+    );
+    const res = await projects(bearer('http://localhost/v1/me/projects', await mint()));
     expect(res.status).not.toBe(401);
   });
 });
