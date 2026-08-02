@@ -22,6 +22,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
+import { refusal } from "@/lib/gateway";
 import { session } from "@/lib/iam";
 import { isCrossSite } from "@/lib/csrf";
 
@@ -87,7 +88,11 @@ export async function POST(
     );
   }
 
-  if (gateway.status === 401 || gateway.status === 403) return unauthorized();
+  if (gateway.status === 401 || gateway.status === 403) {
+    const detail = await gateway.text().catch(() => "");
+    const { body, status } = refusal(gateway.status, detail);
+    return NextResponse.json(body, { status, headers: NO_STORE });
+  }
 
   // The run body (runView) is meaningful on success AND on recorded failure
   // (502 from the cloud). Forward it with the upstream status so the client

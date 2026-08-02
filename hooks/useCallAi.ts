@@ -4,12 +4,17 @@ import { Page } from "@/types";
 import { parsePages, parseSinglePage, stripThinkBlocks } from "@/lib/format-pages";
 import { setLastGenerationRequestId } from "@/lib/reward-signal";
 import { baseEnabled } from "@/lib/base/flag";
-
-// The ONE honest message for an upstream 5xx / network failure. The caller's
-// handleError surfaces it once so the user knows to retry — never an infinite
-// "Building…" with a stuck isAiWorking flag.
-const AI_UNAVAILABLE =
-  "AI backend is temporarily unavailable — try again in a minute.";
+// UNAVAILABLE is the ONE honest message for a failure THIS side detects: the
+// socket died, or the response arrived without a body. The caller's handleError
+// surfaces it once so the user knows to retry — never an infinite "Building…"
+// with a stuck isAiWorking flag.
+//
+// It is deliberately NOT the fallback for a refusal the server explained. A 401
+// or a 403 arrives with a reason (lib/gateway.ts wrote it) and that reason is
+// what the user needs; telling them to wait a minute for a revoked key is how an
+// afternoon gets lost. Retry advice belongs only where retrying can work — which
+// is why this sentence and the server's are literally the same string.
+import { UNAVAILABLE } from "@/lib/gateway";
 
 // Guarded JSON parse: the stream-done handler only treats the response as a
 // JSON error envelope when it actually parses, so a malformed `{…}` never
@@ -255,11 +260,11 @@ export const useCallAi = ({
       }
       if (!request.ok && request.status >= 500) {
         setisAiWorking(false);
-        return { error: "api_error", message: AI_UNAVAILABLE };
+        return { error: "api_error", message: UNAVAILABLE };
       }
       if (!request.body) {
         setisAiWorking(false);
-        return { error: "network_error", message: AI_UNAVAILABLE };
+        return { error: "network_error", message: UNAVAILABLE };
       }
 
       {
@@ -292,7 +297,6 @@ export const useCallAi = ({
                 // Handle pro modal required
                 return { error: "pro_required" };
               } else {
-                toast.error(jsonResponse.message);
                 return { error: "api_error", message: jsonResponse.message };
               }
             }
@@ -352,7 +356,7 @@ export const useCallAi = ({
       if (error?.openLogin) {
         return { error: "login_required" };
       }
-      return { error: "network_error", message: AI_UNAVAILABLE };
+      return { error: "network_error", message: UNAVAILABLE };
     }
   };
 
@@ -393,11 +397,11 @@ export const useCallAi = ({
       }
       if (!request.ok && request.status >= 500) {
         setisAiWorking(false);
-        return { error: "api_error", message: AI_UNAVAILABLE };
+        return { error: "api_error", message: UNAVAILABLE };
       }
       if (!request.body) {
         setisAiWorking(false);
-        return { error: "network_error", message: AI_UNAVAILABLE };
+        return { error: "network_error", message: UNAVAILABLE };
       }
 
       {
@@ -428,7 +432,6 @@ export const useCallAi = ({
                 // Handle pro modal required
                 return { error: "pro_required" };
               } else {
-                toast.error(jsonResponse.message);
                 return { error: "api_error", message: jsonResponse.message };
               }
             }
@@ -477,7 +480,7 @@ export const useCallAi = ({
       if (error?.openLogin) {
         return { error: "login_required" };
       }
-      return { error: "network_error", message: AI_UNAVAILABLE };
+      return { error: "network_error", message: UNAVAILABLE };
     }
   };
 
@@ -522,7 +525,7 @@ export const useCallAi = ({
       }
       if (!request.ok && request.status >= 500) {
         setisAiWorking(false);
-        return { error: "api_error", message: AI_UNAVAILABLE };
+        return { error: "api_error", message: UNAVAILABLE };
       }
 
       {
@@ -537,7 +540,7 @@ export const useCallAi = ({
           } else if (res.openProModal) {
             return { error: "pro_required" };
           }
-          return { error: "api_error", message: res.message || AI_UNAVAILABLE };
+          return { error: "api_error", message: res.message || UNAVAILABLE };
         }
 
         // A 200 with no usable pages (garbled/empty) — fail honestly instead of
@@ -572,7 +575,7 @@ export const useCallAi = ({
       if (error?.openLogin) {
         return { error: "login_required" };
       }
-      return { error: "network_error", message: AI_UNAVAILABLE };
+      return { error: "network_error", message: UNAVAILABLE };
     }
   };
 
@@ -613,11 +616,11 @@ export const useCallAi = ({
       }
       if (!request.ok && request.status >= 500) {
         setisAiWorking(false);
-        return { error: "api_error", message: AI_UNAVAILABLE };
+        return { error: "api_error", message: UNAVAILABLE };
       }
       if (!request.body) {
         setisAiWorking(false);
-        return { error: "network_error", message: AI_UNAVAILABLE };
+        return { error: "network_error", message: UNAVAILABLE };
       }
 
       const reader = request.body.getReader();
@@ -666,7 +669,7 @@ export const useCallAi = ({
       setisAiWorking(false);
       if (error?.name === "AbortError") return { error: "aborted" };
       if (error?.openLogin) return { error: "login_required" };
-      return { error: "network_error", message: AI_UNAVAILABLE };
+      return { error: "network_error", message: UNAVAILABLE };
     }
   };
 

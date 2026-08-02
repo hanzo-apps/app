@@ -32,6 +32,7 @@ import {
   UPDATE_PAGE_END,
 } from "@/lib/prompts";
 import { resolveModelId } from "@/lib/providers";
+import { refusal } from "@/lib/gateway";
 import { session } from "@/lib/iam";
 import { requireSameOrigin } from "@/lib/org/csrf";
 import { Page } from "@/types";
@@ -69,15 +70,6 @@ const unauthorized = () =>
   NextResponse.json(
     { ok: false, openLogin: true, message: "Sign in to build" },
     { status: 401 }
-  );
-
-// The gateway reports the org is out of credit (402 Payment Required). Surface
-// it as a STRUCTURED signal (status 402 + needCredits) so the client raises the
-// "Need more usage?" modal instead of masking it as a generic 502 failure.
-const insufficientCredits = (detail?: string) =>
-  NextResponse.json(
-    { ok: false, needCredits: true, message: detail || "You're out of credits." },
-    { status: 402 }
   );
 
 type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
@@ -162,16 +154,8 @@ export async function POST(request: NextRequest) {
 
   if (!gateway.ok || !gateway.body) {
     const detail = await gateway.text().catch(() => "");
-    if (gateway.status === 401 || gateway.status === 403) return unauthorized();
-    if (gateway.status === 402) return insufficientCredits(detail);
-    return NextResponse.json(
-      {
-        ok: false,
-        message:
-          detail || `Gateway error (${gateway.status}) while generating.`,
-      },
-      { status: 502 }
-    );
+    const { body, status } = refusal(gateway.status, detail);
+    return NextResponse.json(body, { status });
   }
 
   const encoder = new TextEncoder();
@@ -293,15 +277,8 @@ export async function PATCH(request: NextRequest) {
 
   if (!gateway.ok || !gateway.body) {
     const detail = await gateway.text().catch(() => "");
-    if (gateway.status === 401 || gateway.status === 403) return unauthorized();
-    if (gateway.status === 402) return insufficientCredits(detail);
-    return NextResponse.json(
-      {
-        ok: false,
-        message: detail || `Gateway error (${gateway.status}) while planning.`,
-      },
-      { status: 502 }
-    );
+    const { body, status } = refusal(gateway.status, detail);
+    return NextResponse.json(body, { status });
   }
 
   const encoder = new TextEncoder();
@@ -422,15 +399,8 @@ export async function PUT(request: NextRequest) {
 
   if (!gateway.ok) {
     const detail = await gateway.text().catch(() => "");
-    if (gateway.status === 401 || gateway.status === 403) return unauthorized();
-    if (gateway.status === 402) return insufficientCredits(detail);
-    return NextResponse.json(
-      {
-        ok: false,
-        message: detail || `Gateway error (${gateway.status}) while editing.`,
-      },
-      { status: 502 }
-    );
+    const { body, status } = refusal(gateway.status, detail);
+    return NextResponse.json(body, { status });
   }
 
   const data = await gateway.json();
