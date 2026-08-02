@@ -38,6 +38,13 @@ function ago(iso: string | undefined, now: number): string {
   return `${Math.floor(s / 86400)}d`;
 }
 
+/** Memory in use, as a percentage — the machine reports bytes used and free, and
+ *  the total is their sum. Absent when it reported neither. */
+function memPercent(m: { memUsed?: number; memFree?: number }): number | null {
+  const total = (m.memUsed ?? 0) + (m.memFree ?? 0);
+  return total > 0 ? Math.round(((m.memUsed ?? 0) / total) * 100) : null;
+}
+
 /** Trim a path to its tail, which is the part that identifies the work. */
 function shortPath(p: string | undefined): string {
   if (!p) return '';
@@ -46,19 +53,23 @@ function shortPath(p: string | undefined): string {
   return parts.length > 3 ? `…/${parts.slice(-2).join('/')}` : home;
 }
 
-/** How long after its last update a "running" session stops counting as live.
+/** Whether a session is running RIGHT NOW.
  *
- * The plane has no heartbeat: status only changes if a client says so, and a client
- * that loses power never does. So a row claiming to run is evidence only when it is
- * RECENT — without this the roster fills with rows that have been "running" for days
- * and a genuinely live session is indistinguishable from a corpse.
+ * Two facts, each from the one place that owns it. The session row says what it is
+ * doing — running, paused, done — and only its own client can say that. Whether
+ * anything is there to be doing it is the MACHINE's fact, and cloud already
+ * decides it: `status` is the target's `EffectiveStatus`, offline once no
+ * heartbeat has landed inside its window.
+ *
+ * This page deliberately computes neither. A staleness rule invented here would be
+ * a second liveness answer competing with the server's, and the two would disagree
+ * exactly when it matters — an idle-but-linked shell reads dead, or a machine
+ * that lost power reads alive. A session on a machine that never registered has no
+ * such fact to check, so its own status stands.
  */
-const LIVE_WINDOW_MS = 10 * 60 * 1000;
-
-function isLive(s: AgentSession, now: number): boolean {
+function isLive(s: AgentSession, machine: Machine | undefined): boolean {
   if (s.status !== 'running' && s.status !== 'paused') return false;
-  const t = Date.parse(s.updatedAt);
-  return Number.isNaN(t) ? false : now - t <= LIVE_WINDOW_MS;
+  return machine ? machine.status !== 'offline' : true;
 }
 
 interface Group {
@@ -102,14 +113,14 @@ export function SessionBoard({
     for (const g of byKey.values()) {
       g.sessions.sort((x, y) => (y.updatedAt || '').localeCompare(x.updatedAt || ''));
     }
-    const liveCount = (g: Group) => g.sessions.filter((x) => isLive(x, now)).length;
+    const liveCount = (g: Group) => g.sessions.filter((x) => isLive(x, g.machine)).length;
     return [...byKey.values()].sort(
       (a, b) =>
         liveCount(b) - liveCount(a) ||
         b.sessions.length - a.sessions.length ||
         a.label.localeCompare(b.label),
     );
-  }, [sessions, machines, now]);
+  }, [sessions, machines]);
 
   const [selected, setSelected] = useState<string | null>(
     sessions.find((s) => s.terminal)?.id ?? sessions[0]?.id ?? null,
@@ -146,32 +157,30 @@ export function SessionBoard({
                 }`}
               />
               <h2 className="truncate text-sm font-semibold">{g.label}</h2>
-              {g.machine?.spec ? (
-                <span className="truncate text-xs text-muted-foreground">
-                  {[g.machine.spec.os, g.machine.spec.arch].filter(Boolean).join('/')}
-                </span>
+              {g.machine?.capacity ? (
+                // The control plane already composes this ("20 vCPU / 128G / 1× GB10").
+                // Re-deriving it from spec here would be a second summary to keep true.
+                <span className="truncate text-xs text-muted-foreground">{g.machine.capacity}</span>
               ) : null}
               <span className="ml-auto shrink-0 text-xs tabular-nums text-muted-foreground">
-                {g.sessions.filter((x) => isLive(x, now)).length || (g.machine ? 'idle' : '')}
+                {g.sessions.filter((x) => isLive(x, g.machine)).length || (g.machine ? 'idle' : '')}
               </span>
             </header>
 
             {g.machine?.metrics ? (
               <p className="mb-2 flex gap-3 text-xs tabular-nums text-muted-foreground">
-                {g.machine.metrics.cpuPercent != null && (
-                  <span>cpu {Math.round(g.machine.metrics.cpuPercent)}%</span>
+                {g.machine.metrics.load1 ? <span>load {g.machine.metrics.load1.toFixed(2)}</span> : null}
+                {memPercent(g.machine.metrics) != null && (
+                  <span>mem {memPercent(g.machine.metrics)}%</span>
                 )}
-                {g.machine.metrics.memPercent != null && (
-                  <span>mem {Math.round(g.machine.metrics.memPercent)}%</span>
-                )}
-                {g.machine.metrics.diskPercent != null && (
-                  <span>disk {Math.round(g.machine.metrics.diskPercent)}%</span>
-                )}
+                {g.machine.metrics.gpuUtil ? (
+                  <span>gpu {Math.round(g.machine.metrics.gpuUtil * 100)}%</span>
+                ) : null}
               </p>
             ) : null}
 
             <ul className="flex flex-col gap-1.5">
-              {(showAll[g.key] ? g.sessions : g.sessions.filter((x) => isLive(x, now))).map((s) => {
+              {(showAll[g.key] ? g.sessions : g.sessions.filter((x) => isLive(x, g.machine))).map((s) => {
                 const on = s.id === active?.id;
                 return (
                   <li key={s.id}>
@@ -190,7 +199,7 @@ export function SessionBoard({
                         <span
                           aria-hidden
                           className={`size-1.5 shrink-0 rounded-full ${
-                            isLive(s, now) ? DOT[s.status] : DOT.done
+                            isLive(s, g.machine) ? DOT[s.status] : DOT.done
                           }`}
                         />
                         <span className="truncate text-sm">{s.agent}</span>
@@ -207,7 +216,7 @@ export function SessionBoard({
                 );
               })}
               {(() => {
-                const hidden = g.sessions.filter((x) => !isLive(x, now)).length;
+                const hidden = g.sessions.filter((x) => !isLive(x, g.machine)).length;
                 if (g.sessions.length === 0) {
                   return <li className="px-3 py-2 text-xs text-muted-foreground">nothing running</li>;
                 }
