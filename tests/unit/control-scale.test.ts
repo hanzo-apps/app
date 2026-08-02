@@ -47,28 +47,37 @@ const rel = (f: string) => f.replace(ROOT + "/", "");
  * refuses to keep one.
  */
 const SIZES: string[] = (() => {
-  // Start at the published entry and FOLLOW it. `primitives/button.d.ts` used to
-  // declare the union; it is now a one-line re-export of the gui backend, and a
-  // test that reads the barrel finds no `size?:` in it and fails claiming the
-  // library dropped its sizes. Following the re-export means the union can move
-  // again — backends get renamed — without this suite lying about why it broke.
-  const read = (p: string) => readFileSync(join(ROOT, "node_modules/@hanzo/ui/dist", p), "utf8");
-  let at = "primitives/button.d.ts";
-  let dts = read(at);
-  for (let hop = 0; hop < 8 && !/size\?:/.test(dts); hop++) {
-    const to = dts.match(/from\s+'([^']+)'/) ?? dts.match(/from\s+"([^"]+)"/);
-    if (!to) break;
-    at = join(at, "..", to[1]).replace(/\.js$/, ".d.ts");
-    dts = read(at);
-  }
+  // FIND the declaration; do not assume where it lives. `primitives/button.d.ts`
+  // held the union once, is a one-line re-export of the gui backend in one
+  // install, and is absent entirely in another — a clean CI install has only
+  // `backends/gui/button.d.ts`. Hardcoding any of those spellings makes this
+  // suite report "the library dropped its sizes" when the library did nothing of
+  // the kind, which is exactly the failure it exists to prevent.
+  const root = join(ROOT, "node_modules/@hanzo/ui/dist");
+  const candidates: string[] = [];
+  const scan = (dir: string) => {
+    for (const e of readdirSync(dir, { withFileTypes: true })) {
+      const p = join(dir, e.name);
+      if (e.isDirectory()) scan(p);
+      else if (e.name === "button.d.ts") candidates.push(p);
+    }
+  };
+  scan(root);
 
-  const line = dts.match(/size\?:\s*([^;]+);/);
-  if (!line) throw new Error(`@hanzo/ui no longer declares a size union (followed to ${at})`);
-  // Drop `import("@hanzogui/web").SizeTokens` first: its module specifier is
-  // quoted too, and would otherwise be collected as if it were a size named
-  // "@hanzogui/web".
-  const union = line[1].replace(/import\("[^"]+"\)/g, "");
-  return [...union.matchAll(/"([^"]+)"/g)].map((m) => m[1]);
+  for (const c of candidates) {
+    const dts = readFileSync(c, "utf8");
+    const line = dts.match(/size\?:\s*([^;]+);/);
+    if (!line) continue; // a re-export barrel declares nothing
+    // Drop `import("@hanzogui/web").SizeTokens` first: its module specifier is
+    // quoted too, and would otherwise be collected as a size named
+    // "@hanzogui/web".
+    const union = line[1].replace(/import\("[^"]+"\)/g, "");
+    const sizes = [...union.matchAll(/"([^"]+)"/g)].map((m) => m[1]);
+    if (sizes.length) return sizes;
+  }
+  throw new Error(
+    `@hanzo/ui declares no button size union — searched ${candidates.length} button.d.ts under ${root}`,
+  );
 })();
 
 /** Every `<Button …>` opening tag in the surface, with its size and className. */
