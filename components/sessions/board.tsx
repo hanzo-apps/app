@@ -17,13 +17,20 @@ import { useEffect, useMemo, useState } from 'react';
 import type { AgentSession } from '@/lib/sessions';
 import type { Machine } from '@/lib/machines';
 
+/** Status -> dot. Session statuses first, then the machine's.
+ *
+ * The machine's three are exactly what the control plane can send —
+ * online | offline | draining (agents.TargetOnline/Offline/Draining). `busy` was
+ * here and is sent by nothing, while `draining` was missing and fell through to
+ * the offline grey: a box being deliberately drained looked identical to one that
+ * had died, which is the opposite of what draining a box is for. */
 const DOT: Record<string, string> = {
   running: 'bg-emerald-500',
   paused: 'bg-amber-500',
   done: 'bg-muted-foreground/40',
   error: 'bg-destructive',
   online: 'bg-emerald-500',
-  busy: 'bg-amber-500',
+  draining: 'bg-amber-500',
   offline: 'bg-muted-foreground/40',
 };
 
