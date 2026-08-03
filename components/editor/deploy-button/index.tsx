@@ -33,21 +33,23 @@ export function DeployButton({
           <Popover>
             <PopoverTrigger asChild>
               <div>
+                {/* ONE Publish. It used to be two whole buttons, one per
+                    breakpoint (max-lg:hidden / lg:hidden), which renders twice
+                    the moment either variant fails to compile — and it did: the
+                    toolbar showed Publish above Publish. A control that exists
+                    twice can also be CLICKED twice, so the duplicate was not
+                    only ugly.
+
+                    Now the breakpoint moves the smallest thing that differs —
+                    the icon — so the worst a CSS failure can do is show an icon
+                    on a narrow screen, never a second Publish. */}
                 <Button
                   variant="default"
                   size="sm"
-                  className="max-lg:hidden gap-1.5 px-2.5 text-xs"
+                  className="gap-1.5 px-2.5 text-xs"
                   disabled={disabled}
                 >
-                  <MdSave className="size-3.5" />
-                  {disabled ? "Building…" : "Publish"}
-                </Button>
-                <Button
-                  variant="default"
-                  size="sm"
-                  className="lg:hidden px-2.5 text-xs"
-                  disabled={disabled}
-                >
+                  <MdSave className="size-3.5 max-lg:hidden" />
                   {disabled ? "Building…" : "Publish"}
                 </Button>
               </div>
@@ -61,27 +63,16 @@ export function DeployButton({
             </PopoverContent>
           </Popover>
         ) : (
-          <>
-            <Button
-              variant="default"
-              size="sm"
-              className="max-lg:hidden gap-1.5 px-2.5 text-xs"
-              onClick={() => setOpen(true)}
-              disabled={disabled}
-            >
-              <MdSave className="size-3.5" />
-              {disabled ? "Building…" : "Publish"}
-            </Button>
-            <Button
-              variant="default"
-              size="sm"
-              className="lg:hidden px-2.5 text-xs"
-              onClick={() => setOpen(true)}
-              disabled={disabled}
-            >
-              {disabled ? "Building…" : "Publish"}
-            </Button>
-          </>
+          <Button
+            variant="default"
+            size="sm"
+            className="gap-1.5 px-2.5 text-xs"
+            onClick={() => setOpen(true)}
+            disabled={disabled}
+          >
+            <MdSave className="size-3.5 max-lg:hidden" />
+            {disabled ? "Building…" : "Publish"}
+          </Button>
         )}
         <LoginModal
           open={open}

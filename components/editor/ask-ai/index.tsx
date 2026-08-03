@@ -714,7 +714,8 @@ export function AskAI({
         break;
       case "empty_response":
         toast.error(
-          message || "The model didn't return a usable page. Please try again."
+          message ||
+            "The model replied without a page. Try a different model, or check your credits at pay.hanzo.ai."
         );
         break;
       case "network_error":

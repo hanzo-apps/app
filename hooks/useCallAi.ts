@@ -303,15 +303,24 @@ export const useCallAi = ({
 
             const newPages = formatPages(contentResponse);
 
-            // No renderable page came back (empty/garbled model output). Fail
-            // honestly (handleError surfaces the toast) instead of silently
-            // leaving a dead editor.
+            // No renderable page came back. SAY WHAT IS KNOWN, and never "try
+            // again" — the two causes are both things retrying cannot change.
+            //
+            // The stream carries the model the gateway actually routed to, so
+            // name it: a request that returned prose instead of a page is a
+            // routing/model fact the person can act on (pick another model),
+            // and one that returned nothing at all is ours. "Please try again"
+            // was neither, and it is what a request refused for CREDIT looked
+            // like too — the account reads zero, the gateway answers 402, and
+            // the builder said the model had misbehaved.
             if (newPages.length === 0) {
               setisAiWorking(false);
+              const who = served ? `\u2019${served}\u2019 ` : "";
               return {
                 error: "empty_response",
-                message:
-                  "The model didn't return a usable page. Please try again.",
+                message: contentResponse.trim().length
+                  ? `The model ${who}replied without a page — it answered in prose instead of building one. Try a different model, or rephrase as a page to build.`
+                  : `No response came back from the model ${who}. Check your credits at pay.hanzo.ai, then try a different model.`,
               };
             }
 
@@ -442,7 +451,7 @@ export const useCallAi = ({
               return {
                 error: "empty_response",
                 message:
-                  "The model didn't return a usable page. Please try again.",
+                  "The model replied without a page. Try a different model, or check your credits at pay.hanzo.ai.",
               };
             }
 
@@ -550,7 +559,7 @@ export const useCallAi = ({
           return {
             error: "empty_response",
             message:
-              "The model didn't return a usable page. Please try again.",
+              "The model replied without a page. Try a different model, or check your credits at pay.hanzo.ai.",
           };
         }
 

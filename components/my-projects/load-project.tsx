@@ -81,24 +81,17 @@ export const LoadProject = ({
     <>
       {!user ? (
         <>
+          {/* ONE Load. See deploy-button: a whole button per breakpoint renders
+              twice the moment a variant fails to compile, and the toolbar showed
+              Load above Load. The breakpoint now moves only the words that differ. */}
           <Button
             variant="outline"
             size="sm"
-            className="gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-accent max-lg:hidden"
+            className="gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-accent"
             onClick={() => setOpenLoginModal(true)}
           >
-            <Import className="size-3.5" />
-            Load existing Project
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-accent lg:hidden"
-            onClick={() => setOpenLoginModal(true)}
-          >
-            {fullXsBtn && <Import className="size-3.5" />}
-            Load
-            {fullXsBtn && " existing Project"}
+            <Import className="size-3.5 max-lg:hidden" />
+            Load<span className="max-lg:hidden"> existing Project</span>
           </Button>
           <LoginModal
             open={openLoginModal}
@@ -111,20 +104,13 @@ export const LoadProject = ({
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <div>
+              {/* ONE Load — the breakpoint moves the icon, not the control. */}
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-muted max-lg:hidden"
+                className="gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-muted"
               >
-                <Import className="size-3.5" />
-                Load
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-1.5 px-2.5 text-xs !border-border !bg-muted !text-foreground transition-colors duration-150 hover:!bg-muted lg:hidden"
-              >
-                {fullXsBtn && <Import className="size-3.5" />}
+                <Import className="size-3.5 max-lg:hidden" />
                 Load
               </Button>
             </div>
