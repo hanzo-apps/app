@@ -1,26 +1,37 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { AppShell } from '@/components/app-shell';
+import Header from '@/components/layout/header';
+import SiteFooter from '@/components/landing/site-footer';
 import { TemplatesView } from '@/components/views/templates-view';
 import { builderLink } from '@/lib/api/projects';
 
 /**
- * /templates — the deep-linkable Templates gallery. Mirrors the in-app sidebar
- * view (content-area → TemplatesView) so the same gallery is reachable BOTH by the
- * sidebar (client-side view switch) AND a direct URL. Previously `app/templates/`
- * held only per-template subroutes with no index page, so `/templates` 404'd.
- * Gallery cards fork into the builder via `/dev?template=…` internally; a selected
- * custom template opens in the builder at `/dev`.
+ * /templates — browse the starters and launch one. PUBLIC.
+ *
+ * Public because browsing is how someone decides Hanzo is worth an account, and
+ * a starter gallery behind a login is a locked shop window. It wears the site
+ * chrome (Header + SiteFooter) rather than `AppShell` for the same reason
+ * /community does: the signed-in sidebar — Dashboard, Connectors, Settings — is
+ * meaningless to a visitor who has none of it, and mounting it is precisely what
+ * makes a route protected (middleware + tests/unit/protected-routes).
+ *
+ * Launching still requires an account, and that is the right seam: a card forks
+ * into the builder at /dev, which bounces through /login and returns to the same
+ * place. Browse freely, sign in at the moment you actually need to.
  */
 export default function TemplatesPage() {
   const router = useRouter();
   return (
-    <AppShell currentView="templates">
-      <TemplatesView
-        onProjectSelect={(project) => router.push(builderLink(project.id))}
-        onNavigate={(view) => router.push(view.startsWith('/') ? view : `/${view}`)}
-      />
-    </AppShell>
+    <div className="flex min-h-screen flex-col bg-background text-foreground">
+      <Header />
+      <main className="flex-1">
+        <TemplatesView
+          onProjectSelect={(project) => router.push(builderLink(project.id))}
+          onNavigate={(view) => router.push(view.startsWith('/') ? view : `/${view}`)}
+        />
+      </main>
+      <SiteFooter />
+    </div>
   );
 }

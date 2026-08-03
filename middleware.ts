@@ -32,7 +32,6 @@ const PROTECTED_PREFIXES = [
   "/sessions",
   "/settings",
   "/skills",
-  "/templates",
   "/usage",
   "/work",
 ];

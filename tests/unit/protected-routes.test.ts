@@ -17,6 +17,15 @@ import { join } from "node:path";
  */
 const ROOT = join(__dirname, "..", "..");
 
+/** Whether a page MOUNTS the signed-in shell — imports it, or renders it.
+ *
+ * Not "mentions it": a page that has moved to the public chrome may well explain
+ * in prose why it no longer wears AppShell, and a substring match reads that
+ * explanation as the thing it is denying. */
+function mountsShell(src: string): boolean {
+  return /from\s+["']@\/components\/app-shell["']/.test(src) || /<AppShell[\s>]/.test(src);
+}
+
 /** Top-level route prefix for every page that mounts AppShell. */
 function shelledPrefixes(): Set<string> {
   const out = new Set<string>();
@@ -26,7 +35,7 @@ function shelledPrefixes(): Set<string> {
       if (statSync(p).isDirectory()) {
         // A route GROUP `(public)` is organisational and contributes no segment.
         walk(p, name.startsWith("(") ? route : [...route, name]);
-      } else if (name === "page.tsx" && readFileSync(p, "utf8").includes("AppShell")) {
+      } else if (name === "page.tsx" && mountsShell(readFileSync(p, "utf8"))) {
         // The first STATIC segment is the prefix middleware matches on; a
         // dynamic one (`[id]`) is already covered by its parent.
         const first = route.find((s) => !s.startsWith("["));
