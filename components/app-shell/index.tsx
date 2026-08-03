@@ -11,6 +11,11 @@
  * the workspace). Content is a scrollable flex child so each page owns its own
  * scroll region beside the in-flow sidebar.
  *
+ * There is no mode bar. hanzo.app IS the dev surface — the app builder and the
+ * work around it — and hanzo.chat is the chat surface, until the two converge on
+ * one thing. A three-way switcher across surfaces that do not yet behave alike
+ * advertises a choice the product has not made.
+ *
  * The shell also owns the ⌘K command palette: a global keydown opens it, the
  * sidebar's "Search" item opens it (`onOpenSearch`), and it renders here so it is
  * reachable from every content page.
@@ -27,7 +32,6 @@ import { Menu, Search } from 'lucide-react';
 
 import { Sidebar } from '@/components/sidebar';
 import { OrgProvider } from '@/lib/org/client';
-import { ModeSwitcher } from '@/components/mode-switcher';
 import { HanzoLogo } from '@/components/HanzoLogo';
 import { CommandPalette } from '@/components/command-palette';
 import { useCommandK } from '@/hooks/useCommandK';
@@ -79,7 +83,6 @@ export function AppShell({ children, currentView = 'templates' }: AppShellProps)
             <Menu className="h-5 w-5" />
           </button>
           <HanzoLogo className="h-5 w-5 text-foreground" />
-          <ModeSwitcher className="ml-1" />
           <button
             onClick={() => setPaletteOpen(true)}
             aria-label="Search"
@@ -87,12 +90,6 @@ export function AppShell({ children, currentView = 'templates' }: AppShellProps)
           >
             <Search className="h-5 w-5" />
           </button>
-        </div>
-
-        {/* Desktop mode bar — the one webapp's chat | dev | work switcher
-            (mobile carries it in the top bar above). */}
-        <div className="hidden h-11 items-center border-b border-border bg-background px-4 md:flex">
-          <ModeSwitcher />
         </div>
 
         {children}

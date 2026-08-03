@@ -8,6 +8,7 @@
 // disagree.
 
 import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { session } from '@/lib/iam';
 import { listSessions } from '@/lib/sessions';
 import { listMachines } from '@/lib/machines';
@@ -24,18 +25,12 @@ export const metadata = {
 export default async function SessionsPage() {
   const me = await session({ headers: await headers() });
 
-  if (!me) {
-    return (
-      <AppShell currentView="sessions">
-      <main className="mx-auto max-w-5xl px-6 py-16">
-        <h1 className="text-2xl font-semibold tracking-tight">Sessions</h1>
-        <p className="mt-3 text-sm text-muted-foreground">
-          Sign in to see the coding sessions running on your machines.
-        </p>
-      </main>
-      </AppShell>
-    );
-  }
+  // Signed out goes to sign-in, the same way every other authenticated page here
+  // answers it. Rendering the shell instead put a whole navigation — Dashboard,
+  // Projects, Connectors, Settings — in front of someone who cannot open any of
+  // it, around a page with nothing on it. An invitation to sign in is not a
+  // reason to draw the signed-in app.
+  if (!me) redirect('/login');
 
   let roster;
   let machines;
