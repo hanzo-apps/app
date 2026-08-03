@@ -1,76 +1,162 @@
-import { logger } from '@/lib/utils';
+/**
+ * The provider catalogue — one fetch, one shape.
+ *
+ * Every provider we discover models from serves an OpenAI-compatible
+ * `GET <baseUrl>/models`, so the request is identical for all of them and only
+ * the row differs. Two rows exist in the wild, and both are adapted here into
+ * `ProviderModel` — the shape the picker, the model cache and the pricing cache
+ * already read:
+ *
+ *   - OpenRouter: `vendor/model` ids; prices are STRINGS in USD per TOKEN.
+ *   - OpenAI-compatible, our own gateway included: bare ids; prices are NUMBERS
+ *     in USD per MILLION tokens.
+ *
+ * That unit difference is 1e6. Copying one row into the other's shape renders
+ * every cost off by a factor of a million, so the conversion happens here, once,
+ * and everything downstream is per-million.
+ *
+ * Fields a provider does not publish stay `undefined`. api.hanzo.ai states a
+ * context window for 22 of its 107 models and tool support for 7; filling in the
+ * rest would put confident numbers in the UI that no API ever said. Consumers
+ * render what exists and omit what does not.
+ */
 
-export interface ModelArchitecture {
-  input_modalities: string[];
-  output_modalities: string[];
-  tokenizer: string;
-  instruct_type: string | null;
-}
+import { getProvider } from '@/lib/llm/providers/registry';
+import type { ProviderId, ProviderModel } from '@/lib/llm/providers/types';
 
-export interface ModelPricing {
-  prompt: string;
-  completion: string;
-  request: string;
-  image: string;
-  web_search: string;
-  internal_reasoning: string;
-  input_cache_read: string;
-  input_cache_write: string;
-}
-
-export interface TopProvider {
-  context_length: number;
-  max_completion_tokens: number;
-  is_moderated: boolean;
-}
-
-export interface OpenRouterModel {
+/** A row from openrouter.ai/api/v1/models. */
+interface OpenRouterRow {
   id: string;
-  canonical_slug: string;
-  name: string;
-  created: number;
-  description: string;
-  context_length: number;
-  architecture: ModelArchitecture;
-  pricing: ModelPricing;
-  top_provider: TopProvider;
-  per_request_limits: any | null;
-  supported_parameters: string[];
+  name?: string;
+  created?: number;
+  description?: unknown;
+  context_length?: number;
+  architecture?: { input_modalities?: string[]; output_modalities?: string[] };
+  pricing?: { prompt?: string; completion?: string; internal_reasoning?: string };
+  top_provider?: { max_completion_tokens?: number };
+  supported_parameters?: string[];
 }
 
-export interface ModelsResponse {
-  data: OpenRouterModel[];
+/** An OpenAI-compatible row, plus the fields the Hanzo gateway adds to it. */
+interface OpenAiRow {
+  id: string;
+  created?: number;
+  context_window?: number;
+  max_output_tokens?: number;
+  supports_tools?: boolean;
+  supports_vision?: boolean;
+  pricing?: { input?: number; output?: number };
 }
 
-export async function fetchAvailableModels(): Promise<OpenRouterModel[]> {
-  try {
-    const response = await fetch('https://openrouter.ai/api/v1/models');
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch models: ${response.statusText}`);
-    }
-    
-    const data: ModelsResponse = await response.json();
-    
-    const filteredModels = data.data.filter(model => 
-      model.architecture.output_modalities.includes('text') &&
-      model.supported_parameters.includes('tools')
-    );
-    
-    return filteredModels.sort((a, b) => {
-      const popularModels = ['gpt-4', 'claude', 'deepseek', 'qwen'];
-      const aIsPopular = popularModels.some(p => a.id.toLowerCase().includes(p));
-      const bIsPopular = popularModels.some(p => b.id.toLowerCase().includes(p));
-      
-      if (aIsPopular && !bIsPopular) return -1;
-      if (!aIsPopular && bIsPopular) return 1;
-      
-      return b.created - a.created;
-    });
-  } catch (error) {
-    logger.error('Error fetching models:', error);
-    return getDefaultModels();
+/** USD per token, as a string, → USD per million tokens. */
+function perMillion(rate?: string): number | undefined {
+  if (rate === undefined || rate === null) return undefined;
+  const parsed = Number(rate);
+  return Number.isFinite(parsed) ? parsed * 1_000_000 : undefined;
+}
+
+function fromOpenRouter(row: OpenRouterRow): ProviderModel {
+  const input = perMillion(row.pricing?.prompt);
+  const output = perMillion(row.pricing?.completion);
+
+  return {
+    id: row.id,
+    name: row.name || row.id,
+    // OpenRouter has served object descriptions; anything but a string would be
+    // rendered as a React child and crash the picker.
+    description: typeof row.description === 'string' ? row.description : undefined,
+    contextLength: row.context_length,
+    maxTokens: row.top_provider?.max_completion_tokens,
+    supportsFunctions: row.supported_parameters?.includes('tools'),
+    supportsVision: row.architecture?.input_modalities?.includes('image'),
+    supportsReasoning: row.supported_parameters?.includes('reasoning'),
+    pricing:
+      input !== undefined && output !== undefined
+        ? { input, output, reasoning: perMillion(row.pricing?.internal_reasoning) }
+        : undefined,
+  };
+}
+
+function fromOpenAi(row: OpenAiRow): ProviderModel {
+  const input = row.pricing?.input;
+  const output = row.pricing?.output;
+
+  return {
+    id: row.id,
+    // The only name these gateways state is the id. Prettifying it here would
+    // invent a label the API never published.
+    name: row.id,
+    contextLength: row.context_window,
+    maxTokens: row.max_output_tokens,
+    supportsFunctions: row.supports_tools,
+    supportsVision: row.supports_vision,
+    // Already per million tokens — pass through, do not scale.
+    pricing:
+      typeof input === 'number' && typeof output === 'number'
+        ? { input, output }
+        : undefined,
+  };
+}
+
+/**
+ * A model the builder can drive: it must emit text and take tools. Only
+ * OpenRouter states either, and a row that stays silent is kept — absence of a
+ * claim is not a claim of absence, and filtering on a field 100 of 107 Hanzo
+ * models omit would empty the picker.
+ */
+function usable(row: OpenRouterRow): boolean {
+  const outputs = row.architecture?.output_modalities;
+  if (outputs && !outputs.includes('text')) return false;
+
+  const params = row.supported_parameters;
+  if (params && !params.includes('tools')) return false;
+
+  return true;
+}
+
+const POPULAR = ['gpt-4', 'claude', 'deepseek', 'qwen'];
+
+/** Familiar names first, then newest. Display order only — the picker's initial
+ *  selection comes from the provider's declared default, not from this. */
+function byPreference(a: { id: string; created?: number }, b: { id: string; created?: number }): number {
+  const aPopular = POPULAR.some((p) => a.id.toLowerCase().includes(p));
+  const bPopular = POPULAR.some((p) => b.id.toLowerCase().includes(p));
+
+  if (aPopular && !bPopular) return -1;
+  if (!aPopular && bPopular) return 1;
+
+  return (b.created ?? 0) - (a.created ?? 0);
+}
+
+/**
+ * The catalogue the given provider publishes, in the app's own model shape.
+ *
+ * Throws when the provider has no catalogue endpoint or the fetch fails —
+ * callers own the fallback, because what to show instead depends on where the
+ * picker is. There is deliberately no built-in default list: shipping one meant
+ * a Hanzo user seeing four hardcoded OpenRouter ids at 2024 prices.
+ */
+export async function fetchAvailableModels(provider: ProviderId): Promise<ProviderModel[]> {
+  const { baseUrl } = getProvider(provider);
+  if (!baseUrl) {
+    throw new Error(`Provider ${provider} publishes no catalogue endpoint`);
   }
+
+  const response = await fetch(`${baseUrl}/models`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch ${provider} models: ${response.status} ${response.statusText}`);
+  }
+
+  const body = (await response.json()) as { data?: unknown };
+  const rows = (Array.isArray(body.data) ? body.data : []) as Array<{ id?: unknown; created?: number }>;
+
+  const sorted = rows
+    .filter((row): row is { id: string; created?: number } => typeof row.id === 'string')
+    .sort(byPreference);
+
+  return provider === 'openrouter'
+    ? (sorted as OpenRouterRow[]).filter(usable).map(fromOpenRouter)
+    : (sorted as OpenAiRow[]).map(fromOpenAi);
 }
 
 /**
@@ -80,11 +166,11 @@ export async function fetchAvailableModels(): Promise<OpenRouterModel[]> {
  */
 export function formatModelPrice(price: number | undefined, perK: boolean = true): string {
   if (price === undefined || price === null) return '';
-  
+
   const displayPrice = perK ? price / 1000 : price;
-  
+
   if (displayPrice === 0) return 'free';
-  
+
   if (displayPrice < 0.0001) {
     return `$${displayPrice.toFixed(5).replace(/\.?0+$/, '')}`;
   } else if (displayPrice < 0.001) {
@@ -98,168 +184,4 @@ export function formatModelPrice(price: number | undefined, perK: boolean = true
   } else {
     return `$${displayPrice.toFixed(2)}`;
   }
-}
-
-export function getDefaultModels(): OpenRouterModel[] {
-  return [
-    {
-      id: 'deepseek/deepseek-chat',
-      canonical_slug: 'deepseek-chat',
-      name: 'DeepSeek Chat',
-      created: Date.now(),
-      description: 'DeepSeek Chat - Fast and capable model for general tasks',
-      context_length: 64000,
-      architecture: {
-        input_modalities: ['text'],
-        output_modalities: ['text'],
-        tokenizer: 'cl100k_base',
-        instruct_type: 'deepseek'
-      },
-      pricing: {
-        prompt: '0.00014',
-        completion: '0.00028',
-        request: '0',
-        image: '0',
-        web_search: '0',
-        internal_reasoning: '0',
-        input_cache_read: '0',
-        input_cache_write: '0'
-      },
-      top_provider: {
-        context_length: 64000,
-        max_completion_tokens: 8192,
-        is_moderated: false
-      },
-      per_request_limits: null,
-      supported_parameters: ['tools', 'tool_choice', 'temperature', 'max_tokens']
-    },
-    {
-      id: 'qwen/qwen-2.5-coder-32b-instruct',
-      canonical_slug: 'qwen-2.5-coder-32b-instruct',
-      name: 'Qwen 2.5 Coder 32B',
-      created: Date.now(),
-      description: 'Qwen 2.5 Coder - Specialized for code generation',
-      context_length: 32768,
-      architecture: {
-        input_modalities: ['text'],
-        output_modalities: ['text'],
-        tokenizer: 'cl100k_base',
-        instruct_type: 'qwen'
-      },
-      pricing: {
-        prompt: '0.00018',
-        completion: '0.00018',
-        request: '0',
-        image: '0',
-        web_search: '0',
-        internal_reasoning: '0',
-        input_cache_read: '0',
-        input_cache_write: '0'
-      },
-      top_provider: {
-        context_length: 32768,
-        max_completion_tokens: 8192,
-        is_moderated: false
-      },
-      per_request_limits: null,
-      supported_parameters: ['tools', 'tool_choice', 'temperature', 'max_tokens']
-    },
-    {
-      id: 'openai/gpt-4o',
-      canonical_slug: 'gpt-4o',
-      name: 'GPT-4o',
-      created: Date.now(),
-      description: 'OpenAI GPT-4o - Multimodal model with vision capabilities',
-      context_length: 128000,
-      architecture: {
-        input_modalities: ['text', 'image'],
-        output_modalities: ['text'],
-        tokenizer: 'cl100k_base',
-        instruct_type: 'openai'
-      },
-      pricing: {
-        prompt: '0.0025',
-        completion: '0.01',
-        request: '0',
-        image: '0.00765',
-        web_search: '0',
-        internal_reasoning: '0',
-        input_cache_read: '0.00125',
-        input_cache_write: '0.0025'
-      },
-      top_provider: {
-        context_length: 128000,
-        max_completion_tokens: 16384,
-        is_moderated: true
-      },
-      per_request_limits: null,
-      supported_parameters: ['tools', 'tool_choice', 'temperature', 'max_tokens', 'response_format']
-    },
-    {
-      id: 'anthropic/claude-3.5-sonnet',
-      canonical_slug: 'claude-3.5-sonnet',
-      name: 'Claude 3.5 Sonnet',
-      created: Date.now(),
-      description: 'Anthropic Claude 3.5 Sonnet - Advanced reasoning and coding',
-      context_length: 200000,
-      architecture: {
-        input_modalities: ['text', 'image'],
-        output_modalities: ['text'],
-        tokenizer: 'claude',
-        instruct_type: 'anthropic'
-      },
-      pricing: {
-        prompt: '0.003',
-        completion: '0.015',
-        request: '0',
-        image: '0.0048',
-        web_search: '0',
-        internal_reasoning: '0',
-        input_cache_read: '0.0003',
-        input_cache_write: '0.00375'
-      },
-      top_provider: {
-        context_length: 200000,
-        max_completion_tokens: 8192,
-        is_moderated: false
-      },
-      per_request_limits: null,
-      supported_parameters: ['tools', 'tool_choice', 'temperature', 'max_tokens']
-    }
-  ];
-}
-
-
-export function getModelDisplayName(model: OpenRouterModel): string {
-  if (model.name.length > 30) {
-    const parts = model.id.split('/');
-    const provider = parts[0];
-    const modelName = parts[1];
-    
-    const versionMatch = modelName.match(/(\d+[\.\d]*)/);
-    const version = versionMatch ? versionMatch[1] : '';
-    
-    if (provider === 'openai') {
-      if (modelName.includes('gpt-4o')) return 'GPT-4o';
-      if (modelName.includes('gpt-4')) return `GPT-4${version ? ` ${version}` : ''}`;
-      if (modelName.includes('gpt-3.5')) return 'GPT-3.5 Turbo';
-    }
-    if (provider === 'anthropic') {
-      if (modelName.includes('claude-3.5-sonnet')) return 'Claude 3.5 Sonnet';
-      if (modelName.includes('claude-3.5-haiku')) return 'Claude 3.5 Haiku';
-      if (modelName.includes('claude-3-opus')) return 'Claude 3 Opus';
-    }
-    if (provider === 'deepseek') {
-      if (modelName.includes('chat')) return 'DeepSeek Chat';
-      if (modelName.includes('coder')) return `DeepSeek Coder${version ? ` ${version}` : ''}`;
-      if (modelName.includes('reasoner')) return 'DeepSeek Reasoner';
-    }
-    if (provider === 'qwen' && modelName.includes('coder')) {
-      const sizeMatch = modelName.match(/(\d+b)/i);
-      const size = sizeMatch ? ` ${sizeMatch[1].toUpperCase()}` : '';
-      return `Qwen Coder${size}`;
-    }
-  }
-  
-  return model.name;
 }

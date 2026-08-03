@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ProviderId } from '@/lib/llm/providers/types';
-import { getProvider } from '@/lib/llm/providers/registry';
+import { getProvider, getDefaultModel } from '@/lib/llm/providers/registry';
 import { logger } from '@/lib/utils';
 
 export async function POST(request: NextRequest) {
@@ -18,6 +18,29 @@ export async function POST(request: NextRequest) {
     let isValid = false;
 
     switch (provider) {
+      case 'hanzo': {
+        // The gateway's GET /models is public — it answers 200 for any string,
+        // so the generic `default` branch below rubber-stamped every Hanzo key
+        // and the paste of a typo'd one only failed later, at generation.
+        // /chat/completions is the endpoint that actually authenticates.
+        const hanzoResp = await fetch(`${providerConfig.baseUrl}/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: getDefaultModel('hanzo'),
+            messages: [{ role: 'user', content: 'ping' }],
+            max_tokens: 1
+          })
+        });
+        // Only the credential verdicts mean "bad key". A 402 (out of credit) or
+        // a 5xx is a real key meeting a different problem.
+        isValid = hanzoResp.status !== 401 && hanzoResp.status !== 403;
+        break;
+      }
+
       case 'openrouter':
         const openrouterResp = await fetch('https://openrouter.ai/api/v1/auth/key', {
           headers: { 'Authorization': `Bearer ${apiKey}` }

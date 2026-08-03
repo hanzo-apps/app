@@ -30,7 +30,9 @@ export async function validateApiKey(apiKey: string, provider: ProviderId): Prom
 }
 
 export async function getAvailableModels(apiKey?: string, provider?: ProviderId): Promise<string[]> {
-  const currentProvider = provider || configManager.getSelectedProvider() || 'openrouter';
+  // getSelectedProvider() always resolves — a second fallback here was a third
+  // opinion about the default, and it named a competitor.
+  const currentProvider = provider || configManager.getSelectedProvider();
   const providerConfig = getProvider(currentProvider);
   const key = apiKey || configManager.getProviderApiKey(currentProvider);
 

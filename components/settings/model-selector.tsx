@@ -162,12 +162,14 @@ export function ModelSelector({
           <div className="font-medium">Model Information</div>
 
           <div className="grid grid-cols-2 gap-2">
-            <div>
-              <span className="text-muted-foreground">Context Length:</span>
-              <div className="font-mono">
-                {(selectedModelInfo.contextLength / 1000).toFixed(0)}K tokens
+            {selectedModelInfo.contextLength !== undefined && (
+              <div>
+                <span className="text-muted-foreground">Context Length:</span>
+                <div className="font-mono">
+                  {(selectedModelInfo.contextLength / 1000).toFixed(0)}K tokens
+                </div>
               </div>
-            </div>
+            )}
             {selectedModelInfo.maxTokens && (
               <div>
                 <span className="text-muted-foreground">Max Output:</span>

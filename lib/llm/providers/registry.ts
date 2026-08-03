@@ -1,4 +1,5 @@
 import { ProviderId, ProviderConfig, ProviderModel } from './types';
+import { DEFAULT_MODEL } from '@/lib/providers';
 
 const codexModels: ProviderModel[] = [
   {
@@ -312,6 +313,17 @@ export const providers: Record<ProviderId, ProviderConfig> = {
   },
 };
 
+/**
+ * The provider a fresh install talks to: our own gateway.
+ *
+ * Stated once because two stores persist a provider selection — the app's
+ * `configManager` (lib/config/storage) and the settings panel's own
+ * (providers/storage) — and they used to name different fallbacks, so a user
+ * met OpenRouter in one surface and OpenAI in the other, needing a third
+ * party's key to use this product at all. One constant, every reader.
+ */
+export const DEFAULT_PROVIDER: ProviderId = 'hanzo';
+
 export function getProvider(id: ProviderId): ProviderConfig {
   return providers[id];
 }
@@ -332,6 +344,11 @@ export function getLocalProviders(): ProviderConfig[] {
 
 export function getDefaultModel(provider: ProviderId): string {
   switch (provider) {
+    case 'hanzo':
+      // The gateway's default is stated once, in lib/providers — this reads it
+      // rather than restating it, so the BYOK picker and the builder open on
+      // the same model.
+      return DEFAULT_MODEL;
     case 'openrouter':
       return 'deepseek/deepseek-chat';
     case 'openai':
@@ -357,7 +374,10 @@ export function getDefaultModel(provider: ProviderId): string {
     case 'minimax':
       return 'MiniMax-M2.5';
     default:
-      return 'deepseek/deepseek-chat';
+      // Every ProviderId above is handled, so this is reached only by a
+      // persisted id we no longer recognise. Fall back to our own default, not
+      // to some third party's model name.
+      return DEFAULT_MODEL;
   }
 }
 

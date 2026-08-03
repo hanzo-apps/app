@@ -1,6 +1,6 @@
 
 import { ProviderId, ProviderModel, CodexAuthData, HFAuthData } from '@/lib/llm/providers/types';
-import { getDefaultModel } from '@/lib/llm/providers/registry';
+import { getDefaultModel, DEFAULT_PROVIDER } from '@/lib/llm/providers/registry';
 import { UsageInfo } from '@/lib/llm/types';
 
 export interface SessionCost {
@@ -140,7 +140,7 @@ class ConfigManager {
   getSelectedProvider(): ProviderId {
     return this.getSettings().selectedProvider
       || (process.env.NEXT_PUBLIC_DEFAULT_PROVIDER as ProviderId)
-      || 'openrouter';
+      || DEFAULT_PROVIDER;
   }
 
   setSelectedProvider(provider: ProviderId): void {
