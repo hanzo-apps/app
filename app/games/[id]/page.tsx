@@ -17,7 +17,8 @@ import {
   Globe,
   Check,
 } from 'lucide-react';
-import { AppShell } from '@/components/app-shell';
+import Header from '@/components/layout/header';
+import SiteFooter from '@/components/landing/site-footer';
 import {
   getGame,
   studioHref,
@@ -47,14 +48,16 @@ export default function GameDetail() {
 
   if (!game) {
     return (
-      <AppShell currentView="games">
+      <div className="flex min-h-screen flex-col bg-background text-foreground">
+      <Header />
         <div className="flex flex-1 flex-col items-center justify-center gap-4 bg-background text-foreground">
           <p className="text-lg text-muted-foreground">Game not found.</p>
           <Link href="/games" className="text-foreground underline">
             Back to games
           </Link>
         </div>
-      </AppShell>
+        <SiteFooter />
+    </div>
     );
   }
 
@@ -66,7 +69,8 @@ export default function GameDetail() {
   };
 
   return (
-    <AppShell currentView="games">
+    <div className="flex min-h-screen flex-col bg-background text-foreground">
+      <Header />
       <div className="flex-1 overflow-y-auto bg-background text-foreground">
         <div className="container mx-auto max-w-5xl px-6 py-8">
           <Link
@@ -255,7 +259,8 @@ export default function GameDetail() {
           </section>
         </div>
       </div>
-    </AppShell>
+      <SiteFooter />
+    </div>
   );
 }
 

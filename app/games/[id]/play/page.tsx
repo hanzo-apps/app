@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
-import { AppShell } from '@/components/app-shell';
+import Header from '@/components/layout/header';
+import SiteFooter from '@/components/landing/site-footer';
 import { GamePlayer } from '@/components/games/game-player';
 import { getGame, isPlayable, isPlaceholderBuild } from '@/data/games-catalog';
 
@@ -13,7 +14,8 @@ export default function GamePlay() {
 
   if (!game || !isPlayable(game)) {
     return (
-      <AppShell currentView="games">
+      <div className="flex min-h-screen flex-col bg-background text-foreground">
+      <Header />
         <div className="flex flex-1 flex-col items-center justify-center gap-4 bg-background text-foreground">
           <p className="text-lg text-muted-foreground">
             {game ? `${game.name} has no in-browser build.` : 'Game not found.'}
@@ -22,12 +24,14 @@ export default function GamePlay() {
             Back
           </Link>
         </div>
-      </AppShell>
+        <SiteFooter />
+    </div>
     );
   }
 
   return (
-    <AppShell currentView="games">
+    <div className="flex min-h-screen flex-col bg-background text-foreground">
+      <Header />
       <div className="flex flex-1 flex-col bg-background text-foreground">
         <div className="flex items-center gap-4 border-b border-border px-6 py-3">
           <Link
@@ -47,6 +51,7 @@ export default function GamePlay() {
           <GamePlayer gameId={game.id} title={game.name} />
         </div>
       </div>
-    </AppShell>
+      <SiteFooter />
+    </div>
   );
 }

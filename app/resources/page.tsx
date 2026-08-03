@@ -12,11 +12,13 @@
  * provision + seed) → the builder. Game cards open their existing detail page.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Badge } from '@hanzo/ui';
 import { Input } from '@/components/control';
 import { Search, Star, Sparkles, Gamepad2, Loader2 } from 'lucide-react';
-import { AppShell } from '@/components/app-shell';
+import Header from '@/components/layout/header';
+import SiteFooter from '@/components/landing/site-footer';
 import { snapshotCatalog } from '@/lib/gallery-catalog';
 import {
   mergeResources,
@@ -27,12 +29,20 @@ import { TemplatePreviewModal } from '@/components/remix/template-preview-modal'
 import { RemixDialog } from '@/components/remix/remix-dialog';
 import { RemixProgress } from '@/components/remix/remix-progress';
 
-export default function ResourcesPage() {
+/** The page proper. Wrapped below because `useSearchParams` suspends, and the
+ *  App Router requires a boundary rather than letting the whole route go dynamic. */
+function ResourcesBrowser() {
   const [items, setItems] = useState<ResourceItem[]>(() =>
     mergeResources(snapshotCatalog().templates),
   );
   const [loading, setLoading] = useState(true);
-  const [category, setCategory] = useState('All');
+  // The category is deep-linkable: `?category=Games` is what /games redirects to,
+  // and it is how any category can be linked at all. The URL is read once as the
+  // initial value rather than subscribed to — the chips below own it afterwards,
+  // and a filter that fought the URL on every click would be two owners of one
+  // piece of state.
+  const params = useSearchParams();
+  const [category, setCategory] = useState(() => params?.get('category') || 'All');
   const [query, setQuery] = useState('');
 
   // Remix flow state.
@@ -93,7 +103,8 @@ export default function ResourcesPage() {
   };
 
   return (
-    <AppShell currentView="resources">
+    <div className="flex min-h-screen flex-col bg-background text-foreground">
+      <Header />
       <div className="flex-1 overflow-y-auto bg-background text-foreground">
         {/* Hero */}
         <header className="border-b border-border bg-gradient-to-b from-card to-background">
@@ -198,7 +209,24 @@ export default function ResourcesPage() {
         templateSlug={selected?.templateSlug ?? ''}
         onOpenChange={setProgressOpen}
       />
-    </AppShell>
+      <SiteFooter />
+    </div>
+  );
+}
+
+export default function ResourcesPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen flex-col bg-background text-foreground">
+          <Header />
+          <div className="flex-1" />
+          <SiteFooter />
+        </div>
+      }
+    >
+      <ResourcesBrowser />
+    </Suspense>
   );
 }
 
