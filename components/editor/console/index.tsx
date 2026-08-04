@@ -36,11 +36,14 @@ function Sep() {
 
 export function Console({
   isAiWorking,
+  saveText,
   pageCount,
   sidebarCollapsed,
   onToggleSidebar,
 }: {
   isAiWorking: boolean;
+  /** Honest persistence state — see lib/pages/save-label. */
+  saveText: string;
   pageCount: number;
   sidebarCollapsed: boolean;
   onToggleSidebar: () => void;
@@ -141,7 +144,9 @@ export function Console({
             Live
           </span>
           <Sep />
-          <span>{isAiWorking ? "Building…" : "Auto-saved"}</span>
+          {/* The real save state. This said "Auto-saved" unconditionally, checked
+              against nothing, while the project lived only in the browser. */}
+          <span>{isAiWorking ? "Building…" : saveText}</span>
           <Sep />
           <span className="inline-flex items-center gap-1">
             <GitBranch className="size-3" />

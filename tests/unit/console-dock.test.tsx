@@ -69,6 +69,7 @@ const setup = (onToggleSidebar = jest.fn(), voice: ReturnType<typeof machine> | 
       {voice && <Composer voice={voice} />}
       <Console
         isAiWorking={false}
+        saveText="Saved 9:15 PM"
         pageCount={1}
         sidebarCollapsed={false}
         onToggleSidebar={onToggleSidebar}

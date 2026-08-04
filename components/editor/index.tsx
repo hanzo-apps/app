@@ -42,6 +42,8 @@ import { sendRewardSignal, getLastGenerationRequestId } from "@/lib/reward-signa
 import { SaveButton } from "./save-button";
 import { LoadProject } from "../my-projects/load-project";
 import { isTheSameHtml } from "@/lib/compare-html-diff";
+import { useAutosave } from "@/hooks/useAutosave";
+import { saveLabel } from "@/lib/pages/save-label";
 import { FileTree } from "./file-tree";
 import { HistoryPanel } from "./history";
 import { RevisionDetails, type DetailsRev } from "./history/details";
@@ -241,6 +243,15 @@ export const AppEditor = ({
    * The starter document remains the answer for a genuinely empty project, which
    * is the one case where it is accurate.
    */
+  /**
+   * Real persistence, replacing a status bar that printed "Auto-saved"
+   * unconditionally while nothing saved. Addressed exactly as the Save button
+   * addresses it, so there is ONE write path; a project with no record has
+   * nowhere to save and the bar says so instead of reassuring.
+   */
+  const [saveNs, saveRepo] = (project?.space_id ?? "").split("/");
+  const autosave = useAutosave(saveNs, saveRepo, pages, prompts, isAiWorking);
+
   const currentPageData = useMemo(() => {
     return (
       pages.find((page) => page.path === currentPage) ??
@@ -561,6 +572,7 @@ export const AppEditor = ({
           the dictation mic ride far right on the same bar. */}
       <Console
         isAiWorking={isAiWorking}
+        saveText={saveLabel(autosave.state, autosave.at)}
         pageCount={pages.length}
         sidebarCollapsed={sidebarCollapsed}
         onToggleSidebar={() => setSidebarCollapsed((v) => !v)}
