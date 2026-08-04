@@ -4,9 +4,10 @@ import { LoadingScreen } from "@/components/ui/loading-screen";
 import { XStack, SizableText, Paragraph, YStack, Anchor } from '@hanzo/gui';
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Label, Switch, Tabs, TabsList, TabsTrigger, TabsContent } from '@hanzo/ui';
+import { Button, Label, Switch, Tabs, TabsList, TabsTrigger, TabsContent } from '@hanzo/ui';
 import { useUser } from "@/hooks/useUser";
 import { AppShell } from "@/components/app-shell";
+import { ModelSelector } from "@/components/model-selector";
 import { accent, panel, selected } from "@/lib/chrome";
 import { configManager } from "@/lib/config/storage";
 import { useModels } from "@/lib/hooks/use-models";
@@ -89,25 +90,23 @@ export default function SettingsPage() {
                       <Label htmlFor="model-select" fontSize="$3" fontWeight="500" color="$color11" marginBottom="$2">
                         Default AI Model
                       </Label>
-                      <Select
+                      {/* The one picker (components/model-selector): grouped by
+                          family, marked, searchable. A flat Select listed all 70
+                          models as one alphabetical column, so "Claude Haiku 4.5"
+                          sat next to "Claude Haiku 4 5" with nothing to tell them
+                          apart. `defaultModel` is "" until configManager reads
+                          back on mount; the placeholder names that state rather
+                          than drawing a blank box. */}
+                      <ModelSelector
+                        models={models}
                         value={defaultModel}
-                        onValueChange={(v) => {
+                        placeholder="Enso (auto-route)"
+                        data-testid="default-model"
+                        onChange={(v) => {
                           setDefaultModelState(v);
                           configManager.setDefaultModel(v);
                         }}
-                      >
-                        <SelectTrigger id="model-select">
-                          {/* `defaultModel` is "" until configManager reads back on
-                              mount, and the native <select> showed an empty box in
-                              that window. Name the state instead of drawing a blank. */}
-                          <SelectValue placeholder="Enso (auto-route)" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {models.map((m) => (
-                            <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+  />
                       <Paragraph marginTop="$1.5" fontSize="$1" color="$color11">
                         Used when you don&apos;t pick a model in the composer.{" "}
                         <SizableText fontWeight="500" color="$color">Enso</SizableText> auto-routes to the best model per request.

@@ -4,9 +4,11 @@
  * BFF tests for GET /v1/models — the builder's DYNAMIC model-picker source.
  *
  * The contract under test:
- *  - the list is live from the gateway: only Zen build SKUs survive the filter
- *    (embeddings / asr / tts / guard / vl-only and non-`zen` ids are dropped),
- *    ids are prettified into labels, descriptions pass through
+ *  - the list is live from the gateway: every CHAT model survives whoever made
+ *    it, the non-conversation surfaces (embeddings / asr / tts / guard / vl /
+ *    image / video / rerank / routers) are dropped, ids become display names,
+ *    each row carries its family, and two routes to one model collapse to one
+ *    row; descriptions pass through
  *  - it ALWAYS returns a usable list (HTTP 200) so the picker never breaks:
  *    no session, gateway error, or an empty result → offline `fallback: true`
  *  - the signed-in user's bearer is forwarded to the gateway
@@ -73,7 +75,7 @@ describe("BFF: GET /v1/models", () => {
     expect(res.headers.get("cache-control")).toBe("no-store");
   });
 
-  it("shapes the live gateway list: forwards the bearer, filters to build SKUs, prettifies labels", async () => {
+  it("shapes the live gateway list: forwards the bearer, drops non-chat surfaces, names and groups the rest", async () => {
     let seenAuth: string | null = null;
     server.use(
       http.get(`${GATEWAY}/models`, ({ request }) => {
@@ -88,7 +90,11 @@ describe("BFF: GET /v1/models", () => {
             { id: "zen3-tts" }, // dropped: tts
             { id: "zen3-guard" }, // dropped: guard
             { id: "zen3-vl" }, // dropped: vision-only
-            { id: "qwen/qwen3.5-397b" }, // dropped: not a zen id
+            // KEPT. This used to be dropped for not being a `zen` id, which is
+            // how a product that advertises 400+ models shipped a picker
+            // carrying four families. Membership is "is it a chat model", not
+            // "is it ours".
+            { id: "qwen/qwen3.5-397b", owned_by: "alibaba" },
           ],
         });
       })
@@ -101,13 +107,52 @@ describe("BFF: GET /v1/models", () => {
     expect(seenAuth).toBe(`Bearer ${AUTH}`);
     expect(body.ok).toBe(true);
     expect(body.fallback).toBe(false);
+    // Every row carries the family the client groups and marks by, so no picker
+    // re-derives one from the id.
     expect(body.models).toEqual([
-      { value: "zen5-coder", label: "Zen 5 Coder" },
-      { value: "zen5-pro", label: "Zen 5 Pro" },
-      { value: "zen3-omni", label: "Zen 3 Omni", description: "Multimodal chat" },
+      { value: "zen5-coder", label: "Zen 5 Coder", family: "zen" },
+      { value: "zen5-pro", label: "Zen 5 Pro", family: "zen" },
+      {
+        value: "zen3-omni",
+        label: "Zen 3 Omni",
+        family: "zen",
+        description: "Multimodal chat",
+      },
+      // A `vendor/model` id names itself in its second half.
+      { value: "qwen/qwen3.5-397b", label: "Qwen 3.5 397B", family: "qwen" },
     ]);
     expect(body.defaultModel).toBe("zen5-coder");
     expect(res.headers.get("cache-control")).toBe("private, max-age=300");
+  });
+
+  it("carries the gateway's own metadata through to the picker", async () => {
+    server.use(
+      http.get(`${GATEWAY}/models`, () =>
+        HttpResponse.json({
+          data: [
+            {
+              id: "claude-opus-4.8",
+              owned_by: "anthropic",
+              premium: true,
+              context_window: 1_000_000,
+            },
+            // The same model over the resold route. One row must survive, and it
+            // must keep what only this row states.
+            { id: "claude-opus-4-8", owned_by: "do-ai", context_window: 1_000_000 },
+          ],
+        })
+      )
+    );
+    const body = await (await listModels(req("tok-abc"))).json();
+    expect(body.models).toEqual([
+      {
+        value: "claude-opus-4.8",
+        label: "Claude Opus 4.8",
+        family: "claude",
+        premium: true,
+        context: 1_000_000,
+      },
+    ]);
   });
 
   it("honors a gateway-specified default when it is in the filtered list", async () => {
