@@ -166,6 +166,12 @@ export function Console({
         {/* Far right — the workspace controls, floated over the bar so the
             separator underneath stays one clean, uninterrupted drag target. */}
         <div className="absolute right-2 top-0 flex h-full items-center gap-0.5">
+          {/* Enso mounts HERE (public/edit.js, `hanzo:anchor` in app/dev/layout).
+              It used to float at the viewport corner, where it sat on top of the
+              customer's preview — so /dev turned it off entirely. In the control
+              plane it is out of the canvas and beside the other workspace
+              controls, which is where a tool for editing hanzo.app belongs. */}
+          <span id="enso-dock" className="flex items-center [&_[data-hanzo-edit]]:flex" />
           <button
             type="button"
             onClick={onToggleSidebar}
