@@ -1,25 +1,49 @@
-# Platform-native CI/CD — hanzoai/app
+# Canonical CI config for hanzoai/app — read by platform.hanzo.ai.
 #
-# Build + deploy are owned by platform.hanzo.ai (NOT GitHub Actions). On the
-# repo webhook, platform schedules these builds onto self-hosted arcd pools
-# and (on main) rolls the resulting image onto the hanzo operator's `hanzo-app`
-# Service CR. There is no GHA build path for this repo — platform is the only
-# way. Schema reference: platform docs/PLATFORM_CI.md.
-build:
-  matrix:
-    - { os: linux, arch: amd64 }
-    - { os: linux, arch: arm64 }
-  dockerfile: ./Dockerfile.production
-  context: .
-  image: ghcr.io/hanzoai/app
-  tag-pattern: "{{git.sha}}"
-  push: true
-deploy:
-  on:
-    - main
-  target:
-    cluster: hanzo-k8s
-    namespace: hanzo
-    operator: hanzo-operator
-    crd: Service
-    name: hanzo-app
+# NO build: LANE AND NO deploy: LANE HERE, deliberately. Delivery for this repo
+# is `.hanzo/workflows/release.yml` → universe `charts/app/pin.sh` →
+# cd.hanzo.ai, and a lane here would be a SECOND builder for the same image.
+# Same reason hanzoai/cloud's hanzo.yml declares none.
+#
+# WHAT THE SECOND LANE ACTUALLY DID. This file used to declare a two-arch build
+# of `ghcr.io/hanzoai/app` at `tag-pattern: "{{git.sha}}"` with `push: true`,
+# plus a deploy onto a `hanzo-app` Service CR, under a header claiming "platform
+# is the only way". Neither half was true:
+#
+#   THE DEPLOY WAS DEAD. It targets a `Service` CR named hanzo-app. There is no
+#   such resource. The live Deployment carries
+#   `app.kubernetes.io/managed-by: Helm` and
+#   `apps.hanzo.ai/installation-id: hanzo-cd` — cd.hanzo.ai renders it from
+#   universe `charts/app/values/hanzo/hanzo-app.yaml`, and moving that pin is
+#   what actually rolls the pod (measured: pinning v1.42.225 rolled it, while
+#   this lane had been "deploying" every main push to nothing).
+#
+#   THE BUILD RACED. Both lanes push `ghcr.io/hanzoai/app`. On commit 5355682
+#   THREE digests landed within three minutes, and the `v1.42.225` tag moved off
+#   the bytes that had just been pinned and verified — the deploy survived only
+#   because a digest, once pinned, is immune to the tag moving under it. The
+#   matrix also pushed amd64 AND arm64 to the SAME `{{git.sha}}` tag with no
+#   manifest list, so the arches overwrote each other and every sha tag named
+#   whichever finished last; that is why they resolve as single manifests rather
+#   than an index.
+#
+# A tag that names different bytes at different times is the failure that
+# SUCCEEDS: nothing errors, and the pod reports one version while serving
+# another. One image, one builder, one pin.
+#
+# Tests still run here — platform may gate a push, it just may not build or ship
+# one. release.yml's `test` job runs the same suites, so a red suite cannot cut
+# an image either way.
+test:
+  - name: typecheck
+    run: |
+      set -e
+      corepack enable pnpm
+      pnpm install --frozen-lockfile
+      pnpm exec tsc --noEmit
+  - name: unit-integration-security
+    run: |
+      set -e
+      corepack enable pnpm
+      pnpm install --frozen-lockfile
+      pnpm test
