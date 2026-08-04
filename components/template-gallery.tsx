@@ -87,14 +87,14 @@ function TemplateCard({ t, showAuthor = false }: { t: TemplateEntry; showAuthor?
       </YStack>
 
       <YStack flex={1} padding="$4" $sm={{ padding: "$4.5" }}>
-        <H3 alignItems="flex-start" gap="$1.5" fontSize={15} fontWeight="500" lineHeight={1.375} letterSpacing={-0.4} color="$color">
+        <H3 alignItems="flex-start" gap="$1.5" fontSize={15} fontWeight="500" lineHeight="1.375" letterSpacing={-0.4} color="$color">
           <SizableText numberOfLines={1}>{t.name}</SizableText>
           <ArrowUpRight
             size={16} color="$color11"
             strokeWidth={1.6}
   />
         </H3>
-        <Paragraph marginTop="$1.5" numberOfLines={2} minHeight="2.5rem" fontSize={13} lineHeight={1.625} color="$color11">
+        <Paragraph marginTop="$1.5" numberOfLines={2} minHeight="2.5rem" fontSize={13} lineHeight="1.625" color="$color11">
           {t.tagline}
         </Paragraph>
 
@@ -161,7 +161,7 @@ export function TemplateGallery({
         <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
           {eyebrow}
         </Paragraph>
-        <H1 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} color="$color" $sm={{ fontSize: "$11" }} $md={{ color: "2.75rem", lineHeight: 1.05 }}>
+        <H1 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} color="$color" $sm={{ fontSize: "$11" }} $md={{ fontSize: "2.75rem", lineHeight: "1.05" }}>
           {heading}
         </H1>
         <Paragraph marginTop="$4" fontSize="$4" color="$color11" $sm={{ fontSize: "$6" }}>{lead}</Paragraph>

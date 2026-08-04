@@ -75,7 +75,7 @@ export function RemixDialog({
               onCheckedChange={(v: boolean | 'indeterminate') => setAck(v === true)}
               marginTop="$0.5" borderColor="$borderColor"
   />
-            <SizableText fontSize="$1" lineHeight={1.625} color="$color11">{ACK_TEXT}</SizableText>
+            <SizableText fontSize="$1" lineHeight="1.625" color="$color11">{ACK_TEXT}</SizableText>
           </Label>
         </YStack>
 

@@ -53,7 +53,7 @@ function AppCell({ app }: { app: AppEntry }) {
           {app.name}
         </SizableText>
       </XStack>
-      <Paragraph marginTop="$4" maxWidth="30ch" fontSize={15} lineHeight={1.625} color="$color11">
+      <Paragraph marginTop="$4" maxWidth="30ch" fontSize={15} lineHeight="1.625" color="$color11">
         {app.blurb}
       </Paragraph>
       <SizableText marginTop="$4" fontSize="$3" fontWeight="500" color="$color11" $group-hover={{ color: "$color" }}>
@@ -119,10 +119,10 @@ export default function AppsPage() {
       {/* ── Intro: editorial title + surface nav (jumps into the pinned strip) ── */}
       <YStack paddingHorizontal="$4" paddingTop="$7" $md={{ paddingHorizontal: "$6", paddingTop: "$10" }}>
         <YStack alignSelf="center" maxWidth={1152}>
-          <H1 fontSize="$12" fontWeight="500" lineHeight={1.02} letterSpacing={-0.4} $md={{ fontSize: 64 }}>
+          <H1 fontSize="$12" fontWeight="500" lineHeight="1.02" letterSpacing={-0.4} $md={{ fontSize: 64 }}>
             Runs
           </H1>
-          <Paragraph marginTop="$1" fontSize="$12" fontWeight="500" lineHeight={1.02} letterSpacing={-0.4} color="$color11" $md={{ fontSize: 64 }}>
+          <Paragraph marginTop="$1" fontSize="$12" fontWeight="500" lineHeight="1.02" letterSpacing={-0.4} color="$color11" $md={{ fontSize: 64 }}>
             Everywhere.
           </Paragraph>
           <Paragraph marginTop="$5" maxWidth={576} fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
@@ -213,7 +213,7 @@ export default function AppsPage() {
           <H2 fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
             Start with one key.
           </H2>
-          <Paragraph marginTop="$3" maxWidth={448} fontSize={15} lineHeight={1.625} color="$color11">
+          <Paragraph marginTop="$3" maxWidth={448} fontSize={15} lineHeight="1.625" color="$color11">
             Sign in with Hanzo, mint one{" "}
             <SizableText borderRadius="$2" backgroundColor="$color3" paddingHorizontal="$1.5" paddingVertical="$0.5" fontFamily="$mono" fontSize="$3" color="$color">
               hk-

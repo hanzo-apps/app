@@ -76,7 +76,7 @@ export function OrgAvatar({
         flexShrink={0} alignItems="center" justifyContent="center" width={box.width} height={box.height}
         aria-hidden={true}
       >
-        <SizableText lineHeight={1} style={{ fontSize: "1.05rem" }}>{resolved}</SizableText>
+        <SizableText lineHeight="1" style={{ fontSize: "1.05rem" }}>{resolved}</SizableText>
       </XStack>
     );
   }

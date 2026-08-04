@@ -113,7 +113,7 @@ function Card({
         )}
       </XStack>
 
-      <H3 alignItems="flex-start" gap="$1.5" fontSize={15} fontWeight="500" lineHeight={1.375} letterSpacing={-0.4} color="$color">
+      <H3 alignItems="flex-start" gap="$1.5" fontSize={15} fontWeight="500" lineHeight="1.375" letterSpacing={-0.4} color="$color">
         <Anchor href={href} target="_blank" rel="noreferrer" className="stretch-link">
           <SizableText numberOfLines={1}>{e.title || e.name}</SizableText>
         </Anchor>
@@ -123,7 +123,7 @@ function Card({
   />
       </H3>
 
-      <Paragraph numberOfLines={2} minHeight="2.5rem" fontSize={13} lineHeight={1.625} color="$color11">
+      <Paragraph numberOfLines={2} minHeight="2.5rem" fontSize={13} lineHeight="1.625" color="$color11">
         {e.description || (e.url ? e.url.replace(/^https?:\/\//, "") : "")}
       </Paragraph>
 
@@ -131,7 +131,7 @@ function Card({
           than a pile: what this was forked FROM, and who built it. The parent is
           a filter, so "everything built from folio" is one click, not a search. */}
       {e.template && (
-        <Paragraph fontSize={11} lineHeight={1.625} color="$color11">
+        <Paragraph fontSize={11} lineHeight="1.625" color="$color11">
           Forked from{" "}
           {onParent ? (
             <Button
@@ -152,7 +152,7 @@ function Card({
           count — it is the first thing a reader needs in order to read the rest
           of the card correctly. */}
       {e.upstream && (
-        <Paragraph fontSize={11} lineHeight={1.625} color="$color11">
+        <Paragraph fontSize={11} lineHeight="1.625" color="$color11">
           Third-party work, shown with credit: {e.upstream}
           {e.license ? ` · ${e.license}` : ""}
         </Paragraph>
@@ -278,7 +278,7 @@ export function CatalogBrowser({
       <H1 fontSize="$8" fontWeight="500" letterSpacing={-0.4} color="$color" $sm={{ fontSize: "$10" }}>
         {title}
       </H1>
-      <Paragraph marginTop="$2" maxWidth={672} fontSize={14} lineHeight={1.625} color="$color11">
+      <Paragraph marginTop="$2" maxWidth={672} fontSize={14} lineHeight="1.625" color="$color11">
         {blurb ?? (
           <>
             Every project, app and site across Hanzo, Lux and Zoo — searchable in

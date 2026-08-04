@@ -93,7 +93,7 @@ function OrganizationSettingsInner() {
             </XStack>
           </YStack>
 
-          <Paragraph marginTop="$5" borderTopWidth={1} borderColor="$borderColor" paddingTop="$4" fontSize="$1" lineHeight={1.625} color="$color11">
+          <Paragraph marginTop="$5" borderTopWidth={1} borderColor="$borderColor" paddingTop="$4" fontSize="$1" lineHeight="1.625" color="$color11">
             An uploaded image logo will be supported once Hanzo IAM carries it for your
             organization. Until then, this emoji is stored on this device.
           </Paragraph>

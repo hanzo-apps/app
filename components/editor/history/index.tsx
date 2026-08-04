@@ -765,7 +765,7 @@ function RevCard({
   />
         )}
         <YStack minWidth={0} flex={1}>
-          <Paragraph numberOfLines={1} fontSize={13} lineHeight={1.375} color="$color">{rev.title}</Paragraph>
+          <Paragraph numberOfLines={1} fontSize={13} lineHeight="1.375" color="$color">{rev.title}</Paragraph>
           <SizableText marginTop="$0.5" alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={10} color="$color11" display="flex" flexDirection="row">
             <span>{rel(rev.at)}</span>
             {isCommit && (

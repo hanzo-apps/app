@@ -146,7 +146,7 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
         >
           {hasPlanBody ? (
             <YStack maxHeight={220} overflow="scroll">
-              <SizableText whiteSpace="pre-line" fontSize={12.5} lineHeight={1.625} color="$color11">
+              <SizableText whiteSpace="pre-line" fontSize={12.5} lineHeight="1.625" color="$color11">
                 {plan}
               </SizableText>
             </YStack>

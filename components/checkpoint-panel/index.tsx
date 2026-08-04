@@ -118,7 +118,7 @@ export function CheckpointPanel({
                   {/* Description */}
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Paragraph fontSize={11} color="$color" numberOfLines={1} lineHeight={1.375} marginBottom="$1.5">
+                      <Paragraph fontSize={11} color="$color" numberOfLines={1} lineHeight="1.375" marginBottom="$1.5">
                         {cp.description}
                       </Paragraph>
                     </TooltipTrigger>

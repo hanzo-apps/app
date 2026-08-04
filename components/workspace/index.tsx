@@ -360,11 +360,11 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
         <YStack marginTop="$2" rowGap="$2">
         {focusContext.domPath && (
           <YStack className="break-all">
-            <SizableText fontSize={11} fontFamily="$mono" color="$color11" lineHeight={1.375}>{focusContext.domPath}</SizableText>
+            <SizableText fontSize={11} fontFamily="$mono" color="$color11" lineHeight="1.375">{focusContext.domPath}</SizableText>
           </YStack>
         )}
         {trimmedSnippet && (
-          <SizableText maxHeight="$12" overflow="scroll" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2" paddingVertical="$1" fontSize={11} color="$color" lineHeight={1.625} fontFamily="$mono" whiteSpace="pre">
+          <SizableText maxHeight="$12" overflow="scroll" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2" paddingVertical="$1" fontSize={11} color="$color" lineHeight="1.625" fontFamily="$mono" whiteSpace="pre">
             <code>{trimmedSnippet}</code>
           </SizableText>
         )}

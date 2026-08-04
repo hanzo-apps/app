@@ -160,7 +160,7 @@ export default function LandingPage() {
     <YStack position="relative" minHeight="100%" backgroundColor="$background" overflow="hidden" className="landing-root">
       {/* Monochrome hero glow — single soft white radial, zero hue. */}
       <YStack pointerEvents="none" position="fixed" top={0} right={0} bottom={0} left={0} zIndex={0} overflow="hidden">
-        <YStack position="absolute" left="50%" top="-12%" height={560} width={900} x="50%" borderRadius="$10" backgroundColor="$color" />
+        <YStack position="absolute" left="50%" top="-12%" height={560} width={900} x="-50%" borderRadius="$10" backgroundColor="$color" opacity={0.06} style={{ filter: "blur(140px)" }} />
       </YStack>
 
       <Header />
@@ -170,7 +170,7 @@ export default function LandingPage() {
         <YStack paddingHorizontal="$4" paddingBottom="$9" paddingTop="$10" $md={{ paddingHorizontal: "$6", paddingBottom: "$11", paddingTop: "$12" }}>
           <YStack alignSelf="center" maxWidth={768}>
             <Reveal>
-              <XStack marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$3" paddingVertical="$1.5">
+              <XStack marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$3" paddingVertical="$1.5">
                 <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color" />
                 <SizableText fontFamily="$mono" fontSize={11} color="$color">
                   Sites, wired to real data &amp; AI
@@ -179,7 +179,7 @@ export default function LandingPage() {
             </Reveal>
 
             <Reveal delay={60}>
-              <H1 color="1.9rem" fontWeight="500" textAlign="center" lineHeight={1.05} letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
+              <H1 fontSize="1.9rem" fontWeight="500" textAlign="center" lineHeight="1.05" letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
                 {/* The space is explicit: JSX drops the whitespace around the <br>,
                     and the <br> is hidden below sm — without it the mobile heading
                     reads "Describe your app.Hanzo builds and ships it." */}
@@ -198,7 +198,7 @@ export default function LandingPage() {
 
             {/* ── Prompt composer — the ONE BuildComposer ── */}
             <Reveal delay={180}>
-              <YStack id="build" alignSelf="center" marginTop="$6" maxWidth={672}>
+              <YStack id="build" alignSelf="center" width="100%" marginTop="$6" maxWidth={672}>
                 <BuildComposer
                   showPill={false}
                   subline={false}
@@ -216,16 +216,16 @@ export default function LandingPage() {
                       <SizableText fontFamily="$mono" fontSize={11} color="$color">or start from a template</SizableText>
                       <SizableText height={1} width="$5" backgroundColor="$borderColor" />
                     </XStack>
-                    <YStack alignSelf="center" $lg={{ maxWidth: 896 }}>
-                      <YStack gap="$2.5">
+                    <YStack alignSelf="center" width="100%" $lg={{ maxWidth: 896 }}>
+                      <XStack flexWrap="wrap" justifyContent="center" gap="$2.5">
                         {starterTemplates.map((t) => (
                           <Button
                             key={t.slug}
                             type="button"
                             onClick={() => startFromTemplate(t)}
-                            group className="zoom-scope" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" hoverStyle={{ borderColor: "$color", backgroundColor: "$color" }}
+                            group className="zoom-scope" flexGrow={1} flexBasis={220} minWidth={200} maxWidth={300} height="auto" flexDirection="column" alignItems="stretch" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" hoverStyle={{ borderColor: "$color5", backgroundColor: "$color3" }}
                           >
-                            <YStack position="relative" overflow="hidden" backgroundColor="$color">
+                            <YStack position="relative" overflow="hidden" backgroundColor="$color3">
                               <TemplateThumb
                                 name={t.displayName}
                                 category={t.category}
@@ -243,7 +243,7 @@ export default function LandingPage() {
                             </YStack>
                           </Button>
                         ))}
-                      </YStack>
+                      </XStack>
                     </YStack>
                     <YStack marginTop="$3" alignItems="center">
                       <Link
@@ -314,7 +314,7 @@ export default function LandingPage() {
                   <Button
                     key={project.slug}
                     onClick={() => router.push(builderLink(project.slug, project.org))}
-                    group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" hoverStyle={{ borderColor: "$color", backgroundColor: "$color" }}
+                    group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" hoverStyle={{ borderColor: "$color5", backgroundColor: "$color3" }}
                   >
                     <ProjectThumb name={project.name} liveUrl={project.liveUrl} />
                     <YStack padding="$4.5">

@@ -324,7 +324,7 @@ function DiffView({ lines }: { lines: DiffLine[] }) {
                 {l.newNo ?? ""}
               </SizableText>
               <SizableText
-                width="100%" whiteSpace="pre" paddingHorizontal="$2" fontFamily="$mono" fontSize={11} lineHeight={1.625} {...{ color: l.type === "ctx" ? "$color11" : l.type === "hunk" ? "$color11" : l.type === "del" ? "$red3" : l.type === "add" ? "$green3" : undefined }}
+                width="100%" whiteSpace="pre" paddingHorizontal="$2" fontFamily="$mono" fontSize={11} lineHeight="1.625" {...{ color: l.type === "ctx" ? "$color11" : l.type === "hunk" ? "$color11" : l.type === "del" ? "$red3" : l.type === "add" ? "$green3" : undefined }}
               >
                 <SizableText userSelect="none" color="$color11">
                   {l.type === "add" ? "+" : l.type === "del" ? "−" : l.type === "hunk" ? "" : " "}
@@ -388,7 +388,7 @@ function Timeline({ rev, commit }: { rev: DetailsRev; commit: GitCommit | null }
             <FileText size={12} />
             <SizableText fontSize={11} textTransform="uppercase" letterSpacing={0.4} color="$color11">Message</SizableText>
           </XStack>
-          <SizableText whiteSpace="pre" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="white" padding="$3" fontFamily="$mono" fontSize={11} lineHeight={1.625} color="$color">
+          <SizableText whiteSpace="pre" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="white" padding="$3" fontFamily="$mono" fontSize={11} lineHeight="1.625" color="$color">
             {fullMessage}
           </SizableText>
         </div>

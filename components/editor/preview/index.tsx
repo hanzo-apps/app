@@ -24,15 +24,15 @@ function PreviewOverlay({ building }: { building: boolean }) {
       {building ? (
         <YStack width="100%" maxWidth={672} paddingHorizontal="$6">
           <YStack alignSelf="center" gap="$3">
-            <YStack height="$6" width="33.333%" borderRadius="$3" backgroundColor="$color" className="skeleton" />
-            <YStack height="$13" width="100%" borderRadius="$5" backgroundColor="$color" className="skeleton" style={{ animationDelay: "120ms" }} />
+            <YStack height="$6" width="33.333%" borderRadius="$3" backgroundColor="$color4" className="skeleton" />
+            <YStack height="$13" width="100%" borderRadius="$5" backgroundColor="$color4" className="skeleton" style={{ animationDelay: "120ms" }} />
             <YStack gap="$3">
-              <YStack height="$11" borderRadius="$5" backgroundColor="$color" className="skeleton" style={{ animationDelay: "200ms" }} />
-              <YStack height="$11" borderRadius="$5" backgroundColor="$color" className="skeleton" style={{ animationDelay: "280ms" }} />
-              <YStack height="$11" borderRadius="$5" backgroundColor="$color" className="skeleton" style={{ animationDelay: "360ms" }} />
+              <YStack height="$11" borderRadius="$5" backgroundColor="$color4" className="skeleton" style={{ animationDelay: "200ms" }} />
+              <YStack height="$11" borderRadius="$5" backgroundColor="$color4" className="skeleton" style={{ animationDelay: "280ms" }} />
+              <YStack height="$11" borderRadius="$5" backgroundColor="$color4" className="skeleton" style={{ animationDelay: "360ms" }} />
             </YStack>
-            <YStack height="$4" width="66.667%" borderRadius="$2" backgroundColor="$color" className="skeleton" style={{ animationDelay: "440ms" }} />
-            <YStack height="$4" width="50%" borderRadius="$2" backgroundColor="$color" className="skeleton" style={{ animationDelay: "520ms" }} />
+            <YStack height="$4" width="66.667%" borderRadius="$2" backgroundColor="$color4" className="skeleton" style={{ animationDelay: "440ms" }} />
+            <YStack height="$4" width="50%" borderRadius="$2" backgroundColor="$color4" className="skeleton" style={{ animationDelay: "520ms" }} />
           </YStack>
           <Paragraph marginTop="$5" textAlign="center" fontSize={13}>
             <SizableText className="thread-shimmer-text">Building your app…</SizableText>

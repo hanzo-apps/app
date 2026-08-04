@@ -52,7 +52,7 @@ export default function Header() {
         <Button variant="ghost" gap="$2">
           <Avatar height={28} width={28}>
             <AvatarImage src={user?.avatarUrl} alt={displayName} />
-            <AvatarFallback backgroundColor="$color">
+            <AvatarFallback backgroundColor="$color4">
               {userInitial}
             </AvatarFallback>
           </Avatar>
@@ -63,8 +63,8 @@ export default function Header() {
       <DropdownMenuContent minWidth={224}>
         <DropdownMenuLabel>
           <YStack rowGap="$1">
-            <Paragraph fontSize="$3" fontWeight="500" lineHeight={1}>{displayName}</Paragraph>
-            <Paragraph fontSize="$1" lineHeight={1} color="$color11">
+            <Paragraph fontSize="$3" fontWeight="500" lineHeight="1">{displayName}</Paragraph>
+            <Paragraph fontSize="$1" lineHeight="1" color="$color11">
               {user?.email || user?.username}
             </Paragraph>
           </YStack>

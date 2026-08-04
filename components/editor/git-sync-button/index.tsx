@@ -315,7 +315,7 @@ export function GitSyncButton({
           variant="outline"
           size="sm"
           disabled={disabled}
-          height={28} gap="$1.5" paddingHorizontal="$2.5" borderColor="$borderColor" backgroundColor="$color" hoverStyle={{ backgroundColor: "$color3" }}
+          height={28} gap="$1.5" paddingHorizontal="$2.5" borderColor="$borderColor" backgroundColor="$color2" hoverStyle={{ backgroundColor: "$color3" }}
           title="Push your project to Hanzo git, GitHub, or GitLab"
         >
           <UploadCloud size={14} />
@@ -342,7 +342,7 @@ export function GitSyncButton({
 
         {needsConnect ? (
           <YStack alignItems="center" paddingHorizontal="$5" paddingVertical="$6">
-            <XStack marginBottom="$4" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color">
+            <XStack marginBottom="$4" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2">
               <ProviderIcon size={24} color="var(--foreground)" />
             </XStack>
             <Paragraph fontSize="$3" fontWeight="500" textAlign="center">Connect {providerName}</Paragraph>
@@ -375,7 +375,7 @@ export function GitSyncButton({
               {result.created ? "Repository created" : "Commit pushed"}
             </Paragraph>
 
-            <YStack marginTop="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" padding="$3">
+            <YStack marginTop="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$3">
               <XStack alignItems="center" gap="$2">
                 {(() => {
                   const I = providerMeta(result.provider || provider).Icon;
@@ -452,7 +452,7 @@ export function GitSyncButton({
           </YStack>
         ) : linked && !showForm ? (
           <YStack padding="$4.5">
-            <YStack borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" padding="$3.5">
+            <YStack borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" padding="$3.5">
               <XStack marginBottom="$1.5" alignItems="center" gap="$1.5">
                 <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$green8" />
                 <SizableText fontSize={11} textTransform="uppercase" letterSpacing={0.4} color="$color11">
@@ -584,7 +584,7 @@ export function GitSyncButton({
               }}
   />
 
-            <Label cursor="pointer" alignItems="center" justifyContent="space-between" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$3" paddingVertical="$2.5">
+            <Label cursor="pointer" alignItems="center" justifyContent="space-between" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$3" paddingVertical="$2.5">
               <XStack alignItems="center" gap="$2">
                 <Lock size={14} color="$color11" />
                 <SizableText fontSize="$3" color="$color">

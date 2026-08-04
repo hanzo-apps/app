@@ -58,7 +58,7 @@ export default function ModelsStrip() {
             <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
             <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
           </XStack>
-          <SizableText fontFamily="$mono" fontSize={12} lineHeight={1.625} color="$color" overflow="scroll" whiteSpace="pre">
+          <SizableText fontFamily="$mono" fontSize={12} lineHeight="1.625" color="$color" overflow="scroll" whiteSpace="pre">
 {`POST https://api.hanzo.ai/v1/chat/completions
 Authorization: Bearer $HANZO_KEY
 

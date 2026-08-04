@@ -124,8 +124,8 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
             </XStack>
           )}
           <H1 fontSize="$10" fontWeight="500" letterSpacing={-0.4}>{templateTitle}</H1>
-          <Paragraph marginTop="$2" fontSize={15} lineHeight={1.625} color="$color11">{templateDescription}</Paragraph>
-          <Paragraph marginTop="$3" fontSize="$3" lineHeight={1.625} color="$color11">
+          <Paragraph marginTop="$2" fontSize={15} lineHeight="1.625" color="$color11">{templateDescription}</Paragraph>
+          <Paragraph marginTop="$3" fontSize="$3" lineHeight="1.625" color="$color11">
             A polished, production-quality starting point — edit it live in the
             preview panel, fork it to your account, or ship straight to Hanzo Cloud.
           </Paragraph>
@@ -178,7 +178,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
                         {active && <Check size={12} color="$background" strokeWidth={3} />}
                       </XStack>
                     </XStack>
-                    <Paragraph marginTop="$0.5" fontSize={13} lineHeight={1.375} color="$color11">{opt.desc}</Paragraph>
+                    <Paragraph marginTop="$0.5" fontSize={13} lineHeight="1.375" color="$color11">{opt.desc}</Paragraph>
                   </YStack>
                 </Button>
               );

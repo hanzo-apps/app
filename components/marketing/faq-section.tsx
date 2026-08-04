@@ -71,7 +71,7 @@ export default function FaqSection({
                 </Button>
                 {isOpen && (
                   <YStack paddingBottom="$5" paddingRight="$6">
-                    <SizableText fontSize="$3" lineHeight={1.625} color="$color11" $md={{ fontSize: "$4" }}>
+                    <SizableText fontSize="$3" lineHeight="1.625" color="$color11" $md={{ fontSize: "$4" }}>
                       {it.a}
                     </SizableText>
                   </YStack>

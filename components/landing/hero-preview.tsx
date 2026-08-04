@@ -90,7 +90,7 @@ function VibeApp({ v, compact }: { v: number; compact?: boolean }): ReactElement
         )}
       </XStack>
 
-      <H3 fontWeight="500" lineHeight={1.25} letterSpacing={-0.4} color="$color" {...{ fontSize: compact ? 13 : "$6" }}>
+      <H3 fontWeight="500" lineHeight="1.25" letterSpacing={-0.4} color="$color" {...{ fontSize: compact ? 13 : "$6" }}>
         How&apos;s the team feeling today?
       </H3>
 
@@ -114,7 +114,7 @@ function VibeApp({ v, compact }: { v: number; compact?: boolean }): ReactElement
               <SizableText width="$7" flexShrink={0} fontFamily="$mono" color="$color" {...{ fontSize: compact ? 7 : 9 }}>
                 {o.label}
               </SizableText>
-              <YStack height="$1.5" flex={1} overflow="hidden" borderRadius="$10" backgroundColor="$color">
+              <YStack height="$1.5" flex={1} overflow="hidden" borderRadius="$10" backgroundColor="$color4">
                 <YStack height="100%" borderRadius="$10" backgroundColor="$color" style={{ width: o.w }} />
               </YStack>
               <SizableText width="$4" flexShrink={0} textAlign="right" fontFamily="$mono" fontVariant={["tabular-nums"]} color="$color" {...{ fontSize: compact ? 7 : 9 }}>
@@ -251,11 +251,11 @@ export default function HeroPreview() {
       `}</style>
 
       {/* Soft floor glow to seat the frame. */}
-      <YStack pointerEvents="none" position="absolute" left="$0" right="$0" bottom="-7" top="$6" zIndex={10} borderRadius="2rem" backgroundColor="$color" $sm={{ left: "-6", right: "-6" }} />
+      <YStack pointerEvents="none" position="absolute" left="$0" right="$0" bottom="-7" top="$6" zIndex={10} borderRadius="2rem" backgroundColor="$color" opacity={0.05} style={{ filter: "blur(80px)" }} $sm={{ left: "-6", right: "-6" }} />
 
       <YStack overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" elevation={6}>
         {/* ── Editor header — the real /dev chrome in miniature ── */}
-        <XStack alignItems="center" gap="$3" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$3.5" paddingVertical="$2.5">
+        <XStack alignItems="center" gap="$3" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$3.5" paddingVertical="$2.5">
           <XStack alignItems="center" gap="$1.5">
             <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
             <SizableText height="$2.5" width="$2.5" borderRadius="$10" backgroundColor="$color" />
@@ -352,9 +352,9 @@ export default function HeroPreview() {
                 b.role === "user" ? (
                   <YStack
                     key={i}
-                    alignSelf="flex-end" borderRadius="$5" borderBottomRightRadius="$1" backgroundColor="$color" paddingHorizontal="$2.5" paddingVertical="$1.5" className="line"
+                    alignSelf="flex-end" borderRadius="$5" borderBottomRightRadius="$1" backgroundColor="$color12" paddingHorizontal="$2.5" paddingVertical="$1.5" className="line"
                   >
-                    <SizableText fontSize={11} lineHeight={1.375} color="$color">{b.text}</SizableText>
+                    <SizableText fontSize={11} lineHeight="1.375" color="$background">{b.text}</SizableText>
                   </YStack>
                 ) : (
                   <XStack key={i} alignItems="center" gap="$1.5" className="line">
@@ -391,7 +391,7 @@ export default function HeroPreview() {
             <YStack
               minWidth={0} flex={1} overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" {...{ display: device === "desktop" ? undefined : "none" }}
             >
-              <XStack alignItems="center" gap="$2" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$3" paddingVertical="$2">
+              <XStack alignItems="center" gap="$2" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$3" paddingVertical="$2">
                 <XStack alignSelf="center" width="100%" maxWidth={240} alignItems="center" gap="$2" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2.5" paddingVertical="$1">
                   <svg viewBox="0 0 24 24" width={10} height={10} opacity={0.3} fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
                     <rect x="4" y="10" width="16" height="10" rx="2" />
@@ -428,7 +428,7 @@ export default function HeroPreview() {
               width={172} flexShrink={0} {...{ alignSelf: device === "mobile" ? "center" : "center", display: device === "mobile" ? undefined : "none" }}
             >
               <YStack overflow="hidden" borderRadius="1.6rem" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$1.5" elevation={5}>
-                <YStack alignSelf="center" marginBottom="$1" height="$1" width="$7" borderRadius="$10" backgroundColor="$color" />
+                <YStack alignSelf="center" marginBottom="$1" height="$1" width="$7" borderRadius="$10" backgroundColor="$color6" />
                 <YStack position="relative" height={280} overflow="hidden" borderRadius="1.1rem" backgroundColor="$background">
                   {v >= 0 ? (
                     <YStack key={`m${v}`} height="100%" className="rise">
@@ -447,7 +447,7 @@ export default function HeroPreview() {
         </YStack>
 
         {/* Status bar — git push payoff + live URL, exactly one line. */}
-        <XStack alignItems="center" gap="$2" borderTopWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$3.5" paddingVertical="$1.5">
+        <XStack alignItems="center" gap="$2" borderTopWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$3.5" paddingVertical="$1.5">
           <XStack minWidth={0} alignItems="center" gap="$1.5">
             <SizableText numberOfLines={1} fontFamily="$mono" fontSize={9} color="$color">
               {busy ? (streamLine ?? "working…") : live ? "pushed to main · e4b21c7" : "main"}

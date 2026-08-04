@@ -42,8 +42,8 @@ export const UserMenu = ({ className }: { className?: string }) => {
       <DropdownMenuContent width={224}>
         <DropdownMenuLabel>
           <YStack rowGap="$1">
-            <Paragraph fontSize="$3" fontWeight="500" lineHeight={1}>{displayName}</Paragraph>
-            <Paragraph fontSize="$1" lineHeight={1} color="$color11">
+            <Paragraph fontSize="$3" fontWeight="500" lineHeight="1">{displayName}</Paragraph>
+            <Paragraph fontSize="$1" lineHeight="1" color="$color11">
               {user?.email || user?.username}
             </Paragraph>
           </YStack>

@@ -77,7 +77,7 @@ export function BuildTranscript({ build }: { build: Build }) {
   return (
     <SizableText position="relative" minHeight="100%" backgroundColor="$background" color="$color" overflow="hidden" display="flex" flexDirection="column">
       <YStack pointerEvents="none" position="fixed" top={0} right={0} bottom={0} left={0} zIndex={0} overflow="hidden">
-        <YStack position="absolute" left="50%" top="-14%" height={520} width={860} x="50%" borderRadius="$10" backgroundColor="$color" />
+        <YStack position="absolute" left="50%" top="-14%" height={520} width={860} x="-50%" borderRadius="$10" backgroundColor="$color" opacity={0.06} style={{ filter: "blur(140px)" }} />
       </YStack>
 
       <Header />
@@ -103,7 +103,7 @@ export function BuildTranscript({ build }: { build: Build }) {
               </SizableText>
             </nav>
 
-            <H1 marginTop="$6" fontSize="$10" fontWeight="500" lineHeight={1.08} letterSpacing={-0.4} $sm={{ fontSize: "$11" }}>
+            <H1 marginTop="$6" fontSize="$10" fontWeight="500" lineHeight="1.08" letterSpacing={-0.4} $sm={{ fontSize: "$11" }}>
               {build.title || `How ${build.project} was built`}
             </H1>
 
@@ -127,7 +127,7 @@ export function BuildTranscript({ build }: { build: Build }) {
             {/* The claim and how to check it, side by side. */}
             <YStack marginTop="$6" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$4">
               <Paragraph className={`${EYEBROW}`}>Verify</Paragraph>
-              <Paragraph marginTop="$2" fontSize="$3" lineHeight={1.625} color="$color11">
+              <Paragraph marginTop="$2" fontSize="$3" lineHeight="1.625" color="$color11">
                 Every commit below is bound to its turn by a git trailer or note on the
                 commit itself — not by a table on our side. Re-derive all of them:
               </Paragraph>

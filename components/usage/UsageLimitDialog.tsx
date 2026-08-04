@@ -85,7 +85,7 @@ function OptionCard({
       onClick={onClick}
       group width="100%" alignItems="flex-start" gap="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4" outlineWidth={0} hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}
     >
-      <XStack height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color">
+      <XStack height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color3">
         <SizableText color="$color"><Icon size={20} /></SizableText>
       </XStack>
       <YStack minWidth={0} flex={1}>
@@ -93,7 +93,7 @@ function OptionCard({
           <SizableText fontSize="$3" fontWeight="500" color="$color">{title}</SizableText>
           <ArrowRight size={16} color="$color11" />
         </XStack>
-        <SizableText marginTop="$0.5" fontSize="$1" lineHeight={1.625} color="$color11">{desc}</SizableText>
+        <SizableText marginTop="$0.5" fontSize="$1" lineHeight="1.625" color="$color11">{desc}</SizableText>
       </YStack>
     </Button>
   );

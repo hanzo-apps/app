@@ -149,7 +149,7 @@ export default function ProjectDevPage() {
           <H1 fontSize="$6" fontWeight="500" color="$color" textAlign="center">
             Can’t open <SizableText fontFamily="$mono">{org}/{slug}</SizableText>
           </H1>
-          <Paragraph alignSelf="center" marginTop="$2" fontSize="$3" lineHeight={1.625} color="$color11" textAlign="center">
+          <Paragraph alignSelf="center" marginTop="$2" fontSize="$3" lineHeight="1.625" color="$color11" textAlign="center">
             {wrongOrg ? (
               <>
                 This project is in the <SizableText color="$color">{org}</SizableText> organization,

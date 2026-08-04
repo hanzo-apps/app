@@ -124,7 +124,7 @@ export default function PricingPage() {
         {/* ── Hero ─────────────────────────────────────────────── */}
         <YStack position="relative" overflow="hidden" paddingHorizontal="$4" paddingVertical="$8" $sm={{ paddingVertical: "$10" }} $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
           <YStack pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} overflow="hidden">
-            <YStack position="absolute" left="50%" top="-30%" height={420} width={720} x="50%" borderRadius="$10" backgroundColor="$color" />
+            <YStack position="absolute" left="50%" top="-30%" height={420} width={720} x="-50%" borderRadius="$10" backgroundColor="$color" opacity={0.06} style={{ filter: "blur(140px)" }} />
           </YStack>
 
           <YStack position="relative" alignSelf="center" maxWidth={768}>
@@ -138,7 +138,7 @@ export default function PricingPage() {
             </Reveal>
 
             <Reveal delay={60}>
-              <H1 fontSize="$11" fontWeight="500" lineHeight={1.03} letterSpacing={-0.4} textAlign="center" $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
+              <H1 fontSize="$11" fontWeight="500" lineHeight="1.03" letterSpacing={-0.4} textAlign="center" $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
                 Shared AI usage,
                 <br />
                 across everything you build.

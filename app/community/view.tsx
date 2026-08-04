@@ -35,7 +35,7 @@ export default function CommunityPageView() {
           <H2 fontSize="$8" fontWeight="500" letterSpacing={-0.4} textAlign="center" $md={{ fontSize: "$10" }}>
             Build something worth showing off.
           </H2>
-          <Paragraph marginTop="$4" fontSize="$3" lineHeight={1.625} color="$color11" textAlign="center">
+          <Paragraph marginTop="$4" fontSize="$3" lineHeight="1.625" color="$color11" textAlign="center">
             Fork a starter or start from a blank prompt. Either way you are live
             on Hanzo Cloud — database, auth, AI and storage already wired.
           </Paragraph>

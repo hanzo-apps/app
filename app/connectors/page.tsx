@@ -409,7 +409,7 @@ function ConnectorRow({
         ) : p.available ? (
           <Button
             size="sm"
-            gap="$1.5" backgroundColor="$color" hoverStyle={{ backgroundColor: "$color" }}
+            gap="$1.5"
             disabled={busy || disabled}
             onClick={() => onConnect(p)}
           >

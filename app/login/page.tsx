@@ -152,10 +152,10 @@ export default function LoginPage() {
   />
           </YStack>
 
-          <YStack position="absolute" top="25%" right="-14" width={384} height={384} backgroundColor="$color" borderRadius="$10" />
+          <YStack position="absolute" top="25%" right="-14" width={384} height={384} backgroundColor="$color" opacity={0.05} style={{ filter: "blur(120px)" }} borderRadius="$10" />
           <YStack
-            position="absolute" bottom="25%" left="-14" width={384} height={384} backgroundColor="$color" borderRadius="$10"
-            style={{ animationDelay: '2s' }}
+            position="absolute" bottom="25%" left="-14" width={384} height={384} backgroundColor="$color" opacity={0.05} borderRadius="$10"
+            style={{ filter: "blur(120px)", animationDelay: '2s' }}
   />
 
           <YStack position="relative" zIndex={10} maxWidth={576} width="100%">

@@ -230,7 +230,7 @@ export function BuildComposer({
             onBlur={() => setFocused(false)}
             placeholder={placeholder}
             aria-label="Ask Hanzo to build"
-            width="100%" backgroundColor="transparent" paddingHorizontal="$4" paddingBottom="$2" paddingTop="$4" fontSize={15} lineHeight={1.625} color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0 }}
+            width="100%" backgroundColor="transparent" paddingHorizontal="$4" paddingBottom="$2" paddingTop="$4" fontSize={15} lineHeight="1.625" color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0 }}
   />
           <XStack alignItems="center" justifyContent="space-between" gap="$2" paddingHorizontal="$2.5" paddingBottom="$2.5">
             <XStack alignItems="center" gap="$1">
@@ -311,17 +311,25 @@ export function BuildComposer({
       {!!starters?.length && (
         <XStack marginTop="$4" flexWrap="wrap" justifyContent="center" gap="$2">
           {starters.map((s) => (
-            <Button
+            <SizableText
               key={s}
-              type="button"
+              role="button"
+              tabIndex={0}
               onClick={() => {
                 setIdea(s);
                 submit(s);
               }}
-              group borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$1.5" hoverStyle={{ borderColor: "$borderColor" }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setIdea(s);
+                  submit(s);
+                }
+              }}
+              cursor="pointer" flexShrink={0} whiteSpace="nowrap" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$color5", backgroundColor: "$color4", color: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
             >
-              <SizableText fontSize="$1" color="$color11" $group-hover={{ color: "$color" }}>{s}</SizableText>
-            </Button>
+              {s}
+            </SizableText>
           ))}
         </XStack>
       )}

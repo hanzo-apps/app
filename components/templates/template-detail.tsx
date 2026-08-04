@@ -64,7 +64,7 @@ export function TemplateDetail({
     <YStack position="relative" minHeight="100%" backgroundColor="$background" overflow="hidden">
       {/* Monochrome glow — single soft radial, zero hue (matches landing). */}
       <YStack pointerEvents="none" position="fixed" top={0} right={0} bottom={0} left={0} zIndex={0} overflow="hidden">
-        <YStack position="absolute" left="50%" top="-14%" height={520} width={860} x="50%" borderRadius="$10" backgroundColor="$color" />
+        <YStack position="absolute" left="50%" top="-14%" height={520} width={860} x="-50%" borderRadius="$10" backgroundColor="$color" opacity={0.06} style={{ filter: "blur(140px)" }} />
       </YStack>
 
       <Header />
@@ -108,10 +108,10 @@ export function TemplateDetail({
                   ))}
                 </XStack>
 
-                <H1 fontSize="$10" fontWeight="500" lineHeight={1.08} letterSpacing={-0.4} $sm={{ fontSize: "$11" }} $md={{ color: "2.9rem" }}>
+                <H1 fontSize="$10" fontWeight="500" lineHeight="1.08" letterSpacing={-0.4} $sm={{ fontSize: "$11" }} $md={{ fontSize: "2.9rem" }}>
                   {t.name}
                 </H1>
-                <Paragraph marginTop="$4" maxWidth={576} fontSize="$4" lineHeight={1.625} color="$color11" $md={{ fontSize: "$6" }}>
+                <Paragraph marginTop="$4" maxWidth={576} fontSize="$4" lineHeight="1.625" color="$color11" $md={{ fontSize: "$6" }}>
                   {t.tagline}
                 </Paragraph>
 
@@ -208,7 +208,7 @@ export function TemplateDetail({
                         <Icon size={16} color="var(--foreground)" strokeWidth={1.5} />
                       </XStack>
                       <H3 marginTop="$4.5" fontSize="$4" fontWeight="500" color="$color">{h.title}</H3>
-                      <Paragraph marginTop="$2" fontSize="$3" lineHeight={1.625} color="$color11">{h.body}</Paragraph>
+                      <Paragraph marginTop="$2" fontSize="$3" lineHeight="1.625" color="$color11">{h.body}</Paragraph>
                     </YStack>
                   );
                 })}
@@ -225,8 +225,8 @@ export function TemplateDetail({
               <H2 marginTop="$4" fontSize="$8" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$10" }}>
                 {t.name}
               </H2>
-              <Paragraph marginTop="$4.5" fontSize="$4" lineHeight={1.625} color="$color11">{t.about}</Paragraph>
-              <Paragraph marginTop="$4" fontSize="$4" lineHeight={1.625} color="$color11">{t.description}</Paragraph>
+              <Paragraph marginTop="$4.5" fontSize="$4" lineHeight="1.625" color="$color11">{t.about}</Paragraph>
+              <Paragraph marginTop="$4" fontSize="$4" lineHeight="1.625" color="$color11">{t.description}</Paragraph>
             </Reveal>
 
             {t.perfectFor.length > 0 && (
@@ -239,7 +239,7 @@ export function TemplateDetail({
                         <XStack marginTop="$0.5" height="$4.5" width="$4.5" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
                           <Check size={12} color="$color11" strokeWidth={2} />
                         </XStack>
-                        <SizableText lineHeight={1.625} fontSize="$3" color="$color">{p}</SizableText>
+                        <SizableText lineHeight="1.625" fontSize="$3" color="$color">{p}</SizableText>
                       </XStack>
                     ))}
                   </YStack>

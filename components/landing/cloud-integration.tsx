@@ -81,7 +81,7 @@ export default function CloudIntegration() {
           <Paragraph textAlign="center" fontFamily="$mono" fontSize={11} color="$color11">
             The difference
           </Paragraph>
-          <H2 textAlign="center" marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ color: "2.75rem", lineHeight: 1.1 }}>
+          <H2 textAlign="center" marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "2.75rem", lineHeight: "1.1" }}>
             More than a UI. A full app on Hanzo Cloud.
           </H2>
           <Paragraph textAlign="center" marginTop="$4" fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
@@ -113,7 +113,7 @@ export default function CloudIntegration() {
                 <H3 marginTop="$4.5" fontSize="$6" fontWeight="500" letterSpacing={-0.4} color="$color">
                   {c.name}
                 </H3>
-                <Paragraph marginTop="$2" flex={1} fontSize="$3" lineHeight={1.625} color="$color11">
+                <Paragraph marginTop="$2" flex={1} fontSize="$3" lineHeight="1.625" color="$color11">
                   {c.desc}
                 </Paragraph>
 

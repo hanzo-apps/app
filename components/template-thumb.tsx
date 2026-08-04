@@ -128,8 +128,8 @@ export function TemplateThumb({
   />
       {/* soft light bloom */}
       <YStack
-        position="absolute" height="$17" width="$17" borderRadius="$10" backgroundColor="$color"
-        style={{ left: `${hx}%`, top: `${hy}%`, transform: "translate(-40%,-40%)" }}
+        position="absolute" height="$17" width="$17" borderRadius="$10" backgroundColor="$color" opacity={0.06}
+        style={{ filter: "blur(120px)", left: `${hx}%`, top: `${hy}%`, transform: "translate(-40%,-40%)" }}
   />
       {/* fine texture */}
       <YStack

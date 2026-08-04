@@ -143,7 +143,7 @@ export function Header({
         <XStack
           role="tablist"
           aria-label="Editor view"
-          flexShrink={0} alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color" padding="$0.5"
+          flexShrink={0} alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color3" padding="$0.5"
         >
           {TABS.map((item) => {
             const active = tab === item.value;
@@ -175,7 +175,7 @@ export function Header({
           <XStack
             role="tablist"
             aria-label="Preview device"
-            alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color" padding="$0.5"
+            alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="$color3" padding="$0.5"
           >
             {DEVICES.map((d) => {
               const active = device === d.name;
@@ -215,7 +215,7 @@ export function Header({
                   type="button"
                   title="Browse pages"
                   aria-label="Browse pages"
-                  maxWidth="12rem" height={32} alignItems="center" gap="$1.5" borderRadius="$5" backgroundColor="$color" paddingHorizontal="$2.5" hoverStyle={{ backgroundColor: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
+                  maxWidth="12rem" height={32} alignItems="center" gap="$1.5" borderRadius="$5" backgroundColor="$color3" paddingHorizontal="$2.5" hoverStyle={{ backgroundColor: "$color4" }} focusVisibleStyle={{ outlineWidth: 0 }}
                 >
                   <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1">
                     {currentPage}

@@ -264,7 +264,7 @@ export default function FeaturesPage() {
                   </YStack>
                   <div>
                     <H3 fontSize="$7" fontWeight="500" marginBottom="$3" color="$color">{capability.title}</H3>
-                    <Paragraph color="$color" lineHeight={1.625}>{capability.description}</Paragraph>
+                    <Paragraph color="$color" lineHeight="1.625">{capability.description}</Paragraph>
                   </div>
                 </XStack>
               ))}

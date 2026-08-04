@@ -205,12 +205,12 @@ export const DeployButtonContent = ({
             </XStack>
           </XStack>
           <Paragraph textAlign="center" fontSize="$4" fontWeight="500" color="$color">Your app is live</Paragraph>
-          <Paragraph marginTop="$1" textAlign="center" fontSize="$1" lineHeight={1.625} color="$color11">
+          <Paragraph marginTop="$1" textAlign="center" fontSize="$1" lineHeight="1.625" color="$color11">
             Share this link — anyone can open it.
           </Paragraph>
         </YStack>
         <YStack rowGap="$3" backgroundColor="$background" padding="$4">
-          <XStack alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$3" paddingVertical="$2">
+          <XStack alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$3" paddingVertical="$2">
             <SizableText flex={1} numberOfLines={1} fontFamily="$mono" fontSize="$3" color="$color">{host}</SizableText>
             <Button
               type="button"
@@ -256,12 +256,12 @@ export const DeployButtonContent = ({
       {/* Black chrome to match the builder — compact header. */}
       <YStack borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4">
         <XStack marginBottom="$2" alignItems="center" justifyContent="center">
-          <XStack width={36} height={36} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color">
+          <XStack width={36} height={36} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2">
             <Image src={SpaceIcon} alt="" width={28} height={28} />
           </XStack>
         </XStack>
         <Paragraph textAlign="center" fontSize="$4" fontWeight="500" color="$color">Publish your project</Paragraph>
-        <Paragraph marginTop="$1" textAlign="center" fontSize="$1" lineHeight={1.625} color="$color11">
+        <Paragraph marginTop="$1" textAlign="center" fontSize="$1" lineHeight="1.625" color="$color11">
           {options?.description ??
             "Publish to your org on Hanzo Cloud — billed to your org, live across your Hanzo tools."}
         </Paragraph>
@@ -276,7 +276,7 @@ export const DeployButtonContent = ({
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setConfig({ ...config, title: e.target.value })
             }
-            borderColor="$borderColor" backgroundColor="$color" color="$color" placeholderTextColor="$color11"
+            borderColor="$borderColor" backgroundColor="$color2" color="$color" placeholderTextColor="$color11"
   />
         </div>
         <Button

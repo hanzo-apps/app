@@ -49,7 +49,7 @@ export default function HowItWorks() {
               <H3 marginTop="$5" fontSize="$7" fontWeight="500" letterSpacing={-0.4} color="$color">
                 {s.title}
               </H3>
-              <Paragraph marginTop="$3" fontSize="$3" lineHeight={1.625} color="$color11">
+              <Paragraph marginTop="$3" fontSize="$3" lineHeight="1.625" color="$color11">
                 {s.body}
               </Paragraph>
             </YStack>

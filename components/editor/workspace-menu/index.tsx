@@ -160,7 +160,7 @@ export function WorkspaceMenu({
           <Button
             type="button"
             title="Workspace"
-            minWidth={0} alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: "$borderColor", backgroundColor: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
+            minWidth={0} alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: "$borderColor", backgroundColor: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
           >
             <OrgAvatar name={orgName} logo={activeOrg?.logo} />
             <SizableText maxWidth="9rem" numberOfLines={1} fontWeight="500" color="$color">
@@ -193,11 +193,11 @@ export function WorkspaceMenu({
               </AvatarFallback>
             </Avatar>
             <YStack minWidth={0}>
-              <Paragraph numberOfLines={1} fontSize="$3" fontWeight="500" lineHeight={1.25} color="$color">
+              <Paragraph numberOfLines={1} fontSize="$3" fontWeight="500" lineHeight="1.25" color="$color">
                 {uname}
               </Paragraph>
               {user.email && (
-                <Paragraph numberOfLines={1} fontSize="$1" lineHeight={1.25} color="$color11">
+                <Paragraph numberOfLines={1} fontSize="$1" lineHeight="1.25" color="$color11">
                   {user.email}
                 </Paragraph>
               )}
@@ -213,7 +213,7 @@ export function WorkspaceMenu({
                   <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{orgName}</SizableText>
                   <SizableText fontSize={11} color="$color11">Switch workspace</SizableText>
                 </YStack>
-                <SizableText flexShrink={0} borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" color="$color11">
+                <SizableText flexShrink={0} borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" color="$color11">
                   {orgKind}
                 </SizableText>
               </DropdownMenuSubTrigger>
@@ -241,7 +241,7 @@ export function WorkspaceMenu({
                 <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{orgName}</SizableText>
                 <SizableText fontSize={11} color="$color11">Workspace</SizableText>
               </YStack>
-              <SizableText flexShrink={0} borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" color="$color11">
+              <SizableText flexShrink={0} borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" color="$color11">
                 {orgKind}
               </SizableText>
             </XStack>
@@ -252,7 +252,7 @@ export function WorkspaceMenu({
           <DropdownMenuItem asChild marginHorizontal="$0.5" marginTop="$1" borderRadius="$5" padding="$0" focusStyle={{ backgroundColor: "transparent" }}>
             <Link
               href="/billing"
-            ><YStack width="100%" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$3" paddingVertical="$2.5" hoverStyle={{ borderColor: "$borderColor", backgroundColor: "$color" }} focusVisibleStyle={{ borderColor: "$borderColor" }}>
+            ><YStack width="100%" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$3" paddingVertical="$2.5" hoverStyle={{ borderColor: "$borderColor", backgroundColor: "$color" }} focusVisibleStyle={{ borderColor: "$borderColor" }}>
               <XStack alignItems="center" justifyContent="space-between">
                 <XStack alignItems="center" gap="$1.5">
                   <Wallet size={14} color="$color11" />
@@ -345,7 +345,7 @@ export function WorkspaceMenu({
                 if (!renaming) void submitRename();
               }
             }}
-            borderColor="$borderColor" backgroundColor="$color" color="$color"
+            borderColor="$borderColor" backgroundColor="$color2" color="$color"
   />
           <XStack justifyContent="flex-end" gap="$2">
             <Button
