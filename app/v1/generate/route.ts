@@ -660,10 +660,32 @@ function applyEdits(
     }
   }
 
+  // BARE SEARCH/REPLACE — no UPDATE_PAGE marker. This is the ordinary shape of a
+  // single-page follow-up, so it has to work; it did not.
+  //
+  // Two faults, and the second was latent data loss. It resolved the target as
+  // `path === "/" || "/index" || "index"` — generated pages are `index.html`, so
+  // it matched NOTHING and every edit was silently dropped ("No changes applied"
+  // on a project with one page). And `newHtml` started as the empty string, so on
+  // the day that lookup DID match, the page would have been overwritten with
+  // almost nothing.
+  //
+  // It now starts from the real page's html and resolves the entry page the way
+  // the rest of the builder does, matching `index.html` first and falling back to
+  // the only page when a project has one.
   if (
     updatedPages.length === pages?.length &&
     !chunk.includes(UPDATE_PAGE_START)
   ) {
+    const entryIndex = (() => {
+      const byName = updatedPages.findIndex((p) =>
+        /^\/?(index(\.html?)?)$/i.test(p.path),
+      );
+      if (byName !== -1) return byName;
+      return updatedPages.length === 1 ? 0 : -1;
+    })();
+    if (entryIndex !== -1) newHtml = updatedPages[entryIndex].html;
+
     let position = 0;
     let moreBlocks = true;
 
@@ -699,26 +721,29 @@ function applyEdits(
         newHtml = `${replaceBlock}\n${newHtml}`;
         updatedLines.push([1, replaceBlock.split("\n").length]);
       } else {
-        const blockPosition = newHtml.indexOf(searchBlock);
-        if (blockPosition !== -1) {
-          const beforeText = newHtml.substring(0, blockPosition);
+        // The same tolerant matcher the marked path uses — exact, then ignoring
+        // the delimiters' whitespace, then whitespace-insensitive when it names
+        // exactly one place. Two matchers would mean an edit that lands with a
+        // marker and vanishes without one.
+        const applied = applyEdit(newHtml, searchBlock, replaceBlock);
+        if (applied.ok) {
+          const beforeText = newHtml.substring(0, applied.index);
           const startLineNumber = beforeText.split("\n").length;
           const replaceLines = replaceBlock.split("\n").length;
           const endLineNumber = startLineNumber + replaceLines - 1;
 
           updatedLines.push([startLineNumber, endLineNumber]);
-          newHtml = newHtml.replace(searchBlock, replaceBlock);
+          newHtml = applied.html;
         }
       }
 
       position = replaceEndIndex + REPLACE_END.length;
     }
 
-    const mainPageIndex = updatedPages.findIndex(
-      (p) => p.path === "/" || p.path === "/index" || p.path === "index"
-    );
-    if (mainPageIndex !== -1) {
-      updatedPages[mainPageIndex].html = newHtml;
+    // Write back only if we actually resolved a page AND produced content —
+    // never assign an empty string over someone's site.
+    if (entryIndex !== -1 && newHtml.trim()) {
+      updatedPages[entryIndex].html = newHtml;
     }
   }
 
