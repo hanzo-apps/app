@@ -31,6 +31,7 @@ import {
   UPDATE_PAGE_START,
   UPDATE_PAGE_END,
 } from "@/lib/prompts";
+import { applyEdit } from "@/lib/edit/apply";
 import { resolveModelId } from "@/lib/providers";
 import { refusal } from "@/lib/gateway";
 import { session } from "@/lib/iam";
@@ -568,15 +569,23 @@ function applyEdits(
           pageHtml = `${replaceBlock}\n${pageHtml}`;
           updatedLines.push([1, replaceBlock.split("\n").length]);
         } else {
-          const blockPosition = pageHtml.indexOf(searchBlock);
-          if (blockPosition !== -1) {
-            const beforeText = pageHtml.substring(0, blockPosition);
+          // Matching used to be `indexOf(searchBlock)` — an exact byte compare
+          // including the delimiters' own newlines — and a miss did NOTHING,
+          // silently. A model that re-indents its quote by a space produced a
+          // page identical to the one it was asked to change, and the only
+          // account of it was "the edit didn't match this page". applyEdit
+          // degrades exact → trimmed → whitespace-insensitive, and refuses a
+          // relaxed match that names more than one place rather than editing
+          // the wrong part of someone's page.
+          const applied = applyEdit(pageHtml, searchBlock, replaceBlock);
+          if (applied.ok) {
+            const beforeText = pageHtml.substring(0, applied.index);
             const startLineNumber = beforeText.split("\n").length;
             const replaceLines = replaceBlock.split("\n").length;
             const endLineNumber = startLineNumber + replaceLines - 1;
 
             updatedLines.push([startLineNumber, endLineNumber]);
-            pageHtml = pageHtml.replace(searchBlock, replaceBlock);
+            pageHtml = applied.html;
           }
         }
 
