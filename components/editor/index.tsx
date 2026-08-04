@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "@hanzo/ui";
 import type { CodeEditorHandle } from "@/components/code-editor";
 import dynamic from "next/dynamic";
@@ -44,6 +44,7 @@ import { LoadProject } from "../my-projects/load-project";
 import { isTheSameHtml } from "@/lib/compare-html-diff";
 import { useAutosave } from "@/hooks/useAutosave";
 import { commitTurn } from "@/lib/git/commit-turn";
+import { loadWorkspace, saveWorkspace } from "@/lib/dev/workspace";
 import { saveLabel } from "@/lib/pages/save-label";
 import { FileTree } from "./file-tree";
 import { HistoryPanel } from "./history";
@@ -67,10 +68,27 @@ export const AppEditor = ({
 }) => {
   const [htmlStorage, , removeHtmlStorage] = useLocalStorage("pages");
   const [, copyToClipboard] = useCopyToClipboard();
+  /**
+   * A project with no server record had nowhere to come back from on reload:
+   * `initialPages` arrives only for a SAVED project, so a brand-new build came
+   * back empty — and an empty editor is what the replayed seed prompt then
+   * filled by regenerating the whole site. The local working copy closes the gap
+   * before a project record or a repo exists, which is exactly the window where
+   * someone reloads and loses everything.
+   *
+   * Read ONCE, on mount: making it reactive would let a stale snapshot fight the
+   * live pages mid-build.
+   */
+  const restored = useRef(
+    typeof window === "undefined"
+      ? null
+      : loadWorkspace(project?.title || (window as { __projectName?: string }).__projectName || "untitled-site"),
+  );
+
   const { htmlHistory, setHtmlHistory, prompts, setPrompts, pages, setPages } =
     useEditor(
-      initialPages,
-      project?.prompts ?? [],
+      initialPages?.length ? initialPages : restored.current?.pages ?? initialPages,
+      project?.prompts ?? restored.current?.prompts ?? [],
       typeof htmlStorage === "string" ? htmlStorage : undefined
     );
 
@@ -252,6 +270,16 @@ export const AppEditor = ({
    */
   const [saveNs, saveRepo] = (project?.space_id ?? "").split("/");
   const autosave = useAutosave(saveNs, saveRepo, pages, prompts, isAiWorking);
+
+  // Keep the working copy current. Debounced so a streaming build does not write
+  // on every chunk, and skipped while building because a partial document is not
+  // a state worth restoring into.
+  useEffect(() => {
+    if (isAiWorking || !pages.length) return;
+    const name = project?.title || (typeof window !== "undefined" ? (window as { __projectName?: string }).__projectName : "") || "untitled-site";
+    const t = setTimeout(() => saveWorkspace(name, pages, prompts), 800);
+    return () => clearTimeout(t);
+  }, [pages, prompts, isAiWorking, project?.title]);
 
   const currentPageData = useMemo(() => {
     return (
