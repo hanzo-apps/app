@@ -27,7 +27,6 @@ import {
   ListTodo,
   ChevronDown,
   Database,
-  Plus,
   Sparkles,
 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/overlay';
@@ -280,13 +279,6 @@ export function BuildComposer({
                 Base
               </button>
 
-              <button
-                type="button"
-                aria-label="Attach"
-                className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-              >
-                <Plus className="h-4 w-4" />
-              </button>
             </div>
 
             <div className="flex items-center gap-1">
