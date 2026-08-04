@@ -101,10 +101,31 @@ function Dev() {
   const [templatePages] = useState<Page[] | null>(null);
   const [templateEditDone, setTemplateEditDone] = useState(false);
 
-  // Load initialPrompt from localStorage on client-side only
+  /**
+   * The seed prompt, CONSUMED on read.
+   *
+   * This is a one-shot handoff: the composer writes `initialPrompt` and pushes
+   * to /dev, which submits it once. Reading it without removing it made it
+   * durable state, so EVERY LATER LOAD of /dev re-submitted the original prompt
+   * and rebuilt the project from scratch — reload the builder, lose the work,
+   * back to the first version. The import branch below already removed it for
+   * exactly this reason ("drop any stale seed the editor would otherwise pick
+   * up"); the general path never did.
+   *
+   * Removed the moment it is read, so a reload finds nothing to replay. The
+   * `?prompt=` query wins when present and is not stored, so a shared link
+   * still seeds once and does not resurrect on the next load either.
+   */
   useEffect(() => {
-    const prompt = searchParams.get("prompt") || localStorage.getItem("initialPrompt") || "";
-    setInitialPrompt(prompt);
+    const fromQuery = searchParams.get("prompt");
+    let stored: string | null = null;
+    try {
+      stored = localStorage.getItem("initialPrompt");
+      if (stored) localStorage.removeItem("initialPrompt");
+    } catch {
+      /* storage unavailable — the query param path still works */
+    }
+    setInitialPrompt(fromQuery || stored || "");
   }, [searchParams]);
 
   // Open an existing org-scoped project by slug. The query form is LEGACY: once
