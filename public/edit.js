@@ -642,7 +642,7 @@
     // circle framing a white ring read as two rings stacked. What is left is the
     // ensō itself, larger and heavier so it holds its own without a plate, and a
     // ring of light that blooms from the stroke on hover.
-    ':host([data-hanzo-anchored]) .fab{position:static;right:auto;bottom:auto;}' +
+    ':host([data-hanzo-anchored]) .fab{position:static;right:auto;bottom:auto;'+'width:20px;height:20px;}' +    ':host([data-hanzo-anchored]) .fab svg{width:18px;height:18px;}' +
     '.fab{position:fixed;right:16px;bottom:16px;z-index:2147483000;display:inline-flex;' +
     'align-items:center;justify-content:center;width:56px;height:56px;padding:0;' +
     'border-radius:999px;border:0;background:transparent;color:var(--hz-text);' +

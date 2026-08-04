@@ -36,7 +36,7 @@ const HANZO_ROWS = [
     // Verified present in the live catalog (GET https://api.hanzo.ai/v1/models),
     // and the builder's current DEFAULT_MODEL — enso cannot build until the zen
     // identity fix reaches its image (lib/providers.ts).
-    id: 'claude-opus-4.8',
+    id: 'anthropic-claude-opus-5',
     object: 'model',
     created: 1785777643,
     owned_by: 'anthropic',

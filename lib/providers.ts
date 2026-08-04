@@ -44,7 +44,7 @@ export type ModelOption = {
 // The rule this applies is the one already written for FALLBACK_MODELS: a model
 // that cannot serve is worse than one that is absent. That goes double for the
 // default, which is what everyone who never opens the picker gets.
-export const DEFAULT_MODEL = "claude-opus-4.8";
+export const DEFAULT_MODEL = "anthropic-claude-opus-5";
 
 // The Hanzo gateway (api.hanzo.ai) serves the Zen/Enso ladder + connected
 // providers AND — since DO GenAI funded the proprietary catalog — a CURATED set
