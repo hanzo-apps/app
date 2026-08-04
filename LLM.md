@@ -1,8 +1,16 @@
 # hanzo.app — the build surface
 
-AI-driven web app builder: Next.js 15.5 / React 19 / TypeScript, with the
+AI-driven web app builder: Next.js 16 / React 19 / TypeScript, with the
 generated preview at `/dev`. Stack, scripts and layout are in `package.json`
 and the tree — this file carries only what those cannot tell you.
+
+Typecheck is `pnpm typecheck` → `tsgo` (`@typescript/native-preview`, the Go
+compiler). It agrees with `tsc` on every diagnostic this tree produces except
+`TS2783` ("specified more than once"), which it does not implement yet — two
+benign call sites in `components/table-of-contents`. It is ~8x faster, so it is
+the one typecheck entry point; `typescript` stays installed because Next, ESLint
+and `ts-node` each load it themselves. Neither is a build gate:
+`typescript.ignoreBuildErrors` is on, and behind it sit ~676 real errors.
 
 Data plane: Hanzo Base (SQLite) locally, cloud `/v1/` APIs as the source of
 truth for shared state. Never Redis; Hanzo KV if a key/value store is needed.
@@ -41,6 +49,34 @@ that IS typed may not behave the way the DOM one does:
   widen the type in `@hanzo/ui` — do not work around it here, and never
   re-declare the package as `any`.
 
+### The gui 8 line: two things moved, and only one is visible
+
+`@hanzo/gui` 7.3.1 → 8.0.1 changed no export this app touches — the barrel, the
+`GuiProvider` props, `@hanzogui/shell` and `@hanzogui/telemetry` are all
+API-identical. Two packaging facts did change, and both are landmines:
+
+- **gui no longer depends on `react-native-web`.** 7.3.1 declared
+  `react-native-web: ^0.21.0`; 8.0.1 declares none, while ~44 of its own dist
+  files still import it. This app therefore declares it directly, and
+  `next.config.ts` resolves the alias from the APP, not through gui — the old
+  `require.resolve(..., { paths: [guiPkg] })` throws outright on 8.x. Keep
+  `react-native-web` in `dependencies`; it is not an incidental transitive.
+- **`@hanzogui/config/v5` flipped `styleCompat` from `"react-native"` to
+  `"web"`.** That is CSS flex semantics instead of Yoga's, and unitless numeric
+  `lineHeight` instead of raw px. It is a silent default change reached through
+  `@hanzo/ui/gui-config`, so nothing in this repo names it. If spacing or line
+  height ever looks subtly wrong after a gui bump, look here first.
+
+8.0.0 is uninstallable under strict pnpm (six gui packages statically import
+siblings they never declared); **8.0.1 is the floor**. `@hanzogui/themes` stays
+at 8.0.0 by design, so the `lux`/`zoo`/`pars` brand themes and the
+`--hz-font-sans` typeface variable exist upstream but are NOT published — do not
+build on them yet.
+
+`@hanzogui/loader` (the renamed `hanzogui-loader`) is the webpack loader for the
+gui optimizing compiler, consumed only by `@hanzogui/next-plugin`. This app uses
+neither — plain `transpilePackages` — so it is not a dependency here.
+
 That last rule has teeth: `@types/hanzo-ui.d.ts` used to declare every export as
 `any`. "Zero type errors" then meant no types existed to check. Deleting it
 surfaced 79 real errors, one of which was the dead-handler bug above.
@@ -61,13 +97,31 @@ covered; do not write a sixth copy here.
 `next.config.ts` is the only config. Next resolves `['next.config.js',
 'next.config.mjs', 'next.config.ts']` in that order, so a `next.config.js`
 silently wins and any edit to the `.ts` is a no-op — that happened, and it cost
-a release. The transpile list lives in `./transpile.js` because `jest.config.js`
-needs the same array; one list, so build and tests cannot disagree.
+a release. It then happened AGAIN in the other direction: a `next.config.ts` was
+re-added beside the live `.js` and sat inert, missing the gui aliases, the
+absolute `react-native-web` path and the annotate loader. Deleting the `.js`
+without first moving those three into the `.ts` would have shipped a build that
+compiles and then throws "Missing theme." at runtime. If you ever see two
+configs, the `.js` is the one running — diff them before deleting either.
+
+The transpile list lives in `./transpile.js` because `jest.config.js` needs the
+same array; one list, so build and tests cannot disagree.
+
+**That list is a transitive closure, and it has to be.** `@hanzo/gui` names 63
+`@hanzogui/*` dependencies but reaches 99. `@hanzogui/web` is the proof: nothing
+depends on it directly, `@hanzogui/spacer` pulls it in, and untransformed it
+hands jest a bare `export *` that fails 18 suites. Do not compute this set by
+reading `node_modules/@hanzogui` either — under pnpm that directory holds only
+this app's two DIRECT gui deps, so a listing silently misses the other 97.
 
 ### The `react-resizable-panels` shim (GONE — do not restore it)
 
 There used to be a shim, a webpack alias pointing at it, a test guarding it and
-a dependency under it. All four served exactly one consumer: `@hanzo/ui-shadcn`'s
+a dependency under it. All four are now actually gone; for a while only the shim
+and its test were, and the alias sat in `next.config.js` pointing at a deleted
+file with the dependency still installed under it. A webpack alias resolves
+lazily, so a dangling one is invisible until something imports the specifier —
+which is exactly why it survived. All four served one consumer: `@hanzo/ui-shadcn`'s
 `resizable` module, which imported the v2 names `{ Panel, PanelGroup,
 PanelResizeHandle }` from a package that had moved to `{ Panel, Group,
 Separator }`. Nothing in this app ever imported it; the shadcn barrel pulled it

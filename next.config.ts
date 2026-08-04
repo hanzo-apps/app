@@ -1,6 +1,42 @@
+import path from 'node:path';
+
 import type { NextConfig } from 'next';
 
-import { transpiled } from './transpile';
+import { transpiled, guiClosure } from './transpile';
+
+// ONE instance of every gui package, and ONE react-native-web under it.
+//
+// pnpm keys a package directory by its PEER set, so @hanzogui/web installed
+// under a react-native peer and the same version under a react-native-web peer
+// are two physical directories — and therefore two module registries. gui keeps
+// the theme name and the media table in module state, so a second copy means
+// `GuiProvider` fills registry A while `Toaster` reads registry B and throws
+// "Missing theme." Aliasing each package to one absolute path collapses them.
+//
+// Absolute paths, not bare specifiers: under pnpm a bare alias resolves from
+// each importer's own directory, so half the gui graph would miss it.
+const guiPkg = require.resolve('@hanzo/gui/package.json');
+const resolveDir = (name: string, from: string) =>
+  path.dirname(require.resolve(`${name}/package.json`, { paths: [from] }));
+
+// react-native-web is resolved from THIS app: gui 8 dropped it as a dependency
+// (7.3.1 declared `react-native-web: ^0.21.0`, 8.0.1 declares none), so
+// resolving it through gui — which is what the config did — now throws.
+const reactNativeWeb = resolveDir('react-native-web', __filename);
+
+// The closure, not gui's direct dependencies: @hanzogui/web — the package the
+// duplicate-registry failure is actually about — is reached through
+// @hanzogui/spacer, so a direct-only pass would alias everything except the one
+// that matters.
+const guiAliases = Object.fromEntries(
+  guiClosure().flatMap((name: string) => {
+    try {
+      return [[`${name}$`, resolveDir(name, guiPkg)]];
+    } catch {
+      return [];
+    }
+  }),
+);
 
 const nextConfig: NextConfig = {
   // Standalone output — Next traces only the server deps actually used, so the
@@ -74,7 +110,8 @@ const nextConfig: NextConfig = {
       ...config.resolve.alias,
       // @hanzo/gui (Tamagui) targets react-native; on web the bare specifier
       // maps to react-native-web (exact-match so subpaths hit the real package).
-      'react-native$': 'react-native-web',
+      'react-native$': reactNativeWeb,
+      ...guiAliases,
     };
 
     // PREPEND the web extensions so react-native packages resolve their
@@ -89,6 +126,24 @@ const nextConfig: NextConfig = {
       '.web.js',
       ...config.resolve.extensions,
     ];
+
+    // Semantic hierarchy for telemetry: stamp every component's root element
+    // with its own name (`data-observe="UserCard"`) so a PRODUCTION build keeps
+    // the component tree React's dev-only fiber owner would have given us — the
+    // difference between insights recording "a click on a button" and "a click
+    // on Save, inside UserCard, inside Dashboard".
+    //
+    // A pre-loader, deliberately: SWC still does the real compiling. Adding a
+    // Babel config to get a Babel plugin would switch this whole app off SWC and
+    // cost far more than the feature is worth. The transform parses with
+    // TypeScript and splices text, so line numbers survive and a stack trace
+    // still points at the right line; anything it cannot parse passes through
+    // untouched, because a build must never fail over an observability nicety.
+    config.module.rules.push({
+      test: /\.(t|j)sx$/,
+      exclude: /node_modules/,
+      use: require.resolve('@hanzo/annotate/webpack'),
+    });
 
     return config;
   },

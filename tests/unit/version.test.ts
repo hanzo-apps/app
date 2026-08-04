@@ -50,12 +50,21 @@ describe('the version has one source', () => {
   });
 
   it('is imported from nowhere else', () => {
-    // Any module reaching into package.json for itself. `lib/version.ts` is the
+    // Any module reaching into THIS APP's package.json. `lib/version.ts` is the
     // one place allowed to; `tests/unit/version.test.ts` reads it to check.
-    const offenders = grep(/from ['"][^'"]*package\.json['"]|require\((['"])[^'"]*package\.json\1\)/, [
-      'lib/version.ts',
-      'tests/unit/version.test.ts',
-    ]);
+    //
+    // Scoped to `@/` and relative specifiers, which is how our own manifest is
+    // addressed (`lib/version.ts` uses `@/package.json`). A BARE specifier —
+    // `require('@hanzo/gui/package.json')` in next.config.ts — reads a
+    // dependency's manifest for its dependency graph, which is not a second
+    // answer to "what version is this app?" and never was. That read lived in
+    // next.config.js until the two configs collapsed into one `.ts`; it only
+    // became visible here because this scan covers *.ts and not *.js.
+    const own = String.raw`(?:\.{1,2}\/|@\/)[^'"]*package\.json`;
+    const offenders = grep(
+      new RegExp(`from ['"]${own}['"]|require\\((['"])${own}\\1\\)`),
+      ['lib/version.ts', 'tests/unit/version.test.ts'],
+    );
     expect(offenders).toEqual([]);
   });
 
