@@ -14,6 +14,7 @@
 // half-open stream.
 
 import { useEffect, useMemo, useState } from 'react';
+import { Tiles, type TerminalPane } from '@/components/sessions/tiles';
 import type { AgentSession } from '@/lib/sessions';
 import type { Machine } from '@/lib/machines';
 
@@ -128,6 +129,21 @@ export function SessionBoard({
         a.label.localeCompare(b.label),
     );
   }, [sessions, machines]);
+
+  // What the workspace can arrange: every session publishing a terminal right
+  // now. A session with no URL has nothing to frame, and a finished one's tunnel
+  // has stopped answering — neither belongs in a pane.
+  const terminals = useMemo<TerminalPane[]>(
+    () =>
+      sessions
+        .filter((s) => s.terminal && (s.status === 'running' || s.status === 'paused'))
+        .map((s) => ({
+          id: s.id,
+          title: `${s.host || s.agent}${s.cwd ? ` · ${shortPath(s.cwd)}` : ''}`,
+          url: s.terminal!,
+        })),
+    [sessions],
+  );
 
   const [selected, setSelected] = useState<string | null>(
     sessions.find((s) => s.terminal)?.id ?? sessions[0]?.id ?? null,
@@ -260,59 +276,44 @@ export function SessionBoard({
       </div>
 
       <section className={`min-w-0 ${onTerminal ? '' : 'hidden lg:block'}`}>
-        {active ? (
-          <>
-            <div className="mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <button
-                type="button"
-                onClick={() => setOnTerminal(false)}
-                className="lg:hidden text-sm underline underline-offset-4"
-              >
-                ← Machines
-              </button>
+        <div className="mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <button
+            type="button"
+            onClick={() => setOnTerminal(false)}
+            className="lg:hidden text-sm underline underline-offset-4"
+          >
+            ← Machines
+          </button>
+          {active ? (
+            <>
               <h2 className="text-sm font-medium">{active.host || active.agent}</h2>
               <span className="truncate font-mono text-xs text-muted-foreground">
                 {active.cwd || active.repo}
               </span>
-              {active.terminal ? (
-                <a
-                  href={active.terminal}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="ml-auto text-xs underline underline-offset-4"
-                >
-                  Open in a tab
-                </a>
-              ) : null}
-            </div>
+            </>
+          ) : null}
+          {/* The sweep, said once where it is used. */}
+          <span className="ml-auto shrink-0 text-xs text-muted-foreground">
+            ⌥← ⌥→ to move between panes
+          </span>
+          {active?.terminal ? (
+            <a
+              href={active.terminal}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="shrink-0 text-xs underline underline-offset-4"
+            >
+              Open in a tab
+            </a>
+          ) : null}
+        </div>
 
-            {active.terminal ? (
-              <iframe
-                key={active.id}
-                src={active.terminal}
-                title={`Terminal on ${active.host || active.agent}`}
-                className="h-[calc(100dvh-13rem)] w-full rounded-lg border bg-black lg:h-[70vh]"
-                // The frame runs a shell on someone's machine. It gets scripts (a
-                // terminal is one) but not same-origin, so it cannot reach this
-                // page's session.
-                sandbox="allow-scripts allow-same-origin allow-forms"
-              />
-            ) : (
-              <div className="flex h-[calc(100dvh-13rem)] w-full items-center justify-center rounded-lg border border-dashed px-6 text-center lg:h-[70vh]">
-                <p className="max-w-sm text-sm text-muted-foreground">
-                  This session is not publishing a terminal, so there is nothing to drive
-                  here.
-                </p>
-              </div>
-            )}
-          </>
-        ) : (
-          <div className="flex h-[calc(100dvh-13rem)] w-full items-center justify-center rounded-lg border border-dashed px-6 text-center lg:h-[70vh]">
-            <p className="max-w-sm text-sm text-muted-foreground">
-              Select a session to drive it.
-            </p>
-          </div>
-        )}
+        {/* One workspace, every live terminal available to it. The roster on the
+            left chooses what to LOOK at; the tiles decide how it is arranged, and
+            a pane keeps its shell across a split (components/sessions/tiles). */}
+        <div className="h-[calc(100dvh-13rem)] lg:h-[70vh]">
+          <Tiles panes={terminals} />
+        </div>
       </section>
     </div>
   );
