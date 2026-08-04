@@ -322,7 +322,7 @@ export default function VideoStreaming() {
                           </Button>
                         )}
                       </YStack>
-                      <Button variant="ghost" size="icon" height="$6" width="$6">
+                      <Button variant="ghost" size="icon">
                         <MoreVertical size={16} />
                       </Button>
                     </XStack>

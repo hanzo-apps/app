@@ -26,37 +26,10 @@ export function ListPagesItem({
       onClick={() => onSelectPage(page.path)}
       title={page.path}
     >
-      {/* {index > 0 && (
-        <Button
-          size="iconXsss"
-          variant="ghost"
-          onClick={(e: React.MouseEvent) => {
-            e.stopPropagation();
-            // open the window modal to edit the name page
-            let newName = window.prompt(
-              "Enter new name for the page:",
-              page.path
-            );
-            if (newName && newName.trim() !== "") {
-              newName = newName.toLowerCase();
-              if (!newName.endsWith(".html")) {
-                newName = newName.replace(/\.[^/.]+$/, "");
-                newName = newName.replace(/\s+/g, "-");
-                newName += ".html";
-              }
-              onSelectPage(page.path, newName);
-            } else {
-              window.alert("Page name cannot be empty.");
-            }
-          }}
-        >
-          <EditIcon className="!h-3.5 text-muted-foreground cursor-pointer hover:text-muted-foreground" />
-        </Button>
-      )} */}
-      {page.path}
+            {page.path}
       {index > 0 && (
         <Button
-          size="iconXsss"
+          size="icon"
           variant="ghost"
           opacity={0} $group-hover={{ opacity: 1 }}
           onClick={(e: React.MouseEvent) => {

@@ -24,6 +24,7 @@ import {
   type CatalogOrigin,
 } from "@/lib/catalog";
 import { OFFICIAL_LABEL } from "@/lib/template-authors";
+import { repoImportLink } from "@/lib/api/git";
 
 const ALL = "";
 
@@ -162,11 +163,21 @@ function Card({
             {e.stars}
           </SizableText>
         )}
-        {e.forkable && (
-          <SizableText alignItems="center" gap="$1">
+        {/* Forkable is a DOOR, not an adjective. The card used to print the word
+            next to a fork icon and then offer no way to fork anything — 143 of the
+            162 community entries advertised a capability the page did not carry.
+            It is the same `/dev?repo=` route the templates gallery opens, so this
+            is one more entrance to one builder, not a second path. No repo means
+            nothing to clone, and a claim with no door behind it is worse than
+            silence — so the marker only appears when it is real. */}
+        {e.forkable && e.repo && (
+          <Anchor
+            href={repoImportLink(e.repo)}
+            position="relative" zIndex={10} display="inline-flex" alignItems="center" gap="$1" hoverStyle={{ color: "$color" }}
+          >
             <GitFork size={12} strokeWidth={1.6} />
-            forkable
-          </SizableText>
+            fork
+          </Anchor>
         )}
         {e.url && e.kind === "site" && <span>live</span>}
         {/* The trace out of a demo. z-10 puts it above the title's stretched

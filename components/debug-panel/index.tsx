@@ -177,7 +177,7 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
             variant="ghost"
             size="sm"
             onClick={handleClear}
-            height={28} paddingHorizontal="$2" hoverStyle={{ backgroundColor: "$color3" }}
+            paddingHorizontal="$2" hoverStyle={{ backgroundColor: "$color3" }}
             title="Clear all events"
           >
             <Trash2 size={12} />
@@ -186,7 +186,7 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
             variant="ghost"
             size="sm"
             onClick={handleExport}
-            height={28} paddingHorizontal="$2" fontSize="$1" hoverStyle={{ backgroundColor: "$color3" }}
+            paddingHorizontal="$2" fontSize="$1" hoverStyle={{ backgroundColor: "$color3" }}
             title="Export to JSON"
           >
             Export
@@ -298,7 +298,7 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
               size="sm"
               onClick={handleRunCommand}
               disabled={isRunning || !command.trim()}
-              height="$5" paddingHorizontal="$2" fontSize="$1" color="$color8" hoverStyle={{ color: "$color2", backgroundColor: "$color11" }}
+              paddingHorizontal="$2" fontSize="$1" color="$color8" hoverStyle={{ color: "$color2", backgroundColor: "$color11" }}
             >
               {isRunning ? '...' : 'Run'}
             </Button>

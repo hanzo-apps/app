@@ -78,7 +78,7 @@ export function CheckpointPanel({
           )}
         </XStack>
         {onClose && (
-          <Button variant="ghost" size="sm" height="$5" width="$5" padding="$0" onClick={onClose}>
+          <Button variant="ghost" size="icon" padding="$0" onClick={onClose}>
             <X size={14} />
           </Button>
         )}
@@ -133,7 +133,7 @@ export function CheckpointPanel({
                       <Button
                         variant="ghost"
                         size="sm"
-                        height="$4.5" paddingHorizontal="$1.5" fontSize={10} color="$color11" hoverStyle={{ color: "$color" }}
+                        paddingHorizontal="$1.5" fontSize={10} color="$color11" hoverStyle={{ color: "$color" }}
                         onClick={() => onScrollToTurn(cp.id)}
                       >
                         <ArrowRight size={12} />
@@ -143,7 +143,7 @@ export function CheckpointPanel({
                     <Button
                       variant="ghost"
                       size="sm"
-                      height="$4.5" paddingHorizontal="$1.5" fontSize={10} color="$color11" marginLeft="auto" hoverStyle={{ color: "$color" }}
+                      paddingHorizontal="$1.5" fontSize={10} color="$color11" marginLeft="auto" hoverStyle={{ color: "$color" }}
                       onClick={() => onRestore(cp.id, cp.description)}
                     >
                       <RotateCcw size={12} />

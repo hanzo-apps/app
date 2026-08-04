@@ -78,7 +78,7 @@ export default function CloudIntegration() {
     <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$13" }}>
       <YStack alignSelf="center" maxWidth={1152}>
         <Reveal alignSelf="center" width="100%" maxWidth={672} textAlign="center">
-          <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
+          <Paragraph fontFamily="$mono" fontSize={11} color="$color11">
             The difference
           </Paragraph>
           <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ color: "2.75rem", lineHeight: 1.1 }}>
@@ -105,7 +105,7 @@ export default function CloudIntegration() {
                   <SizableText height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
                     <Icon size={20} color="var(--foreground)" strokeWidth={1.5} />
                   </SizableText>
-                  <SizableText fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={2.4} color="$color11">
+                  <SizableText fontFamily="$mono" fontSize={10} color="$color11">
                     {c.product}
                   </SizableText>
                 </XStack>

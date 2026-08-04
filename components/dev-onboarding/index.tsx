@@ -116,12 +116,14 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
       <XStack flex={1} backgroundColor="$background" justifyContent="center" alignItems="flex-start" paddingHorizontal="$5" paddingVertical="$10" overflow="scroll">
         <YStack maxWidth={1152} width="100%">
           <SizableText textAlign="center" marginBottom="$8" display="flex" flexDirection="column">
+            {/* Names the ACTION, not the company. Someone who clicked "build with
+                app" has already chosen Hanzo — greeting them by brand answers a
+                question they did not ask and hides the one they did. Each surface
+                states its own verb: hanzo.app builds, hanzo.chat asks, the
+                extension (which drives the browser) does. */}
             <H1 fontSize="$11" fontWeight="500" color="$color" marginBottom="$4">
-              Welcome to Hanzo AI
+              Build anything
             </H1>
-            <Paragraph fontSize="$7" color="$color11">
-              Your AI-powered development platform is ready
-            </Paragraph>
           </SizableText>
 
           {/* Quick Start Options */}

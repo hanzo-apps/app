@@ -94,7 +94,7 @@ export default function SignupPage() {
               <Button
                 onClick={handleSignup}
                 disabled={loading}
-                width="100%" backgroundColor="$color12" color="$background" fontWeight="500" height="$8" hoverStyle={{ backgroundColor: "$color12" }}
+                width="100%" backgroundColor="$color12" color="$background" fontWeight="500" hoverStyle={{ backgroundColor: "$color12" }}
                 size="lg"
               >
                 {loading ? (

@@ -96,7 +96,7 @@ export const Uploader = ({
       <form>
         <PopoverTrigger asChild>
           <Button
-            size="iconXs"
+            size="icon"
             variant="ghost"
             aria-label="Add images"
             borderRadius="$10" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
@@ -243,7 +243,7 @@ export const Uploader = ({
   ) : (
     <>
       <Button
-        size="iconXs"
+        size="icon"
         variant="ghost"
         aria-label="Add images"
         borderRadius="$10" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}

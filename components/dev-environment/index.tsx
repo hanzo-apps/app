@@ -75,30 +75,30 @@ export function DevEnvironment({ projectId }: DevEnvironmentProps) {
           {/* Layout Toggle Buttons */}
           <Button
             variant={layout === 'split' ? 'default' : 'ghost'}
-            size="sm"
+            size="icon"
             onClick={() => setLayout('split')}
             title="Split View"
-            height="$6" width="$6" padding="$0"
+            padding="$0"
           >
             <Columns2 size={16} />
           </Button>
 
           <Button
             variant={layout === 'explorer-only' ? 'default' : 'ghost'}
-            size="sm"
+            size="icon"
             onClick={() => setLayout('explorer-only')}
             title="Explorer Only"
-            height="$6" width="$6" padding="$0"
+            padding="$0"
           >
             <PanelLeft size={16} />
           </Button>
 
           <Button
             variant={layout === 'editor-only' ? 'default' : 'ghost'}
-            size="sm"
+            size="icon"
             onClick={() => setLayout('editor-only')}
             title="Editor Only"
-            height="$6" width="$6" padding="$0"
+            padding="$0"
           >
             <PanelRight size={16} />
           </Button>
@@ -108,7 +108,7 @@ export function DevEnvironment({ projectId }: DevEnvironmentProps) {
             variant="ghost"
             size="sm"
             onClick={toggleLayout}
-            height="$6" paddingHorizontal="$2" $md={{ display: "none" }}
+            paddingHorizontal="$2" $md={{ display: "none" }}
           >
             {showExplorer && !showEditor && <FolderTree size={16} />}
             {showEditor && !showExplorer && <Code2 size={16} />}

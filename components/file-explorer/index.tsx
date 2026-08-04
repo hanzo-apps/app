@@ -673,7 +673,6 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
           <Button
             size="icon"
             variant="ghost"
-            height="$4.5" width="$4.5"
             onClick={() => fileInputRef.current?.click()}
             title="Upload files"
           >
@@ -682,7 +681,6 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
           <Button
             size="icon"
             variant="ghost"
-            height="$4.5" width="$4.5"
             onClick={() => handleCreateFile('/')}
             title="New file"
           >
@@ -691,7 +689,6 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
           <Button
             size="icon"
             variant="ghost"
-            height="$4.5" width="$4.5"
             onClick={() => handleCreateDirectory('/')}
             title="New folder"
           >

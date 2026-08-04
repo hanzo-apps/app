@@ -173,7 +173,7 @@ The UI is built entirely with @hanzo/ui primitives like Card, Button, ScrollArea
               <Textarea
                 placeholder="Type your message..."
                 value={input}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInput(e.target.value)}
+                onChangeText={(text: string) => setInput(text)}
                 onKeyDown={(e: React.KeyboardEvent) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();

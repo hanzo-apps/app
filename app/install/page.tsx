@@ -143,12 +143,9 @@ export default function AppsPage() {
                   type="button"
                   onClick={() => jumpTo(i)}
                   aria-pressed={on}
-                  className={`${[
-                    "rounded-full px-5 py-2 text-lg transition-colors",
-                    on
-                      ? "border border-foreground text-foreground"
-                      : "border border-transparent text-muted-foreground hover:text-foreground",
-                  ].join(" ")}`}
+                  borderRadius="$10" paddingHorizontal="$5" paddingVertical="$2" fontSize="$6" borderWidth={1} {...(on
+                    ? { borderColor: "$color", color: "$color" }
+                    : { borderColor: "transparent", color: "$color11", hoverStyle: { color: "$color" } })}
                 >
                   {c.label}
                 </Button>
@@ -172,10 +169,7 @@ export default function AppsPage() {
                   key={c.label}
                   data-panel
                   aria-label={c.label}
-                  className={`${[
-                    "flex h-screen w-screen shrink-0 flex-col justify-center px-4 transition-opacity duration-500 md:px-8",
-                    on ? "opacity-100" : "opacity-40",
-                  ].join(" ")}`}
+                  height="100vh" width="100vw" flexShrink={0} justifyContent="center" paddingHorizontal="$4" $md={{ paddingHorizontal: "$8" }} opacity={on ? 1 : 0.4} style={{ transition: "opacity 0.5s" }}
                 >
                   <YStack alignSelf="center" width="100%" maxWidth={1152}>
                     <XStack marginBottom="$2" alignItems="baseline" gap="$3">

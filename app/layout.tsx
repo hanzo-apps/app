@@ -8,6 +8,10 @@ import TanstackProvider from "@/components/providers/tanstack-query-provider";
 // Tamagui `--background !important` fix. One import, at the root, once.
 import "@hanzo/brand/styles/variables.css";
 import "@/assets/globals.css";
+// The full @hanzo/gui atomic sheet as a REAL stylesheet (scripts/gen-gui-css.mjs).
+// GuiProvider gets disableInjectCSS so the same 350KB is no longer inlined into
+// every HTML document, uncacheable.
+import "./gui.css";
 import { SITE_URL } from "@/lib/site";
 import AppContext from "@/components/contexts/app-context";
 import IframeDetector from "@/components/iframe-detector";
@@ -28,6 +32,24 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  // Same policy as sans: text paints in the fallback immediately and swaps —
+  // without it, mono text (code, data) blocks on the woff2 (FOIT).
+  display: "swap",
+});
+
+const SPECULATION_RULES = JSON.stringify({
+  prefetch: [
+    {
+      urls: ["/templates", "/pricing", "/enterprise", "/community", "/gallery", "/new"],
+      eagerness: "moderate",
+    },
+  ],
+  prerender: [
+    {
+      urls: ["/templates", "/pricing", "/enterprise", "/community"],
+      eagerness: "conservative",
+    },
+  ],
 });
 
 export const metadata: Metadata = {
@@ -127,6 +149,15 @@ export default async function RootLayout({
             Served by hanzo.app at /edit.js; any Hanzo app drops in the same tag:
             <script async src="https://hanzo.app/edit.js"></script>. */}
         <script async src="/edit.js" />
+        {/* Speculation Rules — progressive: browsers that don't know the script
+            type ignore it entirely. Top nav routes prefetch on hover/pointerdown
+            (moderate); the static marketing pages additionally prerender on
+            pointerdown (conservative) so the click lands on an already-rendered
+            document. All targets are public, side-effect-free GET routes. */}
+        <script
+          type="speculationrules"
+          dangerouslySetInnerHTML={{ __html: SPECULATION_RULES }}
+        />
       </body>
     </html>
   );

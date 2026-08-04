@@ -144,8 +144,8 @@ export function DeploymentCard({
             <SizableText flex={1} numberOfLines={1}>{publicUrl}</SizableText>
             <Button
               variant="ghost"
-              size="sm"
-              height="$5" width="$5" padding="$0"
+              size="icon"
+              padding="$0"
               onClick={handleCopyUrl}
               title="Copy URL"
             >

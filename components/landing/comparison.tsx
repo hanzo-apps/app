@@ -306,7 +306,7 @@ export default function Comparison() {
     <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$13" }}>
       <YStack alignSelf="center" maxWidth={1152}>
         <Reveal alignSelf="center" width="100%" maxWidth={672} textAlign="center">
-          <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
+          <Paragraph fontFamily="$mono" fontSize={11} color="$color11">
             Why Hanzo
           </Paragraph>
           <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ color: "2.75rem", lineHeight: 1.1 }}>
@@ -342,7 +342,7 @@ export default function Comparison() {
         <YStack marginTop="$7" display="none">
           <Reveal delay={80}>
             <XStack marginBottom="$3" alignItems="center" justifyContent="space-between" gap="$4">
-              <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={1.92} color="$color11">
+              <Paragraph fontFamily="$mono" fontSize={11} color="$color11">
                 Slide across all {COLS.length} criteria →
               </Paragraph>
               <XStack gap="$2">
@@ -384,7 +384,7 @@ export default function Comparison() {
                       {COLS.map((c) => (
                         <SizableText
                           key={c.short}
-                          width={208} minWidth={208} paddingHorizontal="$4" paddingBottom="$4" verticalAlign="bottom" fontFamily="$mono" fontSize={10} fontWeight="400" textTransform="uppercase" lineHeight={1.25} letterSpacing={1.6} color="$color11"
+                          width={208} minWidth={208} paddingHorizontal="$4" paddingBottom="$4" verticalAlign="bottom" fontFamily="$mono" fontSize={10} fontWeight="400" lineHeight={1.25} letterSpacing={1.6} color="$color11"
                         >
                           <YStack marginBottom="$2">
                             <c.icon size={16} color="var(--muted-foreground)" strokeWidth={1.5} aria-hidden />
@@ -404,7 +404,7 @@ export default function Comparison() {
                           <SizableText alignItems="center" gap="$2">
                             {r.name}
                             {r.hanzo && (
-                              <SizableText borderRadius="$10" borderWidth={1} borderColor="$green8" backgroundColor="$green8" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={9} textTransform="uppercase" letterSpacing={1.92} color="$green4">
+                              <SizableText borderRadius="$10" borderWidth={1} borderColor="$green8" backgroundColor="$green8" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={9} color="$green4">
                                 Best
                               </SizableText>
                             )}
@@ -459,7 +459,7 @@ export default function Comparison() {
                 >
                   <XStack marginBottom="$4" alignItems="center" gap="$2">
                     <H3 fontSize="$6" fontWeight="500" color="$color">{r.name}</H3>
-                    <SizableText borderRadius="$10" borderWidth={1} borderColor="$green8" backgroundColor="$green8" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={9} textTransform="uppercase" letterSpacing={1.92} color="$green4">
+                    <SizableText borderRadius="$10" borderWidth={1} borderColor="$green8" backgroundColor="$green8" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={9} color="$green4">
                       Best overall
                     </SizableText>
                   </XStack>
@@ -470,7 +470,7 @@ export default function Comparison() {
                           <Dot tone="good" />
                         </SizableText>
                         <YStack minWidth={0}>
-                          <SizableText alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.6} color="$color11">
+                          <SizableText alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={10} color="$color11">
                             <ColIcon i={ci} size={12} />
                             {COLS[ci].short}
                           </SizableText>
@@ -495,7 +495,7 @@ export default function Comparison() {
                       {r.name}
                     </SizableText>
                     {r.note && (
-                      <SizableText marginLeft="$2" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.6} color="$color11">
+                      <SizableText marginLeft="$2" fontFamily="$mono" fontSize={10} color="$color11">
                         {r.note}
                       </SizableText>
                     )}
@@ -531,7 +531,7 @@ export default function Comparison() {
                         <Dot tone={cell.t} />
                       </SizableText>
                       <YStack minWidth={0}>
-                        <SizableText alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.6} color="$color11">
+                        <SizableText alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={10} color="$color11">
                           <ColIcon i={ci} size={12} />
                           {COLS[ci].short}
                         </SizableText>

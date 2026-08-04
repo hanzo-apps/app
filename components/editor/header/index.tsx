@@ -155,7 +155,12 @@ export function Header({
                 aria-selected={active}
                 title={item.label}
                 onClick={() => onNewTab(item.value)}
-                alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$1.5" fontSize="$3" fontWeight="500" focusVisibleStyle={{ outlineWidth: 0 }} {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, backgroundColor: active ? "$color3" : undefined, color: active ? "$color" : "$color11", elevation: active ? 1 : undefined, hoverStyle: active ? undefined : {"backgroundColor":"$color","color":"$color"} }}
+                // height 28, NOT vertical padding. Inside this group's $0.5 padding that
+                // makes the pill 32px — the header's one control height, shared with the
+                // device group beside it and every icon button. Padding + line-height
+                // computed to 32px of CONTENT, so the group rendered 36px and sat 4px
+                // taller than its own sibling. Set the height; never let padding decide it.
+                height={28} alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal="$2.5" fontSize="$3" fontWeight="500" focusVisibleStyle={{ outlineWidth: 0 }} {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, backgroundColor: active ? "$color3" : undefined, color: active ? "$color" : "$color11", elevation: active ? 1 : undefined, hoverStyle: active ? undefined : {"backgroundColor":"$color","color":"$color"} }}
               >
                 <item.icon size={16} />
                 <SizableText display="none">{item.label}</SizableText>

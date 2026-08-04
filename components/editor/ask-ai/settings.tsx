@@ -75,6 +75,7 @@ export function Settings({
   model,
   error,
   onModelChange,
+  routedModel,
 }: {
   open: boolean;
   // `provider`/`onChange` stay in the contract: the parent (ask-ai/index.tsx)
@@ -87,6 +88,8 @@ export function Settings({
   onClose: React.Dispatch<React.SetStateAction<boolean>>;
   onChange: (provider: string) => void;
   onModelChange: (model: string) => void;
+  /** Which model smart routing actually served the last turn, when it did. */
+  routedModel?: string | null;
 }) {
   // The list is live from the gateway (via /v1/models); never a static catalog.
   const { models } = useModels();
@@ -105,7 +108,7 @@ export function Settings({
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
-          size="iconXs"
+          size="icon"
           title="Settings — model, mode & options"
           aria-label="Settings"
           borderRadius="$10" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
@@ -141,7 +144,11 @@ export function Settings({
           <YStack borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$1">
             <ModelRow
               label="Auto · smart routing"
-              hint="Routes each request to the cheapest capable model"
+              hint={
+                isAuto && routedModel
+                  ? `Last request went to ${routedModel} — you are billed as what served you`
+                  : "Routes each request to the cheapest capable model"
+              }
               selected={isAuto}
               onClick={() => onModelChange(AUTO_MODEL)}
   />

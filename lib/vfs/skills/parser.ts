@@ -7,6 +7,9 @@ import { SkillFrontmatter } from './types';
 
 const FRONTMATTER_REGEX = /^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/;
 
+/** SKILL.md convention: the description is the trigger text, capped at 1024. */
+export const DESCRIPTION_MAX = 1024;
+
 /**
  * Parse SKILL.md content into frontmatter and markdown
  */
@@ -86,9 +89,15 @@ function validateFrontmatter(frontmatter: SkillFrontmatter): void {
     throw new Error('Skill name must be lowercase with hyphens only (e.g., "my-skill-name")');
   }
 
-  // Validate description length
-  if (frontmatter.description.length > 500) {
-    throw new Error('Description must be 500 characters or less');
+  // A skill's description is not a summary — it is the TRIGGER: the only text a
+  // model reads when deciding whether to load the skill at all. So it carries the
+  // trigger vocabulary, and the convention this parser follows caps it at 1024,
+  // not at the 500 that was here. That 500 was not a stricter reading of the
+  // convention, it was a different number, and it silently cost us a skill:
+  // `design-system` (648 chars) was registered, compiled into the bundle, and
+  // thrown away at load — the manager counted 8 where the registry held 9.
+  if (frontmatter.description.length > DESCRIPTION_MAX) {
+    throw new Error(`Description must be ${DESCRIPTION_MAX} characters or less`);
   }
 }
 

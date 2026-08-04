@@ -300,7 +300,7 @@ function NewProjectInner() {
                 <Button
                   onClick={() => submit()}
                   disabled={loading || !value.trim()}
-                  height={36} gap="$1.5" borderRadius="$6" paddingHorizontal="$4"
+                  gap="$1.5" borderRadius="$6" paddingHorizontal="$4"
                 >
                   {loading ? (
                     <Loader2 size={16} />

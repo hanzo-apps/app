@@ -76,11 +76,11 @@ function VibeApp({ v, compact }: { v: number; compact?: boolean }): ReactElement
   return (
     <YStack height="100%" {...{ gap: compact ? "$2" : "$3", padding: compact ? "$2.5" : "$4" }}>
       <XStack alignItems="center" justifyContent="space-between">
-        <SizableText fontFamily="$mono" textTransform="uppercase" letterSpacing={3.2} color="$color" {...{ fontSize: compact ? 8 : 10 }}>
+        <SizableText fontFamily="$mono" color="$color" {...{ fontSize: compact ? 8 : 10 }}>
           Vibe Check
         </SizableText>
         {v >= 2 && !compact && (
-          <SizableText alignItems="center" gap="$1" fontFamily="$mono" fontSize={8} textTransform="uppercase" letterSpacing={1.92} color="$green8">
+          <SizableText alignItems="center" gap="$1" fontFamily="$mono" fontSize={8} color="$green8">
             <SizableText height="$1" width="$1" borderRadius="$10" backgroundColor="$green8" className="livedot" />
             realtime · Base
           </SizableText>
@@ -336,7 +336,7 @@ export default function HeroPreview() {
           <YStack width="100%" flexShrink={0} borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" $md={{ width: 248, borderBottomWidth: 0, borderRightWidth: 1 }}>
             <XStack alignItems="center" gap="$2" paddingHorizontal="$3.5" paddingTop="$3">
               <Sparkles size={12} color="$color" />
-              <SizableText fontFamily="$mono" fontSize={9} textTransform="uppercase" letterSpacing={2.56} color="$color">
+              <SizableText fontFamily="$mono" fontSize={9} color="$color">
                 Agent chat
               </SizableText>
             </XStack>
@@ -400,7 +400,7 @@ export default function HeroPreview() {
                   {live ? (
                     <>
                       <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$green8" className="livedot" />
-                      <SizableText display="none" fontFamily="$mono" fontSize={8} textTransform="uppercase" letterSpacing={2.24} color="$green8">
+                      <SizableText display="none" fontFamily="$mono" fontSize={8} color="$green8">
                         Live
                       </SizableText>
                     </>
@@ -436,7 +436,7 @@ export default function HeroPreview() {
                   )}
                 </YStack>
               </YStack>
-              <SizableText marginTop="$2" textAlign="center" fontFamily="$mono" fontSize={8} textTransform="uppercase" letterSpacing={2.56} color="$color">
+              <SizableText marginTop="$2" textAlign="center" fontFamily="$mono" fontSize={8} color="$color">
                 Mobile
               </SizableText>
             </YStack>
@@ -469,7 +469,7 @@ export default function HeroPreview() {
       </YStack>
 
       {/* Honesty microcopy — a demo, simulated client-side. */}
-      <Paragraph marginTop="$4" textAlign="center" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={2.24} color="$color">
+      <Paragraph marginTop="$4" textAlign="center" fontFamily="$mono" fontSize={10} color="$color">
         Demo · watch the builder build, edit &amp; publish an app — desktop and mobile
       </Paragraph>
     </YStack>

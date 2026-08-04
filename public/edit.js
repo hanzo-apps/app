@@ -48,8 +48,40 @@
     return el ? (el.getAttribute('content') || '').trim() : '';
   }
 
-  var REPO = meta('hanzo:repo');
-  if (!REPO) return; // page does not declare a repo → nothing to do
+  // ---- Which repo is this page? ---------------------------------------------
+  //
+  // The tag is byte-identical on every property:
+  //   <script async src="https://hanzo.app/edit.js"></script>
+  // so a page that never declares `hanzo:repo` still resolves, from the ONE
+  // registry below (host → repo). Keeping the map here — in the single file every
+  // site already loads — is why the include needs no per-site thought: adding a
+  // property is one line HERE, not a commit in that property's repo.
+  //
+  // The meta ALWAYS wins when present: a repo knows its own name better than this
+  // table does, and a site served on a host we don't list (previews, branch
+  // deploys, a new domain) declares itself and works immediately.
+  var SITES = {
+    'hanzo.ai': 'hanzoai/hanzo.ai',
+    'hanzo.app': 'hanzoai/app',
+    'hanzo.chat': 'hanzoai/chat',
+    'world.hanzo.ai': 'hanzoai/world',
+    'docs.hanzo.ai': 'hanzoai/docs',
+    'insights.hanzo.ai': 'hanzoai/insights',
+    'platform.hanzo.ai': 'hanzoai/platform',
+    'cloud.hanzo.ai': 'hanzoai/cloud',
+    'ui.hanzo.ai': 'hanzoai/ui',
+  };
+
+  // `www.` is never its own property, and an unknown subdomain falls back to the
+  // apex's repo only when the apex is one we know.
+  function repoForHost(host) {
+    host = String(host || '').toLowerCase().replace(/^www\./, '');
+    if (SITES[host]) return SITES[host];
+    var apex = host.split('.').slice(-2).join('.');
+    return SITES[apex] || '';
+  }
+
+  var REPO = meta('hanzo:repo') || repoForHost(location.hostname);
 
   var PATH = meta('hanzo:path');
   var BRANCH = meta('hanzo:branch') || 'main';
@@ -121,14 +153,193 @@
     }
   }
 
-  // Session-replay lives on Hanzo Insights. Replay INGEST is a separate, not-yet-
-  // live workstream, so this is a present-when-available attachment: the deep-link
-  // is well-formed now and simply "lights up" once ingest lands. Never blocks.
+  // ---- Session replay (rrweb → Hanzo Insights) ------------------------------
+  //
+  // The recorder is deliberately NOT bundled here. We load the one Insights
+  // itself serves — `<insights>/static/recorder.js` — so the rrweb build that
+  // RECORDS is by construction the build the player REPLAYS. Vendoring our own
+  // copy would fork that pair and let it drift silently: a recording that the
+  // player of the day cannot read is worse than no recording, because it looks
+  // like it worked. Same reasoning as the route manifest — prefer the signal
+  // derived from the same source as the consumer.
+  //
+  // Batches ride the documented recordings route (`POST /v1/s`) as the PostHog-
+  // shaped `$snapshot` envelope insights-capture parses (its `RawRecording`), and
+  // are keyed on the SAME session id the edit payload reports — so a filed fix and
+  // its recording are one session and `replayRef`'s deep-link actually resolves.
+  var REPLAY = {
+    started: false,
+    live: false,
+    host: 'https://insights.hanzo.ai',
+    key: '',
+    win: 'w' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+    buf: [],
+    stop: null,
+  };
+
+  // Consent & opt-out. Replay is off for anyone who asked not to be measured, and
+  // any page can veto it before this script runs (`window.__hanzoNoReplay = true`).
+  function replayOptedOut() {
+    try {
+      if (window.__hanzoNoReplay) return true;
+      var dnt = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      if (dnt === '1' || dnt === 'yes') return true;
+      if (window.localStorage && localStorage.getItem('hz_replay_off') === '1') return true;
+    } catch (e) {
+      /* storage blocked → fall through and record */
+    }
+    return false;
+  }
+
+  // Ship a batch. `closing` is the page-going-away path, which uses `keepalive`
+  // so the request outlives the document — losing the tail of a session costs
+  // exactly the part a bug report needs most.
+  //
+  // Deliberately NOT sendBeacon: capture 502s on a `text/plain` body, so the
+  // envelope must be `application/json`, which is not a CORS-safelisted content
+  // type and therefore preflights. `keepalive` fetch preflights cleanly (and the
+  // preflight is cached for a day); a beacon's is far less certain. One path,
+  // both cases.
+  function flushReplay(closing) {
+    if (!REPLAY.key || !REPLAY.buf.length) return;
+    var batch = REPLAY.buf;
+    REPLAY.buf = [];
+    var sid = sessionId();
+    var body = JSON.stringify([
+      {
+        event: '$snapshot',
+        api_key: REPLAY.key,
+        distinct_id: sid,
+        properties: {
+          $session_id: sid,
+          $window_id: REPLAY.win,
+          $snapshot_source: 'web',
+          $lib: 'hanzo-edit',
+          $snapshot_data: batch,
+        },
+      },
+    ]);
+    // credentials omitted: the recording is keyed by the publishable ingest key,
+    // never by the viewer's Hanzo cookie.
+    var opts = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: body,
+      credentials: 'omit',
+    };
+    // `keepalive` caps the body at 64KB, so it is used ONLY when the page is
+    // going away and a normal request would be cancelled. An over-size closing
+    // batch is dropped rather than silently truncated — the 5s timer means at
+    // most that much is ever at risk.
+    if (closing) {
+      if (body.length > 60000) return;
+      opts.keepalive = true;
+    }
+    fetch(REPLAY.host + '/v1/s', opts).catch(function () {
+      /* a dropped batch must never surface on the page being recorded */
+    });
+  }
+
+  function loadScript(src, cb) {
+    var s = document.createElement('script');
+    s.src = src;
+    s.async = true;
+    s.crossOrigin = 'anonymous';
+    s.onload = cb;
+    s.onerror = function () {
+      /* recorder unavailable → the page is untouched, editing still works */
+    };
+    (document.head || document.documentElement).appendChild(s);
+  }
+
+  function startRecorder() {
+    var rr = window.rrweb || (window.__InsightsExtensions__ && window.__InsightsExtensions__.rrweb);
+    if (!rr || typeof rr.record !== 'function') return;
+    REPLAY.live = true;
+    REPLAY.stop = rr.record({
+      emit: function (ev) {
+        REPLAY.buf.push(ev);
+        // Cap the hold when the key hasn't landed yet, so a page that never gets
+        // config can't grow a buffer without bound.
+        if (!REPLAY.key && REPLAY.buf.length > 400) REPLAY.buf.splice(0, REPLAY.buf.length - 400);
+        else if (REPLAY.buf.length >= 100) flushReplay(false);
+      },
+      // Privacy is the DEFAULT, not a deployment option: every input value is
+      // masked before it leaves the page, so a recording can never carry a
+      // password, a card number, or anything else somebody typed. Opt an element
+      // back in with `.hz-unmask`; hide any subtree entirely with `.hz-no-record`.
+      maskAllInputs: true,
+      maskTextClass: 'hz-mask',
+      unmaskTextClass: 'hz-unmask',
+      blockClass: 'hz-no-record',
+      ignoreClass: 'hz-no-ignore',
+      // Never record our own widget: replaying the editor on top of the page it
+      // edits is noise, and its panel can hold the user's unsent prose.
+      blockSelector: '[data-hanzo-edit]',
+      collectFonts: false,
+      recordCanvas: false,
+      recordCrossOriginIframes: false,
+      // A viewer scrubbing into the middle of a long session still needs a full
+      // DOM to start from.
+      checkoutEveryNms: 300000,
+    });
+
+    setInterval(function () {
+      flushReplay(false);
+    }, 5000);
+    // `pagehide` fires where `unload` is unreliable (bfcache, mobile Safari).
+    window.addEventListener('pagehide', function () {
+      flushReplay(true);
+    });
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'hidden') flushReplay(true);
+    });
+  }
+
+  // Boot replay. Orthogonal to editing: it runs on every page carrying the tag,
+  // including pages that map to no repo, because a recording is worth having
+  // whether or not this page happens to be editable.
+  function bootReplay() {
+    if (REPLAY.started || replayOptedOut()) return;
+    REPLAY.started = true;
+    fetch(BASE + '/v1/edit/config', { credentials: 'omit' })
+      .then(function (r) {
+        return r.ok ? r.json() : null;
+      })
+      .then(function (cfg) {
+        var ins = (cfg && cfg.insights) || null;
+        if (!ins || !ins.enabled || !ins.key) return;
+        if (typeof ins.sampleRate === 'number' && ins.sampleRate < 1 && Math.random() > ins.sampleRate) return;
+        REPLAY.key = String(ins.key);
+        if (ins.host) REPLAY.host = String(ins.host).replace(/\/+$/, '');
+        loadScript(REPLAY.host + '/static/recorder.js', startRecorder);
+      })
+      .catch(function () {
+        /* no config → no recording; never a page error */
+      });
+  }
+
+  // The replay reference attached to every submission. `recording` states whether
+  // this session is actually being captured, so a reviewer knows whether the
+  // deep-link will have anything behind it rather than guessing.
   function replayRef() {
     var sid = sessionId();
     if (!sid) return undefined;
-    return { sessionId: sid, deepLink: 'https://insights.hanzo.ai/replay/' + encodeURIComponent(sid) };
+    return {
+      sessionId: sid,
+      deepLink: REPLAY.host + '/replay/' + encodeURIComponent(sid),
+      recording: REPLAY.live || undefined,
+    };
   }
+
+  // Recording starts here — BEFORE the repo gate below, because replay and
+  // editing are independent capabilities that happen to share one tag. A page we
+  // cannot map to a repo is still a page worth being able to watch back.
+  bootReplay();
+
+  // Past this line everything is the EDIT widget, which is meaningless without a
+  // repo to open the change against.
+  if (!REPO) return;
 
   // A short ring buffer of recent route events, captured from load. Degrades to
   // just the initial view when the page never client-navigates.
@@ -371,9 +582,41 @@
     document.addEventListener('DOMContentLoaded', mount, { once: true });
   }
 
+  // The widget's whole palette, declared ONCE, in terms of the host page's
+  // design tokens. Everything below reads these — no literal colour, font or
+  // radius appears twice.
+  //
+  // Custom properties cross the shadow boundary: they are inherited, and `all`
+  // does NOT reset them, so `:host{all:initial}` isolates this tree from the
+  // page's own rules while `--background`, `--brand-accent`, `--font-geist-sans`
+  // and the rest still arrive intact. (Measured on hanzo.app: --brand-accent
+  // reads #8b5cf6 and --font-geist-sans reads "Geist" from inside this root.)
+  // Adopting the page's stylesheets would be the wrong tool anyway — this script
+  // is dropped into OTHER Hanzo apps cross-origin, where the only contract that
+  // can be relied on is the token names.
+  //
+  // Every token carries the literal it replaces as its fallback, so a page that
+  // ships no token layer at all renders exactly what it rendered before.
+  var TOKENS =
+    ':host{all:initial;' +
+    '--hz-font:var(--font-geist-sans,var(--font-sans,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif));' +
+    '--hz-mono:var(--font-geist-mono,var(--font-mono,ui-monospace,SFMono-Regular,Menlo,monospace));' +
+    // Purple is the ONE accent in this system. The widget used to draw a stray
+    // #8ab4ff blue — links, the admin chip, the chosen candidate, the
+    // inline-edit outline — which belongs to no palette here.
+    '--hz-accent:var(--brand-accent,#8b5cf6);' +
+    '--hz-accent-soft:var(--brand-accent-soft,rgba(139,92,246,.14));' +
+    '--hz-panel:var(--card,#0e0e0e);' +
+    '--hz-field:var(--muted,#171717);' +
+    '--hz-text:var(--foreground,#f4f4f5);' +
+    '--hz-dim:var(--muted-foreground,#9a9a9a);' +
+    '--hz-line:var(--border,rgba(255,255,255,.14));' +
+    '--hz-radius:var(--control-radius,8px);' +
+    '}';
+
   var css =
-    ':host{all:initial}' +
-    '*{box-sizing:border-box;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}' +
+    TOKENS +
+    '*{box-sizing:border-box;font-family:var(--hz-font)}' +
     // The trigger is the ensō mark alone — one affordance for every AI action
     // on the page (ask, edit, suggest). It glows rather than grows, so it never
     // reflows content or competes with the page's own controls.
@@ -383,7 +626,7 @@
     // ring of light that blooms from the stroke on hover.
     '.fab{position:fixed;right:16px;bottom:16px;z-index:2147483000;display:inline-flex;' +
     'align-items:center;justify-content:center;width:56px;height:56px;padding:0;' +
-    'border-radius:999px;border:0;background:transparent;color:#fff;' +
+    'border-radius:999px;border:0;background:transparent;color:var(--hz-text);' +
     'cursor:pointer;line-height:0;-webkit-tap-highlight-color:transparent;' +
     'transition:transform .2s ease,filter .25s ease}' +
     '.fab svg{width:34px;height:34px;display:block;overflow:visible;' +
@@ -394,56 +637,60 @@
     '.fab:focus-visible{outline:none}' +
     '.fab:active{transform:scale(.96)}' +
     '@media (prefers-reduced-motion:reduce){.fab{transition:none}.fab:hover{transform:none}}' +
-    '.panel{position:fixed;right:16px;bottom:16px;z-index:2147483001;width:360px;max-width:92vw;background:#0e0e0e;' +
-    'color:#f4f4f5;border:1px solid rgba(255,255,255,.14);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.5);' +
-    'overflow:hidden;display:none}' +
+    '.panel{position:fixed;right:16px;bottom:16px;z-index:2147483001;width:360px;max-width:92vw;' +
+    'background:var(--hz-panel);color:var(--hz-text);border:1px solid var(--hz-line);border-radius:14px;' +
+    'box-shadow:0 12px 40px rgba(0,0,0,.5);overflow:hidden;display:none}' +
     '.panel.open{display:block}' +
-    '.hd{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.08)}' +
+    '.hd{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--hz-line)}' +
     '.hd b{font-size:13px;font-weight:600}' +
-    '.hd .sub{font-size:11px;color:#9a9a9a;margin-top:2px}' +
-    '.x{background:none;border:none;color:#9a9a9a;cursor:pointer;font-size:18px;line-height:1;padding:2px 4px}' +
-    '.x:hover{color:#fff}' +
+    '.hd .sub{font-size:11px;color:var(--hz-dim);margin-top:2px}' +
+    '.x{background:none;border:none;color:var(--hz-dim);cursor:pointer;font-size:18px;line-height:1;padding:2px 4px}' +
+    '.x:hover{color:var(--hz-text)}' +
     '.bd{padding:14px}' +
-    'textarea{width:100%;min-height:84px;resize:vertical;background:#171717;color:#fff;border:1px solid rgba(255,255,255,.14);' +
-    'border-radius:8px;padding:9px 10px;font-size:13px;outline:none}' +
-    'textarea:focus{border-color:#666}' +
-    'input.path{width:100%;margin-top:8px;background:#171717;color:#cfcfcf;border:1px solid rgba(255,255,255,.12);' +
-    'border-radius:8px;padding:8px 10px;font-size:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;outline:none}' +
-    'input.path:focus{border-color:#666}' +
+    'textarea{width:100%;min-height:84px;resize:vertical;background:var(--hz-field);color:var(--hz-text);' +
+    'border:1px solid var(--hz-line);border-radius:var(--hz-radius);padding:9px 10px;font-size:13px;outline:none}' +
+    'textarea:focus{border-color:var(--hz-accent)}' +
+    'input.path{width:100%;margin-top:8px;background:var(--hz-field);color:var(--hz-text);border:1px solid var(--hz-line);' +
+    'border-radius:var(--hz-radius);padding:8px 10px;font-size:12px;font-family:var(--hz-mono);outline:none}' +
+    'input.path:focus{border-color:var(--hz-accent)}' +
     '.cands{margin-top:7px;display:flex;flex-wrap:wrap;gap:6px}' +
-    '.cand{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:#cfcfcf;background:#151515;' +
-    'border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:3px 7px;cursor:pointer;max-width:100%;overflow:hidden;' +
+    '.cand{font-family:var(--hz-mono);font-size:11px;color:var(--hz-dim);background:var(--hz-field);' +
+    'border:1px solid var(--hz-line);border-radius:6px;padding:3px 7px;cursor:pointer;max-width:100%;overflow:hidden;' +
     'text-overflow:ellipsis;white-space:nowrap}' +
-    '.cand:hover{border-color:#666;color:#fff}' +
-    '.cand.on{border-color:#8ab4ff;color:#fff}' +
-    '.ctx{font-size:11px;color:#7a7a7a;margin-top:9px;line-height:1.5;word-break:break-word}' +
+    '.cand:hover{border-color:var(--hz-accent);color:var(--hz-text)}' +
+    '.cand.on{border-color:var(--hz-accent);background:var(--hz-accent-soft);color:var(--hz-text)}' +
+    '.ctx{font-size:11px;color:var(--hz-dim);margin-top:9px;line-height:1.5;word-break:break-word}' +
     '.row{display:flex;gap:8px;margin-top:12px;align-items:center}' +
-    '.btn{flex:1;padding:10px 12px;border-radius:8px;border:none;background:#fff;color:#000;font-size:13px;font-weight:600;cursor:pointer}' +
+    // Primary action stays WHITE — purple is links/active/focus only, never the
+    // primary button (the v2 monochrome rule).
+    '.btn{flex:1;padding:10px 12px;border-radius:var(--hz-radius);border:none;background:#fff;color:#000;' +
+    'font-size:13px;font-weight:600;cursor:pointer}' +
     '.btn:hover{background:#e8e8e8}' +
     '.btn:disabled{opacity:.55;cursor:default}' +
-    '.btn.sec{flex:0 0 auto;background:transparent;color:#cfcfcf;border:1px solid rgba(255,255,255,.16);font-weight:500}' +
-    '.btn.sec:hover{background:rgba(255,255,255,.06)}' +
-    '.note{font-size:11px;color:#8a8a8a;margin-top:9px}' +
-    '.link{color:#8ab4ff;text-decoration:none}' +
+    '.btn.sec{flex:0 0 auto;background:transparent;color:var(--hz-dim);border:1px solid var(--hz-line);font-weight:500}' +
+    '.btn.sec:hover{background:var(--hz-field);color:var(--hz-text)}' +
+    '.note{font-size:11px;color:var(--hz-dim);margin-top:9px}' +
+    '.link{color:var(--hz-accent);text-decoration:none}' +
     '.link:hover{text-decoration:underline}' +
     '.msg{font-size:13px;line-height:1.5;word-break:break-word}' +
     '.msg.err{color:#ff9d9d}' +
-    // Admin review: the proposed-change diff before a live commit.
-    '.diff{margin-top:10px;max-height:38vh;overflow:auto;background:#0e0e0e;border:1px solid rgba(255,255,255,.12);' +
-    'border-radius:8px;padding:8px 10px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;' +
+    // Admin review: the proposed-change diff before a live commit. Added/removed
+    // lines stay green/red — that is semantics, not chrome.
+    '.diff{margin-top:10px;max-height:38vh;overflow:auto;background:var(--hz-field);border:1px solid var(--hz-line);' +
+    'border-radius:var(--hz-radius);padding:8px 10px;font-family:var(--hz-mono);font-size:11px;' +
     'line-height:1.45;white-space:pre;tab-size:2}' +
     '.diff .a{color:#7ee787;background:rgba(46,160,67,.12);display:block}' +
     '.diff .d{color:#ff9d9d;background:rgba(248,81,73,.12);display:block}' +
-    '.diff .c{color:#8a8a8a;display:block}' +
+    '.diff .c{color:var(--hz-dim);display:block}' +
     '.warn{font-size:11px;color:#e3b341;margin-top:9px}' +
-    'code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;background:#1c1c1c;' +
-    'border:1px solid rgba(255,255,255,.12);border-radius:5px;padding:1px 5px}' +
+    'code{font-family:var(--hz-mono);font-size:11px;background:var(--hz-field);' +
+    'border:1px solid var(--hz-line);border-radius:5px;padding:1px 5px}' +
     // Admin affordances: the "admin" chip + the ghost inline-edit button.
-    '.adm{color:#8ab4ff;font-weight:600;text-transform:uppercase;letter-spacing:.04em;font-size:10px}' +
-    '.btn.ghost{width:100%;margin-top:8px;background:transparent;color:#cfcfcf;border:1px dashed rgba(255,255,255,.22);' +
-    'font-weight:500;padding:9px 12px;border-radius:8px;cursor:pointer}' +
-    '.btn.ghost:hover{border-color:#8ab4ff;color:#fff}' +
-    '.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;' +
+    '.adm{color:var(--hz-accent);font-weight:600;text-transform:uppercase;letter-spacing:.04em;font-size:10px}' +
+    '.btn.ghost{width:100%;margin-top:8px;background:transparent;color:var(--hz-dim);border:1px dashed var(--hz-line);' +
+    'font-weight:500;padding:9px 12px;border-radius:var(--hz-radius);cursor:pointer}' +
+    '.btn.ghost:hover{border-color:var(--hz-accent);color:var(--hz-text)}' +
+    '.spin{display:inline-block;width:13px;height:13px;border:2px solid var(--hz-line);border-top-color:var(--hz-text);' +
     'border-radius:50%;animation:hz 0.7s linear infinite;vertical-align:-2px;margin-right:6px}' +
     '@keyframes hz{to{transform:rotate(360deg)}}' +
     // Mobile: the panel becomes a bottom-sheet (full-width, rounded top, safe-area
@@ -876,6 +1123,21 @@
     }
   }
 
+  // What "this is the element you are editing" looks like on someone else's
+  // page. A hard 2px box in a colour from no palette read as damage; this is the
+  // accent at one hairline, held off the text by an offset, with a soft wash
+  // behind it — the same shape a focus ring takes everywhere else in the system.
+  //
+  // These land on a PAGE element, outside the shadow root, so they read the
+  // page's own tokens directly (the widget's --hz-* aliases live on :host and do
+  // not reach here) and fall back to the literals when a page ships no tokens.
+  function highlight(el) {
+    el.style.outline = '1px solid var(--brand-accent, #8b5cf6)';
+    el.style.outlineOffset = '2px';
+    el.style.boxShadow = '0 0 0 4px var(--brand-accent-soft, rgba(139,92,246,.14))';
+    el.style.borderRadius = el.style.borderRadius || '2px';
+  }
+
   // Inline click-to-edit (admin): make the tracked element's text editable in
   // place; on commit (Enter / blur) turn the before→after diff into a precise
   // instruction and apply it live. Escape cancels + restores. Text-only — never
@@ -894,10 +1156,14 @@
     var before = (el.innerText || el.textContent || '').trim();
     var label = nodeToken(el);
     var prevCE = el.getAttribute('contenteditable');
-    var prevOutline = el.style.outline;
+    // ONE thing to remember: the element's whole inline style, restored verbatim.
+    // Remembering `outline` alone meant every property the highlight grew had to
+    // be remembered separately, and the first one that was not leaked onto the
+    // page for good.
+    var prevStyle = el.getAttribute('style');
     close(); // reveal the element so the admin can type over it
     el.setAttribute('contenteditable', 'true');
-    el.style.outline = '2px solid #8ab4ff';
+    highlight(el);
     el.focus();
     // Select all the text so typing replaces it.
     try {
@@ -911,7 +1177,8 @@
     }
 
     function restore() {
-      el.style.outline = prevOutline;
+      if (prevStyle === null) el.removeAttribute('style');
+      else el.setAttribute('style', prevStyle);
       if (prevCE === null) el.removeAttribute('contenteditable');
       else el.setAttribute('contenteditable', prevCE);
       el.removeEventListener('keydown', onKey, true);

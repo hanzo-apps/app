@@ -1,10 +1,7 @@
 'use client';
 
 import { XStack, YStack, SizableText, H3, Anchor } from '@hanzo/gui';
-// Use package.json version as fallback when env var is not provided
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore - JSON import for version string
-import pkg from '../../package.json';
+import { VERSION } from '@/lib/version';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Button, Badge } from '@hanzo/ui';
 import { Logo } from '@/components/ui/logo';
 import { Github, ExternalLink } from 'lucide-react';
@@ -97,7 +94,7 @@ export function AboutModal({ open, onOpenChange }: AboutModalProps) {
 
         <XStack justifyContent="space-between" alignItems="center" paddingTop="$4" borderTopWidth={1}>
           <Badge variant="secondary" fontSize="$1">
-            v{process.env.NEXT_PUBLIC_APP_VERSION || pkg.version}
+            v{VERSION}
           </Badge>
           <Button onClick={() => onOpenChange(false)}>
             Close

@@ -2,11 +2,13 @@
  * Server-only org resolution + the projects trust boundary.
  *
  * Identity comes from `lib/iam.ts` — one verified session, never a decode. The
- * cloud gateway then re-derives the tenant from that same bearer's `owner` claim
+ * cloud gateway then re-derives the tenant from that same bearer's HOME org —
+ * `orgs[0].org`, NEVER the `owner` claim, which carries the APPLICATION's org
  * (a non-admin bearer can never widen scope: cloud `middleware_identity.go`
- * strips a client-set X-Org-Id and re-mints it from the verified token). So:
+ * strips a client-set X-Org-Id and re-mints it from the verified token). We read
+ * the SAME claim here, so what this app shows is what the gateway bills. So:
  *
- *   - The org a call is scoped/billed to == the bearer owner. We forward the
+ *   - The org a call is scoped/billed to == the bearer's home org. We forward the
  *     bearer; the gateway is the AUTHORITATIVE enforcer.
  *   - A global admin (member of the `admin` org) is the one principal cloud lets
  *     cross orgs via an explicit X-Org-Id; we stamp it ONLY for that case, and
@@ -41,8 +43,8 @@ export function cloudBase(): string {
 /**
  * The scoping decision for a BFF request — the ONE place cross-org is authorized.
  *
- * Default scope is the caller's own org (the verified `owner` claim; the gateway
- * re-derives it, so this is always safe). A DIFFERENT org (`X-Org-Id`) is honored
+ * Default scope is the caller's own org (their HOME org from the signed `orgs`
+ * claim; the gateway re-derives it the same way, so this is always safe). A DIFFERENT org (`X-Org-Id`) is honored
  * only for a global admin, and "global admin" is now read off a signature-checked
  * claim — so neither a forged JWT nor a client-set header can make this server
  * stamp `X-Org-Id: victim-org`.
@@ -173,7 +175,7 @@ function jsonError(error: string, status: number): Response {
  *
  * Called from the CROSS-ORIGIN `/v1/register` widget route, so it takes the
  * already-verified bearer explicitly (not `req`): the cloud gateway
- * derives the tenant from that bearer's owner claim, so the project lands in the
+ * derives the tenant from that bearer's HOME org (orgs[0].org), so the project lands in the
  * caller's home org WITHOUT the browser choosing a tenant. Fail-open (never
  * throws): registration is a convenience, not a gate — a failure just means the
  * property isn't auto-listed yet.

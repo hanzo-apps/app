@@ -5,16 +5,17 @@
  * per hanzoai/ui#36); this module matches it. It stays LOCAL here (recorded
  * debt) because the hoisted factory
  * fixes `brandOrg` at construction while hanzo.app's default is the signed-in
- * user's HOME org (their IAM owner claim), seeded late by the OrgProvider via
- * `setHomeOrg`. Behavior is identical: `currentOrg()` reads a localStorage
+ * user's HOME org (the first entry of their signed `orgs` claim — NOT the IAM
+ * `owner` claim, which carries the APPLICATION's org), seeded late by the
+ * OrgProvider via `setHomeOrg`. Behavior is identical: `currentOrg()` reads a localStorage
  * override, else the home org; switching persists + reloads so every module
  * refetches under the new `X-Org-Id` (the server honors it only for a global
- * admin — a normal user is pinned to their owner).
+ * admin — a normal user is pinned to their home org).
  */
 
 const KEY = 'hanzo.app.org';
 
-/** The user's home org (IAM owner), seeded from /v1/orgs. Module-level default. */
+/** The user's home org (`orgs[0].org`), seeded from /v1/orgs. Module-level default. */
 let homeOrg = '';
 
 /** Seed the home org (the default scope). Called once by the OrgProvider. */

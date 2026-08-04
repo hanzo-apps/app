@@ -379,7 +379,6 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
                 onModelChange?.(modelId);
               }
             }}
-            className="space-y-2"
   />
         </YStack>
       </div>
@@ -415,8 +414,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
                 }
                 onModelChange?.(modelId);
               }}
-              className="space-y-2"
-  />
+    />
           </YStack>
         </div>
       )}
@@ -437,8 +435,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
               mode="inline"
               skipGlobalSync
               onChange={(modelId) => onJudgeModelChange?.(modelId)}
-              className="space-y-2"
-  />
+    />
           </div>
         </>
       )}

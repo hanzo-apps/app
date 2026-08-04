@@ -32,8 +32,8 @@ export function detectDeploymentType(): 'hanzo_cloud' | 'hf_space' | 'server' | 
   return 'browser';
 }
 
-import pkg from '@/package.json';
+import { VERSION } from '@/lib/version';
 
 export function getAppVersion(): string {
-  return pkg.version;
+  return VERSION;
 }

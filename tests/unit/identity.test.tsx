@@ -1,7 +1,7 @@
 /**
  * A name is what a person answers to — never an id.
  *
- * IAM's OIDC `name` claim carries the Casdoor username, and for SSO/seeded
+ * IAM's OIDC `name` claim carries the account username, and for SSO/seeded
  * accounts that username IS the account uuid. `useUser` used to read
  * `name || email || sub`, so `name` won and the marketing header rendered
  * `e7d7fda0-4c53-4508-9d35-7ec892b7e5d7`. Accounts that happen to have a real

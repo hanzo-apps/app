@@ -172,7 +172,7 @@ export default function LandingPage() {
             <Reveal>
               <XStack marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$3" paddingVertical="$1.5">
                 <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color" />
-                <SizableText fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.4} color="$color">
+                <SizableText fontFamily="$mono" fontSize={11} color="$color">
                   Sites, wired to real data &amp; AI
                 </SizableText>
               </XStack>
@@ -211,7 +211,7 @@ export default function LandingPage() {
                     into the builder, seeded from that template. */}
                 {starterTemplates.length > 0 && (
                   <YStack marginTop="$5">
-                    <SizableText marginBottom="$3" alignItems="center" justifyContent="center" gap="$2.5" fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={1.92} color="$color" display="flex" flexDirection="row">
+                    <SizableText marginBottom="$3" alignItems="center" justifyContent="center" gap="$2.5" fontFamily="$mono" fontSize={11} color="$color" display="flex" flexDirection="row">
                       <SizableText height={1} width="$5" backgroundColor="$borderColor" />
                       or start from a template
                       <SizableText height={1} width="$5" backgroundColor="$borderColor" />

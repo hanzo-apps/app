@@ -380,7 +380,7 @@ export default function ChatPage() {
                 <YStack position="absolute" right="$2" top="$2" opacity={0} $group-hover={{ opacity: 1 }}>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" height="$5" width="$5" padding="$0">
+                      <Button variant="ghost" size="icon" padding="$0">
                         <MoreHorizontal size={16} />
                       </Button>
                     </DropdownMenuTrigger>
@@ -542,17 +542,17 @@ export default function ChatPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              height="$6" paddingHorizontal="$2" color="$color11" hoverStyle={{ color: "$color" }}
+                              paddingHorizontal="$2" color="$color11" hoverStyle={{ color: "$color" }}
                               onClick={() => copyMessage(message.content)}
                             >
                               <Copy size={12} />
                               Copy
                             </Button>
-                            <Button variant="ghost" size="sm" height="$6" paddingHorizontal="$2" color="$color11" hoverStyle={{ color: "$color" }}>
+                            <Button variant="ghost" size="sm" paddingHorizontal="$2" color="$color11" hoverStyle={{ color: "$color" }}>
                               <RefreshCw size={12} />
                               Regenerate
                             </Button>
-                            <Button variant="ghost" size="sm" height="$6" paddingHorizontal="$2" color="$color11" hoverStyle={{ color: "$color" }}>
+                            <Button variant="ghost" size="sm" paddingHorizontal="$2" color="$color11" hoverStyle={{ color: "$color" }}>
                               <Share2 size={12} />
                             </Button>
                           </XStack>

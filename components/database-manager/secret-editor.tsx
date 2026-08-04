@@ -124,8 +124,8 @@ export function SecretEditor({
               <Button
                 type="button"
                 variant="ghost"
-                size="sm"
-                position="absolute" right="$1" top="50%" y="50%" height={28} width={28} padding="$0"
+                size="icon"
+                position="absolute" right="$1" top="50%" y="50%" padding="$0"
                 onClick={() => setShowValue(!showValue)}
               >
                 {showValue ? (

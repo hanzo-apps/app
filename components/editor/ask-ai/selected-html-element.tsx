@@ -37,17 +37,6 @@ export const SelectedHtmlElement = ({
         </Paragraph>
         <XCircle size={16} color="$color11" />
       </CollapsibleTrigger>
-      {/* <CollapsibleContent className="border-t border-border pt-2 mt-2">
-        <div className="text-xs text-muted-foreground">
-          <p>
-            <span className="font-medium">ID:</span> {element.id || "No ID"}
-          </p>
-          <p>
-            <span className="font-medium">Classes:</span>{" "}
-            {element.className || "No classes"}
-          </p>
-        </div>
-      </CollapsibleContent> */}
-    </Collapsible>
+          </Collapsible>
   );
 };

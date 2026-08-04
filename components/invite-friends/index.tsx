@@ -15,7 +15,7 @@ export function InviteFriends() {
       <form>
         <DialogTrigger asChild>
           <Button
-            size="iconXs"
+            size="icon"
             variant="outline"
             borderColor="$borderColor" color="$color11" hoverStyle={{ borderColor: "$borderColor", color: "$color" }}
           >

@@ -350,7 +350,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
           <Button
             size="sm"
             variant="ghost"
-            height="$5" paddingHorizontal="$2" fontSize="$1"
+            paddingHorizontal="$2" fontSize="$1"
             onClick={() => setFocusContext(null)}
             title="Clear focus context"
           >
@@ -1054,8 +1054,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
           durationMs: Date.now() - taskStartTime,
         });
         toast.error(result.summary || 'Generation failed', {
-          duration: 5000,
-          position: 'bottom-center'
+          duration: 5000
         });
       }
 
@@ -1087,8 +1086,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
       addDebugEvent('error', { message: errorMessage });
 
       toast.error(errorMessage, {
-        duration: 5000,
-        position: 'bottom-center'
+        duration: 5000
       });
     } finally {
       setGenerating(false);

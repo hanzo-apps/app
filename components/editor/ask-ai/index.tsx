@@ -2,9 +2,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
 import { useState, useMemo, useRef, useEffect } from "react";
-import { toast, Button, Tooltip, TooltipTrigger, TooltipContent, Textarea } from '@hanzo/ui';
+import { toast, Button, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger, Tooltip, TooltipTrigger, TooltipContent, Textarea } from '@hanzo/ui';
 import { useLocalStorage } from "react-use";
-import { ArrowUp, CircleStop, Crosshair, ImagePlus, X } from "lucide-react";
+import { ArrowUp, CircleStop, ImagePlus, MoreHorizontal, X } from "lucide-react";
 
 import ProModal from "@/components/pro-modal";
 import { useUsageLimit } from "@/components/usage/usage-limit";
@@ -16,7 +16,6 @@ import { HtmlHistory, Page, Project } from "@/types";
 import { Settings } from "@/components/editor/ask-ai/settings";
 import { LoginModal } from "@/components/login-modal";
 import { ReImagine } from "@/components/editor/ask-ai/re-imagine";
-import { Fix } from "@/components/editor/ask-ai/fix";
 import { imageFilesFrom, uploadProjectImages } from "@/lib/upload-project-images";
 import {
   addReferenceImages,
@@ -147,6 +146,17 @@ export function AskAI({
   // Fix mode: ONE flag. While on, the generate call is prefixed with a
   // fix-intent preamble and the send guard accepts a references-only submit.
   const [isFixMode, setIsFixMode] = useState(false);
+
+  // The working modes currently on. ONE list: it names the overflow control,
+  // drives its accent, and is its aria-label — the states cannot drift apart.
+  const modes = useMemo(
+    () =>
+      [
+        isEditableModeEnabled && "Select an element",
+        isFixMode && "Match a reference",
+      ].filter(Boolean) as string[],
+    [isEditableModeEnabled, isFixMode]
+  );
   const [isDragging, setIsDragging] = useState(false);
 
   // Composer mode (Lovable parity): "build" generates/patches the app (default);
@@ -1193,32 +1203,63 @@ export function AskAI({
               project={project}
   />
             {isNew && <ReImagine onRedesign={(md) => callAi(md)} />}
+            {/* The two working modes, behind ONE control.
+                They were two icon-only buttons on the bar — a wrench and a
+                crosshair — which is two mysteries the bar had to carry at all
+                times to say something each is one word long. In the menu they
+                get their names, their state gets a checkmark, and the bar keeps
+                one trigger. It accents when either mode is on, so nothing is
+                hidden that is currently doing something. */}
             {!isSameHtml && (
-              <Fix
-                active={isFixMode}
-                onToggle={() => setIsFixMode((v) => !v)}
-  />
-            )}
-            {!isSameHtml && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    size="xs"
-                    variant={isEditableModeEnabled ? "default" : "ghost"}
-                    onClick={() => {
-                      setIsEditableModeEnabled?.(!isEditableModeEnabled);
-                    }}
-                    height={28} {...{ color: !isEditableModeEnabled ? "$color11" : undefined, hoverStyle: !isEditableModeEnabled ? {"backgroundColor":"$color3","color":"$color"} : undefined }}
-                    aria-label="Select an element to edit"
+              <DropdownMenu>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        aria-label={
+                          modes.length
+                            ? `More — ${modes.join(", ")} on`
+                            : "More composer modes"
+                        }
+                        borderRadius="$10" {...(modes.length > 0
+                          ? { color: "var(--brand-accent)", hoverStyle: { color: "var(--brand-accent)" } }
+                          : { color: "$color11", hoverStyle: { backgroundColor: "$color3", color: "$color" } })}
+                      >
+                        <MoreHorizontal size={16} />
+                      </Button>
+                    </DropdownMenuTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent align="start">
+                    {modes.length ? `${modes.join(", ")} on` : "More"}
+                  </TooltipContent>
+                </Tooltip>
+                <DropdownMenuContent align="start" side="top" width={256}>
+                  <DropdownMenuCheckboxItem
+                    checked={isEditableModeEnabled}
+                    onCheckedChange={(v: boolean) => setIsEditableModeEnabled?.(!!v)}
                   >
-                    <Crosshair size={16} />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent align="start">
-                  Select an element on the page to ask Hanzo edit it
-                  directly.
-                </TooltipContent>
-              </Tooltip>
+                    <YStack>
+                      <SizableText>Select an element</SizableText>
+                      <SizableText fontSize="$1" color="$color11">
+                        Click something on the page to edit it directly
+                      </SizableText>
+                    </YStack>
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={isFixMode}
+                    onCheckedChange={(v: boolean) => setIsFixMode(!!v)}
+                  >
+                    <YStack>
+                      <SizableText>Match a reference</SizableText>
+                      <SizableText fontSize="$1" color="$color11">
+                        Attach an image; Hanzo changes only what differs
+                      </SizableText>
+                    </YStack>
+                  </DropdownMenuCheckboxItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
             {/* <InviteFriends /> */}
           </XStack>

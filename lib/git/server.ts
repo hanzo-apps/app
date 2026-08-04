@@ -2,7 +2,7 @@
  * Server-only Git connection layer — the trust boundary for repository import.
  *
  * hanzo.app users authenticate via Hanzo IAM (HIP-0111 OIDC). When a user signs
- * in with — or links — a git provider, Casdoor (IAM) stores that user's provider
+ * in with — or links — a git provider, IAM stores that user's provider
  * OAuth token in their account `Properties["oauth_<Provider>_accessToken"]`. IAM
  * masks per-provider tokens for every caller EXCEPT the user themselves, so
  * calling `GET /v1/iam/get-account` with the user's OWN bearer (which we already
@@ -73,7 +73,7 @@ interface IamAccount {
 const OAUTH_PROVIDERS = ['github', 'gitlab'] as const;
 type OAuthProvider = (typeof OAUTH_PROVIDERS)[number];
 
-/** IAM property keys per OAuth provider (Casdoor's `oauth_<Type>_*` convention). */
+/** IAM account property keys per OAuth provider — the `oauth_<Type>_*` convention. */
 const IAM_KEYS: Record<OAuthProvider, { token: string; username: string; login?: string }> = {
   github: { token: 'oauth_GitHub_accessToken', username: 'oauth_GitHub_username', login: 'github' },
   gitlab: { token: 'oauth_GitLab_accessToken', username: 'oauth_GitLab_username', login: 'gitlab' },

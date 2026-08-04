@@ -22,7 +22,7 @@ setup('authenticate via Hanzo IAM (hanzo.id OIDC)', async ({ page }) => {
     );
   }
 
-  // A protected route redirects straight to the hanzo.id (Casdoor) authorize form
+  // A protected route redirects straight to the hanzo.id (IAM) authorize form
   // — there is no intermediate in-app login to click through. Do NOT touch the
   // "Continue with <provider>" buttons; use the email/password fields + "Sign in".
   await page.goto('/dashboard');
@@ -33,7 +33,7 @@ setup('authenticate via Hanzo IAM (hanzo.id OIDC)', async ({ page }) => {
   await page.locator('input[type="password"]').first().fill(password);
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
 
-  // Success → callback exchanges the PKCE code → back on hanzo.app. Casdoor may
+  // Success → callback exchanges the PKCE code → back on hanzo.app. IAM may
   // interpose a one-time consent; approve it if shown. If we're bounced back to the
   // form with an error, the creds are wrong — fail loudly rather than hang.
   const consent = page.getByRole('button', { name: /^(authorize|allow|agree|continue)$/i });

@@ -164,7 +164,7 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
                       </Select>
                       <Button
                         variant="ghost"
-                        size="icon-sm"
+                        size="icon"
                         onClick={() => removeCollaborator(collaborator.id)}
                         aria-label="Remove collaborator"
                       >

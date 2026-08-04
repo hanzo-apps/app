@@ -73,7 +73,18 @@ describe("UI centralization — every component comes from @hanzo/ui", () => {
   });
 
   it("no Tailwind utility classes — gui carries its own style props", () => {
-    expect(offendersOf(/className=/)).toEqual([]);
+    // Tailwind is detected by its vocabulary, not by className's existence:
+    // app-owned CSS classes (globals.css) and forwarded className plumbing are
+    // legitimate gui usage. This matches the utility grammar inside string or
+    // template className values.
+    const UTIL =
+      /className=(?:"[^"]*?|\{`[^`]*?)(?<![-\w])(?:flex|grid|hidden|inline-flex|items-(?:center|start|end)|justify-(?:center|between|start|end)|gap-[\d.]|space-[xy]-|p[xylrtb]?-[\d.]|m[xylrtb]?-[\d.]|w-(?:full|\d)|h-(?:full|\d)|size-\d|min-h-|max-w-|text-(?:xs|sm|base|lg|xl|\dxl|left|center|right|white|black|foreground|muted-foreground|primary|destructive|red-|green-|blue-|yellow-|orange-|amber-|emerald-|purple-|neutral-|gray-)|bg-(?:white|black|background|muted|card|accent|primary|transparent|red-|green-|blue-|yellow-|orange-|amber-|emerald-|purple-|neutral-|gray-|\[)|border-(?:border|primary|transparent|input|red-|green-|blue-|amber-|emerald-)|rounded(?:-\w+)?\b|shadow(?:-\w+)?\b|font-(?:mono|sans|medium|semibold|bold)|uppercase|lowercase|capitalize|tracking-|leading-|divide-[xy]|overflow-(?:hidden|auto|scroll)|absolute|relative|fixed|sticky|inset-|top-\d|left-\d|right-\d|bottom-\d|z-\d|opacity-\d|transition|duration-\d|cursor-pointer|pointer-events-|shrink-0|grow\b|truncate|(?:hover|focus|active|disabled|group-hover|max-lg|max-md|sm|md|lg|xl|2xl|dark):)/;
+    // lib/project-templates.ts is the one exemption: it is the SOURCE of the
+    // starter apps this product generates for users — tailwind there is product
+    // content shipped to user projects, not this app's UI.
+    expect(
+      offendersOf(UTIL).filter((f) => f !== "lib/project-templates.ts"),
+    ).toEqual([]);
   });
 
   it("exactly ONE TooltipProvider, at the app root", () => {

@@ -50,6 +50,38 @@ function config() {
   };
 }
 
+/**
+ * The USER's own organization — the tenant whose ledger pays and whose membership
+ * decides authority. It is the FIRST entry of the signed `orgs` claim, which IAM
+ * builds home-first from the authoritative user row.
+ *
+ * IT IS DELIBERATELY NOT the `owner` claim. `owner` has never carried the user's
+ * org: IAM stamps the APPLICATION's org into it (oidc/jwt.go `Owner: app.Organization`),
+ * so the same person authenticating through two apps gets two different values. A
+ * token minted right now by `hanzo-console` proves it — `sub` is `admin/hanzo-console`
+ * while `owner` is `hanzo`.
+ *
+ * Two defects fell out of reading it here, and one accessor closes both:
+ *   - BILLING asked the wrong ledger. hanzo.app stamped every caller's org as its
+ *     own app org, so the org this app DISPLAYED and the org cloud BILLED (which
+ *     derives from `orgs`) could differ — a funded customer reading $0.00 while the
+ *     switcher said "Hanzo".
+ *   - PRIVILEGE was app-selectable. `isSuperAdmin` is `org === 'admin'`, so any
+ *     person signing in through an app owned by the `admin` org inherited sudo.
+ *
+ * EMPTY MEANS EMPTY. A token with no `orgs` (minted before IAM v1.33.0) resolves NO
+ * org and every org-scoped decision must fail closed. Falling back to `owner` would
+ * reinstate exactly the app-selected tenant this exists to stop trusting.
+ *
+ * cloud `auth_identity.go homeOrg()` is the same rule on the server side; this is the
+ * browser-facing half of ONE decision, not a second one.
+ */
+export function homeOrg(orgs: unknown): string {
+  if (!Array.isArray(orgs) || orgs.length === 0) return '';
+  const first = orgs[0] as { org?: unknown } | null;
+  return typeof first?.org === 'string' ? first.org.trim() : '';
+}
+
 /** Did IAM mint this token for OUR client? The elevation guard. */
 function mintedForApp(claims: { aud?: unknown; azp?: unknown }, clientId: string): boolean {
   const aud = claims.aud;
@@ -66,7 +98,8 @@ export interface Session {
   name: string;
   /** Email, when the token carries one. */
   email: string;
-  /** The caller's org — the verified `owner` claim; '' when unassigned. */
+  /** The caller's OWN org — {@link homeOrg} of the signed `orgs` claim; '' when the
+   *  token names none, in which case every org-scoped decision fails closed. */
   org: string;
   /** Human label for that org, when the token carries one. */
   orgDisplay: string;
@@ -125,7 +158,7 @@ export async function session(
   if (!result.ok) return null;
 
   const claims = result.claims as {
-    owner?: unknown;
+    orgs?: unknown;
     displayName?: unknown;
     isAdmin?: unknown;
     email?: unknown;
@@ -136,12 +169,9 @@ export async function session(
   };
   const str = (v: unknown) => (typeof v === 'string' ? v.trim() : '');
 
-  // The org is the `owner` claim, NOT the SDK's `result.owner`: IAM issues an
-  // opaque uuid `sub`, so the SDK's "org prefix of sub" derivation resolves to
-  // "unknown" for every real token.
-  const org = str(claims.owner);
+  const org = homeOrg(claims.orgs);
   const email = str(claims.email) || result.email || '';
-  const authority = { owner: org, isAdmin: claims.isAdmin === true, email };
+  const authority = { org, isAdmin: claims.isAdmin === true, email };
   const ours = mintedForApp(claims, cfg.clientId);
 
   return {

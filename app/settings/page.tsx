@@ -11,6 +11,7 @@ import { useUser } from "@/hooks/useUser";
 import { AppShell } from "@/components/app-shell";
 import { configManager } from "@/lib/config/storage";
 import { useModels } from "@/lib/hooks/use-models";
+import { usePlan, unpaid } from "@/lib/billing/entitlements";
 
 export default function SettingsPage() {
   // All hooks must be called unconditionally before any conditional returns
@@ -21,6 +22,7 @@ export default function SettingsPage() {
   // directly — same source the in-app settings panel + sonner read.
   const { theme, setTheme } = useTheme();
   const { models } = useModels();
+  const plan = usePlan();
   const [mounted, setMounted] = useState(false);
   const [defaultModel, setDefaultModelState] = useState("");
   const [notifs, setNotifs] = useState<Record<string, boolean>>({});
@@ -201,7 +203,7 @@ export default function SettingsPage() {
                   <H2 fontSize="$7" fontWeight="500" color="$color" marginBottom="$4">Security Settings</H2>
 
                   {/* Password, MFA, sessions and account deletion are owned by
-                      IAM (hanzo.id / Casdoor account page) — the ONE identity
+                      IAM (the hanzo.id account page) — the ONE identity
                       source. Link out rather than re-implement auth here. */}
                   <YStack rowGap="$4">
                     <Anchor href="https://hanzo.id/account" target="_blank" rel="noopener noreferrer">
@@ -233,9 +235,26 @@ export default function SettingsPage() {
                   <H2 fontSize="$7" fontWeight="500" color="$color" marginBottom="$4">Billing & Usage</H2>
 
                   <YStack backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" borderRadius="$5" padding="$4">
-                    <Paragraph fontSize="$3" color="$color" marginBottom="$2">Current Plan: Free</Paragraph>
-                    <Paragraph fontSize="$1" color="$color11" marginBottom="$4">0 / 100 AI generations used this month</Paragraph>
-                    <Button width="100%">Upgrade to Pro</Button>
+                    {/* The plan is READ, never assumed. This panel used to hardcode
+                        "Current Plan: Free" and "0 / 100 AI generations used this
+                        month" — two assertions about a customer's account that
+                        nothing had ever asked commerce about, shown identically to
+                        someone paying us every month. A number nobody measured is
+                        worse than no number, so the generations line is gone rather
+                        than replaced with another guess; usage lives on /billing,
+                        which actually reads it. */}
+                    <Paragraph fontSize="$3" color="$color" marginBottom="$2">
+                      {plan.phase === "loading"
+                        ? "Current Plan: …"
+                        : plan.phase === "unknown"
+                          ? "Current Plan: unavailable"
+                          : `Current Plan: ${plan.tier || "Free"}`}
+                    </Paragraph>
+                    {unpaid(plan) && (
+                      <Button width="100%" onClick={() => router.push("/billing")}>
+                        Upgrade to Pro
+                      </Button>
+                    )}
                   </YStack>
 
                   <YStack rowGap="$2">

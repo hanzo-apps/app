@@ -507,8 +507,8 @@ export function VisualEditor({
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          size="sm"
-          width="$6" height="$6" flexShrink={0} padding="$0" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+          size="icon"
+          flexShrink={0} padding="$0" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
           title="More"
           aria-label="Visual editor options"
         >

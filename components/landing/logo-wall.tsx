@@ -29,7 +29,7 @@ export default function LogoWall() {
     <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
       <YStack alignSelf="center" maxWidth={1152}>
         <Reveal>
-          <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.2} color="$color11" textAlign="center">
+          <Paragraph fontFamily="$mono" fontSize={11} color="$color11" textAlign="center">
             Backed by Techstars · Built on world-class infrastructure
           </Paragraph>
         </Reveal>

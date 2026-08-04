@@ -3,6 +3,7 @@
 import { SizableText, YStack, XStack, H2, Paragraph, Anchor } from '@hanzo/gui';
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { Project } from '@/lib/vfs/types';
+import { usePlan, unpaid } from '@/lib/billing/entitlements';
 import { getSyncOverviewStatus, SyncOverviewStatus } from '@/lib/vfs/auto-sync';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Input } from '@hanzo/ui';
 import { HanzoLogo } from '@/components/HanzoLogo';
@@ -46,7 +47,7 @@ import { useUser } from '@/hooks/useUser';
 import { builderLink } from '@/lib/api/projects';
 import { useFolders } from '@/hooks/useFolders';
 import { markProjectOpened, orderByRecentlyOpened } from '@/lib/recent-projects';
-import pkg from '@/package.json';
+import { VERSION } from '@/lib/version';
 
 // Collapsed sidebar width (icon-only rail). Kept exported for callers that lay
 // out around the sidebar; the width itself is applied via a Tailwind class now.
@@ -307,7 +308,7 @@ function SidebarContent({
                 <SizableText minWidth={0} flexDirection="column" textAlign="left">
                   <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" lineHeight={1}>Hanzo&nbsp;App</SizableText>
                   <SizableText marginTop="$0.5" fontSize={10} lineHeight={10} color="$color11">
-                    {isServerMode ? `Server · v${pkg.version}` : `v${pkg.version}`}
+                    {isServerMode ? `Server · v${VERSION}` : `v${VERSION}`}
                   </SizableText>
                 </SizableText>
               </Button>
@@ -644,8 +645,18 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
   );
 }
 
-/** Upgrade card → billing. */
+/**
+ * Upgrade card → billing. Renders ONLY for a caller we know pays for nothing.
+ *
+ * It used to render unconditionally, so a customer on a paid plan was told to
+ * upgrade to the thing they had already bought. `unpaid` is false while the plan
+ * is loading AND when the read failed, because neither is evidence of a free
+ * account — an upgrade offer is a claim about someone's billing, and a UI that
+ * makes that claim has to have asked.
+ */
 function UpgradeCard({ onClick }: { onClick: () => void }) {
+  const plan = usePlan();
+  if (!unpaid(plan)) return null;
   return (
     <Button
       onClick={onClick}

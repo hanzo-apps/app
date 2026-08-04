@@ -1,14 +1,13 @@
 const nextJest = require('next/jest');
-const nextConfig = require('./next.config.js');
+const { transpiled } = require('./transpile');
 
 // Which node_modules the CJS test runtime must transform: exactly what Next
-// already transpiles (ONE list, read from next.config — never a second copy),
-// plus `jose`. jose is ESM-only and @hanzo/iam's verifier requires it, so
-// leaving it untransformed hands the runtime a bare `export {}`.
+// transpiles. Both read `./transpile`, so the build and the tests can never
+// disagree about what needs transforming.
 //
 // Two shapes because pnpm stores a package twice: `.pnpm/<name>@<version>/`
 // with `/` flattened to `+`, and the plain `node_modules/<name>/` symlink.
-const TRANSFORMED = [...(nextConfig.transpilePackages || []), 'jose'];
+const TRANSFORMED = transpiled();
 const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const transformIgnorePatterns = [
   `/node_modules/\\.pnpm/(?!(?:${TRANSFORMED.map((n) => escape(n.replace('/', '+'))).join('|')})@)`,

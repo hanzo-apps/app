@@ -143,10 +143,10 @@ The UI is built entirely with @hanzo/ui primitives like Card, Button, ScrollArea
                         </SizableText>
                         {message.role === "assistant" && !message.isStreaming && (
                           <XStack gap="$1">
-                            <Button variant="ghost" size="icon" height="$5" width="$5">
+                            <Button variant="ghost" size="icon">
                               <Copy size={12} />
                             </Button>
-                            <Button variant="ghost" size="icon" height="$5" width="$5">
+                            <Button variant="ghost" size="icon">
                               <RefreshCw size={12} />
                             </Button>
                           </XStack>

@@ -247,7 +247,7 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
           <Button
             size="sm"
             variant="ghost"
-            height="$4.5" paddingHorizontal="$2" gap="$1.5"
+            paddingHorizontal="$2" gap="$1.5"
             onClick={() => saveFile(activeFilePath!)}
           >
             <Save size={12} />

@@ -44,6 +44,13 @@ export function SidebarWallet({collapsed}: {collapsed: boolean}) {
   const {ctx} = useOrg()
   const router = useRouter()
   const {phase, balance} = useCloudBalance()
+  // EVERY hook this component calls is called HERE, before the first `return`.
+  // `useUserTheme` used to sit below `if (!user) return null`, so the signed-out
+  // first paint ran a shorter hook list than the paint after the session
+  // resolved — React #310 ("rendered more hooks than during the previous
+  // render"), thrown during a commit and therefore fatal to the whole tree, not
+  // just to this control. It took down every page that mounts the shell.
+  const theme = useUserTheme()
   const cents = spendableCents(balance)
 
   if (!user) return null
@@ -63,8 +70,6 @@ export function SidebarWallet({collapsed}: {collapsed: boolean}) {
     ctx?.orgs ?? [],
     currentOrg() || ctx?.currentOrg || '',
   )
-
-  const theme = useUserTheme()
 
   // ONE control, everywhere: identity, the org, the balance, settings/usage and
   // sign-out all come from @hanzo/iam's UserMenu — the same widget hanzo.chat

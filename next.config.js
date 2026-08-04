@@ -154,6 +154,23 @@ const nextConfig = {
       '@react-native-async-storage/async-storage': false,
       'pino-pretty': false,
     };
+    // Semantic hierarchy for telemetry: stamp every component's root element with
+    // its own name (`data-observe="UserCard"`) so a PRODUCTION build keeps the
+    // component tree that React's dev-only fiber owner would have given us — the
+    // difference between insights recording "a click on a button" and "a click on
+    // Save, inside UserCard, inside Dashboard".
+    //
+    // A pre-loader, deliberately: SWC still does the real compiling. Adding a
+    // Babel config to get a Babel plugin would switch this whole app off SWC and
+    // cost far more than the feature is worth. The transform parses with
+    // TypeScript and splices text, so line numbers survive and a stack trace
+    // still points at the right line; anything it cannot parse passes through
+    // untouched, because a build must never fail over an observability nicety.
+    config.module.rules.push({
+      test: /\.(t|j)sx$/,
+      exclude: /node_modules/,
+      use: require.resolve('@hanzo/annotate/webpack'),
+    });
     return config;
   },
 }

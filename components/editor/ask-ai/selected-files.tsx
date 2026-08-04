@@ -32,7 +32,7 @@ export const SelectedFiles = ({
               height={40}
   />
             <Button
-              size="iconXsss"
+              size="icon"
               variant="secondary"
               position="absolute" top="$0.5" right="$0.5" {...{ opacity: isAiWorking ? 0.5 : undefined, cursor: isAiWorking ? "not-allowed" : undefined }}
               disabled={isAiWorking}

@@ -28,7 +28,7 @@ export default function ModelsStrip() {
     <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
       <YStack alignSelf="center" maxWidth={1152} alignItems="center" gap="$8" $lg={{ gap: "$10" }} className="shrink-cells">
         <Reveal>
-          <Paragraph fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={3.2} color="$color11">
+          <Paragraph fontFamily="$mono" fontSize={11} color="$color11">
             Hanzo AI
           </Paragraph>
           <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>

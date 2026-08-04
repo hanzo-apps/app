@@ -24,7 +24,7 @@ cp -r components/ui $TEMP_DIR/components/
 cp app/globals.css $TEMP_DIR/app/
 cp app/layout.tsx $TEMP_DIR/app/
 cp package.json $TEMP_DIR/
-cp next.config.js $TEMP_DIR/
+cp next.config.ts $TEMP_DIR/
 cp tailwind.config.js $TEMP_DIR/
 cp tsconfig.json $TEMP_DIR/
 cp postcss.config.* $TEMP_DIR/ 2>/dev/null || true
