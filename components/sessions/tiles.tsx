@@ -50,6 +50,7 @@ import {
   retain,
   setRatio,
   splitPane,
+  stableOrder,
 } from '@/lib/tiles';
 
 export interface TerminalPane {
@@ -104,6 +105,18 @@ export function Tiles({ panes }: { panes: TerminalPane[] }) {
 
   useEffect(() => { save(tile); }, [tile]);
 
+  // The order the panes are RENDERED in — append-only, never the server's. See
+  // `stableOrder`: the sessions array is ordered by recency, so following it
+  // moved iframes among their siblings and remounted every terminal on the page.
+  const [order, setOrder] = useState<string[]>([]);
+  useEffect(() => {
+    setOrder((prev) => stableOrder(prev, panes.map((p) => p.id)));
+  }, [panes]);
+  const rendered = useMemo(
+    () => order.map((id) => byId.get(id)).filter((p): p is TerminalPane => !!p),
+    [order, byId],
+  );
+
   const ids = useMemo(() => (tile ? paneIds(tile) : []), [tile]);
   const [focus, setFocus] = useState<string | null>(null);
   useEffect(() => {
@@ -148,6 +161,24 @@ export function Tiles({ panes }: { panes: TerminalPane[] }) {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [tile, focus]);
+
+  // CLICKING A TERMINAL FOCUSES ITS PANE — which it did not, because the only
+  // `onPointerDown` is on the 28px header: a click inside a cross-origin frame is
+  // consumed by that frame's document and this one never sees it.
+  //
+  // What the parent DOES see is its own window losing focus, after which
+  // `document.activeElement` is the <iframe> element that took it. That needs no
+  // cooperation from the terminal and no message channel. The timeout is required:
+  // activeElement is still the old node during the blur event itself.
+  useEffect(() => {
+    const onBlur = () =>
+      setTimeout(() => {
+        const el = document.activeElement;
+        if (el instanceof HTMLIFrameElement && el.dataset.pane) setFocus(el.dataset.pane);
+      }, 0);
+    window.addEventListener('blur', onBlur);
+    return () => window.removeEventListener('blur', onBlur);
+  }, []);
 
   // ---- dragging a divider -------------------------------------------------
   const boxRef = useRef<HTMLDivElement>(null);
@@ -235,7 +266,7 @@ export function Tiles({ panes }: { panes: TerminalPane[] }) {
     <div ref={boxRef} className="relative min-h-0 w-full flex-1 overflow-hidden rounded-lg border bg-black">
       {/* One element per terminal, in a fixed order. Only `style` changes when the
           layout does, so the frame — and the shell inside it — survives. */}
-      {panes.map((p) => {
+      {rendered.map((p) => {
         const r = placed.get(p.id);
         if (!r) return null; // not on screen right now
         const on = p.id === focus;
@@ -252,7 +283,13 @@ export function Tiles({ panes }: { panes: TerminalPane[] }) {
               }`}
             >
               <span className="truncate">{p.title}</span>
-              <span className="ml-auto flex items-center gap-0.5">
+              {/* ONE bare <button> per row below sm. assets/globals.css gives every
+                  bare button a 44x44 ::after overlay for touch; four of them at a
+                  ~24px pitch overlap by ~20px and the LAST one wins every contested
+                  tap — so on a phone "split down" was hit-tested as "close". The
+                  icons appear from sm up, where the pointer is precise and the
+                  overlay rule does not apply. */}
+              <span className="ml-auto hidden items-center gap-0.5 sm:flex">
                 <a
                   href={p.url}
                   target="_blank"
@@ -293,6 +330,16 @@ export function Tiles({ panes }: { panes: TerminalPane[] }) {
                   <X className="h-3.5 w-3.5" />
                 </button>
               </span>
+              {/* The phone's single control. Closing is the one thing that cannot
+                  be undone, so it is the one that must not be adjacent to anything. */}
+              <button
+                type="button"
+                onClick={() => doClose(p.id)}
+                aria-label={`Close ${p.title}`}
+                className="ml-auto rounded p-0.5 text-muted-foreground hover:bg-muted-foreground/20 sm:hidden"
+              >
+                <X className="h-4 w-4" />
+              </button>
             </div>
             {/* The frame and the way out, stacked. The hint sits UNDER the frame,
                 so a terminal that renders covers it and a blank one leaves it
@@ -314,6 +361,7 @@ export function Tiles({ panes }: { panes: TerminalPane[] }) {
                 </a>
               </div>
             <iframe
+              data-pane={p.id}
               src={p.url}
               title={p.title}
               className={`absolute inset-0 h-full w-full rounded-b-md border-x border-b bg-black ${

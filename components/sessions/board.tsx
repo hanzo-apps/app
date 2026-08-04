@@ -292,10 +292,13 @@ export function SessionBoard({
               </span>
             </>
           ) : null}
-          {/* The sweep, said once where it is used. */}
-          <span className="ml-auto shrink-0 text-xs text-muted-foreground">
-            ⌥← ⌥→ to move between panes
-          </span>
+          {/* No keyboard legend here. ⌥←/⌥→ is bound on `window`, and a click
+              inside a terminal moves focus into that frame's document — from
+              which this page receives no keydown at all. The shortcut therefore
+              works only while focus is in the chrome, which is precisely when
+              nobody needs it. Printing it as an instruction was a promise the
+              page cannot keep; it comes back when the machine's terminal
+              forwards the chord (see the tiles doc). */}
           {active?.terminal ? (
             <a
               href={active.terminal}

@@ -193,3 +193,21 @@ export function geometry(t: Tile): Geometry {
   walk(t, [], 0, 0, 100, 100);
   return { rects, dividers };
 }
+
+/** A DOM order that only ever grows.
+ *
+ * The panes render as a flat list whose ORDER decides React's reconciliation, so
+ * that order must never depend on anything a server sorts. It did: the list came
+ * straight from the sessions array, which the control plane orders by recency —
+ * so a session updating its `cwd` could reorder the array, move an iframe among
+ * its siblings, and remount every terminal on the page. The invariant this file
+ * exists to protect was being broken by the thing it was protecting.
+ *
+ * Appending new ids and never moving or removing an existing one makes the order
+ * a fact about THIS browser session rather than about the server's opinion.
+ */
+export function stableOrder(prev: readonly string[], present: readonly string[]): string[] {
+  const seen = new Set(prev);
+  const added = present.filter((id) => !seen.has(id));
+  return added.length === 0 ? (prev as string[]) : [...prev, ...added];
+}

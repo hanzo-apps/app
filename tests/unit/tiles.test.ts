@@ -10,6 +10,7 @@ import {
   retain,
   setRatio,
   splitPane,
+  stableOrder,
   type Tile,
 } from '@/lib/tiles';
 
@@ -184,5 +185,32 @@ describe('geometry is derived, so the panes can stay put in the DOM', () => {
     const after = setRatio(t, inner.path, 0.2) as Extract<Tile, { kind: 'split' }>;
     expect(after.ratio).toBe(0.5);
     expect(after.b).toMatchObject({ ratio: 0.2 });
+  });
+});
+
+describe('the DOM order is this browser’s, not the server’s', () => {
+  it('keeps what it had and appends what is new', () => {
+    expect(stableOrder(['a', 'b'], ['a', 'b', 'c'])).toEqual(['a', 'b', 'c']);
+  });
+
+  it('IGNORES a reorder — which is the whole point', () => {
+    // The control plane sorts sessions by recency, so this array really does
+    // reorder in normal use. Following it would move an iframe among its
+    // siblings and remount every terminal on the page.
+    const prev = ['a', 'b', 'c'];
+    expect(stableOrder(prev, ['c', 'b', 'a'])).toBe(prev);
+    expect(stableOrder(prev, ['b', 'a', 'c'])).toBe(prev);
+  });
+
+  it('keeps a departed id in place rather than closing the gap', () => {
+    // Removing it would shift every later sibling and remount their frames. The
+    // renderer skips an id with no rect; the ORDER does not need to know.
+    expect(stableOrder(['a', 'b', 'c'], ['a', 'c'])).toEqual(['a', 'b', 'c']);
+  });
+
+  it('returns the SAME array when nothing is new, so React sees no change', () => {
+    const prev = ['a', 'b'];
+    expect(stableOrder(prev, ['a', 'b'])).toBe(prev);
+    expect(stableOrder(prev, [])).toBe(prev);
   });
 });
