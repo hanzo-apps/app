@@ -206,7 +206,17 @@ export const accent = {
    * out near-black on a 20% grey button at 1.6:1, well under any legibility
    * floor and worse than the white pill it replaced. Measured in the browser,
    * not guessed — every inline copy of this recipe in the app has that bug.
+   *
+   * `$color12`, for the reason `selected` gives above and by the same
+   * measurement: a Button mounts its OWN theme scope, and inside it `--color`
+   * is `hsl(0 0% 80%)` — the same value as `--color11`, the quiet foreground.
+   * So the loudest control on the page painted its label rgb(204,204,204)
+   * while the `outline` button beside it, which resolves `$color12` inside the
+   * library, painted rgb(255,255,255): the primary action read QUIETER than
+   * the secondary sitting next to it. Read off /settings → Billing, where the
+   * two stood one above the other. `$color12` is full strength in every scope,
+   * so the emphasis survives the nesting that ate it.
    */
-  color: '$color',
-  hoverStyle: { backgroundColor: '$color6', color: '$color' },
+  color: '$color12',
+  hoverStyle: { backgroundColor: '$color6', color: '$color12' },
 } as const;
