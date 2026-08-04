@@ -329,7 +329,7 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
             <YStack rowGap="$2.5">
               {/* Export Data */}
               <XStack alignItems="center" gap="$3" padding="$3" borderRadius="$5" borderWidth={1}>
-                <Download size={16} color="$color11" />
+                <Download size={16} />
                 <YStack flex={1} minWidth={0}>
                   <YStack><SizableText fontSize="$3" fontWeight="500">Export All Data</SizableText></YStack>
                   <YStack>
@@ -350,7 +350,7 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
 
               {/* Import Data */}
               <XStack alignItems="center" gap="$3" padding="$3" borderRadius="$5" borderWidth={1}>
-                <Upload size={16} color="$color11" />
+                <Upload size={16} />
                 <YStack flex={1} minWidth={0}>
                   <YStack><SizableText fontSize="$3" fontWeight="500">Import Data</SizableText></YStack>
                   <YStack>

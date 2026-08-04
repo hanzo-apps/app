@@ -596,11 +596,11 @@ export default function TestGenerationPage() {
 
   const getStatusIcon = (status: TestResult['status']) => {
     switch (status) {
-      case 'success': return <CheckCircle size={16} color="$green9" />;
-      case 'failed': return <XCircle size={16} color="$red9" />;
-      case 'stopped': return <Square size={16} color="$orange9" />;
-      case 'running': return <RefreshCw size={16} color="$blue9" />;
-      default: return <Clock size={16} color="$color8" />;
+      case 'success': return <CheckCircle size={16} />;
+      case 'failed': return <XCircle size={16} />;
+      case 'stopped': return <Square size={16} />;
+      case 'running': return <RefreshCw size={16} />;
+      default: return <Clock size={16} />;
     }
   };
 
@@ -949,7 +949,7 @@ export default function TestGenerationPage() {
         {/* Info Banner */}
         <YStack backgroundColor="$blue1" borderWidth={1} borderColor="$blue3" borderRadius="$5" padding="$4" marginBottom="$5" $theme-dark={{ backgroundColor: "$blue12", borderColor: "$blue11" }}>
           <XStack alignItems="flex-start" gap="$3">
-            <AlertCircle size={20} color="$blue10" />
+            <AlertCircle size={20} />
             <YStack flex={1}>
               <H3 fontWeight="500" color="$blue12" marginBottom="$1" $theme-dark={{ color: "$blue2" }}>How to Interpret Benchmark Results</H3>
               <Paragraph fontSize="$3" color="$blue11" $theme-dark={{ color: "$blue3" }}>

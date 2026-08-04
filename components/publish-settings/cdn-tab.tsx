@@ -110,7 +110,7 @@ export function CdnTab({ settings, onChange }: CdnTabProps) {
 
       {settings.cdnLinks.length === 0 ? (
         <YStack alignItems="center" padding="$6" borderWidth={2} borderStyle="dashed" borderRadius="$5">
-          <Link2 size={48} color="$color11" />
+          <Link2 size={48} />
           <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">No CDN Resources</H3>
           <Paragraph fontSize="$3" color="$color11" marginBottom="$4" textAlign="center">
             Add libraries like Bootstrap, Tailwind, or custom stylesheets

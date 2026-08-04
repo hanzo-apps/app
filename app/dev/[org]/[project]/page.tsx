@@ -144,7 +144,7 @@ export default function ProjectDevPage() {
       <XStack height="100dvh" alignItems="center" justifyContent="center" backgroundColor="$background" paddingHorizontal="$5">
         <YStack maxWidth={448}>
           <XStack alignSelf="center" marginBottom="$4.5" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$6" backgroundColor="$color3">
-            <LockKeyhole size={24} color="$color11" />
+            <LockKeyhole size={24} />
           </XStack>
           <H1 fontSize="$6" fontWeight="500" color="$color" textAlign="center">
             Can’t open <SizableText fontFamily="$mono">{org}/{slug}</SizableText>

@@ -62,7 +62,7 @@ export function SchemaViewer({ deploymentId, schemaEndpoint, showSystemTablesTog
   if (loading) {
     return (
       <XStack alignItems="center" justifyContent="center" height="100%">
-        <Loader2 size={24} color="$color11" />
+        <Loader2 size={24} />
       </XStack>
     );
   }
@@ -70,7 +70,7 @@ export function SchemaViewer({ deploymentId, schemaEndpoint, showSystemTablesTog
   if (error) {
     return (
       <YStack alignItems="center" justifyContent="center" height="100%" gap="$4">
-        <AlertCircle size={32} color="$red9" />
+        <AlertCircle size={32} />
         <Paragraph fontSize="$3" color="$color11">{error}</Paragraph>
         <Button variant="outline" onClick={loadSchema}>
           Retry
@@ -107,7 +107,7 @@ export function SchemaViewer({ deploymentId, schemaEndpoint, showSystemTablesTog
       <YStack flex={1} overflow="scroll" borderWidth={1} borderRadius="$5">
         {filteredTables.length === 0 ? (
           <YStack alignItems="center" justifyContent="center" height="100%" padding="$6">
-            <Table2 size={32} color="$color11" />
+            <Table2 size={32} />
             <Paragraph fontSize="$3" color="$color11" textAlign="center">No user tables found</Paragraph>
             <Paragraph fontSize="$1" color="$color11" marginTop="$1" textAlign="center">
               Create tables using the SQL editor
@@ -122,11 +122,11 @@ export function SchemaViewer({ deploymentId, schemaEndpoint, showSystemTablesTog
                   width="100%" alignItems="center" gap="$2" padding="$3" justifyContent="flex-start" hoverStyle={{ backgroundColor: "$color3" }}
                 >
                   {expandedTables.has(table.name) ? (
-                    <ChevronDown size={16} color="$color11" />
+                    <ChevronDown size={16} />
                   ) : (
-                    <ChevronRight size={16} color="$color11" />
+                    <ChevronRight size={16} />
                   )}
-                  <Table2 size={16} color="$blue9" />
+                  <Table2 size={16} />
                   <SizableText flex={1} fontFamily="$mono" fontSize="$3">{table.name}</SizableText>
                   <SizableText fontSize="$1" color="$color11">
                     {table.rowCount} row{table.rowCount !== 1 ? 's' : ''}
@@ -152,7 +152,7 @@ export function SchemaViewer({ deploymentId, schemaEndpoint, showSystemTablesTog
                           <YStack key={col.name} borderBottomWidth={1} className="last-flat">
                             <XStack padding="$2" alignItems="center" gap="$1.5">
                               {col.primaryKey && (
-                                <KeyRound size={12} color="$yellow9" />
+                                <KeyRound size={12} />
                               )}
                               <SizableText fontFamily="$mono" fontSize="$3">{col.name}</SizableText>
                             </XStack>

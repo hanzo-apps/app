@@ -120,7 +120,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
             </YStack>
           ) : (
             <XStack marginBottom="$4.5" height="$10" width="$10" alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
-              <Sparkles size={32} color="$color" />
+              <Sparkles size={32} />
             </XStack>
           )}
           <H1 fontSize="$10" fontWeight="500" letterSpacing={-0.4}>{templateTitle}</H1>
@@ -175,7 +175,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
                       <XStack
                         height="$4" width="$4" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} {...{ borderColor: active ? "$color12" : "$color", backgroundColor: active ? "$color12" : undefined }}
                       >
-                        {active && <Check size={12} color="$background" strokeWidth={3} />}
+                        {active && <Check size={12} strokeWidth={3} />}
                       </XStack>
                     </XStack>
                     <Paragraph marginTop="$0.5" fontSize={13} lineHeight="1.375" color="$color11">{opt.desc}</Paragraph>

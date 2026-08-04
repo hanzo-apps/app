@@ -125,7 +125,7 @@ export default function AppsPage() {
           <Paragraph marginTop="$1" fontSize="$12" fontWeight="500" lineHeight="1.02" letterSpacing={-0.4} color="$color11" $md={{ fontSize: 64 }}>
             Everywhere.
           </Paragraph>
-          <Paragraph marginTop="$5" maxWidth={576} fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
+          <Paragraph marginTop="$5" maxWidth={576} fontSize="$4" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
             One key, every surface. Install Hanzo in your browser, editor,
             desktop, and office — or connect the tools your team already runs.
           </Paragraph>
@@ -210,7 +210,7 @@ export default function AppsPage() {
       {/* ── CTA — the page's real conversion ────────────────────────────────── */}
       <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$12" $md={{ paddingHorizontal: "$6" }}>
         <YStack alignSelf="center" maxWidth={1152}>
-          <H2 fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
+          <H2 fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }} lineHeight="1.1">
             Start with one key.
           </H2>
           <Paragraph marginTop="$3" maxWidth={448} fontSize={15} lineHeight="1.625" color="$color11">

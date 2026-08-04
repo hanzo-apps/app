@@ -180,7 +180,7 @@ export function SqlEditor({ deploymentId, queryEndpoint }: SqlEditorProps) {
           <YStack height="100%">
             {/* Status bar */}
             <XStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$2" backgroundColor="$color3" borderBottomWidth={1}>
-              <CheckCircle2 size={16} color="$green9" />
+              <CheckCircle2 size={16} />
               {result.rows && result.rows.length > 0 ? (
                 <SizableText fontSize="$3">{result.rows.length} row{result.rows.length !== 1 ? 's' : ''}</SizableText>
               ) : result.rowsAffected !== undefined && result.rowsAffected > 0 ? (
@@ -227,7 +227,7 @@ export function SqlEditor({ deploymentId, queryEndpoint }: SqlEditorProps) {
           </YStack>
         ) : (
           <YStack height="100%" alignItems="center" justifyContent="center" gap="$2" padding="$4">
-            <AlertCircle size={24} color="$red9" />
+            <AlertCircle size={24} />
             <Paragraph fontSize="$3" color="$red9" fontWeight="500">Query Error</Paragraph>
             <Paragraph fontSize="$3" color="$color11" textAlign="center" maxWidth={448}>
               {result.error}

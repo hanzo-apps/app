@@ -120,7 +120,7 @@ export function SecretsManager({ deploymentId, dataProvider }: SecretsManagerPro
   if (loading) {
     return (
       <XStack alignItems="center" justifyContent="center" height="100%">
-        <Loader2 size={24} color="$color11" />
+        <Loader2 size={24} />
       </XStack>
     );
   }
@@ -128,7 +128,7 @@ export function SecretsManager({ deploymentId, dataProvider }: SecretsManagerPro
   if (error) {
     return (
       <YStack alignItems="center" justifyContent="center" height="100%" gap="$4">
-        <AlertCircle size={32} color="$red9" />
+        <AlertCircle size={32} />
         <Paragraph fontSize="$3" color="$color11">{error}</Paragraph>
         <Button variant="outline" onClick={loadSecrets}>
           Retry
@@ -167,7 +167,7 @@ export function SecretsManager({ deploymentId, dataProvider }: SecretsManagerPro
       <YStack flex={1} overflow="scroll">
         {secrets.length === 0 ? (
           <YStack alignItems="center" justifyContent="center" height="100%" padding="$6" borderWidth={1} borderRadius="$5">
-            <Key size={32} color="$color11" />
+            <Key size={32} />
             <Paragraph fontSize="$3" color="$color11" textAlign="center">No secrets yet</Paragraph>
             <Paragraph fontSize="$1" color="$color11" marginTop="$1" marginBottom="$4" textAlign="center">
               Store API keys and tokens securely for your edge functions
@@ -191,7 +191,7 @@ export function SecretsManager({ deploymentId, dataProvider }: SecretsManagerPro
                 <XStack alignItems="flex-start" justifyContent="space-between" gap="$2">
                   <YStack flex={1} minWidth={0} overflow="hidden">
                     <XStack alignItems="center" gap="$2" flexWrap="wrap">
-                      <Key size={16} color="$yellow9" />
+                      <Key size={16} />
                       <SizableText fontFamily="$mono" fontWeight="500" numberOfLines={1}>{secret.name}</SizableText>
                       {!secret.hasValue && (
                         <Badge variant="outline" className="shrink-0 border-yellow-500 text-yellow-600">

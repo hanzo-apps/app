@@ -40,7 +40,7 @@ export default function FaqSection({
               </Paragraph>
             )}
             {title && (
-              <H2 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} textAlign="center" $md={{ fontSize: "$11" }}>
+              <H2 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} textAlign="center" $md={{ fontSize: "$11" }} lineHeight="1.1">
                 {title}
               </H2>
             )}

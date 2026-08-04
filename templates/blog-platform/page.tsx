@@ -114,7 +114,7 @@ export default function BlogPlatform() {
 
             <XStack alignItems="center" gap="$4">
               <YStack position="relative" display="none">
-                <Search size={16} color="$color11" />
+                <Search size={16} />
                 <Input
                   placeholder="Search articles..."
                   value={searchQuery}

@@ -152,7 +152,7 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
         <XStack alignItems="center" justifyContent="space-between" paddingHorizontal="$2" paddingVertical="$1.5">
           <SizableText fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.4}>Collections</SizableText>
           <Button onClick={loadSchema} title="Refresh">
-            <RefreshCw size={14} color="$color11" />
+            <RefreshCw size={14} />
           </Button>
         </XStack>
         {tables.length === 0 && (
@@ -173,11 +173,11 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
       {/* Records */}
       <YStack minWidth={0} flex={1}>
         <XStack alignItems="center" gap="$2" borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$2">
-          <Database size={16} color="$color11" />
+          <Database size={16} />
           <SizableText fontSize="$3" fontWeight="500" color="$color">{selected || '—'}</SizableText>
           <SizableText fontSize="$1" color="$color11">{filtered.length} record{filtered.length === 1 ? '' : 's'}</SizableText>
           <YStack position="relative" marginLeft="auto">
-            <Search size={14} color="$color11" />
+            <Search size={14} />
             <Input
               value={search}
               onChangeText={(t) => setSearch(t)}
@@ -232,10 +232,10 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
                     <SizableText paddingHorizontal="$3" paddingVertical="$1.5">
                       <XStack alignItems="center" gap="$1" opacity={0} $group-hover={{ opacity: 1 }}>
                         <Button onClick={() => openEdit(row)} title="Edit">
-                          <Pencil size={14} color="$color11" />
+                          <Pencil size={14} />
                         </Button>
                         <Button onClick={() => del(row)} title="Delete">
-                          <Trash2 size={14} color="$color11" />
+                          <Trash2 size={14} />
                         </Button>
                       </XStack>
                     </SizableText>
@@ -256,7 +256,7 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
                 {editing.mode === 'new' ? 'New record' : 'Edit record'} · <SizableText color="$color11">{selected}</SizableText>
               </H3>
               <Button onClick={() => !saving && setEditing(null)}>
-                <X size={20} color="$color11" />
+                <X size={20} />
               </Button>
             </XStack>
             <YStack rowGap="$3">

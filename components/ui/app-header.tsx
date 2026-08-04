@@ -123,7 +123,7 @@ export function AppHeader({
             <H1 fontSize="$6" fontWeight="500" $md={{ display: "none" }}>{leftText}</H1>
           ) : title ? (
             <>
-              {title && <H1 fontSize="$6" fontWeight="500" $md={{ fontSize: "$7" }}>{title}</H1>}
+              {title && <H1 fontSize="$6" fontWeight="500" $md={{ fontSize: "$7" }} lineHeight="1.1">{title}</H1>}
               {badge && <Badge variant="secondary">{badge}</Badge>}
             </>
           ) : null}

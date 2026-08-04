@@ -69,7 +69,7 @@ export function FileTree({
               key={page.path}
               group alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1.5" backgroundColor={active ? "$color3" : undefined} hoverStyle={active ? undefined : { backgroundColor: "white" }}
             >
-              <FileCode2 size={14} color="$color11" />
+              <FileCode2 size={14} />
               {isRenaming ? (
                 <Input
                   autoFocus
@@ -128,7 +128,7 @@ export function FileTree({
         })}
         {pages.length === 0 && (
           <YStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$6">
-            <X size={16} color="$color11" />
+            <X size={16} />
             <Paragraph fontSize={11} color="$color11">No files yet.</Paragraph>
           </YStack>
         )}

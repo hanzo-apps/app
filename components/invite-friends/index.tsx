@@ -38,7 +38,7 @@ export function InviteFriends() {
                 <SizableText fontSize="$8">😜</SizableText>
               </XStack>
             </XStack>
-            <Paragraph fontSize="$7" fontWeight="500" color="$color" maxWidth={200}>
+            <Paragraph fontSize="$7" fontWeight="500" color="$color" maxWidth={200} lineHeight="1.4">
               Invite your friends to join us!
             </Paragraph>
             <Paragraph fontSize="$3" color="$color11" marginTop="$2" maxWidth={384}>

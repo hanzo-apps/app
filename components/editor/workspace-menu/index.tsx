@@ -166,7 +166,7 @@ export function WorkspaceMenu({
             <SizableText maxWidth="9rem" numberOfLines={1} fontWeight="500" color="$color">
               {projectName}
             </SizableText>
-            <ChevronsUpDown size={14} color="$color11" />
+            <ChevronsUpDown size={14} />
           </Button>
         </DropdownMenuTrigger>
 
@@ -228,7 +228,7 @@ export function WorkspaceMenu({
                     >
                       <OrgAvatar name={orgDisplayName(orgs, o.name)} logo={o.logo} />
                       <SizableText minWidth={0} flex={1} numberOfLines={1} fontSize="$3" color="$color">{orgDisplayName(orgs, o.name)}</SizableText>
-                      {isCurrent && <Check size={16} color="$color" />}
+                      {isCurrent && <Check size={16} />}
                     </DropdownMenuItem>
                   );
                 })}
@@ -255,7 +255,7 @@ export function WorkspaceMenu({
             ><YStack width="100%" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$3" paddingVertical="$2.5" hoverStyle={{ borderColor: "$borderColor", backgroundColor: "$color" }} focusVisibleStyle={{ borderColor: "$borderColor" }}>
               <XStack alignItems="center" justifyContent="space-between">
                 <XStack alignItems="center" gap="$1.5">
-                  <Wallet size={14} color="$color11" />
+                  <Wallet size={14} />
                   <SizableText fontSize="$1" fontWeight="500" color="$color">Credits</SizableText>
                 </XStack>
                 <SizableText fontFamily="$mono" fontSize="$3" fontVariant={["tabular-nums"]} color="$color">{balanceText}</SizableText>

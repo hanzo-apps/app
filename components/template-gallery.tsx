@@ -90,7 +90,7 @@ function TemplateCard({ t, showAuthor = false }: { t: TemplateEntry; showAuthor?
         <H3 alignItems="flex-start" gap="$1.5" fontSize={15} fontWeight="500" lineHeight="1.375" letterSpacing={-0.4} color="$color">
           <SizableText numberOfLines={1}>{t.name}</SizableText>
           <ArrowUpRight
-            size={16} color="$color11"
+            size={16}
             strokeWidth={1.6}
   />
         </H3>
@@ -164,7 +164,7 @@ export function TemplateGallery({
         <H1 marginTop="$3" fontSize="$10" fontWeight="500" letterSpacing={-0.4} color="$color" $sm={{ fontSize: "$11" }} $md={{ fontSize: "2.75rem", lineHeight: "1.05" }}>
           {heading}
         </H1>
-        <Paragraph marginTop="$4" fontSize="$4" color="$color11" $sm={{ fontSize: "$6" }}>{lead}</Paragraph>
+        <Paragraph marginTop="$4" fontSize="$4" color="$color11" $sm={{ fontSize: "$6" }} lineHeight="1.5">{lead}</Paragraph>
       </YStack>
 
       {/* Category rail — instant client-side filtering. */}

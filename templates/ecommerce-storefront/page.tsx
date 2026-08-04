@@ -94,7 +94,7 @@ export default function EcommerceStorefront() {
 
             <XStack alignItems="center" gap="$4">
               <YStack position="relative" display="none">
-                <Search size={16} color="$color11" />
+                <Search size={16} />
                 <Input
                   placeholder="Search products..."
                   paddingLeft={36} width={200} $lg={{ width: 300 }}
@@ -248,7 +248,7 @@ export default function EcommerceStorefront() {
           <YStack gap="$6">
             <SizableText textAlign="center" display="flex" flexDirection="column">
               <XStack width="$8" height="$8" borderRadius="$10" backgroundColor="$orange9" alignItems="center" justifyContent="center" alignSelf="center" marginBottom="$3">
-                <ShoppingCart size={24} color="$orange9" />
+                <ShoppingCart size={24} />
               </XStack>
               <H3 fontWeight="600" marginBottom="$1">Free Shipping</H3>
               <Paragraph fontSize="$3" color="$color11">
@@ -257,7 +257,7 @@ export default function EcommerceStorefront() {
             </SizableText>
             <SizableText textAlign="center" display="flex" flexDirection="column">
               <XStack width="$8" height="$8" borderRadius="$10" backgroundColor="$pink9" alignItems="center" justifyContent="center" alignSelf="center" marginBottom="$3">
-                <Star size={24} color="$pink9" />
+                <Star size={24} />
               </XStack>
               <H3 fontWeight="600" marginBottom="$1">Quality Products</H3>
               <Paragraph fontSize="$3" color="$color11">
@@ -266,7 +266,7 @@ export default function EcommerceStorefront() {
             </SizableText>
             <SizableText textAlign="center" display="flex" flexDirection="column">
               <XStack width="$8" height="$8" borderRadius="$10" backgroundColor="$red9" alignItems="center" justifyContent="center" alignSelf="center" marginBottom="$3">
-                <Heart size={24} color="$red9" />
+                <Heart size={24} />
               </XStack>
               <H3 fontWeight="600" marginBottom="$1">24/7 Support</H3>
               <Paragraph fontSize="$3" color="$color11">

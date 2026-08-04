@@ -72,19 +72,19 @@ export default function SignupPage() {
                 <H3 fontSize="$3" fontWeight="500" color="$color" marginBottom="$3">What you'll get:</H3>
                 <YStack gap="$2">
                   <XStack alignItems="center" gap="$3">
-                    <Sparkles size={16} color="$color" />
+                    <Sparkles size={16} />
                     <SizableText fontSize="$3" color="$color">Access to 400+ AI models</SizableText>
                   </XStack>
                   <XStack alignItems="center" gap="$3">
-                    <Zap size={16} color="$color" />
+                    <Zap size={16} />
                     <SizableText fontSize="$3" color="$color">$5 free cloud credits to start</SizableText>
                   </XStack>
                   <XStack alignItems="center" gap="$3">
-                    <Shield size={16} color="$color" />
+                    <Shield size={16} />
                     <SizableText fontSize="$3" color="$color">Secure cloud infrastructure</SizableText>
                   </XStack>
                   <XStack alignItems="center" gap="$3">
-                    <Rocket size={16} color="$color" />
+                    <Rocket size={16} />
                     <SizableText fontSize="$3" color="$color">Deploy instantly to production</SizableText>
                   </XStack>
                 </YStack>
@@ -121,11 +121,11 @@ export default function SignupPage() {
               {/* Trust badges */}
               <XStack alignItems="center" justifyContent="center" gap="$5" paddingTop="$2">
                 <XStack alignItems="center" gap="$2">
-                  <Shield size={16} color="$color11" />
+                  <Shield size={16} />
                   <SizableText fontSize="$1" color="$color11">Encrypted &amp; Audited</SizableText>
                 </XStack>
                 <XStack alignItems="center" gap="$2">
-                  <Shield size={16} color="$color11" />
+                  <Shield size={16} />
                   <SizableText fontSize="$1" color="$color11">GDPR Ready</SizableText>
                 </XStack>
               </XStack>

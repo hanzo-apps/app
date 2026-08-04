@@ -91,7 +91,7 @@ function OptionCard({
       <YStack minWidth={0} flex={1}>
         <XStack alignItems="center" justifyContent="space-between" gap="$2">
           <SizableText fontSize="$3" fontWeight="500" color="$color">{title}</SizableText>
-          <ArrowRight size={16} color="$color11" />
+          <ArrowRight size={16} />
         </XStack>
         <SizableText marginTop="$0.5" fontSize="$1" lineHeight="1.625" color="$color11">{desc}</SizableText>
       </YStack>

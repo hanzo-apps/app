@@ -77,7 +77,7 @@ export function BuildTranscript({ build }: { build: Build }) {
   return (
     <SizableText position="relative" minHeight="100%" backgroundColor="$background" color="$color" overflow="hidden" display="flex" flexDirection="column">
       <YStack pointerEvents="none" position="fixed" top={0} right={0} bottom={0} left={0} zIndex={0} overflow="hidden">
-        <YStack position="absolute" left="50%" top="-14%" height={520} width={860} x="-50%" borderRadius="$10" backgroundColor="$color" opacity={0.06} style={{ filter: "blur(140px)" }} />
+        <YStack position="absolute" left="50%" top="-14%" height={520} width={860} marginLeft={-430} borderRadius="$10" backgroundColor="$color005" filter="blur(130px)" />
       </YStack>
 
       <Header />
@@ -93,11 +93,11 @@ export function BuildTranscript({ build }: { build: Build }) {
                   </SizableText></Link>
                 </li>
                 <li aria-hidden="true">
-                  <ChevronRight size={12} color="$color11" />
+                  <ChevronRight size={12} />
                 </li>
                 <li>{build.org}</li>
                 <li aria-hidden="true">
-                  <ChevronRight size={12} color="$color11" />
+                  <ChevronRight size={12} />
                 </li>
                 <SizableText color="$color">{build.project}</SizableText>
               </SizableText>
@@ -160,11 +160,11 @@ export function BuildTranscript({ build }: { build: Build }) {
                   <SizableText key={t.turn} position="relative" paddingBottom="$7" className="last-flat">
                     <SizableText position="absolute" left={-31} height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background">
                       {isUser ? (
-                        <User size={10} color="$color11" />
+                        <User size={10} />
                       ) : t.kind === "status" ? (
-                        <Terminal size={10} color="$color11" />
+                        <Terminal size={10} />
                       ) : (
-                        <Bot size={10} color="$color11" />
+                        <Bot size={10} />
                       )}
                     </SizableText>
 
@@ -187,7 +187,7 @@ export function BuildTranscript({ build }: { build: Build }) {
                     {t.commit ? (
                       <YStack marginTop="$4" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$3">
                         <XStack flexWrap="wrap" alignItems="center" gap="$2">
-                          <GitCommit size={14} color="$color11" />
+                          <GitCommit size={14} />
                           <SizableText fontFamily="$mono" fontSize={11} color="$color">
                             {t.commit.slice(0, 12)}
                           </SizableText>

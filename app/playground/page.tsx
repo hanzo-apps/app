@@ -428,19 +428,19 @@ export default function PlaygroundPage() {
                       {/* Metrics */}
                       <XStack alignItems="center" gap="$4" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
                         <XStack alignItems="center" gap="$1">
-                          <Clock size={12} color="$color11" />
+                          <Clock size={12} />
                           <SizableText fontSize="$1" color="$color11">
                             {activeResult.models[0]?.latency.toFixed(0)}ms
                           </SizableText>
                         </XStack>
                         <XStack alignItems="center" gap="$1">
-                          <Hash size={12} color="$color11" />
+                          <Hash size={12} />
                           <SizableText fontSize="$1" color="$color11">
                             {activeResult.models[0]?.tokens} tokens
                           </SizableText>
                         </XStack>
                         <XStack alignItems="center" gap="$1">
-                          <DollarSign size={12} color="$color11" />
+                          <DollarSign size={12} />
                           <SizableText fontSize="$1" color="$color11">
                             ${activeResult.models[0]?.cost.toFixed(4)}
                           </SizableText>
@@ -466,7 +466,7 @@ export default function PlaygroundPage() {
                   ) : (
                     <XStack height={400} alignItems="center" justifyContent="center">
                       <YStack>
-                        <Sparkles size={48} color="$color11" />
+                        <Sparkles size={48} />
                         <Paragraph color="$color11">Generate a response to see output</Paragraph>
                       </YStack>
                     </XStack>
@@ -511,19 +511,19 @@ export default function PlaygroundPage() {
                         {/* Metrics */}
                         <XStack alignItems="center" gap="$4" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
                           <XStack alignItems="center" gap="$1">
-                            <Clock size={12} color="$color11" />
+                            <Clock size={12} />
                             <SizableText fontSize="$1" color="$color11">
                               {activeResult.models[1].latency.toFixed(0)}ms
                             </SizableText>
                           </XStack>
                           <XStack alignItems="center" gap="$1">
-                            <Hash size={12} color="$color11" />
+                            <Hash size={12} />
                             <SizableText fontSize="$1" color="$color11">
                               {activeResult.models[1].tokens} tokens
                             </SizableText>
                           </XStack>
                           <XStack alignItems="center" gap="$1">
-                            <DollarSign size={12} color="$color11" />
+                            <DollarSign size={12} />
                             <SizableText fontSize="$1" color="$color11">
                               ${activeResult.models[1].cost.toFixed(4)}
                             </SizableText>
@@ -549,7 +549,7 @@ export default function PlaygroundPage() {
                     ) : (
                       <XStack height={400} alignItems="center" justifyContent="center">
                         <YStack>
-                          <Sparkles size={48} color="$color11" />
+                          <Sparkles size={48} />
                           <Paragraph color="$color11">Generate a response to see output</Paragraph>
                         </YStack>
                       </XStack>

@@ -198,7 +198,7 @@ function ConnectorsInner() {
   if (!userLoading && !user) {
     return (
       <YStack minHeight="100%" alignItems="center" justifyContent="center" gap="$4" backgroundColor="$background" paddingHorizontal="$5">
-        <Plug size={32} color="$color11" />
+        <Plug size={32} />
         <div>
           <H1 textAlign="center" fontSize="$6" fontWeight="500">Sign in to manage connectors</H1>
           <Paragraph textAlign="center" marginTop="$1" fontSize="$3" color="$color11">
@@ -252,7 +252,7 @@ function ConnectorsInner() {
       <YStack alignSelf="center" maxWidth={768} paddingHorizontal="$5" paddingVertical="$5">
         {/* Search */}
         <YStack position="relative" marginBottom="$4">
-          <Search size={16} color="$color11" />
+          <Search size={16} />
           <Input
             placeholder="Search connectors…"
             paddingLeft={36}
@@ -286,7 +286,7 @@ function ConnectorsInner() {
         ) : providers.length === 0 ? (
           /* Empty — honest about the org-scoped surface being unpopulated. */
           <YStack borderRadius="$6" borderWidth={1} borderStyle="dashed" borderColor="$borderColor" paddingHorizontal="$5" paddingVertical="$10">
-            <Plug size={32} color="$color11" />
+            <Plug size={32} />
             <H2 textAlign="center" fontSize="$3" fontWeight="500">No connectors available yet</H2>
             <Paragraph textAlign="center" alignSelf="center" marginTop="$1" maxWidth={384} fontSize="$3" color="$color11">
               Connectors for this workspace will appear here once they're enabled. Nothing to set

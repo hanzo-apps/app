@@ -205,7 +205,7 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
                   {(settings.analytics.features?.heatmaps || settings.analytics.features?.sessionRecording) && (
                     <YStack padding="$4" backgroundColor="$orange1" borderWidth={1} borderColor="$orange3" borderRadius="$5" $theme-dark={{ backgroundColor: "$orange12", borderColor: "$orange11" }}>
                       <XStack gap="$3">
-                        <Info size={20} color="$orange10" />
+                        <Info size={20} />
                         <YStack rowGap="$1">
                           <H4 fontWeight="500" color="$orange12" $theme-dark={{ color: "$orange2" }}>
                             High Data Volume Features Enabled
@@ -358,7 +358,7 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
                   <Label htmlFor="privacy-mode" fontSize="$4">
                     Privacy Mode
                   </Label>
-                  <Shield size={16} color="$color11" />
+                  <Shield size={16} />
                 </XStack>
                 <Paragraph fontSize="$3" color="$color11">
                   Anonymize IPs and disable cookies for GDPR compliance
@@ -376,7 +376,7 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
             {settings.analytics.privacyMode && (
               <YStack padding="$4" backgroundColor="$green1" borderWidth={1} borderColor="$green3" borderRadius="$5" $theme-dark={{ backgroundColor: "$green12", borderColor: "$green11" }}>
                 <XStack gap="$3">
-                  <Info size={20} color="$green10" />
+                  <Info size={20} />
                   <YStack rowGap="$1">
                     <H4 fontWeight="500" color="$green12" $theme-dark={{ color: "$green2" }}>
                       Privacy Mode Enabled

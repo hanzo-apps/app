@@ -221,7 +221,7 @@ export default function ProjectSettingsPage() {
                 Every published app is versioned in Hanzo Git (S3-backed). Its source is committed and pushed on each publish.
               </Paragraph>
               <XStack marginTop="$3" alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2">
-                <GitBranch size={14} color="$color11" />
+                <GitBranch size={14} />
                 <SizableText minWidth={0} flex={1} numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">
                   https://git.hanzo.ai/{org}/{slug}.git
                 </SizableText>

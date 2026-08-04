@@ -46,7 +46,7 @@ export function ProjectCard({ project }: { project: Project }) {
         <DropdownMenu placement="bottom-start">
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
-              <EllipsisVertical size={20} color="$color11" />
+              <EllipsisVertical size={20} />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent width={224}>
@@ -55,7 +55,7 @@ export function ProjectCard({ project }: { project: Project }) {
                 href={`/projects/${project.space_id}/settings`}
               >
                 <DropdownMenuItem>
-                  <Settings size={16} color="$color" />
+                  <Settings size={16} />
                   Project Settings
                 </DropdownMenuItem>
               </a>

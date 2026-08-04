@@ -160,7 +160,7 @@ export default function LandingPage() {
     <YStack position="relative" minHeight="100%" backgroundColor="$background" overflow="hidden" className="landing-root">
       {/* Monochrome hero glow — single soft white radial, zero hue. */}
       <YStack pointerEvents="none" position="fixed" top={0} right={0} bottom={0} left={0} zIndex={0} overflow="hidden">
-        <YStack position="absolute" left="50%" top="-12%" height={560} width={900} x="-50%" borderRadius="$10" backgroundColor="$color" opacity={0.06} style={{ filter: "blur(140px)" }} />
+        <YStack position="absolute" left="50%" top="-12%" height={560} width={900} marginLeft={-450} borderRadius="$10" backgroundColor="$color0075" filter="blur(130px)" />
       </YStack>
 
       <Header />
@@ -170,9 +170,9 @@ export default function LandingPage() {
         <YStack paddingHorizontal="$4" paddingBottom="$9" paddingTop="$10" $md={{ paddingHorizontal: "$6", paddingBottom: "$11", paddingTop: "$12" }}>
           <YStack alignSelf="center" maxWidth={768}>
             <Reveal>
-              <XStack marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$3" paddingVertical="$1.5">
-                <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color" />
-                <SizableText fontFamily="$mono" fontSize={11} color="$color">
+              <XStack alignSelf="center" marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color0025" paddingHorizontal="$3" paddingVertical="$1.5">
+                <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color06" />
+                <SizableText fontFamily="$mono" fontSize={11} letterSpacing={1.65} textTransform="uppercase" color="$color11">
                   Sites, wired to real data &amp; AI
                 </SizableText>
               </XStack>
@@ -190,7 +190,7 @@ export default function LandingPage() {
             </Reveal>
 
             <Reveal delay={120}>
-              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" textAlign="center" color="$color" $md={{ fontSize: "$6" }}>
+              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" textAlign="center" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
                 One prompt becomes a live app on Hanzo Cloud — UI, database,
                 auth, and 400+ AI models, wired in and deployed.
               </Paragraph>
@@ -213,19 +213,21 @@ export default function LandingPage() {
                   <YStack marginTop="$5">
                     <XStack marginBottom="$3" alignItems="center" justifyContent="center" gap="$2.5">
                       <SizableText height={1} width="$5" backgroundColor="$borderColor" />
-                      <SizableText fontFamily="$mono" fontSize={11} color="$color">or start from a template</SizableText>
+                      <SizableText fontFamily="$mono" fontSize={11} letterSpacing={1.32} textTransform="uppercase" color="$color10">or start from a template</SizableText>
                       <SizableText height={1} width="$5" backgroundColor="$borderColor" />
                     </XStack>
                     <YStack alignSelf="center" width="100%" $lg={{ maxWidth: 896 }}>
-                      <XStack flexWrap="wrap" justifyContent="center" gap="$2.5">
+                      {/* Two across, four from $sm — `grid-cols-2 sm:grid-cols-4`.
+                          The conversion made this a YStack and stacked them. */}
+                      <XStack flexWrap="wrap" gap={10}>
                         {starterTemplates.map((t) => (
                           <Button
                             key={t.slug}
                             type="button"
                             onClick={() => startFromTemplate(t)}
-                            group className="zoom-scope" flexGrow={1} flexBasis={220} minWidth={200} maxWidth={300} height="auto" flexDirection="column" alignItems="stretch" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" hoverStyle={{ borderColor: "$color5", backgroundColor: "$color3" }}
+                            width="calc(50% - 5px)" $sm={{ width: "calc(25% - 7.5px)" }} height="auto" padding={0} flexDirection="column" alignItems="stretch" group className="zoom-scope" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" hoverStyle={{ borderColor: "$color02", backgroundColor: "$color005" }}
                           >
-                            <YStack position="relative" overflow="hidden" backgroundColor="$color3">
+                            <YStack position="relative" overflow="hidden" aspectRatio={16 / 10} backgroundColor="$color002">
                               <TemplateThumb
                                 name={t.displayName}
                                 category={t.category}
@@ -234,10 +236,10 @@ export default function LandingPage() {
   />
                             </YStack>
                             <YStack paddingHorizontal="$2.5" paddingVertical="$2">
-                              <Paragraph numberOfLines={1} fontSize="$1" fontWeight="500" color="$color">
+                              <Paragraph numberOfLines={1} fontSize="$1" fontWeight="500" color="$color11">
                                 {t.displayName}
                               </Paragraph>
-                              <Paragraph numberOfLines={1} fontSize={11} color="$color">
+                              <Paragraph numberOfLines={1} fontSize={11} color="$color10">
                                 {t.category}
                               </Paragraph>
                             </YStack>
@@ -295,7 +297,7 @@ export default function LandingPage() {
             <YStack alignSelf="center" maxWidth={1152}>
               <XStack marginBottom="$7" alignItems="flex-end" justifyContent="space-between">
                 <div>
-                  <H2 fontSize="$8" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$10" }}>
+                  <H2 fontSize="$8" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$10" }} lineHeight="1.1">
                     Continue building
                   </H2>
                   <Paragraph marginTop="$1.5" fontSize="$3" color="$color">
@@ -318,10 +320,10 @@ export default function LandingPage() {
                   >
                     <ProjectThumb name={project.name} liveUrl={project.liveUrl} />
                     <YStack padding="$4.5">
-                      <H3 fontSize="$3" fontWeight="500" color="$color" $md={{ fontSize: "$4" }}>
+                      <H3 fontSize="$3" fontWeight="500" color="$color" $md={{ fontSize: "$4" }} lineHeight="1.15">
                         {project.name}
                       </H3>
-                      <Paragraph marginTop="$1" numberOfLines={2} fontSize="$1" color="$color" $md={{ fontSize: "$3" }}>
+                      <Paragraph marginTop="$1" numberOfLines={2} fontSize="$1" color="$color" $md={{ fontSize: "$3" }} lineHeight="1.5">
                         {project.status === "live" ? "Live" : "Draft"}
                       </Paragraph>
                       {project.updatedAtIso && (
@@ -343,10 +345,10 @@ export default function LandingPage() {
         <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$12" $md={{ paddingHorizontal: "$6", paddingVertical: "$14" }}>
           <Reveal alignSelf="center" width="100%" maxWidth={672}>
             <YStack>
-              <H2 fontSize="$10" fontWeight="500" textAlign="center" letterSpacing={-0.4} $md={{ fontSize: "$12" }}>
+              <H2 fontSize="$10" fontWeight="500" textAlign="center" letterSpacing={-0.4} $md={{ fontSize: "$12" }} lineHeight="1.1">
                 Ship your first app today.
               </H2>
-              <Paragraph alignSelf="center" marginTop="$4" maxWidth={448} fontSize="$4" textAlign="center" color="$color" $md={{ fontSize: "$6" }}>
+              <Paragraph alignSelf="center" marginTop="$4" maxWidth={448} fontSize="$4" textAlign="center" color="$color" $md={{ fontSize: "$6" }} lineHeight="1.5">
                 Start with a sentence. Deploy to Hanzo Cloud in one click.
               </Paragraph>
             </YStack>

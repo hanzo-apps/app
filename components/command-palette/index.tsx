@@ -187,7 +187,7 @@ export function CommandPalette({
                       onSelect={() => openProject(p)}
                       gap="$2"
                     >
-                      <FolderOpen size={16} color="$color11" />
+                      <FolderOpen size={16} />
                       <SizableText numberOfLines={1}>{p.name}</SizableText>
                       <StatusDot status={p.status} alignEnd />
                     </CommandItem>

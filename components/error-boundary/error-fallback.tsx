@@ -39,7 +39,7 @@ export function ErrorFallback({
       <XStack alignItems="center" justifyContent="center" padding="$4" {...{ position: isolate ? "absolute" : undefined, top: isolate ? 0 : undefined, right: isolate ? 0 : undefined, bottom: isolate ? 0 : undefined, left: isolate ? 0 : undefined }}>
         <YStack backgroundColor="$red1" borderWidth={1} borderColor="$red3" borderRadius="$5" padding="$4" maxWidth={448} $theme-dark={{ backgroundColor: "$red12", borderColor: "$red11" }}>
           <XStack alignItems="flex-start" columnGap="$3">
-            <AlertCircle size={20} color="$red9" />
+            <AlertCircle size={20} />
             <YStack flex={1}>
               <H3 fontSize="$3" fontWeight="500" color="$red11" $theme-dark={{ color: "$red3" }}>
                 Component Error
@@ -70,7 +70,7 @@ export function ErrorFallback({
           <YStack borderBottomWidth={1} borderColor="$red9" backgroundColor="$red9" padding="$5">
             <XStack alignItems="center" columnGap="$3">
               <YStack backgroundColor="$red9" borderRadius="$10" padding="$3">
-                <AlertCircle size={32} color="$red8" />
+                <AlertCircle size={32} />
               </YStack>
               <div>
                 <H1 fontSize="$8" fontWeight="500" color="$color">
@@ -130,7 +130,7 @@ export function ErrorFallback({
                   onClick={resetErrorBoundary}
                   width="100%" alignItems="center" justifyContent="center" columnGap="$2" backgroundColor="$color12" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$color12" }}
                 >
-                  <RefreshCw size={16} color="$background" />
+                  <RefreshCw size={16} />
                   <SizableText color="$background" fontWeight="500">Try Again</SizableText>
                 </Button>
               )}
@@ -140,7 +140,7 @@ export function ErrorFallback({
                   onClick={() => window.location.reload()}
                   width="100%" alignItems="center" justifyContent="center" columnGap="$2" backgroundColor="$color12" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$color12" }}
                 >
-                  <RefreshCw size={16} color="$background" />
+                  <RefreshCw size={16} />
                   <SizableText color="$background" fontWeight="500">Refresh Page</SizableText>
                 </Button>
               )}
@@ -149,7 +149,7 @@ export function ErrorFallback({
                 onClick={handleGoHome}
                 width="100%" alignItems="center" justifyContent="center" columnGap="$2" backgroundColor="$color4" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$color4" }}
               >
-                <Home size={16} color="$color" />
+                <Home size={16} />
                 <SizableText color="$color">Go to Homepage</SizableText>
               </Button>
 
@@ -158,7 +158,7 @@ export function ErrorFallback({
                   onClick={handleReportBug}
                   width="100%" alignItems="center" justifyContent="center" columnGap="$2" borderWidth={1} borderColor="$borderColor" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
                 >
-                  <Bug size={16} color="$color" />
+                  <Bug size={16} />
                   <SizableText color="$color">Report This Issue</SizableText>
                 </Button>
               )}

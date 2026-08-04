@@ -65,7 +65,7 @@ export function LogsViewer({ deploymentId }: LogsViewerProps) {
   if (loading) {
     return (
       <XStack alignItems="center" justifyContent="center" height="100%">
-        <Loader2 size={24} color="$color11" />
+        <Loader2 size={24} />
       </XStack>
     );
   }
@@ -73,7 +73,7 @@ export function LogsViewer({ deploymentId }: LogsViewerProps) {
   if (error) {
     return (
       <YStack alignItems="center" justifyContent="center" height="100%" gap="$4">
-        <AlertCircle size={32} color="$red9" />
+        <AlertCircle size={32} />
         <Paragraph fontSize="$3" color="$color11">{error}</Paragraph>
         <Button variant="outline" onClick={loadLogs}>
           Retry
@@ -106,7 +106,7 @@ export function LogsViewer({ deploymentId }: LogsViewerProps) {
       <YStack flex={1} overflow="scroll" borderWidth={1} borderRadius="$5">
         {logs.length === 0 ? (
           <SizableText flexDirection="column" alignItems="center" justifyContent="center" height="100%" padding="$6" textAlign="center" display="flex">
-            <Clock size={32} color="$color11" />
+            <Clock size={32} />
             <Paragraph fontSize="$3" color="$color11">No execution logs yet</Paragraph>
             <Paragraph fontSize="$1" color="$color11" marginTop="$1">
               Logs will appear here when functions are invoked
@@ -129,11 +129,11 @@ export function LogsViewer({ deploymentId }: LogsViewerProps) {
                 <YStack key={log.id} borderTopWidth={1} hoverStyle={{ backgroundColor: "$color3" }}>
                   <SizableText padding="$3">
                     {log.statusCode >= 200 && log.statusCode < 300 ? (
-                      <CheckCircle2 size={16} color="$green9" />
+                      <CheckCircle2 size={16} />
                     ) : log.statusCode >= 400 ? (
-                      <XCircle size={16} color="$red9" />
+                      <XCircle size={16} />
                     ) : (
-                      <ArrowRight size={16} color="$yellow9" />
+                      <ArrowRight size={16} />
                     )}
                   </SizableText>
                   <SizableText padding="$3" fontFamily="$mono">

@@ -103,9 +103,9 @@ export default function AnalyticsDashboard() {
                 <SizableText fontSize="$8" fontWeight="700" display="flex" flexDirection="column">{metric.value}</SizableText>
                 <SizableText alignItems="center" gap="$1" fontSize="$1" display="flex" flexDirection="row">
                   {metric.trend === "up" ? (
-                    <TrendingUp size={12} color="$green10" />
+                    <TrendingUp size={12} />
                   ) : (
-                    <TrendingDown size={12} color="$red10" />
+                    <TrendingDown size={12} />
                   )}
                   <SizableText {...{ color: metric.trend === "up" ? "$green10" : "$red10" }}>
                     {metric.change}

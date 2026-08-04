@@ -15,7 +15,7 @@ export default function BuildsIndexPageView({
   return (
     <YStack position="relative" minHeight="100%" backgroundColor="$background" overflow="hidden">
       <YStack pointerEvents="none" position="fixed" top={0} right={0} bottom={0} left={0} zIndex={0} overflow="hidden">
-        <YStack position="absolute" left="50%" top="-14%" height={520} width={860} x="-50%" borderRadius="$10" backgroundColor="$color" opacity={0.06} style={{ filter: "blur(140px)" }} />
+        <YStack position="absolute" left="50%" top="-14%" height={520} width={860} marginLeft={-430} borderRadius="$10" backgroundColor="$color005" filter="blur(130px)" />
       </YStack>
       <Header />
       <YStack position="relative" zIndex={10} paddingHorizontal="$4" paddingTop={36} $md={{ paddingHorizontal: "$6", paddingTop: "$9" }}>
@@ -57,7 +57,7 @@ export default function BuildsIndexPageView({
                         {b.org}/{b.project} · {b.agent} · {b.turns} turns
                       </SizableText>
                     </YStack>
-                    <ArrowUpRight size={16} color="$color11" />
+                    <ArrowUpRight size={16} />
                   </XStack></Link>
                 </li>
               ))}

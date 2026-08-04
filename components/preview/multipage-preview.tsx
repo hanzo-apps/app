@@ -816,7 +816,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
         <Header />
         <XStack flex={1} alignItems="center" justifyContent="center">
           <YStack rowGap="$2">
-            <RefreshCw size={32} color="$color12" />
+            <RefreshCw size={32} />
             <Paragraph color="$color11" textAlign="center">Compiling project...</Paragraph>
           </YStack>
         </XStack>

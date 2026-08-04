@@ -563,7 +563,7 @@ export const AppEditor = ({
   />
                 <YStack position="relative" minWidth={0} flex={1} overflow="hidden">
                   <CopyIcon
-                    size={16} color="$color11"
+                    size={16}
                     onClick={() => {
                       copyToClipboard(currentPageData.html);
                       toast.success("HTML copied to clipboard!");

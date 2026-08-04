@@ -235,7 +235,7 @@ export function SkillsManager() {
             <YStack gap="$3" $sm={{ flexDirection: "row" }}>
               {/* Search */}
               <YStack position="relative" flex={1}>
-                <Search size={16} color="$color11" />
+                <Search size={16} />
                 <Input
                   placeholder="Search skills..."
                   value={searchQuery}
@@ -304,7 +304,7 @@ export function SkillsManager() {
           <YStack alignSelf="center" maxWidth={896}>
             {filteredSkills.length === 0 ? (
               <YStack paddingVertical="$8" alignItems="center">
-                <Sparkles size={48} color="$color11" />
+                <Sparkles size={48} />
                 <H3 fontSize="$6" fontWeight="500" marginBottom="$2">No skills found</H3>
                 <Paragraph color="$color11" marginBottom="$4" textAlign="center">
                   {searchQuery ? 'Try a different search query' : 'Create your first custom skill'}

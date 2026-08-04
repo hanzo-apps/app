@@ -421,7 +421,7 @@ function SidebarContent({
                   }}
                   title={f.name}
                 >
-                  <Folder size={14} color="$color11" />
+                  <Folder size={14} />
                   <SizableText numberOfLines={1} fontSize="$3">{f.name}</SizableText>
                 </Button>
               ))}
@@ -446,7 +446,7 @@ function SidebarContent({
                     title={project.name}
                   >
                     <FolderOpen
-                      size={14} color="$color11"
+                      size={14}
   />
                     {!collapsed && <SizableText numberOfLines={1} fontSize="$3">{project.name}</SizableText>}
                   </Button>

@@ -221,7 +221,7 @@ export function ComplianceTab({ settings, onChange }: ComplianceTabProps) {
                   <Label htmlFor="block-analytics" fontSize="$4">
                     Block Analytics Until Consent
                   </Label>
-                  <Cookie size={16} color="$color11" />
+                  <Cookie size={16} />
                 </XStack>
                 <Paragraph fontSize="$3" color="$color11">
                   Prevent analytics tracking until user accepts
@@ -239,7 +239,7 @@ export function ComplianceTab({ settings, onChange }: ComplianceTabProps) {
             {settings.compliance.mode === 'opt-in' && (
               <YStack padding="$4" backgroundColor="$blue1" borderWidth={1} borderColor="$blue3" borderRadius="$5" $theme-dark={{ backgroundColor: "$blue12", borderColor: "$blue11" }}>
                 <XStack gap="$3">
-                  <Shield size={20} color="$blue10" />
+                  <Shield size={20} />
                   <YStack rowGap="$1">
                     <H4 fontWeight="500" color="$blue12" $theme-dark={{ color: "$blue2" }}>
                       GDPR Compliance Mode
@@ -262,7 +262,7 @@ export function ComplianceTab({ settings, onChange }: ComplianceTabProps) {
 
             <YStack padding="$4" backgroundColor="$color3" borderRadius="$5" borderWidth={1}>
               <XStack gap="$3">
-                <Info size={20} color="$color11" />
+                <Info size={20} />
                 <YStack rowGap="$1">
                   <Paragraph fontSize="$3" fontWeight="500">Live Preview</Paragraph>
                   <Paragraph fontSize="$3" color="$color11">

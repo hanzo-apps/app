@@ -40,7 +40,7 @@ function OrganizationSettingsInner() {
   if (loading) {
     return (
       <XStack flex={1} alignItems="center" justifyContent="center" backgroundColor="$background">
-        <Loader2 size={32} color="$color11" />
+        <Loader2 size={32} />
       </XStack>
     );
   }

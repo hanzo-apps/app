@@ -258,7 +258,7 @@ export function SeoTab({ settings, onChange }: SeoTabProps) {
 
         <YStack padding="$4" borderWidth={1} borderRadius="$5" backgroundColor="$color3">
           <XStack gap="$2" marginBottom="$2">
-            <Search size={20} color="$blue10" />
+            <Search size={20} />
             <YStack flex={1}>
               <YStack marginBottom="$1"><SizableText fontSize="$3" color="$blue10">https://your-domain.com</SizableText></YStack>
               <H3 fontSize="$6" color="$blue11" fontWeight="500" marginBottom="$1" $theme-dark={{ color: "$blue8" }}>

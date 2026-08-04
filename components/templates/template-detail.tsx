@@ -64,7 +64,7 @@ export function TemplateDetail({
     <YStack position="relative" minHeight="100%" backgroundColor="$background" overflow="hidden">
       {/* Monochrome glow — single soft radial, zero hue (matches landing). */}
       <YStack pointerEvents="none" position="fixed" top={0} right={0} bottom={0} left={0} zIndex={0} overflow="hidden">
-        <YStack position="absolute" left="50%" top="-14%" height={520} width={860} x="-50%" borderRadius="$10" backgroundColor="$color" opacity={0.06} style={{ filter: "blur(140px)" }} />
+        <YStack position="absolute" left="50%" top="-14%" height={520} width={860} marginLeft={-430} borderRadius="$10" backgroundColor="$color005" filter="blur(130px)" />
       </YStack>
 
       <Header />
@@ -81,7 +81,7 @@ export function TemplateDetail({
                   </SizableText></Link>
                 </li>
                 <li aria-hidden="true">
-                  <ChevronRight size={12} color="$color11" />
+                  <ChevronRight size={12} />
                 </li>
                 <li>
                   <Link href={catHref}><SizableText fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.24} color="$color11" hoverStyle={{ color: "$color" }}>
@@ -237,7 +237,7 @@ export function TemplateDetail({
                     {t.perfectFor.map((p) => (
                       <XStack key={p} alignItems="flex-start" gap="$3">
                         <XStack marginTop="$0.5" height="$4.5" width="$4.5" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
-                          <Check size={12} color="$color11" strokeWidth={2} />
+                          <Check size={12} strokeWidth={2} />
                         </XStack>
                         <SizableText lineHeight="1.625" fontSize="$3" color="$color">{p}</SizableText>
                       </XStack>

@@ -201,7 +201,7 @@ export const DeployButtonContent = ({
         <YStack borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4">
           <XStack marginBottom="$2" alignItems="center" justifyContent="center">
             <XStack width={36} height={36} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$green9" backgroundColor="$green9">
-              <Rocket size={16} color="$green8" />
+              <Rocket size={16} />
             </XStack>
           </XStack>
           <Paragraph textAlign="center" fontSize="$4" fontWeight="500" color="$color">Your app is live</Paragraph>
@@ -227,7 +227,7 @@ export const DeployButtonContent = ({
               variant="ghost"
               width={28} height={28} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3"
             >
-              {copied ? <Check size={16} color="$green8" /> : <Copy size={16} />}
+              {copied ? <Check size={16} /> : <Copy size={16} />}
             </Button>
           </XStack>
           <Anchor

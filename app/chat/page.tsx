@@ -287,7 +287,7 @@ export default function ChatPage() {
 
           <YStack padding="$3">
             <YStack position="relative">
-              <Search size={16} color="$color11" />
+              <Search size={16} />
               <Input
                 placeholder="Search chats"
                 value={search}

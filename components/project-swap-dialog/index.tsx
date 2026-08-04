@@ -110,14 +110,14 @@ export function ProjectSwapDialog({
         <YStack paddingVertical="$4">
           {loading && (
             <XStack alignItems="center" justifyContent="center" paddingVertical="$6">
-              <Loader2 size={24} color="$color11" />
+              <Loader2 size={24} />
               <SizableText marginLeft="$2" fontSize="$3" color="$color11">Analyzing changes...</SizableText>
             </XStack>
           )}
 
           {error && (
             <XStack alignItems="flex-start" gap="$2" padding="$3" backgroundColor="$red9" borderWidth={1} borderColor="$red9" borderRadius="$5">
-              <AlertTriangle size={16} color="$red9" />
+              <AlertTriangle size={16} />
               <Paragraph fontSize="$3" color="$red9">{error}</Paragraph>
             </XStack>
           )}
@@ -189,7 +189,7 @@ export function ProjectSwapDialog({
 
               {diff.hasConflicts && (
                 <XStack alignItems="flex-start" gap="$2" padding="$3" backgroundColor="$yellow1" borderWidth={1} borderColor="$yellow3" borderRadius="$5" $theme-dark={{ backgroundColor: "$yellow12", borderColor: "$yellow11" }}>
-                  <AlertTriangle size={16} color="$yellow10" />
+                  <AlertTriangle size={16} />
                   <Paragraph fontSize="$3" color="$yellow11" $theme-dark={{ color: "$yellow3" }}>
                     Some backend features will be removed or replaced. Analytics data will be preserved.
                   </Paragraph>

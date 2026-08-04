@@ -32,7 +32,7 @@ export default function CommunityPageView() {
   />
       <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
         <YStack alignSelf="center" maxWidth={672}>
-          <H2 fontSize="$8" fontWeight="500" letterSpacing={-0.4} textAlign="center" $md={{ fontSize: "$10" }}>
+          <H2 fontSize="$8" fontWeight="500" letterSpacing={-0.4} textAlign="center" $md={{ fontSize: "$10" }} lineHeight="1.1">
             Build something worth showing off.
           </H2>
           <Paragraph marginTop="$4" fontSize="$3" lineHeight="1.625" color="$color11" textAlign="center">

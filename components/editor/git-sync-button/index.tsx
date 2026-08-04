@@ -331,7 +331,7 @@ export function GitSyncButton({
       >
         <YStack borderBottomWidth={1} borderColor="$borderColor" padding="$4.5">
           <XStack marginBottom="$1" alignItems="center" gap="$2">
-            <UploadCloud size={18} color="$color" />
+            <UploadCloud size={18} />
             <H3 fontSize={15} fontWeight="500">Push to a Git repository</H3>
           </XStack>
           <Paragraph fontSize="$3" color="$color11">
@@ -369,7 +369,7 @@ export function GitSyncButton({
         ) : result?.ok ? (
           <YStack paddingHorizontal="$5" paddingVertical={28}>
             <XStack alignSelf="center" marginBottom="$4" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$green8" backgroundColor="$green8">
-              <Check size={24} color="$green8" />
+              <Check size={24} />
             </XStack>
             <Paragraph fontSize="$3" fontWeight="500" textAlign="center">
               {result.created ? "Repository created" : "Commit pushed"}
@@ -396,7 +396,7 @@ export function GitSyncButton({
                   title="Copy URL"
                 >
                   {copied ? (
-                    <Check size={14} color="$green8" />
+                    <Check size={14} />
                   ) : (
                     <Copy size={14} />
                   )}
@@ -479,7 +479,7 @@ export function GitSyncButton({
                   title="Copy URL"
                 >
                   {copied ? (
-                    <Check size={14} color="$green8" />
+                    <Check size={14} />
                   ) : (
                     <Copy size={14} />
                   )}
@@ -586,7 +586,7 @@ export function GitSyncButton({
 
             <Label cursor="pointer" alignItems="center" justifyContent="space-between" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$3" paddingVertical="$2.5">
               <XStack alignItems="center" gap="$2">
-                <Lock size={14} color="$color11" />
+                <Lock size={14} />
                 <SizableText fontSize="$3" color="$color">
                   Private repository
                 </SizableText>
@@ -661,7 +661,7 @@ function CommitMessageField({
           borderColor="$borderColor" backgroundColor="$background" color="$color" placeholderTextColor="$color11"
   />
         {loading && (
-          <Loader2 size={14} color="$color11" />
+          <Loader2 size={14} />
         )}
       </YStack>
       <Paragraph marginTop="$1" fontSize={10} color="$color11">
@@ -675,7 +675,7 @@ function CommitMessageField({
 function ErrorNote({ message }: { message: string }) {
   return (
     <XStack alignItems="flex-start" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$red9" backgroundColor="$red9" paddingHorizontal="$3" paddingVertical="$2.5">
-      <AlertCircle size={14} color="$red8" />
+      <AlertCircle size={14} />
       <Paragraph fontSize="$1" color="$red3">{message}</Paragraph>
     </XStack>
   );

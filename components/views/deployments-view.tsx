@@ -540,7 +540,7 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
           <YStack alignSelf="center" maxWidth={1280} gap="$3" $sm={{ flexDirection: "row" }}>
             {/* Search */}
             <YStack position="relative" flex={1}>
-              <Search size={16} color="$color11" />
+              <Search size={16} />
               <Input
                 placeholder="Search deployments..."
                 value={searchQuery}
@@ -591,7 +591,7 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
           <YStack alignSelf="center" maxWidth={1280}>
             {filteredAndSortedDeployments.length === 0 ? (
               <YStack alignItems="center" justifyContent="center" paddingVertical="$10">
-                <Globe size={64} color="$color11" />
+                <Globe size={64} />
                 {deployments.length === 0 ? (
                   <>
                     <H2 fontSize="$7" fontWeight="500" marginBottom="$2" textAlign="center">No Deployments Yet</H2>

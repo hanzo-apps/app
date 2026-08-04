@@ -325,7 +325,7 @@ export function ProjectSettingsPanel({ project, onProjectUpdate, enabled }: Proj
                   <TabsContent key={tab} value={tab} height="100%" margin="$0">
                     <XStack height="100%" alignItems="center" justifyContent="center" padding="$6">
                       <YStack maxWidth={384} alignItems="center">
-                        <Lock size={40} color="$color11" />
+                        <Lock size={40} />
                         <H4 fontWeight="500" textAlign="center" marginBottom="$2">Server Mode Required</H4>
                         <Paragraph fontSize="$3" textAlign="center" color="$color11" marginBottom="$4">
                           Backend features require Server Mode. Deploy to a self-hosted instance to use edge functions, secrets, and database features.
@@ -350,7 +350,7 @@ export function ProjectSettingsPanel({ project, onProjectUpdate, enabled }: Proj
                   <TabsContent key={tab} value={tab} height="100%" margin="$0">
                     <XStack height="100%" alignItems="center" justifyContent="center">
                       <YStack maxWidth={320} alignItems="center">
-                        <PowerOff size={32} color="$color11" />
+                        <PowerOff size={32} />
                         <Paragraph fontSize="$3" textAlign="center" color="$color11">
                           Backend features are disabled for this project. Enable them using the toggle above to manage edge functions, secrets, and more.
                         </Paragraph>

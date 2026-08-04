@@ -220,7 +220,7 @@ export function Header({
                   <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1">
                     {currentPage}
                   </SizableText>
-                  <ChevronDown size={14} color="$color11" />
+                  <ChevronDown size={14} />
                 </Button>
               </PopoverTrigger>
               <PopoverContent

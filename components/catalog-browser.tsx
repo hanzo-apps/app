@@ -99,7 +99,7 @@ function Card({
         )}
         {/* Provenance, never decoration: a row only this org can see says so. */}
         {e.scope === "org" && (
-          <SizableText borderRadius="$10" borderWidth={1} borderColor="$color" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color">
+          <SizableText borderRadius="$10" borderWidth={1} borderColor="$color02" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color">
             private
           </SizableText>
         )}
@@ -107,7 +107,7 @@ function Card({
             official from a marker no tenant can raise. The same label the
             template gallery uses, so a reader meets one word, not two. */}
         {e.official && (
-          <SizableText borderRadius="$10" borderWidth={1} borderColor="$color" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color">
+          <SizableText borderRadius="$10" borderWidth={1} borderColor="$color02" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color">
             {OFFICIAL_LABEL}
           </SizableText>
         )}
@@ -118,7 +118,7 @@ function Card({
           <SizableText numberOfLines={1}>{e.title || e.name}</SizableText>
         </Anchor>
         <ArrowUpRight
-          size={16} color="$color11"
+          size={16}
           strokeWidth={1.6}
   />
       </H3>
@@ -275,7 +275,7 @@ export function CatalogBrowser({
 
   return (
     <YStack alignSelf="center" width="100%" maxWidth={1280} paddingHorizontal="$4" paddingVertical="$7" $sm={{ paddingHorizontal: "$5", paddingVertical: "$9" }}>
-      <H1 fontSize="$8" fontWeight="500" letterSpacing={-0.4} color="$color" $sm={{ fontSize: "$10" }}>
+      <H1 fontSize="$8" fontWeight="500" letterSpacing={-0.4} color="$color" $sm={{ fontSize: "$10" }} lineHeight="1.1">
         {title}
       </H1>
       <Paragraph marginTop="$2" maxWidth={672} fontSize={14} lineHeight="1.625" color="$color11">
@@ -292,7 +292,7 @@ export function CatalogBrowser({
 
       <YStack position="relative" marginTop="$5">
         <Search
-          size={16} color="$color11"
+          size={16}
           strokeWidth={1.6}
   />
         <Input

@@ -168,7 +168,7 @@ export function RevisionDetails({
           onClick={onClose}
           alignItems="center" gap="$1" borderRadius="$3" paddingHorizontal="$1.5" paddingVertical="$1" hoverStyle={{ backgroundColor: "$color3" }}
         >
-          <ArrowLeft size={14} color="$color11" />
+          <ArrowLeft size={14} />
           <SizableText fontSize="$1" color="$color11">Back to latest</SizableText>
         </Button>
         <SizableText marginLeft="$1" numberOfLines={1} fontSize={13} fontWeight="500" color="$color">Details</SizableText>
@@ -191,7 +191,7 @@ export function RevisionDetails({
             title="Close details"
             width={28} height={28} alignItems="center" justifyContent="center" borderRadius="$3" hoverStyle={{ backgroundColor: "$color3" }}
           >
-            <X size={16} color="$color11" />
+            <X size={16} />
           </Button>
         </XStack>
       </XStack>
@@ -260,7 +260,7 @@ function FileCard({
           minWidth={0} flex={1} alignItems="center" gap="$2"
         >
           <ChevronRight
-            size={14} color="$color11"
+            size={14}
   />
           <StatusBadge status={file.status} />
           <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color">{file.path}</SizableText>
@@ -371,7 +371,7 @@ function Timeline({ rev, commit }: { rev: DetailsRev; commit: GitCommit | null }
   return (
     <YStack rowGap="$4" padding="$4">
       <XStack alignItems="center" gap="$2">
-        <GitCommitHorizontal size={16} color="$color11" />
+        <GitCommitHorizontal size={16} />
         <SizableText fontSize={13} fontWeight="500" color="$color">{rev.title}</SizableText>
       </XStack>
       <YStack rowGap="$1.5">

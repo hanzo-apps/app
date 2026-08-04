@@ -297,7 +297,7 @@ export default function AgentsPage() {
           <Card backgroundColor="$background" borderColor="$borderColor" alignSelf="center" maxWidth={512} marginTop="$8">
             <CardHeader alignItems="center">
               <XStack alignSelf="center" marginBottom="$2" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$10" backgroundColor="$purple9">
-                <Bot size={24} color="$purple8" />
+                <Bot size={24} />
               </XStack>
               <CardTitle color="$color">Sign in to view agents</CardTitle>
               <CardDescription>
@@ -318,7 +318,7 @@ export default function AgentsPage() {
           <Card backgroundColor="$red12" borderColor="$red12" alignSelf="center" maxWidth={512} marginTop="$8">
             <CardHeader alignItems="center">
               <XStack alignSelf="center" marginBottom="$2" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$10" backgroundColor="$red9">
-                <AlertCircle size={24} color="$red8" />
+                <AlertCircle size={24} />
               </XStack>
               <CardTitle color="$color">
                 Couldn&apos;t load agents
@@ -427,7 +427,7 @@ export default function AgentsPage() {
             {/* Search */}
             {agents.length > 0 && (
               <YStack position="relative" marginBottom="$5" width="100%" maxWidth={448}>
-                <Search size={16} color="$color11" />
+                <Search size={16} />
                 <Input
                   placeholder="Search agents…"
                   paddingLeft="$7" backgroundColor="$background" borderColor="$borderColor"
@@ -444,7 +444,7 @@ export default function AgentsPage() {
               <Card backgroundColor="$background" borderColor="$borderColor" alignSelf="center" maxWidth={512} marginTop="$8">
                 <CardHeader alignItems="center">
                   <XStack alignSelf="center" marginBottom="$2" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$10" backgroundColor="$purple9">
-                    <Bot size={24} color="$purple8" />
+                    <Bot size={24} />
                   </XStack>
                   <CardTitle color="$color">
                     Create your first agent

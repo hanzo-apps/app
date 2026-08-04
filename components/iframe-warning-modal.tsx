@@ -23,7 +23,7 @@ IframeWarningModalProps) {
       <DialogContent $sm={{ maxWidth: 448 }}>
         <DialogHeader>
           <XStack alignItems="center" gap="$2">
-            <AlertTriangle size={20} color="$red9" />
+            <AlertTriangle size={20} />
             <DialogTitle>Unauthorized Embedding</DialogTitle>
           </XStack>
           <DialogDescription textAlign="left">

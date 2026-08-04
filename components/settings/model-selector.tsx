@@ -203,7 +203,7 @@ export function ModelSelector({
 
       {loading && (
         <XStack alignItems="center" justifyContent="center" padding="$4">
-          <Loader2 size={20} color="$color11" />
+          <Loader2 size={20} />
         </XStack>
       )}
     </YStack>

@@ -94,11 +94,11 @@ export function AppSwitcher({ currentApp = 'app' }: { currentApp?: string }) {
         <Button
           type="button"
           aria-label="Open Hanzo apps"
-          group flexShrink={0} alignItems="center" gap="$2" borderRadius="$5" paddingHorizontal="$1" paddingVertical="$1" outlineWidth={0} hoverStyle={{ backgroundColor: "$background" }}
+          backgroundColor="transparent" height="auto" group flexShrink={0} alignItems="center" gap="$2" borderRadius="$5" paddingHorizontal="$1" paddingVertical="$1" outlineWidth={0} hoverStyle={{ backgroundColor: "$color3" }}
         >
           <HanzoLogo size={28} color="var(--foreground)" />
           <SizableText fontSize="$6" fontWeight="500" letterSpacing={-0.4} color="$color">Hanzo</SizableText>
-          <ChevronDown size={16} color="$color11" />
+          <ChevronDown size={16} />
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -136,7 +136,7 @@ export function AppSwitcher({ currentApp = 'app' }: { currentApp?: string }) {
                         href={app.href}
                         aria-current={current ? 'page' : undefined}
                         flexDirection="column" alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} paddingHorizontal="$2" paddingVertical="$2.5" textAlign="center" outlineWidth={0} {...{ borderColor: current ? "$borderColor" : "transparent", backgroundColor: current ? "$color3" : undefined, color: current ? "$color" : "$color11", hoverStyle: current ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
-                      >
+                       display="flex" textDecorationLine="none">
                         <Icon size={20} />
                         <SizableText width="100%" numberOfLines={1} fontSize="$1" fontWeight="500">{app.label}</SizableText>
                       </Anchor>

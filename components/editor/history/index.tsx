@@ -605,7 +605,7 @@ export function HistoryPanel({
           the top toolbar (px-3 lg:px-4) so "History" lines up under the org
           switcher instead of sitting inset from it. */}
       <XStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingBottom="$2" paddingTop="$3" $lg={{ paddingHorizontal: "$4" }}>
-        <RotateCcw size={16} color="$color11" />
+        <RotateCcw size={16} />
         <SizableText fontSize={13} fontWeight="500" color="$color">History</SizableText>
         <XStack marginLeft="auto" alignItems="center" gap="$1.5">
           <XStack alignItems="center" gap="$0.5" borderRadius="$5" backgroundColor="white" padding="$0.5">
@@ -637,7 +637,7 @@ export function HistoryPanel({
       {/* Previewing-a-past-commit banner (item 11 "out of date → back to working"). */}
       {previewingSha && (
         <SizableText marginHorizontal="$3" marginBottom="$1" alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$yellow8" backgroundColor="$yellow8" paddingHorizontal="$3" paddingVertical="$2" fontSize="$1" display="flex" flexDirection="row">
-          <Eye size={14} color="$yellow4" />
+          <Eye size={14} />
           <SizableText minWidth={0} flex={1} numberOfLines={1} color="$yellow2">
             Preview shows {previewingSha.slice(0, 7)} — an older version.
           </SizableText>
@@ -916,7 +916,7 @@ function ConnectRepoCta() {
   return (
     <YStack marginTop="$2" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="white" padding="$3.5">
       <SizableText marginBottom="$1" alignItems="center" gap="$1.5" fontSize={13} fontWeight="500" color="$color" display="flex" flexDirection="row">
-        <GitBranch size={14} color="$color11" />
+        <GitBranch size={14} />
         Keep full version history
       </SizableText>
       <Paragraph fontSize="$1" color="$color11">
@@ -939,7 +939,7 @@ function ConnectRepoCta() {
 function EmptyState({ bookmarks }: { bookmarks: boolean }) {
   return (
     <SizableText flexDirection="column" alignItems="center" justifyContent="center" gap="$2" paddingHorizontal="$4" paddingVertical="$10" textAlign="center" display="flex">
-      <Bookmark size={28} color="$color11" />
+      <Bookmark size={28} />
       <Paragraph fontSize={13} fontWeight="500" color="$color">{bookmarks ? "No bookmarks yet" : "No revisions yet"}</Paragraph>
       <Paragraph maxWidth={220} fontSize="$1" color="$color11">
         {bookmarks

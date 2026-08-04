@@ -84,7 +84,7 @@ export default function CloudIntegration() {
           <H2 textAlign="center" marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "2.75rem", lineHeight: "1.1" }}>
             More than a UI. A full app on Hanzo Cloud.
           </H2>
-          <Paragraph textAlign="center" marginTop="$4" fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
+          <Paragraph textAlign="center" marginTop="$4" fontSize="$4" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
             Other builders hand you a screenshot. Hanzo ships a running app —
             database, auth, AI, secrets, and storage already connected.
           </Paragraph>
@@ -99,8 +99,8 @@ export default function CloudIntegration() {
                 href={c.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                group position="relative" height="100%" flexDirection="column" borderRadius="$8" borderWidth={1} padding="$5" {...{ borderColor: c.primary ? "$color" : "$borderColor", backgroundColor: c.primary ? "$color3" : "$color3", hoverStyle: c.primary ? {"borderColor":"$color"} : {"borderColor":"$color","backgroundColor":"$color3"} }}
-              >
+                group position="relative" height="100%" flexDirection="column" borderRadius="$8" borderWidth={1} padding="$5" {...{ borderColor: c.primary ? "$color02" : "$borderColor", backgroundColor: c.primary ? "$color3" : "$color3", hoverStyle: c.primary ? {"borderColor":"$color"} : {"borderColor":"$color","backgroundColor":"$color3"} }}
+               display="flex" textDecorationLine="none">
                 <XStack alignItems="center" justifyContent="space-between">
                   <XStack height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
                     <Icon size={20} color="var(--foreground)" strokeWidth={1.5} />

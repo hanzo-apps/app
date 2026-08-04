@@ -124,7 +124,7 @@ export default function PricingPage() {
         {/* ── Hero ─────────────────────────────────────────────── */}
         <YStack position="relative" overflow="hidden" paddingHorizontal="$4" paddingVertical="$8" $sm={{ paddingVertical: "$10" }} $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
           <YStack pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} overflow="hidden">
-            <YStack position="absolute" left="50%" top="-30%" height={420} width={720} x="-50%" borderRadius="$10" backgroundColor="$color" opacity={0.06} style={{ filter: "blur(140px)" }} />
+            <YStack position="absolute" left="50%" top="-30%" height={420} width={720} marginLeft={-360} borderRadius="$10" backgroundColor="$color005" filter="blur(130px)" />
           </YStack>
 
           <YStack position="relative" alignSelf="center" maxWidth={768}>
@@ -146,7 +146,7 @@ export default function PricingPage() {
             </Reveal>
 
             <Reveal delay={120}>
-              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" color="$color11" textAlign="center" $md={{ fontSize: "$6" }}>
+              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" color="$color11" textAlign="center" $md={{ fontSize: "$6" }} lineHeight="1.5">
                 One subscription powers AI across the app builder, Hanzo Chat, and
                 the API at{" "}
                 <SizableText fontFamily="$mono" color="$color">api.hanzo.ai</SizableText> — from
@@ -213,7 +213,7 @@ export default function PricingPage() {
                   <YStack marginTop={28} rowGap="$3.5" borderTopWidth={1} borderColor="$borderColor" paddingTop="$5">
                     {plan.features.map((f) => (
                       <XStack key={f} alignItems="flex-start" gap="$3">
-                        <Check size={16} color="$color" />
+                        <Check size={16} />
                         <SizableText fontSize="$3" color="$color">{f}</SizableText>
                       </XStack>
                     ))}

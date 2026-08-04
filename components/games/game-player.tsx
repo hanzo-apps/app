@@ -32,7 +32,7 @@ export function GamePlayer({ gameId, title }: GamePlayerProps) {
     <YStack position="relative" height="100%" width="100%" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background">
       {!loaded && (
         <YStack position="absolute" top={0} right={0} bottom={0} left={0} zIndex={10} alignItems="center" justifyContent="center" gap="$3" backgroundColor="$background">
-          <Loader2 size={32} color="$color" />
+          <Loader2 size={32} />
           <Paragraph fontSize="$3" color="$color11">Loading {title}…</Paragraph>
         </YStack>
       )}

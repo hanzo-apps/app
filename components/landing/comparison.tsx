@@ -312,7 +312,7 @@ export default function Comparison() {
           <H2 textAlign="center" marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "2.75rem", lineHeight: "1.1" }}>
             One platform beats the whole stack.
           </H2>
-          <Paragraph textAlign="center" marginTop="$4" fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
+          <Paragraph textAlign="center" marginTop="$4" fontSize="$4" color="$color11" $md={{ fontSize: "$6" }} lineHeight="1.5">
             Site builders lock you in. AI coding tools hand you bugs to clean up.
             Hanzo ships production apps you own — fast, secure, and built to
             scale.

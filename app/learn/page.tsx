@@ -110,10 +110,10 @@ export default function LearnPage() {
             <BookOpen size={16} />
             Hanzo Academy
           </Badge>
-          <H1 fontSize="$11" fontWeight="500" marginBottom="$5" textAlign="center" $md={{ fontSize: "$13" }}>
+          <H1 fontSize="$11" fontWeight="500" marginBottom="$5" textAlign="center" $md={{ fontSize: "$13" }} lineHeight="1.1">
             Learn to build with AI superpowers
           </H1>
-          <Paragraph fontSize="$7" color="$color11" marginBottom="$6" maxWidth={672} alignSelf="center" textAlign="center">
+          <Paragraph fontSize="$7" color="$color11" marginBottom="$6" maxWidth={672} alignSelf="center" textAlign="center" lineHeight="1.4">
             Free courses, tutorials, and resources to help you master AI development
           </Paragraph>
           <XStack alignItems="center" gap="$4" justifyContent="center">
@@ -160,7 +160,7 @@ export default function LearnPage() {
       <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6" }}>
         <YStack maxWidth={1280} alignSelf="center">
           <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
-            <H2 fontSize="$8" fontWeight="500" $md={{ fontSize: "$10" }}>All Courses</H2>
+            <H2 fontSize="$8" fontWeight="500" $md={{ fontSize: "$10" }} lineHeight="1.1">All Courses</H2>
             <Button variant="outline" borderColor="$color" hoverStyle={{ backgroundColor: "$color3" }}>
               <Video size={20} />
               Watch Live Classes
@@ -226,7 +226,7 @@ export default function LearnPage() {
       <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6" }}>
         <YStack maxWidth={1280} alignSelf="center">
           <YStack marginBottom="$8">
-            <H2 fontSize="$10" fontWeight="500" marginBottom="$4" textAlign="center" $md={{ fontSize: "$11" }}>
+            <H2 fontSize="$10" fontWeight="500" marginBottom="$4" textAlign="center" $md={{ fontSize: "$11" }} lineHeight="1.1">
               Additional Resources
             </H2>
             <Paragraph fontSize="$6" color="$color11" textAlign="center">
@@ -235,7 +235,7 @@ export default function LearnPage() {
           </YStack>
           <YStack gap="$5">
             <YStack backgroundColor="$color3" borderRadius="$8" padding="$5" borderWidth={1} borderColor="$borderColor" hoverStyle={{ backgroundColor: "$color3" }}>
-              <BookOpen size={32} color="$purple8" />
+              <BookOpen size={32} />
               <H3 fontSize="$7" fontWeight="500" marginBottom="$2">Documentation</H3>
               <Paragraph color="$color11" marginBottom="$4">Comprehensive guides and API references</Paragraph>
               <Link href="/docs"><SizableText color="$purple8" hoverStyle={{ color: "$purple4" }}>
@@ -243,7 +243,7 @@ export default function LearnPage() {
               </SizableText></Link>
             </YStack>
             <YStack backgroundColor="$color3" borderRadius="$8" padding="$5" borderWidth={1} borderColor="$borderColor" hoverStyle={{ backgroundColor: "$color3" }}>
-              <Users size={32} color="$purple8" />
+              <Users size={32} />
               <H3 fontSize="$7" fontWeight="500" marginBottom="$2">Community Forum</H3>
               <Paragraph color="$color11" marginBottom="$4">Get help and share knowledge with others</Paragraph>
               <Link href="/community"><SizableText color="$purple8" hoverStyle={{ color: "$purple4" }}>
@@ -251,7 +251,7 @@ export default function LearnPage() {
               </SizableText></Link>
             </YStack>
             <YStack backgroundColor="$color3" borderRadius="$8" padding="$5" borderWidth={1} borderColor="$borderColor" hoverStyle={{ backgroundColor: "$color3" }}>
-              <Video size={32} color="$purple8" />
+              <Video size={32} />
               <H3 fontSize="$7" fontWeight="500" marginBottom="$2">YouTube Channel</H3>
               <Paragraph color="$color11" marginBottom="$4">Video tutorials and live coding sessions</Paragraph>
               <Anchor href="https://youtube.com/@hanzoai" color="$purple8" alignItems="center" gap="$1" hoverStyle={{ color: "$purple4" }}>
@@ -265,10 +265,10 @@ export default function LearnPage() {
       {/* CTA Section */}
       <YStack paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6" }}>
         <YStack maxWidth={896} alignSelf="center">
-          <H2 fontSize="$10" fontWeight="500" marginBottom="$5" textAlign="center" $md={{ fontSize: "$11" }}>
+          <H2 fontSize="$10" fontWeight="500" marginBottom="$5" textAlign="center" $md={{ fontSize: "$11" }} lineHeight="1.1">
             Start your learning journey today
           </H2>
-          <Paragraph fontSize="$7" color="$color11" marginBottom="$6" textAlign="center">
+          <Paragraph fontSize="$7" color="$color11" marginBottom="$6" textAlign="center" lineHeight="1.4">
             Join thousands of developers mastering AI development
           </Paragraph>
           <Button size="lg" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}>

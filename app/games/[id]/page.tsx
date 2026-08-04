@@ -87,7 +87,7 @@ export default function GameDetail() {
           <XStack flexWrap="wrap" alignItems="flex-start" justifyContent="space-between" gap="$4">
             <div>
               <XStack marginBottom="$2" alignItems="center" gap="$2">
-                <Gamepad2 size={20} color="$color11" />
+                <Gamepad2 size={20} />
                 <SizableText fontSize="$3" fontWeight="500">
                   {game.engine[0].toUpperCase() + game.engine.slice(1)} {game.engineVersion}
                 </SizableText>
@@ -128,7 +128,7 @@ export default function GameDetail() {
             </Spec>
             <Spec label="Build status">
               <XStack alignItems="center" gap="$1.5">
-                {game.buildable && <Check size={16} color="$color" />}
+                {game.buildable && <Check size={16} />}
                 <SizableText fontSize="$3" color="$color">
                   {playable
                     ? 'WebGL build (placeholder)'
@@ -195,7 +195,7 @@ export default function GameDetail() {
           {/* Generative hook — studio pipeline */}
           <YStack marginTop="$7" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$5">
             <XStack marginBottom="$4" alignItems="center" gap="$2">
-              <Sparkles size={20} color="$color" />
+              <Sparkles size={20} />
               <H2 fontSize="$6" fontWeight="500">Generate assets</H2>
             </XStack>
             <Paragraph marginBottom="$4" fontSize="$3" color="$color11">
@@ -231,7 +231,7 @@ export default function GameDetail() {
           {/* Builder hook — natural-language prompt with the game repo as context */}
           <YStack marginTop="$5" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$5">
             <XStack marginBottom="$4" alignItems="center" gap="$2">
-              <Gamepad2 size={20} color="$color" />
+              <Gamepad2 size={20} />
               <H2 fontSize="$6" fontWeight="500">Build with AI</H2>
             </XStack>
             <Paragraph marginBottom="$4" fontSize="$3" color="$color11">

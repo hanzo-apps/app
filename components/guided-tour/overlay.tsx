@@ -125,7 +125,7 @@ export function GuidedTourOverlay({ location }: GuidedTourOverlayProps) {
               </YStack>
             </YStack>
             {isBusy && (
-              <Loader2 size={20} color="$color12" />
+              <Loader2 size={20} />
             )}
           </XStack>
 

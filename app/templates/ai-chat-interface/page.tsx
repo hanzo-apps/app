@@ -124,7 +124,7 @@ The UI is built entirely with @hanzo/ui primitives like Card, Button, ScrollArea
                   {message.role === "assistant" && (
                     <Avatar>
                       <AvatarFallback backgroundColor="$color3">
-                        <Bot size={20} color="$color" />
+                        <Bot size={20} />
                       </AvatarFallback>
                     </Avatar>
                   )}

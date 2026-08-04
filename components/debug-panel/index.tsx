@@ -256,7 +256,7 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
         <YStack borderTopWidth={1} borderColor="$borderColor" flexShrink={0}>
           {/* Terminal Header */}
           <XStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$1.5" backgroundColor="$color3" borderBottomWidth={1} borderColor="$borderColor">
-            <Terminal size={12} color="$color11" />
+            <Terminal size={12} />
             <SizableText fontSize="$1" fontWeight="500">VFS Shell</SizableText>
             {shellOutput.length > 0 && (
               <Button
