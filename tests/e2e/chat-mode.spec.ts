@@ -164,7 +164,16 @@ test.describe('chat mode', () => {
     await expect(page.getByTestId('send')).toBeVisible();
   });
 
-  test('model picker is zen-only', async ({ page }) => {
+  // /chat is deliberately HOUSE-only: `houseOnly()` in app/chat/page.tsx keeps
+  // `^(zen|enso)` and drops the resold families that the builder and settings
+  // pickers do offer.
+  //
+  // This asserted `not.toMatch(/enso/i)` while the filter it describes ADMITS
+  // enso, so it contradicted the code it was guarding — and since the offline
+  // ladder is the one this test actually gets (mockChatBackend never stubs
+  // /v1/models, and an unsigned token makes the BFF fall back), the labels it
+  // saw were exactly the ones it forbade.
+  test('model picker offers the house families only', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await mockChatBackend(page);
     await page.goto('/chat');
@@ -175,8 +184,8 @@ test.describe('chat mode', () => {
     const labels = await options.allTextContents();
     expect(labels.length).toBeGreaterThan(0);
     for (const label of labels) {
-      expect(label).toMatch(/zen/i);
-      expect(label).not.toMatch(/gpt|claude|enso/i);
+      expect(label).toMatch(/zen|enso/i);
+      expect(label).not.toMatch(/gpt|claude|kimi|glm|qwen|deepseek|llama/i);
     }
   });
 
