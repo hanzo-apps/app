@@ -11,7 +11,8 @@ import { YStack, XStack, H1, SizableText, Paragraph, H2, Image, H3 } from '@hanz
 
 import { useCallback, useEffect, useState } from "react";
 import { Card, CardContent, CardFooter, Button, Badge, Input, AspectRatio } from '@hanzo/ui';
-import { ShoppingCart, Search, Store as StoreIcon, Loader2 } from "lucide-react";
+import { ShoppingCart, Search, Store as StoreIcon } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 
 interface StoreProduct {
   key: string;
@@ -185,7 +186,7 @@ export function Storefront() {
               position="relative" gap="$2"
             >
               {checkingOut ? (
-                <Loader2 size={20} />
+                <Spinner size={20} />
               ) : (
                 <ShoppingCart size={20} />
               )}
@@ -199,7 +200,7 @@ export function Storefront() {
         <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5">
           {loading && (
             <XStack alignItems="center" justifyContent="center" paddingVertical="$12">
-              <Loader2 size={24} /> <SizableText color="$color11">Loading catalog…</SizableText>
+              <Spinner size={24} /> <SizableText color="$color11">Loading catalog…</SizableText>
             </XStack>
           )}
 

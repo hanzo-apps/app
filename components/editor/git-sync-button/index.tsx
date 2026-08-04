@@ -18,7 +18,6 @@ import {
   Github,
   GitBranch,
   GitlabIcon,
-  Loader2,
   Lock,
   RefreshCw,
   UploadCloud,
@@ -36,6 +35,7 @@ import {
   type SyncGitResult,
 } from "@/lib/api/git";
 import { Page } from "@/types";
+import { Spinner } from "@/components/ui/spinner";
 
 /**
  * The push targets, Hanzo FIRST (our own git — the default). Each carries its
@@ -431,7 +431,7 @@ export function GitSyncButton({
                 gap="$1.5"
               >
                 {loading ? (
-                  <Loader2 size={14} />
+                  <Spinner size={14} />
                 ) : (
                   <RefreshCw size={14} />
                 )}
@@ -522,7 +522,7 @@ export function GitSyncButton({
               marginTop="$3" width="100%" gap="$2"
             >
               {loading ? (
-                <Loader2 size={16} />
+                <Spinner size={16} />
               ) : (
                 <RefreshCw size={16} />
               )}
@@ -603,7 +603,7 @@ export function GitSyncButton({
               width="100%" gap="$2"
             >
               {loading ? (
-                <Loader2 size={16} />
+                <Spinner size={16} />
               ) : (
                 <UploadCloud size={16} />
               )}
@@ -661,7 +661,7 @@ function CommitMessageField({
           borderColor="$borderColor" backgroundColor="$background" color="$color" placeholderTextColor="$color11"
   />
         {loading && (
-          <Loader2 size={14} />
+          <Spinner size={14} />
         )}
       </YStack>
       <Paragraph marginTop="$1" fontSize={10} color="$color11">

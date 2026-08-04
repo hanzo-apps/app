@@ -5,11 +5,12 @@ import { useState, useEffect } from 'react';
 import { toast, Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@hanzo/ui';
 import { EdgeFunction } from '@/lib/vfs/types';
 import {
-  Plus, Loader2, AlertCircle, Code2, MoreVertical, Pencil, Trash2,
+  Plus, AlertCircle, Code2, MoreVertical, Pencil, Trash2,
   ToggleLeft, ToggleRight, Copy, ExternalLink, CheckCircle2
 } from 'lucide-react';
 import { FunctionEditor } from './function-editor';
 import type { FunctionsDataProvider } from './data-providers';
+import { Spinner } from '@/components/ui/spinner';
 
 interface FunctionsManagerProps {
   deploymentId?: string;
@@ -140,7 +141,7 @@ export function FunctionsManager({ deploymentId, dataProvider, hideRuntimeFeatur
   if (loading) {
     return (
       <XStack alignItems="center" justifyContent="center" height="100%">
-        <Loader2 size={24} />
+        <Spinner size={24} />
       </XStack>
     );
   }

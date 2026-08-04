@@ -57,7 +57,7 @@ import { CommandPalette } from '@/components/command-palette';
 import { useCommandK } from '@/hooks/useCommandK';
 import type { Project } from '@/lib/vfs/types';
 import { builderLink } from '@/lib/api/projects';
-import { RAIL } from '@/lib/chrome';
+import { RAIL, glass } from '@/lib/chrome';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -148,8 +148,26 @@ export function AppShell({
                   rail INSIDE it, so the title starts at exactly the same x as
                   the content below. Padding on the outer band instead put the
                   two rails 24px out of step — the header's centered inside the
-                  padding, the content's inside the rail. */}
-              <YStack borderBottomWidth={1} borderColor="$borderColor">
+                  padding, the content's inside the rail.
+
+                  Sticky, and therefore glass. The header is a child of the
+                  scroll region (it has to be — it scrolls with the rail it
+                  measures), so it used to leave with the content: on a long
+                  page you lost the page's name the moment you started reading
+                  it. Pinning it to the top is what makes the material honest —
+                  there is now content passing UNDER it, which is the whole
+                  precondition for vibrancy. Unpinned it would be a blur with
+                  nothing to blur.
+
+                  `top={0}` against the scroll container, not the viewport, so
+                  the mobile bar above stays clear of it. */}
+              <YStack
+                {...glass(2)}
+                position="sticky"
+                top={0}
+                zIndex={10}
+                borderBottomWidth={1}
+              >
                 <XStack width="100%" maxWidth={RAIL} alignSelf="center" paddingHorizontal="$5" paddingVertical="$4" alignItems="center" justifyContent="space-between" gap="$4">
                   <YStack minWidth={0}>
                     <H1 numberOfLines={1} fontSize="$8" fontWeight="500" letterSpacing={-0.4} color="$color">

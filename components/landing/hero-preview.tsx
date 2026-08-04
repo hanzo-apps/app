@@ -22,13 +22,13 @@ import { YStack, XStack, SizableText, H3, Paragraph, type GuiElement } from '@ha
 // the settled final frame, no animation.
 
 import { useEffect, useRef, useState, type ReactElement } from "react";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Check,
   Clock,
   Code2,
   CornerDownLeft,
   Eye,
-  Loader2,
   MessageSquare,
   Monitor,
   RotateCcw,
@@ -327,7 +327,7 @@ export default function HeroPreview() {
                 </>
               ) : phase === "publishing" ? (
                 <>
-                  <Loader2 size={12} /> Publishing
+                  <Spinner size={12} /> Publishing
                 </>
               ) : (
                 "Publish"
@@ -368,7 +368,7 @@ export default function HeroPreview() {
               )}
               {streamLine && (
                 <XStack alignItems="center" gap="$1.5" className="line">
-                  <Loader2 size={10} />
+                  <Spinner size={10} />
                   <SizableText numberOfLines={1} fontFamily="$mono" fontSize={10} color="$color">{streamLine}</SizableText>
                 </XStack>
               )}
@@ -411,7 +411,7 @@ export default function HeroPreview() {
                       </SizableText>
                     </>
                   ) : (
-                    <Loader2 size={10} />
+                    <Spinner size={10} />
                   )}
                 </XStack>
               </XStack>
@@ -464,7 +464,7 @@ export default function HeroPreview() {
               </>
             ) : phase === "publishing" ? (
               <>
-                <Loader2 size={10} />
+                <Spinner size={10} />
                 <SizableText fontFamily="$mono" fontSize={9} color="$color">Publishing…</SizableText>
               </>
             ) : (
@@ -485,7 +485,7 @@ export default function HeroPreview() {
 function Generating(): ReactElement {
   return (
     <YStack height="100%" alignItems="center" justifyContent="center" gap="$2">
-      <Loader2 size={16} />
+      <Spinner size={16} />
       <SizableText fontFamily="$mono" fontSize={9} color="$color11">Generating</SizableText>
     </YStack>
   );

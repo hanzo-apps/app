@@ -22,12 +22,12 @@ import {
   Eye,
   Crosshair,
   Camera,
-  Loader2,
   X
 } from 'lucide-react';
 import { logger } from '@/lib/utils';
 import { captureIframeScreenshot } from '@/lib/utils/screenshot';
 import type { ProjectRuntime } from '@/lib/vfs/types';
+import { Spinner } from '@/components/ui/spinner';
 
 export interface MultipagePreviewHandle {
   captureScreenshot: (waitForContent?: boolean) => Promise<string | null>;
@@ -902,7 +902,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
               disabled={!iframeReady || isCapturing}
               title="Capture screenshot as thumbnail"
             >
-              {isCapturing ? <Loader2 size={12} /> : <Camera size={12} />}
+              {isCapturing ? <Spinner size={12} /> : <Camera size={12} />}
             </Button>
           )}
         </XStack>
@@ -985,7 +985,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
               disabled={!iframeReady || isCapturing}
               title="Capture screenshot as thumbnail"
             >
-              {isCapturing ? <Loader2 size={12} /> : <Camera size={12} />}
+              {isCapturing ? <Spinner size={12} /> : <Camera size={12} />}
             </Button>
           )}
         </XStack>

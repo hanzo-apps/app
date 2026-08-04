@@ -19,7 +19,6 @@ import {
   CheckCircle2,
   XCircle,
   AlertCircle,
-  Loader2,
   ChevronRight,
   ChevronDown,
   Search,
@@ -34,6 +33,7 @@ import { AppShell } from "@/components/app-shell";
 import { accent, panel } from "@/lib/chrome";
 import { DEFAULT_MODEL } from "@/lib/providers";
 import Link from "next/link";
+import { Spinner } from "@/components/ui/spinner";
 
 // The canonical cloud agentView shape (cloud/clients/agents/agents.go).
 interface Agent {
@@ -84,7 +84,7 @@ function statusIcon(status: string) {
     case "ready":
       return <CheckCircle2 size={16} />;
     case "running":
-      return <Loader2 size={16} />;
+      return <Spinner size={16} />;
     case "error":
       return <XCircle size={16} />;
     default:
@@ -271,7 +271,7 @@ export default function AgentsPage() {
         {/* Loading */}
         {state.kind === "loading" && (
           <YStack alignItems="center" justifyContent="center" paddingVertical="$12">
-            <Loader2 size={32} />
+            <Spinner size={32} />
             <SizableText color="$color11">Loading agents…</SizableText>
           </YStack>
         )}
@@ -370,7 +370,7 @@ export default function AgentsPage() {
                       onClick={createAgent}
                     >
                       {submitting ? (
-                        <Loader2 size={16} />
+                        <Spinner size={16} />
                       ) : (
                         <Plus size={16} />
                       )}
@@ -545,7 +545,7 @@ export default function AgentsPage() {
                             onClick={() => runAgent(agent.name)}
                           >
                             {isRunning ? (
-                              <Loader2 size={16} />
+                              <Spinner size={16} />
                             ) : (
                               <Play size={16} />
                             )}

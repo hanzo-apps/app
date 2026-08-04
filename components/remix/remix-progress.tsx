@@ -22,8 +22,9 @@ import { H2, Paragraph, YStack, XStack } from '@hanzo/gui';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogContent, DialogTitle } from '@hanzo/ui';
-import { Check, Loader2, Circle } from 'lucide-react';
+import { Check, Circle } from 'lucide-react';
 import { HanzoLogo } from '@/components/HanzoLogo';
+import { Spinner } from '@/components/ui/spinner';
 import {
   createRemixProject,
   provisionRemixProject,
@@ -164,7 +165,7 @@ function Step({ state, label, subline }: { state: StepState; label: string; subl
         {state === 'done' ? (
           <Check size={16} />
         ) : state === 'active' ? (
-          <Loader2 size={16} />
+          <Spinner size={16} />
         ) : (
           <Circle size={10} />
         )}

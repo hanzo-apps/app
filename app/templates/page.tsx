@@ -16,7 +16,7 @@ import { SizableText, YStack, XStack, H1, Paragraph, Image, H3 } from '@hanzo/gu
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Badge, Input, Button } from '@hanzo/ui';
-import { Search, Star, Sparkles, Gamepad2, Loader2 } from 'lucide-react';
+import { Search, Star, Sparkles, Gamepad2 } from 'lucide-react';
 import Header from '@/components/layout/header';
 import SiteFooter from '@/components/landing/site-footer';
 import { snapshotCatalog } from '@/lib/gallery-catalog';
@@ -29,6 +29,7 @@ import { bySpectrum, tint } from '@/lib/template-hues';
 import { TemplatePreviewModal } from '@/components/remix/template-preview-modal';
 import { RemixDialog } from '@/components/remix/remix-dialog';
 import { RemixProgress } from '@/components/remix/remix-progress';
+import { Spinner } from '@/components/ui/spinner';
 
 /** The page proper. Wrapped below because `useSearchParams` suspends, and the
  *  App Router requires a boundary rather than letting the whole route go dynamic. */
@@ -171,7 +172,7 @@ function ResourcesBrowser() {
           {filtered.length === 0 && (
             <YStack paddingVertical="$11" alignItems="center">
               {loading ? (
-                <Loader2 size={24} />
+                <Spinner size={24} />
               ) : (
                 <>
                   <Paragraph fontSize="$6" color="$color11">Nothing matches your search.</Paragraph>

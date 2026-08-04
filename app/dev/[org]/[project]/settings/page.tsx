@@ -21,7 +21,6 @@ import {
   Circle,
   ExternalLink,
   Pencil,
-  Loader2,
   Trash2,
   GitBranch,
   Rocket,
@@ -45,6 +44,7 @@ import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, t
 import { statusOf } from "@/lib/project-status";
 import { relativeTime } from "@/lib/projects-view";
 import { currentOrg, setCurrentOrg } from "@/lib/org-scope";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function ProjectSettingsPage() {
   const params = useParams<{ org: string; project: string }>();
@@ -176,7 +176,7 @@ export default function ProjectSettingsPage() {
                   disabled={!dirty || saving}
                   alignItems="center" gap="$2" borderRadius="$10" {...accent} paddingHorizontal="$4.5" paddingVertical="$2" disabledStyle={{ cursor: "not-allowed", backgroundColor: "$color3" }}
                 >
-                  {saving && <Loader2 size={14} />}
+                  {saving && <Spinner size={14} />}
                   Save changes
                 </Button>
               </XStack>
@@ -352,7 +352,7 @@ function DeploymentStatus({ slug }: { slug: string }) {
   if (state.kind === "loading") {
     return (
       <XStack marginTop="$3" alignItems="center" gap="$2">
-        <Loader2 size={14} />
+        <Spinner size={14} />
         <SizableText fontSize="$1" color="$color11">Loading deploy history…</SizableText>
       </XStack>
     );

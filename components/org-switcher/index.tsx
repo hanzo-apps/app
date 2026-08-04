@@ -23,13 +23,14 @@
 import { Image, SizableText, YStack, Paragraph, XStack, H1 } from '@hanzo/gui';
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Building2, Check, ChevronsUpDown, Loader2, Plus, Search, Settings, Sparkles } from 'lucide-react';
+import { Building2, Check, ChevronsUpDown, Plus, Search, Settings, Sparkles } from 'lucide-react';
 import { Button, Input } from '@hanzo/ui';
 
 import { useOrg } from '@/lib/org/client';
 import { currentOrg, switchOrg, filterOrgs, isScopedAway, setCurrentOrg, getHomeOrg, orgDisplayName, titleCase } from '@/lib/org-scope';
 import type { Org } from '@/lib/org/types';
 import { resolveOrgLogo, isEmoji, isImageUrl } from '@/lib/avatar';
+import { Spinner } from '@/components/ui/spinner';
 
 /**
  * The org's identity mark for the chrome. Renders, in priority (see
@@ -184,7 +185,7 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
                     Cancel
                   </Button>
                   <Button size="sm" onClick={() => void create()} disabled={busy || !newName.trim()}>
-                    {busy ? <Loader2 size={16} /> : 'Create'}
+                    {busy ? <Spinner size={16} /> : 'Create'}
                   </Button>
                 </XStack>
               </YStack>
@@ -278,7 +279,7 @@ export function OrgGate({ children }: { children: React.ReactNode }) {
   if (loading) {
     return (
       <XStack alignItems="center" justifyContent="center" paddingVertical="$12">
-        <Loader2 size={32} />
+        <Spinner size={32} />
       </XStack>
     );
   }
@@ -318,7 +319,7 @@ function OnboardingPanel() {
       </Paragraph>
 
       <Button width="100%" onClick={() => run({ personal: true })} disabled={busy !== null}>
-        {busy === 'personal' ? <Loader2 size={16} /> : 'Continue with a personal workspace'}
+        {busy === 'personal' ? <Spinner size={16} /> : 'Continue with a personal workspace'}
       </Button>
 
       <SizableText marginVertical="$4" textAlign="center" fontSize="$1" letterSpacing={0.4} color="$color11">or</SizableText>
@@ -336,7 +337,7 @@ function OnboardingPanel() {
         onClick={() => run({ name: name.trim() })}
         disabled={busy !== null || name.trim().length < 2}
       >
-        {busy === 'named' ? <Loader2 size={16} /> : 'Create team organization'}
+        {busy === 'named' ? <Spinner size={16} /> : 'Create team organization'}
       </Button>
 
       {error && <Paragraph marginTop="$4" fontSize="$3" color="$red8" textAlign="center">{error}</Paragraph>}

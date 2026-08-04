@@ -30,7 +30,6 @@ import {
   type LucideIcon,
   Search,
   RefreshCw,
-  Loader2,
   Plug,
   Link as LinkIcon,
   X,
@@ -47,6 +46,7 @@ import { Button, Badge, Input, toast } from '@hanzo/ui';
 import { useUser } from "@/hooks/useUser";
 import { AppShell } from "@/components/app-shell";
 import { selected } from "@/lib/chrome";
+import { Spinner } from "@/components/ui/spinner";
 import {
   fetchConnectors,
   connectProvider,
@@ -381,7 +381,7 @@ function ConnectorRow({
             disabled={busy || disabled}
             onClick={() => onDisconnect(p)}
           >
-            {busy ? <Loader2 size={14} /> : <X size={14} />}
+            {busy ? <Spinner size={14} /> : <X size={14} />}
             Disconnect
           </Button>
         ) : p.available ? (
@@ -392,7 +392,7 @@ function ConnectorRow({
             disabled={busy || disabled}
             onClick={() => onConnect(p)}
           >
-            {busy ? <Loader2 size={14} /> : <LinkIcon size={14} />}
+            {busy ? <Spinner size={14} /> : <LinkIcon size={14} />}
             Connect
           </Button>
         ) : (

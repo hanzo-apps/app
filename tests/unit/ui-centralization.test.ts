@@ -283,3 +283,42 @@ describe("Full-screen states measure the screen", () => {
     expect(offendersOf(/\{\.\.\.screen\}/).length).toBeGreaterThanOrEqual(8);
   });
 });
+
+/**
+ * ONE spinner.
+ *
+ * A spinner is an arc IN MOTION; lucide ships only the arc. The rotation lived
+ * in `.spin` (globals.css) as an OPT-IN, and an opt-in that 82 of 83 call sites
+ * decline is not a mechanism — it is a hazard with a comment on it. Every busy
+ * state in the app rendered a still three-quarter ring, which is what the owner
+ * saw on /auth/callback and correctly read as breakage.
+ *
+ * `components/ui/spinner` binds the rotation to the glyph, so reaching for the
+ * raw lucide loader is the thing to ban: there is no way to get the arc without
+ * the motion, and therefore no way to forget it.
+ */
+describe("Spinners spin", () => {
+  // NOT an exemption — a ratchet, in the shape TAILWIND_DEBT uses above. This
+  // file was held by another agent during the sweep. The two assertions let the
+  // set only SHRINK: a new raw loader fails because it is not listed, and
+  // converting this one fails until it is removed from here.
+  const RAW_LOADER_DEBT = ["components/settings/model-settings.tsx"];
+
+  it("no raw lucide loader glyph — the motion comes with it", () => {
+    // The one home renders the arc; everywhere else asks the home for it.
+    const offenders = offendersOf(/<Loader(?:2|Circle)\b/).filter(
+      (f) => f !== "components/ui/spinner.tsx",
+    );
+    expect(offenders.filter((f) => !RAW_LOADER_DEBT.includes(f))).toEqual([]);
+    expect(RAW_LOADER_DEBT.filter((f) => !offenders.includes(f))).toEqual([]);
+  });
+
+  it("the one spinner is the one that carries `.spin`", () => {
+    // `.spin` is not a class components decorate themselves with any more. The
+    // sole other holder is the sync badge, which spins an icon that is NOT a
+    // loader (it swaps glyph by status), so it states the motion itself.
+    expect(offendersOf(/className=(?:"spin"|'spin'|\{'spin'\})/)).toEqual([
+      "components/ui/spinner.tsx",
+    ]);
+  });
+});

@@ -3,8 +3,9 @@
 import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, Button } from '@hanzo/ui';
+import { Spinner } from '@/components/ui/spinner';
 import {
-  Loader2, AlertTriangle, Plus, Minus, RefreshCw, Key,
+  AlertTriangle, Plus, Minus, RefreshCw, Key,
   Code2, Wrench, Clock,
 } from 'lucide-react';
 
@@ -110,7 +111,7 @@ export function ProjectSwapDialog({
         <YStack paddingVertical="$4">
           {loading && (
             <XStack alignItems="center" justifyContent="center" paddingVertical="$6">
-              <Loader2 size={24} />
+              <Spinner size={24} />
               <SizableText marginLeft="$2" fontSize="$3" color="$color11">Analyzing changes...</SizableText>
             </XStack>
           )}
@@ -210,7 +211,7 @@ export function ProjectSwapDialog({
           >
             {swapping ? (
               <>
-                <Loader2 size={16} />
+                <Spinner size={16} />
                 Swapping...
               </>
             ) : (

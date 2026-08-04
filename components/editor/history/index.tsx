@@ -19,7 +19,6 @@ import {
   GitBranch,
   GitlabIcon,
   ListTree,
-  Loader2,
   MoreVertical,
   RotateCcw,
   Undo2,
@@ -53,6 +52,7 @@ import {
 } from "@/lib/api/history";
 import { readBookmarks, saveBookmarks } from "./bookmarks";
 import type { DetailsRev } from "./details";
+import { Spinner } from "@/components/ui/spinner";
 
 /**
  * A revision as the panel sees it — the union of the THREE real sources, primary
@@ -680,7 +680,7 @@ export function HistoryPanel({
                 <GroupHeader label="Commits" hint={repo ? `${repo.provider}/${repo.branch}` : ""} />
                 {commitsLoading && commitsShown.length === 0 ? (
                   <SizableText alignItems="center" gap="$2" paddingHorizontal="$2" paddingVertical="$5" fontSize="$1" color="$color11" display="flex" flexDirection="row">
-                    <Loader2 size={14} />
+                    <Spinner size={14} />
                     Loading commits…
                   </SizableText>
                 ) : commitsShown.length === 0 ? (
@@ -804,13 +804,13 @@ function RevCard({
         )}
         {isCommit && onPreview && canPreview && (
           <CardButton onClick={onPreview} active={isPreviewing}>
-            {previewBusy ? <Loader2 size={12} /> : <Eye size={12} />}
+            {previewBusy ? <Spinner size={12} /> : <Eye size={12} />}
             {isPreviewing ? "Previewing" : "Preview"}
           </CardButton>
         )}
         {!isCommit && (
           <CardButton onClick={onRestore} disabled={isBusy}>
-            {isBusy ? <Loader2 size={12} /> : <Undo2 size={12} />}
+            {isBusy ? <Spinner size={12} /> : <Undo2 size={12} />}
             Restore
           </CardButton>
         )}

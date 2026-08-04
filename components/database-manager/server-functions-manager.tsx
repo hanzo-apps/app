@@ -5,11 +5,12 @@ import { useState, useEffect } from 'react';
 import { toast, Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@hanzo/ui';
 import { ServerFunction } from '@/lib/vfs/types';
 import {
-  Plus, Loader2, AlertCircle, Wrench, MoreVertical, Pencil, Trash2,
+  Plus, AlertCircle, Wrench, MoreVertical, Pencil, Trash2,
   ToggleLeft, ToggleRight
 } from 'lucide-react';
 import { ServerFunctionEditor } from './server-function-editor';
 import type { ServerFunctionsDataProvider } from './data-providers';
+import { Spinner } from '@/components/ui/spinner';
 
 interface ServerFunctionsManagerProps {
   deploymentId?: string;
@@ -130,7 +131,7 @@ export function ServerFunctionsManager({ deploymentId, dataProvider }: ServerFun
   if (loading) {
     return (
       <XStack alignItems="center" justifyContent="center" height="100%">
-        <Loader2 size={24} />
+        <Spinner size={24} />
       </XStack>
     );
   }

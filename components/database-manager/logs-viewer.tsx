@@ -4,10 +4,11 @@ import { XStack, YStack, Paragraph, H3, SizableText } from '@hanzo/gui';
 import { useState, useEffect } from 'react';
 import { FunctionLog } from '@/lib/vfs/types';
 import {
-  Loader2, AlertCircle, RefreshCw, Trash2, CheckCircle2, XCircle,
+  AlertCircle, RefreshCw, Trash2, CheckCircle2, XCircle,
   Clock, ArrowRight
 } from 'lucide-react';
 import { Button } from '@hanzo/ui';
+import { Spinner } from '@/components/ui/spinner';
 interface LogsViewerProps {
   deploymentId: string;
 }
@@ -65,7 +66,7 @@ export function LogsViewer({ deploymentId }: LogsViewerProps) {
   if (loading) {
     return (
       <XStack alignItems="center" justifyContent="center" height="100%">
-        <Loader2 size={24} />
+        <Spinner size={24} />
       </XStack>
     );
   }

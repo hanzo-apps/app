@@ -4,7 +4,8 @@ import { YStack, Paragraph, SizableText, XStack } from '@hanzo/gui';
 import React, { useState, useEffect } from 'react';
 import { Secret } from '@/lib/vfs/types';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Button, Input, Label } from '@hanzo/ui';
-import { Loader2, AlertCircle, Eye, EyeOff, Info } from 'lucide-react';
+import { AlertCircle, Eye, EyeOff, Info } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
 
 interface SecretEditorProps {
   secret: Secret | null;
@@ -190,7 +191,7 @@ const allSecrets = secrets.list(); // ['${name || 'HANZO_COMMERCE_API_KEY'}', ..
           <Button onClick={handleSave} disabled={saving}>
             {saving ? (
               <>
-                <Loader2 size={16} />
+                <Spinner size={16} />
                 Saving...
               </>
             ) : (

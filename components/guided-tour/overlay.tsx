@@ -4,8 +4,8 @@ import { YStack, XStack, H3, SizableText } from '@hanzo/gui';
 import { useEffect, useMemo, useState } from 'react';
 import { useGuidedTour } from './context';
 import { Button } from '@hanzo/ui';
-import { Loader2 } from 'lucide-react';
 import { GUIDED_TOUR_STEPS } from './steps';
+import { Spinner } from '@/components/ui/spinner';
 
 interface GuidedTourOverlayProps {
   location: 'global' | 'project-manager' | 'workspace' | 'settings';
@@ -125,7 +125,7 @@ export function GuidedTourOverlay({ location }: GuidedTourOverlayProps) {
               </YStack>
             </YStack>
             {isBusy && (
-              <Loader2 size={20} />
+              <Spinner size={20} />
             )}
           </XStack>
 

@@ -3,12 +3,13 @@
 import { YStack, Anchor, Paragraph, XStack, SizableText } from '@hanzo/gui';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Button, Input, Label, toast } from '@hanzo/ui';
-import { ExternalLink, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { ExternalLink, Eye, EyeOff } from 'lucide-react';
 import { ConnectionBadge } from '@/components/settings/connection-badge';
 import { configManager } from '@/lib/config/storage';
 import { validateApiKey } from '@/lib/llm/llm-client';
 import { checkHFCapabilities, loginHF } from '@/lib/auth/hf-auth';
 import type { HFCapabilities } from '@/lib/auth/hf-auth';
+import { Spinner } from '@/components/ui/spinner';
 
 interface HFAuthPanelProps {
   onAuthChange?: () => void;
@@ -226,7 +227,7 @@ export function HFAuthPanel({ onAuthChange }: HFAuthPanelProps) {
           >
             {isConnecting ? (
               <>
-                <Loader2 size={12} />
+                <Spinner size={12} />
                 Connecting...
               </>
             ) : (

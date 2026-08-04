@@ -3,8 +3,9 @@
 import { SizableText, XStack, Paragraph } from '@hanzo/gui';
 import { useEffect, useState } from 'react';
 import { Deployment } from '@/lib/vfs/types';
-import { Server, Database, Loader2, X } from 'lucide-react';
+import { Server, Database, X } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Tooltip, TooltipContent, TooltipTrigger, Button } from '@hanzo/ui';
+import { Spinner } from '@/components/ui/spinner';
 interface DeploymentSelectorProps {
   projectId: string;
   selectedDeploymentId: string | null;
@@ -75,7 +76,7 @@ export function DeploymentSelector({
   if (loading) {
     return (
       <XStack alignItems="center" gap="$2" className={`${className}`}>
-        <Loader2 size={16} />
+        <Spinner size={16} />
         <SizableText fontSize="$3" color="$color11">Loading deployments...</SizableText>
       </XStack>
     );

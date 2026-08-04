@@ -4,9 +4,10 @@ import { XStack, YStack, SizableText, Paragraph, H3 } from '@hanzo/gui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Input, Label } from '@hanzo/ui';
 import {
-  Database, Plus, RefreshCw, Trash2, Pencil, X, Loader2, Search, TableProperties,
+  Database, Plus, RefreshCw, Trash2, Pencil, X, Search, TableProperties,
 } from 'lucide-react';
 import { selectAll, insertInto, updateRow, deleteRow } from './sql';
+import { Spinner } from '@/components/ui/spinner';
 
 /**
  * Data browser — the native "admin backend for all collections": list every
@@ -198,7 +199,7 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
         <YStack minHeight={0} flex={1} overflow="scroll">
           {loading ? (
             <XStack height="100%" alignItems="center" justifyContent="center">
-              <Loader2 size={16} />
+              <Spinner size={16} />
               <SizableText color="$color11"> Loading records…</SizableText>
             </XStack>
           ) : filtered.length === 0 ? (
@@ -278,7 +279,7 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
             <XStack marginTop="$4.5" alignItems="center" justifyContent="flex-end" gap="$2">
               <Button variant="outline" onClick={() => setEditing(null)} disabled={saving}>Cancel</Button>
               <Button onClick={save} disabled={saving}>
-                {saving ? <Loader2 size={16} /> : null}
+                {saving ? <Spinner size={16} /> : null}
                 {editing.mode === 'new' ? 'Create' : 'Save'}
               </Button>
             </XStack>

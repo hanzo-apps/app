@@ -6,7 +6,8 @@ import { useAccount, useConnect, useDisconnect, useWriteContract, useWaitForTran
 import { parseUnits } from 'viem'
 import { base, mainnet, arbitrum } from 'wagmi/chains'
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Badge } from '@hanzo/ui';
-import { Wallet, Loader2, Check, ExternalLink, Zap, ChevronDown } from 'lucide-react'
+import { Spinner } from '@/components/ui/spinner';
+import { Wallet, Check, ExternalLink, Zap, ChevronDown } from 'lucide-react'
 import { TREASURY_ADDRESS, USDC_ADDRESSES, ERC20_ABI, CREDIT_PRICING, CHAIN_INFO } from '@/lib/web3/config'
 
 // Crypto credit top-ups are KILLED until the backend is real. `app/api/crypto/
@@ -279,13 +280,13 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
                 disabled={isPending}
                 flex={1}
               >
-                {isPending ? <Loader2 size={16} /> : 'Pay Now'}
+                {isPending ? <Spinner size={16} /> : 'Pay Now'}
               </Button>
             </XStack>
           </YStack>
         ) : (
           <YStack paddingVertical="$6">
-            <Loader2 size={48} />
+            <Spinner size={48} />
             <Paragraph fontSize="$6" fontWeight="500" textAlign="center">
               {isConfirming ? 'Confirming transaction...' : 'Waiting for wallet...'}
             </Paragraph>

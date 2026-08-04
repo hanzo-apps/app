@@ -10,7 +10,6 @@ import {
   Github,
   GitlabIcon,
   Globe,
-  Loader2,
   Lock,
   Plus,
   RefreshCw,
@@ -42,6 +41,7 @@ import {
 } from "@/lib/api/git";
 import { linkProvider } from "@/lib/hanzo/iam";
 import { isGitUrl, gitUrlGateMessage } from "@/lib/git/url";
+import { Spinner } from "@/components/ui/spinner";
 
 /**
  * Provider display metadata — the ONE place icon/label per provider lives.
@@ -436,7 +436,7 @@ export function ImportGitPanel() {
                     disabled={Boolean(importing)}
                   >
                     {importing === r.cloneUrl ? (
-                      <Loader2 size={14} />
+                      <Spinner size={14} />
                     ) : (
                       <>
                         Import

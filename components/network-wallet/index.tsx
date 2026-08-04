@@ -17,10 +17,11 @@
  */
 import { Button } from '@hanzo/ui';
 import { XStack, SizableText } from '@hanzo/gui';
-import { Loader2, LogOut, Wallet } from "lucide-react";
+import { LogOut, Wallet } from "lucide-react";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 
 import { WalletBoundary } from "@/components/providers/WalletBoundary";
+import { Spinner } from "@/components/ui/spinner";
 
 /** Truncate an EVM address for a glanceable, monospaced label. */
 function shortAddress(address: string): string {
@@ -73,7 +74,7 @@ function WalletInner() {
       width="100%" alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }} disabledStyle={{ opacity: 0.5 }} focusVisibleStyle={{ outlineWidth: 0 }}
     >
       {isPending ? (
-        <Loader2 size={16} />
+        <Spinner size={16} />
       ) : (
         <Wallet size={16} />
       )}

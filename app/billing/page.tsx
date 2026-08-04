@@ -15,7 +15,8 @@ import { useCloudBalance, spendableCents } from '@/lib/billing/live-balance';
 import { Button, Card, CardContent, CardHeader, CardTitle, CardDescription, Badge, Tabs, TabsList, TabsTrigger, TabsContent, Progress } from '@hanzo/ui';
 
 // Icons
-import { Wallet, Download, Plus, ExternalLink, Sparkles, TrendingUp, Clock, Activity, Database, Brain, Loader2, FileText, CreditCard, ArrowRight, CheckCircle2, XCircle } from 'lucide-react';
+import { Wallet, Download, Plus, ExternalLink, Sparkles, TrendingUp, Clock, Activity, Database, Brain, FileText, CreditCard, ArrowRight, CheckCircle2, XCircle } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
 
 // Types
 
@@ -212,7 +213,7 @@ export default function BillingPage() {
   if (authLoading || loading) {
     return (
       <XStack {...screen} backgroundColor="$background">
-        <Loader2 size={32} />
+        <Spinner size={32} />
       </XStack>
     );
   }

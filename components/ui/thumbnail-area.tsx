@@ -3,8 +3,9 @@
 import { Button, Input } from '@hanzo/ui';
 import { YStack, Image, XStack, SizableText } from '@hanzo/gui';
 import React, { useRef, useState } from 'react';
-import { Camera, ImageUp, X, Loader2 } from 'lucide-react';
+import { Camera, ImageUp, X } from 'lucide-react';
 import { compressImage } from '@/lib/utils/image-compress';
+import { Spinner } from '@/components/ui/spinner';
 interface ThumbnailAreaProps {
   image: string | undefined;
   onCapture?: () => Promise<string | null>;  // undefined = capture unavailable
@@ -103,7 +104,7 @@ export function ThumbnailArea({
               height="$5" width="$5" borderRadius="$2" alignItems="center" justifyContent="center" hoverStyle={{ backgroundColor: "$color11" }}
               title="Capture"
             >
-              <SizableText color="$color11">{isCapturing ? <Loader2 size={12} /> : <Camera size={12} />}</SizableText>
+              <SizableText color="$color11">{isCapturing ? <Spinner size={12} /> : <Camera size={12} />}</SizableText>
             </Button>
           )}
           <Button
@@ -126,7 +127,7 @@ export function ThumbnailArea({
               height={36} width={36} borderRadius="$5" alignItems="center" justifyContent="center" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" elevation={1} hoverStyle={{ backgroundColor: "$background" }}
               title="Capture screenshot"
             >
-              <SizableText color="$color11">{isCapturing ? <Loader2 size={16} /> : <Camera size={16} />}</SizableText>
+              <SizableText color="$color11">{isCapturing ? <Spinner size={16} /> : <Camera size={16} />}</SizableText>
             </Button>
           )}
           <Button

@@ -12,7 +12,6 @@ import { Label, Input } from '@hanzo/ui';
 import { XStack, YStack, Paragraph, SizableText } from '@hanzo/gui';
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
 
 import { AppShell } from "@/components/app-shell";
 import { panel } from "@/lib/chrome";
@@ -21,6 +20,7 @@ import { useOrg } from "@/lib/org/client";
 import { currentOrg, orgDisplayName } from "@/lib/org-scope";
 import { readOrgLogoOverride, setOrgLogoOverride, isEmoji } from "@/lib/avatar";
 import { useUser } from "@/hooks/useUser";
+import { Spinner } from "@/components/ui/spinner";
 
 function OrganizationSettingsInner() {
   const { ctx, loading } = useOrg();
@@ -41,7 +41,7 @@ function OrganizationSettingsInner() {
   if (loading) {
     return (
       <XStack flex={1} alignItems="center" justifyContent="center" backgroundColor="$background">
-        <Loader2 size={32} />
+        <Spinner size={32} />
       </XStack>
     );
   }

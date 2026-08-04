@@ -19,12 +19,12 @@ import {
   Folder,
   BarChart3,
   Pencil,
-  Loader2,
   FileBox,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ThumbnailArea } from '@/components/ui/thumbnail-area';
 import { captureDeploymentScreenshot } from '@/lib/utils/deployment-thumbnail';
+import { Spinner } from '@/components/ui/spinner';
 
 interface DeploymentCardProps {
   deployment: Deployment;
@@ -92,7 +92,7 @@ export function DeploymentCard({
         {/* Publishing spinner overlay */}
         {isPublishing && (
           <XStack position="absolute" top={0} right={0} bottom={0} left={0} backgroundColor="$background" alignItems="center" justifyContent="center" zIndex={10}>
-            <Loader2 size={24} />
+            <Spinner size={24} />
           </XStack>
         )}
 

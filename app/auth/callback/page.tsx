@@ -31,15 +31,13 @@ const REDIRECT_KEY = "redirectAfterLogin";
  * already said it was the ONE page-level auth/loading gate; this page was the
  * holdout that made that untrue.
  *
- * The spinner is worth naming, because it is what the owner actually saw. It
- * was `<Loader2 size={16} />` — and lucide's `Loader2` is only the ARC. The
- * rotation is `.spin` in globals.css, an opt-in this call site never took, so
- * what rendered beside "Signing you in…" was a static three-quarter ring: a
- * stray line, on a screen whose entire job is to say that something is still
- * happening. (It is not alone. 82 of the app's 83 `Loader2` call sites never
- * take `.spin` either — residue of the Tailwind rip, where `animate-spin` was
- * removed and an opt-in put in its place. That sweep is its own piece of work;
- * here the fix is that this screen has no spinner to forget.)
+ * The spinner is worth naming, because it is what the owner actually saw: a
+ * still three-quarter ring beside "Signing you in…", on a screen whose entire
+ * job is to say that something is happening. lucide ships only the arc, and the
+ * rotation was an opt-in this site never took — as it turned out, nor did 79
+ * others. `components/ui/spinner` now binds the two, so the glyph cannot be
+ * rendered still; this screen simply has no spinner to place, because the
+ * mark's breathe already says it.
  */
 export default function AuthCallback() {
   const router = useRouter();

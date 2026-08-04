@@ -10,7 +10,6 @@ import {
   ExternalLink,
   FileText,
   GitCommitHorizontal,
-  Loader2,
   X,
 } from "lucide-react";
 import { toast, Button } from '@hanzo/ui';
@@ -23,6 +22,7 @@ import {
   type GitProvider,
 } from "@/lib/api/git";
 import { parseUnifiedPatch, diffText, diffStat, type DiffLine } from "@/lib/git/diff";
+import { Spinner } from "@/components/ui/spinner";
 
 /**
  * The revision the Details view describes — a real git commit, or an in-session
@@ -220,7 +220,7 @@ function Changes({
   if (files === "loading") {
     return (
       <XStack alignItems="center" gap="$2" paddingHorizontal="$4" paddingVertical="$6">
-        <Loader2 size={16} />
+        <Spinner size={16} />
         <SizableText fontSize="$3" color="$color11">Loading changes…</SizableText>
       </XStack>
     );

@@ -3,7 +3,8 @@
 import { YStack, XStack, Paragraph, SizableText } from '@hanzo/gui';
 import { useState, useRef, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Button, ScrollArea, Avatar, AvatarFallback, Badge, Textarea } from '@hanzo/ui';
-import { Send, Bot, User, Copy, RefreshCw, Loader2, Sparkles, Settings } from "lucide-react";
+import { Send, Bot, User, Copy, RefreshCw, Sparkles, Settings } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 interface Message {
   id: string;
   role: "user" | "assistant";
@@ -188,7 +189,7 @@ The UI is built entirely with @hanzo/ui primitives like Card, Button, ScrollArea
                 paddingHorizontal="$4"
               >
                 {isLoading ? (
-                  <Loader2 size={16} />
+                  <Spinner size={16} />
                 ) : (
                   <Send size={16} />
                 )}

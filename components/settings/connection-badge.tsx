@@ -3,7 +3,8 @@
 import { XStack, YStack, SizableText } from '@hanzo/gui';
 import React from 'react';
 import { Button } from '@hanzo/ui';
-import { Loader2, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
 
 interface ConnectionBadgeProps {
   method?: string;
@@ -36,7 +37,7 @@ export function ConnectionBadge({ method, extra, info, onDisconnect, disconnecti
         >
           <XStack alignItems="center" gap="$1">
             {disconnecting ? (
-              <Loader2 size={12} />
+              <Spinner size={12} />
             ) : (
               <LogOut size={12} />
             )}
