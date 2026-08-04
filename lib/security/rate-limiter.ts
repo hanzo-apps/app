@@ -1,117 +1,68 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { SESSION_COOKIE } from '@hanzo/iam/server';
 
-interface RateLimitConfig {
+/**
+ * What a request COSTS us, and therefore which budget it draws from.
+ *
+ * Cost, not audience. A signed-in dashboard GET and an anonymous landing GET
+ * are both a document read and both cheap; a POST that calls a model is
+ * expensive whoever sends it. Naming the tiers after cost is what keeps the
+ * classification honest when a new route shows up.
+ */
+export type Tier = 'read' | 'api' | 'auth' | 'ai' | 'payment';
+
+export interface Budget {
   windowMs: number;
-  maxRequests: number;
-  keyGenerator?: (req: NextRequest) => string;
-  skipSuccessfulRequests?: boolean;
-  skipFailedRequests?: boolean;
+  max: number;
 }
 
-interface RateLimitEntry {
-  count: number;
-  resetTime: number;
+/**
+ * READS ARE LOOSE ON PURPOSE, and that is the whole fix.
+ *
+ * One navigation is not one request: Next fetches the document, then an RSC
+ * payload per segment, then a prefetch for every link the pointer crosses — a
+ * project grid emits dozens before the page has settled. At 200/min the
+ * limiter refused people for *browsing*, which is very nearly the only thing
+ * it ever did. An in-memory per-instance counter cannot stop a distributed
+ * flood anyway; what it can protect is our own upstreams, and a document read
+ * does not touch them.
+ *
+ * The expensive tiers stay exactly as tight as they were. Nothing here buys
+ * headroom for a model call or a charge.
+ */
+const BUDGETS: Record<Tier, Budget> = {
+  read: { windowMs: 60_000, max: 1000 },
+  api: { windowMs: 60_000, max: 60 },
+  auth: { windowMs: 15 * 60_000, max: 100 },
+  ai: { windowMs: 60_000, max: 30 },
+  payment: { windowMs: 60 * 60_000, max: 20 },
+};
+
+// Model calls. Expensive whatever the verb, so the path decides before the
+// method does — today all three are writes (/v1/generate is POST PATCH PUT),
+// so this changes nothing now and stays right if a streaming GET ever lands.
+const MODEL = ['/v1/generate', '/v1/images', '/api/ai'];
+const CREDENTIAL = ['/v1/auth', '/api/auth'];
+const CHARGE = ['/v1/commerce', '/api/commerce', '/v1/crypto/payment'];
+
+const under = (path: string, roots: string[]): boolean =>
+  roots.some((root) => path === root || path.startsWith(root + '/'));
+
+/** The ONE classification. Pure in its two arguments, so a test can state it. */
+export function classify(method: string, path: string): Tier {
+  if (under(path, MODEL)) return 'ai';
+  if (method === 'GET' || method === 'HEAD') return 'read';
+  if (under(path, CREDENTIAL)) return 'auth';
+  if (under(path, CHARGE)) return 'payment';
+  return 'api';
 }
 
-// In-memory store. Per-instance by construction: a distributed limiter would
-// go through Hanzo KV, never Redis.
-const rateLimitStore = new Map<string, RateLimitEntry>();
-
-// Clean up expired entries periodically
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, entry] of rateLimitStore.entries()) {
-    if (entry.resetTime < now) {
-      rateLimitStore.delete(key);
-    }
-  }
-}, 60000); // Clean up every minute
-
-export class RateLimiter {
-  protected config: Required<RateLimitConfig>;
-
-  constructor(config: RateLimitConfig) {
-    this.config = {
-      windowMs: config.windowMs,
-      maxRequests: config.maxRequests,
-      keyGenerator: config.keyGenerator || this.defaultKeyGenerator,
-      skipSuccessfulRequests: config.skipSuccessfulRequests || false,
-      skipFailedRequests: config.skipFailedRequests || false,
-    };
-  }
-
-  private defaultKeyGenerator(req: NextRequest): string {
-    // Use IP address as default key
-    const forwarded = req.headers.get('x-forwarded-for');
-    const ip = forwarded ? forwarded.split(',')[0] : req.headers.get('x-real-ip') || 'unknown';
-    return `rate-limit:${ip}`;
-  }
-
-  async checkLimit(req: NextRequest): Promise<{ allowed: boolean; remaining: number; resetTime: number }> {
-    const key = this.config.keyGenerator(req);
-    const now = Date.now();
-
-    let entry = rateLimitStore.get(key);
-
-    if (!entry || entry.resetTime < now) {
-      // Create new entry or reset expired one
-      entry = {
-        count: 0,
-        resetTime: now + this.config.windowMs,
-      };
-      rateLimitStore.set(key, entry);
-    }
-
-    const remaining = Math.max(0, this.config.maxRequests - entry.count);
-    const allowed = entry.count < this.config.maxRequests;
-
-    if (allowed) {
-      entry.count++;
-    }
-
-    return {
-      allowed,
-      remaining,
-      resetTime: entry.resetTime,
-    };
-  }
-
-  middleware() {
-    return async (req: NextRequest) => {
-      const result = await this.checkLimit(req);
-
-      if (!result.allowed) {
-        return new Response('Too Many Requests', {
-          status: 429,
-          headers: {
-            'X-RateLimit-Limit': this.config.maxRequests.toString(),
-            'X-RateLimit-Remaining': '0',
-            'X-RateLimit-Reset': new Date(result.resetTime).toISOString(),
-            'Retry-After': Math.ceil((result.resetTime - Date.now()) / 1000).toString(),
-          },
-        });
-      }
-
-      // Add rate limit headers to successful responses
-      return {
-        headers: {
-          'X-RateLimit-Limit': this.config.maxRequests.toString(),
-          'X-RateLimit-Remaining': result.remaining.toString(),
-          'X-RateLimit-Reset': new Date(result.resetTime).toISOString(),
-        },
-      };
-    };
-  }
-}
-
-// Pre-configured rate limiters for different endpoints
 /**
  * The subject a request's token CLAIMS, for bucketing only.
  *
- * Deliberately not `lib/iam.ts`: `keyGenerator` is synchronous and runs in the
- * edge middleware, and a rate-limit bucket is not an authorization decision —
- * the worst a forged `sub` buys is a different bucket, which sending no token at
+ * Deliberately not `lib/iam.ts`: this runs in the edge middleware on every
+ * request, and a rate-limit bucket is not an authorization decision — the
+ * worst a forged `sub` buys is a different bucket, which sending no token at
  * all already does. Identity is verified per request, later, in lib/iam.ts.
  */
 export function subjectOf(req: NextRequest): string | null {
@@ -129,83 +80,110 @@ export function subjectOf(req: NextRequest): string | null {
   }
 }
 
-export const rateLimiters = {
-  // Strict rate limit for authentication endpoints
-  auth: new RateLimiter({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    maxRequests: 100, // 100 requests per 15 minutes
-  }),
+/**
+ * WHOSE budget this is: the subject when the request carries a session, the
+ * address only when it does not.
+ *
+ * An address is the wrong owner for signed-in traffic. Behind an office NAT —
+ * or behind the shared cluster ingress — an entire floor arrives as one
+ * address, so one heavy user spends everybody's budget and a busy room 429s
+ * itself. The subject is stable across a token refresh, so it also closes the
+ * hole a token-keyed bucket left open: re-minting handed you a fresh budget.
+ *
+ * Unauthenticated traffic still falls back to the address, which is the right
+ * owner for the one case that matters there — a credential-stuffing run has no
+ * session to key on.
+ */
+function principal(req: NextRequest): string {
+  const sub = subjectOf(req);
+  if (sub) return `user:${sub}`;
+  const forwarded = req.headers.get('x-forwarded-for');
+  const address =
+    forwarded?.split(',')[0].trim() || req.headers.get('x-real-ip') || 'unknown';
+  return `ip:${address}`;
+}
 
-  // Moderate rate limit for API endpoints
-  api: new RateLimiter({
-    windowMs: 60 * 1000, // 1 minute
-    maxRequests: 60, // 60 requests per minute
-  }),
+export interface Verdict {
+  tier: Tier;
+  allowed: boolean;
+  max: number;
+  /** Left AFTER this request. Zero when refused. */
+  remaining: number;
+  /** Epoch ms at which the window rolls over. */
+  reset: number;
+}
 
-  // Loose rate limit for public endpoints
-  public: new RateLimiter({
-    windowMs: 60 * 1000, // 1 minute
-    maxRequests: 200, // 200 requests per minute
-  }),
+// Fixed-window counters. Per-instance by construction: a distributed limiter
+// would go through Hanzo KV, never Redis.
+const counters = new Map<string, { count: number; reset: number }>();
 
-  // Rate limit for AI endpoints (expensive operations). Keyed PER-USER, not
-  // per-IP: /v1/generate is authenticated, and behind the shared cluster ingress
-  // an IP key collapses EVERY user into one global bucket (so one person's
-  // builds 429 everyone). Per-user gives each builder their own headroom; 30/min
-  // covers interactive iterate-and-rebuild while still guarding cost. Falls back
-  // to IP only for unauthenticated callers.
-  //
-  // The key is the token's SUBJECT, not the token: a refresh mints a new token
-  // for the same person, so keying on the token itself handed anyone who
-  // refreshed a brand-new budget. `sub` is stable for the life of the account.
-  ai: new RateLimiter({
-    windowMs: 60 * 1000, // 1 minute
-    maxRequests: 30, // per authenticated user
-    keyGenerator: (req) => {
-      const sub = subjectOf(req);
-      if (sub) return `rate-limit:ai:user:${sub}`;
-      const fwd = req.headers.get('x-forwarded-for');
-      const ip = fwd ? fwd.split(',')[0] : req.headers.get('x-real-ip') || 'unknown';
-      return `rate-limit:ai:ip:${ip}`;
-    },
-  }),
+const sweep = setInterval(() => {
+  const now = Date.now();
+  for (const [key, entry] of counters.entries()) {
+    if (entry.reset < now) counters.delete(key);
+  }
+}, 60_000);
+// Node keeps the loop alive for a bare interval, which hangs jest and any
+// script that imports this. Edge runtime has no unref, hence the guard.
+(sweep as unknown as { unref?: () => void }).unref?.();
 
-  // Very strict rate limit for payment endpoints
-  payment: new RateLimiter({
-    windowMs: 60 * 60 * 1000, // 1 hour
-    maxRequests: 20, // 20 requests per hour
-  }),
-};
+/**
+ * Draw one unit from `key`'s budget.
+ *
+ * The key MUST carry its tier. Every tier used to share one `rate-limit:<ip>`
+ * counter, so the 200/min the middleware spent on page views was withdrawn
+ * from the same balance as the 20/hour payment budget: browse twenty pages and
+ * you could not check out for an hour. Namespacing is the entire fix, and it
+ * is why the tier is part of the key rather than a lookup beside it.
+ */
+export function consume(key: string, budget: Budget): Omit<Verdict, 'tier'> {
+  const now = Date.now();
+  let entry = counters.get(key);
 
-// Helper function for easy rate limiting in API routes
-export async function applyRateLimiting(
-  req: NextRequest,
-  limiterName: keyof typeof rateLimiters = 'api'
-): Promise<{ allowed: boolean; response?: NextResponse }> {
-  const limiter = rateLimiters[limiterName];
-  const { allowed, remaining, resetTime } = await limiter.checkLimit(req);
-
-  if (!allowed) {
-    return {
-      allowed: false,
-      response: new NextResponse(
-        JSON.stringify({
-          error: 'Too many requests',
-          message: 'Rate limit exceeded. Please try again later.',
-          resetTime: new Date(resetTime).toISOString(),
-        }),
-        {
-          status: 429,
-          headers: {
-            'Content-Type': 'application/json',
-            'X-RateLimit-Remaining': '0',
-            'X-RateLimit-Reset': String(resetTime),
-            'Retry-After': String(Math.ceil((resetTime - Date.now()) / 1000)),
-          },
-        }
-      ),
-    };
+  if (!entry || entry.reset < now) {
+    entry = { count: 0, reset: now + budget.windowMs };
+    counters.set(key, entry);
   }
 
-  return { allowed: true };
+  const allowed = entry.count < budget.max;
+  if (allowed) entry.count++;
+
+  return {
+    allowed,
+    max: budget.max,
+    // AFTER the increment. Reporting it before meant the header promised one
+    // more request than the caller actually had.
+    remaining: Math.max(0, budget.max - entry.count),
+    reset: entry.reset,
+  };
+}
+
+/** Classify, key, and draw — the ONE entry point the middleware calls. */
+export function limit(req: NextRequest): Verdict {
+  const tier = classify(req.method, req.nextUrl.pathname);
+  return { tier, ...consume(`${tier}:${principal(req)}`, BUDGETS[tier]) };
+}
+
+/**
+ * The verdict as wire headers — one map for both outcomes, so a pass and a
+ * refusal can never describe the same budget differently.
+ *
+ * `X-RateLimit-Reset` is epoch SECONDS (the de-facto convention); the two
+ * copies this replaces disagreed, one emitting an ISO string and the other
+ * epoch milliseconds. `Retry-After` is delta-seconds, present only on a
+ * refusal and never below 1 — a `Retry-After: 0` invites an instant retry into
+ * the same wall.
+ */
+export function headers(verdict: Verdict): Record<string, string> {
+  const wire: Record<string, string> = {
+    'X-RateLimit-Limit': String(verdict.max),
+    'X-RateLimit-Remaining': String(verdict.remaining),
+    'X-RateLimit-Reset': String(Math.ceil(verdict.reset / 1000)),
+  };
+  if (!verdict.allowed) {
+    wire['Retry-After'] = String(
+      Math.max(1, Math.ceil((verdict.reset - Date.now()) / 1000)),
+    );
+  }
+  return wire;
 }

@@ -1,54 +1,153 @@
 import { NextRequest } from 'next/server';
-import { RateLimiter } from '@/lib/security/rate-limiter';
+import { SESSION_COOKIE } from '@hanzo/iam/server';
+import { classify, consume, headers, limit } from '@/lib/security/rate-limiter';
 import { DDoSProtection } from '@/lib/security/ddos-protection';
 import { sanitizeInput, sanitizeSQLInput, validateFileUpload, schemas } from '@/lib/security/input-validation';
 import { validateEnv } from '@/lib/security/env-validation';
 
 describe('Security Tests', () => {
   describe('Rate Limiter', () => {
-    let rateLimiter: RateLimiter;
+    const budget = { windowMs: 1000, max: 2 };
+    // Module-level counters are shared, so every case draws on its own key.
+    const key = (name: string) => `test-${name}-${Math.random()}`;
 
-    beforeEach(() => {
-      rateLimiter = new RateLimiter({
-        windowMs: 1000, // 1 second window for testing
-        maxRequests: 2,
-      });
+    // A session cookie whose payload names a subject. Only the `sub` claim is
+    // read, and only to pick a bucket — never to decide anything.
+    const sessionFor = (sub: string) => {
+      const payload = Buffer.from(JSON.stringify({ sub })).toString('base64url');
+      return `${SESSION_COOKIE}=header.${payload}.signature`;
+    };
+
+    it('reports what is left AFTER the request, not before', () => {
+      const k = key('remaining');
+
+      const first = consume(k, budget);
+      expect(first.allowed).toBe(true);
+      expect(first.remaining).toBe(1);
+
+      const second = consume(k, budget);
+      expect(second.allowed).toBe(true);
+      expect(second.remaining).toBe(0);
     });
 
-    it.skip('should allow requests under the limit', async () => {
-      const req = new NextRequest('http://localhost:3000/api/test');
+    it('should block requests over the limit', () => {
+      const k = key('block');
 
-      const result1 = await rateLimiter.checkLimit(req);
-      expect(result1.allowed).toBe(true);
-      expect(result1.remaining).toBe(1);
+      consume(k, budget);
+      consume(k, budget);
 
-      const result2 = await rateLimiter.checkLimit(req);
-      expect(result2.allowed).toBe(true);
-      expect(result2.remaining).toBe(0);
-    });
-
-    it('should block requests over the limit', async () => {
-      const req = new NextRequest('http://localhost:3000/api/test');
-
-      await rateLimiter.checkLimit(req);
-      await rateLimiter.checkLimit(req);
-
-      const result3 = await rateLimiter.checkLimit(req);
-      expect(result3.allowed).toBe(false);
-      expect(result3.remaining).toBe(0);
+      const third = consume(k, budget);
+      expect(third.allowed).toBe(false);
+      expect(third.remaining).toBe(0);
     });
 
     it('should reset after window expires', async () => {
-      const req = new NextRequest('http://localhost:3000/api/test');
+      const k = key('reset');
 
-      await rateLimiter.checkLimit(req);
-      await rateLimiter.checkLimit(req);
+      consume(k, budget);
+      consume(k, budget);
+      expect(consume(k, budget).allowed).toBe(false);
 
-      // Wait for window to expire
-      await new Promise(resolve => setTimeout(resolve, 1100));
+      await new Promise((resolve) => setTimeout(resolve, 1100));
 
-      const result = await rateLimiter.checkLimit(req);
-      expect(result.allowed).toBe(true);
+      expect(consume(k, budget).allowed).toBe(true);
+    });
+
+    it('classifies by what the request costs', () => {
+      // Reads are reads whatever they read — a page, an RSC payload, a list.
+      expect(classify('GET', '/dashboard')).toBe('read');
+      expect(classify('GET', '/v1/projects')).toBe('read');
+      expect(classify('GET', '/v1/billing/plans')).toBe('read');
+      expect(classify('HEAD', '/')).toBe('read');
+
+      // A model call is expensive whatever the verb.
+      expect(classify('POST', '/v1/generate')).toBe('ai');
+      expect(classify('PATCH', '/v1/generate')).toBe('ai');
+      expect(classify('GET', '/v1/images')).toBe('ai');
+
+      // Writes, by what they touch.
+      expect(classify('POST', '/v1/auth/codex/token')).toBe('auth');
+      expect(classify('POST', '/v1/commerce/subscription')).toBe('payment');
+      expect(classify('POST', '/v1/crypto/payment')).toBe('payment');
+      expect(classify('POST', '/v1/deployments')).toBe('api');
+      expect(classify('DELETE', '/v1/projects/x')).toBe('api');
+
+      // Prefix matching is on segments: /v1/authorize is not /v1/auth.
+      expect(classify('POST', '/v1/authorize')).toBe('api');
+    });
+
+    it('spends page views out of the read budget, never the payment budget', () => {
+      // The regression: every tier shared one `rate-limit:<ip>` counter, so
+      // browsing twenty pages exhausted the 20/hour payment budget and
+      // checkout 429'd for the rest of the hour.
+      const ip = { 'x-forwarded-for': '198.51.100.7' };
+      const read = () =>
+        limit(new NextRequest('http://localhost:3000/dashboard', { headers: ip }));
+      const pay = () =>
+        limit(
+          new NextRequest('http://localhost:3000/v1/commerce/subscription', {
+            method: 'POST',
+            headers: ip,
+          }),
+        );
+
+      for (let i = 0; i < 25; i++) expect(read().allowed).toBe(true);
+
+      const charge = pay();
+      expect(charge.tier).toBe('payment');
+      expect(charge.allowed).toBe(true);
+      expect(charge.remaining).toBe(19);
+    });
+
+    it('gives each signed-in person their own budget behind one address', () => {
+      // The NAT office: one address, many people. Keying on the address alone
+      // let one heavy user spend the whole floor's budget.
+      const from = (sub: string) =>
+        limit(
+          new NextRequest('http://localhost:3000/v1/deployments', {
+            method: 'POST',
+            headers: { 'x-forwarded-for': '203.0.113.9', cookie: sessionFor(sub) },
+          }),
+        );
+
+      const a = from('person-a');
+      const b = from('person-b');
+
+      expect(a.tier).toBe('api');
+      expect(a.remaining).toBe(59);
+      expect(b.remaining).toBe(59); // untouched by A
+    });
+
+    it('states Retry-After only when it refuses, and never below a second', () => {
+      const k = key('headers');
+      const pass = { tier: 'api' as const, ...consume(k, budget) };
+
+      expect(headers(pass)['Retry-After']).toBeUndefined();
+      expect(headers(pass)['X-RateLimit-Limit']).toBe('2');
+      expect(headers(pass)['X-RateLimit-Remaining']).toBe('1');
+      // Epoch SECONDS — the two copies this replaced disagreed on the unit.
+      expect(Number(headers(pass)['X-RateLimit-Reset'])).toBeCloseTo(
+        Math.ceil((Date.now() + budget.windowMs) / 1000),
+        -1,
+      );
+
+      consume(k, budget);
+      const refused = { tier: 'api' as const, ...consume(k, budget) };
+      expect(refused.allowed).toBe(false);
+      expect(Number(headers(refused)['Retry-After'])).toBeGreaterThanOrEqual(1);
+
+      // A window that has all but elapsed still asks for a whole second back.
+      expect(
+        Number(
+          headers({
+            tier: 'api',
+            allowed: false,
+            max: 2,
+            remaining: 0,
+            reset: Date.now() + 1,
+          })['Retry-After'],
+        ),
+      ).toBe(1);
     });
   });
 

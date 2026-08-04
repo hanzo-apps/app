@@ -1,5 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { rateLimiters } from './rate-limiter';
+import type { NextResponse } from 'next/server';
 
 // Security headers configuration
 const securityHeaders = {
@@ -102,31 +101,12 @@ export function applySecurityHeaders(response: NextResponse): NextResponse {
   return response;
 }
 
-// Rate limiting middleware
-export async function applyRateLimiting(
-  request: NextRequest,
-  rateLimitType: 'auth' | 'api' | 'public' | 'ai' | 'payment' = 'api'
-): Promise<NextResponse | null> {
-  const limiter = rateLimiters[rateLimitType];
-  const result = await limiter.checkLimit(request);
-
-  if (!result.allowed) {
-    return NextResponse.json(
-      { error: 'Too many requests. Please try again later.' },
-      {
-        status: 429,
-        headers: {
-          'X-RateLimit-Limit': limiter['config'].maxRequests.toString(),
-          'X-RateLimit-Remaining': '0',
-          'X-RateLimit-Reset': new Date(result.resetTime).toISOString(),
-          'Retry-After': Math.ceil((result.resetTime - Date.now()) / 1000).toString(),
-        },
-      }
-    );
-  }
-
-  return null;
-}
+// Rate limiting lives in ONE place: ./rate-limiter, which the root middleware
+// calls directly. A second copy used to sit here — same job, different answers:
+// it reported `X-RateLimit-Reset` as an ISO string where the other emitted
+// epoch milliseconds, and it reached through `limiter['config']` to read a max
+// the other took from the verdict. Two spellings of one budget is how a client
+// ends up trusting whichever it happened to parse.
 
 // CORS lives in ONE place: lib/edit/cors.ts, which the cross-origin widget
 // routes (/v1/me, /v1/suggest, /v1/edit, /v1/register) call directly. A second
@@ -138,77 +118,11 @@ export async function applyRateLimiting(
 // serve. Deleted rather than reconciled: two allowlists drift, and the drift is
 // exactly what broke hanzo.chat.
 
-// Request sanitization
-export function sanitizeRequest(request: NextRequest): NextRequest {
-  // Clone the request to avoid modifying the original
-  const sanitizedUrl = new URL(request.url);
-
-  // Remove potentially dangerous query parameters
-  const dangerousParams = ['__proto__', 'constructor', 'prototype'];
-  dangerousParams.forEach((param) => {
-    sanitizedUrl.searchParams.delete(param);
-  });
-
-  // Validate and sanitize path
-  const path = sanitizedUrl.pathname;
-  if (path.includes('..') || path.includes('//')) {
-    throw new Error('Invalid path detected');
-  }
-
-  return request;
-}
-
-// User agent validation
-export function validateUserAgent(request: NextRequest): boolean {
-  const userAgent = request.headers.get('user-agent') || '';
-
-  // Block known bad user agents
-  const blockedUserAgents = [
-    'sqlmap', // SQL injection tool
-    'nikto', // Web scanner
-    'nmap', // Network scanner
-    'masscan', // Port scanner
-    'burpsuite', // Security testing tool
-  ];
-
-  const lowerUserAgent = userAgent.toLowerCase();
-  return !blockedUserAgents.some((blocked) => lowerUserAgent.includes(blocked));
-}
-
-// Combined security middleware
-export async function securityMiddleware(
-  request: NextRequest,
-  options?: {
-    rateLimit?: 'auth' | 'api' | 'public' | 'ai' | 'payment';
-    validateUA?: boolean;
-  }
-): Promise<NextResponse | null> {
-  try {
-    // Validate user agent if required
-    if (options?.validateUA && !validateUserAgent(request)) {
-      return NextResponse.json({ error: 'Invalid user agent' }, { status: 403 });
-    }
-
-    // Apply rate limiting
-    if (options?.rateLimit) {
-      const rateLimitResponse = await applyRateLimiting(request, options.rateLimit);
-      if (rateLimitResponse) {
-        return rateLimitResponse;
-      }
-    }
-
-    return null; // Continue with request processing
-  } catch (error) {
-    console.error('Security middleware error:', error);
-    return NextResponse.json({ error: 'Security check failed' }, { status: 500 });
-  }
-}
-
-// Export all security utilities
-export const security = {
-  applySecurityHeaders,
-  applyRateLimiting,
-  sanitizeRequest,
-  validateUserAgent,
-  securityMiddleware,
-};
+// `sanitizeRequest`, `validateUserAgent`, `securityMiddleware` and a `security`
+// barrel used to live here with ZERO callers between them. Unreachable code
+// that reads as a control is worse than no control: the user-agent blocklist
+// (sqlmap, nikto, nmap…) looked like scanner defence while matching on a
+// header the scanner chooses, and `sanitizeRequest` deleted `__proto__` from a
+// URL it then threw away, returning the untouched request. Deleted rather than
+// wired — neither was protecting anything, and pretending otherwise is how a
+// real gap goes unnoticed.

@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { SESSION_COOKIE } from "@hanzo/iam/server";
-import { applySecurityHeaders, applyRateLimiting } from "@/lib/security/middleware";
+import { applySecurityHeaders } from "@/lib/security/middleware";
+import { limit, headers as rateLimitHeaders } from "@/lib/security/rate-limiter";
 
 // Routes that require authentication (prefix match).
 //
@@ -57,26 +58,21 @@ function isPublicRoute(pathname: string): boolean {
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
-  // --- Rate limiting (unchanged) ---
-  let rateLimitType: "auth" | "api" | "public" | "ai" | "payment" = "public";
+  // --- Rate limiting: decide, express, apply ---
+  // The tier and the key are `lib/security/rate-limiter`'s to choose — it reads
+  // the method as well as the path, which is what keeps a page view out of the
+  // budget a model call spends. One verdict produces one header map, so the
+  // refusal and the pass can never describe the same budget differently, and
+  // the headers now ride EVERY response instead of only the 429 that is too
+  // late to act on.
+  const verdict = limit(request);
+  const budget = rateLimitHeaders(verdict);
 
-  if (path.startsWith("/api/auth") || path.startsWith("/v1/auth")) {
-    rateLimitType = "auth";
-  } else if (path.startsWith("/api/commerce")) {
-    rateLimitType = "payment";
-  } else if (
-    path.startsWith("/api/ai") ||
-    path.startsWith("/v1/generate") ||
-    path.startsWith("/v1/images")
-  ) {
-    rateLimitType = "ai";
-  } else if (path.startsWith("/api")) {
-    rateLimitType = "api";
-  }
-
-  const rateLimitResponse = await applyRateLimiting(request, rateLimitType);
-  if (rateLimitResponse) {
-    return rateLimitResponse;
+  if (!verdict.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429, headers: budget },
+    );
   }
 
   // --- IAM token gate ---
@@ -110,6 +106,9 @@ export async function middleware(request: NextRequest) {
   // (x-current-host, x-client-ip) never reached a handler and have no reader
   // anywhere in the repo, so the clone is deleted rather than corrected.
   const response = NextResponse.next();
+  for (const [name, value] of Object.entries(budget)) {
+    response.headers.set(name, value);
+  }
   return applySecurityHeaders(response);
 }
 
