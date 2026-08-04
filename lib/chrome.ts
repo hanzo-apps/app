@@ -1,11 +1,39 @@
 /**
- * The signed-in chrome, as values.
+ * The chrome, as values.
  *
- * Three constants, because three things were being spelled out by hand on every
+ * Four constants, because four things were being spelled out by hand on every
  * page and drifting apart every time: how wide the content column is, what a
- * panel looks like, and which control is the loud one. Each is ONE value here
- * and nowhere else.
+ * panel looks like, which control is the loud one, and what it means to fill the
+ * screen. Each is ONE value here and nowhere else.
  */
+
+/**
+ * A state that owns the whole screen: the loading gate, the 404, the crash
+ * screen, the OAuth callback, admin's sign-in, the store's receipt. It stands
+ * alone — no `AppShell` above it — so it must MEASURE the screen itself.
+ *
+ * `minHeight="100%"` does not measure it, and that is the bug this value ends.
+ * A percentage resolves against the parent's computed height; every ancestor up
+ * to `<body>` is `height: auto` (globals.css gives body a min-height only) and
+ * @hanzo/gui's provider span is `display: contents`, so there is no box in
+ * between either. The percentage resolved to auto, the stack shrink-wrapped its
+ * content, and `justifyContent: center` then centered inside THAT — perfectly,
+ * and invisibly, in a box the height of the content. Measured on /auth/callback:
+ * the brand mark sat at y=0 of a 903px viewport with 860px of black under it.
+ * Ten states had the identical line; all ten were top-glued.
+ *
+ * `dvh`, not `vh`: on a phone the URL bar collapses and `100vh` overflows by its
+ * height. `AppShell` measures the same way for the same reason.
+ *
+ * The centering travels WITH the measure because the two are one decision — a
+ * state that fills the screen holds a paragraph of content, and half of this
+ * recipe is what produced the defect in the first place.
+ */
+export const screen = {
+  minHeight: '100dvh',
+  alignItems: 'center',
+  justifyContent: 'center',
+} as const;
 
 /**
  * The content column. Header and body read the SAME number, so a page's title

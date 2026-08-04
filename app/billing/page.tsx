@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/hooks/useUser';
 import { AppShell } from '@/components/app-shell';
-import { accent, panel, selected } from '@/lib/chrome';
+import { accent, panel, selected, screen } from '@/lib/chrome';
 import { CryptoPayment, CRYPTO_PAYMENTS_ENABLED } from '@/components/crypto-payment';
 import { WalletBoundary } from '@/components/providers/WalletBoundary';
 import { TopUp, Subscribe } from '@/components/billing/purchase';
@@ -211,7 +211,7 @@ export default function BillingPage() {
 
   if (authLoading || loading) {
     return (
-      <XStack minHeight="100%" backgroundColor="$background" alignItems="center" justifyContent="center">
+      <XStack {...screen} backgroundColor="$background">
         <Loader2 size={32} />
       </XStack>
     );

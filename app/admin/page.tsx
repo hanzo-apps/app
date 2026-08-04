@@ -3,6 +3,7 @@
 import { XStack, Paragraph } from '@hanzo/gui';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { screen } from '@/lib/chrome';
 
 export default function AdminPage() {
   const router = useRouter();
@@ -14,7 +15,7 @@ export default function AdminPage() {
   }, [router]);
 
   return (
-    <XStack minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="#0a0a0a">
+    <XStack {...screen} backgroundColor="#0a0a0a">
       <Paragraph color="$color8">Redirecting...</Paragraph>
     </XStack>
   );

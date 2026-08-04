@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 
 import { AppShell } from "@/components/app-shell";
-import { accent } from "@/lib/chrome";
+import { accent, screen } from "@/lib/chrome";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import {
   fetchProject,
@@ -101,7 +101,7 @@ export default function ProjectSettingsPage() {
 
   if (loading) {
     return (
-      <XStack minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="$background">
+      <XStack {...screen} backgroundColor="$background">
         <HanzoLogo size={40} color="var(--foreground)" className="skeleton" />
       </XStack>
     );

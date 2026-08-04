@@ -4,6 +4,7 @@ import { Label, Input, Button } from '@hanzo/ui';
 import { SizableText, XStack, YStack, H1, Paragraph } from '@hanzo/gui';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { screen } from '@/lib/chrome';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -43,7 +44,7 @@ export default function LoginPage() {
   };
 
   return (
-    <XStack minHeight="100%" backgroundColor="$background" alignItems="center" justifyContent="center" padding="$4">
+    <XStack {...screen} backgroundColor="$background" padding="$4">
       <style jsx>{`
         @keyframes fadeIn {
           from { opacity: 0; }
