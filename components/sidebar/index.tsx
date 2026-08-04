@@ -39,6 +39,7 @@ import {
   Gift,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { accent, selected } from '@/lib/chrome';
 import { OrgProvider } from '@/lib/org/client';
 import { OrgSwitcher } from '@/components/org-switcher';
 import { SidebarWallet } from '@/components/SidebarWallet';
@@ -258,12 +259,12 @@ function SidebarContent({
       <Button
         key={item.id}
         variant="ghost"
-        width="100%" gap="$2" {...{ justifyContent: collapsed ? "center" : "flex-start", paddingHorizontal: collapsed ? "$2" : undefined, backgroundColor: isActive ? "$color3" : "transparent", color: isActive ? "$color" : "$color11", hoverStyle: {"backgroundColor":"$color3"} }}
+        width="100%" gap="$2" {...selected(isActive)} {...{ justifyContent: collapsed ? "center" : "flex-start", paddingHorizontal: collapsed ? "$2" : undefined, hoverStyle: {"backgroundColor":"$color3"} }}
         onClick={() => handleItemAction(item)}
         title={collapsed ? item.label : undefined}
       >
         <Icon size={16} />
-        {!collapsed && <SizableText flex={1} textAlign="left">{item.label}</SizableText>}
+        {!collapsed && <SizableText flex={1} textAlign="left" color={isActive ? "$color12" : "$color11"}>{item.label}</SizableText>}
         {!collapsed && item.kbd && <kbd>{item.kbd}</kbd>}
       </Button>
     );
@@ -625,10 +626,10 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
   />
           <Button
             onClick={copy}
-            flexShrink={0} alignItems="center" gap="$1.5" borderRadius="$3" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$3" paddingVertical="$1.5" {...{ color: "$background" }} hoverStyle={{ backgroundColor: "$color6" }}
+            flexShrink={0} alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal="$3" paddingVertical="$1.5" {...accent}
           >
             {copied ? <Check size={14} /> : <Copy size={14} />}
-            <SizableText fontSize="$1" fontWeight="500" color="$background">{copied ? 'Copied' : 'Copy'}</SizableText>
+            <SizableText fontSize="$1" fontWeight="500" color="$color">{copied ? 'Copied' : 'Copy'}</SizableText>
           </Button>
         </XStack>
 
@@ -683,7 +684,7 @@ function UpgradeCard({ onClick }: { onClick: () => void }) {
       onClick={onClick}
       title="More credits & private apps"
       variant="outline"
-      width="100%" alignItems="center" gap="$2" borderRadius="$3" borderWidth={1} borderColor="$color6" backgroundColor="$color5" paddingHorizontal="$2.5" paddingVertical="$1.5" {...{ color: "$color" }}
+      width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$1.5" {...accent}
     >
       <Zap size={14} />
       <SizableText numberOfLines={1} fontWeight="500" fontSize="$1" color="$color">Upgrade to Pro</SizableText>

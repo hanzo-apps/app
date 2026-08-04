@@ -2,12 +2,13 @@
 
 /** The usage screen's markup. The page around it stays a server component so it
  *  can read the request's IAM session; only the view needs the client. */
-import { SizableText, YStack, H1, Paragraph, XStack } from '@hanzo/gui';
+import { SizableText, YStack, Paragraph, XStack } from '@hanzo/gui';
 import Link from 'next/link';
 import { Activity, ExternalLink } from 'lucide-react';
 import { Button, Card, CardContent, CardHeader, CardTitle, CardDescription } from '@hanzo/ui';
 
 import { AppShell } from '@/components/app-shell';
+import { panel } from '@/lib/chrome';
 import SmartRoutingCard from '@/components/usage/smart-routing-card';
 import CloudUsagePanel from '@/components/usage/cloud-usage-panel';
 import type { buildUsage } from '@/lib/usage';
@@ -20,30 +21,25 @@ export default function UsageView({
   account: ReturnType<typeof buildUsage>;
 }) {
   return (
-    <AppShell currentView="usage">
-    <YStack flex={1} backgroundColor="$background" overflow="scroll">
-      <YStack maxWidth={1024} alignSelf="center" paddingHorizontal="$4" paddingVertical="$6" $md={{ paddingHorizontal: "$6", paddingVertical: "$8" }}>
-        <YStack justifyContent="space-between" alignItems="flex-start" gap="$4" marginBottom="$6" $sm={{ flexDirection: "row", alignItems: "center" }}>
-          <div>
-            <H1 fontSize="$10" fontWeight="500" marginBottom="$2" $md={{ fontSize: "$11" }} lineHeight="1.1">Usage</H1>
-            <Paragraph color="$color11">
-              Your account consumption
-              {email && <SizableText marginLeft="$2" color="$color11">({email})</SizableText>}
-            </Paragraph>
-          </div>
-          <Link href="https://console.hanzo.ai/ai-accounts" target="_blank" rel="noopener noreferrer">
-            <Button variant="outline" borderColor="$borderColor" hoverStyle={{ backgroundColor: "$color3" }}>
-              <ExternalLink size={16} />
-              Multi-provider dashboard
-            </Button>
-          </Link>
-        </YStack>
+    <AppShell
+      currentView="usage"
+      title="Usage"
+      subtitle={email ? `Your account consumption (${email})` : "Your account consumption"}
+      actions={
+        <Link href="https://console.hanzo.ai/ai-accounts" target="_blank" rel="noopener noreferrer">
+          <Button variant="outline">
+            <ExternalLink size={16} />
+            Multi-provider dashboard
+          </Button>
+        </Link>
+      }
+    >
 
         {/* Smart routing — explains the value and toggles the builder default. */}
         <SmartRoutingCard />
 
         {/* Account usage — real figures from the Hanzo Base data plane. */}
-        <Card backgroundColor="$background" borderColor="$borderColor" marginBottom="$5">
+        <Card {...panel} marginBottom="$5">
           <CardHeader>
             <CardTitle alignItems="center" gap="$2">
               <Activity size={16} />
@@ -72,8 +68,6 @@ export default function UsageView({
             (spend, tokens, requests, per-model, activity). Same component every
             Hanzo surface renders; reads this session's IAM bearer. */}
         <CloudUsagePanel />
-      </YStack>
-    </YStack>
     </AppShell>
   );
 }

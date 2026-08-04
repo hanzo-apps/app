@@ -1,10 +1,11 @@
 'use client';
 
-import { SizableText, YStack, H1, Paragraph, XStack, H4, Anchor } from '@hanzo/gui';
+import { SizableText, YStack, Paragraph, XStack, H4, Anchor } from '@hanzo/gui';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/hooks/useUser';
 import { AppShell } from '@/components/app-shell';
+import { accent, panel, selected } from '@/lib/chrome';
 import { CryptoPayment, CRYPTO_PAYMENTS_ENABLED } from '@/components/crypto-payment';
 import { WalletBoundary } from '@/components/providers/WalletBoundary';
 import { TopUp, Subscribe } from '@/components/billing/purchase';
@@ -217,31 +218,21 @@ export default function BillingPage() {
   }
 
   return (
-    <AppShell currentView="billing">
-    <YStack flex={1} backgroundColor="$background" overflow="scroll">
-      <YStack maxWidth={1280} alignSelf="center" paddingHorizontal="$4" paddingVertical="$6" $md={{ paddingHorizontal: "$6", paddingVertical: "$8" }}>
-        {/* Header */}
-        <YStack justifyContent="space-between" alignItems="flex-start" gap="$4" marginBottom="$6" $sm={{ flexDirection: "row", alignItems: "center" }}>
-          <div>
-            <H1 fontSize="$10" fontWeight="500" marginBottom="$2" $md={{ fontSize: "$11" }} lineHeight="1.1">Billing & Usage</H1>
-            <Paragraph color="$color11">
-              Manage your credits, subscriptions, and monitor usage
-              {user?.email && <SizableText marginLeft="$2" color="$color11">({user.email})</SizableText>}
-            </Paragraph>
-          </div>
-          <Button
-            onClick={() => setActiveTab('add-credits')}
-            backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }}
-          >
-            <Plus size={16} />
-            Add Credits
-          </Button>
-        </YStack>
-
+    <AppShell
+      currentView="billing"
+      title="Billing"
+      subtitle={user?.email ? `Credits, subscription and usage for ${user.email}` : "Credits, subscription and usage"}
+      actions={
+        <Button {...accent} onClick={() => setActiveTab('add-credits')}>
+          <Plus size={16} />
+          Add Credits
+        </Button>
+      }
+    >
         {/* Key Metrics */}
         <YStack gap="$5" marginBottom="$6">
           {/* Current Plan */}
-          <Card backgroundColor="$background" borderColor="$borderColor" hoverStyle={{ borderColor: "$color" }}>
+          <Card {...panel} hoverStyle={{ borderColor: "$color6" }}>
             <CardHeader paddingBottom="$3">
               <CardTitle fontSize="$3" fontWeight="500" color="$color11">Current Plan</CardTitle>
             </CardHeader>
@@ -279,7 +270,7 @@ export default function BillingPage() {
           </Card>
 
           {/* Credits */}
-          <Card backgroundColor="$background" borderColor="$borderColor" hoverStyle={{ borderColor: "$color" }}>
+          <Card {...panel} hoverStyle={{ borderColor: "$color6" }}>
             <CardHeader paddingBottom="$3">
               <CardTitle fontSize="$3" fontWeight="500" color="$color11">Credit Balance</CardTitle>
             </CardHeader>
@@ -317,7 +308,7 @@ export default function BillingPage() {
           </Card>
 
           {/* Usage Summary */}
-          <Card backgroundColor="$background" borderColor="$borderColor" hoverStyle={{ borderColor: "$color" }}>
+          <Card {...panel} hoverStyle={{ borderColor: "$color6" }}>
             <CardHeader paddingBottom="$3">
               <CardTitle fontSize="$3" fontWeight="500" color="$color11">This Month</CardTitle>
             </CardHeader>
@@ -342,23 +333,25 @@ export default function BillingPage() {
 
         {/* Tabbed Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} width="100%">
-          <TabsList width="100%" maxWidth={512} backgroundColor="$background" borderWidth={1} borderColor="$borderColor">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="add-credits">Add Credits</TabsTrigger>
-            <TabsTrigger value="history">History</TabsTrigger>
-            <TabsTrigger value="usage">Usage</TabsTrigger>
+          <XStack marginBottom="$5" flexWrap="wrap" alignItems="center" gap="$3" borderBottomWidth={1} borderColor="$borderColor" paddingBottom="$3">
+          <TabsList backgroundColor="transparent" padding="$0">
+            <TabsTrigger value="overview" {...selected(activeTab === "overview")}>Overview</TabsTrigger>
+            <TabsTrigger value="add-credits" {...selected(activeTab === "add-credits")}>Add Credits</TabsTrigger>
+            <TabsTrigger value="history" {...selected(activeTab === "history")}>History</TabsTrigger>
+            <TabsTrigger value="usage" {...selected(activeTab === "usage")}>Usage</TabsTrigger>
           </TabsList>
+          </XStack>
 
           {/* Overview Tab */}
           <TabsContent value="overview" marginTop="$5" rowGap="$5">
-            <Card backgroundColor="$background" borderColor="$borderColor">
+            <Card {...panel}>
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent gap="$3">
                 {CRYPTO_PAYMENTS_ENABLED && (
                   <Button
-                    backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }}
+                    {...accent}
                     onClick={() => { setPaymentMethod('crypto'); setCreditModalOpen(true); }}
                   >
                     <Wallet size={16} />
@@ -393,7 +386,7 @@ export default function BillingPage() {
             </Card>
 
             {/* Recent transactions in overview */}
-            <Card backgroundColor="$background" borderColor="$borderColor">
+            <Card {...panel}>
               <CardHeader flexDirection="row" alignItems="center" justifyContent="space-between">
                 <CardTitle>Recent Transactions</CardTitle>
                 {invoices.length > 0 && (
@@ -458,7 +451,7 @@ export default function BillingPage() {
 
           {/* History / Invoices Tab */}
           <TabsContent value="history" marginTop="$5">
-            <Card backgroundColor="$background" borderColor="$borderColor">
+            <Card {...panel}>
               <CardHeader>
                 <CardTitle>Transaction History</CardTitle>
                 <CardDescription>All payments, invoices, and crypto transactions</CardDescription>
@@ -483,7 +476,7 @@ export default function BillingPage() {
 
           {/* Usage Tab */}
           <TabsContent value="usage" marginTop="$5" rowGap="$5">
-            <Card backgroundColor="$background" borderColor="$borderColor">
+            <Card {...panel}>
               <CardHeader>
                 <CardTitle>Usage Details</CardTitle>
                 <CardDescription>Current billing period usage across all services</CardDescription>
@@ -565,7 +558,6 @@ export default function BillingPage() {
             </Card>
           </TabsContent>
         </Tabs>
-      </YStack>
 
       {/* Crypto Payment Modal — web3 stack (wagmi/WalletConnect/Coinbase) scoped here.
           Gated off while crypto is killed (open can never be true anyway). */}
@@ -579,7 +571,6 @@ export default function BillingPage() {
           onSuccess={handleCryptoPaymentSuccess}
   />
       </WalletBoundary>
-    </YStack>
     </AppShell>
   );
 }

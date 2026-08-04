@@ -23,13 +23,11 @@
  * "connected" signal.
  */
 
-import { SizableText, H1, Paragraph, YStack, XStack, H2 } from '@hanzo/gui';
+import { SizableText, Paragraph, YStack, XStack, H2 } from '@hanzo/gui';
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   type LucideIcon,
-  ArrowLeft,
   Search,
   RefreshCw,
   Loader2,
@@ -47,9 +45,8 @@ import {
 import { Button, Badge, Input, toast } from '@hanzo/ui';
 
 import { useUser } from "@/hooks/useUser";
-import { useOrg } from "@/lib/org/client";
 import { AppShell } from "@/components/app-shell";
-import { currentOrg, orgDisplayName } from "@/lib/org-scope";
+import { selected } from "@/lib/chrome";
 import {
   fetchConnectors,
   connectProvider,
@@ -92,32 +89,27 @@ function sinceLabel(iso: string): string {
 }
 
 export default function ConnectorsPage() {
-  // Connectors live UNDER the consistent chrome shell (the same sidebar the
-  // dashboard uses), with the "Connectors" nav item active — matching chat +
-  // desktop. AppShell provides the ONE OrgProvider scope for the shell + page,
-  // so useOrg has a provider ancestor without a second, nested one here.
+  // Connectors live UNDER the shell, with the "Connectors" nav item active, and
+  // the shell draws the title — so this page has no header of its own.
   return (
-    <AppShell currentView="connectors">
+    <AppShell
+      currentView="connectors"
+      title="Connectors"
+      subtitle="Connect services to your workspace"
+    >
       <ConnectorsInner />
     </AppShell>
   );
 }
 
 function ConnectorsInner() {
-  const router = useRouter();
   const { user, loading: userLoading } = useUser();
-  const { ctx } = useOrg();
 
   const [providers, setProviders] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("all");
   const [busyId, setBusyId] = useState<string | null>(null);
-
-  // Which org these connectors belong to — resolved exactly like the workspace
-  // menu / OrgSwitcher, so the header names the ORG the connections attribute to.
-  const orgId = currentOrg() || ctx?.currentOrg || "";
-  const orgName = orgDisplayName(ctx?.orgs ?? [], orgId) || "";
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -197,15 +189,15 @@ function ConnectorsInner() {
   // honest sign-in CTA rather than an empty list.
   if (!userLoading && !user) {
     return (
-      <YStack minHeight="100%" alignItems="center" justifyContent="center" gap="$4" backgroundColor="$background" paddingHorizontal="$5">
+      <YStack alignItems="center" justifyContent="center" gap="$4" paddingVertical="$10">
         <Plug size={32} />
         <div>
-          <H1 textAlign="center" fontSize="$6" fontWeight="500">Sign in to manage connectors</H1>
+          <H2 textAlign="center" fontSize="$6" fontWeight="500">Sign in to manage connectors</H2>
           <Paragraph textAlign="center" marginTop="$1" fontSize="$3" color="$color11">
             Connectors are scoped to your workspace.
           </Paragraph>
         </div>
-        <Button asChild>
+        <Button variant="outline" asChild>
           <Link href="/login">Sign in</Link>
         </Button>
       </YStack>
@@ -213,53 +205,38 @@ function ConnectorsInner() {
   }
 
   return (
-    <YStack minHeight="100%" backgroundColor="$background">
-      {/* Header */}
-      <YStack position="sticky" top="$0" zIndex={10} borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" backdropFilter="blur(8px)">
-        <XStack alignSelf="center" maxWidth={768} alignItems="center" justifyContent="space-between" gap="$4" paddingHorizontal="$5" paddingVertical="$4">
-          <XStack minWidth={0} alignItems="center" gap="$3">
-            <Button variant="ghost" size="sm" onClick={() => router.back()} gap="$2">
-              <ArrowLeft size={16} />
-              Back
-            </Button>
-            <YStack minWidth={0}>
-              <H1 numberOfLines={1} fontSize="$7" fontWeight="500">Connectors</H1>
-              <Paragraph numberOfLines={1} fontSize="$1" color="$color11">
-                {orgName ? `Connect services to ${orgName}` : "Connect services to your workspace"}
-              </Paragraph>
-            </YStack>
-          </XStack>
-          <XStack flexShrink={0} alignItems="center" gap="$2">
-            {connectedCount > 0 && (
-              <Badge variant="outline">
-                <SizableText width="$1.5" height="$1.5" borderRadius="$10" backgroundColor="$green9" />
-                {connectedCount} connected
-              </Badge>
-            )}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => void load()}
-              aria-label="Refresh"
-              title="Refresh"
-            >
-              <RefreshCw size={16} />
-            </Button>
-          </XStack>
-        </XStack>
-      </YStack>
-
-      <YStack alignSelf="center" maxWidth={768} paddingHorizontal="$5" paddingVertical="$5">
-        {/* Search */}
-        <YStack position="relative" marginBottom="$4">
-          <Search size={16} />
-          <Input
-            placeholder="Search connectors…"
-            paddingLeft={36}
-            value={query}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
+    <>
+      {/* The list's own toolbar. The count and Refresh used to ride in a sticky
+          page header alongside a hand-rolled title and a "← Back" button that
+          stood in for the sidebar this page had forgotten to mount. The shell
+          carries the title now; these two belong beside the list they describe
+          and refresh. */}
+        <XStack marginBottom="$4" alignItems="center" gap="$2">
+          <YStack position="relative" flex={1}>
+            <Search size={16} />
+            <Input
+              placeholder="Search connectors…"
+              paddingLeft={36}
+              value={query}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
   />
-        </YStack>
+          </YStack>
+          {connectedCount > 0 && (
+            <Badge variant="outline">
+              <SizableText width="$1.5" height="$1.5" borderRadius="$10" backgroundColor="$green9" />
+              {connectedCount} connected
+            </Badge>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => void load()}
+            aria-label="Refresh"
+            title="Refresh"
+          >
+            <RefreshCw size={16} />
+          </Button>
+        </XStack>
 
         {/* Category filter — only when the catalog spans more than one. */}
         {categories.length > 2 && (
@@ -269,9 +246,10 @@ function ConnectorsInner() {
                 key={c}
                 onClick={() => setCategory(c)}
                 variant="ghost"
-                borderRadius="$10" paddingHorizontal="$3" paddingVertical="$1" backgroundColor={category === c ? "$color12" : undefined} hoverStyle={category === c ? undefined : { backgroundColor: "$color3" }}
+                {...selected(category === c)}
+                borderRadius="$10" paddingHorizontal="$3" paddingVertical="$1" hoverStyle={category === c ? undefined : { backgroundColor: "$color3" }}
               >
-                <SizableText fontSize="$1" textTransform="capitalize" color={category === c ? "$background" : "$color11"}>{c}</SizableText>
+                <SizableText fontSize="$1" textTransform="capitalize" color={category === c ? "$color" : "$color11"}>{c}</SizableText>
               </Button>
             ))}
           </XStack>
@@ -305,8 +283,7 @@ function ConnectorsInner() {
             <Section title="Coming soon" rows={unavailable} busyId={busyId} onConnect={onConnect} onDisconnect={onDisconnect} muted />
           </YStack>
         )}
-      </YStack>
-    </YStack>
+    </>
   );
 }
 

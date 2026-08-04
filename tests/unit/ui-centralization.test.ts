@@ -154,3 +154,98 @@ describe("UI centralization — every component comes from @hanzo/ui", () => {
     expect(offendersOf(/\$group-(xs|sm|md|lg|xl)\b/)).toEqual([]);
   });
 });
+
+/**
+ * ONE chrome.
+ *
+ * Every signed-in page renders inside `AppShell`, and the shell — not the page —
+ * draws the title, the rail under it and the scroll region. Before this, six
+ * pages drew their own: five title sizes ($6/$7/$8/$10/$11), five column widths
+ * (672/768/896/1152/1280), two "← Back" buttons standing in for a sidebar the
+ * page had not mounted, and on /profile a header rail that disagreed with its
+ * own body rail. These keep the pages from drifting apart again.
+ */
+describe("Chrome uniformity — the shell draws the header", () => {
+  const shellPages = files
+    .filter((f) => /^app\//.test(rel(f)))
+    .filter((f) => /from\s+['"]@\/components\/app-shell['"]/.test(readFileSync(f, "utf8")));
+
+  it("finds the signed-in pages", () => {
+    expect(shellPages.length).toBeGreaterThan(8);
+  });
+
+  it("a titled page never draws its own <H1> — the shell owns it", () => {
+    // Balanced `{...}` prop values are stripped first, so a `>` inside
+    // `actions={<Button …>}` cannot end the tag early and hide a `title`.
+    const withoutBraces = (src: string) => {
+      let out = "";
+      let depth = 0;
+      for (const ch of src) {
+        if (ch === "{") depth++;
+        else if (ch === "}") depth = Math.max(0, depth - 1);
+        else if (depth === 0) out += ch;
+      }
+      return out;
+    };
+    const offenders = shellPages.filter((f) => {
+      const src = readFileSync(f, "utf8");
+      const titled = /<AppShell[^>]*\stitle=/.test(withoutBraces(src));
+      return titled && /<H1\b/.test(src);
+    });
+    expect(offenders.map(rel)).toEqual([]);
+  });
+
+  it("no page re-opens the shell's scroll region", () => {
+    // `<YStack flex={1} … overflow="scroll">` as a page's outermost child was
+    // copied into eight pages and forgotten by two, which is why /connectors and
+    // /profile could not scroll at all. The shell opens exactly one.
+    const offenders = shellPages.filter((f) =>
+      /flex=\{1\}\s+backgroundColor="\$background"\s+overflow="scroll"/.test(
+        readFileSync(f, "utf8"),
+      ),
+    );
+    expect(offenders.map(rel)).toEqual([]);
+  });
+
+  it("every Button on a signed-in page names its variant", () => {
+    // THE screenshot defect. `<Button onClick={…}>Edit Profile</Button>` takes
+    // @hanzo/ui's `default`, which is `bg: $color12, color: $color1` — and
+    // $color12 is hsl(0 0% 100%), a pure white pill, the loudest object on a
+    // #080808 page. Nothing in the source says "white"; the loudness comes from
+    // the prop that was left off. Naming a variant (or spreading `accent`, the
+    // one primary) is the whole fix, so the omission is what this bans.
+    const openings = (src: string, name: string) => {
+      const out: string[] = [];
+      let i = 0;
+      while ((i = src.indexOf("<" + name, i)) !== -1) {
+        if (/[A-Za-z0-9]/.test(src[i + 1 + name.length] ?? "")) {
+          i++;
+          continue;
+        }
+        let depth = 0;
+        let j = i;
+        for (; j < src.length; j++) {
+          const c = src[j];
+          if (c === "{") depth++;
+          else if (c === "}") depth--;
+          else if (c === ">" && depth === 0) break;
+        }
+        out.push(src.slice(i, j + 1));
+        i = j + 1;
+      }
+      return out;
+    };
+    const offenders = shellPages.flatMap((f) =>
+      openings(readFileSync(f, "utf8"), "Button")
+        .filter((t) => !/\bvariant\s*=/.test(t) && !/\.\.\.accent/.test(t))
+        .map(() => rel(f)),
+    );
+    expect([...new Set(offenders)]).toEqual([]);
+  });
+
+  it("$color12 is never a control's fill", () => {
+    // The same white blob reached by hand rather than by variant — /connectors'
+    // selected category chip. Selected state is $color3 + $color, as in the sidebar.
+    expect(offendersOf(/<Button[^>]*backgroundColor="\$color12"/)).toEqual([]);
+  });
+});

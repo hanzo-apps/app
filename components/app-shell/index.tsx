@@ -25,9 +25,27 @@
  * top-bar hamburger here — without which a phone would have NO way to reach the
  * nav. The Sidebar's own nav items self-route (absolute canonical routes);
  * selecting a recent project opens it in the builder.
+ *
+ * ── The shell owns the header, and that is the whole uniformity law ──────────
+ *
+ * Pass `title` (with optional `subtitle`/`actions`) and the shell draws the page
+ * header AND the content rail underneath it, both on the same `RAIL` measure.
+ * Every signed-in page used to draw its own: five title sizes ($6, $7, $8, $10,
+ * $11), five column widths, two of them with a "← Back" button standing in for
+ * the sidebar that the page had simply forgotten to mount. /profile's header
+ * rail (1280) and its body rail (896) did not even agree with each other, and
+ * because that header set `maxWidth` with no `width`, it shrink-wrapped and
+ * centered itself — which is why the title and its button collided mid-screen in
+ * the owner's screenshot.
+ *
+ * The presence of a title is the ONLY switch: a titled page gets header + rail,
+ * a page without one owns the canvas (the dashboard hero, chat, the builder).
+ * There is no `bleed` flag and no second header component to reach for, so an
+ * ad-hoc header is not something a page can drift into — it is something it
+ * would have to go out of its way to build.
  */
 import { Button } from '@hanzo/ui';
-import { YStack, XStack } from '@hanzo/gui';
+import { YStack, XStack, H1, Paragraph } from '@hanzo/gui';
 import React, { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Menu, Search } from 'lucide-react';
@@ -39,14 +57,30 @@ import { CommandPalette } from '@/components/command-palette';
 import { useCommandK } from '@/hooks/useCommandK';
 import type { Project } from '@/lib/vfs/types';
 import { builderLink } from '@/lib/api/projects';
+import { RAIL } from '@/lib/chrome';
 
 interface AppShellProps {
   children: React.ReactNode;
   /** Which sidebar item is active (highlights it). Defaults to 'templates'. */
   currentView?: string;
+  /**
+   * The page title. Drawing it here is what makes the chrome uniform — and its
+   * presence is also what gives the page its content rail (see above).
+   */
+  title?: string;
+  /** One line under the title. Say what the page is for, not what it is called. */
+  subtitle?: React.ReactNode;
+  /** Page-level controls, right-aligned on the title row. */
+  actions?: React.ReactNode;
 }
 
-export function AppShell({ children, currentView = 'templates' }: AppShellProps) {
+export function AppShell({
+  children,
+  currentView = 'templates',
+  title,
+  subtitle,
+  actions,
+}: AppShellProps) {
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -103,7 +137,47 @@ export function AppShell({ children, currentView = 'templates' }: AppShellProps)
           </Button>
         </XStack>
 
-        {children}
+        {/* The scroll region. It lives HERE so every page scrolls the same way —
+            each one used to open with its own identical `flex={1} overflow=
+            "scroll"`, which is one line to forget and /connectors and /profile
+            both forgot it (they set `minHeight="100%"` and could not scroll). */}
+        <YStack flex={1} backgroundColor="$background" overflow="scroll">
+          {title ? (
+            <>
+              {/* The hairline spans the full width; the padding belongs to the
+                  rail INSIDE it, so the title starts at exactly the same x as
+                  the content below. Padding on the outer band instead put the
+                  two rails 24px out of step — the header's centered inside the
+                  padding, the content's inside the rail. */}
+              <YStack borderBottomWidth={1} borderColor="$borderColor">
+                <XStack width="100%" maxWidth={RAIL} alignSelf="center" paddingHorizontal="$5" paddingVertical="$4" alignItems="center" justifyContent="space-between" gap="$4">
+                  <YStack minWidth={0}>
+                    <H1 numberOfLines={1} fontSize="$8" fontWeight="500" letterSpacing={-0.4} color="$color">
+                      {title}
+                    </H1>
+                    {subtitle ? (
+                      <Paragraph numberOfLines={1} marginTop="$1" fontSize="$3" color="$color11">
+                        {subtitle}
+                      </Paragraph>
+                    ) : null}
+                  </YStack>
+                  {actions ? (
+                    <XStack flexShrink={0} alignItems="center" gap="$2">{actions}</XStack>
+                  ) : null}
+                </XStack>
+              </YStack>
+
+              {/* `width="100%"` is load-bearing: `maxWidth` + `alignSelf` alone
+                  shrink-wraps to the content and centers it, which is the bug
+                  the screenshot caught on /profile. */}
+              <YStack width="100%" maxWidth={RAIL} alignSelf="center" paddingHorizontal="$5" paddingVertical="$6">
+                {children}
+              </YStack>
+            </>
+          ) : (
+            children
+          )}
+        </YStack>
       </YStack>
 
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />

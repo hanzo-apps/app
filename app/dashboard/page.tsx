@@ -18,6 +18,7 @@ import {
 import { useUser } from "@/hooks/useUser";
 import { useProjects } from "@/hooks/useProjects";
 import { AppShell } from "@/components/app-shell";
+import { panel, selected, RAIL } from "@/lib/chrome";
 import { BuildComposer } from "@/components/build-composer";
 import { ProjectThumb } from "@/components/project-thumb";
 import { builderLink, liveUrlOf } from "@/lib/api/projects";
@@ -92,8 +93,10 @@ export default function DashboardPage() {
   const greetingName = user.fullname || user.name || "there";
 
   return (
+    // No title: the dashboard is a canvas page, so it owns its own hero rather
+    // than taking the shell's header + rail. The scroll region is the shell's —
+    // this page used to open its own identical one.
     <AppShell currentView="dashboard">
-      <YStack flex={1} backgroundColor="$background" overflow="scroll">
         {/* ── Hero viewport: ONLY the centered composer until you scroll ── */}
         {/* Fill the scroll viewport — `100%` of a parent that is now definite,
             which is also the one spelling that is right on both sizes (below md
@@ -125,22 +128,25 @@ export default function DashboardPage() {
         </YStack>
 
         {/* ── Projects: a rounded panel that slides up as you scroll ── */}
-        <YStack id="projects-panel" alignSelf="center" maxWidth={1152} paddingHorizontal="$4" paddingBottom="$12" $sm={{ paddingHorizontal: "$5" }}>
+        <YStack id="projects-panel" width="100%" alignSelf="center" maxWidth={RAIL} paddingHorizontal="$4" paddingBottom="$12" $sm={{ paddingHorizontal: "$5" }}>
           <Reveal>
-            <YStack borderRadius="1.75rem" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4.5" elevation={6} $md={{ padding: "$6" }}>
+            {/* The same panel every other page's content sits on. It was a
+                bespoke 1.75rem radius over an elevation, i.e. a surface claiming
+                to float above a page it is sitting in. */}
+            <YStack {...panel} padding="$4.5" $md={{ padding: "$6" }}>
               <Tabs value={tab} onValueChange={setTab} width="100%">
                 <XStack marginBottom="$4.5" flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$3" borderBottomWidth={1} borderColor="$borderColor" paddingBottom="$3">
                   <TabsList backgroundColor="transparent" padding="$0">
-                    <TabsTrigger value="mine">
+                    <TabsTrigger value="mine" {...selected(tab === "mine")}>
                       My projects
                     </TabsTrigger>
-                    <TabsTrigger value="recent">
+                    <TabsTrigger value="recent" {...selected(tab === "recent")}>
                       Recently viewed
                     </TabsTrigger>
-                    <TabsTrigger value="visitors">
+                    <TabsTrigger value="visitors" {...selected(tab === "visitors")}>
                       Most visitors today
                     </TabsTrigger>
-                    <TabsTrigger value="templates">
+                    <TabsTrigger value="templates" {...selected(tab === "templates")}>
                       Templates
                     </TabsTrigger>
                   </TabsList>
@@ -221,7 +227,6 @@ export default function DashboardPage() {
             </YStack>
           </Reveal>
         </YStack>
-      </YStack>
     </AppShell>
   );
 }
@@ -241,6 +246,7 @@ function ProjectGrid({
         const st = statusOf(p.status);
         return (
           <Button
+            variant="ghost"
             key={p.id}
             onClick={() => onOpen(p)}
             group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "-0.5", borderColor: "$color", backgroundColor: "$color3" }}

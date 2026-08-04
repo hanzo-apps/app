@@ -35,6 +35,7 @@ import {
   Textarea,
 } from '@hanzo/ui';
 import { AppShell } from '@/components/app-shell';
+import { accent } from '@/lib/chrome';
 import { MarkdownRenderer } from '@/components/markdown-renderer';
 import { DEFAULT_MODEL } from '@/lib/providers';
 import { useModels } from '@/lib/hooks/use-models';
@@ -363,7 +364,7 @@ export default function ChatPage() {
                     Answers are metered to your own account, so chatting needs a session.
                   </Paragraph>
                   <a href="/login?next=/chat">
-                    <Button size="sm" marginTop="$3">Sign in</Button>
+                    <Button variant="outline" size="sm" marginTop="$3">Sign in</Button>
                   </a>
                 </YStack>
               )}
@@ -450,6 +451,7 @@ export default function ChatPage() {
   />
                 {streaming ? (
                   <Button
+                    {...accent}
                     onClick={stop}
                     size="sm"
                     aria-label="Stop generating"
@@ -460,6 +462,7 @@ export default function ChatPage() {
                   </Button>
                 ) : (
                   <Button
+                    {...accent}
                     onClick={() => void send()}
                     disabled={!input.trim()}
                     size="sm"
