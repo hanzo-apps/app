@@ -71,15 +71,15 @@ export function ReImagine({
         >
           <YStack backgroundColor="$color3" padding="$5" borderBottomWidth={1} borderColor="$borderColor">
             <XStack alignItems="center" justifyContent="center" columnGap="$4" marginBottom="$3">
-              <SizableText width={36} height={36} borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$7" display="flex" flexDirection="row">
-                🎨
-              </SizableText>
-              <SizableText width={44} height={44} borderRadius="$10" backgroundColor="$color4" borderWidth={1} borderColor="$borderColor" elevation={4} alignItems="center" justifyContent="center" fontSize="$8" zIndex={2} display="flex" flexDirection="row">
-                🥳
-              </SizableText>
-              <SizableText width={36} height={36} borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$7" display="flex" flexDirection="row">
-                💎
-              </SizableText>
+              <XStack width={36} height={36} borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center">
+                <SizableText fontSize="$7">🎨</SizableText>
+              </XStack>
+              <XStack width={44} height={44} borderRadius="$10" backgroundColor="$color4" borderWidth={1} borderColor="$borderColor" elevation={4} alignItems="center" justifyContent="center" zIndex={2}>
+                <SizableText fontSize="$8">🥳</SizableText>
+              </XStack>
+              <XStack width={36} height={36} borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center">
+                <SizableText fontSize="$7">💎</SizableText>
+              </XStack>
             </XStack>
             <Paragraph fontSize="$7" fontWeight="500" color="$color" textAlign="center">
               Redesign your Site!

@@ -1,6 +1,6 @@
 "use client";
 
-import { SizableText } from '@hanzo/gui';
+import { SizableText, XStack } from '@hanzo/gui';
 import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AppEditor } from "@/components/editor";
@@ -53,9 +53,11 @@ function Shell({ children }: { children: React.ReactNode }) {
 function Splash({ children }: { children: React.ReactNode }) {
   return (
     <Shell>
-      <SizableText flex={1} alignItems="center" justifyContent="center" backgroundColor="$color12" color="$color8" fontSize="$3" display="flex" flexDirection="row">
-        {children}
-      </SizableText>
+      <XStack flex={1} alignItems="center" justifyContent="center" backgroundColor="$color12">
+        <SizableText color="$color8" fontSize="$3">
+          {children}
+        </SizableText>
+      </XStack>
     </Shell>
   );
 }

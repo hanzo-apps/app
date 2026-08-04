@@ -18,7 +18,7 @@ type FocusTarget = FocusContextPayload & { timestamp: number };
 // Helper to render user message content (string or ContentBlock[])
 function UserMessageContent({ content }: { content: string | ContentBlock[] }) {
   if (typeof content === 'string') {
-    return <SizableText whiteSpace="pre-wrap" display="flex" flexDirection="column">{content}</SizableText>;
+    return <SizableText fontSize="$3" color="$color" whiteSpace="pre-wrap" display="flex" flexDirection="column">{content}</SizableText>;
   }
 
   // Separate text and image blocks
@@ -29,7 +29,7 @@ function UserMessageContent({ content }: { content: string | ContentBlock[] }) {
     <YStack rowGap="$2">
       {/* Render text blocks */}
       {textBlocks.map((block, index) => (
-        <SizableText key={`text-${index}`} whiteSpace="pre-wrap" display="flex" flexDirection="column">
+        <SizableText key={`text-${index}`} fontSize="$3" color="$color" whiteSpace="pre-wrap" display="flex" flexDirection="column">
           {block.type === 'text' && block.text}
         </SizableText>
       ))}
@@ -686,11 +686,11 @@ export function ChatPanel({
   // Focus context hint
   const trimmedSnippet = focusPreviewSnippet?.trim() ?? '';
   const focusContextHint = focusContext ? (
-    <SizableText
+    <YStack
       id="focus-context-hint"
-      borderRadius="$3" borderWidth={1} borderStyle="dashed" borderColor="$color12" backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$2" fontSize="$1" color="$color11" elevation={1} display="flex" flexDirection="column"
+      borderRadius="$3" borderWidth={1} borderStyle="dashed" borderColor="$color12" backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$2" elevation={1}
     >
-      <SizableText flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$2" color="$color" display="flex" flexDirection="row">
+      <XStack flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$2">
         <XStack alignItems="center" gap="$2">
           <SizableText fontWeight="500" fontSize="$1" textTransform="uppercase" letterSpacing={0.4} color="$color12">context</SizableText>
           <SizableText fontSize={10} textTransform="uppercase" letterSpacing={0.4} color="$color11">included in next message</SizableText>
@@ -704,7 +704,7 @@ export function ChatPanel({
         >
           <SizableText fontSize="$1">Clear</SizableText>
         </Button>
-      </SizableText>
+      </XStack>
       <YStack marginTop="$2" rowGap="$2">
         {focusContext.domPath && (
           <SizableText fontSize={11} fontFamily="$mono" color="$color11" lineHeight={1.375} display="flex" flexDirection="column" className="break-all">
@@ -717,7 +717,7 @@ export function ChatPanel({
           </SizableText>
         )}
       </YStack>
-    </SizableText>
+    </YStack>
   ) : null;
 
   return (
@@ -825,10 +825,10 @@ export function ChatPanel({
           {/* Drop overlay */}
           {isDragging && supportsVision && (
             <XStack position="absolute" top={0} right={0} bottom={0} left={0} alignItems="center" justifyContent="center" backgroundColor="$color12" zIndex={10} pointerEvents="none">
-              <SizableText color="$color12" fontWeight="500" alignItems="center" gap="$2" display="flex" flexDirection="row">
+              <XStack alignItems="center" gap="$2">
                 <ImageIcon size={20} />
-                Drop image here
-              </SizableText>
+                <SizableText color="$color12" fontWeight="500">Drop image here</SizableText>
+              </XStack>
             </XStack>
           )}
 
@@ -1004,9 +1004,9 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
 
           case 'text':
             return (
-              <SizableText key={item.id} fontSize="$3" color="$color" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$2" display="flex" flexDirection="column">
+              <YStack key={item.id} backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$2">
                 <MarkdownRenderer content={item.data} />
-              </SizableText>
+              </YStack>
             );
 
           case 'project_context':
@@ -1032,10 +1032,10 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
 
           case 'user':
             return (
-              <SizableText key={item.id} fontSize="$3" color="$color" backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$2" borderWidth={1} borderColor="$color12" display="flex" flexDirection="column">
+              <YStack key={item.id} backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$2" borderWidth={1} borderColor="$color12">
                 <SizableText fontWeight="500" color="$color12" marginBottom="$1" fontSize="$1" display="flex" flexDirection="column">User</SizableText>
                 <UserMessageContent content={item.data} />
-              </SizableText>
+              </YStack>
             );
 
           case 'synthetic_error':
@@ -1053,11 +1053,11 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
 
           case 'error':
             return (
-              <SizableText key={item.id} fontSize="$3" backgroundColor="$red9" borderWidth={1} borderColor="$red9" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$2" display="flex" flexDirection="column">
+              <YStack key={item.id} backgroundColor="$red9" borderWidth={1} borderColor="$red9" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$2">
                 <XStack alignItems="flex-start" gap="$2">
                   <XCircle size={16} color="$red9" />
                   <YStack flex={1}>
-                    <SizableText fontWeight="500" color="$red9" marginBottom="$1" display="flex" flexDirection="column">Error</SizableText>
+                    <SizableText fontWeight="500" color="$red9" marginBottom="$1" fontSize="$3" display="flex" flexDirection="column">Error</SizableText>
                     <SizableText color="$red9" whiteSpace="pre-wrap" fontFamily="$mono" fontSize="$1" display="flex" flexDirection="column">
                       {item.data?.message || JSON.stringify(item.data, null, 2)}
                     </SizableText>
@@ -1073,7 +1073,7 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
                     )}
                   </YStack>
                 </XStack>
-              </SizableText>
+              </YStack>
             );
 
           default:
@@ -1284,9 +1284,9 @@ function ReasoningDisplay({ itemId, content, isExpanded, onToggle }: ReasoningDi
 
       {isExpanded && (
         <YStack marginTop="$2" paddingHorizontal="$2">
-          <SizableText fontSize="$1" backgroundColor="$color3" padding="$2" borderRadius="$2" maxHeight={256} overflow="scroll" display="flex" flexDirection="column">
+          <YStack backgroundColor="$color3" padding="$2" borderRadius="$2" maxHeight={256} overflow="scroll">
             <MarkdownRenderer content={content || 'Thinking...'} />
-          </SizableText>
+          </YStack>
         </YStack>
       )}
     </YStack>

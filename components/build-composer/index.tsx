@@ -241,11 +241,11 @@ export function BuildComposer({
                     type="button"
                     alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: "$borderColor" }}
                   >
-                    <SizableText display="flex" flexDirection="row" alignItems="center" gap="$1.5" fontSize="$1" color="$color">
+                    <XStack alignItems="center" gap="$1.5">
                       <CurrentMode.icon size={14} />
-                      {CurrentMode.label}
+                      <SizableText fontSize="$1" color="$color">{CurrentMode.label}</SizableText>
                       <ChevronDown size={12} color="$color11" />
-                    </SizableText>
+                    </XStack>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
@@ -257,10 +257,10 @@ export function BuildComposer({
                       onClick={() => setMode(m.value)}
                       flexDirection="column" alignItems="flex-start" gap="$0.5"
                     >
-                      <SizableText alignItems="center" gap="$2" fontWeight="500">
+                      <XStack alignItems="center" gap="$2">
                         <m.icon size={16} />
-                        {m.label}
-                      </SizableText>
+                        <SizableText fontWeight="500">{m.label}</SizableText>
+                      </XStack>
                       <SizableText paddingLeft="$5" fontSize="$1" color="$color11">{m.hint}</SizableText>
                     </DropdownMenuItem>
                   ))}
@@ -275,10 +275,10 @@ export function BuildComposer({
                 title="Hanzo Base backend — database, auth, realtime for this app"
                 group alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} paddingHorizontal="$2.5" paddingVertical="$1.5" {...{ borderColor: withBase ? "$borderColor" : "$borderColor", backgroundColor: withBase ? "$color3" : undefined, hoverStyle: withBase ? undefined : {"borderColor":"$borderColor"} }}
               >
-                <SizableText display="flex" flexDirection="row" alignItems="center" gap="$1.5" fontSize="$1" color={withBase ? "$color" : "$color11"} $group-hover={{ color: "$color" }}>
+                <XStack alignItems="center" gap="$1.5">
                   <Database size={14} />
-                  Base
-                </SizableText>
+                  <SizableText fontSize="$1" color={withBase ? "$color" : "$color11"} $group-hover={{ color: "$color" }}>Base</SizableText>
+                </XStack>
               </Button>
             </XStack>
 

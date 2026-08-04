@@ -132,24 +132,24 @@ export default function ProjectDevPage() {
 
   if (phase === "loading") {
     return (
-      <SizableText height="100dvh" backgroundColor="$background" alignItems="center" justifyContent="center" color="$color11" fontSize="$3" display="flex" flexDirection="row">
-        Opening {slug}…
-      </SizableText>
+      <XStack height="100dvh" backgroundColor="$background" alignItems="center" justifyContent="center">
+        <SizableText color="$color11" fontSize="$3">Opening {slug}…</SizableText>
+      </XStack>
     );
   }
 
   if (phase === "denied") {
     const wrongOrg = !!signedInOrg && !!org && signedInOrg !== org;
     return (
-      <SizableText height="100dvh" alignItems="center" justifyContent="center" backgroundColor="$background" paddingHorizontal="$5" textAlign="center" display="flex" flexDirection="row">
+      <XStack height="100dvh" alignItems="center" justifyContent="center" backgroundColor="$background" paddingHorizontal="$5">
         <YStack maxWidth={448}>
           <XStack alignSelf="center" marginBottom="$4.5" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$6" backgroundColor="$color3">
             <LockKeyhole size={24} color="$color11" />
           </XStack>
-          <H1 fontSize="$6" fontWeight="500" color="$color">
+          <H1 fontSize="$6" fontWeight="500" color="$color" textAlign="center">
             Can’t open <SizableText fontFamily="$mono">{org}/{slug}</SizableText>
           </H1>
-          <Paragraph alignSelf="center" marginTop="$2" fontSize="$3" lineHeight={1.625} color="$color11">
+          <Paragraph alignSelf="center" marginTop="$2" fontSize="$3" lineHeight={1.625} color="$color11" textAlign="center">
             {wrongOrg ? (
               <>
                 This project is in the <SizableText color="$color">{org}</SizableText> organization,
@@ -179,7 +179,7 @@ export default function ProjectDevPage() {
             </SizableText></Link>
           </XStack>
         </YStack>
-      </SizableText>
+      </XStack>
     );
   }
 

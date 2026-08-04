@@ -169,17 +169,17 @@ export function FunctionsManager({ deploymentId, dataProvider, hideRuntimeFeatur
 
       <YStack flex={1} overflow="scroll">
         {functions.length === 0 ? (
-          <SizableText flexDirection="column" alignItems="center" justifyContent="center" height="100%" padding="$6" textAlign="center" borderWidth={1} borderRadius="$5" display="flex">
+          <YStack alignItems="center" justifyContent="center" height="100%" padding="$6" borderWidth={1} borderRadius="$5">
             <Code2 size={32} color="$color11" />
-            <Paragraph fontSize="$3" color="$color11">No edge functions yet</Paragraph>
-            <Paragraph fontSize="$1" color="$color11" marginTop="$1" marginBottom="$4">
+            <Paragraph fontSize="$3" color="$color11" textAlign="center">No edge functions yet</Paragraph>
+            <Paragraph fontSize="$1" color="$color11" marginTop="$1" marginBottom="$4" textAlign="center">
               Create your first API endpoint
             </Paragraph>
             <Button size="sm" onClick={() => setIsCreating(true)}>
               <Plus size={16} />
               Create Function
             </Button>
-          </SizableText>
+          </YStack>
         ) : (
           <YStack gap="$3">
             {functions.map(fn => (
@@ -207,29 +207,26 @@ export function FunctionsManager({ deploymentId, dataProvider, hideRuntimeFeatur
                         {fn.description}
                       </Paragraph>
                     )}
-                    <SizableText alignItems="center" gap="$4" marginTop="$2" fontSize="$1" color="$color11" display="flex" flexDirection="row">
-                      <SizableText flexShrink={0}>Timeout: {fn.timeoutMs / 1000}s</SizableText>
+                    <XStack alignItems="center" gap="$4" marginTop="$2">
+                      <SizableText flexShrink={0} fontSize="$1" color="$color11">Timeout: {fn.timeoutMs / 1000}s</SizableText>
                       {!hideRuntimeFeatures && deploymentId && (
                         <Button
                           onClick={() => copyUrl(fn)}
                           backgroundColor="transparent" alignItems="center" gap="$1" flexShrink={0} group
                         >
-                          <SizableText display="flex" flexDirection="row" alignItems="center" gap="$1" fontSize="$1" color="$color11" $group-hover={{ color: "$color" }}>
+                          <XStack alignItems="center" gap="$1">
                             {copiedUrl === fn.id ? (
-                              <>
-                                <CheckCircle2 size={12} color="$green9" />
-                                Copied!
-                              </>
+                              <CheckCircle2 size={12} color="$green9" />
                             ) : (
-                              <>
-                                <Copy size={12} />
-                                Copy URL
-                              </>
+                              <Copy size={12} />
                             )}
-                          </SizableText>
+                            <SizableText fontSize="$1" color="$color11" $group-hover={{ color: "$color" }}>
+                              {copiedUrl === fn.id ? 'Copied!' : 'Copy URL'}
+                            </SizableText>
+                          </XStack>
                         </Button>
                       )}
-                    </SizableText>
+                    </XStack>
                   </YStack>
 
                   <DropdownMenu>

@@ -197,23 +197,23 @@ function ConnectorsInner() {
   // honest sign-in CTA rather than an empty list.
   if (!userLoading && !user) {
     return (
-      <SizableText minHeight="100%" flexDirection="column" alignItems="center" justifyContent="center" gap="$4" backgroundColor="$background" paddingHorizontal="$5" textAlign="center" color="$color" display="flex">
+      <YStack minHeight="100%" alignItems="center" justifyContent="center" gap="$4" backgroundColor="$background" paddingHorizontal="$5">
         <Plug size={32} color="$color11" />
         <div>
-          <H1 fontSize="$6" fontWeight="500">Sign in to manage connectors</H1>
-          <Paragraph marginTop="$1" fontSize="$3" color="$color11">
+          <H1 textAlign="center" fontSize="$6" fontWeight="500">Sign in to manage connectors</H1>
+          <Paragraph textAlign="center" marginTop="$1" fontSize="$3" color="$color11">
             Connectors are scoped to your workspace.
           </Paragraph>
         </div>
         <Button asChild>
           <Link href="/login">Sign in</Link>
         </Button>
-      </SizableText>
+      </YStack>
     );
   }
 
   return (
-    <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
+    <YStack minHeight="100%" backgroundColor="$background">
       {/* Header */}
       <YStack position="sticky" top="$0" zIndex={10} borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" backdropFilter="blur(8px)">
         <XStack alignSelf="center" maxWidth={768} alignItems="center" justifyContent="space-between" gap="$4" paddingHorizontal="$5" paddingVertical="$4">
@@ -285,14 +285,14 @@ function ConnectorsInner() {
           </YStack>
         ) : providers.length === 0 ? (
           /* Empty — honest about the org-scoped surface being unpopulated. */
-          <SizableText borderRadius="$6" borderWidth={1} borderStyle="dashed" borderColor="$borderColor" paddingHorizontal="$5" paddingVertical="$10" textAlign="center" display="flex" flexDirection="column">
+          <YStack borderRadius="$6" borderWidth={1} borderStyle="dashed" borderColor="$borderColor" paddingHorizontal="$5" paddingVertical="$10">
             <Plug size={32} color="$color11" />
-            <H2 fontSize="$3" fontWeight="500">No connectors available yet</H2>
-            <Paragraph alignSelf="center" marginTop="$1" maxWidth={384} fontSize="$3" color="$color11">
+            <H2 textAlign="center" fontSize="$3" fontWeight="500">No connectors available yet</H2>
+            <Paragraph textAlign="center" alignSelf="center" marginTop="$1" maxWidth={384} fontSize="$3" color="$color11">
               Connectors for this workspace will appear here once they're enabled. Nothing to set
               up in the meantime.
             </Paragraph>
-          </SizableText>
+          </YStack>
         ) : filtered.length === 0 ? (
           <Paragraph paddingVertical="$10" textAlign="center" fontSize="$3" color="$color11">
             No connectors match “{query}”.
@@ -305,7 +305,7 @@ function ConnectorsInner() {
           </YStack>
         )}
       </YStack>
-    </SizableText>
+    </YStack>
   );
 }
 
@@ -368,18 +368,18 @@ function ConnectorRow({
     <XStack
       alignItems="center" gap="$4" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$4" paddingVertical="$3.5" {...{ opacity: muted ? 0.6 : undefined }}
     >
-      <SizableText width="$7" height="$7" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" color="$color" display="flex" flexDirection="row">
+      <XStack width="$7" height="$7" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
         <Icon size={20} />
-      </SizableText>
+      </XStack>
 
       <YStack minWidth={0} flex={1}>
         <XStack alignItems="center" gap="$2">
           <SizableText numberOfLines={1} fontWeight="500">{p.name}</SizableText>
           {p.connected && (
-            <SizableText alignItems="center" gap="$1" fontSize="$1" color="$green10" $theme-dark={{ color: "$green9" }}>
+            <XStack alignItems="center" gap="$1">
               <SizableText width="$1.5" height="$1.5" borderRadius="$10" backgroundColor="$green9" />
-              Connected
-            </SizableText>
+              <SizableText fontSize="$1" color="$green10" $theme-dark={{ color: "$green9" }}>Connected</SizableText>
+            </XStack>
           )}
           {p.category && !p.connected && (
             <YStack display="none">

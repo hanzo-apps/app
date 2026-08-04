@@ -143,7 +143,7 @@ export default function FeaturesPage() {
   ];
 
   return (
-    <SizableText backgroundColor="$background" color="$color" minHeight="100%" display="flex" flexDirection="column">
+    <YStack backgroundColor="$background" minHeight="100%">
       {/* Gradient background */}
       <YStack position="fixed" top={0} right={0} bottom={0} left={0} pointerEvents="none" zIndex={0}>
         <YStack position="absolute" top={0} right={0} bottom={0} left={0} />
@@ -159,13 +159,13 @@ export default function FeaturesPage() {
       <YStack position="relative" zIndex={10}>
         {/* Hero Section */}
         <YStack paddingHorizontal="$4" paddingTop="$10" paddingBottom="$10" $md={{ paddingHorizontal: "$6", paddingTop: "$12", paddingBottom: "$11" }}>
-          <SizableText maxWidth={1024} alignSelf="center" textAlign="center" display="flex" flexDirection="column">
+          <YStack maxWidth={1024} alignSelf="center" alignItems="center">
             <XStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$1.5" marginBottom="$5" backgroundColor="$purple9" borderWidth={1} borderColor="$purple9" borderRadius="$10" $md={{ marginBottom: "$6" }}>
               <Sparkles size={16} color="$purple8" />
               <SizableText fontSize="$3" color="$purple4">Powered by Advanced AI</SizableText>
             </XStack>
 
-            <H1 fontSize="$11" fontWeight="500" marginBottom="$4" $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13", marginBottom: "$5" }}>
+            <H1 fontSize="$11" fontWeight="500" marginBottom="$4" textAlign="center" $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13", marginBottom: "$5" }}>
               Everything you need to{" "}
               <SizableText position="relative">
                 <SizableText backgroundClip="text" color="transparent">
@@ -174,7 +174,7 @@ export default function FeaturesPage() {
                 <YStack position="absolute" top="-2" right="-2" bottom="-2" left="-2" zIndex={10} />
               </SizableText>
             </H1>
-            <Paragraph fontSize="$6" color="$color11" marginBottom="$8" maxWidth={768} alignSelf="center" $md={{ fontSize: "$7" }}>
+            <Paragraph fontSize="$6" color="$color11" marginBottom="$8" maxWidth={768} alignSelf="center" textAlign="center" $md={{ fontSize: "$7" }}>
               From AI-powered code generation to instant deployment, Hanzo provides all the tools you need to turn ideas into production-ready applications
             </Paragraph>
 
@@ -195,22 +195,22 @@ export default function FeaturesPage() {
                 <ArrowRight size={20} />
               </Button>
             </YStack>
-          </SizableText>
+          </YStack>
         </YStack>
 
         {/* Core Features */}
         <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
           <YStack maxWidth={1280} alignSelf="center">
-            <SizableText textAlign="center" marginBottom="$10" display="flex" flexDirection="column">
+            <YStack marginBottom="$10" alignItems="center">
               <Badge className="mb-4 px-4 py-1.5">
                 <Settings size={16} />
                 Core Features
               </Badge>
-              <H2 fontSize="$10" fontWeight="500" marginBottom="$4" $md={{ fontSize: "$11" }}>Everything you need in one platform</H2>
-              <Paragraph fontSize="$6" color="$color11" maxWidth={672} alignSelf="center">
+              <H2 fontSize="$10" fontWeight="500" marginBottom="$4" textAlign="center" $md={{ fontSize: "$11" }}>Everything you need in one platform</H2>
+              <Paragraph fontSize="$6" color="$color11" maxWidth={672} alignSelf="center" textAlign="center">
                 Comprehensive development tools designed to accelerate your workflow
               </Paragraph>
-            </SizableText>
+            </YStack>
 
             <YStack gap="$6">
               {coreFeatures.map((feature, index) => (
@@ -227,10 +227,10 @@ export default function FeaturesPage() {
                   <CardContent>
                     <YStack rowGap="$2">
                       {feature.features.map((item, idx) => (
-                        <SizableText key={idx} alignItems="center" gap="$2" fontSize="$3" color="$color">
+                        <XStack key={idx} alignItems="center" gap="$2">
                           <Check size={16} color="$green8" />
-                          {item}
-                        </SizableText>
+                          <SizableText fontSize="$3" color="$color">{item}</SizableText>
+                        </XStack>
                       ))}
                     </YStack>
                   </CardContent>
@@ -243,16 +243,16 @@ export default function FeaturesPage() {
         {/* AI Capabilities */}
         <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
           <YStack maxWidth={1280} alignSelf="center">
-            <SizableText textAlign="center" marginBottom="$10" display="flex" flexDirection="column">
+            <YStack marginBottom="$10" alignItems="center">
               <Badge className="mb-4 px-4 py-1.5">
                 <Brain size={16} />
                 AI Capabilities
               </Badge>
-              <H2 fontSize="$10" fontWeight="500" marginBottom="$4" $md={{ fontSize: "$11" }}>Next-generation AI development</H2>
-              <Paragraph fontSize="$6" color="$color11" maxWidth={672} alignSelf="center">
+              <H2 fontSize="$10" fontWeight="500" marginBottom="$4" textAlign="center" $md={{ fontSize: "$11" }}>Next-generation AI development</H2>
+              <Paragraph fontSize="$6" color="$color11" maxWidth={672} alignSelf="center" textAlign="center">
                 Advanced AI models that understand your intent and generate production-ready code
               </Paragraph>
-            </SizableText>
+            </YStack>
 
             <YStack gap="$8">
               {aiCapabilities.map((capability, index) => (
@@ -275,39 +275,39 @@ export default function FeaturesPage() {
         {/* Technical Stack */}
         <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
           <YStack maxWidth={1280} alignSelf="center">
-            <SizableText textAlign="center" marginBottom="$10" display="flex" flexDirection="column">
+            <YStack marginBottom="$10" alignItems="center">
               <Badge className="mb-4 px-4 py-1.5">
                 <Layers size={16} />
                 Technology Stack
               </Badge>
-              <H2 fontSize="$10" fontWeight="500" marginBottom="$4" $md={{ fontSize: "$11" }}>Built on modern infrastructure</H2>
-              <Paragraph fontSize="$6" color="$color11" maxWidth={672} alignSelf="center">
+              <H2 fontSize="$10" fontWeight="500" marginBottom="$4" textAlign="center" $md={{ fontSize: "$11" }}>Built on modern infrastructure</H2>
+              <Paragraph fontSize="$6" color="$color11" maxWidth={672} alignSelf="center" textAlign="center">
                 Enterprise-grade technology stack designed for scale and performance
               </Paragraph>
-            </SizableText>
+            </YStack>
 
             <YStack gap="$6">
-              <SizableText textAlign="center" display="flex" flexDirection="column">
+              <YStack alignItems="center">
                 <XStack padding="$4" borderRadius="$8" borderWidth={1} borderColor="$blue9" marginBottom="$4">
                   <Cloud size={32} color="$blue8" />
                 </XStack>
-                <H3 fontSize="$7" fontWeight="500" marginBottom="$2" color="$color">Cloud Infrastructure</H3>
-                <Paragraph color="$color11">Global CDN, edge computing, and auto-scaling infrastructure</Paragraph>
-              </SizableText>
-              <SizableText textAlign="center" display="flex" flexDirection="column">
+                <H3 fontSize="$7" fontWeight="500" marginBottom="$2" color="$color" textAlign="center">Cloud Infrastructure</H3>
+                <Paragraph color="$color11" textAlign="center">Global CDN, edge computing, and auto-scaling infrastructure</Paragraph>
+              </YStack>
+              <YStack alignItems="center">
                 <XStack padding="$4" borderRadius="$8" borderWidth={1} borderColor="$green9" marginBottom="$4">
                   <Server size={32} color="$green8" />
                 </XStack>
-                <H3 fontSize="$7" fontWeight="500" marginBottom="$2" color="$color">Database Solutions</H3>
-                <Paragraph color="$color11">Hanzo Base (SQLite), Hanzo SQL, and Hanzo KV with auto-backups</Paragraph>
-              </SizableText>
-              <SizableText textAlign="center" display="flex" flexDirection="column">
+                <H3 fontSize="$7" fontWeight="500" marginBottom="$2" color="$color" textAlign="center">Database Solutions</H3>
+                <Paragraph color="$color11" textAlign="center">Hanzo Base (SQLite), Hanzo SQL, and Hanzo KV with auto-backups</Paragraph>
+              </YStack>
+              <YStack alignItems="center">
                 <XStack padding="$4" borderRadius="$8" borderWidth={1} borderColor="$purple9" marginBottom="$4">
                   <Cpu size={32} color="$purple8" />
                 </XStack>
-                <H3 fontSize="$7" fontWeight="500" marginBottom="$2" color="$color">AI Processing</H3>
-                <Paragraph color="$color11">GPT-4, Claude, and custom models for code generation</Paragraph>
-              </SizableText>
+                <H3 fontSize="$7" fontWeight="500" marginBottom="$2" color="$color" textAlign="center">AI Processing</H3>
+                <Paragraph color="$color11" textAlign="center">GPT-4, Claude, and custom models for code generation</Paragraph>
+              </YStack>
             </YStack>
           </YStack>
         </YStack>
@@ -315,16 +315,16 @@ export default function FeaturesPage() {
         {/* Pricing Comparison */}
         <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
           <YStack maxWidth={1280} alignSelf="center">
-            <SizableText textAlign="center" marginBottom="$10" display="flex" flexDirection="column">
+            <YStack marginBottom="$10" alignItems="center">
               <Badge className="mb-4 px-4 py-1.5">
                 <BarChart size={16} />
                 Simple Pricing
               </Badge>
-              <H2 fontSize="$10" fontWeight="500" marginBottom="$4" $md={{ fontSize: "$11" }}>Choose your plan</H2>
-              <Paragraph fontSize="$6" color="$color11" maxWidth={672} alignSelf="center">
+              <H2 fontSize="$10" fontWeight="500" marginBottom="$4" textAlign="center" $md={{ fontSize: "$11" }}>Choose your plan</H2>
+              <Paragraph fontSize="$6" color="$color11" maxWidth={672} alignSelf="center" textAlign="center">
                 Start free, scale as you grow. No hidden fees or surprises.
               </Paragraph>
-            </SizableText>
+            </YStack>
 
             <YStack gap="$6">
               {pricingPlans.map((plan, index) => (
@@ -375,22 +375,22 @@ export default function FeaturesPage() {
               ))}
             </YStack>
 
-            <SizableText textAlign="center" marginTop="$8" display="flex" flexDirection="column">
-              <Paragraph color="$color11" marginBottom="$4">All plans include free SSL certificates and 99.9% uptime SLA</Paragraph>
-              <Link href="/pricing"><SizableText color="$purple8" fontSize="$3" fontWeight="500" hoverStyle={{ color: "$purple4" }}>
+            <YStack marginTop="$8" alignItems="center">
+              <Paragraph color="$color11" marginBottom="$4" textAlign="center">All plans include free SSL certificates and 99.9% uptime SLA</Paragraph>
+              <Link href="/pricing"><SizableText color="$purple8" fontSize="$3" fontWeight="500" textAlign="center" hoverStyle={{ color: "$purple4" }}>
                 View detailed pricing comparison →
               </SizableText></Link>
-            </SizableText>
+            </YStack>
           </YStack>
         </YStack>
 
         {/* CTA Section */}
         <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
-          <SizableText maxWidth={896} alignSelf="center" textAlign="center" display="flex" flexDirection="column">
-            <H2 fontSize="$10" fontWeight="500" marginBottom="$4" $md={{ fontSize: "$11" }}>
+          <YStack maxWidth={896} alignSelf="center" alignItems="center">
+            <H2 fontSize="$10" fontWeight="500" marginBottom="$4" textAlign="center" $md={{ fontSize: "$11" }}>
               Ready to build your next project?
             </H2>
-            <Paragraph fontSize="$6" color="$color11" marginBottom="$6" maxWidth={672} alignSelf="center">
+            <Paragraph fontSize="$6" color="$color11" marginBottom="$6" maxWidth={672} alignSelf="center" textAlign="center">
               Join thousands of developers who are already building amazing applications with Hanzo AI
             </Paragraph>
 
@@ -411,7 +411,7 @@ export default function FeaturesPage() {
                 <SizableText color="$color" fontWeight="500" fontSize="$6">Explore Community</SizableText>
               </Button>
             </YStack>
-          </SizableText>
+          </YStack>
         </YStack>
       </YStack>
 
@@ -422,6 +422,6 @@ export default function FeaturesPage() {
           the live canonical hanzo.ai/* destinations and carries SDKs → hanzo.ai/sdks
           and Docs → docs.hanzo.ai. */}
       <SiteFooter />
-    </SizableText>
+    </YStack>
   );
 }

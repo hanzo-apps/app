@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText, XStack, H1, Paragraph } from '@hanzo/gui';
+import { SizableText, XStack, YStack, H1, Paragraph } from '@hanzo/gui';
 import Link from 'next/link';
 import { HanzoBrand } from '@/components/HanzoLogo';
 
@@ -12,8 +12,8 @@ import { HanzoBrand } from '@/components/HanzoLogo';
  */
 export default function NotFound() {
   return (
-    <SizableText minHeight="100%" backgroundColor="$background" color="$color" alignItems="center" justifyContent="center" paddingHorizontal="$5" paddingVertical="$11" display="flex" flexDirection="row">
-      <SizableText width="100%" maxWidth={448} textAlign="center" display="flex" flexDirection="column">
+    <XStack minHeight="100%" backgroundColor="$background" alignItems="center" justifyContent="center" paddingHorizontal="$5" paddingVertical="$11">
+      <YStack width="100%" maxWidth={448}>
         <XStack justifyContent="center" marginBottom="$7">
           <HanzoBrand
             color="var(--foreground)"
@@ -22,8 +22,8 @@ export default function NotFound() {
   />
         </XStack>
 
-        <H1 fontSize="$11" fontWeight="500" marginBottom="$4" letterSpacing={-0.4}>404 — page not found</H1>
-        <Paragraph color="$color11" fontSize="$6" marginBottom="$7">This page does not exist or has moved.</Paragraph>
+        <H1 fontSize="$11" fontWeight="500" marginBottom="$4" letterSpacing={-0.4} textAlign="center">404 — page not found</H1>
+        <Paragraph color="$color11" fontSize="$6" marginBottom="$7" textAlign="center">This page does not exist or has moved.</Paragraph>
 
         <XStack alignItems="center" justifyContent="center" gap="$4">
           <Link
@@ -37,7 +37,7 @@ export default function NotFound() {
             Go to dashboard
           </SizableText></Link>
         </XStack>
-      </SizableText>
-    </SizableText>
+      </YStack>
+    </XStack>
   );
 }

@@ -118,9 +118,11 @@ export function GuidedTourOverlay({ location }: GuidedTourOverlayProps) {
                 <H3 fontSize="$6" fontWeight="500" color="$color">{currentStep.title}</H3>
                 <SizableText fontSize="$3" color="$color11" fontWeight="500">{currentStepNumber}/{totalSteps}</SizableText>
               </XStack>
-              <SizableText marginTop="$2" fontSize="$3" lineHeight={1.625} color="$color11" display="flex" flexDirection="column">
-                {currentStep.body}
-              </SizableText>
+              <YStack marginTop="$2">
+                <SizableText fontSize="$3" lineHeight={1.625} color="$color11">
+                  {currentStep.body}
+                </SizableText>
+              </YStack>
             </YStack>
             {isBusy && (
               <Loader2 size={20} color="$color12" />

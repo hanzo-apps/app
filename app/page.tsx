@@ -157,7 +157,7 @@ export default function LandingPage() {
   };
 
   return (
-    <SizableText position="relative" minHeight="100%" backgroundColor="$background" color="$color" overflow="hidden" display="flex" flexDirection="column" className="landing-root">
+    <YStack position="relative" minHeight="100%" backgroundColor="$background" overflow="hidden" className="landing-root">
       {/* Monochrome hero glow — single soft white radial, zero hue. */}
       <YStack pointerEvents="none" position="fixed" top={0} right={0} bottom={0} left={0} zIndex={0} overflow="hidden">
         <YStack position="absolute" left="50%" top="-12%" height={560} width={900} x="50%" borderRadius="$10" backgroundColor="$color" />
@@ -168,7 +168,7 @@ export default function LandingPage() {
       <YStack position="relative" zIndex={10}>
         {/* ── Hero ─────────────────────────────────────────────── */}
         <YStack paddingHorizontal="$4" paddingBottom="$9" paddingTop="$10" $md={{ paddingHorizontal: "$6", paddingBottom: "$11", paddingTop: "$12" }}>
-          <SizableText alignSelf="center" maxWidth={768} textAlign="center" display="flex" flexDirection="column">
+          <YStack alignSelf="center" maxWidth={768}>
             <Reveal>
               <XStack marginBottom="$4.5" alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$3" paddingVertical="$1.5">
                 <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color" />
@@ -179,7 +179,7 @@ export default function LandingPage() {
             </Reveal>
 
             <Reveal delay={60}>
-              <H1 color="1.9rem" fontWeight="500" lineHeight={1.05} letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
+              <H1 color="1.9rem" fontWeight="500" textAlign="center" lineHeight={1.05} letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
                 {/* The space is explicit: JSX drops the whitespace around the <br>,
                     and the <br> is hidden below sm — without it the mobile heading
                     reads "Describe your app.Hanzo builds and ships it." */}
@@ -190,7 +190,7 @@ export default function LandingPage() {
             </Reveal>
 
             <Reveal delay={120}>
-              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" color="$color" $md={{ fontSize: "$6" }}>
+              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" textAlign="center" color="$color" $md={{ fontSize: "$6" }}>
                 One prompt becomes a live app on Hanzo Cloud — UI, database,
                 auth, and 400+ AI models, wired in and deployed.
               </Paragraph>
@@ -198,7 +198,7 @@ export default function LandingPage() {
 
             {/* ── Prompt composer — the ONE BuildComposer ── */}
             <Reveal delay={180}>
-              <SizableText id="build" alignSelf="center" marginTop="$6" maxWidth={672} textAlign="left" display="flex" flexDirection="column">
+              <YStack id="build" alignSelf="center" marginTop="$6" maxWidth={672}>
                 <BuildComposer
                   showPill={false}
                   subline={false}
@@ -211,11 +211,11 @@ export default function LandingPage() {
                     into the builder, seeded from that template. */}
                 {starterTemplates.length > 0 && (
                   <YStack marginTop="$5">
-                    <SizableText marginBottom="$3" alignItems="center" justifyContent="center" gap="$2.5" fontFamily="$mono" fontSize={11} color="$color" display="flex" flexDirection="row">
+                    <XStack marginBottom="$3" alignItems="center" justifyContent="center" gap="$2.5">
                       <SizableText height={1} width="$5" backgroundColor="$borderColor" />
-                      or start from a template
+                      <SizableText fontFamily="$mono" fontSize={11} color="$color">or start from a template</SizableText>
                       <SizableText height={1} width="$5" backgroundColor="$borderColor" />
-                    </SizableText>
+                    </XStack>
                     <YStack alignSelf="center" $lg={{ maxWidth: 896 }}>
                       <YStack gap="$2.5">
                         {starterTemplates.map((t) => (
@@ -245,31 +245,31 @@ export default function LandingPage() {
                         ))}
                       </YStack>
                     </YStack>
-                    <SizableText marginTop="$3" textAlign="center" display="flex" flexDirection="column">
+                    <YStack marginTop="$3" alignItems="center">
                       <Link
                         href="/gallery"
                       ><SizableText fontSize="$1" color="$color" hoverStyle={{ color: "$color" }}>
                         Browse all templates →
                       </SizableText></Link>
-                    </SizableText>
+                    </YStack>
                   </YStack>
                 )}
 
-                <SizableText marginTop="$5" flexDirection="column" alignItems="center" gap="$2" fontSize="$1" color="$color" display="flex">
-                  <p>
+                <YStack marginTop="$5" alignItems="center" gap="$2">
+                  <SizableText fontSize="$1" color="$color">
                     Every app ships on Hanzo Cloud with database, auth, and AI
                     built in.
-                  </p>
+                  </SizableText>
                   <Link
                     href="/new"
-                  ><SizableText alignItems="center" gap="$1.5" color="$color" hoverStyle={{ color: "$color" }}>
+                  ><XStack alignItems="center" gap="$1.5">
                     <Github size={14} />
-                    or import an existing GitHub repo
-                  </SizableText></Link>
-                </SizableText>
-              </SizableText>
+                    <SizableText fontSize="$1" color="$color" hoverStyle={{ color: "$color" }}>or import an existing GitHub repo</SizableText>
+                  </XStack></Link>
+                </YStack>
+              </YStack>
             </Reveal>
-          </SizableText>
+          </YStack>
 
           {/* Hero focal visual — the builder building an app, live. Lazy: it sits
               just below the composer, so it mounts the moment it nears view. */}
@@ -325,9 +325,11 @@ export default function LandingPage() {
                         {project.status === "live" ? "Live" : "Draft"}
                       </Paragraph>
                       {project.updatedAtIso && (
-                        <SizableText marginTop="$3" fontFamily="$mono" fontSize={11} color="$color" display="flex" flexDirection="column">
-                          {new Date(project.updatedAtIso).toLocaleDateString()}
-                        </SizableText>
+                        <YStack marginTop="$3">
+                          <SizableText fontFamily="$mono" fontSize={11} color="$color">
+                            {new Date(project.updatedAtIso).toLocaleDateString()}
+                          </SizableText>
+                        </YStack>
                       )}
                     </YStack>
                   </Button>
@@ -340,14 +342,14 @@ export default function LandingPage() {
         {/* ── Final CTA — the SAME composer as the hero, ready to type ── */}
         <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$12" $md={{ paddingHorizontal: "$6", paddingVertical: "$14" }}>
           <Reveal alignSelf="center" width="100%" maxWidth={672}>
-            <SizableText textAlign="center" display="flex" flexDirection="column">
-              <H2 fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$12" }}>
+            <YStack>
+              <H2 fontSize="$10" fontWeight="500" textAlign="center" letterSpacing={-0.4} $md={{ fontSize: "$12" }}>
                 Ship your first app today.
               </H2>
-              <Paragraph alignSelf="center" marginTop="$4" maxWidth={448} fontSize="$4" color="$color" $md={{ fontSize: "$6" }}>
+              <Paragraph alignSelf="center" marginTop="$4" maxWidth={448} fontSize="$4" textAlign="center" color="$color" $md={{ fontSize: "$6" }}>
                 Start with a sentence. Deploy to Hanzo Cloud in one click.
               </Paragraph>
-            </SizableText>
+            </YStack>
             <YStack marginTop="$6">
               <BuildComposer
                 showPill={false}
@@ -361,6 +363,6 @@ export default function LandingPage() {
 
       <LazySection minHeight={200}><PreFooterCTA /></LazySection>
       <LazySection minHeight={240}><SiteFooter /></LazySection>
-    </SizableText>
+    </YStack>
   );
 }

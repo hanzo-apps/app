@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText, XStack, H2, Paragraph } from '@hanzo/gui';
+import { SizableText, XStack, YStack, H2, Paragraph } from '@hanzo/gui';
 import { useLocalStorage } from "react-use";
 import { Button, Dialog, DialogContent, DialogTitle, Separator } from '@hanzo/ui';
 import { CheckCheck } from "lucide-react";
@@ -28,17 +28,17 @@ export const ProModal = ({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent borderRadius="$6" backgroundColor="$background" borderColor="$borderColor" $sm={{ maxWidth: 512 }} $lg={{ padding: "$6" }}>
         <DialogTitle display="none" />
-        <SizableText flexDirection="column" alignItems="flex-start" textAlign="left" position="relative" paddingTop="$2" display="flex">
+        <YStack alignItems="flex-start" position="relative" paddingTop="$2">
           <XStack alignItems="center" justifyContent="flex-start" columnGap="$4" marginBottom="$4.5">
-            <SizableText width="$9" height="$9" borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$10" display="flex" flexDirection="row">
-              🚀
-            </SizableText>
-            <SizableText width="$10" height="$10" borderRadius="$10" backgroundColor="$color4" borderWidth={1} borderColor="$borderColor" elevation={4} alignItems="center" justifyContent="center" fontSize="$11" zIndex={2} display="flex" flexDirection="row">
-              🤩
-            </SizableText>
-            <SizableText width="$9" height="$9" borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$10" display="flex" flexDirection="row">
-              🥳
-            </SizableText>
+            <XStack width="$9" height="$9" borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center">
+              <SizableText fontSize="$10">🚀</SizableText>
+            </XStack>
+            <XStack width="$10" height="$10" borderRadius="$10" backgroundColor="$color4" borderWidth={1} borderColor="$borderColor" elevation={4} alignItems="center" justifyContent="center" zIndex={2}>
+              <SizableText fontSize="$11">🤩</SizableText>
+            </XStack>
+            <XStack width="$9" height="$9" borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center">
+              <SizableText fontSize="$10">🥳</SizableText>
+            </XStack>
           </XStack>
           <H2 fontSize="$8" fontWeight="500" color="$color">
             Only $9 to enhance your possibilities
@@ -51,26 +51,26 @@ export const ProModal = ({
             Upgrade to a <ProTag /> Account, and unlock your
             Hanzo high quota access ⚡
           </Paragraph>
-          <SizableText marginTop="$3" rowGap="$1" color="$color11" display="flex" flexDirection="column">
-            <SizableText fontSize="$3" color="$color11" columnGap="$2" alignItems="center" justifyContent="flex-start" gap="$2" marginBottom="$3">
+          <YStack marginTop="$3" rowGap="$1">
+            <SizableText fontSize="$3" color="$color11" marginBottom="$3">
               You&apos;ll also unlock PRO features, like:
             </SizableText>
-            <SizableText fontSize="$3" columnGap="$2" alignItems="center" justifyContent="flex-start" gap="$2">
+            <XStack alignItems="center" justifyContent="flex-start" gap="$2" columnGap="$2">
               <CheckCheck size={16} color="var(--brand-accent-muted)" />
-              Get acces to thousands of AI app (ZeroGPU) with high quota
-            </SizableText>
-            <SizableText fontSize="$3" columnGap="$2" alignItems="center" justifyContent="flex-start" gap="$2">
+              <SizableText fontSize="$3" color="$color11">Get acces to thousands of AI app (ZeroGPU) with high quota</SizableText>
+            </XStack>
+            <XStack alignItems="center" justifyContent="flex-start" gap="$2" columnGap="$2">
               <CheckCheck size={16} color="var(--brand-accent-muted)" />
-              Get exclusive early access to new features and updates
-            </SizableText>
-            <SizableText fontSize="$3" columnGap="$2" alignItems="center" justifyContent="flex-start" gap="$2">
+              <SizableText fontSize="$3" color="$color11">Get exclusive early access to new features and updates</SizableText>
+            </XStack>
+            <XStack alignItems="center" justifyContent="flex-start" gap="$2" columnGap="$2">
               <CheckCheck size={16} color="var(--brand-accent-muted)" />
-              Get free credits across all Inference Providers
-            </SizableText>
-            <SizableText fontSize="$3" color="$color11" columnGap="$2" alignItems="center" justifyContent="flex-start" gap="$2" marginTop="$3">
+              <SizableText fontSize="$3" color="$color11">Get free credits across all Inference Providers</SizableText>
+            </XStack>
+            <SizableText fontSize="$3" color="$color11" marginTop="$3">
               ... and lots more!
             </SizableText>
-          </SizableText>
+          </YStack>
           <Button
             size="lg"
             width="100%" height={44} marginTop="$6"
@@ -78,7 +78,7 @@ export const ProModal = ({
           >
             <SizableText fontSize="$4">Subscribe to PRO ($9/month)</SizableText>
           </Button>
-        </SizableText>
+        </YStack>
       </DialogContent>
     </Dialog>
   );

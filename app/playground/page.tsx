@@ -330,10 +330,10 @@ export default function PlaygroundPage() {
                     placeholder="Enter your prompt here..."
                     backgroundColor="$color3" borderColor="$borderColor" color="$color" minHeight={150}
   />
-                  <SizableText justifyContent="space-between" fontSize="$1" color="$color11" display="flex" flexDirection="row">
-                    <span>{prompt.length} characters</span>
-                    <span>~{Math.ceil(prompt.length / 4)} tokens</span>
-                  </SizableText>
+                  <XStack justifyContent="space-between">
+                    <SizableText fontSize="$1" color="$color11">{prompt.length} characters</SizableText>
+                    <SizableText fontSize="$1" color="$color11">~{Math.ceil(prompt.length / 4)} tokens</SizableText>
+                  </XStack>
                 </YStack>
 
                 <Button
@@ -465,10 +465,10 @@ export default function PlaygroundPage() {
                     </YStack>
                   ) : (
                     <XStack height={400} alignItems="center" justifyContent="center">
-                      <SizableText textAlign="center" display="flex" flexDirection="column">
+                      <YStack>
                         <Sparkles size={48} color="$color11" />
                         <Paragraph color="$color11">Generate a response to see output</Paragraph>
-                      </SizableText>
+                      </YStack>
                     </XStack>
                   )}
                 </CardContent>
@@ -548,10 +548,10 @@ export default function PlaygroundPage() {
                       </YStack>
                     ) : (
                       <XStack height={400} alignItems="center" justifyContent="center">
-                        <SizableText textAlign="center" display="flex" flexDirection="column">
+                        <YStack>
                           <Sparkles size={48} color="$color11" />
                           <Paragraph color="$color11">Generate a response to see output</Paragraph>
-                        </SizableText>
+                        </YStack>
                       </XStack>
                     )}
                   </CardContent>

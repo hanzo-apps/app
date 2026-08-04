@@ -86,12 +86,12 @@ export function EngagementMetrics({ deploymentId }: EngagementMetricsProps) {
       {/* Time on Page Overview */}
       <YStack gap="$4">
         <YStack borderWidth={1} borderRadius="$5" padding="$4">
-          <SizableText fontSize="$3" color="$color11" marginBottom="$1" display="flex" flexDirection="column">Average Time on Page</SizableText>
-          <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{formatDuration(data.timeOnPage.average)}</SizableText>
+          <YStack marginBottom="$1"><SizableText fontSize="$3" color="$color11">Average Time on Page</SizableText></YStack>
+          <YStack><SizableText fontSize="$8" fontWeight="500">{formatDuration(data.timeOnPage.average)}</SizableText></YStack>
         </YStack>
         <YStack borderWidth={1} borderRadius="$5" padding="$4">
-          <SizableText fontSize="$3" color="$color11" marginBottom="$1" display="flex" flexDirection="column">Median Time on Page</SizableText>
-          <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{formatDuration(data.timeOnPage.median)}</SizableText>
+          <YStack marginBottom="$1"><SizableText fontSize="$3" color="$color11">Median Time on Page</SizableText></YStack>
+          <YStack><SizableText fontSize="$8" fontWeight="500">{formatDuration(data.timeOnPage.median)}</SizableText></YStack>
         </YStack>
       </YStack>
 
@@ -115,9 +115,11 @@ export function EngagementMetrics({ deploymentId }: EngagementMetricsProps) {
       <YStack borderWidth={1} borderRadius="$5" padding="$4">
         <H3 fontWeight="500" marginBottom="$4">Scroll Depth Funnel</H3>
         <YStack rowGap="$3">
-          <SizableText fontSize="$3" color="$color11" marginBottom="$2" display="flex" flexDirection="column">
-            Average: <SizableText fontWeight="500" color="$color">{data.scrollDepth.average.toFixed(1)}%</SizableText>
-          </SizableText>
+          <YStack marginBottom="$2">
+            <SizableText fontSize="$3" color="$color11">
+              Average: <SizableText fontWeight="500" color="$color">{data.scrollDepth.average.toFixed(1)}%</SizableText>
+            </SizableText>
+          </YStack>
           {(() => {
             const milestones = [25, 50, 75, 100];
             // Calculate cumulative counts (users who reached AT LEAST this depth)
@@ -136,12 +138,12 @@ export function EngagementMetrics({ deploymentId }: EngagementMetricsProps) {
 
               return (
                 <div key={milestone}>
-                  <SizableText justifyContent="space-between" fontSize="$3" marginBottom="$1" display="flex" flexDirection="row">
-                    <span>Reached {milestone}%+</span>
-                    <SizableText color="$color11">
+                  <XStack justifyContent="space-between" marginBottom="$1">
+                    <SizableText fontSize="$3">Reached {milestone}%+</SizableText>
+                    <SizableText color="$color11" fontSize="$3">
                       {count.toLocaleString()} ({percentage.toFixed(1)}%)
                     </SizableText>
-                  </SizableText>
+                  </XStack>
                   <YStack height="$5" backgroundColor="$color3" borderRadius="$2" overflow="hidden">
                     <YStack
                       height="100%" backgroundColor="$color12"
@@ -162,10 +164,10 @@ export function EngagementMetrics({ deploymentId }: EngagementMetricsProps) {
           {data.topLandingPages.slice(0, 10).map((landing) => (
             <XStack key={landing.page} justifyContent="space-between" alignItems="center" borderBottomWidth={1} paddingBottom="$2">
               <YStack flex={1}>
-                <SizableText fontSize="$3" fontWeight="500" display="flex" flexDirection="column">{landing.page}</SizableText>
-                <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
+                <YStack><SizableText fontSize="$3" fontWeight="500">{landing.page}</SizableText></YStack>
+                <YStack><SizableText fontSize="$1" color="$color11">
                   {landing.visitCount.toLocaleString()} visits
-                </SizableText>
+                </SizableText></YStack>
               </YStack>
               <SizableText textAlign="right" display="flex" flexDirection="column">
                 <SizableText fontSize="$3" display="flex" flexDirection="column">

@@ -106,13 +106,13 @@ export function SchemaViewer({ deploymentId, schemaEndpoint, showSystemTablesTog
 
       <YStack flex={1} overflow="scroll" borderWidth={1} borderRadius="$5">
         {filteredTables.length === 0 ? (
-          <SizableText flexDirection="column" alignItems="center" justifyContent="center" height="100%" padding="$6" textAlign="center" display="flex">
+          <YStack alignItems="center" justifyContent="center" height="100%" padding="$6">
             <Table2 size={32} color="$color11" />
-            <Paragraph fontSize="$3" color="$color11">No user tables found</Paragraph>
-            <Paragraph fontSize="$1" color="$color11" marginTop="$1">
+            <Paragraph fontSize="$3" color="$color11" textAlign="center">No user tables found</Paragraph>
+            <Paragraph fontSize="$1" color="$color11" marginTop="$1" textAlign="center">
               Create tables using the SQL editor
             </Paragraph>
-          </SizableText>
+          </YStack>
         ) : (
           <YStack>
             {filteredTables.map(table => (
@@ -138,28 +138,28 @@ export function SchemaViewer({ deploymentId, schemaEndpoint, showSystemTablesTog
 
                 {expandedTables.has(table.name) && (
                   <YStack backgroundColor="$color3" borderTopWidth={1}>
-                    <SizableText width="100%" fontSize="$3" display="flex" flexDirection="column">
+                    <YStack width="100%">
                       <thead>
                         <YStack borderBottomWidth={1} backgroundColor="$color3">
-                          <SizableText textAlign="left" padding="$2" fontWeight="500">Column</SizableText>
-                          <SizableText textAlign="left" padding="$2" fontWeight="500">Type</SizableText>
-                          <SizableText textAlign="left" padding="$2" fontWeight="500">Nullable</SizableText>
-                          <SizableText textAlign="left" padding="$2" fontWeight="500">Default</SizableText>
+                          <SizableText textAlign="left" padding="$2" fontWeight="500" fontSize="$3">Column</SizableText>
+                          <SizableText textAlign="left" padding="$2" fontWeight="500" fontSize="$3">Type</SizableText>
+                          <SizableText textAlign="left" padding="$2" fontWeight="500" fontSize="$3">Nullable</SizableText>
+                          <SizableText textAlign="left" padding="$2" fontWeight="500" fontSize="$3">Default</SizableText>
                         </YStack>
                       </thead>
                       <tbody>
                         {table.columns.map(col => (
                           <YStack key={col.name} borderBottomWidth={1} className="last-flat">
-                            <SizableText padding="$2" fontFamily="$mono" alignItems="center" gap="$1.5">
+                            <XStack padding="$2" alignItems="center" gap="$1.5">
                               {col.primaryKey && (
                                 <KeyRound size={12} color="$yellow9" />
                               )}
-                              {col.name}
-                            </SizableText>
-                            <SizableText padding="$2" fontFamily="$mono" color="$color11">
+                              <SizableText fontFamily="$mono" fontSize="$3">{col.name}</SizableText>
+                            </XStack>
+                            <SizableText padding="$2" fontFamily="$mono" color="$color11" fontSize="$3">
                               {col.type || 'TEXT'}
                             </SizableText>
-                            <SizableText padding="$2" color="$color11">
+                            <SizableText padding="$2" color="$color11" fontSize="$3">
                               {col.nullable ? 'Yes' : 'No'}
                             </SizableText>
                             <SizableText padding="$2" fontFamily="$mono" color="$color11" fontSize="$1">
@@ -168,7 +168,7 @@ export function SchemaViewer({ deploymentId, schemaEndpoint, showSystemTablesTog
                           </YStack>
                         ))}
                       </tbody>
-                    </SizableText>
+                    </YStack>
                   </YStack>
                 )}
               </YStack>

@@ -1,7 +1,7 @@
 'use client';
 
 import { Label, Input, Button } from '@hanzo/ui';
-import { SizableText, YStack, H1, Paragraph } from '@hanzo/gui';
+import { SizableText, XStack, YStack, H1, Paragraph } from '@hanzo/gui';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -43,7 +43,7 @@ export default function LoginPage() {
   };
 
   return (
-    <SizableText minHeight="100%" backgroundColor="$background" color="$color" alignItems="center" justifyContent="center" padding="$4" display="flex" flexDirection="row">
+    <XStack minHeight="100%" backgroundColor="$background" alignItems="center" justifyContent="center" padding="$4">
       <style jsx>{`
         @keyframes fadeIn {
           from { opacity: 0; }
@@ -61,7 +61,7 @@ export default function LoginPage() {
         }
       `}</style>
 
-      <SizableText maxWidth={448} width="100%" textAlign="center" display="flex" flexDirection="column">
+      <YStack maxWidth={448} width="100%">
         {/* Logo */}
         <YStack marginBottom="$6">
           <svg
@@ -90,7 +90,7 @@ export default function LoginPage() {
         {/* Login Form */}
         <form onSubmit={handleSubmit}>
           <YStack rowGap="$4">
-          <SizableText textAlign="left" display="flex" flexDirection="column">
+          <YStack>
             <Label htmlFor="password" fontSize="$3" fontWeight="500" color="$color11" marginBottom="$2">
               Password
             </Label>
@@ -104,12 +104,12 @@ export default function LoginPage() {
               required
               autoFocus
   />
-          </SizableText>
+          </YStack>
 
           {error && (
-            <SizableText padding="$3" backgroundColor="$red12" borderWidth={1} borderColor="$red11" color="$red8" borderRadius="$5" fontSize="$3" display="flex" flexDirection="column">
-              {error}
-            </SizableText>
+            <YStack padding="$3" backgroundColor="$red12" borderWidth={1} borderColor="$red11" borderRadius="$5">
+              <SizableText color="$red8" fontSize="$3">{error}</SizableText>
+            </YStack>
           )}
 
           <Button
@@ -123,8 +123,8 @@ export default function LoginPage() {
         </form>
 
         {/* Footer */}
-        <SizableText marginTop="$8" paddingTop="$5" borderTopWidth={1} borderColor="$borderColor" alignItems="center" justifyContent="center" gap="$2" fontSize="$3" color="$color11" display="flex" flexDirection="row">
-          <span>Powered by</span>
+        <XStack marginTop="$8" paddingTop="$5" borderTopWidth={1} borderColor="$borderColor" alignItems="center" justifyContent="center" gap="$2">
+          <SizableText fontSize="$3" color="$color11">Powered by</SizableText>
           <svg
             width={20}
             height={20}
@@ -142,9 +142,9 @@ export default function LoginPage() {
               <path d="M3047 2515 c-47 -16 -81 -46 -101 -90 -14 -28 -16 -95 -16 -463 0 -281 4 -440 11 -459 15 -40 48 -73 94 -94 38 -17 79 -19 685 -19 626 0 646 -1 678 -20 58 -35 72 -72 72 -185 0 -110 -14 -147 -67 -182 -25 -17 -73 -18 -698 -23 -672 -5 -672 -5 -708 -33 -20 -15 -44 -42 -53 -60 -21 -39 -21 -125 -1 -163 20 -38 65 -80 100 -93 19 -8 289 -11 833 -11 701 0 809 2 841 15 48 20 71 41 94 88 19 35 19 60 17 480 -3 444 -3 444 -30 479 -54 71 -23 68 -740 68 -612 0 -645 1 -685 20 -67 30 -83 66 -83 183 0 116 14 156 68 189 35 21 35 21 691 22 606 1 658 2 688 19 137 74 130 264 -12 328 -38 18 -85 19 -840 18 -652 0 -807 -2 -838 -14z"/>
             </g>
           </svg>
-          <span>Hanzo App</span>
-        </SizableText>
-      </SizableText>
-    </SizableText>
+          <SizableText fontSize="$3" color="$color11">Hanzo App</SizableText>
+        </XStack>
+      </YStack>
+    </XStack>
   );
 }

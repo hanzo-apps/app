@@ -383,25 +383,25 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
           </XStack>
           <YStack minHeight={0} flex={1} paddingVertical="$1" overflow="scroll">
             {browseGroups.length === 0 ? (
-              <SizableText height="100%" flexDirection="column" alignItems="center" justifyContent="center" gap="$3" padding="$5" textAlign="center" color="$color11" display="flex">
-                <FileCode size={40} />
+              <YStack height="100%" alignItems="center" justifyContent="center" gap="$3" padding="$5">
+                <FileCode size={40} color="$color11" />
                 <YStack rowGap="$1">
-                  <Paragraph fontSize="$3" fontWeight="500">
+                  <Paragraph fontSize="$3" fontWeight="500" color="$color11" textAlign="center">
                     {allFiles.length === 0
                       ? 'No files in this project yet'
                       : 'No files match your search'}
                   </Paragraph>
-                  <Paragraph fontSize="$1">Pick a file to open it in the editor.</Paragraph>
+                  <Paragraph fontSize="$1" color="$color11" textAlign="center">Pick a file to open it in the editor.</Paragraph>
                 </YStack>
-              </SizableText>
+              </YStack>
             ) : (
               browseGroups.map((group) => (
                 <YStack key={group.folder || '/'} paddingVertical="$0.5">
                   {group.folder && (
-                    <SizableText alignItems="center" gap="$1.5" paddingHorizontal="$3" paddingVertical="$1" fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.4} color="$color11" display="flex" flexDirection="row">
-                      <Folder size={12} />
-                      <SizableText numberOfLines={1}>{group.folder}</SizableText>
-                    </SizableText>
+                    <XStack alignItems="center" gap="$1.5" paddingHorizontal="$3" paddingVertical="$1">
+                      <Folder size={12} color="$color11" />
+                      <SizableText numberOfLines={1} fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.4} color="$color11">{group.folder}</SizableText>
+                    </XStack>
                   )}
                   {group.items.map((file) => (
                     <Button
@@ -459,11 +459,11 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
                 if (fileType.type === 'image') {
                   return (
                     <XStack height="100%" alignItems="center" justifyContent="center" backgroundColor="$background" padding="$6">
-                      <SizableText textAlign="center" rowGap="$4" maxWidth={672} display="flex" flexDirection="column">
+                      <YStack rowGap="$4" maxWidth={672}>
                         <ImageIcon size={48} color="$color11" />
                         <YStack rowGap="$2">
-                          <H3 fontSize="$6" fontWeight="500">Image Preview</H3>
-                          <Paragraph fontSize="$3" color="$color11">
+                          <H3 fontSize="$6" fontWeight="500" textAlign="center">Image Preview</H3>
+                          <Paragraph fontSize="$3" color="$color11" textAlign="center">
                             {activeFile.file.name}
                           </Paragraph>
                         </YStack>
@@ -485,10 +485,10 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
                             }}
   />
                         </YStack>
-                        <Paragraph fontSize="$1" color="$color11">
+                        <Paragraph fontSize="$1" color="$color11" textAlign="center">
                           Image files cannot be edited in the text editor
                         </Paragraph>
-                      </SizableText>
+                      </YStack>
                     </XStack>
                   );
                 }
@@ -496,19 +496,19 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
                 if (fileType.type === 'unsupported') {
                   return (
                     <XStack height="100%" alignItems="center" justifyContent="center" backgroundColor="$background" padding="$6">
-                      <SizableText textAlign="center" rowGap="$4" display="flex" flexDirection="column">
+                      <YStack rowGap="$4">
                         <AlertCircle size={48} color="$color11" />
                         <YStack rowGap="$2">
-                          <H3 fontSize="$6" fontWeight="500">Unsupported File Type</H3>
-                          <Paragraph fontSize="$3" color="$color11">
+                          <H3 fontSize="$6" fontWeight="500" textAlign="center">Unsupported File Type</H3>
+                          <Paragraph fontSize="$3" color="$color11" textAlign="center">
                             {activeFile.file.name}
                           </Paragraph>
-                          <Paragraph fontSize="$3" color="$color11" maxWidth={448}>
+                          <Paragraph fontSize="$3" color="$color11" maxWidth={448} textAlign="center">
                             This file type is not supported for editing in the text editor.
                             Binary files and certain document formats cannot be displayed here.
                           </Paragraph>
                         </YStack>
-                      </SizableText>
+                      </YStack>
                     </XStack>
                   );
                 }

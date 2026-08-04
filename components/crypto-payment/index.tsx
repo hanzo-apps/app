@@ -134,11 +134,11 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
         </DialogHeader>
 
         {step === 'success' ? (
-          <SizableText paddingVertical="$6" textAlign="center" display="flex" flexDirection="column">
+          <YStack paddingVertical="$6">
             <XStack width="$10" height="$10" borderRadius="$10" backgroundColor="$green9" alignItems="center" justifyContent="center" alignSelf="center" marginBottom="$4">
               <Check size={32} color="$green9" />
             </XStack>
-            <Paragraph fontSize="$6" fontWeight="500" marginBottom="$2">
+            <Paragraph fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">
               +{CREDIT_PRICING[selectedAmount as keyof typeof CREDIT_PRICING]?.credits.toLocaleString()} credits added!
             </Paragraph>
             {hash && (
@@ -154,7 +154,7 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
             <Button onClick={handleClose} marginTop="$5">
               Done
             </Button>
-          </SizableText>
+          </YStack>
         ) : !isConnected ? (
           <YStack paddingVertical="$5" rowGap="$3">
             <Paragraph fontSize="$3" color="$color11" textAlign="center" marginBottom="$4">Connect your wallet to continue</Paragraph>
@@ -172,12 +172,12 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
           </YStack>
         ) : step === 'select' ? (
           <YStack paddingVertical="$4" rowGap="$4">
-            <SizableText alignItems="center" justifyContent="space-between" fontSize="$3" display="flex" flexDirection="row">
-              <SizableText color="$color11">Connected: {address?.slice(0, 6)}...{address?.slice(-4)}</SizableText>
+            <XStack alignItems="center" justifyContent="space-between">
+              <SizableText color="$color11" fontSize="$3">Connected: {address?.slice(0, 6)}...{address?.slice(-4)}</SizableText>
               <Button variant="ghost" size="sm" onClick={() => disconnect()}>
                 Disconnect
               </Button>
-            </SizableText>
+            </XStack>
 
             {/* Chain selector */}
             <YStack position="relative">
@@ -217,11 +217,13 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
                       <Badge>Popular</Badge>
                     </YStack>
                   )}
-                  <SizableText fontSize="$7" fontWeight="500" display="flex" flexDirection="column">${option.amount}</SizableText>
-                  <SizableText alignItems="center" fontSize="$3" color="$color11" marginTop="$1" display="flex" flexDirection="row">
+                  <YStack><SizableText fontSize="$7" fontWeight="500">${option.amount}</SizableText></YStack>
+                  <XStack alignItems="center" marginTop="$1">
                     <Zap size={12} />
-                    {option.credits.toLocaleString()} credits
-                  </SizableText>
+                    <SizableText fontSize="$3" color="$color11">
+                      {option.credits.toLocaleString()} credits
+                    </SizableText>
+                  </XStack>
                   {option.bonus > 0 && (
                     <YStack marginTop="$2">
                       <Badge variant="secondary">+{option.bonus.toLocaleString()} bonus</Badge>
@@ -282,15 +284,15 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
             </XStack>
           </YStack>
         ) : (
-          <SizableText paddingVertical="$6" textAlign="center" display="flex" flexDirection="column">
+          <YStack paddingVertical="$6">
             <Loader2 size={48} color="$purple9" />
-            <Paragraph fontSize="$6" fontWeight="500">
+            <Paragraph fontSize="$6" fontWeight="500" textAlign="center">
               {isConfirming ? 'Confirming transaction...' : 'Waiting for wallet...'}
             </Paragraph>
-            <Paragraph fontSize="$3" color="$color11" marginTop="$2">
+            <Paragraph fontSize="$3" color="$color11" marginTop="$2" textAlign="center">
               Please confirm the transaction in your wallet
             </Paragraph>
-          </SizableText>
+          </YStack>
         )}
       </DialogContent>
     </Dialog>

@@ -10,7 +10,7 @@ import { OFFICIAL_LABEL } from "@/lib/template-authors";
 
 export default function CommunityPageView() {
   return (
-    <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
+    <YStack minHeight="100%" backgroundColor="$background">
       <Header />
       <CatalogBrowser
         origin="community"
@@ -30,30 +30,30 @@ export default function CommunityPageView() {
           </>
         }
   />
-      <SizableText borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" textAlign="center" display="flex" flexDirection="column" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
+      <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
         <YStack alignSelf="center" maxWidth={672}>
-          <H2 fontSize="$8" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$10" }}>
+          <H2 fontSize="$8" fontWeight="500" letterSpacing={-0.4} textAlign="center" $md={{ fontSize: "$10" }}>
             Build something worth showing off.
           </H2>
-          <Paragraph marginTop="$4" fontSize="$3" lineHeight={1.625} color="$color11">
+          <Paragraph marginTop="$4" fontSize="$3" lineHeight={1.625} color="$color11" textAlign="center">
             Fork a starter or start from a blank prompt. Either way you are live
             on Hanzo Cloud — database, auth, AI and storage already wired.
           </Paragraph>
           <XStack marginTop="$6" flexWrap="wrap" alignItems="center" justifyContent="center" gap="$3">
             <Link
               href="/dev"
-            ><SizableText height={44} alignItems="center" gap="$1.5" borderRadius="$6" backgroundColor="$color12" paddingHorizontal="$4.5" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
-              Start building <ArrowUpRight size={16} />
-            </SizableText></Link>
+            ><XStack height={44} alignItems="center" gap="$1.5" borderRadius="$6" backgroundColor="$color12" paddingHorizontal="$4.5" hoverStyle={{ backgroundColor: "$color12" }}>
+              <SizableText fontSize="$3" fontWeight="500" color="$background">Start building</SizableText> <ArrowUpRight size={16} />
+            </XStack></Link>
             <Link
               href="/templates"
-            ><SizableText height={44} alignItems="center" gap="$1.5" borderRadius="$6" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$4.5" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ backgroundColor: "$background" }}>
-              Browse templates
-            </SizableText></Link>
+            ><XStack height={44} alignItems="center" gap="$1.5" borderRadius="$6" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$4.5" hoverStyle={{ backgroundColor: "$background" }}>
+              <SizableText fontSize="$3" fontWeight="500" color="$color">Browse templates</SizableText>
+            </XStack></Link>
           </XStack>
         </YStack>
-      </SizableText>
+      </YStack>
       <SiteFooter />
-    </SizableText>
+    </YStack>
   );
 }

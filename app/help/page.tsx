@@ -87,12 +87,12 @@ const channels: Channel[] = [
 
 export default function HelpPage() {
   return (
-    <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
+    <YStack minHeight="100%" backgroundColor="$background">
       <Header />
 
       <main>
         {/* ── Hero ─────────────────────────────────────────────── */}
-        <SizableText position="relative" overflow="hidden" paddingHorizontal="$4" paddingVertical="$11" textAlign="center" display="flex" flexDirection="column" $md={{ paddingHorizontal: "$6", paddingVertical: "$13" }}>
+        <YStack position="relative" overflow="hidden" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$13" }}>
           <YStack pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} overflow="hidden">
             <YStack position="absolute" left="50%" top="-30%" height={420} width={720} x="50%" borderRadius="$10" backgroundColor="$color" />
           </YStack>
@@ -108,13 +108,13 @@ export default function HelpPage() {
             </Reveal>
 
             <Reveal delay={60}>
-              <H1 fontSize="$11" fontWeight="500" lineHeight={1.03} letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
+              <H1 fontSize="$11" fontWeight="500" lineHeight={1.03} letterSpacing={-0.4} textAlign="center" $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
                 How can we help?
               </H1>
             </Reveal>
 
             <Reveal delay={120}>
-              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
+              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" color="$color11" textAlign="center" $md={{ fontSize: "$6" }}>
                 Start with the FAQ or docs for a fast answer, or reach the team
                 directly at{" "}
                 <Anchor
@@ -127,7 +127,7 @@ export default function HelpPage() {
               </Paragraph>
             </Reveal>
           </YStack>
-        </SizableText>
+        </YStack>
 
         {/* ── Channels ─────────────────────────────────────────── */}
         <YStack paddingHorizontal="$4" paddingBottom="$6" $md={{ paddingHorizontal: "$6" }}>
@@ -136,9 +136,9 @@ export default function HelpPage() {
               const inner = (
                 <YStack group height="100%" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$5" hoverStyle={{ borderColor: "$color", backgroundColor: "$color" }}>
                   <XStack alignItems="center" justifyContent="space-between">
-                    <SizableText height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" color="$color">
+                    <XStack height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
                       {c.icon}
-                    </SizableText>
+                    </XStack>
                     {c.external ? (
                       <ArrowUpRight size={16} color="$color" />
                     ) : (
@@ -197,6 +197,6 @@ export default function HelpPage() {
       </main>
 
       <SiteFooter />
-    </SizableText>
+    </YStack>
   );
 }

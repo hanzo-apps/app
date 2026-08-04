@@ -284,7 +284,16 @@ function SidebarContent({
       )}
 
       <YStack
-        height="100%" backgroundColor="$background" position="fixed" right="$0" top="$0" zIndex={50} width={256} borderLeftWidth={1} {...{ $md: mobileOpen ? collapsed ? {"width":"$9"} : {"width":240} : {"x":"$0"}, x: mobileOpen ? "$0" : "100%" }}
+        height="100%" backgroundColor="$background" zIndex={50} borderRightWidth={1} borderColor="$borderColor"
+        width={collapsed ? 72 : 256}
+        // Mobile (<md): an off-canvas fixed drawer that slides in from the LEFT.
+        // Desktop (md+): an IN-FLOW left column — position:relative so it sits
+        // inside the shell's XStack row (first child = left), NOT pinned to the
+        // viewport. It was `position:fixed right:0` for ALL sizes, which floated
+        // the whole nav to the right of the screen on desktop.
+        position="fixed" left="$0" top="$0"
+        x={mobileOpen ? "$0" : "-100%"}
+        $md={{ position: "relative", left: "unset", x: "$0", zIndex: 1 }}
       >
         {/* Top: brand mark + collapse toggle. */}
         <XStack

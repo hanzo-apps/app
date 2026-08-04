@@ -155,10 +155,10 @@ export function SecretEditor({
 
           {/* Usage Reference */}
           <YStack backgroundColor="$color3" borderWidth={1} borderRadius="$5" padding="$4" rowGap="$2">
-            <SizableText alignItems="center" gap="$2" fontSize="$3" fontWeight="500" display="flex" flexDirection="row">
+            <XStack alignItems="center" gap="$2">
               <Info size={16} />
-              Usage in Edge Functions
-            </SizableText>
+              <SizableText fontSize="$3" fontWeight="500">Usage in Edge Functions</SizableText>
+            </XStack>
             <SizableText fontSize="$1" fontFamily="$mono" backgroundColor="$background" padding="$2" borderRadius="$2" overflow="scroll" whiteSpace="pre">
 {`// Get secret value
 const apiKey = secrets.get('${name || 'HANZO_COMMERCE_API_KEY'}');
@@ -175,10 +175,10 @@ const allSecrets = secrets.list(); // ['${name || 'HANZO_COMMERCE_API_KEY'}', ..
 
           {/* Error */}
           {error && (
-            <SizableText alignItems="center" gap="$2" fontSize="$3" color="$red9" backgroundColor="$red9" padding="$3" borderRadius="$5" display="flex" flexDirection="row">
+            <XStack alignItems="center" gap="$2" backgroundColor="$red9" padding="$3" borderRadius="$5">
               <AlertCircle size={16} />
-              {error}
-            </SizableText>
+              <SizableText fontSize="$3" color="$red9">{error}</SizableText>
+            </XStack>
           )}
         </YStack>
 

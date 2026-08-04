@@ -338,11 +338,11 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
   const trimmedSnippet = focusPreviewSnippet?.trim() ?? '';
 
   const focusContextHint = focusContext ? (
-    <SizableText
+    <YStack
       id="focus-context-hint"
-      borderRadius="$3" borderWidth={1} borderStyle="dashed" borderColor="$color12" backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$2" fontSize="$1" color="$color11" elevation={1} display="flex" flexDirection="column"
+      borderRadius="$3" borderWidth={1} borderStyle="dashed" borderColor="$color12" backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$2" elevation={1}
     >
-        <SizableText flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$2" color="$color" display="flex" flexDirection="row">
+        <XStack flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$2">
           <XStack alignItems="center" gap="$2">
             <SizableText fontWeight="500" fontSize="$1" textTransform="uppercase" letterSpacing={0.4} color="$color12">context</SizableText>
             <SizableText fontSize={10} textTransform="uppercase" letterSpacing={0.4} color="$color11">included in next message</SizableText>
@@ -356,12 +356,12 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
           >
             <SizableText fontSize="$1">Clear</SizableText>
           </Button>
-        </SizableText>
+        </XStack>
         <YStack marginTop="$2" rowGap="$2">
         {focusContext.domPath && (
-          <SizableText fontSize={11} fontFamily="$mono" color="$color11" lineHeight={1.375} display="flex" flexDirection="column" className="break-all">
-            {focusContext.domPath}
-          </SizableText>
+          <YStack className="break-all">
+            <SizableText fontSize={11} fontFamily="$mono" color="$color11" lineHeight={1.375}>{focusContext.domPath}</SizableText>
+          </YStack>
         )}
         {trimmedSnippet && (
           <SizableText maxHeight="$12" overflow="scroll" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2" paddingVertical="$1" fontSize={11} color="$color" lineHeight={1.625} fontFamily="$mono" whiteSpace="pre">
@@ -369,7 +369,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
           </SizableText>
         )}
       </YStack>
-    </SizableText>
+    </YStack>
   ) : null;
 
   useEffect(() => {

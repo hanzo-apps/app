@@ -39,13 +39,13 @@ function PreviewOverlay({ building }: { building: boolean }) {
           </Paragraph>
         </YStack>
       ) : (
-        <SizableText maxWidth={384} paddingHorizontal="$6" textAlign="center" display="flex" flexDirection="column">
+        <YStack maxWidth={384} paddingHorizontal="$6">
           <Paragraph fontSize={15} fontWeight="600" color="$color">Describe your idea.</Paragraph>
           <Paragraph marginTop="$1.5" fontSize={13} color="$color11">
             <SizableText aria-hidden marginRight="$1">↓</SizableText>Watch Hanzo build it live
             <SizableText marginLeft="$0.5" height="$4" width={2} y={3} backgroundColor="$color" verticalAlign="middle" />
           </Paragraph>
-        </SizableText>
+        </YStack>
       )}
     </XStack>
   );

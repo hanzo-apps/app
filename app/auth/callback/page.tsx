@@ -81,8 +81,8 @@ export default function AuthCallback() {
   }, [completeLogin, isAuthenticated, router]);
 
   return (
-    <SizableText minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="$background" color="$color" paddingHorizontal="$5" display="flex" flexDirection="row">
-      <SizableText width="100%" maxWidth={384} textAlign="center" display="flex" flexDirection="column">
+    <XStack minHeight="100%" alignItems="center" justifyContent="center" backgroundColor="$background" paddingHorizontal="$5">
+      <YStack width="100%" maxWidth={384}>
         <XStack justifyContent="center" marginBottom="$7">
           <HanzoLogo size={44} color="var(--foreground)" />
         </XStack>
@@ -90,32 +90,32 @@ export default function AuthCallback() {
         {error ? (
           <YStack rowGap="$4.5">
             <div>
-              <H1 fontSize="$7" fontWeight="500" letterSpacing={-0.4}>
+              <H1 fontSize="$7" fontWeight="500" letterSpacing={-0.4} textAlign="center">
                 Sign-in didn&apos;t complete
               </H1>
-              <Paragraph marginTop="$2" fontSize="$3" color="$color11">
+              <Paragraph marginTop="$2" fontSize="$3" color="$color11" textAlign="center">
                 Your session couldn&apos;t be established. Please try signing in
                 again.
               </Paragraph>
             </div>
             <Link
               href="/login"
-            ><SizableText width="100%" alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color12" paddingHorizontal="$4.5" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
-              Back to sign in
-            </SizableText></Link>
+            ><XStack width="100%" alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color12" paddingHorizontal="$4.5" paddingVertical="$2.5" hoverStyle={{ backgroundColor: "$color12" }}>
+              <SizableText fontSize="$3" fontWeight="500" color="$background">Back to sign in</SizableText>
+            </XStack></Link>
           </YStack>
         ) : (
           <YStack rowGap="$3">
-            <SizableText alignItems="center" justifyContent="center" gap="$2.5" color="$color" display="flex" flexDirection="row">
+            <XStack alignItems="center" justifyContent="center" gap="$2.5">
               <Loader2 size={16} />
-              <SizableText fontSize="$3">Signing you in…</SizableText>
-            </SizableText>
-            <Paragraph fontSize="$1" color="$color11">
+              <SizableText fontSize="$3" color="$color">Signing you in…</SizableText>
+            </XStack>
+            <Paragraph fontSize="$1" color="$color11" textAlign="center">
               Completing secure sign-in with Hanzo
             </Paragraph>
           </YStack>
         )}
-      </SizableText>
-    </SizableText>
+      </YStack>
+    </XStack>
   );
 }

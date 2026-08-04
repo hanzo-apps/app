@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText } from '@hanzo/gui';
+import { SizableText, YStack } from '@hanzo/gui';
 import { SyncableItem } from '@/lib/vfs/sync-types';
 
 interface SummaryBarProps {
@@ -24,8 +24,8 @@ export function SummaryBar({ items }: SummaryBarProps) {
   if (serverOnly > 0) parts.push(`${serverOnly} server only`);
 
   return (
-    <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">
-      {parts.join(', ')}
-    </SizableText>
+    <YStack>
+      <SizableText fontSize="$3" color="$color11">{parts.join(', ')}</SizableText>
+    </YStack>
   );
 }

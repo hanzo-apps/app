@@ -13,7 +13,7 @@ export default function BuildsIndexPageView({
   builds: Awaited<ReturnType<typeof listBuilds>>;
 }) {
   return (
-    <SizableText position="relative" minHeight="100%" backgroundColor="$background" color="$color" overflow="hidden" display="flex" flexDirection="column">
+    <YStack position="relative" minHeight="100%" backgroundColor="$background" overflow="hidden">
       <YStack pointerEvents="none" position="fixed" top={0} right={0} bottom={0} left={0} zIndex={0} overflow="hidden">
         <YStack position="absolute" left="50%" top="-14%" height={520} width={860} x="50%" borderRadius="$10" backgroundColor="$color" />
       </YStack>
@@ -49,14 +49,14 @@ export default function BuildsIndexPageView({
                   <Link
                     href={`/builds/${b.org}/${b.project}`}
                   ><XStack group flexWrap="wrap" alignItems="baseline" justifyContent="space-between" gap="$3" paddingVertical="$4.5" hoverStyle={{ backgroundColor: "$color3" }}>
-                    <SizableText minWidth={0}>
+                    <YStack minWidth={0}>
                       <SizableText numberOfLines={1} fontSize="$4" fontWeight="500">
                         {b.title || `${b.org}/${b.project}`}
                       </SizableText>
                       <SizableText marginTop="$1" fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={1.92} color="$color11">
                         {b.org}/{b.project} · {b.agent} · {b.turns} turns
                       </SizableText>
-                    </SizableText>
+                    </YStack>
                     <ArrowUpRight size={16} color="$color11" />
                   </XStack></Link>
                 </li>
@@ -66,6 +66,6 @@ export default function BuildsIndexPageView({
         </YStack>
       </YStack>
       <SiteFooter />
-    </SizableText>
+    </YStack>
   );
 }

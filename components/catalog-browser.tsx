@@ -158,13 +158,13 @@ function Card({
         </Paragraph>
       )}
 
-      <SizableText marginTop="auto" alignItems="center" gap="$3" paddingTop="$1" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color11" display="flex" flexDirection="row">
-        {e.language && <span>{e.language}</span>}
+      <XStack marginTop="auto" alignItems="center" gap="$3" paddingTop="$1">
+        {e.language && <SizableText fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color11">{e.language}</SizableText>}
         {!!e.stars && (
-          <SizableText alignItems="center" gap="$1">
+          <XStack alignItems="center" gap="$1">
             <Star size={12} strokeWidth={1.6} />
-            {e.stars}
-          </SizableText>
+            <SizableText fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color11">{e.stars}</SizableText>
+          </XStack>
         )}
         {/* Forkable is a DOOR, not an adjective. The card used to print the word
             next to a fork icon and then offer no way to fork anything — 143 of the
@@ -176,13 +176,13 @@ function Card({
         {e.forkable && e.repo && (
           <Anchor
             href={repoImportLink(e.repo)}
-            position="relative" zIndex={10} display="inline-flex" alignItems="center" gap="$1" hoverStyle={{ color: "$color" }}
+            position="relative" zIndex={10} display="inline-flex" alignItems="center" gap="$1" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color11" hoverStyle={{ color: "$color" }}
           >
             <GitFork size={12} strokeWidth={1.6} />
             fork
           </Anchor>
         )}
-        {e.url && e.kind === "site" && <span>live</span>}
+        {e.url && e.kind === "site" && <SizableText fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color11">live</SizableText>}
         {/* The trace out of a demo. z-10 puts it above the title's stretched
             hit area, so clicking "source" goes to the source. */}
         {e.repo && e.repo !== href && (
@@ -190,12 +190,12 @@ function Card({
             href={e.repo}
             target="_blank"
             rel="noreferrer"
-            position="relative" zIndex={10} hoverStyle={{ color: "$color", textDecorationLine: "underline" }}
+            position="relative" zIndex={10} fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="$color11" hoverStyle={{ color: "$color", textDecorationLine: "underline" }}
           >
             source
           </Anchor>
         )}
-      </SizableText>
+      </XStack>
     </YStack>
   );
 }

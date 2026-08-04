@@ -173,32 +173,32 @@ export function SqlEditor({ deploymentId, queryEndpoint }: SqlEditorProps) {
       {/* Results Section */}
       <YStack flex={1} overflow="hidden" borderWidth={1} borderRadius="$5">
         {result === null ? (
-          <SizableText height="100%" alignItems="center" justifyContent="center" color="$color11" fontSize="$3" display="flex" flexDirection="row">
-            Execute a query to see results
-          </SizableText>
+          <XStack height="100%" alignItems="center" justifyContent="center">
+            <SizableText color="$color11" fontSize="$3">Execute a query to see results</SizableText>
+          </XStack>
         ) : result.success ? (
           <YStack height="100%">
             {/* Status bar */}
-            <SizableText alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$2" backgroundColor="$color3" borderBottomWidth={1} fontSize="$3" display="flex" flexDirection="row">
+            <XStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$2" backgroundColor="$color3" borderBottomWidth={1}>
               <CheckCircle2 size={16} color="$green9" />
               {result.rows && result.rows.length > 0 ? (
-                <span>{result.rows.length} row{result.rows.length !== 1 ? 's' : ''}</span>
+                <SizableText fontSize="$3">{result.rows.length} row{result.rows.length !== 1 ? 's' : ''}</SizableText>
               ) : result.rowsAffected !== undefined && result.rowsAffected > 0 ? (
-                <span>{result.rowsAffected} row{result.rowsAffected !== 1 ? 's' : ''} affected</span>
+                <SizableText fontSize="$3">{result.rowsAffected} row{result.rowsAffected !== 1 ? 's' : ''} affected</SizableText>
               ) : (
-                <span>Query executed successfully</span>
+                <SizableText fontSize="$3">Query executed successfully</SizableText>
               )}
-              <SizableText color="$color11">({result.executionTime}ms)</SizableText>
-            </SizableText>
+              <SizableText color="$color11" fontSize="$3">({result.executionTime}ms)</SizableText>
+            </XStack>
 
             {/* Results table */}
             {result.columns && result.columns.length > 0 && result.rows ? (
               <YStack flex={1} overflow="scroll">
-                <SizableText width="100%" fontSize="$3" display="flex" flexDirection="column">
+                <YStack width="100%">
                   <YStack position="sticky" top="$0" backgroundColor="$color3">
                     <tr>
                       {result.columns.map((col, i) => (
-                        <SizableText key={i} textAlign="left" padding="$2" fontWeight="500" borderRightWidth={1} className="last-flat-r">
+                        <SizableText key={i} textAlign="left" padding="$2" fontWeight="500" fontSize="$3" borderRightWidth={1} className="last-flat-r">
                           {col}
                         </SizableText>
                       ))}
@@ -221,7 +221,7 @@ export function SqlEditor({ deploymentId, queryEndpoint }: SqlEditorProps) {
                       </YStack>
                     ))}
                   </tbody>
-                </SizableText>
+                </YStack>
               </YStack>
             ) : null}
           </YStack>

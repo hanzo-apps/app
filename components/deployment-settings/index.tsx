@@ -199,9 +199,9 @@ export function DeploymentSettingsModal({
           </YStack>
 
           <XStack alignItems="center" justifyContent="space-between" paddingTop="$4" borderTopWidth={1}>
-            <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">
-              {isDirty && <span>You have unsaved changes</span>}
-            </SizableText>
+            <YStack>
+              {isDirty && <SizableText fontSize="$3" color="$color11">You have unsaved changes</SizableText>}
+            </YStack>
             <XStack gap="$2">
               <Button variant="outline" onClick={handleClose} disabled={isSaving}>
                 Cancel

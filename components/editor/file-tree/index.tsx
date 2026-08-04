@@ -65,9 +65,9 @@ export function FileTree({
           const active = page.path === currentPage;
           const isRenaming = renaming === page.path;
           return (
-            <SizableText
+            <XStack
               key={page.path}
-              group alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1.5" fontSize={13} display="flex" flexDirection="row" {...{ backgroundColor: active ? "$color3" : undefined, color: active ? "$color" : "$color11", hoverStyle: active ? undefined : {"backgroundColor":"white","color":"$color"} }}
+              group alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1.5" backgroundColor={active ? "$color3" : undefined} hoverStyle={active ? undefined : { backgroundColor: "white" }}
             >
               <FileCode2 size={14} color="$color11" />
               {isRenaming ? (
@@ -89,7 +89,7 @@ export function FileTree({
                   minWidth={0} flex={1}
                   title={page.path}
                 >
-                  <SizableText flex={1} minWidth={0} numberOfLines={1} textAlign="left" fontFamily="$mono">{page.path}</SizableText>
+                  <SizableText flex={1} minWidth={0} numberOfLines={1} textAlign="left" fontFamily="$mono" fontSize={13} color={active ? "$color" : "$color11"} $group-hover={{ color: "$color" }}>{page.path}</SizableText>
                 </Button>
               )}
 
@@ -102,7 +102,7 @@ export function FileTree({
                   <Check size={12} />
                 </Button>
               ) : (
-                <SizableText flexShrink={0} alignItems="center" gap="$0.5" opacity={0} $group-hover={{ opacity: 1 }}>
+                <XStack flexShrink={0} alignItems="center" gap="$0.5" opacity={0} $group-hover={{ opacity: 1 }}>
                   <Button
                     type="button"
                     onClick={() => startRename(page.path)}
@@ -121,16 +121,16 @@ export function FileTree({
                       <Trash2 size={12} />
                     </Button>
                   )}
-                </SizableText>
+                </XStack>
               )}
-            </SizableText>
+            </XStack>
           );
         })}
         {pages.length === 0 && (
-          <SizableText flexDirection="column" alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$6" textAlign="center" display="flex">
+          <YStack alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$6">
             <X size={16} color="$color11" />
             <Paragraph fontSize={11} color="$color11">No files yet.</Paragraph>
-          </SizableText>
+          </YStack>
         )}
       </YStack>
     </YStack>

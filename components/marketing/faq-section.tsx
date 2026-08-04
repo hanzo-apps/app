@@ -70,9 +70,11 @@ export default function FaqSection({
                   </SizableText>
                 </Button>
                 {isOpen && (
-                  <SizableText paddingBottom="$5" paddingRight="$6" fontSize="$3" lineHeight={1.625} color="$color11" display="flex" flexDirection="column" $md={{ fontSize: "$4" }}>
-                    {it.a}
-                  </SizableText>
+                  <YStack paddingBottom="$5" paddingRight="$6">
+                    <SizableText fontSize="$3" lineHeight={1.625} color="$color11" $md={{ fontSize: "$4" }}>
+                      {it.a}
+                    </SizableText>
+                  </YStack>
                 )}
               </div>
             );

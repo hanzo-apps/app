@@ -74,16 +74,18 @@ export function ChatThread({
 function UserBubble({ text }: { text: string }) {
   return (
     <XStack justifyContent="flex-end">
-      <SizableText maxWidth="85%" whiteSpace="pre-wrap" borderRadius="$5" borderBottomRightRadius="$1" backgroundColor="$color4" paddingHorizontal="$3" paddingVertical="$1.5" fontSize={13} color="$color" display="flex" flexDirection="column">
-        {text}
-      </SizableText>
+      <YStack maxWidth="85%" borderRadius="$5" borderBottomRightRadius="$1" backgroundColor="$color4" paddingHorizontal="$3" paddingVertical="$1.5">
+        <SizableText whiteSpace="pre-wrap" fontSize={13} color="$color">
+          {text}
+        </SizableText>
+      </YStack>
     </XStack>
   );
 }
 
 function SystemLine({ text }: { text: string }) {
   return (
-    <SizableText paddingVertical="$0.5" textAlign="center" fontSize={11.5} color="$color11" display="flex" flexDirection="column">{text}</SizableText>
+    <YStack paddingVertical="$0.5"><SizableText textAlign="center" fontSize={11.5} color="$color11">{text}</SizableText></YStack>
   );
 }
 
@@ -99,14 +101,16 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
   if (kind === "chat") {
     if (error) {
       return (
-        <SizableText fontSize={12.5} color="$red8" display="flex" flexDirection="column">
-          {text || "Something went wrong — please try again."}
-        </SizableText>
+        <YStack>
+          <SizableText fontSize={12.5} color="$red8">
+            {text || "Something went wrong — please try again."}
+          </SizableText>
+        </YStack>
       );
     }
     return (
       <XStack width="100%" justifyContent="flex-start">
-        <SizableText maxWidth="95%" borderRadius="$5" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1.5" fontSize={13} color="$color" display="flex" flexDirection="column">
+        <YStack maxWidth="95%" borderRadius="$5" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1.5">
           {text ? (
             <XStack flexWrap="wrap" alignItems="flex-end">
               {/* Render the assistant reply as formatted markdown (headings, lists,
@@ -120,7 +124,7 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
           ) : (
             <SizableText fontSize={13} className="thread-shimmer-text">Thinking…</SizableText>
           )}
-        </SizableText>
+        </YStack>
       </XStack>
     );
   }
@@ -141,11 +145,13 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
           live={planning}
         >
           {hasPlanBody ? (
-            <SizableText maxHeight={220} whiteSpace="pre-line" fontSize={12.5} lineHeight={1.625} color="$color11" overflow="scroll" display="flex" flexDirection="column">
-              {plan}
-            </SizableText>
+            <YStack maxHeight={220} overflow="scroll">
+              <SizableText whiteSpace="pre-line" fontSize={12.5} lineHeight={1.625} color="$color11">
+                {plan}
+              </SizableText>
+            </YStack>
           ) : (
-            <SizableText fontSize={12.5} color="$color11" display="flex" flexDirection="column">Analyzing your request…</SizableText>
+            <YStack><SizableText fontSize={12.5} color="$color11">Analyzing your request…</SizableText></YStack>
           )}
         </CollapsibleSection>
       )}
@@ -163,17 +169,19 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
               <ActivityItems labels={files} settled />
             </CollapsibleSection>
           )}
-          <SizableText alignItems="center" gap="$1.5" fontSize={12} color="$color11" display="flex" flexDirection="row">
+          <XStack alignItems="center" gap="$1.5">
             <Check size={14} color="var(--brand-accent-muted)" />
-            <span>{text || "Done"}</span>
-          </SizableText>
+            <SizableText fontSize={12} color="$color11">{text || "Done"}</SizableText>
+          </XStack>
         </>
       )}
 
       {error && (
-        <SizableText fontSize={12.5} color="$red8" display="flex" flexDirection="column">
-          {text || "Something went wrong — please try again."}
-        </SizableText>
+        <YStack>
+          <SizableText fontSize={12.5} color="$red8">
+            {text || "Something went wrong — please try again."}
+          </SizableText>
+        </YStack>
       )}
     </YStack>
   );
@@ -232,19 +240,19 @@ function ActivityItems({ labels, settled = false }: { labels: string[]; settled?
         // settled every line is a ✓. Concise task states — never a spinner.
         const active = !settled && i === shown.length - 1;
         return (
-          <SizableText key={`${i}-${label}`} alignItems="center" gap="$2" fontSize={12}>
+          <XStack key={`${i}-${label}`} alignItems="center" gap="$2">
             {active ? (
-              <SizableText position="relative" width="$2" height="$2" flexShrink={0} alignItems="center" justifyContent="center">
+              <XStack position="relative" width="$2" height="$2" flexShrink={0} alignItems="center" justifyContent="center">
                 <SizableText position="absolute" width="$2" height="$2" borderRadius="$10" backgroundColor="var(--brand-accent)" opacity={0.6} />
                 <SizableText position="relative" width="$1.5" height="$1.5" borderRadius="$10" backgroundColor="var(--brand-accent)" />
-              </SizableText>
+              </XStack>
             ) : (
               <Check size={12} color="$color11" />
             )}
-            <SizableText {...{ color: active ? undefined : "$color11" }} className="thread-shimmer-text">
+            <SizableText fontSize={12} {...{ color: active ? undefined : "$color11" }} className="thread-shimmer-text">
               {label}
             </SizableText>
-          </SizableText>
+          </XStack>
         );
       })}
     </YStack>

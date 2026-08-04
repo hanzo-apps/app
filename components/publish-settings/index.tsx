@@ -171,9 +171,11 @@ export function PublishSettingsModal({
           </Tabs>
 
           <XStack justifyContent="space-between" alignItems="center" paddingTop="$4" borderTopWidth={1}>
-            <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">
-              {isDirty && '• Unsaved changes'}
-            </SizableText>
+            <YStack>
+              <SizableText fontSize="$3" color="$color11">
+                {isDirty && '• Unsaved changes'}
+              </SizableText>
+            </YStack>
             <XStack gap="$2">
               <Button variant="outline" onClick={handleClose} disabled={isSaving}>
                 Cancel

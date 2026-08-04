@@ -244,16 +244,14 @@ function ProjectGrid({
             <YStack padding="$4">
               <H3 numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{p.name}</H3>
               <XStack marginTop="$1.5" alignItems="center" gap="$3">
-                <SizableText
-                  alignItems="center" gap="$1" fontSize={11} textTransform="uppercase" letterSpacing={0.4} color={st.text}
-                >
+                <XStack alignItems="center" gap="$1">
                   <Circle size={6} />
-                  {st.label}
-                </SizableText>
-                <SizableText alignItems="center" gap="$1" fontSize={11} color="$color11">
+                  <SizableText fontSize={11} textTransform="uppercase" letterSpacing={0.4} color={st.text}>{st.label}</SizableText>
+                </XStack>
+                <XStack alignItems="center" gap="$1">
                   <Clock size={12} />
-                  {relativeTime(p.updatedAtIso)}
-                </SizableText>
+                  <SizableText fontSize={11} color="$color11">{relativeTime(p.updatedAtIso)}</SizableText>
+                </XStack>
               </XStack>
             </YStack>
           </Button>
@@ -301,12 +299,12 @@ function EmptyState({
   action?: { label: string; href: string };
 }) {
   return (
-    <SizableText borderRadius="$8" borderWidth={1} borderStyle="dashed" borderColor="$borderColor" backgroundColor="$background" padding="$8" textAlign="center" display="flex" flexDirection="column">
+    <YStack borderRadius="$8" borderWidth={1} borderStyle="dashed" borderColor="$borderColor" backgroundColor="$background" padding="$8">
       <XStack alignSelf="center" marginBottom="$4" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$6" backgroundColor="$color3">
         <Icon size={24} color="var(--muted-foreground)" />
       </XStack>
-      <H3 fontWeight="500" color="$color">{title}</H3>
-      <Paragraph alignSelf="center" marginTop="$1" maxWidth={448} fontSize="$3" color="$color11">{body}</Paragraph>
+      <H3 fontWeight="500" color="$color" textAlign="center">{title}</H3>
+      <Paragraph alignSelf="center" marginTop="$1" maxWidth={448} fontSize="$3" color="$color11" textAlign="center">{body}</Paragraph>
       {action && (
         <Anchor
           href={action.href}
@@ -318,6 +316,6 @@ function EmptyState({
           <ArrowUpRight size={14} />
         </Anchor>
       )}
-    </SizableText>
+    </YStack>
   );
 }

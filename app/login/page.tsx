@@ -61,7 +61,7 @@ export default function LoginPage() {
   }, [ideas.length]);
 
   return (
-    <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
+    <YStack minHeight="100%" backgroundColor="$background">
       {/* Navigation */}
       <YStack position="absolute" top="$0" left="$0" right="$0" zIndex={50}>
         <XStack maxWidth={1400} alignSelf="center" paddingHorizontal="$5" paddingVertical="$4.5" alignItems="center" justifyContent="space-between">
@@ -75,7 +75,7 @@ export default function LoginPage() {
       <XStack minHeight="100%">
         {/* Left Side - Redirecting to IAM */}
         <XStack width="100%" alignItems="center" justifyContent="center" paddingHorizontal="$5" paddingVertical="$11" $lg={{ width: "50%" }}>
-          <SizableText width="100%" maxWidth={448} textAlign="center" display="flex" flexDirection="column">
+          <YStack width="100%" maxWidth={448}>
             <XStack justifyContent="center" marginBottom="$7">
               <HanzoBrand
                 color="var(--foreground)"
@@ -84,13 +84,13 @@ export default function LoginPage() {
   />
             </XStack>
 
-            <H1 fontSize="$11" fontWeight="500" marginBottom="$4" letterSpacing={-0.4}>Welcome back</H1>
-            <Paragraph color="$color11" fontSize="$6" marginBottom="$7">Taking you to Hanzo ID to sign in</Paragraph>
+            <H1 fontSize="$11" fontWeight="500" marginBottom="$4" letterSpacing={-0.4} textAlign="center">Welcome back</H1>
+            <Paragraph color="$color11" fontSize="$6" marginBottom="$7" textAlign="center">Taking you to Hanzo ID to sign in</Paragraph>
 
-            <SizableText alignItems="center" justifyContent="center" gap="$2" color="$color11" marginBottom="$8" display="flex" flexDirection="row">
+            <XStack alignItems="center" justifyContent="center" gap="$2" marginBottom="$8">
               <Loader2 size={20} />
-              <Paragraph fontSize="$3">Redirecting to secure sign in…</Paragraph>
-            </SizableText>
+              <Paragraph fontSize="$3" color="$color11">Redirecting to secure sign in…</Paragraph>
+            </XStack>
 
             {/* Desktop App Options */}
             <YStack rowGap="$4">
@@ -137,7 +137,7 @@ export default function LoginPage() {
                 Mobile coming soon • Local AI models included
               </Paragraph>
             </YStack>
-          </SizableText>
+          </YStack>
         </XStack>
 
         {/* Right Side - Animated Ideas */}
@@ -190,31 +190,31 @@ export default function LoginPage() {
 
               <YStack marginTop="$5" paddingTop="$5" borderTopWidth={1} borderColor="$borderColor">
                 <XStack alignItems="center" justifyContent="flex-end">
-                  <SizableText alignItems="center" gap="$2" paddingHorizontal="$4.5" paddingVertical="$2.5" backgroundColor="$color12" color="$background" borderRadius="$6" fontWeight="500" fontSize="$3" display="flex" flexDirection="row">
+                  <XStack alignItems="center" gap="$2" paddingHorizontal="$4.5" paddingVertical="$2.5" backgroundColor="$color12" borderRadius="$6">
                     <Zap size={14} />
-                    Generate
-                  </SizableText>
+                    <SizableText color="$background" fontWeight="500" fontSize="$3">Generate</SizableText>
+                  </XStack>
                 </XStack>
               </YStack>
             </YStack>
 
             <YStack gap="$5" marginTop="$7">
-              <SizableText textAlign="center" display="flex" flexDirection="column">
-                <Paragraph fontSize="$10" fontWeight="300" color="$color">10k+</Paragraph>
-                <Paragraph fontSize="$1" color="$color11" marginTop="$1">Apps built</Paragraph>
-              </SizableText>
-              <SizableText textAlign="center" display="flex" flexDirection="column">
-                <Paragraph fontSize="$10" fontWeight="300" color="$color">50ms</Paragraph>
-                <Paragraph fontSize="$1" color="$color11" marginTop="$1">Response time</Paragraph>
-              </SizableText>
-              <SizableText textAlign="center" display="flex" flexDirection="column">
-                <Paragraph fontSize="$10" fontWeight="300" color="$color">400+</Paragraph>
-                <Paragraph fontSize="$1" color="$color11" marginTop="$1">AI models</Paragraph>
-              </SizableText>
+              <YStack>
+                <Paragraph fontSize="$10" fontWeight="300" color="$color" textAlign="center">10k+</Paragraph>
+                <Paragraph fontSize="$1" color="$color11" marginTop="$1" textAlign="center">Apps built</Paragraph>
+              </YStack>
+              <YStack>
+                <Paragraph fontSize="$10" fontWeight="300" color="$color" textAlign="center">50ms</Paragraph>
+                <Paragraph fontSize="$1" color="$color11" marginTop="$1" textAlign="center">Response time</Paragraph>
+              </YStack>
+              <YStack>
+                <Paragraph fontSize="$10" fontWeight="300" color="$color" textAlign="center">400+</Paragraph>
+                <Paragraph fontSize="$1" color="$color11" marginTop="$1" textAlign="center">AI models</Paragraph>
+              </YStack>
             </YStack>
           </YStack>
         </YStack>
       </XStack>
-    </SizableText>
+    </YStack>
   );
 }

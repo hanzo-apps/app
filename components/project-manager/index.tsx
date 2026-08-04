@@ -508,10 +508,10 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
   if (loading && !initialLoadComplete) {
     return (
       <XStack alignItems="center" justifyContent="center" height="100%">
-        <SizableText textAlign="center" display="flex" flexDirection="column">
+        <YStack>
           <YStack borderRadius="$10" height="$8" width="$8" borderBottomWidth={2} borderColor="$color12" alignSelf="center"></YStack>
           <Paragraph marginTop="$4">Loading projects...</Paragraph>
-        </SizableText>
+        </YStack>
       </XStack>
     );
   }
@@ -601,7 +601,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
             <YStack flex={1} paddingHorizontal="$4" paddingTop="$3" paddingBottom="$4" $sm={{ paddingHorizontal: "$5", paddingTop: "$3", paddingBottom: "$5" }}>
               <YStack alignSelf="center" maxWidth={1280}>
                 {filteredProjects.length === 0 ? (
-                  <SizableText textAlign="center" paddingVertical="$8" display="flex" flexDirection="column">
+                  <YStack paddingVertical="$8">
                     <FolderOpen size={48} color="$color11" />
                     <H2 fontSize="$7" fontWeight="500" marginBottom="$2">
                       {searchQuery ? 'No projects found' : 'No projects yet'}
@@ -623,7 +623,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
                         </Button>
                       </XStack>
                     )}
-                  </SizableText>
+                  </YStack>
                 ) : (
                   <YStack
                     {...{ gap: viewMode === 'grid' ? "$4" : undefined, rowGap: viewMode === 'grid' ? undefined : "$3" }}
@@ -755,16 +755,18 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
                 }}
               >
                 <SelectTrigger id="runtime" marginTop="$2" width="100%">
-                  <SizableText numberOfLines={1} flex={1} textAlign="left" display="flex" flexDirection="column">
-                    {getProjectRuntimes().find(r => r.value === newProjectRuntime)?.label}
-                  </SizableText>
+                  <YStack flex={1}>
+                    <SizableText numberOfLines={1}>
+                      {getProjectRuntimes().find(r => r.value === newProjectRuntime)?.label}
+                    </SizableText>
+                  </YStack>
                 </SelectTrigger>
                 <SelectContent>
                   {getProjectRuntimes().map(rt => (
                     <SelectItem key={rt.value} value={rt.value}>
                       <YStack gap="$0.5">
-                        <SizableText fontWeight="500" display="flex" flexDirection="column">{rt.label}</SizableText>
-                        <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">{rt.description}</SizableText>
+                        <YStack><SizableText fontWeight="500">{rt.label}</SizableText></YStack>
+                        <YStack><SizableText fontSize="$1" color="$color11">{rt.description}</SizableText></YStack>
                       </YStack>
                     </SelectItem>
                   ))}
@@ -779,9 +781,11 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
                 onValueChange={setNewProjectTemplate}
               >
                 <SelectTrigger id="template" marginTop="$2" width="100%">
-                  <SizableText numberOfLines={1} flex={1} textAlign="left" display="flex" flexDirection="column">
-                    {getTemplateDisplayName(newProjectTemplate)}
-                  </SizableText>
+                  <YStack flex={1}>
+                    <SizableText numberOfLines={1}>
+                      {getTemplateDisplayName(newProjectTemplate)}
+                    </SizableText>
+                  </YStack>
                 </SelectTrigger>
                 <SelectContent>
                   {filteredBuiltInTemplates.length > 0 && (
@@ -789,8 +793,8 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
                       {filteredBuiltInTemplates.map(template => (
                         <SelectItem key={template.id} value={template.id}>
                           <YStack gap="$0.5">
-                            <SizableText fontWeight="500" display="flex" flexDirection="column">{template.name}</SizableText>
-                            <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">{template.description}</SizableText>
+                            <YStack><SizableText fontWeight="500">{template.name}</SizableText></YStack>
+                            <YStack><SizableText fontSize="$1" color="$color11">{template.description}</SizableText></YStack>
                           </YStack>
                         </SelectItem>
                       ))}
@@ -804,8 +808,8 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
                         {filtered.map(template => (
                           <SelectItem key={template.id} value={`custom:${template.id}`}>
                             <YStack gap="$0.5">
-                              <SizableText fontWeight="500" display="flex" flexDirection="column">{template.name}</SizableText>
-                              <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">{template.description}</SizableText>
+                              <YStack><SizableText fontWeight="500">{template.name}</SizableText></YStack>
+                              <YStack><SizableText fontSize="$1" color="$color11">{template.description}</SizableText></YStack>
                             </YStack>
                           </SelectItem>
                         ))}

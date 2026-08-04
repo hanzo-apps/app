@@ -277,17 +277,17 @@ Start writing your content above!
       {/* Status Bar */}
       <YStack borderTopWidth={1}>
         <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$2">
-          <SizableText alignItems="center" justifyContent="space-between" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+          <XStack alignItems="center" justifyContent="space-between">
             <XStack alignItems="center" gap="$4">
-              <span>{markdown.length} characters</span>
-              <span>{markdown.split(/\s+/).filter(w => w).length} words</span>
-              <span>{markdown.split("\n").length} lines</span>
+              <SizableText fontSize="$1" color="$color11">{markdown.length} characters</SizableText>
+              <SizableText fontSize="$1" color="$color11">{markdown.split(/\s+/).filter(w => w).length} words</SizableText>
+              <SizableText fontSize="$1" color="$color11">{markdown.split("\n").length} lines</SizableText>
             </XStack>
             <XStack alignItems="center" gap="$2">
               <FileText size={12} />
-              <span>Markdown</span>
+              <SizableText fontSize="$1" color="$color11">Markdown</SizableText>
             </XStack>
-          </SizableText>
+          </XStack>
         </YStack>
       </YStack>
     </YStack>

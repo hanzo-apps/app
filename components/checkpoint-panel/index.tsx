@@ -87,10 +87,10 @@ export function CheckpointPanel({
       {/* Checkpoint list */}
       <YStack flex={1} overflow="scroll">
         {checkpoints.length === 0 ? (
-          <SizableText flexDirection="column" alignItems="center" justifyContent="center" height="100%" color="$color11" gap="$2" padding="$4" display="flex">
+          <YStack alignItems="center" justifyContent="center" height="100%" gap="$2" padding="$4">
             <Inbox size={32} />
-            <SizableText fontSize="$1" textAlign="center">No checkpoints yet. Checkpoints are created automatically when the AI makes changes.</SizableText>
-          </SizableText>
+            <SizableText fontSize="$1" textAlign="center" color="$color11">No checkpoints yet. Checkpoints are created automatically when the AI makes changes.</SizableText>
+          </YStack>
         ) : (
           <YStack padding="$2" rowGap="$1.5">
             {checkpoints.map((cp) => {
@@ -98,9 +98,9 @@ export function CheckpointPanel({
               const hasLinkedTurn = linkedCheckpointIds.has(cp.id);
 
               return (
-                <SizableText
+                <YStack
                   key={cp.id}
-                  borderRadius="$3" borderWidth={1} paddingHorizontal="$2.5" paddingVertical="$2" fontSize="$1" display="flex" flexDirection="column" {...{ borderColor: isCurrent ? "$color12" : "$borderColor", backgroundColor: isCurrent ? "$color12" : "$background", hoverStyle: isCurrent ? undefined : {"backgroundColor":"$color3"} }}
+                  borderRadius="$3" borderWidth={1} paddingHorizontal="$2.5" paddingVertical="$2" {...{ borderColor: isCurrent ? "$color12" : "$borderColor", backgroundColor: isCurrent ? "$color12" : "$background", hoverStyle: isCurrent ? undefined : {"backgroundColor":"$color3"} }}
                 >
                   {/* Top row: badge + timestamp */}
                   <XStack alignItems="center" gap="$1.5" marginBottom="$1">
@@ -150,7 +150,7 @@ export function CheckpointPanel({
                       <SizableText fontSize={10} color="$color11">Restore</SizableText>
                     </Button>
                   </XStack>
-                </SizableText>
+                </YStack>
               );
             })}
           </YStack>

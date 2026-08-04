@@ -32,7 +32,7 @@ export default function SignupPage() {
   };
 
   return (
-    <SizableText minHeight="100%" backgroundColor="$background" color="$color" flexDirection="column" display="flex">
+    <YStack minHeight="100%" backgroundColor="$background">
       {/* Navigation */}
       <YStack borderBottomWidth={1} borderColor="$borderColor">
         <XStack maxWidth={1280} alignSelf="center" paddingHorizontal="$4" paddingVertical="$4" alignItems="center" justifyContent="space-between" $md={{ paddingHorizontal: "$6" }}>
@@ -111,11 +111,11 @@ export default function SignupPage() {
                 <XStack position="absolute" top={0} right={0} bottom={0} left={0} alignItems="center">
                   <YStack width="100%" borderTopWidth={1} borderColor="$borderColor"></YStack>
                 </XStack>
-                <SizableText position="relative" justifyContent="center" fontSize="$1" display="flex" flexDirection="row">
-                  <SizableText backgroundColor="$background" paddingHorizontal="$2" color="$color11">
+                <XStack position="relative" justifyContent="center">
+                  <SizableText backgroundColor="$background" paddingHorizontal="$2" color="$color11" fontSize="$1">
                     No credit card required
                   </SizableText>
-                </SizableText>
+                </XStack>
               </YStack>
 
               {/* Trust badges */}
@@ -131,8 +131,8 @@ export default function SignupPage() {
               </XStack>
 
               {/* Footer Links */}
-              <SizableText paddingTop="$4" textAlign="center" rowGap="$2" display="flex" flexDirection="column">
-                <Paragraph fontSize="$3" color="$color11">
+              <YStack paddingTop="$4" rowGap="$2">
+                <Paragraph fontSize="$3" color="$color11" textAlign="center">
                   Already have an account?{' '}
                   <Link href="/login"><SizableText color="$color" textDecorationLine="underline" hoverStyle={{ color: "$color" }}>
                     Sign in
@@ -144,7 +144,7 @@ export default function SignupPage() {
                     These were `/terms` and `/privacy` — routes this app does not
                     have, so both 404'd and signup asked people to accept terms
                     they could not open. */}
-                <Paragraph fontSize="$1" color="$color11">
+                <Paragraph fontSize="$1" color="$color11" textAlign="center">
                   By signing up, you agree to our{' '}
                   <Anchor
                     href="https://hanzo.ai/terms"
@@ -166,11 +166,11 @@ export default function SignupPage() {
                     Privacy Policy
                   </Anchor>
                 </Paragraph>
-              </SizableText>
+              </YStack>
             </CardContent>
           </Card>
         </YStack>
       </XStack>
-    </SizableText>
+    </YStack>
   );
 }

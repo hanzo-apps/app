@@ -203,7 +203,7 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
         </XStack>
 
         {storage && (
-        <SizableText borderBottomWidth={1} paddingHorizontal="$5" paddingVertical="$2" backgroundColor="$color3" fontSize="$3" display="flex" flexDirection="column">
+        <SizableText borderBottomWidth={1} paddingHorizontal="$5" paddingVertical="$2" backgroundColor="$color3" fontSize="$3">
           <SizableText color="$color11">Storage:</SizableText>{' '}
           <SizableText fontWeight="500">{storage.totalMB.toFixed(2)} MB</SizableText>
           {' • '}
@@ -250,34 +250,34 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
               )}
 
               {!loading && notPublished && (
-                <SizableText flexDirection="column" alignItems="center" justifyContent="center" height={384} textAlign="center" display="flex">
+                <YStack alignItems="center" justifyContent="center" height={384}>
                   <BarChart3 size={64} color="$color11" />
-                  <H3 fontSize="$6" fontWeight="500" marginBottom="$2">Analytics Not Available</H3>
-                  <Paragraph color="$color11" maxWidth={448}>
+                  <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">Analytics Not Available</H3>
+                  <Paragraph color="$color11" maxWidth={448} textAlign="center">
                     Analytics data will be available after you publish your deployment for the first time.
                     The analytics database is created when the deployment is published.
                   </Paragraph>
-                </SizableText>
+                </YStack>
               )}
 
               {!loading && !notPublished && overview && (
                 <>
                   <YStack gap="$4">
                     <YStack borderWidth={1} borderRadius="$5" padding="$4">
-                      <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">Total Pageviews</SizableText>
-                      <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{overview.totalPageviews.toLocaleString()}</SizableText>
+                      <SizableText fontSize="$3" color="$color11">Total Pageviews</SizableText>
+                      <SizableText fontSize="$8" fontWeight="500">{overview.totalPageviews.toLocaleString()}</SizableText>
                     </YStack>
                     <YStack borderWidth={1} borderRadius="$5" padding="$4">
-                      <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">Unique Visitors</SizableText>
-                      <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{overview.uniqueVisitors.toLocaleString()}</SizableText>
+                      <SizableText fontSize="$3" color="$color11">Unique Visitors</SizableText>
+                      <SizableText fontSize="$8" fontWeight="500">{overview.uniqueVisitors.toLocaleString()}</SizableText>
                     </YStack>
                     <YStack borderWidth={1} borderRadius="$5" padding="$4">
-                      <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">Avg. Time on Site</SizableText>
-                      <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{formatDuration(overview.averageTimeOnSite)}</SizableText>
+                      <SizableText fontSize="$3" color="$color11">Avg. Time on Site</SizableText>
+                      <SizableText fontSize="$8" fontWeight="500">{formatDuration(overview.averageTimeOnSite)}</SizableText>
                     </YStack>
                     <YStack borderWidth={1} borderRadius="$5" padding="$4">
-                      <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">Bounce Rate</SizableText>
-                      <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{(overview.bounceRate * 100).toFixed(1)}%</SizableText>
+                      <SizableText fontSize="$3" color="$color11">Bounce Rate</SizableText>
+                      <SizableText fontSize="$8" fontWeight="500">{(overview.bounceRate * 100).toFixed(1)}%</SizableText>
                     </YStack>
                   </YStack>
 
@@ -316,12 +316,12 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
 
                         return (
                           <div key={device}>
-                            <SizableText justifyContent="space-between" fontSize="$3" marginBottom="$1" display="flex" flexDirection="row">
-                              <SizableText textTransform="capitalize">{device}</SizableText>
-                              <SizableText color="$color11">
+                            <XStack justifyContent="space-between" marginBottom="$1">
+                              <SizableText textTransform="capitalize" fontSize="$3">{device}</SizableText>
+                              <SizableText color="$color11" fontSize="$3">
                                 {count.toLocaleString()} ({percentage.toFixed(1)}%)
                               </SizableText>
-                            </SizableText>
+                            </XStack>
                             <YStack height="$5" backgroundColor="$color3" borderRadius="$2" overflow="hidden">
                               <YStack height="100%" backgroundColor="$color12" style={{ width: `${percentage}%` }} />
                             </YStack>
@@ -336,13 +336,13 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
 
             <TabsContent value="heatmaps" padding="$5">
               {notPublished ? (
-                <SizableText flexDirection="column" alignItems="center" justifyContent="center" height={384} textAlign="center" display="flex">
+                <YStack alignItems="center" justifyContent="center" height={384}>
                   <MousePointerClick size={64} color="$color11" />
-                  <H3 fontSize="$6" fontWeight="500" marginBottom="$2">Heatmaps Not Available</H3>
-                  <Paragraph color="$color11" maxWidth={448}>
+                  <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">Heatmaps Not Available</H3>
+                  <Paragraph color="$color11" maxWidth={448} textAlign="center">
                     Heatmap data will be collected after you publish your deployment.
                   </Paragraph>
-                </SizableText>
+                </YStack>
               ) : (
                 <HeatmapViewer deploymentId={deployment.id} pages={pages} />
               )}
@@ -350,13 +350,13 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
 
             <TabsContent value="sessions" padding="$5">
               {notPublished ? (
-                <SizableText flexDirection="column" alignItems="center" justifyContent="center" height={384} textAlign="center" display="flex">
+                <YStack alignItems="center" justifyContent="center" height={384}>
                   <Users size={64} color="$color11" />
-                  <H3 fontSize="$6" fontWeight="500" marginBottom="$2">Sessions Not Available</H3>
-                  <Paragraph color="$color11" maxWidth={448}>
+                  <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">Sessions Not Available</H3>
+                  <Paragraph color="$color11" maxWidth={448} textAlign="center">
                     Session data will be collected after you publish your deployment.
                   </Paragraph>
-                </SizableText>
+                </YStack>
               ) : (
                 <SessionViewer deploymentId={deployment.id} />
               )}
@@ -364,13 +364,13 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
 
             <TabsContent value="engagement" padding="$5">
               {notPublished ? (
-                <SizableText flexDirection="column" alignItems="center" justifyContent="center" height={384} textAlign="center" display="flex">
+                <YStack alignItems="center" justifyContent="center" height={384}>
                   <Activity size={64} color="$color11" />
-                  <H3 fontSize="$6" fontWeight="500" marginBottom="$2">Engagement Metrics Not Available</H3>
-                  <Paragraph color="$color11" maxWidth={448}>
+                  <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">Engagement Metrics Not Available</H3>
+                  <Paragraph color="$color11" maxWidth={448} textAlign="center">
                     Engagement data will be collected after you publish your deployment.
                   </Paragraph>
-                </SizableText>
+                </YStack>
               ) : (
                 <EngagementMetrics deploymentId={deployment.id} />
               )}

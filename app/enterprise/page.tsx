@@ -42,11 +42,11 @@ export default function EnterprisePage() {
   ];
 
   return (
-    <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
+    <YStack minHeight="100%" backgroundColor="$background">
       <Header />
 
       {/* Hero Section */}
-      <SizableText paddingHorizontal="$4" paddingVertical="$10" textAlign="center" display="flex" flexDirection="column" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
+      <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
         <YStack maxWidth={896} alignSelf="center">
           <Badge className="mb-4">
             <Building size={16} />
@@ -71,7 +71,7 @@ export default function EnterprisePage() {
             </Button>
           </YStack>
         </YStack>
-      </SizableText>
+      </YStack>
 
       {/* Trust Section — real Techstars '17 + infra-partner proof (shared with landing) */}
       <LogoWall />
@@ -79,14 +79,14 @@ export default function EnterprisePage() {
       {/* Features Grid */}
       <YStack paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6" }}>
         <YStack maxWidth={1280} alignSelf="center">
-          <SizableText textAlign="center" marginBottom="$10" display="flex" flexDirection="column">
+          <YStack marginBottom="$10">
             <H2 fontSize="$10" fontWeight="500" marginBottom="$4" $md={{ fontSize: "$11" }}>
               Everything you need for enterprise AI
             </H2>
             <Paragraph fontSize="$6" color="$color11" maxWidth={672} alignSelf="center">
               Built from the ground up with enterprise requirements in mind
             </Paragraph>
-          </SizableText>
+          </YStack>
 
           <YStack gap="$6">
             {features.map(feature => (
@@ -120,29 +120,29 @@ export default function EnterprisePage() {
                 <XStack alignItems="flex-start" gap="$3">
                   <CheckCircle2 size={24} color="$green8" />
                   <div>
-                    <SizableText fontWeight="500" marginBottom="$1" display="flex" flexDirection="column">SOC 2 Type II — Audit in Progress</SizableText>
-                    <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">Independent Type II audit underway; report available under NDA on completion</SizableText>
+                    <YStack marginBottom="$1"><SizableText fontWeight="500">SOC 2 Type II — Audit in Progress</SizableText></YStack>
+                    <YStack><SizableText fontSize="$3" color="$color11">Independent Type II audit underway; report available under NDA on completion</SizableText></YStack>
                   </div>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
                   <CheckCircle2 size={24} color="$green8" />
                   <div>
-                    <SizableText fontWeight="500" marginBottom="$1" display="flex" flexDirection="column">GDPR & CCPA Compliant</SizableText>
-                    <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">Full compliance with global data privacy regulations</SizableText>
+                    <YStack marginBottom="$1"><SizableText fontWeight="500">GDPR & CCPA Compliant</SizableText></YStack>
+                    <YStack><SizableText fontSize="$3" color="$color11">Full compliance with global data privacy regulations</SizableText></YStack>
                   </div>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
                   <CheckCircle2 size={24} color="$green8" />
                   <div>
-                    <SizableText fontWeight="500" marginBottom="$1" display="flex" flexDirection="column">SSO, RBAC & Audit Logs</SizableText>
-                    <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">SAML single sign-on, role-based access control, and a full audit trail</SizableText>
+                    <YStack marginBottom="$1"><SizableText fontWeight="500">SSO, RBAC & Audit Logs</SizableText></YStack>
+                    <YStack><SizableText fontSize="$3" color="$color11">SAML single sign-on, role-based access control, and a full audit trail</SizableText></YStack>
                   </div>
                 </XStack>
                 <XStack alignItems="flex-start" gap="$3">
                   <CheckCircle2 size={24} color="$green8" />
                   <div>
-                    <SizableText fontWeight="500" marginBottom="$1" display="flex" flexDirection="column">End-to-end Encryption</SizableText>
-                    <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">Your data is encrypted at rest and in transit</SizableText>
+                    <YStack marginBottom="$1"><SizableText fontWeight="500">End-to-end Encryption</SizableText></YStack>
+                    <YStack><SizableText fontSize="$3" color="$color11">Your data is encrypted at rest and in transit</SizableText></YStack>
                   </div>
                 </XStack>
               </YStack>
@@ -188,7 +188,7 @@ export default function EnterprisePage() {
       </YStack>
 
       {/* CTA Section */}
-      <SizableText paddingHorizontal="$4" paddingVertical="$11" textAlign="center" display="flex" flexDirection="column" $md={{ paddingHorizontal: "$6" }}>
+      <YStack paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6" }}>
         <YStack maxWidth={896} alignSelf="center">
           <H2 fontSize="$10" fontWeight="500" marginBottom="$5" $md={{ fontSize: "$11" }}>
             Ready to transform your business with AI?
@@ -201,9 +201,9 @@ export default function EnterprisePage() {
             <ArrowRight size={20} />
           </Button>
         </YStack>
-      </SizableText>
+      </YStack>
 
       <SiteFooter />
-    </SizableText>
+    </YStack>
   );
 }

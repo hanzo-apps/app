@@ -112,18 +112,18 @@ export default function CryptoPortfolio() {
               <DollarSign size={16} color="$color11" />
             </CardHeader>
             <CardContent>
-              <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">${portfolio.totalValue.toLocaleString()}</SizableText>
-              <SizableText alignItems="center" gap="$1" fontSize="$1" display="flex" flexDirection="row">
+              <YStack><SizableText fontSize="$8" fontWeight="500">${portfolio.totalValue.toLocaleString()}</SizableText></YStack>
+              <XStack alignItems="center" gap="$1">
                 {portfolio.dailyChangePercent > 0 ? (
                   <TrendingUp size={12} color="$green10" />
                 ) : (
                   <TrendingDown size={12} color="$red10" />
                 )}
-                <SizableText {...{ color: portfolio.dailyChangePercent > 0 ? "$green10" : "$red10" }}>
+                <SizableText fontSize="$1" {...{ color: portfolio.dailyChangePercent > 0 ? "$green10" : "$red10" }}>
                   ${Math.abs(portfolio.dailyChange).toLocaleString()} ({portfolio.dailyChangePercent}%)
                 </SizableText>
-                <SizableText color="$color11">today</SizableText>
-              </SizableText>
+                <SizableText fontSize="$1" color="$color11">today</SizableText>
+              </XStack>
             </CardContent>
           </Card>
 
@@ -133,12 +133,16 @@ export default function CryptoPortfolio() {
               <TrendingUp size={16} color="$color11" />
             </CardHeader>
             <CardContent>
-              <SizableText fontSize="$8" fontWeight="500" color="$green10" display="flex" flexDirection="column">
-                +${portfolio.totalProfit.toLocaleString()}
-              </SizableText>
-              <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
-                +{portfolio.profitPercent}% all time
-              </SizableText>
+              <YStack>
+                <SizableText fontSize="$8" fontWeight="500" color="$green10">
+                  +${portfolio.totalProfit.toLocaleString()}
+                </SizableText>
+              </YStack>
+              <YStack>
+                <SizableText fontSize="$1" color="$color11">
+                  +{portfolio.profitPercent}% all time
+                </SizableText>
+              </YStack>
             </CardContent>
           </Card>
 
@@ -148,8 +152,8 @@ export default function CryptoPortfolio() {
               <Wallet size={16} color="$color11" />
             </CardHeader>
             <CardContent>
-              <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">${portfolio.totalInvested.toLocaleString()}</SizableText>
-              <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">Principal amount</SizableText>
+              <YStack><SizableText fontSize="$8" fontWeight="500">${portfolio.totalInvested.toLocaleString()}</SizableText></YStack>
+              <YStack><SizableText fontSize="$1" color="$color11">Principal amount</SizableText></YStack>
             </CardContent>
           </Card>
 
@@ -159,8 +163,8 @@ export default function CryptoPortfolio() {
               <PieChart size={16} color="$color11" />
             </CardHeader>
             <CardContent>
-              <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{holdings.length}</SizableText>
-              <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">Cryptocurrencies</SizableText>
+              <YStack><SizableText fontSize="$8" fontWeight="500">{holdings.length}</SizableText></YStack>
+              <YStack><SizableText fontSize="$1" color="$color11">Cryptocurrencies</SizableText></YStack>
             </CardContent>
           </Card>
         </YStack>
@@ -200,9 +204,9 @@ export default function CryptoPortfolio() {
                     {holdings.map((coin) => (
                       <XStack key={coin.symbol} alignItems="center" justifyContent="space-between">
                         <XStack alignItems="center" gap="$3">
-                          <SizableText width="$7" height="$7" borderRadius="$10" backgroundColor="$color12" alignItems="center" justifyContent="center" fontWeight="500" display="flex" flexDirection="row">
-                            {coin.icon}
-                          </SizableText>
+                          <XStack width="$7" height="$7" borderRadius="$10" backgroundColor="$color12" alignItems="center" justifyContent="center">
+                            <SizableText fontWeight="500">{coin.icon}</SizableText>
+                          </XStack>
                           <div>
                             <Paragraph fontWeight="500">{coin.name}</Paragraph>
                             <Paragraph fontSize="$3" color="$color11">
@@ -210,8 +214,8 @@ export default function CryptoPortfolio() {
                             </Paragraph>
                           </div>
                         </XStack>
-                        <SizableText textAlign="right" display="flex" flexDirection="column">
-                          <Paragraph fontWeight="500">${coin.value.toLocaleString()}</Paragraph>
+                        <YStack>
+                          <Paragraph fontWeight="500" textAlign="right">${coin.value.toLocaleString()}</Paragraph>
                           <XStack alignItems="center" justifyContent="flex-end" gap="$1">
                             {coin.change24h > 0 ? (
                               <ArrowUpRight size={12} color="$green10" />
@@ -222,7 +226,7 @@ export default function CryptoPortfolio() {
                               {Math.abs(coin.change24h)}%
                             </SizableText>
                           </XStack>
-                        </SizableText>
+                        </YStack>
                       </XStack>
                     ))}
                   </YStack>
@@ -264,10 +268,10 @@ export default function CryptoPortfolio() {
               </CardHeader>
               <CardContent>
                 <XStack height={300} alignItems="center" justifyContent="center" backgroundColor="$color3" borderRadius="$2">
-                  <SizableText textAlign="center" display="flex" flexDirection="column">
+                  <YStack>
                     <Activity size={48} color="$color11" />
-                    <Paragraph color="$color11">Performance Chart (@hanzo/ui)</Paragraph>
-                  </SizableText>
+                    <Paragraph color="$color11" textAlign="center">Performance Chart (@hanzo/ui)</Paragraph>
+                  </YStack>
                 </XStack>
               </CardContent>
             </Card>
@@ -298,10 +302,10 @@ export default function CryptoPortfolio() {
                           <Paragraph fontSize="$3" color="$color11">{tx.time}</Paragraph>
                         </div>
                       </XStack>
-                      <SizableText textAlign="right" display="flex" flexDirection="column">
-                        <Paragraph fontWeight="500">${tx.value.toLocaleString()}</Paragraph>
-                        <Paragraph fontSize="$3" color="$color11">{tx.amount} {tx.asset}</Paragraph>
-                      </SizableText>
+                      <YStack>
+                        <Paragraph fontWeight="500" textAlign="right">${tx.value.toLocaleString()}</Paragraph>
+                        <Paragraph fontSize="$3" color="$color11" textAlign="right">{tx.amount} {tx.asset}</Paragraph>
+                      </YStack>
                     </XStack>
                   ))}
                 </YStack>

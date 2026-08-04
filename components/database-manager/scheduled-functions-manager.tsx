@@ -188,17 +188,17 @@ export function ScheduledFunctionsManager({ deploymentId, dataProvider }: Schedu
 
       <YStack flex={1} overflow="scroll">
         {scheduledFunctions.length === 0 ? (
-          <SizableText flexDirection="column" alignItems="center" justifyContent="center" height="100%" padding="$6" textAlign="center" borderWidth={1} borderRadius="$5" display="flex">
+          <YStack alignItems="center" justifyContent="center" height="100%" padding="$6" borderWidth={1} borderRadius="$5">
             <Clock size={32} color="$color11" />
-            <Paragraph fontSize="$3" color="$color11">No scheduled functions yet</Paragraph>
-            <Paragraph fontSize="$1" color="$color11" marginTop="$1" marginBottom="$4">
+            <Paragraph fontSize="$3" color="$color11" textAlign="center">No scheduled functions yet</Paragraph>
+            <Paragraph fontSize="$1" color="$color11" marginTop="$1" marginBottom="$4" textAlign="center">
               Run edge functions on a cron schedule
             </Paragraph>
             <Button size="sm" onClick={() => setIsCreating(true)}>
               <Plus size={16} />
               Create Schedule
             </Button>
-          </SizableText>
+          </YStack>
         ) : (
           <YStack gap="$3">
             {scheduledFunctions.map(fn => (
@@ -223,18 +223,18 @@ export function ScheduledFunctionsManager({ deploymentId, dataProvider }: Schedu
                         {fn.description}
                       </Paragraph>
                     )}
-                    <SizableText alignItems="center" gap="$4" marginTop="$2" fontSize="$1" color="$color11" flexWrap="wrap" display="flex" flexDirection="row">
-                      <SizableText flexShrink={0}>
+                    <XStack alignItems="center" gap="$4" marginTop="$2" flexWrap="wrap">
+                      <SizableText flexShrink={0} fontSize="$1" color="$color11">
                         Function: <SizableText fontFamily="$mono">{getEdgeFunctionName(fn.functionId)}</SizableText>
                       </SizableText>
-                      <SizableText flexShrink={0}>Next: {formatDate(fn.nextRunAt)}</SizableText>
+                      <SizableText flexShrink={0} fontSize="$1" color="$color11">Next: {formatDate(fn.nextRunAt)}</SizableText>
                       {fn.lastStatus && (
-                        <SizableText flexShrink={0} {...{ color: fn.lastStatus === 'success' ? "$green10" : "$red10" }}>
+                        <SizableText flexShrink={0} fontSize="$1" {...{ color: fn.lastStatus === 'success' ? "$green10" : "$red10" }}>
                           Last: {fn.lastStatus}
                           {fn.lastRunAt && ` (${formatDate(fn.lastRunAt)})`}
                         </SizableText>
                       )}
-                    </SizableText>
+                    </XStack>
                   </YStack>
 
                   <DropdownMenu placement="bottom-end">

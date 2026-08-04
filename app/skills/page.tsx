@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText } from '@hanzo/gui';
+import { YStack } from '@hanzo/gui';
 import { AppShell } from '@/components/app-shell';
 import { SkillsView } from '@/components/views/skills-view';
 
@@ -18,9 +18,9 @@ import { SkillsView } from '@/components/views/skills-view';
 export default function SkillsPage() {
   return (
     <AppShell currentView="skills">
-      <SizableText minHeight={0} flex={1} flexDirection="column" backgroundColor="$background" color="$color" display="flex">
+      <YStack minHeight={0} flex={1} backgroundColor="$background">
         <SkillsView />
-      </SizableText>
+      </YStack>
     </AppShell>
   );
 }

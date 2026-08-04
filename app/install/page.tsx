@@ -56,7 +56,7 @@ function AppCell({ app }: { app: AppEntry }) {
       <Paragraph marginTop="$4" maxWidth="30ch" fontSize={15} lineHeight={1.625} color="$color11">
         {app.blurb}
       </Paragraph>
-      <SizableText marginTop="$4" alignItems="center" gap="$1" fontSize="$3" fontWeight="500" color="$color11" $group-hover={{ color: "$color" }}>
+      <SizableText marginTop="$4" fontSize="$3" fontWeight="500" color="$color11" $group-hover={{ color: "$color" }}>
         {ACTION_LABEL[app.action]}
         <ArrowUpRight size={14} aria-hidden />
       </SizableText>
@@ -112,7 +112,7 @@ export default function AppsPage() {
   };
 
   return (
-    <SizableText minHeight="100%" backgroundColor="$background" fontFamily="$body" color="$color" display="flex" flexDirection="column">
+    <YStack minHeight="100%" backgroundColor="$background">
       {/* Shared site header — same menu as the rest of hanzo.app. */}
       <Header />
 
@@ -222,12 +222,12 @@ export default function AppsPage() {
           </Paragraph>
           <Link
             href="/dashboard"
-          ><SizableText marginTop="$5" alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
+          ><SizableText marginTop="$5" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
             Get your key
             <ArrowRight size={16} aria-hidden />
           </SizableText></Link>
         </YStack>
       </YStack>
-    </SizableText>
+    </YStack>
   );
 }

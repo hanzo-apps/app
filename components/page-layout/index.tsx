@@ -147,18 +147,20 @@ export function PageLayout({
           <YStack rowGap="$4" paddingVertical="$4">
             <XStack alignItems="flex-start" gap="$3" padding="$3" backgroundColor="$color3" borderRadius="$5">
               <Database size={20} color="$color11" />
-              <SizableText fontSize="$3" display="flex" flexDirection="column">
-                <Paragraph fontWeight="500">Why does this matter?</Paragraph>
-                <Paragraph color="$color11" marginTop="$1">
+              <YStack>
+                <Paragraph fontSize="$3" fontWeight="500">Why does this matter?</Paragraph>
+                <Paragraph fontSize="$3" color="$color11" marginTop="$1">
                   The <strong>Deployments</strong> feature requires projects to be synced to the server database.
                   Until you push your local projects, the Deployments view won&apos;t show any projects to publish.
                 </Paragraph>
-              </SizableText>
+              </YStack>
             </XStack>
 
-            <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">
-              Click <strong>Open Sync</strong> to push your local projects to the server, or dismiss this message to configure it later.
-            </SizableText>
+            <YStack>
+              <SizableText fontSize="$3" color="$color11">
+                Click <strong>Open Sync</strong> to push your local projects to the server, or dismiss this message to configure it later.
+              </SizableText>
+            </YStack>
           </YStack>
 
           <DialogFooter flexDirection="column" gap="$2" $sm={{ flexDirection: "row" }}>

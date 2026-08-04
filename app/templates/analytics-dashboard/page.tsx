@@ -95,23 +95,23 @@ export default function AnalyticsDashboard() {
                 <CardTitle fontSize="$3" fontWeight="500">
                   {metric.title}
                 </CardTitle>
-                <SizableText width="$6" height="$6" borderRadius="$10" backgroundColor="#171717]/1" alignItems="center" justifyContent="center" color="#171717" display="flex" flexDirection="row">
-                  {metric.icon}
-                </SizableText>
+                <XStack width="$6" height="$6" borderRadius="$10" backgroundColor="#171717]/1" alignItems="center" justifyContent="center">
+                  <SizableText color="#171717">{metric.icon}</SizableText>
+                </XStack>
               </CardHeader>
               <CardContent>
-                <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{metric.value}</SizableText>
-                <SizableText alignItems="center" gap="$1" fontSize="$1" display="flex" flexDirection="row">
+                <YStack><SizableText fontSize="$8" fontWeight="500">{metric.value}</SizableText></YStack>
+                <XStack alignItems="center" gap="$1">
                   {metric.trend === "up" ? (
                     <TrendingUp size={12} color="$green10" />
                   ) : (
                     <TrendingDown size={12} color="$red10" />
                   )}
-                  <SizableText {...{ color: metric.trend === "up" ? "$green10" : "$red10" }}>
+                  <SizableText fontSize="$1" {...{ color: metric.trend === "up" ? "$green10" : "$red10" }}>
                     {metric.change}
                   </SizableText>
-                  <SizableText color="$color11">from last month</SizableText>
-                </SizableText>
+                  <SizableText fontSize="$1" color="$color11">from last month</SizableText>
+                </XStack>
               </CardContent>
             </Card>
           ))}
@@ -151,14 +151,16 @@ export default function AnalyticsDashboard() {
                   <YStack rowGap="$4">
                     {recentSales.map((sale, i) => (
                       <XStack key={i} alignItems="center">
-                        <SizableText width={36} height={36} borderRadius="$10" backgroundColor="#171717]/1" alignItems="center" justifyContent="center" fontSize="$3" fontWeight="500" color="#171717" display="flex" flexDirection="row">
-                          {sale.name.split(" ").map(n => n[0]).join("")}
-                        </SizableText>
+                        <XStack width={36} height={36} borderRadius="$10" backgroundColor="#171717]/1" alignItems="center" justifyContent="center">
+                          <SizableText fontSize="$3" fontWeight="500" color="#171717">
+                            {sale.name.split(" ").map(n => n[0]).join("")}
+                          </SizableText>
+                        </XStack>
                         <YStack marginLeft="$4" rowGap="$1" flex={1}>
                           <Paragraph fontSize="$3" fontWeight="500">{sale.name}</Paragraph>
                           <Paragraph fontSize="$3" color="$color11">{sale.email}</Paragraph>
                         </YStack>
-                        <SizableText fontWeight="500" display="flex" flexDirection="column">{sale.amount}</SizableText>
+                        <YStack><SizableText fontWeight="500">{sale.amount}</SizableText></YStack>
                       </XStack>
                     ))}
                   </YStack>
@@ -194,7 +196,7 @@ export default function AnalyticsDashboard() {
                 </CardHeader>
                 <CardContent>
                   <YStack rowGap="$2">
-                    <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">$89.42</SizableText>
+                    <YStack><SizableText fontSize="$8" fontWeight="500">$89.42</SizableText></YStack>
                     <XStack alignItems="center" gap="$2">
                       <Badge variant="outline" className="border-green-600 text-green-600">
                         <TrendingUp size={12} />
@@ -213,7 +215,7 @@ export default function AnalyticsDashboard() {
                 </CardHeader>
                 <CardContent>
                   <YStack rowGap="$2">
-                    <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">4.8/5.0</SizableText>
+                    <YStack><SizableText fontSize="$8" fontWeight="500">4.8/5.0</SizableText></YStack>
                     <XStack alignItems="center" gap="$1">
                       {[...Array(5)].map((_, i) => (
                         <YStack

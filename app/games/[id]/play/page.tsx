@@ -15,32 +15,34 @@ export default function GamePlay() {
 
   if (!game || !isPlayable(game)) {
     return (
-      <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
+      <YStack minHeight="100%" backgroundColor="$background">
         <Header />
-        <SizableText flex={1} flexDirection="column" alignItems="center" justifyContent="center" gap="$4" backgroundColor="$background" color="$color" display="flex">
+        <YStack flex={1} alignItems="center" justifyContent="center" gap="$4" backgroundColor="$background">
           <Paragraph fontSize="$6" color="$color11">
             {game ? `${game.name} has no in-browser build.` : 'Game not found.'}
           </Paragraph>
           <Link href={game ? `/games/${game.id}` : '/games'}><SizableText color="$color" textDecorationLine="underline">
             Back
           </SizableText></Link>
-        </SizableText>
+        </YStack>
         <SiteFooter />
-      </SizableText>
+      </YStack>
     );
   }
 
   return (
-    <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
+    <YStack minHeight="100%" backgroundColor="$background">
       <Header />
-      <SizableText flex={1} flexDirection="column" backgroundColor="$background" color="$color" display="flex">
+      <YStack flex={1} backgroundColor="$background">
         <XStack alignItems="center" gap="$4" borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$5" paddingVertical="$3">
           <Link
             href={`/games/${game.id}`}
-          ><SizableText alignItems="center" gap="$1.5" fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}>
+          ><XStack alignItems="center" gap="$1.5">
             <ArrowLeft size={16} />
-            {game.name}
-          </SizableText></Link>
+            <SizableText fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}>
+              {game.name}
+            </SizableText>
+          </XStack></Link>
           {isPlaceholderBuild(game) && (
             <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$0.5" fontSize={11} color="$color11">
               placeholder build
@@ -50,8 +52,8 @@ export default function GamePlay() {
         <YStack minHeight={0} flex={1} padding="$4">
           <GamePlayer gameId={game.id} title={game.name} />
         </YStack>
-      </SizableText>
+      </YStack>
       <SiteFooter />
-    </SizableText>
+    </YStack>
   );
 }

@@ -281,24 +281,24 @@ export default function KanbanBoard() {
                       </XStack>
 
                       {/* Meta info */}
-                      <SizableText alignItems="center" justifyContent="space-between" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+                      <XStack alignItems="center" justifyContent="space-between">
                         <XStack alignItems="center" gap="$3">
                           {task.dueDate && (
                             <XStack alignItems="center" gap="$1">
                               <Calendar size={12} />
-                              {task.dueDate}
+                              <SizableText fontSize="$1" color="$color11">{task.dueDate}</SizableText>
                             </XStack>
                           )}
                           {task.comments > 0 && (
                             <XStack alignItems="center" gap="$1">
                               <MessageSquare size={12} />
-                              {task.comments}
+                              <SizableText fontSize="$1" color="$color11">{task.comments}</SizableText>
                             </XStack>
                           )}
                           {task.attachments > 0 && (
                             <XStack alignItems="center" gap="$1">
                               <Paperclip size={12} />
-                              {task.attachments}
+                              <SizableText fontSize="$1" color="$color11">{task.attachments}</SizableText>
                             </XStack>
                           )}
                         </XStack>
@@ -307,7 +307,7 @@ export default function KanbanBoard() {
                             <SizableText fontSize="$1">{task.assignee.split(" ").map(n => n[0]).join("")}</SizableText>
                           </AvatarFallback>
                         </Avatar>
-                      </SizableText>
+                      </XStack>
                     </CardContent>
                   </Card>
                 ))}
