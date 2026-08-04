@@ -96,13 +96,22 @@ export default function Header() {
     </>
   );
 
-  // The registry surface, re-labelled as DATA (never a fork): "Product" reads
-  // as "Features" here, and Community (the showcase) joins the nav.
+  // The registry surface with THIS surface's nav as DATA (never a fork). The
+  // registry's own localNav is written for hanzo.ai's cloud framing — Product /
+  // Templates / Pricing / Enterprise, on absolute hanzo.app URLs. Here the five
+  // rows are the questions a builder actually arrives with, in the order they
+  // ask them, on local routes so navigation stays client-side.
+  //
+  // No `productsTaxonomy`: the ten-category cloud mega-menu belongs to the cloud
+  // surfaces. This one gets the flat nav plus the universal Meet Hanzo menu.
   const surface = resolveSurface("hanzo.app");
-  const nav = surface.localNav.map((l) =>
-    l.id === "product" ? { ...l, label: "Features", href: "/features" } : l,
-  );
-  nav.splice(1, 0, { id: "community", label: "Community", href: "/community" });
+  const nav = [
+    { id: "features", label: "Features", href: "/features" },
+    { id: "pricing", label: "Pricing", href: "/pricing" },
+    { id: "resources", label: "Resources", href: "/templates" },
+    { id: "solutions", label: "Solutions", href: "/enterprise" },
+    { id: "help", label: "Help", href: "/help" },
+  ];
 
   return (
     <HanzoHeader
