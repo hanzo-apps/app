@@ -59,7 +59,14 @@ export function AppShell({ children, currentView = 'templates' }: AppShellProps)
     // page rendered as {children} (Connectors, Settings, …) read the SAME context,
     // so a page that calls useOrg never crashes for lack of a provider ancestor.
     <OrgProvider>
-    <XStack position="relative" height="100%" overflow="hidden" backgroundColor="$background">
+    {/* The shell owns the viewport, so it MEASURES the viewport. `height="100%"`
+        looked equivalent and was not: a percentage resolves against the parent's
+        computed height, every ancestor up to <body> is `height: auto` (globals.css
+        gives body a min-height only), so it fell back to auto. The shell then sized
+        to its content — 275px — and the sidebar's `flex={1}` nav, which has
+        `min-height: 0` so it can scroll, collapsed to a 24px slot that showed the
+        top half of "Dashboard" and hid every item below it. */}
+    <XStack position="relative" height="100dvh" overflow="hidden" backgroundColor="$background">
       <Sidebar
         currentView={currentView}
         onNavigate={() => {}}

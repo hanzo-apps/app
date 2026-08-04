@@ -304,7 +304,8 @@ function SidebarContent({
               onClick={toggleCollapsed}
               title="Expand sidebar"
               aria-label="Expand sidebar"
-              height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$3" hoverStyle={{ backgroundColor: "$color3" }}
+              variant="ghost"
+              height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$3"
             >
               <HanzoLogo size={20} color="var(--foreground)" />
             </Button>
@@ -312,7 +313,8 @@ function SidebarContent({
             <>
               <Button
                 onClick={() => (isMobile ? onMobileOpenChange?.(false) : onLogoClick?.())}
-                minWidth={0} alignItems="center" gap="$2" borderRadius="$3" padding="$1" hoverStyle={{ backgroundColor: "$color3" }}
+                variant="ghost"
+                minWidth={0} alignItems="center" gap="$2" borderRadius="$3" padding="$1"
                 title="Hanzo App"
               >
                 <HanzoLogo size={20} color="var(--foreground)" />
@@ -328,7 +330,8 @@ function SidebarContent({
                 onClick={toggleCollapsed}
                 title="Collapse sidebar"
                 aria-label="Collapse sidebar"
-                display="none" height="$6" width="$6" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" {...{ color: "$color11" }} hoverStyle={{ backgroundColor: "$color3" }}
+                variant="ghost"
+                display="none" height="$6" width="$6" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" {...{ color: "$color11" }}
               >
                 <PanelLeft size={16} />
               </Button>
@@ -337,7 +340,8 @@ function SidebarContent({
                 onClick={() => onMobileOpenChange?.(false)}
                 title="Close menu"
                 aria-label="Close menu"
-                height="$6" width="$6" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" {...{ color: "$color11" }} $md={{ display: "none" }} hoverStyle={{ backgroundColor: "$color3" }}
+                variant="ghost"
+                height="$6" width="$6" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" {...{ color: "$color11" }} $md={{ display: "none" }}
               >
                 <X size={16} />
               </Button>
@@ -370,7 +374,8 @@ function SidebarContent({
                   <DropdownMenuTrigger asChild>
                     <Button
                       aria-label="Project actions"
-                      borderRadius="$2" padding="$0.5" {...{ color: "$color11" }} hoverStyle={{ backgroundColor: "$color3" }}
+                      variant="ghost"
+                      borderRadius="$2" padding="$0.5" {...{ color: "$color11" }}
                     >
                       <MoreHorizontal size={14} />
                     </Button>
@@ -522,6 +527,7 @@ function ShareCard() {
       <Button
         onClick={() => setOpen(true)}
         title="Share Hanzo, earn free weeks"
+        variant="outline"
         width="100%" alignItems="center" gap="$2" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color005" paddingHorizontal="$2.5" paddingVertical="$1.5" {...{ color: "$color11" }} hoverStyle={{ borderColor: "$color06" }}
       >
         <Share2 size={14} />
@@ -676,7 +682,8 @@ function UpgradeCard({ onClick }: { onClick: () => void }) {
     <Button
       onClick={onClick}
       title="More credits & private apps"
-      width="100%" alignItems="center" gap="$2" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$1.5" {...{ color: "$color" }}
+      variant="outline"
+      width="100%" alignItems="center" gap="$2" borderRadius="$3" borderWidth={1} borderColor="$color6" backgroundColor="$color5" paddingHorizontal="$2.5" paddingVertical="$1.5" {...{ color: "$color" }}
     >
       <Zap size={14} />
       <SizableText numberOfLines={1} fontWeight="500" fontSize="$1" color="$color">Upgrade to Pro</SizableText>

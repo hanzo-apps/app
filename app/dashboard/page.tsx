@@ -95,7 +95,15 @@ export default function DashboardPage() {
     <AppShell currentView="dashboard">
       <YStack flex={1} backgroundColor="$background" overflow="scroll">
         {/* ── Hero viewport: ONLY the centered composer until you scroll ── */}
-        <YStack position="relative" minHeight="calc(100dvh-4rem)" justifyContent="flex-start" paddingTop="14vh" paddingHorizontal="$4" $md={{ justifyContent: "center", paddingTop: "$0" }}>
+        {/* Fill the scroll viewport — `100%` of a parent that is now definite,
+            which is also the one spelling that is right on both sizes (below md
+            the parent already excludes the mobile top bar). It was
+            `calc(100dvh-4rem)`: CSS requires whitespace around `-`, so the
+            declaration was invalid, the min-height was 0, and the hero shrank to
+            its content — which is what drove the absolutely-positioned scroll
+            hint up into the composer. `paddingBottom` reserves the hint's own
+            band so it cannot touch the content even when the hero has to grow. */}
+        <YStack position="relative" minHeight="100%" justifyContent="flex-start" paddingTop="14vh" paddingBottom="$12" paddingHorizontal="$4" $md={{ justifyContent: "center", paddingTop: "$0" }}>
           <BuildComposer greetingName={greetingName} showPill />
 
           {/* Scroll invitation — the projects panel waits below the fold. */}
@@ -107,7 +115,7 @@ export default function DashboardPage() {
                 ?.scrollIntoView({ behavior: "smooth", block: "start" })
             }
             variant="ghost"
-            group position="absolute" bottom="$5" left="50%" x="50%" flexDirection="column" alignItems="center" gap="$1"
+            group position="absolute" bottom="$5" left="50%" x="-50%" flexDirection="column" alignItems="center" gap="$1"
           >
             <SizableText fontFamily="$mono" fontSize={10} color="$color11" $group-hover={{ color: "$color" }}>
               Your projects

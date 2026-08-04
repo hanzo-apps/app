@@ -107,8 +107,27 @@ export function resolveOrgLogo(name: string, serverLogo?: string): string | unde
 }
 
 /* ------------------------------------------------------------------ *
- * Gravatar (user fallback) — MD5(email) → URL
+ * User photo — the portrait, then Gravatar, then (the caller's) monogram
  * ------------------------------------------------------------------ */
+
+/**
+ * IAM hands every account that never set a photo a stand-in image: the ABSENCE
+ * of a portrait, encoded as a link. It is not a picture of anyone, and it does
+ * not even resolve — so a consumer that trusts it renders a broken-image glyph.
+ * Matched on the filename, not the host, so a CDN move cannot revive it.
+ */
+const STANDIN = /(^|\/)default-avatar\.[a-z0-9]+(?:[?#]|$)/i;
+
+/**
+ * The user's real photo, or '' when there is none — which every avatar in this
+ * app reads as "render the monogram" rather than as an image to fetch. The same
+ * contract app/profile/page.tsx's photo chain relies on, so the sidebar, the
+ * account menu and the profile page all fall back to the same mark.
+ */
+export function portrait(url?: string | null): string {
+  const t = (url || '').trim();
+  return !t || !isImageUrl(t) || STANDIN.test(t) ? '' : t;
+}
 
 /**
  * The Gravatar URL for `email`. `d=404` means "no gravatar for this email → 404"

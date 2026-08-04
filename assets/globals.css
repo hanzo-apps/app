@@ -725,6 +725,12 @@ kbd {
    runtime-injected atomic display classes regardless of sheet order. */
 @media (min-width: 768px) { .md-hidden { display: none !important; } }
 
+/* Collapsed sidebar: the account row keeps only its avatar. The row belongs to
+   @hanzo/iam's UserMenu and is styled by its own `hz-iam-*` rules, so it is
+   hidden from OUTSIDE — passing `classNames.triggerLabel` would REPLACE
+   `hz-iam-grow`, which is the growth the row's layout is built on. */
+.rail .hz-iam-grow { display: none; }
+
 /* Project-card preview frame — fills the card, dims on card hover. */
 .thumb-frame { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; border: 0; transition: filter 0.2s; }
 a:hover .thumb-frame { filter: brightness(0.75); }
