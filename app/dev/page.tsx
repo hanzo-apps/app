@@ -13,6 +13,10 @@ import { readStagedProject, clearStagedProject } from "@/lib/import/staging";
 import {
   resolveTemplateSeedMeta,
   buildTemplateSeedPrompt,
+  fetchTemplatePages,
+  templateBrief,
+  titleize,
+  type TemplateSeedMeta,
 } from "@/lib/api/templates";
 import type { Page } from "@/types";
 
@@ -97,11 +101,12 @@ function Dev() {
   // staged for AskAI (which reads window.__initialPrompt on mount) so the first
   // generation starts automatically — no manual TemplateLoader click.
   const [seedReady, setSeedReady] = useState(false);
-  // Edit-mode template: the template's ready HTML, loaded into the editor so the
-  // preview renders IMMEDIATELY (before/without any AI call). null until fetched.
-  // Templates no longer preload page HTML (they generate their landing page);
-  // kept for the imported-project path which passes pages through unchanged.
-  const [templatePages] = useState<Page[] | null>(null);
+  // Edit-mode template: the template's own pages, loaded into the editor so the
+  // preview renders IMMEDIATELY (before/without any AI call). null until fetched,
+  // and null forever for a template that publishes no source — which is a
+  // different thing from "not fetched yet", and is why the effect below also sets
+  // a greeting saying which of the two happened.
+  const [templatePages, setTemplatePages] = useState<Page[] | null>(null);
   const [templateEditDone, setTemplateEditDone] = useState(false);
 
   /**
@@ -276,58 +281,54 @@ function Dev() {
     }
   }, [repoUrl, action, seedPrompt]);
 
-  // Edit-mode template: BUILD the template's ONE landing page. Gallery templates
-  // are full running apps (Next.js, multi-page), NOT fetchable single-page HTML —
-  // the old path loaded a dead SCREENSHOT (and non-gallery slugs fell back to a
-  // directory-of-pages), neither of which is a usable, editable template. Instead
-  // we resolve the template's design brief (category · use case · features) and
-  // seed a REAL generation of the SINGLE primary landing page (the dashboard/home)
-  // as editable HTML the user immediately builds on. A rich, concrete brief (never
-  // a no-op) avoids the old "didn't return a usable page" failure. Applies to ANY
-  // template edit; falls back to a slug-derived brief when the catalog is silent.
+  // Edit-mode template: OPEN the template — load ITS pages into the editor and
+  // wait. A template is a finished starting point, so "edit Savor" means Savor is
+  // on screen and the first thing the user says is the first change.
+  //
+  // This used to generate instead. Every template edit resolved the catalog's
+  // DESCRIPTION and seeded "Build the primary landing page for <name> — a <cat>
+  // app…", so clicking Savor wrote a fresh imitation of Savor and presented it as
+  // Savor; the only clue was that the result looked wrong. The two paths below are
+  // now told apart by one fact — whether the template publishes real source — and
+  // the recreation says so in the chat instead of passing itself off as the
+  // template. Today almost every slug lands on that branch, because the template
+  // demos it reads were wiped; the greeting is honest about it rather than hiding
+  // it, and the loading path starts working again the moment they are redeployed.
   useEffect(() => {
     if (seedPrompt.trim()) return; // a seeded fork already auto-generates
     if (action !== "edit" || !repoData?.name || templateEditDone) return;
     let alive = true;
     (async () => {
       const slug = repoData.name as string;
-      let title = slug.replace(/[-/]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-      let brief = "";
+      let meta: TemplateSeedMeta | null = null;
       try {
-        const meta = await resolveTemplateSeedMeta(slug);
-        if (meta) {
-          title = meta.displayName || title;
-          const feats = meta.features?.length
-            ? ` Include these areas: ${meta.features.join(", ")}.`
-            : "";
-          const use = meta.useCase ? ` It is used for: ${meta.useCase}.` : "";
-          const desc = meta.description ? ` ${meta.description}` : "";
-          const cat = meta.category || "modern";
-          brief =
-            `Build the primary landing page for "${title}" — a ${cat} app.${desc}${use}${feats} ` +
-            `Design ONE polished, self-contained, fully responsive page (the main ${cat.toLowerCase()} view): ` +
-            `real navigation, a hero/summary, KPI or content cards, charts or sections, and a footer. ` +
-            `Production-quality, modern, dark-mode friendly, realistic placeholder content (no lorem).`;
-        }
+        meta = await resolveTemplateSeedMeta(slug);
       } catch {
-        /* fall through to the generic brief */
+        /* an unknown slug still opens, titled from the slug itself */
       }
-      if (!brief) {
-        brief =
-          `Build the primary, self-contained, responsive landing page for "${title}" — one polished view ` +
-          `with real navigation, a hero/summary, content cards or sections, and a footer. Modern, production-quality, dark-mode friendly.`;
-      }
+      const title = meta?.displayName || titleize(slug);
+      const pages = await fetchTemplatePages(slug);
       if (!alive) return;
-      // Leave templatePages null: AppEditor mounts BLANK (no screenshot) and
-      // AskAI reads __initialPrompt on mount to auto-build the real landing page.
       (window as any).__projectName = title;
-      (window as any).__initialPrompt = brief;
-      try {
-        localStorage.setItem("initialPrompt", brief);
-      } catch {
-        /* window.__initialPrompt is sufficient */
+      if (pages) {
+        // The template itself. AskAI greets and waits — NO generation: there is
+        // nothing to build, it is already here.
+        setTemplatePages(pages);
+        (window as any).__assistantGreeting = `${title} is loaded — tell me what to change.`;
+      } else {
+        // No published source. Say that, then build from the description.
+        (window as any).__assistantGreeting =
+          `${title} doesn't publish its source yet, so I'm recreating it from the template's description ` +
+          `rather than opening the original. Tell me what to change as it comes together.`;
+        const brief = templateBrief(meta, slug);
+        (window as any).__initialPrompt = brief;
+        try {
+          localStorage.setItem("initialPrompt", brief);
+        } catch {
+          /* window.__initialPrompt is sufficient */
+        }
       }
-      setTemplateEditDone(true); // lift the "Loading template…" splash → generate
+      setTemplateEditDone(true); // lift the "Loading template…" splash
     })();
     return () => {
       alive = false;

@@ -16,6 +16,8 @@
  * than fabricate cards or crash.
  */
 
+import type { Page } from '@/types';
+
 // --- Type (cloud clients/templates.Template) ---
 
 export interface GalleryTemplate {
@@ -215,23 +217,35 @@ export function templateBuilderLink(source: string): string {
 }
 
 /**
- * Fetch a template's ready-to-show preview HTML from the same-origin BFF
- * (`/v1/templates/:slug/html`). This is what lets `/dev?template=…&action=edit`
- * render the template in the preview IMMEDIATELY — before/without any AI call —
- * so the AI only augments from there. Resolves to `null` on any failure (no
- * screenshot, unreachable) so the editor falls back to the default page rather
- * than dead-ending.
+ * A template's REAL, editable pages from the same-origin BFF
+ * (`/v1/templates/:slug/pages`). This is what lets `/dev?template=…&action=edit`
+ * OPEN the template — its own markup in the preview, before and without any AI
+ * call — so the first thing the user sees is the template they clicked.
+ *
+ * `null` means the template publishes no source. It never means "close enough":
+ * the endpoint refuses to answer this question with a screenshot, so a null here
+ * is the caller's cue to say out loud that it is recreating the template rather
+ * than opening it.
  */
-export async function fetchTemplateHtml(slug: string): Promise<string | null> {
+export async function fetchTemplatePages(slug: string): Promise<Page[] | null> {
   const clean = (slug || '').trim();
   if (!clean) return null;
   try {
-    const res = await fetch(`/v1/templates/${encodeURIComponent(clean)}/html`, {
-      headers: { Accept: 'text/html' },
+    const res = await fetch(`/v1/templates/${encodeURIComponent(clean)}/pages`, {
+      headers: { Accept: 'application/json' },
     });
     if (!res.ok) return null;
-    const html = await res.text();
-    return html.trim() ? html : null;
+    const body = (await res.json()) as { pages?: unknown };
+    const rows = Array.isArray(body?.pages) ? body.pages : [];
+    const pages = rows.filter(
+      (p): p is Page =>
+        !!p &&
+        typeof p === 'object' &&
+        typeof (p as Page).path === 'string' &&
+        typeof (p as Page).html === 'string' &&
+        (p as Page).html.trim().length > 0,
+    );
+    return pages.length ? pages : null;
   } catch {
     return null;
   }
@@ -254,8 +268,8 @@ export interface TemplateSeedMeta {
 }
 
 /** Human title from a slug when a catalog title is missing ("bento-cards-v1" → "Bento Cards V1"). */
-function titleize(slug: string): string {
-  return slug.replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+export function titleize(slug: string): string {
+  return slug.replace(/[-/]/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
 }
 
 /**
@@ -328,6 +342,39 @@ export async function resolveTemplateSeedMeta(slug: string): Promise<TemplateSee
   }
 
   return null;
+}
+
+/**
+ * The design brief for a template that publishes NO source — the only situation
+ * in which the builder writes a template instead of opening one.
+ *
+ * Its sibling `buildTemplateSeedPrompt` is for the opposite case, and the two must
+ * not be confused: that one frames the first change on top of a template that is
+ * already loaded ("it's already built and running in the live preview"), while
+ * this one is a genuine recreation from a description. Handing the wrong one to
+ * the model is how a template got silently reinvented; keeping them apart, named
+ * for what they assume, is what makes the mistake visible.
+ *
+ * The caller is expected to TELL the user when it uses this one.
+ */
+export function templateBrief(meta: TemplateSeedMeta | null, slug: string): string {
+  const title = meta?.displayName || titleize(slug);
+  if (!meta) {
+    return (
+      `Build the primary, self-contained, responsive landing page for "${title}" — one polished view ` +
+      `with real navigation, a hero/summary, content cards or sections, and a footer. Modern, production-quality, dark-mode friendly.`
+    );
+  }
+  const cat = meta.category || 'modern';
+  const desc = meta.description ? ` ${meta.description}` : '';
+  const use = meta.useCase ? ` It is used for: ${meta.useCase}.` : '';
+  const feats = meta.features?.length ? ` Include these areas: ${meta.features.join(', ')}.` : '';
+  return (
+    `Build the primary landing page for "${title}" — a ${cat} app.${desc}${use}${feats} ` +
+    `Design ONE polished, self-contained, fully responsive page (the main ${cat.toLowerCase()} view): ` +
+    `real navigation, a hero/summary, KPI or content cards, charts or sections, and a footer. ` +
+    `Production-quality, modern, dark-mode friendly, realistic placeholder content (no lorem).`
+  );
 }
 
 /**
