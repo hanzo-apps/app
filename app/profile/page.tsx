@@ -234,8 +234,26 @@ export default function ProfilePage() {
           {/* Profile Header */}
           <YStack borderTopLeftRadius="$5" borderTopRightRadius="$5" padding="$6">
             <XStack alignItems="center" gap="$5">
-              <YStack position="relative">
-                <Avatar width="$12" height="$12" borderWidth={4} borderColor="black">
+              <YStack
+                position="relative"
+                {...(isEditing
+                  ? {
+                      role: "button" as const,
+                      tabIndex: 0,
+                      "aria-label": "Change profile photo",
+                      cursor: "pointer",
+                      group: true,
+                      onClick: () => fileInput.current?.click(),
+                      onKeyDown: (e: { key: string; preventDefault: () => void }) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          fileInput.current?.click();
+                        }
+                      },
+                    }
+                  : null)}
+              >
+                <Avatar width="$12" height="$12" borderWidth={4} borderColor="$background">
                   {/* An `<img>` with src="" resolves to the PAGE url, loads HTML,
                       fails to decode, and renders the browser's broken-image
                       icon — which is exactly what this showed, because
@@ -245,12 +263,31 @@ export default function ProfilePage() {
                   {photo && !imgFailed && (
                     <AvatarImage src={photo} alt="" onError={() => setImgFailed(true)} />
                   )}
-                  <AvatarFallback backgroundColor="$purple10">
+                  <AvatarFallback backgroundColor="$color4">
                     {initial}
                   </AvatarFallback>
                 </Avatar>
                 {isEditing && (
                   <>
+                    {/* The whole avatar is the target; this veil says so on
+                        hover/focus without stealing the click. */}
+                    <XStack
+                      pointerEvents="none"
+                      position="absolute"
+                      top={4}
+                      right={4}
+                      bottom={4}
+                      left={4}
+                      alignItems="center"
+                      justifyContent="center"
+                      borderRadius="$10"
+                      backgroundColor="transparent"
+                      opacity={0}
+                      $group-hover={{ backgroundColor: "rgba(0,0,0,0.55)", opacity: 1 }}
+                      $group-focus={{ backgroundColor: "rgba(0,0,0,0.55)", opacity: 1 }}
+                    >
+                      <Camera size={20} color="#fff" />
+                    </XStack>
                     {/* Visually hidden, still in the a11y tree — the `sr-only`
                         class upstream used came from Tailwind, which this app no
                         longer loads, so the class would leave a bare file input
@@ -277,11 +314,14 @@ export default function ProfilePage() {
                       }}
                     />
                     <Button
-                      onClick={() => fileInput.current?.click()}
+                      onClick={(e: { stopPropagation: () => void }) => {
+                        e.stopPropagation();
+                        fileInput.current?.click();
+                      }}
                       disabled={busy}
                       aria-label="Change profile photo"
                       title="Change profile photo"
-                      position="absolute" bottom="$0" right="$0" padding="$1.5" backgroundColor="$purple9" borderRadius="$10" hoverStyle={{ backgroundColor: "$purple10" }} disabledStyle={{ opacity: 0.5 }}
+                      position="absolute" bottom="$0" right="$0" padding="$1.5" backgroundColor="$color5" borderWidth={1} borderColor="$color6" borderRadius="$10" hoverStyle={{ backgroundColor: "$color6" }} disabledStyle={{ opacity: 0.5 }}
                     >
                       <Camera size={16} />
                     </Button>
@@ -297,7 +337,7 @@ export default function ProfilePage() {
                     onChange={(e) => set("displayName", e.target.value)}
                     placeholder={user?.fullname || "Your name"}
                     aria-label="Display name"
-                    fontSize="$10" fontWeight="500" backgroundColor="transparent" color="$color" borderBottomWidth={1} borderColor="$borderColor" outlineWidth={0} paddingBottom="$2" marginBottom="$2" focusStyle={{ borderColor: "$purple9" }}
+                    fontSize="$10" fontWeight="500" backgroundColor="transparent" color="$color" borderBottomWidth={1} borderColor="$borderColor" outlineWidth={0} paddingBottom="$2" marginBottom="$2" focusStyle={{ borderColor: "$color06" }}
   />
                 ) : (
                   <H2 fontSize="$10" fontWeight="500" color="$color" marginBottom="$2">{shownName}</H2>

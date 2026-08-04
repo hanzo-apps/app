@@ -70,7 +70,7 @@ export default function LandingPage() {
   // snapshot seeds them instantly, then the live catalog (gallery.hanzo.ai)
   // refreshes below.
   const [starterTemplates, setStarterTemplates] = useState<GalleryTemplate[]>(
-    () => popularTemplates(snapshotCatalog().templates, 4),
+    () => popularTemplates(snapshotCatalog().templates, 100),
   );
 
   // Fetch the user's REAL projects from the ONE canonical org store (the same
@@ -126,7 +126,7 @@ export default function LandingPage() {
       .then((res) => res.json())
       .then((data) => {
         if (alive && Array.isArray(data.templates) && data.templates.length) {
-          setStarterTemplates(popularTemplates(data.templates, 4));
+          setStarterTemplates(popularTemplates(data.templates, 100));
         }
       })
       .catch(() => {});
@@ -216,17 +216,19 @@ export default function LandingPage() {
                       <SizableText fontFamily="$mono" fontSize={11} color="$color10">or start from a template</SizableText>
                       <SizableText height={1} width="$5" backgroundColor="$borderColor" />
                     </XStack>
-                    <YStack alignSelf="center" width="100%" $lg={{ maxWidth: 896 }}>
-                      {/* Two across, four from $sm — `grid-cols-2 sm:grid-cols-4`.
-                          The conversion made this a YStack and stacked them. */}
-                      <XStack flexWrap="wrap" gap={10}>
+                    {/* FULL-BLEED lane: breaks out of the hero column to the
+                        viewport edge so the strip swoops the whole width. */}
+                    <YStack width="100vw" marginLeft="calc(50% - 50vw)" paddingHorizontal="$5">
+                      {/* EVERY starter, one horizontal strip: snap-scrolled,
+                          edge-faded (.hz-strip in globals.css), lazy thumbs. */}
+                      <XStack className="hz-strip" flexWrap="nowrap" gap={10}>
                         {starterTemplates.map((t) => (
                           <Button
                             key={t.slug}
                             type="button"
                             variant="ghost"
                             onClick={() => startFromTemplate(t)}
-                            width="calc(50% - 5px)" $sm={{ width: "calc(25% - 7.5px)" }} height="auto" padding={0} flexDirection="column" alignItems="stretch" group className="zoom-scope" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" hoverStyle={{ borderColor: "$color02", backgroundColor: "$color005" }}
+                            width={216} flexShrink={0} height="auto" padding={0} flexDirection="column" alignItems="stretch" group className="zoom-scope hz-strip-card" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" hoverStyle={{ borderColor: "$color02", backgroundColor: "$color005" }}
                           >
                             <YStack position="relative" overflow="hidden" aspectRatio={16 / 10} backgroundColor="$color002">
                               <TemplateThumb
@@ -362,6 +364,22 @@ export default function LandingPage() {
   />
             </YStack>
           </Reveal>
+        </YStack>
+      </YStack>
+
+      {/* ── Community — what people built, linking out to the showcase ── */}
+      <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6" }}>
+        <YStack alignSelf="center" width="100%" maxWidth={672} alignItems="center">
+          <H2 fontSize="$8" fontWeight="500" letterSpacing={-0.4} textAlign="center" $md={{ fontSize: "$10" }} lineHeight="1.1">
+            Built on Hanzo.
+          </H2>
+          <Paragraph marginTop="$3" fontSize="$3" lineHeight="1.625" color="$color11" textAlign="center" maxWidth={512}>
+            Forks, remixes, and example apps from the community — every entry
+            names the template it came from and who built it.
+          </Paragraph>
+          <Link href="/community"><XStack marginTop="$5" height={44} alignItems="center" gap="$1.5" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" paddingHorizontal="$4.5" hoverStyle={{ borderColor: "$color06", backgroundColor: "$color005" }}>
+            <SizableText fontSize="$3" fontWeight="500" color="$color">Explore the community</SizableText>
+          </XStack></Link>
         </YStack>
       </YStack>
 

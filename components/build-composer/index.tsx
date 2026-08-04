@@ -232,7 +232,7 @@ export function BuildComposer({
             onBlur={() => setFocused(false)}
             placeholder={placeholder}
             aria-label="Ask Hanzo to build"
-            width="100%" backgroundColor="transparent" paddingHorizontal="$4" paddingBottom="$2" paddingTop="$4" fontSize={15} lineHeight="1.625" color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0 }}
+            width="100%" backgroundColor="transparent" borderWidth={0} paddingHorizontal="$4" paddingBottom="$2" paddingTop="$4" fontSize={15} lineHeight="1.625" color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0, borderWidth: 0 }}
   />
           <XStack alignItems="center" justifyContent="space-between" gap="$2" paddingHorizontal="$2.5" paddingBottom="$2.5">
             <XStack alignItems="center" gap="$1">

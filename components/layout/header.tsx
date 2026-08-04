@@ -14,7 +14,7 @@
 // the SIGNUP funnel (IAM registration hint → builder, where OrgGate onboards
 // the new org); "Sign In" is plain login() for returning users.
 
-import { HanzoHeader, HANZO_PRODUCT_CATEGORIES } from "@hanzogui/shell";
+import { HanzoHeader, resolveSurface } from "@hanzogui/shell";
 import { SizableText, YStack, Paragraph, XStack } from "@hanzo/gui";
 import { useRouter } from "next/navigation";
 import { Home, Settings, DollarSign, LogOut } from "lucide-react";
@@ -96,10 +96,17 @@ export default function Header() {
     </>
   );
 
+  // The registry surface, re-labelled as DATA (never a fork): "Product" reads
+  // as "Features" here, and Community (the showcase) joins the nav.
+  const surface = resolveSurface("hanzo.app");
+  const nav = surface.localNav.map((l) =>
+    l.id === "product" ? { ...l, label: "Features", href: "/features" } : l,
+  );
+  nav.splice(1, 0, { id: "community", label: "Community", href: "/community" });
+
   return (
     <HanzoHeader
-      surface="hanzo.app"
-      productsTaxonomy={HANZO_PRODUCT_CATEGORIES}
+      surface={{ ...surface, localNav: nav }}
       currentHref="https://hanzo.app"
       identitySlot={
         <XStack alignItems="center" gap="$2">

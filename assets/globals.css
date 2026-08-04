@@ -190,8 +190,8 @@ a {
      monochrome ninja-stealth, and the composer ring is the ONE deliberate
      spectrum — the Apple-Intelligence iridescence (blue → violet → pink →
      amber and home again), moderated so it glows instead of shouting. */
-  --hz-spectrum: rgba(8, 148, 255, 0.55), rgba(201, 89, 221, 0.6),
-    rgba(255, 46, 84, 0.5), rgba(255, 144, 4, 0.5), rgba(8, 148, 255, 0.55);
+  --hz-spectrum: rgba(8, 148, 255, 0.45), rgba(201, 89, 221, 0.48),
+    rgba(255, 46, 84, 0.4), rgba(255, 144, 4, 0.4), rgba(8, 148, 255, 0.45);
 
   /* Product hues — the same prism, cut per product. Category accents for
      marks, badges and cards; chrome stays monochrome, these are ACCENTS. */
@@ -1028,6 +1028,26 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
 /* Same idea along the row axis — the last cell drops its right divider. */
 .last-flat-r:last-child {
   border-right-width: 0 !important;
+}
+
+/* Template strip — one horizontal, snap-scrolled lane with faded edges and no
+   visible scrollbar. The cards themselves are gui buttons; only the SCROLL
+   mechanics live here (CSS is the right owner of overflow behavior). */
+.hz-strip {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+  mask-image: linear-gradient(to right, transparent, black 32px, black calc(100% - 32px), transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 32px, black calc(100% - 32px), transparent);
+}
+.hz-strip::-webkit-scrollbar {
+  display: none;
+}
+.hz-strip-card {
+  scroll-snap-align: start;
 }
 
 /* The `group` prop exists in this app for STATE only ($group-hover/press/
