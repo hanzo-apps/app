@@ -164,7 +164,7 @@ export default function SettingsPage() {
 
                   <YStack rowGap="$4">
                     {["Email notifications", "Push notifications", "Project updates", "Marketing emails"].map((item) => (
-                      <Label key={item} alignItems="center" justifyContent="space-between" padding="$4" backgroundColor="$color3" borderRadius="$5" borderWidth={1} borderColor="$borderColor" cursor="pointer">
+                      <Label key={item} display="flex" alignItems="center" justifyContent="space-between" padding="$4" backgroundColor="$color3" borderRadius="$5" borderWidth={1} borderColor="$borderColor" cursor="pointer">
                         <SizableText fontSize="$3" color="$color11">{item}</SizableText>
                         <Switch
                           checked={notifs[item] ?? true}

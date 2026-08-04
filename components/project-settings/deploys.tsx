@@ -136,7 +136,7 @@ function Row({ d, slug }: { d: Deployment; slug: string }) {
         )}
       </XStack>
       {url && (
-        <Anchor
+        <Anchor display="inline-flex"
           href={url}
           target="_blank"
           rel="noopener noreferrer"

@@ -655,7 +655,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
               variant="ghost"
               onClick={onClose}
               aria-label="Hide file explorer"
-              position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" group
+              position="relative" display="none" $md={{ display: "flex" }} height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" group
             >
               <FolderTree 
                 size={16} 

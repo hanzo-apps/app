@@ -41,7 +41,7 @@ export default function ModelsStrip() {
             and connect MCP tool servers the gateway can call mid-completion.
           </Paragraph>
 
-          <Anchor
+          <Anchor display="inline-flex"
             href="https://hanzo.ai/llm"
             target="_blank"
             rel="noopener noreferrer"

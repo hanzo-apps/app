@@ -550,7 +550,7 @@ function RecentProjectsCard({
         </XStack></Link>
       </XStack>
       {projects.length === 0 ? (
-        <Paragraph fontSize="$1" color="$color11" textAlign="center" paddingVertical="$2" flex={1} alignItems="center" justifyContent="center">
+        <Paragraph fontSize="$1" color="$color11" textAlign="center" paddingVertical="$2" flex={1} display="flex" alignItems="center" justifyContent="center">
           No projects yet
         </Paragraph>
       ) : (
@@ -591,7 +591,7 @@ function RecentDeploymentsCard({ deployments }: { deployments: DashboardData['re
         </XStack></Link>
       </XStack>
       {deployments.length === 0 ? (
-        <Paragraph fontSize="$1" color="$color11" textAlign="center" paddingVertical="$2" flex={1} alignItems="center" justifyContent="center">
+        <Paragraph fontSize="$1" color="$color11" textAlign="center" paddingVertical="$2" flex={1} display="flex" alignItems="center" justifyContent="center">
           No deployments yet
         </Paragraph>
       ) : (
@@ -630,7 +630,7 @@ function TrafficLists({ data }: { data: DashboardData }) {
           <H3 fontSize="$3" fontWeight="500" color="$color11">Top Deployments (24h)</H3>
         </XStack>
         {data.traffic.topDeployments.length === 0 ? (
-          <Paragraph fontSize="$1" color="$color11" textAlign="center" paddingVertical="$2" flex={1} alignItems="center" justifyContent="center">
+          <Paragraph fontSize="$1" color="$color11" textAlign="center" paddingVertical="$2" flex={1} display="flex" alignItems="center" justifyContent="center">
             No traffic recorded yet
           </Paragraph>
         ) : (
@@ -658,7 +658,7 @@ function TrafficLists({ data }: { data: DashboardData }) {
           <H3 fontSize="$3" fontWeight="500" color="$color11">Recent Errors</H3>
         </XStack>
         {data.traffic.recentErrors.length === 0 ? (
-          <Paragraph fontSize="$1" color="$color11" textAlign="center" paddingVertical="$2" flex={1} alignItems="center" justifyContent="center">
+          <Paragraph fontSize="$1" color="$color11" textAlign="center" paddingVertical="$2" flex={1} display="flex" alignItems="center" justifyContent="center">
             No errors recorded
           </Paragraph>
         ) : (

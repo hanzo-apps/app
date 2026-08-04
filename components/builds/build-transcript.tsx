@@ -108,18 +108,18 @@ export function BuildTranscript({ build }: { build: Build }) {
             </H1>
 
             <XStack marginTop="$4.5" flexWrap="wrap" alignItems="center" gap="$2">
-              <SizableText alignItems="center" gap="$1.5" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1" fontFamily="$mono" fontSize={11} color="$color11">
+              <SizableText display="inline-flex" alignItems="center" gap="$1.5" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1" fontFamily="$mono" fontSize={11} color="$color11">
                 {build.agent}
               </SizableText>
               {build.model ? (
-                <SizableText alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} color="$color11">
+                <SizableText display="inline-flex" alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} color="$color11">
                   {build.model}
                 </SizableText>
               ) : null}
-              <SizableText alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} color="$color11">
+              <SizableText display="inline-flex" alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} color="$color11">
                 {build.turns.length} turns
               </SizableText>
-              <SizableText alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} color="$color11">
+              <SizableText display="inline-flex" alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} color="$color11">
                 {bound} commits
               </SizableText>
             </XStack>
@@ -135,7 +135,7 @@ export function BuildTranscript({ build }: { build: Build }) {
                 {build.verify}
               </SizableText>
               {build.repo ? (
-                <Anchor
+                <Anchor display="inline-flex"
                   href={build.repo}
                   target="_blank"
                   rel="noreferrer"

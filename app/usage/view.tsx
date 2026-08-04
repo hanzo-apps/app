@@ -45,7 +45,7 @@ export default function UsageView({
         {/* Account usage — real figures from the Hanzo Base data plane. */}
         <Card backgroundColor="$background" borderColor="$borderColor" marginBottom="$5">
           <CardHeader>
-            <CardTitle alignItems="center" gap="$2">
+            <CardTitle display="flex" alignItems="center" gap="$2">
               <Activity size={16} />
               Account
             </CardTitle>

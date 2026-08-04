@@ -319,7 +319,7 @@ export function GitSyncButton({
           title="Push your project to Hanzo git, GitHub, or GitLab"
         >
           <UploadCloud size={14} />
-          <SizableText display="none">Push to Git</SizableText>
+          <SizableText display="none" $md={{ display: "inline" }}>Push to Git</SizableText>
           {linked && (
             <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$green8" aria-hidden />
           )}
@@ -584,7 +584,7 @@ export function GitSyncButton({
               }}
   />
 
-            <Label cursor="pointer" alignItems="center" justifyContent="space-between" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$3" paddingVertical="$2.5">
+            <Label cursor="pointer" display="flex" alignItems="center" justifyContent="space-between" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" paddingHorizontal="$3" paddingVertical="$2.5">
               <XStack alignItems="center" gap="$2">
                 <Lock size={14} />
                 <SizableText fontSize="$3" color="$color">
@@ -624,7 +624,7 @@ export function GitSyncButton({
               </Button>
             )}
 
-            <Paragraph alignItems="center" gap="$1" fontSize="$1" color="$color11">
+            <Paragraph display="flex" alignItems="center" gap="$1" fontSize="$1" color="$color11">
               <ExternalLink size={12} />
               {provider === "hanzo"
                 ? "Pushes to your Hanzo account. Credentials stay server-side."

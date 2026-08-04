@@ -68,7 +68,7 @@ export function SyncDialog({ open, onOpenChange, onSyncComplete }: SyncDialogPro
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className={`${dialogContentClass}`}>
           <DialogHeader>
-            <DialogTitle alignItems="center" gap="$2">
+            <DialogTitle display="flex" alignItems="center" gap="$2">
               <CloudOff size={20} />
               Not Authenticated
             </DialogTitle>
@@ -93,7 +93,7 @@ export function SyncDialog({ open, onOpenChange, onSyncComplete }: SyncDialogPro
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={`${dialogContentClass}`}>
         <DialogHeader>
-          <DialogTitle alignItems="center" gap="$2">
+          <DialogTitle display="flex" alignItems="center" gap="$2">
             <Cloud size={20} />
             Server Sync
           </DialogTitle>

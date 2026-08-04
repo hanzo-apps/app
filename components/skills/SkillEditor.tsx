@@ -193,7 +193,7 @@ export function SkillEditor({ skill, mode, onSave, onCancel }: SkillEditorProps)
               </div>
 
               <YStack backgroundColor="$color3" borderRadius="$5" padding="$4">
-                <H3 fontWeight="500" marginBottom="$2" alignItems="center" gap="$2">
+                <H3 fontWeight="500" marginBottom="$2" display="flex" alignItems="center" gap="$2">
                   <FileText size={16} />
                   Tips for Writing Skills
                 </H3>

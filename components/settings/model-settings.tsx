@@ -222,7 +222,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
             method="API Key"
             extra={(() => { const k = configManager.getProviderApiKey(selectedProvider); return k ? `···${k.slice(-4)}` : undefined; })()}
             info={providerConfig.apiKeyHelpUrl && (
-              <Anchor
+              <Anchor display="inline-flex"
                 href={providerConfig.apiKeyHelpUrl}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -280,7 +280,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
             {providerConfig.apiKeyHelpUrl && (
               <Paragraph fontSize="$3" color="$color11" marginTop="$2">
                 Get your API key from{' '}
-                <Anchor
+                <Anchor display="inline-flex"
                   href={providerConfig.apiKeyHelpUrl}
                   target="_blank"
                   rel="noopener noreferrer"

@@ -307,7 +307,7 @@ function EmptyState({
       <H3 fontWeight="500" color="$color" textAlign="center">{title}</H3>
       <Paragraph alignSelf="center" marginTop="$1" maxWidth={448} fontSize="$3" color="$color11" textAlign="center">{body}</Paragraph>
       {action && (
-        <Anchor
+        <Anchor display="inline-flex"
           href={action.href}
           target="_blank"
           rel="noopener noreferrer"

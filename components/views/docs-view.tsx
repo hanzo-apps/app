@@ -261,7 +261,7 @@ function DocsViewContent() {
 
         {/* Table of Contents Sidebar - independent scrollable column */}
         {showToc && (
-          <YStack display="none" height="100%" borderLeftWidth={1} borderColor="$borderColor" backgroundColor="$color2" overflow="scroll">
+          <YStack display="none" $lg={{ display: "flex" }} height="100%" borderLeftWidth={1} borderColor="$borderColor" backgroundColor="$color2" overflow="scroll">
             <YStack padding="$5" position="sticky" top="$0">
               <TableOfContents items={tocItems} activeId={activeId} visibleIds={visibleIds} onItemClick={handleTocClick} />
             </YStack>

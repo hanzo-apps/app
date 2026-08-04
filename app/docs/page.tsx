@@ -149,7 +149,7 @@ export default function DocsPage() {
                   <SizableText fontSize="$3" fontWeight="500" color="$background">Start building</SizableText>
                   <SizableText color="$background"><ArrowRight size={16} /></SizableText>
                 </XStack></Link>
-                <Anchor
+                <Anchor display="inline-flex"
                   href="https://docs.hanzo.ai"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -264,7 +264,7 @@ export default function DocsPage() {
                 Zen and Enso families included — through a single OpenAI-compatible
                 endpoint. Swap models with one string.
               </Paragraph>
-              <Anchor
+              <Anchor display="inline-flex"
                 href="https://hanzo.ai/llm"
                 target="_blank"
                 rel="noopener noreferrer"

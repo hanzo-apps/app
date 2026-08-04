@@ -130,7 +130,7 @@ export function Header({
             title={historyOpen ? "Back to chat" : "Version history"}
             aria-label={historyOpen ? "Back to chat" : "Version history"}
             aria-pressed={Boolean(historyOpen)}
-            display="none" width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" focusVisibleStyle={{ outlineWidth: 0 }} {...{ backgroundColor: historyOpen ? "$color3" : undefined, hoverStyle: historyOpen ? undefined : { backgroundColor: "$color3" } }}
+            display="none" $lg={{ display: "flex" }} width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" focusVisibleStyle={{ outlineWidth: 0 }} {...{ backgroundColor: historyOpen ? "$color3" : undefined, hoverStyle: historyOpen ? undefined : { backgroundColor: "$color3" } }}
           >
             <History size={16} />
           </Button>
@@ -165,7 +165,7 @@ export function Header({
                 <SizableText color={active ? "$background" : "$color11"}>
                   <item.icon size={16} />
                 </SizableText>
-                <SizableText display="none">{item.label}</SizableText>
+                <SizableText display="none" $sm={{ display: "inline" }}>{item.label}</SizableText>
               </Button>
             );
           })}
@@ -173,7 +173,7 @@ export function Header({
 
         {/* Preview-frame controls — device, refresh, page selector, external.
             Hidden below `md` where there's no room. */}
-        <YStack display="none" alignItems="center" gap="$2">
+        <XStack display="none" $md={{ display: "flex" }} alignItems="center" gap="$2">
           <XStack
             role="tablist"
             aria-label="Preview device"
@@ -252,7 +252,7 @@ export function Header({
           >
             <ExternalLink size={14} />
           </Button>
-        </YStack>
+        </XStack>
       </XStack>
 
       {/* RIGHT — the solid Publish primary is pinned `shrink-0` OUTSIDE the

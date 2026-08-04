@@ -230,7 +230,7 @@ export const DeployButtonContent = ({
               {copied ? <Check size={16} /> : <Copy size={16} />}
             </Button>
           </XStack>
-          <Anchor
+          <Anchor display="inline-flex"
             href={published.url}
             target="_blank"
             rel="noopener noreferrer"

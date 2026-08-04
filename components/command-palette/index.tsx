@@ -289,7 +289,7 @@ function PreviewPanel({ project, authorName }: { project: PaletteProject | null;
           </XStack>
         ))}
       </YStack>
-      <Anchor
+      <Anchor display="inline-flex"
         href={publishedUrl(project.slug)}
         target="_blank"
         rel="noopener noreferrer"

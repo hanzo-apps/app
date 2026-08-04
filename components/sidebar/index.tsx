@@ -328,7 +328,7 @@ function SidebarContent({
                 onClick={toggleCollapsed}
                 title="Collapse sidebar"
                 aria-label="Collapse sidebar"
-                display="none" height="$6" width="$6" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" {...{ color: "$color11" }} hoverStyle={{ backgroundColor: "$color3" }}
+                display="none" $md={{ display: "flex" }} height="$6" width="$6" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" {...{ color: "$color11" }} hoverStyle={{ backgroundColor: "$color3" }}
               >
                 <PanelLeft size={16} />
               </Button>
@@ -633,7 +633,7 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
           >
             <Share2 size={14} /> <SizableText fontSize="$1" color="$color11">Share</SizableText>
           </Button>
-          <Anchor
+          <Anchor display="inline-flex"
             href={`https://x.com/intent/post?text=${shareText}&url=${enc}`}
             target="_blank"
             rel="noopener noreferrer"
@@ -641,7 +641,7 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
           >
             Post on X
           </Anchor>
-          <Anchor
+          <Anchor display="inline-flex"
             href={`https://www.linkedin.com/sharing/share-offsite/?url=${enc}`}
             target="_blank"
             rel="noopener noreferrer"

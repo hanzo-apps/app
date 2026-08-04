@@ -97,7 +97,7 @@ export default function LoginPage() {
               <Paragraph fontSize="$3" color="$color11" textAlign="center">Run locally without login</Paragraph>
 
               <YStack gap="$3">
-                <Anchor
+                <Anchor display="flex"
                   href="https://github.com/hanzoai/app/releases/latest"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -107,7 +107,7 @@ export default function LoginPage() {
                   <SizableText fontSize="$3" color="$color11" $group-hover={{ color: "$color" }}>Windows</SizableText>
                 </Anchor>
 
-                <Anchor
+                <Anchor display="flex"
                   href="https://github.com/hanzoai/app/releases/latest"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -117,7 +117,7 @@ export default function LoginPage() {
                   <SizableText fontSize="$3" color="$color11" $group-hover={{ color: "$color" }}>macOS</SizableText>
                 </Anchor>
 
-                <Anchor
+                <Anchor display="flex"
                   href="https://github.com/hanzoai/app/releases/latest"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -141,7 +141,7 @@ export default function LoginPage() {
         </XStack>
 
         {/* Right Side - Animated Ideas */}
-        <YStack display="none" width="50%" alignItems="center" justifyContent="center" paddingHorizontal="$5" paddingVertical="$11" position="relative" overflow="hidden">
+        <YStack display="none" $lg={{ display: "flex" }} width="50%" alignItems="center" justifyContent="center" paddingHorizontal="$5" paddingVertical="$11" position="relative" overflow="hidden">
           <YStack position="absolute" top={0} right={0} bottom={0} left={0} opacity={0.2}>
             <YStack
               position="absolute" top={0} right={0} bottom={0} left={0}

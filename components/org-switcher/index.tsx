@@ -141,7 +141,7 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
     return (
       <XStack alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5">
         <Building2 size={16} />
-        <SizableText display="none" fontSize="$3" color="$color11">…</SizableText>
+        <SizableText display="none" $sm={{ display: "inline" }} fontSize="$3" color="$color11">…</SizableText>
       </XStack>
     );
   }

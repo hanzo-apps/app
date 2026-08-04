@@ -321,7 +321,7 @@ export function SkillsManager() {
                 {/* Built-in Skills */}
                 {builtInSkills.length > 0 && (
                   <div>
-                    <H2 fontSize="$6" fontWeight="500" marginBottom="$3" alignItems="center" gap="$2">
+                    <H2 fontSize="$6" fontWeight="500" marginBottom="$3" display="flex" alignItems="center" gap="$2">
                       <FileText size={20} />
                       Built-in Skills ({builtInSkills.length})
                     </H2>
@@ -344,7 +344,7 @@ export function SkillsManager() {
                 {/* Custom Skills */}
                 {customSkills.length > 0 && (
                   <div>
-                    <H2 fontSize="$6" fontWeight="500" marginBottom="$3" alignItems="center" gap="$2">
+                    <H2 fontSize="$6" fontWeight="500" marginBottom="$3" display="flex" alignItems="center" gap="$2">
                       <Sparkles size={20} />
                       Custom Skills ({customSkills.length})
                     </H2>

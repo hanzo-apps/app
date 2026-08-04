@@ -44,7 +44,7 @@ export default function SmartRoutingCard() {
       <CardHeader>
         <XStack alignItems="flex-start" justifyContent="space-between" gap="$4">
           <div>
-            <CardTitle alignItems="center" gap="$2">
+            <CardTitle display="flex" alignItems="center" gap="$2">
               <Zap size={16} />
               Smart routing
             </CardTitle>
@@ -81,7 +81,7 @@ export default function SmartRoutingCard() {
               ? "On — the builder opens on Auto and the gateway routes each request."
               : `Off — the builder uses ${DEFAULT_MODEL} unless you pick another model.`}
         </Paragraph>
-        <Anchor
+        <Anchor display="inline-flex"
           href={ROUTING_DOCS_URL}
           target="_blank"
           rel="noopener noreferrer"

@@ -340,7 +340,7 @@ export function BuildComposer({
 
       {/* Subtle honest sub-line — no fabricated claims. */}
       {subline && (
-        <Paragraph marginTop="$3" alignItems="center" justifyContent="center" gap="$1.5" textAlign="center" fontSize="$1" color="$color11">
+        <Paragraph marginTop="$3" display="flex" alignItems="center" justifyContent="center" gap="$1.5" textAlign="center" fontSize="$1" color="$color11">
           <Sparkles size={12} />
           UI, database, auth, and 400+ AI models — wired in and deployed to Hanzo Cloud.
         </Paragraph>

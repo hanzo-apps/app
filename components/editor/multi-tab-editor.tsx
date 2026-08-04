@@ -335,7 +335,7 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
               type="button"
               onClick={onClose}
               aria-label="Hide code editor"
-              position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" group
+              position="relative" display="none" $md={{ display: "flex" }} height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" group
             >
               <Code2
                 size={16}

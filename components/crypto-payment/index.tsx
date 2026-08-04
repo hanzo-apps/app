@@ -122,7 +122,7 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent maxWidth={512} backgroundColor="$background" borderColor="$borderColor">
         <DialogHeader>
-          <DialogTitle alignItems="center" fontSize="$7">
+          <DialogTitle display="flex" alignItems="center" fontSize="$7">
             <Wallet size={20} />
             {step === 'success' ? 'Payment Complete!' : 'Purchase Credits with USDC'}
           </DialogTitle>
@@ -142,7 +142,7 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
               +{CREDIT_PRICING[selectedAmount as keyof typeof CREDIT_PRICING]?.credits.toLocaleString()} credits added!
             </Paragraph>
             {hash && (
-              <Anchor
+              <Anchor display="flex"
                 href={`${explorerUrl}/tx/${hash}`}
                 target="_blank"
                 rel="noopener noreferrer"

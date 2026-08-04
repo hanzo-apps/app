@@ -1085,7 +1085,7 @@ export function AskAI({
         </Button>
         {isDragging && (
           <XStack position="absolute" top={0} right={0} bottom={0} left={0} zIndex={30} borderRadius="$8" borderWidth={2} borderStyle="dashed" borderColor="$color11" backgroundColor="$background" alignItems="center" justifyContent="center" pointerEvents="none">
-            <Paragraph fontSize="$3" color="$color" alignItems="center" gap="$2">
+            <Paragraph fontSize="$3" color="$color" display="flex" alignItems="center" gap="$2">
               <ImagePlus size={16} />
               Drop images to attach as references
             </Paragraph>

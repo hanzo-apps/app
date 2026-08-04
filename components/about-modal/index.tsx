@@ -48,7 +48,7 @@ export function AboutModal({ open, onOpenChange }: AboutModalProps) {
           <section>
             <H3 fontWeight="500" fontSize="$6" marginBottom="$3">Links & Community</H3>
             <YStack gap="$2">
-              <Anchor
+              <Anchor display="inline-flex"
                 href="https://discord.gg/mAJ8Ss4u"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -58,7 +58,7 @@ export function AboutModal({ open, onOpenChange }: AboutModalProps) {
                 Discord Community
                 <ExternalLink size={12} />
               </Anchor>
-              <Anchor
+              <Anchor display="inline-flex"
                 href="https://github.com/hanzoai/app"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -68,7 +68,7 @@ export function AboutModal({ open, onOpenChange }: AboutModalProps) {
                 GitHub repo
                 <ExternalLink size={12} />
               </Anchor>
-              <Anchor
+              <Anchor display="inline-flex"
                 href="https://hanzo.app"
                 target="_blank"
                 rel="noopener noreferrer"

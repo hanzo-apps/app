@@ -122,7 +122,7 @@ export function TemplateDetail({
                     <SizableText color="$background"><Code2 size={16} /></SizableText>
                     <SizableText fontSize="$3" fontWeight="500" color="$background">Use template</SizableText>
                   </XStack></Link>
-                  <Anchor
+                  <Anchor display="inline-flex"
                     href={t.previewUrl}
                     target="_blank"
                     rel="noreferrer"
@@ -262,7 +262,7 @@ export function TemplateDetail({
                 </div>
                 <Link
                   href={catHref}
-                ><SizableText display="none" flexShrink={0} fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}>
+                ><SizableText display="none" $sm={{ display: "inline" }} flexShrink={0} fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}>
                   View all →
                 </SizableText></Link>
               </Reveal>

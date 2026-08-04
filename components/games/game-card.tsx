@@ -33,13 +33,13 @@ export function GameCard({ game }: { game: GameEntry }) {
     ><YStack group height="100%" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "-1", borderColor: "$color" }}>
       {/* Header band — engine + play status */}
       <XStack alignItems="center" justifyContent="space-between" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$4" paddingVertical="$3">
-        <SizableText alignItems="center" gap="$2" fontSize="$3" fontWeight="500" color="$color">
+        <SizableText display="inline-flex" alignItems="center" gap="$2" fontSize="$3" fontWeight="500" color="$color">
           <Gamepad2 size={16} aria-hidden />
           {ENGINE_LABEL[game.engine]}
           <SizableText color="$color11">{game.engineVersion}</SizableText>
         </SizableText>
         {playable ? (
-          <SizableText alignItems="center" gap="$1" borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$2" paddingVertical="$0.5" fontSize={11} fontWeight="500" color="$color12">
+          <SizableText display="inline-flex" alignItems="center" gap="$1" borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$2" paddingVertical="$0.5" fontSize={11} fontWeight="500" color="$color12">
             <Play size={12} aria-hidden />
             Play
           </SizableText>

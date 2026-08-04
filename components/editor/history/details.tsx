@@ -350,7 +350,7 @@ function Timeline({ rev, commit }: { rev: DetailsRev; commit: GitCommit | null }
       rows.push({
         label: "Link",
         value: (
-          <Anchor
+          <Anchor display="inline-flex"
             href={rev.url}
             target="_blank"
             rel="noopener noreferrer"

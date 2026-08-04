@@ -255,7 +255,7 @@ export default function BlogPlatform() {
                 {/* Popular Authors */}
                 <Card>
                   <CardHeader>
-                    <CardTitle alignItems="center" gap="$2">
+                    <CardTitle display="flex" alignItems="center" gap="$2">
                       <Users size={20} />
                       Popular Authors
                     </CardTitle>
@@ -287,7 +287,7 @@ export default function BlogPlatform() {
                 {/* Your Stats */}
                 <Card>
                   <CardHeader>
-                    <CardTitle alignItems="center" gap="$2">
+                    <CardTitle display="flex" alignItems="center" gap="$2">
                       <BarChart size={20} />
                       Your Stats
                     </CardTitle>
@@ -317,7 +317,7 @@ export default function BlogPlatform() {
                 {/* Reading List */}
                 <Card>
                   <CardHeader>
-                    <CardTitle alignItems="center" gap="$2">
+                    <CardTitle display="flex" alignItems="center" gap="$2">
                       <Clock size={20} />
                       Reading List
                     </CardTitle>

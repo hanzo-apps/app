@@ -87,7 +87,7 @@ function TemplateCard({ t, showAuthor = false }: { t: TemplateEntry; showAuthor?
       </YStack>
 
       <YStack flex={1} padding="$4" $sm={{ padding: "$4.5" }}>
-        <H3 alignItems="flex-start" gap="$1.5" fontSize={15} fontWeight="500" lineHeight="1.375" letterSpacing={-0.4} color="$color">
+        <H3 display="flex" alignItems="flex-start" gap="$1.5" fontSize={15} fontWeight="500" lineHeight="1.375" letterSpacing={-0.4} color="$color">
           <SizableText numberOfLines={1}>{t.name}</SizableText>
           <ArrowUpRight
             size={16}

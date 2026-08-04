@@ -341,7 +341,7 @@ export const AppEditor = ({
           height={28} gap="$1.5" paddingHorizontal="$2.5" borderColor="$borderColor" backgroundColor="$color3" hoverStyle={{ backgroundColor: "$color3" }}
         >
           <Share2 size={14} />
-          <SizableText display="none">Share</SizableText>
+          <SizableText display="none" $md={{ display: "inline" }}>Share</SizableText>
         </Button>
         <LoadProject
           onSuccess={(project: Project) => {
