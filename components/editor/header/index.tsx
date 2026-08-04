@@ -207,12 +207,15 @@ export function Header({
               project (not just index.html). The working page is highlighted. */}
           {pages.length > 0 && (
             <Popover open={pageMenuOpen} onOpenChange={setPageMenuOpen}>
+              {/* A fixed 32px box, not vertical padding: this control sits in a
+                  row with the others and has to match their height exactly, which
+                  padding around a variable-height label does not. */}
               <PopoverTrigger asChild>
                 <Button
                   type="button"
                   title="Browse pages"
                   aria-label="Browse pages"
-                  maxWidth="12rem" alignItems="center" gap="$1.5" borderRadius="$5" backgroundColor="$color" paddingHorizontal="$2.5" paddingVertical="$1.5" fontSize="$3" color="$color" hoverStyle={{ backgroundColor: "$color", color: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
+                  maxWidth="12rem" height={32} alignItems="center" gap="$1.5" borderRadius="$5" backgroundColor="$color" paddingHorizontal="$2.5" fontSize="$3" color="$color" hoverStyle={{ backgroundColor: "$color", color: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
                 >
                   <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1">
                     {currentPage}

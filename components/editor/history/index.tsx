@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { toast, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Button } from '@hanzo/ui';
 import { stageProject } from "@/lib/import/staging";
+import { projectRepoName } from "@/lib/dev/workspace";
 
 import { HtmlHistory, Page } from "@/types";
 import { HanzoLogo } from "@/components/HanzoLogo";
@@ -266,6 +267,22 @@ export function HistoryPanel({
         }
       } catch {
         /* best-effort */
+      }
+      // THE FIX for "no revisions yet". A saved project carries its repo link, and
+      // the fetch above finds it. But a brand-new build has NO project record —
+      // and `commitTurn` still committed every turn, to the native repo named by
+      // `projectRepoName` (the project slug, or a minted id). Reading commits only
+      // from the project record meant those commits were written to a real repo the
+      // panel never looked at, so the timeline stayed empty for exactly the case
+      // people are in most: a fresh build they have not saved yet.
+      //
+      // Fall back to that same native repo. The /v1/git/commits route resolves
+      // provider 'hanzo' against the session's own account and accepts a bare name,
+      // so passing the repo NAME is enough — no owner needed here, and a caller
+      // cannot read another account's repo.
+      if (!ref) {
+        const name = projectRepoName(pk === "local" ? undefined : pk);
+        if (name) ref = { provider: "hanzo", repo: name, branch: "main" };
       }
       if (!alive) return;
       setRepo(ref);

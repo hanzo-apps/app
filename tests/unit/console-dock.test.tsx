@@ -97,18 +97,27 @@ const setup = (onToggleSidebar = jest.fn(), voice: ReturnType<typeof machine> | 
 const heightOf = (dock: HTMLElement) => parseInt(dock.style.height, 10);
 
 /**
- * The nearest box holding BOTH controls — i.e. the cluster they share.
+ * The bar's two ends. The controls used to share one box; the panel toggle now
+ * rides the left and the AI controls the right, so a cluster is named by the
+ * edge it is pinned to.
  *
- * Neither control's own parent is a handle on it: @hanzo/ui wraps its Button in
- * a `display: contents` theme span, so the two sit at different depths. Walking
- * up until the other one is inside asks the question structurally, and survives
- * any wrapper either of them grows later.
+ * gui compiles `left="$2"` to `left: var(--c-space-2)`, and jsdom cannot resolve
+ * a CSS variable — the emitted class is the only honest evidence available here
+ * that an offset is set at all.
  */
-const clusterOf = (one: HTMLElement, other: HTMLElement) => {
-  let node = one.parentElement;
-  while (node && !node.contains(other)) node = node.parentElement;
-  return node as HTMLElement;
-};
+const LEFT_OFFSET = "._l-c-space-2";
+const RIGHT_OFFSET = "._r-c-space-2";
+
+/**
+ * The cluster a control rides in, found by the edge it is pinned to.
+ *
+ * A control's own parent is not a handle on it: @hanzo/ui wraps its Button in a
+ * `display: contents` theme span, and @hanzo/voice adds its own, so the two sit
+ * at different depths. Asking for the nearest pinned ancestor survives any
+ * wrapper either of them grows later.
+ */
+const clusterFor = (control: HTMLElement, edge: string) =>
+  control.closest(edge) as HTMLElement;
 
 const dragTo = (handle: HTMLElement, from: number, to: number) => {
   fireEvent.pointerDown(handle, { button: 0, clientY: from, pointerId: 1 });
@@ -282,29 +291,39 @@ describe("the workspace controls ride far right on the bar", () => {
     expect(screen.queryByRole("button", { name: /talk to hanzo/i })).toBeNull();
   });
 
-  it("puts both of them to the right of the status readout", () => {
+  it("sits the panel toggle on the LEFT, by the pane it controls", () => {
+    // The toggle shows and hides the LEFT chat pane, so it lives on the left: a
+    // right-side control that collapsed the left pane read as belonging to the
+    // preview and people could not find it.
     setup();
     const ai = screen.getByRole("button", { name: /chat panel/i });
+    const cluster = clusterFor(ai, LEFT_OFFSET);
+    expect(cluster).not.toBeNull();
+    expect(getComputedStyle(cluster).position).toBe("absolute");
+    // Its own cluster, at the other end of the bar from the AI controls.
+    expect(cluster).not.toContainElement(
+      screen.getByRole("button", { name: /talk to hanzo/i }),
+    );
+  });
+
+  it("sits the mic and Enso on the RIGHT, mic first", () => {
+    setup();
     const mic = screen.getByRole("button", { name: /talk to hanzo/i });
     const status = screen.getByText(SAVE_TEXT);
 
-    // One cluster, not two controls that merely landed in the same dock: the
-    // box they share holds them and leaves the status readout outside it.
-    const cluster = clusterOf(mic, ai);
-    expect(cluster).toContainElement(ai);
-    expect(cluster).toContainElement(mic);
-    expect(cluster).not.toContainElement(status);
-
-    // …and it rides to the RIGHT of that readout: after it in the bar, floated
+    const cluster = clusterFor(mic, RIGHT_OFFSET);
+    expect(cluster).not.toBeNull();
+    // It rides to the RIGHT of the status readout: after it in the bar, floated
     // over the bar rather than in flow, pinned to the bar's right edge.
+    expect(cluster).not.toContainElement(status);
     expect(status.compareDocumentPosition(cluster)).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING,
     );
     expect(getComputedStyle(cluster).position).toBe("absolute");
-    // gui compiles `right="$2"` to `right: var(--c-space-2)`, and jsdom cannot
-    // resolve a CSS variable — the emitted class is the only honest evidence
-    // available here that a right offset is set at all.
-    expect(cluster).toHaveClass("_r-c-space-2");
+    // Enso anchors into #enso-dock, ordered AFTER the mic (to its right).
+    const dock = cluster.querySelector("#enso-dock");
+    expect(dock).not.toBeNull();
+    expect(mic.compareDocumentPosition(dock as Node) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("clicking a control does not resize or toggle the dock", () => {

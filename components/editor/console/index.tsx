@@ -144,8 +144,31 @@ export function Console({
           <SizableText pointerEvents="none" position="absolute" left="50%" top={3} height="$1" width="$6" x="50%" borderRadius="$10" backgroundColor="transparent" $group-dock-hover={{ backgroundColor: "$color" }} $group-dock-focus={{ backgroundColor: "$color" }} $group-dock-press={{ backgroundColor: "$color" }} />
         </YStack>
 
-        {/* State, inert: it rides on the bar but never eats the drag. */}
-        <SizableText pointerEvents="none" position="relative" height="100%" alignItems="center" gap="$2.5" paddingLeft="$3" paddingRight="4.75rem" fontSize={11} color="$color11" display="flex" flexDirection="row">
+        {/* Far LEFT — the chat/AI panel toggle. It shows and hides the LEFT pane,
+            so it belongs on the left: a right-side control that collapsed the left
+            pane read as belonging to the preview, and people could not find it.
+            Floated over the bar like the right cluster so the separator underneath
+            stays one clean, uninterrupted drag target. */}
+        <XStack position="absolute" left="$2" top="$0" height="100%" alignItems="center">
+          <Button
+            type="button"
+            onClick={onToggleSidebar}
+            aria-label="Chat panel"
+            aria-expanded={!sidebarCollapsed}
+            width="$4.5" height="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" color="$color11" hoverStyle={{ backgroundColor: "$color", color: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
+          >
+            {sidebarCollapsed ? (
+              <PanelLeft size={14} />
+            ) : (
+              <PanelLeftClose size={14} />
+            )}
+          </Button>
+        </XStack>
+
+        {/* State, inert: it rides on the bar but never eats the drag. Padded to
+            clear the panel toggle on the left and the mic + Enso on the right —
+            measured clearances, so they stay the measurements they are. */}
+        <SizableText pointerEvents="none" position="relative" height="100%" alignItems="center" gap="$2.5" paddingLeft="2.25rem" paddingRight="4.25rem" fontSize={11} color="$color11" display="flex" flexDirection="row">
           <SizableText alignItems="center" gap="$1.5">
             <SizableText position="relative" width="$1.5" height="$1.5" alignItems="center" justifyContent="center">
               <SizableText position="absolute" width="$1.5" height="$1.5" borderRadius="$10" backgroundColor="var(--brand-accent)" opacity={0.6} />
@@ -182,30 +205,11 @@ export function Console({
           </SizableText>
         </SizableText>
 
-        {/* Far right — the workspace controls, floated over the bar so the
-            separator underneath stays one clean, uninterrupted drag target. */}
+        {/* Far right — the workspace AI controls, floated over the bar so the
+            separator underneath stays one clean, uninterrupted drag target.
+            Order is mic then Enso: the mic is the conversation, Enso the editor,
+            and the user asked for the mark to sit to the RIGHT of the mic. */}
         <XStack position="absolute" right="$2" top="$0" height="100%" alignItems="center" gap="$0.5">
-          {/* Enso mounts HERE (public/edit.js, `hanzo:anchor` in app/dev/layout).
-              It used to float at the viewport corner, where it sat on top of the
-              customer's preview — so /dev turned it off entirely. In the control
-              plane it is out of the canvas and beside the other workspace
-              controls, which is where a tool for editing hanzo.app belongs.
-              The host it injects is a descendant that arrives after render, so
-              THAT one rule lives in assets/globals.css — see #enso-dock. */}
-          <XStack id="enso-dock" alignItems="center" />
-          <Button
-            type="button"
-            onClick={onToggleSidebar}
-            aria-label="Chat panel"
-            aria-expanded={!sidebarCollapsed}
-            width="$4.5" height="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" color="$color11" hoverStyle={{ backgroundColor: "$color", color: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
-          >
-            {sidebarCollapsed ? (
-              <PanelLeft size={14} />
-            ) : (
-              <PanelLeftClose size={14} />
-            )}
-          </Button>
           {voice && (
             <Voice
               voice={voice}
@@ -213,6 +217,15 @@ export function Console({
               className="voice-control"
   />
           )}
+          {/* Enso mounts HERE (public/edit.js, `hanzo:anchor` in app/dev/layout),
+              to the RIGHT of the mic. It used to float at the viewport corner, on
+              top of the customer's preview — so /dev turned it off entirely. In
+              the control plane it is out of the canvas and beside the other
+              workspace controls, which is where a tool for editing hanzo.app
+              belongs. Anchored size is pinned small in public/edit.js. The host
+              it injects is a descendant that arrives after render, so THAT one
+              rule lives in assets/globals.css — see #enso-dock. */}
+          <XStack id="enso-dock" alignItems="center" />
         </XStack>
       </YStack>
 
