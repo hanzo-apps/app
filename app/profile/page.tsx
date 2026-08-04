@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Save, Camera, Twitter, Github, Globe } from "lucide-react";
 import { Button } from "@hanzo/ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
+import { useIamToken } from "@hanzo/iam/react";
 import { useUser } from "@/hooks/useUser";
 import { toast } from "@hanzo/ui";
 import { HanzoLogo } from "@/components/HanzoLogo";
@@ -41,14 +42,35 @@ export default function ProfilePage() {
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) =>
     setDraft((d) => ({ ...d, [key]: value }));
 
+  /**
+   * THE SESSION THIS APP ACTUALLY HAS.
+   *
+   * `session()` on the server reads a bearer, falling back to a session COOKIE —
+   * and this app has no such cookie. Its session is an IAM access token in Web
+   * Storage, which every other authenticated surface sends explicitly
+   * (`useIamToken()` → `Authorization: Bearer`, e.g. components/usage). A plain
+   * `credentials: "same-origin"` fetch therefore arrives ANONYMOUS: the route
+   * answers 401 "Sign in to edit your profile" for a signed-in person, and every
+   * save fails while the page looks logged in. Nothing here works without this.
+   */
+  const { token } = useIamToken();
+  const authed = (init: RequestInit = {}): RequestInit => ({
+    ...init,
+    credentials: "same-origin",
+    headers: {
+      ...(init.headers as Record<string, string> | undefined),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
   // The stored profile. Until this lands the page shows the session's claims,
   // which is what the header already renders.
   useEffect(() => {
-    if (!user) return;
+    if (!user || !token) return;
     let live = true;
     (async () => {
       try {
-        const res = await fetch("/v1/me/profile", { credentials: "same-origin" });
+        const res = await fetch("/v1/me/profile", authed());
         const body = await res.json().catch(() => null);
         if (!live || !res.ok || !body?.ok) return;
         const p: Draft = { ...EMPTY, ...body.profile };
@@ -62,7 +84,7 @@ export default function ProfilePage() {
     return () => {
       live = false;
     };
-  }, [user]);
+  }, [user, token]);
 
   const pickPhoto = useCallback(async (file: File) => {
     setBusy(true);
@@ -86,12 +108,14 @@ export default function ProfilePage() {
   const handleSave = async () => {
     setBusy(true);
     try {
-      const res = await fetch("/v1/me/profile", {
-        method: "POST",
-        credentials: "same-origin",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(draft),
-      });
+      const res = await fetch(
+        "/v1/me/profile",
+        authed({
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(draft),
+        }),
+      );
       const body = await res.json().catch(() => null);
       if (!res.ok || !body?.ok) {
         // Say what the server said. "Profile updated successfully" on a failed
