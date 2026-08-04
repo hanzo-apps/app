@@ -164,8 +164,15 @@ export async function POST(request: NextRequest) {
   const response = new NextResponse(stream.readable, {
     headers: {
       "Content-Type": "text/plain; charset=utf-8",
-      "Cache-Control": "no-cache",
+      // `no-transform` and `X-Accel-Buffering: no` are what keep this a STREAM
+      // across the proxies in front of it. Without them an intermediary is free
+      // to buffer the whole body before forwarding any of it — the builder then
+      // shows nothing for the length of the generation, and a proxy that gives
+      // up mid-buffer truncates the page instead of delivering it. The sibling
+      // stream (app/v1/chat/completions) has always sent both; this one did not.
+      "Cache-Control": "no-cache, no-transform",
       Connection: "keep-alive",
+      "X-Accel-Buffering": "no",
     },
   });
 
@@ -287,8 +294,15 @@ export async function PATCH(request: NextRequest) {
   const response = new NextResponse(stream.readable, {
     headers: {
       "Content-Type": "text/plain; charset=utf-8",
-      "Cache-Control": "no-cache",
+      // `no-transform` and `X-Accel-Buffering: no` are what keep this a STREAM
+      // across the proxies in front of it. Without them an intermediary is free
+      // to buffer the whole body before forwarding any of it — the builder then
+      // shows nothing for the length of the generation, and a proxy that gives
+      // up mid-buffer truncates the page instead of delivering it. The sibling
+      // stream (app/v1/chat/completions) has always sent both; this one did not.
+      "Cache-Control": "no-cache, no-transform",
       Connection: "keep-alive",
+      "X-Accel-Buffering": "no",
     },
   });
 
