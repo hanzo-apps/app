@@ -3,8 +3,7 @@ import { toast } from "@hanzo/ui";
 import { Page } from "@/types";
 import { parsePages, parseSinglePage, stripThinkBlocks } from "@/lib/format-pages";
 import { setLastGenerationRequestId } from "@/lib/reward-signal";
-import { deadLinks } from "@/lib/pages/links";
-import { responsiveIssues } from "@/lib/pages/responsive";
+import { qualityReport } from "@/lib/pages/report";
 import { baseEnabled } from "@/lib/base/flag";
 // UNAVAILABLE is the ONE honest message for a failure THIS side detects: the
 // socket died, or the response arrived without a body. The caller's handleError
@@ -275,22 +274,9 @@ export const useCallAi = ({
               // Reported in one message rather than two toasts: a build with a
               // dead nav usually also has the layout problem that came with it,
               // and stacking notifications buries the first.
-              const dead = deadLinks(newPages);
-              const unfit = responsiveIssues(newPages);
-              if (!dead.length && unfit.length) {
-                const first = unfit[0];
-                toast.error(
-                  unfit.length === 1
-                    ? `${first.from}: ${first.problem}${first.detail ? ` (${first.detail})` : ""}.`
-                    : `${unfit.length} things will not render on a phone (first: ${first.from} — ${first.problem}).`,
-                );
-              } else if (dead.length) {
-                const first = dead[0];
-                toast.error(
-                  dead.length === 1
-                    ? `${first.href} on ${first.from} goes nowhere — ${first.reason}. Ask for that page, or for the link to be removed.`
-                    : `${dead.length} links go nowhere (first: ${first.href} on ${first.from}). Ask for those pages, or for the links to be removed.`,
-                );
+              const problem = qualityReport(newPages);
+              if (problem) {
+                toast.error(problem);
               } else {
                 toast.success("AI responded successfully");
                 if (audio.current) audio.current.play();
@@ -538,6 +524,11 @@ export const useCallAi = ({
         setLastGenerationRequestId(res.id);
         setPages(res.pages);
         onSuccess(res.pages, prompt, res.updatedLines);
+        // The SAME checks the first build runs. A link is no less dead for
+        // having arrived on the second prompt, and an edit is the likeliest way
+        // a nav gains an item pointing at a page nobody wrote.
+        const editProblem = qualityReport(res.pages);
+        if (editProblem) toast.error(editProblem);
 
         if (audio.current) audio.current.play();
 

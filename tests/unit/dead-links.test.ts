@@ -82,3 +82,23 @@ describe('deadLinks', () => {
     expect(deadLinks(pages)).toEqual([]);
   });
 });
+
+describe('qualityReport — one voice, every turn', () => {
+  const { qualityReport } = jest.requireActual('@/lib/pages/report');
+  const doc = (body: string) =>
+    `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width"></head><body>${body}</body></html>`;
+
+  it('says nothing about a clean build', () => {
+    expect(qualityReport([page('index.html', doc('<p>ok</p>'))])).toBeNull();
+  });
+
+  it('leads with a dead link — the more visible failure', () => {
+    const pages = [page('index.html', doc('<a href="gone.html">Go</a><div style="width:1200px"></div>'))];
+    expect(qualityReport(pages)).toMatch(/goes nowhere/);
+  });
+
+  it('reports a phone problem when the links are fine', () => {
+    const pages = [page('index.html', doc('<div style="width:1200px"></div>'))];
+    expect(qualityReport(pages)).toMatch(/phone|wider/i);
+  });
+});
