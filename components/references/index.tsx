@@ -93,6 +93,22 @@ export function References({ project }: { project?: string | null }) {
     }
   };
 
+  /**
+   * Download the pixels, a batch at a time.
+   *
+   * The import records what is there; this keeps the bytes. Both modes need
+   * them — a gallery hotlinked to Drive breaks when the link rots, and
+   * guidelines whose evidence expired point at nothing. Bounded so a folder of
+   * two hundred cannot spin forever, and each landed batch is already saved.
+   */
+  const land = async () => {
+    for (let i = 0; i < 40; i++) {
+      const j = await send("/assets/bytes", { method: "POST" }, "land");
+      if (!j || !j.remaining) break;
+    }
+    await load();
+  };
+
   const importLink = async () => {
     const j = await send(
       "/assets",
@@ -106,6 +122,7 @@ export function References({ project }: { project?: string | null }) {
     if (j) {
       setUrl("");
       await load();
+      await land();
     }
   };
 
@@ -183,7 +200,10 @@ export function References({ project }: { project?: string | null }) {
           onClick={() => void importLink()}
           className="flex items-center justify-center gap-1.5 rounded-md bg-white px-3 py-2 text-sm font-medium text-black disabled:opacity-50"
         >
-          {busy === "import" ? <Loader2 className="animate-spin" size={14} /> : null} Import
+          {busy === "import" || busy === "land" ? (
+            <Loader2 className="animate-spin" size={14} />
+          ) : null}
+          {busy === "land" ? "Saving images…" : "Import"}
         </button>
         {err ? (
           <p role="alert" className="text-xs text-red-400">
