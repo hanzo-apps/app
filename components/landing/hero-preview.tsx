@@ -251,7 +251,7 @@ export default function HeroPreview() {
       `}</style>
 
       {/* Soft floor glow to seat the frame. */}
-      <YStack pointerEvents="none" position="absolute" left="$0" right="$0" bottom="-7" top="$6" zIndex={10} borderRadius="2rem" backgroundColor="$color005" filter="blur(80px)" $sm={{ left: "-6", right: "-6" }} />
+      <YStack pointerEvents="none" position="absolute" left="$0" right="$0" bottom="$-7" top="$6" zIndex={10} borderRadius="2rem" backgroundColor="$color005" filter="blur(80px)" $sm={{ left: "$-6", right: "$-6" }} />
 
       <YStack overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" elevation={6}>
         {/* ── Editor header — the real /dev chrome in miniature ── */}

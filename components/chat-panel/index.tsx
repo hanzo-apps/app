@@ -815,7 +815,7 @@ export function ChatPanel({
   />
                   <Button
                     onClick={() => removeImage(img.id)}
-                    position="absolute" top="-1" right="-1" height="$4" width="$4" backgroundColor="$red9" borderRadius="$10" alignItems="center" justifyContent="center" opacity={0} $group-hover={{ opacity: 1 }}
+                    position="absolute" top="$-1" right="$-1" height="$4" width="$4" backgroundColor="$red9" borderRadius="$10" alignItems="center" justifyContent="center" opacity={0} $group-hover={{ opacity: 1 }}
                     title="Remove image"
                   >
                     <SizableText color="$background" display="flex"><X size={12} /></SizableText>

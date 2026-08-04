@@ -182,7 +182,7 @@ export function WorkspaceMenu({
             </Link>
           </DropdownMenuItem>
 
-          <DropdownMenuSeparator marginHorizontal="-1.5" marginVertical="$1.5" backgroundColor="$borderColor" />
+          <DropdownMenuSeparator marginHorizontal="$-1.5" marginVertical="$1.5" backgroundColor="$borderColor" />
 
           {/* Who you're signed in as. */}
           <XStack alignItems="center" gap="$2.5" paddingHorizontal="$2" paddingVertical="$1.5">
@@ -282,7 +282,7 @@ export function WorkspaceMenu({
             <NetworkWallet />
           </YStack>
 
-          <DropdownMenuSeparator marginHorizontal="-1.5" marginVertical="$1.5" backgroundColor="$borderColor" />
+          <DropdownMenuSeparator marginHorizontal="$-1.5" marginVertical="$1.5" backgroundColor="$borderColor" />
 
           <DropdownMenuItem asChild {...ITEM}>
             <Link href="/settings">
@@ -311,7 +311,7 @@ export function WorkspaceMenu({
             </a>
           </DropdownMenuItem>
 
-          <DropdownMenuSeparator marginHorizontal="-1.5" marginVertical="$1.5" backgroundColor="$borderColor" />
+          <DropdownMenuSeparator marginHorizontal="$-1.5" marginVertical="$1.5" backgroundColor="$borderColor" />
 
           <DropdownMenuItem
             onSelect={() => void logout()}

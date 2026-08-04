@@ -155,7 +155,7 @@ export default function PricingPage() {
                             position="relative" flexBasis={252} flexGrow={1} minWidth={240} maxWidth={360} borderRadius="$8" borderWidth={1} padding={28} {...{ borderColor: highlighted ? "$color" : "$borderColor", backgroundColor: highlighted ? "$color2" : "$color002", hoverStyle: highlighted ? undefined : {"borderColor":"$color06"} }}
                           >
                             {highlighted && (
-                              <YStack position="absolute" top="-3" left={28}>
+                              <YStack position="absolute" top="$-3" left={28}>
                                 <SizableText borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$3" paddingVertical="$1" fontSize={11} fontWeight="500" color="$color12">
                                   Most popular
                                 </SizableText>
