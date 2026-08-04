@@ -18,7 +18,9 @@ one engine and retires the interim pieces.
 
 - **Single-shot** (`app/v1/generate/route.ts`): streams SEARCH/REPLACE +
   NEW_PAGE blocks from the gateway; no tools, no sandbox, no repo. This is the
-  landing / `/dev` path via `hooks/useCallAi.ts`.
+  landing / `/dev` path via `hooks/useCallAi.ts`. **It is what every user
+  actually gets** — `/v1/agent` below ships dark behind `AGENT_SERVER_ENABLED`,
+  so "the builder" and "the agent" are two systems and only the toy one is live.
 - **Client agent loop** (`lib/llm/multi-agent-orchestrator.ts`, ~56KB): a real
   reason→act loop with a tool registry (`lib/llm/tool-registry.ts` — shell /
   write / evaluation), streaming parser, string-patch, cost calculator, skills.
@@ -118,6 +120,66 @@ orchestrator's events, so this maps onto existing UI with no new render layer.
 ---
 
 ## 4. Increment plan
+
+### D0 — PERSISTENCE. Every project is a real repo. ⛔ NOT BUILT — do this first
+
+This increment did not exist, and its absence is the defect users actually
+report: *"none of the work is persisting"*, *"it keeps starting over"*. D2–D5
+below all assume a repo to seed from; nothing creates one.
+
+**Measured today.** A builder project lives in browser IndexedDB
+(`lib/vfs/*`, checkpoints) plus whatever `/v1/publish` pushed to S3. The only
+git path is `/v1/git/sync`, which pushes to **the user's own GitHub/GitLab** and
+first requires them to link a provider — so the default project has no repo
+anywhere, and closing the tab is the end of it.
+
+**Target.** A project is a repo on **git.hanzo.ai** from its first turn, created
+under the signed-in user's org, committed every turn. The browser VFS becomes a
+working copy, not the record.
+
+- `POST /v1/projects/<id>/repo` — idempotent create on git.hanzo.ai
+  (`/v1/repos/<org>/<name>`, admin token from KMS, never the browser). Records
+  `repo:{url,branch}` on the project exactly as `/v1/git/sync` already does, so
+  the console and history panel light up with no further change.
+- Each completed turn commits the changed files with the prompt as the message.
+  The history panel already unions git commits, edits and checkpoints — commits
+  simply start existing.
+- `/v1/git/sync` stays as-is: it is EXPORT to a user's own provider, a different
+  intent from the project's home. Two remotes, two purposes, no merge.
+
+**Why first.** CI has nothing to test, CD has nothing to deploy, `/v1/code` has
+nothing to index, and a sandbox pod has nothing to seed from until this exists.
+
+### D0.1 — CI / CD on the project's own repo
+
+- **ci.hanzo.ai** — on push, run the checks the builder already computes locally
+  (`lib/pages/links.ts` dead links, `lib/pages/responsive.ts` phone fitness) plus
+  the deploy gate's headless render at 390/1440. These are the SAME functions the
+  composer reports from, so a green CI and a clean build cannot disagree.
+- **cd.hanzo.ai → platform.hanzo.ai `/v1/site`** — a generated app is static, so
+  it deploys as a site, not a container. `/v1/publish` already puts the pages on
+  S3 behind `<slug>.hanzo.app`; D0.1 moves the TRIGGER to the repo so a commit
+  deploys, and publish becomes "promote this commit" rather than "upload the
+  browser's current state".
+
+### D0.2 — Stack defaults for GENERATED apps (invariants, not preferences)
+
+The builder prompt currently produces plain HTML + Tailwind CDN. Generated apps
+must instead default to the house stack, and these are invariants because each
+has exactly one correct answer here:
+
+- **Auth is Hanzo IAM. Never hand-rolled.** The Base proxy already injects the
+  verified identity server-side; the app reads `/v1/me` and sends visitors to
+  hanzo.id. A generated login form is a security defect, not a feature.
+- **Backend is Hanzo Base** — `/v1/base/<collection>`, already proxied and
+  org-scoped.
+- **UI is `@hanzo/gui`**, with `@hanzo/ui` components where one fits. A template
+  or a fork overrides this: the user's chosen starting point wins.
+- **Files are S3 (s3.hanzo.ai)**, not localStorage or IndexedDB.
+- **Telemetry is `@hanzo/event`** — pageviews, product events AND errors go to
+  `POST api.hanzo.ai/v1/event`. It subsumes Sentry; there is no second DSN.
+- **Code intelligence is `/v1/code`** — index the project's repo so the agent
+  searches real code rather than re-reading a snapshot each turn.
 
 ### D1 — Server-side agent mode, no new infra ✅ BUILT
 
