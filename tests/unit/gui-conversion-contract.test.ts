@@ -123,6 +123,35 @@ describe("3. lineHeight is a length, not a ratio", () => {
   });
 });
 
+describe("5. an icon inherits its colour", () => {
+  // lucide forwards its `color` prop straight onto the <svg> as `stroke=`.
+  // A gui token is not a CSS colour, so the attribute is dropped and the icon
+  // paints nothing at all — measured: three of them, fully invisible, with a
+  // green build. Every lucide default is stroke="currentColor", so the one way
+  // to colour an icon is to set `color` on the gui parent and let it inherit.
+  // Which names in a file actually ARE lucide icons, read from its own import
+  // rather than guessed from the shape of the tag. A heuristic ("takes a size
+  // prop") flags app components like ConnectionBadge that legitimately accept a
+  // gui colour and forward it as a gui prop — the import list cannot be wrong.
+  const lucideNames = (file: string): Set<string> => {
+    const src = readFileSync(join(ROOT, file), "utf8");
+    const names = new Set<string>();
+    for (const m of src.matchAll(/import\s*\{([^}]*)\}\s*from\s*['"]lucide-react['"]/g))
+      for (const raw of m[1].split(","))
+        if (raw.trim()) names.add(raw.trim().split(/\s+as\s+/).pop()!.trim());
+    return names;
+  };
+  const iconsPerFile = new Map(files.map((f) => [f, lucideNames(f)]));
+
+  it("no icon is handed a gui token as its colour", () => {
+    const bad = allTags
+      .filter((t) => iconsPerFile.get(t.file)?.has(t.name))
+      .filter((t) => /\scolor=(\{[^}]*['"]\$|"\$)/.test(t.text))
+      .map((t) => `${at(t)} ${t.text.match(/color=(\{[^}]*\}|"[^"]*")/)?.[0] ?? ""}`);
+    expect(bad).toEqual([]);
+  });
+});
+
 describe("4. a length needs a unit or a token", () => {
   // Percentages are NOT the bug here, though they look like one: gui's
   // normalizeValueWithProperty appends `px` to NUMBERS and returns strings

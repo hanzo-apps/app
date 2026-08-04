@@ -162,9 +162,9 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
           <Button
             key={t.name}
             onClick={() => setSelected(t.name)}
-            width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1.5" {...{ backgroundColor: selected === t.name ? "$color3" : undefined, hoverStyle: selected === t.name ? undefined : { backgroundColor: "$color3" } }}
+            width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1.5" color={selected === t.name ? "$color" : "$color11"} {...{ backgroundColor: selected === t.name ? "$color3" : undefined, hoverStyle: selected === t.name ? undefined : { backgroundColor: "$color3" } }}
           >
-            <TableProperties size={14} color={selected === t.name ? "$color" : "$color11"} />
+            <TableProperties size={14} />
             <SizableText numberOfLines={1} fontSize="$3" color={selected === t.name ? "$color" : "$color11"}>{t.name}</SizableText>
           </Button>
         ))}

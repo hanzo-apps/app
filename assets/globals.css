@@ -446,10 +446,16 @@ a {
     min-height: var(--control-h);
   }
 
-  button:not([data-slot="button"]):not([class*="absolute"]):not([class*="fixed"]):not([class*="sticky"]) {
+  /* `[role="button"]` is here for the same reason `button` is: it IS a button,
+     it just isn't spelled with the tag. The starter chips on the landing page
+     are spans carrying the role, and measured at 390 they were 34px tall — the
+     overlay skipped them purely because of how they were written. Widening the
+     selector fixes all five without touching a call site, which is the point of
+     doing this from CSS in the first place. */
+  :is(button, [role="button"]):not([data-slot="button"]):not([class*="absolute"]):not([class*="fixed"]):not([class*="sticky"]) {
     position: relative;
   }
-  button:not([data-slot="button"])::after {
+  :is(button, [role="button"]):not([data-slot="button"])::after {
     content: '';
     position: absolute;
     left: 50%;
