@@ -29,6 +29,7 @@ import {
 import { toast, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Button } from '@hanzo/ui';
 import { stageProject } from "@/lib/import/staging";
 import { projectRepoName } from "@/lib/dev/workspace";
+import { commitTurn } from "@/lib/git/commit-turn";
 
 import { HtmlHistory, Page } from "@/types";
 import { HanzoLogo } from "@/components/HanzoLogo";
@@ -491,13 +492,37 @@ export function HistoryPanel({
         }
         return;
       }
-      // commit → open on provider (in-app restore from a past commit is a follow-up).
-      if (rev.url) window.open(rev.url, "_blank", "noopener,noreferrer");
-      toast("Opened commit on " + (repo ? PROVIDER_LABEL[repo.provider] : "provider"), {
-        description: "Restoring a past commit into the editor is coming soon.",
-      });
+      // commit → restore its pages INTO the editor. Lovable semantics: head moves
+      // FORWARD (a new commit) rather than a detached checkout, so nothing in the
+      // timeline is lost and "restore" is itself a revision you can undo. Same
+      // fetch previewCommit uses; on empty/error say so instead of silently doing
+      // nothing.
+      if (!repo) return;
+      setBusyKey(rev.key);
+      try {
+        const commitPages = await fetchCommitPages(repo.provider, repo.repo, rev.sha);
+        if (!commitPages || commitPages.length === 0) {
+          toast.error("Couldn't load this version's files.");
+          return;
+        }
+        // This IS the working tree now — drop any preview snapshot so closing the
+        // panel doesn't restore the older working copy over the restore.
+        previewSnapshot.delete(appId);
+        setPreviewingSha(null);
+        setPages(commitPages);
+        setActiveKey(rev.key);
+        toast.success(`Restored ${rev.shortSha}`);
+        // Move head forward so the restore is a real revision, not a detached
+        // state. Fire-and-forget — the pages are already on screen.
+        const name = projectRepoName(appId === "local" ? undefined : appId);
+        if (name) void commitTurn(name, commitPages, `Restore ${rev.shortSha}`);
+      } catch {
+        toast.error("Couldn't restore this version.");
+      } finally {
+        setBusyKey(null);
+      }
     },
-    [setPages, repo],
+    [setPages, repo, appId],
   );
 
   // Load a past commit's pages into the preview (item 11). Snapshots the working
