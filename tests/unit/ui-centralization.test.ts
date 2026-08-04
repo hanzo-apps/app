@@ -120,4 +120,37 @@ describe("UI centralization — every component comes from @hanzo/ui", () => {
   it("exactly ONE TooltipProvider, at the app root", () => {
     expect(offendersOf(/<TooltipProvider\b/)).toEqual(["app/providers.tsx"]);
   });
+
+  // ── The design law, enforced. Each of these shipped as a REAL regression
+  //    (2026-08-04, the gui-codemod damage) and is structurally banned. ──
+
+  it("numeric lineHeight renders as PIXELS — multipliers are strings", () => {
+    // lineHeight={1.5} → line-height:1.5px: the line box collapses and text
+    // stacks on itself. The one sanctioned numeric is a true-px case.
+    const offenders = offendersOf(/lineHeight(=\{|:\s*)[12](\.[0-9]+)?[},\s]/).filter(
+      (f) => f !== "components/sidebar/index.tsx",
+    );
+    expect(offenders).toEqual([]);
+  });
+
+  it("$color is the foreground — never a bordered container's fill", () => {
+    // White panels ("the blobs"): a hairline border + $color background is a
+    // surface wearing the text color. Surfaces sit on the ladder ($color2+).
+    expect(offendersOf(/borderColor="\$borderColor" backgroundColor="\$color"/)).toEqual([]);
+  });
+
+  it("a size never lands in the color prop", () => {
+    expect(offendersOf(/color(=|:\s*)"[0-9.]+(rem|px|em)"/)).toEqual([]);
+  });
+
+  it("no all-caps chrome — the owner reads sentence case", () => {
+    expect(offendersOf(/textTransform="uppercase"/)).toEqual([]);
+  });
+
+  it("no $group-<size> queries while globals.css neutralizes container-type", () => {
+    // .t_group_true { container-type: normal } restores intrinsic width for
+    // every group'd chip (the 26px-collapse class). A size query would silently
+    // never match under it — adding one requires scoping that rule first.
+    expect(offendersOf(/\$group-(xs|sm|md|lg|xl)\b/)).toEqual([]);
+  });
 });
