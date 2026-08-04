@@ -228,3 +228,43 @@ either the manifest goes back to `^8.0.31` or `@hanzo/gui` moves to 8.x (the
 phased migration in `components/editor/CLAUDE.md`). Three unit suites
 (`control-scale`, `hanzo-ui-button-aschild`, `overlay`) fail under 8.0.39 for
 the same reason.
+
+## `postbuild` runs gui-css-check, and it is currently RED
+
+`next build` proves the code compiles. It has never had an opinion about whether
+the stylesheet a page links contains the classes that page uses, which is how
+this app shipped 18 KB of CSS holding none of its atomic classes and stayed
+green the whole time. `gui-css-check` ships in `@hanzo/gui` and runs as
+`postbuild`, so a class with no rule now fails the build instead of the page.
+
+Measured on a real `next build` of this commit — 167 pages, 98 KB of cached
+sheets, 13 KB inline per document:
+
+- **1,022 / 1,110 classes covered (92.1%)**
+- **atomic classes: 807 used, 0 missing.** `disableInjectCSS` is correct here.
+  gui emits only the rules each page actually uses (18 KB on `/`, covering 262
+  of that page's 265 atomic classes) instead of the whole 350 KB config sheet.
+  Turning injection back on costs 337 KB per document and buys nothing.
+- **88 classes have no rule anywhere and render unstyled in production.**
+  Confirmed twice: statically, and by rendering `/` and `/templates/*` in a real
+  browser, where they are still missing after every runtime has injected.
+
+The 88 split two ways:
+
+- **59 Tailwind-shaped** (`mb-4`, `px-4`, `bg-sky-100`, `prose`, `aspect-[16/10]`,
+  `border-l-4`, …) across ~10 files — `app/templates/kanban-board/page.tsx` and
+  `app/templates/markdown-editor/page.tsx` hold most of them, in a `labelColors`
+  map and a markdown→HTML string replacer. There is no Tailwind in this app and
+  there must not be; these have never rendered. Convert to gui props, delete the
+  strings.
+- **29 authored** — `hanzo-button*` / `hanzo-badge*` (a BEM sheet that is never
+  delivered), `shade` in `components/HanzoLogo.tsx`, `landing-root`,
+  `markdown-preview`, `font_mono`, and a literal `class="undefined"` from a
+  template string in `app/profile/page.tsx`.
+
+`r-*`, `css-*` and `jsx-*` are NOT in that list: react-native-web and styled-jsx
+inject their rules at runtime, so they are late rather than missing. That was
+measured with `gui-css-check --render`, not assumed.
+
+Until the 88 are fixed the gate fails. That is the gate working — do not
+allowlist them.
