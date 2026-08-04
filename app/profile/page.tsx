@@ -137,12 +137,26 @@ export default function ProfilePage() {
   const handleSave = async () => {
     setBusy(true);
     try {
+      // Send what CHANGED, not the whole draft. `avatar` is why: IAM seeds it
+      // with a URL (`https://api.hanzo.ai/v1/avatar/…`), the load puts that URL
+      // in the draft, and the server refuses a remote URL on purpose — it stores
+      // only self-contained data URIs, so nobody can point their picture at a
+      // host that then sees everyone who views them. Posting the whole draft
+      // therefore fed back a value the server had just served and could not
+      // accept, and "That photo is not an image we can store" was the answer to
+      // editing your BIO. A patch of changed keys makes that shape impossible
+      // for every field at once: `writeProfile` merges only the keys present.
+      const patch = Object.fromEntries(
+        (Object.keys(draft) as (keyof Draft)[])
+          .filter((k) => draft[k] !== saved[k])
+          .map((k) => [k, draft[k]]),
+      );
       const res = await fetch(
         "/v1/me/profile",
         authed({
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(draft),
+          body: JSON.stringify(patch),
         }),
       );
       const body = await res.json().catch(() => null);
