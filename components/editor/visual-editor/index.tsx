@@ -583,16 +583,16 @@ export function VisualEditor({
         </DropdownMenuRadioGroup>
 
         <DropdownMenuSeparator backgroundColor="$borderColor" />
-        <SizableText
-          alignItems="center" justifyContent="space-between" gap="$4" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$3" color="$color" display="flex" flexDirection="row"
+        <XStack
+          alignItems="center" justifyContent="space-between" gap="$4" paddingHorizontal="$2" paddingVertical="$1.5"
           onPointerDown={(e) => e.stopPropagation()}
         >
-          <SizableText alignItems="center" gap="$2">
+          <XStack alignItems="center" gap="$2">
             <Keyboard size={16} />
-            Keyboard shortcuts
-          </SizableText>
+            <SizableText fontSize="$3" color="$color">Keyboard shortcuts</SizableText>
+          </XStack>
           <Switch checked={shortcutsEnabled} onCheckedChange={setShortcutsEnabled} />
-        </SizableText>
+        </XStack>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -713,26 +713,28 @@ export function VisualEditor({
                 <X size={16} />
               </Button>
             </XStack>
-            <SizableText rowGap="$1" fontSize="$1" color="$color11" display="flex" flexDirection="column">
+            <YStack rowGap="$1">
               <XStack alignItems="center" gap="$2">
                 <Box size={12} />
-                <SizableText fontFamily="$mono">{selectedElement.tagName}</SizableText>
+                <SizableText fontFamily="$mono" fontSize="$1" color="$color11">{selectedElement.tagName}</SizableText>
                 {selectedElement.id && (
-                  <SizableText color="$color11">#{selectedElement.id}</SizableText>
+                  <SizableText fontSize="$1" color="$color11">#{selectedElement.id}</SizableText>
                 )}
               </XStack>
               {selectedElement.className && (
-                <SizableText fontSize="$1" color="$color11" numberOfLines={1} display="flex" flexDirection="column">
-                  .{selectedElement.className.split(' ').join('.')}
-                </SizableText>
+                <YStack>
+                  <SizableText fontSize="$1" color="$color11" numberOfLines={1}>
+                    .{selectedElement.className.split(' ').join('.')}
+                  </SizableText>
+                </YStack>
               )}
               {selectedElement.sourceLocation && (
-                <SizableText alignItems="center" gap="$1" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+                <XStack alignItems="center" gap="$1">
                   <Code size={12} />
-                  Line {selectedElement.sourceLocation.line}
-                </SizableText>
+                  <SizableText fontSize="$1" color="$color11">Line {selectedElement.sourceLocation.line}</SizableText>
+                </XStack>
               )}
-            </SizableText>
+            </YStack>
           </YStack>
 
           <Tabs defaultValue="content" flex={1} overflow="hidden">

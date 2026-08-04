@@ -105,12 +105,12 @@ const steps = [
 
 export default function DocsPage() {
   return (
-    <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
+    <YStack minHeight="100%" backgroundColor="$background">
       <Header />
 
       <main>
         {/* ── Hero ─────────────────────────────────────────────── */}
-        <SizableText position="relative" overflow="hidden" paddingHorizontal="$4" paddingVertical="$8" textAlign="center" display="flex" flexDirection="column" $sm={{ paddingVertical: "$10" }} $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
+        <YStack position="relative" overflow="hidden" paddingHorizontal="$4" paddingVertical="$8" $sm={{ paddingVertical: "$10" }} $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
           <YStack pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} overflow="hidden">
             <YStack position="absolute" left="50%" top="-30%" height={420} width={720} x="50%" borderRadius="$10" backgroundColor="$color" />
           </YStack>
@@ -126,7 +126,7 @@ export default function DocsPage() {
             </Reveal>
 
             <Reveal delay={60}>
-              <H1 fontSize="$11" fontWeight="500" lineHeight={1.03} letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
+              <H1 fontSize="$11" fontWeight="500" textAlign="center" lineHeight={1.03} letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
                 Everything you need
                 <br />
                 to build with Hanzo.
@@ -134,7 +134,7 @@ export default function DocsPage() {
             </Reveal>
 
             <Reveal delay={120}>
-              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
+              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" textAlign="center" color="$color11" $md={{ fontSize: "$6" }}>
                 Start in the builder, then reach for the full docs, the API, and
                 the template gallery when you need them. Real destinations, no
                 dead ends.
@@ -145,10 +145,10 @@ export default function DocsPage() {
               <YStack marginTop="$6" alignItems="center" justifyContent="center" gap="$3" $sm={{ flexDirection: "row" }}>
                 <Link
                   href="/dev"
-                ><SizableText alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
-                  Start building
-                  <ArrowRight size={16} />
-                </SizableText></Link>
+                ><XStack alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$5" paddingVertical="$3" hoverStyle={{ backgroundColor: "$color12" }}>
+                  <SizableText fontSize="$3" fontWeight="500" color="$background">Start building</SizableText>
+                  <SizableText color="$background"><ArrowRight size={16} /></SizableText>
+                </XStack></Link>
                 <Anchor
                   href="https://docs.hanzo.ai"
                   target="_blank"
@@ -161,7 +161,7 @@ export default function DocsPage() {
               </YStack>
             </Reveal>
           </YStack>
-        </SizableText>
+        </YStack>
 
         {/* ── Quick start (inline, real) ───────────────────────── */}
         <YStack borderTopWidth={1} borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
@@ -213,9 +213,9 @@ export default function DocsPage() {
                 const inner = (
                   <YStack group height="100%" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$5" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}>
                     <XStack alignItems="center" justifyContent="space-between">
-                      <SizableText height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" color="$color">
+                      <XStack height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
                         {d.icon}
-                      </SizableText>
+                      </XStack>
                       {d.external ? (
                         <ArrowUpRight size={16} color="$color11" />
                       ) : (
@@ -296,32 +296,32 @@ Authorization: Bearer $HANZO_KEY
         </YStack>
 
         {/* ── Help CTA ─────────────────────────────────────────── */}
-        <SizableText borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" textAlign="center" display="flex" flexDirection="column" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
+        <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
           <Reveal alignSelf="center" width="100%" maxWidth={672}>
-            <H2 fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
+            <H2 fontSize="$10" fontWeight="500" textAlign="center" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
               Still stuck?
             </H2>
-            <Paragraph alignSelf="center" marginTop="$4" maxWidth={448} fontSize="$4" color="$color11">
+            <Paragraph alignSelf="center" marginTop="$4" maxWidth={448} fontSize="$4" textAlign="center" color="$color11">
               Check the FAQ for quick answers, or reach the team directly.
             </Paragraph>
             <YStack marginTop="$6" alignItems="center" justifyContent="center" gap="$3" $sm={{ flexDirection: "row" }}>
               <Link
                 href="/faq"
-              ><SizableText alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
-                Read the FAQ
-                <ArrowRight size={16} />
-              </SizableText></Link>
+              ><XStack alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$5" paddingVertical="$3" hoverStyle={{ backgroundColor: "$color12" }}>
+                <SizableText fontSize="$3" fontWeight="500" color="$background">Read the FAQ</SizableText>
+                <SizableText color="$background"><ArrowRight size={16} /></SizableText>
+              </XStack></Link>
               <Link
                 href="/help"
-              ><SizableText alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}>
+              ><SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$5" paddingVertical="$3" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}>
                 Get help
               </SizableText></Link>
             </YStack>
           </Reveal>
-        </SizableText>
+        </YStack>
       </main>
 
       <SiteFooter />
-    </SizableText>
+    </YStack>
   );
 }

@@ -277,34 +277,34 @@ export function ProjectCard({
             <YStack rowGap="$2" marginTop="$2" $md={{ marginTop: "$0" }}>
               {/* Stats - inline on desktop, horizontal on mobile */}
               {stats && (
-                <SizableText flexWrap="wrap" alignItems="center" columnGap="$3" rowGap="$1" fontSize="$3" color="$color11" display="flex" flexDirection="row">
-                  <SizableText alignItems="center" gap="$1">
+                <XStack flexWrap="wrap" alignItems="center" columnGap="$3" rowGap="$1">
+                  <XStack alignItems="center" gap="$1">
                     <FolderOpen size={16} />
-                    {stats.fileCount} {stats.fileCount === 1 ? 'file' : 'files'}
-                  </SizableText>
-                  <SizableText alignItems="center" gap="$1">
+                    <SizableText fontSize="$3" color="$color11">{stats.fileCount} {stats.fileCount === 1 ? 'file' : 'files'}</SizableText>
+                  </XStack>
+                  <XStack alignItems="center" gap="$1">
                     <HardDrive size={16} />
-                    {stats.formattedSize}
-                  </SizableText>
+                    <SizableText fontSize="$3" color="$color11">{stats.formattedSize}</SizableText>
+                  </XStack>
                   {project.costTracking?.totalCost && project.costTracking.totalCost > 0 && (
-                    <SizableText alignItems="center" gap="$1">
+                    <XStack alignItems="center" gap="$1">
                       <DollarSign size={16} />
-                      {formatCost(project.costTracking.totalCost)}
-                    </SizableText>
+                      <SizableText fontSize="$3" color="$color11">{formatCost(project.costTracking.totalCost)}</SizableText>
+                    </XStack>
                   )}
-                </SizableText>
+                </XStack>
               )}
 
               {/* File types */}
               {stats && getMainFileTypes().length > 0 && (
-                <SizableText flexWrap="wrap" alignItems="center" columnGap="$3" rowGap="$1" fontSize="$1" display="flex" flexDirection="row">
+                <XStack flexWrap="wrap" alignItems="center" columnGap="$3" rowGap="$1">
                   {getMainFileTypes().map(([ext, count]) => (
-                    <SizableText key={ext} alignItems="center" gap="$1" color="$color11" display="flex" flexDirection="row">
+                    <XStack key={ext} alignItems="center" gap="$1">
                       {getFileTypeIcon(ext)}
-                      <span>{ext.toUpperCase()} ({count})</span>
-                    </SizableText>
+                      <SizableText fontSize="$1" color="$color11">{ext.toUpperCase()} ({count})</SizableText>
+                    </XStack>
                   ))}
-                </SizableText>
+                </XStack>
               )}
             </YStack>
           </YStack>
@@ -569,41 +569,41 @@ export function ProjectCard({
           <YStack height="$5" backgroundColor="$color3" borderRadius="$2" />
         ) : stats && (
           <>
-            <SizableText alignItems="center" gap="$3" fontSize="$3" color="$color11" paddingTop="$2" borderTopWidth={1} display="flex" flexDirection="row">
-              <SizableText alignItems="center" gap="$1">
+            <XStack alignItems="center" gap="$3" paddingTop="$2" borderTopWidth={1}>
+              <XStack alignItems="center" gap="$1">
                 <FolderOpen size={16} />
-                {stats.fileCount} {stats.fileCount === 1 ? 'file' : 'files'}
-              </SizableText>
-              <SizableText alignItems="center" gap="$1">
+                <SizableText fontSize="$3" color="$color11">{stats.fileCount} {stats.fileCount === 1 ? 'file' : 'files'}</SizableText>
+              </XStack>
+              <XStack alignItems="center" gap="$1">
                 <HardDrive size={16} />
-                {stats.formattedSize}
-              </SizableText>
+                <SizableText fontSize="$3" color="$color11">{stats.formattedSize}</SizableText>
+              </XStack>
               {project.costTracking?.totalCost && project.costTracking.totalCost > 0 && (
-                <SizableText alignItems="center" gap="$1">
+                <XStack alignItems="center" gap="$1">
                   <DollarSign size={16} />
-                  {formatCost(project.costTracking.totalCost)}
-                </SizableText>
+                  <SizableText fontSize="$3" color="$color11">{formatCost(project.costTracking.totalCost)}</SizableText>
+                </XStack>
               )}
-            </SizableText>
+            </XStack>
 
             {/* File types */}
             {getMainFileTypes().length > 0 && (
-              <SizableText alignItems="center" gap="$3" fontSize="$1" display="flex" flexDirection="row">
+              <XStack alignItems="center" gap="$3">
                 {getMainFileTypes().map(([ext, count]) => (
-                  <SizableText key={ext} alignItems="center" gap="$1" color="$color11" display="flex" flexDirection="row">
+                  <XStack key={ext} alignItems="center" gap="$1">
                     {getFileTypeIcon(ext)}
-                    <span>{ext} ({count})</span>
-                  </SizableText>
+                    <SizableText fontSize="$1" color="$color11">{ext} ({count})</SizableText>
+                  </XStack>
                 ))}
-              </SizableText>
+              </XStack>
             )}
           </>
         )}
 
         {/* Timestamps */}
-        <SizableText fontSize="$1" color="$color11" paddingTop="$2" borderTopWidth={1} display="flex" flexDirection="column">
-          <p>Updated {formatDistanceToNow(project.updatedAt, { addSuffix: true })}</p>
-        </SizableText>
+        <YStack paddingTop="$2" borderTopWidth={1}>
+          <SizableText fontSize="$1" color="$color11">Updated {formatDistanceToNow(project.updatedAt, { addSuffix: true })}</SizableText>
+        </YStack>
       </YStack>
     </YStack>
   );

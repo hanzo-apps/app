@@ -14,9 +14,9 @@ const CodeEditor = dynamic(
   {
     ssr: false,
     loading: () => (
-      <SizableText height="100%" width="100%" backgroundColor="$background" alignItems="center" justifyContent="center" color="$color11" fontSize="$1" position="absolute" left="$0" top="$0" display="flex" flexDirection="row">
-        Loading editor…
-      </SizableText>
+      <XStack height="100%" width="100%" backgroundColor="$background" alignItems="center" justifyContent="center" position="absolute" left="$0" top="$0">
+        <SizableText color="$color11" fontSize="$1">Loading editor…</SizableText>
+      </XStack>
     ),
   }
 );

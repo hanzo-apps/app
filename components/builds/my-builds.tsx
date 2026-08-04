@@ -90,7 +90,7 @@ export function MyBuilds() {
       ) : (
         <YStack marginTop="$4" borderTopWidth={1} borderBottomWidth={1} borderColor="$borderColor">
           {state.sessions.map((s) => (
-            <SizableText key={s.id} flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$3" paddingVertical="$4">
+            <XStack key={s.id} flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$3" paddingVertical="$4">
               <YStack minWidth={0}>
                 <XStack alignItems="center" gap="$2">
                   <MessageSquare size={14} color="$color11" />
@@ -111,12 +111,12 @@ export function MyBuilds() {
               {s.published && s.project && s.org ? (
                 <Link
                   href={`/builds/${s.org}/${s.project}`}
-                ><SizableText flexShrink={0} alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={1.92} color="$color11" hoverStyle={{ color: "$color" }}>
-                  Read
+                ><XStack flexShrink={0} alignItems="center" gap="$1.5">
+                  <SizableText fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={1.92} color="$color11" hoverStyle={{ color: "$color" }}>Read</SizableText>
                   <ArrowUpRight size={12} />
-                </SizableText></Link>
+                </XStack></Link>
               ) : null}
-            </SizableText>
+            </XStack>
           ))}
         </YStack>
       )}

@@ -72,11 +72,11 @@ export function TemplatePreviewModal({
                 height="100%" width="100%" objectFit="cover" objectPosition="top"
   />
             ) : (
-              <SizableText height="100%" flexDirection="column" alignItems="center" justifyContent="center" gap="$2" color="$color11" display="flex">
+              <YStack height="100%" alignItems="center" justifyContent="center" gap="$2">
                 <Gamepad2 size={40} />
                 <SizableText fontSize="$3">{item.framework}</SizableText>
                 {item.meta && <SizableText fontSize="$1" color="$color11">{item.meta}</SizableText>}
-              </SizableText>
+              </YStack>
             )}
           </YStack>
 

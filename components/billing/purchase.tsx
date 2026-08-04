@@ -119,12 +119,12 @@ export function TopUp() {
                   key={amount}
                   borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4.5" hoverStyle={{ borderColor: "$color" }}
                 >
-                  <SizableText marginBottom="$4" textAlign="center" display="flex" flexDirection="column">
-                    <SizableText fontSize="$10" fontWeight="500" display="flex" flexDirection="column">${amount}</SizableText>
-                    <SizableText marginTop="$1" fontSize="$3" color="$color11" display="flex" flexDirection="column">
+                  <YStack marginBottom="$4">
+                    <SizableText textAlign="center" fontSize="$10" fontWeight="500">${amount}</SizableText>
+                    <SizableText marginTop="$1" textAlign="center" fontSize="$3" color="$color11">
                       {amount}.00 of credit
                     </SizableText>
-                  </SizableText>
+                  </YStack>
                   <Button
                     onClick={() => goToCheckout({ amountUsd: amount, returnUrl })}
                     width="100%" backgroundColor="$color3" hoverStyle={{ backgroundColor: "$color" }}

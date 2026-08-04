@@ -80,10 +80,10 @@ function VibeApp({ v, compact }: { v: number; compact?: boolean }): ReactElement
           Vibe Check
         </SizableText>
         {v >= 2 && !compact && (
-          <SizableText alignItems="center" gap="$1" fontFamily="$mono" fontSize={8} color="$color">
+          <XStack alignItems="center" gap="$1">
             <SizableText height="$1" width="$1" borderRadius="$10" backgroundColor="$color" className="livedot" />
-            realtime · Base
-          </SizableText>
+            <SizableText fontFamily="$mono" fontSize={8} color="$color">realtime · Base</SizableText>
+          </XStack>
         )}
         {v >= 2 && compact && (
           <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color" className="livedot" />
@@ -96,12 +96,14 @@ function VibeApp({ v, compact }: { v: number; compact?: boolean }): ReactElement
 
       <YStack {...{ gap: compact ? "$1.5" : "$2" }}>
         {votes.map((o, i) => (
-          <SizableText
+          <YStack
             key={o.label}
-            borderRadius="$5" borderWidth={1} textAlign="center" fontWeight="500" display="flex" flexDirection="column" {...{ paddingHorizontal: compact ? "$1" : "$2", paddingVertical: compact ? "$1.5" : "$2.5", fontSize: compact ? 9 : 12, borderColor: i === 0 ? "$color" : "$borderColor", backgroundColor: i === 0 ? "$color" : "$color", color: i === 0 ? "$color" : "$color" }}
+            borderRadius="$5" borderWidth={1} {...{ paddingHorizontal: compact ? "$1" : "$2", paddingVertical: compact ? "$1.5" : "$2.5", borderColor: i === 0 ? "$color" : "$borderColor", backgroundColor: i === 0 ? "$color" : "$color" }}
           >
-            {o.label}
-          </SizableText>
+            <SizableText textAlign="center" fontWeight="500" {...{ fontSize: compact ? 9 : 12, color: i === 0 ? "$color" : "$color" }}>
+              {o.label}
+            </SizableText>
+          </YStack>
         ))}
       </YStack>
 
@@ -271,12 +273,12 @@ export default function HeroPreview() {
               { id: "preview", icon: Eye },
               { id: "code", icon: Code2 },
             ].map((tabItem, i) => (
-              <SizableText
+              <XStack
                 key={tabItem.id}
-                height="$4.5" width="$5" alignItems="center" justifyContent="center" borderRadius="$2" {...{ backgroundColor: i < 2 ? "$color" : undefined, color: i < 2 ? "$color" : "$color" }}
+                height="$4.5" width="$5" alignItems="center" justifyContent="center" borderRadius="$2" {...{ backgroundColor: i < 2 ? "$color" : undefined }}
               >
                 <tabItem.icon size={12} />
-              </SizableText>
+              </XStack>
             ))}
           </YStack>
 
@@ -289,9 +291,9 @@ export default function HeroPreview() {
             >
               <SizableText color="$color"><RotateCcw size={12} /></SizableText>
             </Button>
-            <SizableText height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" color="$color">
+            <XStack height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$2">
               <Clock size={12} />
-            </SizableText>
+            </XStack>
             <XStack alignItems="center" borderRadius="$3" borderWidth={1} borderColor="$borderColor" padding="$0.5" $lg={{ display: "none" }}>
               <Button
                 type="button"
@@ -313,7 +315,7 @@ export default function HeroPreview() {
               </Button>
             </XStack>
             <SizableText
-              alignItems="center" gap="$1" borderRadius="$3" borderWidth={1} paddingHorizontal="$2" paddingVertical="$1" fontSize={10} fontWeight="600" {...{ backgroundColor: live ? "$color4" : "$color12", borderColor: live ? "$color" : "$color12", color: live ? "$color" : "$background" }}
+              borderRadius="$3" borderWidth={1} paddingHorizontal="$2" paddingVertical="$1" fontSize={10} fontWeight="600" {...{ backgroundColor: live ? "$color4" : "$color12", borderColor: live ? "$color" : "$color12", color: live ? "$color" : "$background" }}
             >
               {live ? (
                 <>
@@ -348,24 +350,24 @@ export default function HeroPreview() {
             >
               {bubbles.map((b, i) =>
                 b.role === "user" ? (
-                  <SizableText
+                  <YStack
                     key={i}
-                    alignSelf="flex-end" borderRadius="$5" borderBottomRightRadius="$1" backgroundColor="$color" paddingHorizontal="$2.5" paddingVertical="$1.5" fontSize={11} lineHeight={1.375} color="$color" display="flex" flexDirection="column" className="line"
+                    alignSelf="flex-end" borderRadius="$5" borderBottomRightRadius="$1" backgroundColor="$color" paddingHorizontal="$2.5" paddingVertical="$1.5" className="line"
                   >
-                    {b.text}
-                  </SizableText>
+                    <SizableText fontSize={11} lineHeight={1.375} color="$color">{b.text}</SizableText>
+                  </YStack>
                 ) : (
-                  <SizableText key={i} alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={10} color="$color" display="flex" flexDirection="row" className="line">
+                  <XStack key={i} alignItems="center" gap="$1.5" className="line">
                     <Check size={10} color="$color" strokeWidth={3} />
-                    <SizableText numberOfLines={1}>{b.text}</SizableText>
-                  </SizableText>
+                    <SizableText numberOfLines={1} fontFamily="$mono" fontSize={10} color="$color">{b.text}</SizableText>
+                  </XStack>
                 ),
               )}
               {streamLine && (
-                <SizableText alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={10} color="$color" display="flex" flexDirection="row" className="line">
+                <XStack alignItems="center" gap="$1.5" className="line">
                   <Loader2 size={10} />
-                  <SizableText numberOfLines={1}>{streamLine}</SizableText>
-                </SizableText>
+                  <SizableText numberOfLines={1} fontFamily="$mono" fontSize={10} color="$color">{streamLine}</SizableText>
+                </XStack>
               )}
             </YStack>
 
@@ -397,7 +399,7 @@ export default function HeroPreview() {
                   </svg>
                   <SizableText numberOfLines={1} fontFamily="$mono" fontSize={10} color="$color">{SLUG}</SizableText>
                 </XStack>
-                <SizableText flexShrink={0} alignItems="center" gap="$1">
+                <XStack flexShrink={0} alignItems="center" gap="$1">
                   {live ? (
                     <>
                       <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color" className="livedot" />
@@ -408,7 +410,7 @@ export default function HeroPreview() {
                   ) : (
                     <Loader2 size={10} color="$color" />
                   )}
-                </SizableText>
+                </XStack>
               </XStack>
               <YStack position="relative" minHeight={240} flex={1}>
                 {v >= 0 ? (
@@ -445,28 +447,28 @@ export default function HeroPreview() {
         </YStack>
 
         {/* Status bar — git push payoff + live URL, exactly one line. */}
-        <SizableText alignItems="center" gap="$2" borderTopWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$3.5" paddingVertical="$1.5" fontFamily="$mono" fontSize={9} display="flex" flexDirection="row">
-          <SizableText minWidth={0} alignItems="center" gap="$1.5" color="$color">
-            <SizableText numberOfLines={1}>
+        <XStack alignItems="center" gap="$2" borderTopWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$3.5" paddingVertical="$1.5">
+          <XStack minWidth={0} alignItems="center" gap="$1.5">
+            <SizableText numberOfLines={1} fontFamily="$mono" fontSize={9} color="$color">
               {busy ? (streamLine ?? "working…") : live ? "pushed to main · e4b21c7" : "main"}
             </SizableText>
-          </SizableText>
-          <SizableText marginLeft="auto" flexShrink={0} alignItems="center" gap="$1.5">
+          </XStack>
+          <XStack marginLeft="auto" flexShrink={0} alignItems="center" gap="$1.5">
             {live ? (
               <>
                 <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color" className="livedot" />
-                <SizableText color="$color">Live at {SLUG}</SizableText>
+                <SizableText fontFamily="$mono" fontSize={9} color="$color">Live at {SLUG}</SizableText>
               </>
             ) : phase === "publishing" ? (
               <>
                 <Loader2 size={10} color="$color" />
-                <SizableText color="$color">Publishing…</SizableText>
+                <SizableText fontFamily="$mono" fontSize={9} color="$color">Publishing…</SizableText>
               </>
             ) : (
-              <SizableText color="$color">{busy ? "Building…" : "Ready"}</SizableText>
+              <SizableText fontFamily="$mono" fontSize={9} color="$color">{busy ? "Building…" : "Ready"}</SizableText>
             )}
-          </SizableText>
-        </SizableText>
+          </XStack>
+        </XStack>
       </YStack>
 
       {/* Honesty microcopy — a demo, simulated client-side. */}
@@ -479,10 +481,10 @@ export default function HeroPreview() {
 
 function Generating(): ReactElement {
   return (
-    <SizableText height="100%" flexDirection="column" alignItems="center" justifyContent="center" gap="$2" color="$color" display="flex">
+    <YStack height="100%" alignItems="center" justifyContent="center" gap="$2">
       <Loader2 size={16} />
       <SizableText fontFamily="$mono" fontSize={9} textTransform="uppercase" letterSpacing={2.24}>Generating</SizableText>
-    </SizableText>
+    </YStack>
   );
 }
 

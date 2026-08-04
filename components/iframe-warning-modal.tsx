@@ -35,12 +35,12 @@ IframeWarningModalProps) {
 
         <YStack backgroundColor="$color3" borderRadius="$5" padding="$4" rowGap="$2">
           <Paragraph fontSize="$3" fontWeight="500">Why visit the official site?</Paragraph>
-          <SizableText fontSize="$3" color="$color11" rowGap="$1" display="flex" flexDirection="column">
-            <li>• Better performance and security</li>
-            <li>• Full functionality access</li>
-            <li>• Latest features and updates</li>
-            <li>• Proper authentication support</li>
-          </SizableText>
+          <YStack rowGap="$1">
+            <SizableText fontSize="$3" color="$color11">• Better performance and security</SizableText>
+            <SizableText fontSize="$3" color="$color11">• Full functionality access</SizableText>
+            <SizableText fontSize="$3" color="$color11">• Latest features and updates</SizableText>
+            <SizableText fontSize="$3" color="$color11">• Proper authentication support</SizableText>
+          </YStack>
         </YStack>
 
         <DialogFooter flexDirection="column" gap="$2" $sm={{ flexDirection: "row" }}>

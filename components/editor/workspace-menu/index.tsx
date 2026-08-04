@@ -209,10 +209,10 @@ export function WorkspaceMenu({
             <DropdownMenuSub>
               <DropdownMenuSubTrigger display="flex" alignItems="center" gap="$2.5" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1.5" focusStyle={{ backgroundColor: "$color3" }}>
                 <OrgAvatar name={orgName} logo={activeOrg?.logo} size={28} />
-                <SizableText minWidth={0} flex={1}>
+                <YStack minWidth={0} flex={1}>
                   <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{orgName}</SizableText>
                   <SizableText fontSize={11} color="$color11">Switch workspace</SizableText>
-                </SizableText>
+                </YStack>
                 <SizableText flexShrink={0} borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" color="$color11">
                   {orgKind}
                 </SizableText>
@@ -237,10 +237,10 @@ export function WorkspaceMenu({
           ) : (
             <XStack alignItems="center" gap="$2.5" paddingHorizontal="$2" paddingVertical="$1.5">
               <OrgAvatar name={orgName} logo={activeOrg?.logo} size={28} />
-              <SizableText minWidth={0} flex={1}>
+              <YStack minWidth={0} flex={1}>
                 <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{orgName}</SizableText>
                 <SizableText fontSize={11} color="$color11">Workspace</SizableText>
-              </SizableText>
+              </YStack>
               <SizableText flexShrink={0} borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" color="$color11">
                 {orgKind}
               </SizableText>
@@ -254,10 +254,10 @@ export function WorkspaceMenu({
               href="/billing"
             ><YStack width="100%" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$3" paddingVertical="$2.5" hoverStyle={{ borderColor: "$borderColor", backgroundColor: "$color" }} focusVisibleStyle={{ borderColor: "$borderColor" }}>
               <XStack alignItems="center" justifyContent="space-between">
-                <SizableText alignItems="center" gap="$1.5" fontSize="$1" fontWeight="500" color="$color">
+                <XStack alignItems="center" gap="$1.5">
                   <Wallet size={14} color="$color11" />
-                  Credits
-                </SizableText>
+                  <SizableText fontSize="$1" fontWeight="500" color="$color">Credits</SizableText>
+                </XStack>
                 <SizableText fontFamily="$mono" fontSize="$3" fontVariant={["tabular-nums"]} color="$color">{balanceText}</SizableText>
               </XStack>
               <YStack
@@ -378,7 +378,7 @@ export function WorkspaceMenu({
               {slug ? "This project is saved to your workspace." : "This project isn’t published yet."}
             </DialogDescription>
           </DialogHeader>
-          <SizableText rowGap="$2" fontSize="$3" display="flex" flexDirection="column">
+          <YStack rowGap="$2">
             <DetailRow label="Name" value={projectName} />
             <DetailRow label="Workspace" value={orgName} />
             <DetailRow label="Plan" value={orgKind} />
@@ -389,7 +389,7 @@ export function WorkspaceMenu({
                 value={new Date(project._createdAt).toLocaleDateString()}
   />
             )}
-          </SizableText>
+          </YStack>
         </DialogContent>
       </Dialog>
     </>
@@ -407,8 +407,8 @@ function DetailRow({
 }) {
   return (
     <XStack alignItems="center" justifyContent="space-between" gap="$3">
-      <SizableText color="$color11">{label}</SizableText>
-      <SizableText minWidth={0} numberOfLines={1} color="$color" {...{ fontFamily: mono ? "$mono" : undefined, fontSize: mono ? "$1" : undefined }}>
+      <SizableText fontSize="$3" color="$color11">{label}</SizableText>
+      <SizableText minWidth={0} numberOfLines={1} color="$color" {...{ fontFamily: mono ? "$mono" : undefined, fontSize: mono ? "$1" : "$3" }}>
         {value}
       </SizableText>
     </XStack>

@@ -159,17 +159,17 @@ export function ServerFunctionsManager({ deploymentId, dataProvider }: ServerFun
 
       <YStack flex={1} overflow="scroll">
         {functions.length === 0 ? (
-          <SizableText flexDirection="column" alignItems="center" justifyContent="center" height="100%" padding="$6" textAlign="center" borderWidth={1} borderRadius="$5" display="flex">
+          <YStack alignItems="center" justifyContent="center" height="100%" padding="$6" borderWidth={1} borderRadius="$5">
             <Wrench size={32} color="$color11" />
-            <Paragraph fontSize="$3" color="$color11">No server functions yet</Paragraph>
-            <Paragraph fontSize="$1" color="$color11" marginTop="$1" marginBottom="$4">
+            <Paragraph fontSize="$3" color="$color11" textAlign="center">No server functions yet</Paragraph>
+            <Paragraph fontSize="$1" color="$color11" marginTop="$1" marginBottom="$4" textAlign="center">
               Create reusable helpers for your edge functions
             </Paragraph>
             <Button size="sm" onClick={() => setIsCreating(true)}>
               <Plus size={16} />
               Create Helper
             </Button>
-          </SizableText>
+          </YStack>
         ) : (
           <YStack gap="$3">
             {functions.map(fn => (
@@ -191,9 +191,9 @@ export function ServerFunctionsManager({ deploymentId, dataProvider }: ServerFun
                         {fn.description}
                       </Paragraph>
                     )}
-                    <SizableText alignItems="center" gap="$4" marginTop="$2" fontSize="$1" color="$color11" display="flex" flexDirection="row">
-                      <SizableText fontFamily="$mono" numberOfLines={1}>server.{fn.name}(args)</SizableText>
-                    </SizableText>
+                    <XStack alignItems="center" gap="$4" marginTop="$2">
+                      <SizableText fontFamily="$mono" fontSize="$1" color="$color11" numberOfLines={1}>server.{fn.name}(args)</SizableText>
+                    </XStack>
                   </YStack>
 
                   <DropdownMenu>

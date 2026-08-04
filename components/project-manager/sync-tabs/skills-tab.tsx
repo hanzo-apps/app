@@ -167,9 +167,9 @@ export function SkillsTab({
 
   if (items.length === 0) {
     return (
-      <SizableText textAlign="center" paddingVertical="$6" color="$color11" display="flex" flexDirection="column">
-        No custom skills to sync
-      </SizableText>
+      <YStack paddingVertical="$6">
+        <SizableText textAlign="center" color="$color11">No custom skills to sync</SizableText>
+      </YStack>
     );
   }
 

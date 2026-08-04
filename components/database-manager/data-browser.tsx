@@ -197,19 +197,20 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
 
         <YStack minHeight={0} flex={1} overflow="scroll">
           {loading ? (
-            <SizableText height="100%" alignItems="center" justifyContent="center" color="$color11" display="flex" flexDirection="row">
-              <Loader2 size={16} /> Loading records…
-            </SizableText>
+            <XStack height="100%" alignItems="center" justifyContent="center">
+              <Loader2 size={16} />
+              <SizableText color="$color11"> Loading records…</SizableText>
+            </XStack>
           ) : filtered.length === 0 ? (
-            <SizableText height="100%" flexDirection="column" alignItems="center" justifyContent="center" gap="$2" color="$color11" display="flex">
+            <YStack height="100%" alignItems="center" justifyContent="center" gap="$2">
               <Database size={32} />
               <Paragraph fontSize="$3">No records{search ? ' match your filter' : ' yet'}.</Paragraph>
               {!search && selected && (
                 <Button size="sm" variant="outline" onClick={openNew}><Plus size={14} />Add the first record</Button>
               )}
-            </SizableText>
+            </YStack>
           ) : (
-            <SizableText width="100%" textAlign="left" fontSize="$3" display="flex" flexDirection="column">
+            <YStack width="100%">
               <YStack position="sticky" top="$0" backgroundColor="$background">
                 <YStack borderBottomWidth={1} borderColor="$borderColor">
                   {cols.map((c) => (
@@ -241,7 +242,7 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
                   </YStack>
                 ))}
               </tbody>
-            </SizableText>
+            </YStack>
           )}
         </YStack>
       </YStack>

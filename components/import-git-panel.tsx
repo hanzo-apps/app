@@ -395,23 +395,25 @@ export function ImportGitPanel() {
   />
               ))
             ) : filteredRepos.length === 0 ? (
-              <SizableText paddingVertical="$6" textAlign="center" fontSize="$3" color="$color11" display="flex" flexDirection="column">
-                {repos.length === 0
-                  ? `No repositories found for ${active}.`
-                  : `No repositories match “${search}”.`}
-              </SizableText>
+              <YStack paddingVertical="$6">
+                <SizableText textAlign="center" fontSize="$3" color="$color11">
+                  {repos.length === 0
+                    ? `No repositories found for ${active}.`
+                    : `No repositories match “${search}”.`}
+                </SizableText>
+              </YStack>
             ) : (
               filteredRepos.map((r) => (
                 <XStack
                   key={r.fullName}
                   group alignItems="center" gap="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$2.5" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}
                 >
-                  <SizableText height="$6" width="$6" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" color="$color11" display="flex" flexDirection="row">
+                  <XStack height="$6" width="$6" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
                     {(() => {
                       const Icon = PROVIDER_META[r.provider]?.Icon ?? Github;
-                      return <Icon size={16} />;
+                      return <Icon size={16} color="$color11" />;
                     })()}
-                  </SizableText>
+                  </XStack>
                   <YStack minWidth={0} flex={1}>
                     <XStack alignItems="center" gap="$1.5">
                       <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">
@@ -421,7 +423,7 @@ export function ImportGitPanel() {
                         <Lock size={12} color="$color11" />
                       )}
                     </XStack>
-                    <SizableText numberOfLines={1} fontSize="$1" color="$color11" display="flex" flexDirection="column">
+                    <SizableText numberOfLines={1} fontSize="$1" color="$color11">
                       {[r.language, relativeTime(r.pushedAt)]
                         .filter(Boolean)
                         .join(" · ") || "Repository"}
@@ -490,12 +492,12 @@ function ConnectCta({
   gitlabConnectable: boolean;
 }) {
   return (
-    <SizableText alignSelf="center" maxWidth={448} flexDirection="column" alignItems="center" borderRadius="$6" borderWidth={1} borderStyle="dashed" borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$5" paddingVertical="$7" textAlign="center" display="flex">
+    <YStack alignSelf="center" maxWidth={448} alignItems="center" borderRadius="$6" borderWidth={1} borderStyle="dashed" borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$5" paddingVertical="$7">
       <XStack marginBottom="$4" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
         <Github size={24} color="$color" />
       </XStack>
-      <H3 fontSize="$3" fontWeight="500" color="$color">Connect a Git provider</H3>
-      <Paragraph alignSelf="center" marginTop="$1.5" maxWidth={320} fontSize="$3" color="$color11">
+      <H3 fontSize="$3" fontWeight="500" color="$color" textAlign="center">Connect a Git provider</H3>
+      <Paragraph alignSelf="center" marginTop="$1.5" maxWidth={320} fontSize="$3" color="$color11" textAlign="center">
         Sign in with GitHub or GitLab to import your repositories and deploy them
         with automatic builds on every push.
       </Paragraph>
@@ -510,6 +512,6 @@ function ConnectCta({
           {!gitlabConnectable && <Badge variant="outline">Needs setup</Badge>}
         </Button>
       </XStack>
-    </SizableText>
+    </YStack>
   );
 }

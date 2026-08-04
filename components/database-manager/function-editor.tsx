@@ -192,24 +192,24 @@ export function FunctionEditor({
 
           {/* API Reference */}
           <YStack backgroundColor="$color3" borderWidth={1} borderRadius="$5" padding="$4" rowGap="$2">
-            <SizableText alignItems="center" gap="$2" fontSize="$3" fontWeight="500" display="flex" flexDirection="row">
+            <XStack alignItems="center" gap="$2">
               <Info size={16} />
-              Available APIs
-            </SizableText>
-            <SizableText gap="$2" fontSize="$1" fontFamily="$mono" display="flex" flexDirection="column">
-              <div><SizableText color="$blue9">request</SizableText>.method, .body, .query, .headers, .params, .path</div>
-              <div><SizableText color="$green9">db</SizableText>.query(sql, params), .run(sql, params), .all(sql, params)</div>
-              <div><SizableText color="$purple9">Response</SizableText>.json(data, status), .text(text, status), .error(msg, status)</div>
-              <div><SizableText color="$yellow9">fetch</SizableText>(url, options) - External HTTP requests</div>
-            </SizableText>
+              <SizableText fontSize="$3" fontWeight="500">Available APIs</SizableText>
+            </XStack>
+            <YStack gap="$2">
+              <SizableText fontSize="$1" fontFamily="$mono"><SizableText color="$blue9">request</SizableText>.method, .body, .query, .headers, .params, .path</SizableText>
+              <SizableText fontSize="$1" fontFamily="$mono"><SizableText color="$green9">db</SizableText>.query(sql, params), .run(sql, params), .all(sql, params)</SizableText>
+              <SizableText fontSize="$1" fontFamily="$mono"><SizableText color="$purple9">Response</SizableText>.json(data, status), .text(text, status), .error(msg, status)</SizableText>
+              <SizableText fontSize="$1" fontFamily="$mono"><SizableText color="$yellow9">fetch</SizableText>(url, options) - External HTTP requests</SizableText>
+            </YStack>
           </YStack>
 
           {/* Error */}
           {error && (
-            <SizableText alignItems="center" gap="$2" fontSize="$3" color="$red9" backgroundColor="$red9" padding="$3" borderRadius="$5" display="flex" flexDirection="row">
+            <XStack alignItems="center" gap="$2" backgroundColor="$red9" padding="$3" borderRadius="$5">
               <AlertCircle size={16} />
-              {error}
-            </SizableText>
+              <SizableText fontSize="$3" color="$red9">{error}</SizableText>
+            </XStack>
           )}
         </YStack>
 

@@ -117,12 +117,12 @@ export default function PricingPage() {
   };
 
   return (
-    <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
+    <YStack minHeight="100%" backgroundColor="$background">
       <Header />
 
       <main>
         {/* ── Hero ─────────────────────────────────────────────── */}
-        <SizableText position="relative" overflow="hidden" paddingHorizontal="$4" paddingVertical="$8" textAlign="center" display="flex" flexDirection="column" $sm={{ paddingVertical: "$10" }} $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
+        <YStack position="relative" overflow="hidden" paddingHorizontal="$4" paddingVertical="$8" $sm={{ paddingVertical: "$10" }} $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
           <YStack pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} overflow="hidden">
             <YStack position="absolute" left="50%" top="-30%" height={420} width={720} x="50%" borderRadius="$10" backgroundColor="$color" />
           </YStack>
@@ -138,7 +138,7 @@ export default function PricingPage() {
             </Reveal>
 
             <Reveal delay={60}>
-              <H1 fontSize="$11" fontWeight="500" lineHeight={1.03} letterSpacing={-0.4} $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
+              <H1 fontSize="$11" fontWeight="500" lineHeight={1.03} letterSpacing={-0.4} textAlign="center" $sm={{ fontSize: "$12" }} $md={{ fontSize: "$13" }}>
                 Shared AI usage,
                 <br />
                 across everything you build.
@@ -146,7 +146,7 @@ export default function PricingPage() {
             </Reveal>
 
             <Reveal delay={120}>
-              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
+              <Paragraph alignSelf="center" marginTop="$4.5" maxWidth={576} fontSize="$4" color="$color11" textAlign="center" $md={{ fontSize: "$6" }}>
                 One subscription powers AI across the app builder, Hanzo Chat, and
                 the API at{" "}
                 <SizableText fontFamily="$mono" color="$color">api.hanzo.ai</SizableText> — from
@@ -155,7 +155,7 @@ export default function PricingPage() {
               </Paragraph>
             </Reveal>
           </YStack>
-        </SizableText>
+        </YStack>
 
         {/* ── Plans ────────────────────────────────────────────── */}
         <YStack paddingHorizontal="$4" paddingBottom="$6" $md={{ paddingHorizontal: "$6" }}>
@@ -212,10 +212,10 @@ export default function PricingPage() {
 
                   <YStack marginTop={28} rowGap="$3.5" borderTopWidth={1} borderColor="$borderColor" paddingTop="$5">
                     {plan.features.map((f) => (
-                      <SizableText key={f} alignItems="flex-start" gap="$3">
+                      <XStack key={f} alignItems="flex-start" gap="$3">
                         <Check size={16} color="$color" />
                         <SizableText fontSize="$3" color="$color">{f}</SizableText>
-                      </SizableText>
+                      </XStack>
                     ))}
                   </YStack>
                 </YStack>
@@ -240,10 +240,10 @@ export default function PricingPage() {
               </div>
               <Link
                 href="/dev"
-              ><SizableText flexShrink={0} alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$4.5" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}>
-                Open the builder
+              ><XStack flexShrink={0} alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$4.5" paddingVertical="$2.5" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}>
+                <SizableText fontSize="$3" fontWeight="500" color="$color">Open the builder</SizableText>
                 <ArrowRight size={16} />
-              </SizableText></Link>
+              </XStack></Link>
             </YStack>
           </Reveal>
         </YStack>
@@ -263,10 +263,10 @@ export default function PricingPage() {
               </div>
               <Link
                 href="/enterprise"
-              ><SizableText flexShrink={0} alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$4.5" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}>
-                Talk to us
+              ><XStack flexShrink={0} alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$4.5" paddingVertical="$2.5" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}>
+                <SizableText fontSize="$3" fontWeight="500" color="$color">Talk to us</SizableText>
                 <ArrowRight size={16} />
-              </SizableText></Link>
+              </XStack></Link>
             </YStack>
           </Reveal>
         </YStack>
@@ -279,8 +279,8 @@ export default function PricingPage() {
           items={billingFaq}
   />
 
-        <SizableText borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingBottom="$4" textAlign="center" display="flex" flexDirection="column" $md={{ paddingHorizontal: "$6" }}>
-          <Paragraph marginTop="$6" fontSize="$3" color="$color11">
+        <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingBottom="$4" $md={{ paddingHorizontal: "$6" }}>
+          <Paragraph marginTop="$6" fontSize="$3" color="$color11" textAlign="center">
             More questions? Read the{" "}
             <Link
               href="/faq"
@@ -295,10 +295,10 @@ export default function PricingPage() {
             </SizableText></Link>
             .
           </Paragraph>
-        </SizableText>
+        </YStack>
       </main>
 
       <SiteFooter />
-    </SizableText>
+    </YStack>
   );
 }

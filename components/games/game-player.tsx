@@ -13,7 +13,7 @@
  * or allow-popups — a game build needs neither.
  */
 
-import { YStack, SizableText, Paragraph } from '@hanzo/gui';
+import { YStack, Paragraph } from '@hanzo/gui';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { webglBuildPath } from '@/data/games-catalog';
@@ -31,10 +31,10 @@ export function GamePlayer({ gameId, title }: GamePlayerProps) {
   return (
     <YStack position="relative" height="100%" width="100%" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background">
       {!loaded && (
-        <SizableText position="absolute" top={0} right={0} bottom={0} left={0} zIndex={10} flexDirection="column" alignItems="center" justifyContent="center" gap="$3" backgroundColor="$background" color="$color11" display="flex">
+        <YStack position="absolute" top={0} right={0} bottom={0} left={0} zIndex={10} alignItems="center" justifyContent="center" gap="$3" backgroundColor="$background">
           <Loader2 size={32} color="$color" />
-          <Paragraph fontSize="$3">Loading {title}…</Paragraph>
-        </SizableText>
+          <Paragraph fontSize="$3" color="$color11">Loading {title}…</Paragraph>
+        </YStack>
       )}
       <iframe
         data-testid="game-player-frame"

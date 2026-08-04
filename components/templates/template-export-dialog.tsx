@@ -157,11 +157,11 @@ export function TemplateExportDialog({
             <YStack rowGap="$2">
               <Label>Preview Thumbnail</Label>
               <XStack width="100%" height="$19" borderRadius="$5" backgroundColor="$color3" alignItems="center" justifyContent="center" borderWidth={1}>
-                <SizableText textAlign="center" color="$color11" display="flex" flexDirection="column">
-                  <FileBox size={48} />
+                <YStack alignItems="center">
+                  <FileBox size={48} color="$color11" />
                   <Paragraph fontSize="$3">No preview available</Paragraph>
                   <Paragraph fontSize="$1">Save your project to capture a preview</Paragraph>
-                </SizableText>
+                </YStack>
               </XStack>
             </YStack>
           )}
@@ -270,10 +270,10 @@ export function TemplateExportDialog({
               </SelectContent>
             </Select>
             {selectedLicense && (
-              <SizableText alignItems="flex-start" gap="$2" padding="$2" borderRadius="$3" backgroundColor="$color3" fontSize="$1" display="flex" flexDirection="row">
+              <XStack alignItems="flex-start" gap="$2" padding="$2" borderRadius="$3" backgroundColor="$color3">
                 <Info size={12} color="$color11" />
                 <Paragraph color="$color11">{selectedLicense.description}</Paragraph>
-              </SizableText>
+              </XStack>
             )}
           </YStack>
 

@@ -64,12 +64,12 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
           </DropdownMenu>
         </XStack>
 
-        <SizableText marginTop="$2" alignItems="center" gap="$1.5" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+        <XStack marginTop="$2" alignItems="center" gap="$1.5">
           <Globe size={14} />
-          <SizableText textTransform="capitalize">{project.framework || 'static'}</SizableText>
-          <SizableText marginHorizontal="$1">·</SizableText>
-          <span>{status.label}</span>
-        </SizableText>
+          <SizableText textTransform="capitalize" fontSize="$1" color="$color11">{project.framework || 'static'}</SizableText>
+          <SizableText marginHorizontal="$1" fontSize="$1" color="$color11">·</SizableText>
+          <SizableText fontSize="$1" color="$color11">{status.label}</SizableText>
+        </XStack>
 
         {project.description && (
           <Paragraph marginTop="$2" fontSize="$3" color="$color11" numberOfLines={2}>{project.description}</Paragraph>

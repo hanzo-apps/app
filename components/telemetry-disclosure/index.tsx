@@ -26,7 +26,7 @@ export function TelemetryDisclosure({ open, onDismiss }: TelemetryDisclosureProp
           </DialogDescription>
         </DialogHeader>
 
-        <SizableText rowGap="$4" fontSize="$3" color="$color11" lineHeight={1.625} display="flex" flexDirection="column">
+        <YStack rowGap="$4">
           <Paragraph fontSize="$3">
             Built with{' '}
             <Anchor
@@ -47,7 +47,7 @@ export function TelemetryDisclosure({ open, onDismiss }: TelemetryDisclosureProp
                 <SizableText fontSize="$1" color="$color">Details</SizableText>
               </CollapsibleTrigger>
               <CollapsibleContent>
-                <SizableText paddingHorizontal="$4" paddingBottom="$4" rowGap="$3" fontSize="$3" color="$color11" display="flex" flexDirection="column">
+                <YStack paddingHorizontal="$4" paddingBottom="$4" rowGap="$3">
                   <div>
                     <Paragraph fontWeight="500" color="$color" marginBottom="$1.5">What will <SizableText color="$orange8" textTransform="uppercase">not</SizableText> be collected:</Paragraph>
                     <YStack paddingLeft="$4.5" rowGap="$0.5">
@@ -72,11 +72,11 @@ export function TelemetryDisclosure({ open, onDismiss }: TelemetryDisclosureProp
                       <li>A randomly generated ID stored in your browser to count unique visitors</li>
                     </YStack>
                   </div>
-                </SizableText>
+                </YStack>
               </CollapsibleContent>
             </YStack>
           </Collapsible>
-        </SizableText>
+        </YStack>
 
         <DialogFooter alignItems="center" justifyContent="space-between" gap="$2" $sm={{ justifyContent: "space-between" }}>
           <Button

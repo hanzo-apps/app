@@ -197,7 +197,7 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
       </XStack>
 
       {/* Event Counts */}
-      <SizableText padding="$2" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$color3" fontSize="$1" display="flex" flexDirection="column">
+      <YStack padding="$2" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$color3">
         <XStack flexWrap="wrap" gap="$2">
           {Object.entries(eventCounts).map(([event, count]) => (
             <Button
@@ -209,7 +209,7 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
             </Button>
           ))}
         </XStack>
-      </SizableText>
+      </YStack>
 
       {/* Filter Input */}
       <YStack padding="$2" borderBottomWidth={1} borderColor="$borderColor">
@@ -238,9 +238,11 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
       {/* Events List */}
       <YStack flex={1} padding="$2" rowGap="$1" overflow="scroll">
         {filteredEvents.length === 0 ? (
-          <SizableText fontSize="$1" color="$color11" textAlign="center" padding="$4" display="flex" flexDirection="column">
-            No events yet. Events will appear here as they occur.
-          </SizableText>
+          <YStack padding="$4">
+            <SizableText fontSize="$1" color="$color11" textAlign="center">
+              No events yet. Events will appear here as they occur.
+            </SizableText>
+          </YStack>
         ) : (
           filteredEvents.map((event) => (
             <EventItem key={event.id} event={event} />
@@ -268,19 +270,19 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
 
           {/* Output history */}
           {shellOutput.length > 0 && (
-            <SizableText
+            <YStack
               ref={shellOutputRef}
-              maxHeight="$14" padding="$2" backgroundColor="$color12" fontFamily="$mono" fontSize="$1" overflow="scroll" display="flex" flexDirection="column"
+              maxHeight="$14" padding="$2" backgroundColor="$color12" overflow="scroll"
             >
               {shellOutput.map((entry, i) => (
                 <YStack key={i} marginBottom="$2">
-                  <SizableText color="$green8" display="flex" flexDirection="column">$ {entry.cmd}</SizableText>
+                  <YStack><SizableText color="$green8">$ {entry.cmd}</SizableText></YStack>
                   <SizableText whiteSpace="pre" fontFamily="$mono" {...{ color: entry.isError ? "$red8" : "$color4" }}>
                     {entry.output}
                   </SizableText>
                 </YStack>
               ))}
-            </SizableText>
+            </YStack>
           )}
 
           {/* Command input */}
@@ -329,7 +331,7 @@ function EventItem({ event }: { event: DebugEvent }) {
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <CollapsibleTrigger width="100%">
-        <SizableText alignItems="center" gap="$2" padding="$1.5" borderRadius="$2" fontSize="$1" display="flex" flexDirection="row" hoverStyle={{ backgroundColor: "$color3" }}>
+        <XStack alignItems="center" gap="$2" padding="$1.5" borderRadius="$2" hoverStyle={{ backgroundColor: "$color3" }}>
           {isOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
           <SizableText color="$color11" fontFamily="$mono">{time}</SizableText>
           <SizableText fontWeight="500" className={`${getEventColor(event.event)}`}>
@@ -340,12 +342,12 @@ function EventItem({ event }: { event: DebugEvent }) {
               ({event.count})
             </SizableText>
           )}
-        </SizableText>
+        </XStack>
       </CollapsibleTrigger>
       <CollapsibleContent>
-        <SizableText marginLeft="$5" padding="$2" backgroundColor="$color3" borderRadius="$2" fontSize="$1" fontFamily="$mono" overflow="scroll" display="flex" flexDirection="column">
+        <YStack marginLeft="$5" padding="$2" backgroundColor="$color3" borderRadius="$2" overflow="scroll">
           <pre>{JSON.stringify(event.data, null, 2)}</pre>
-        </SizableText>
+        </YStack>
       </CollapsibleContent>
     </Collapsible>
   );

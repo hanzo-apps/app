@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@hanzo/ui';
-import { SizableText, H2, Paragraph } from '@hanzo/gui';
+import { YStack, H2, Paragraph } from '@hanzo/gui';
 import React, { Component, ReactNode } from 'react';
 import { AlertCircle } from 'lucide-react';
 
@@ -34,10 +34,10 @@ export class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return this.props.fallback || (
-        <SizableText flexDirection="column" alignItems="center" justifyContent="center" minHeight={400} padding="$6" textAlign="center" display="flex">
+        <YStack alignItems="center" justifyContent="center" minHeight={400} padding="$6">
           <AlertCircle size={48} color="$red9" />
-          <H2 fontSize="$7" fontWeight="500" marginBottom="$2">Something went wrong</H2>
-          <Paragraph color="$color11" marginBottom="$4">
+          <H2 fontSize="$7" fontWeight="500" marginBottom="$2" textAlign="center">Something went wrong</H2>
+          <Paragraph color="$color11" marginBottom="$4" textAlign="center">
             {this.state.error?.message || 'An unexpected error occurred'}
           </Paragraph>
           <Button
@@ -46,7 +46,7 @@ export class ErrorBoundary extends Component<Props, State> {
           >
             Try again
           </Button>
-        </SizableText>
+        </YStack>
       );
     }
 

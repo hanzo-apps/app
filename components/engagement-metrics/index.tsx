@@ -169,14 +169,14 @@ export function EngagementMetrics({ deploymentId }: EngagementMetricsProps) {
                   {landing.visitCount.toLocaleString()} visits
                 </SizableText></YStack>
               </YStack>
-              <SizableText textAlign="right" display="flex" flexDirection="column">
-                <SizableText fontSize="$3" display="flex" flexDirection="column">
+              <YStack alignItems="flex-end">
+                <YStack>
                   <SizableText {...{ color: landing.bounceRate > 0.7 ? '#ef4444' : landing.bounceRate > 0.4 ? '#f97316' : '#22c55e' }}>
                     {(landing.bounceRate * 100).toFixed(1)}%
                   </SizableText>
-                </SizableText>
-                <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">bounce rate</SizableText>
-              </SizableText>
+                </YStack>
+                <YStack><SizableText fontSize="$1" color="$color11">bounce rate</SizableText></YStack>
+              </YStack>
             </XStack>
           ))}
         </YStack>
@@ -189,12 +189,12 @@ export function EngagementMetrics({ deploymentId }: EngagementMetricsProps) {
           {data.exitPages.slice(0, 10).map((exit) => (
             <XStack key={exit.page} justifyContent="space-between" alignItems="center">
               <SizableText fontSize="$3" numberOfLines={1} flex={1}>{exit.page}</SizableText>
-              <SizableText textAlign="right" marginLeft="$4" display="flex" flexDirection="column">
-                <SizableText fontSize="$3" fontWeight="500" display="flex" flexDirection="column">{exit.exitCount.toLocaleString()}</SizableText>
-                <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
+              <YStack alignItems="flex-end" marginLeft="$4">
+                <YStack><SizableText fontSize="$3" fontWeight="500">{exit.exitCount.toLocaleString()}</SizableText></YStack>
+                <YStack><SizableText fontSize="$1" color="$color11">
                   {(exit.exitRate * 100).toFixed(1)}% exit rate
-                </SizableText>
-              </SizableText>
+                </SizableText></YStack>
+              </YStack>
             </XStack>
           ))}
         </YStack>

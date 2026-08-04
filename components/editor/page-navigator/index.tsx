@@ -131,10 +131,10 @@ export function PagePanel({
           groups.map((group) => (
             <YStack key={group.folder || "/"} paddingVertical="$0.5">
               {group.folder && (
-                <SizableText alignItems="center" gap="$1.5" paddingHorizontal="$2.5" paddingVertical="$1" fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.4} color="$color11" display="flex" flexDirection="row">
-                  <Folder size={12} />
-                  <SizableText numberOfLines={1}>{group.folder}</SizableText>
-                </SizableText>
+                <XStack alignItems="center" gap="$1.5" paddingHorizontal="$2.5" paddingVertical="$1">
+                  <SizableText color="$color11"><Folder size={12} /></SizableText>
+                  <SizableText numberOfLines={1} fontSize={10} fontWeight="500" textTransform="uppercase" letterSpacing={0.4} color="$color11">{group.folder}</SizableText>
+                </XStack>
               )}
               {group.items.map((item) => {
                 const active = item.path === currentPage;

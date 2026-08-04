@@ -72,24 +72,23 @@ export function OrgAvatar({
   //     the color; the box stays borderless here (inline size beats the class).
   if (resolved && isEmoji(resolved)) {
     return (
-      <SizableText
-        flexShrink={0} alignItems="center" justifyContent="center" lineHeight={1} width={box.width} height={box.height}
-        style={{ fontSize: "1.05rem" }}
+      <XStack
+        flexShrink={0} alignItems="center" justifyContent="center" width={box.width} height={box.height}
         aria-hidden={true}
       >
-        {resolved}
-      </SizableText>
+        <SizableText lineHeight={1} style={{ fontSize: "1.05rem" }}>{resolved}</SizableText>
+      </XStack>
     );
   }
   // (c) fallback — the org's initial in a neutral rounded square (monochrome).
   const initial = (name || "").trim().charAt(0).toUpperCase() || "•";
   return (
-    <SizableText
-      flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" fontWeight="600" color="$color" width={box.width} height={box.height} fontSize={box.fontSize}
+    <XStack
+      flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" width={box.width} height={box.height}
       aria-hidden={true}
     >
-      {initial}
-    </SizableText>
+      <SizableText fontWeight="600" color="$color" fontSize={box.fontSize}>{initial}</SizableText>
+    </XStack>
   );
 }
 
@@ -140,10 +139,10 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
 
   if (loading) {
     return (
-      <SizableText alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$3" color="$color11" display="flex" flexDirection="row">
+      <XStack alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5">
         <Building2 size={16} />
-        <SizableText display="none">…</SizableText>
-      </SizableText>
+        <SizableText display="none" fontSize="$3" color="$color11">…</SizableText>
+      </XStack>
     );
   }
   if (!ctx) return null; // signed out — no org chrome
@@ -232,11 +231,11 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
                 <Link
                   href="/settings/organization"
                   onClick={() => setOpen(false)}
-                ><SizableText marginTop="$1" width="100%" alignItems="center" gap="$2" borderRadius="$3" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$2" fontSize="$3" color="$color" hoverStyle={{ backgroundColor: "$color3" }}>
+                ><XStack marginTop="$1" width="100%" alignItems="center" gap="$2" borderRadius="$3" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$2" hoverStyle={{ backgroundColor: "$color3" }}>
                   <Settings size={16} />
-                  Organization settings
+                  <SizableText fontSize="$3" color="$color">Organization settings</SizableText>
                   <SizableText marginLeft="auto" color="$color11">→</SizableText>
-                </SizableText></Link>
+                </XStack></Link>
                 <Button
                   onClick={() => { setCreating(true); setErr(null); }}
                   marginTop="$1" width="100%" alignItems="center" gap="$2" borderRadius="$3" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$2" hoverStyle={{ backgroundColor: "$color3" }}
@@ -305,12 +304,12 @@ function OnboardingPanel() {
   };
 
   return (
-    <SizableText alignSelf="center" maxWidth={448} paddingHorizontal="$4" paddingVertical="$10" textAlign="center" display="flex" flexDirection="column">
+    <YStack alignSelf="center" maxWidth={448} paddingHorizontal="$4" paddingVertical="$10">
       <XStack alignSelf="center" marginBottom="$5" height="$9" width="$9" alignItems="center" justifyContent="center" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
         <Sparkles size={28} color="$color" />
       </XStack>
-      <H1 marginBottom="$2" fontSize="$8" fontWeight="500">Set up your workspace</H1>
-      <Paragraph marginBottom="$6" fontSize="$3" color="$color11">
+      <H1 marginBottom="$2" fontSize="$8" fontWeight="500" textAlign="center">Set up your workspace</H1>
+      <Paragraph marginBottom="$6" fontSize="$3" color="$color11" textAlign="center">
         Every project belongs to an organization — that&apos;s where it&apos;s billed and
         shared. Start with a personal workspace, or name a team organization.
       </Paragraph>
@@ -319,7 +318,7 @@ function OnboardingPanel() {
         {busy === 'personal' ? <Loader2 size={16} /> : 'Continue with a personal workspace'}
       </Button>
 
-      <SizableText marginVertical="$4" fontSize="$1" textTransform="uppercase" letterSpacing={0.4} color="$color11" display="flex" flexDirection="column">or</SizableText>
+      <SizableText marginVertical="$4" textAlign="center" fontSize="$1" textTransform="uppercase" letterSpacing={0.4} color="$color11">or</SizableText>
 
       <Input
         value={name}
@@ -337,7 +336,7 @@ function OnboardingPanel() {
         {busy === 'named' ? <Loader2 size={16} /> : 'Create team organization'}
       </Button>
 
-      {error && <Paragraph marginTop="$4" fontSize="$3" color="$red8">{error}</Paragraph>}
-    </SizableText>
+      {error && <Paragraph marginTop="$4" fontSize="$3" color="$red8" textAlign="center">{error}</Paragraph>}
+    </YStack>
   );
 }

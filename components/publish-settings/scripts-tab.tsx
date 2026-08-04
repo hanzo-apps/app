@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, H3, Paragraph, SizableText, H4 } from '@hanzo/gui';
+import { YStack, XStack, H3, Paragraph, H4 } from '@hanzo/gui';
 import { useState } from 'react';
 import { PublishSettings, ScriptConfig } from '@/lib/vfs/types';
 import { Button, Input, Label, Textarea, Switch, Badge, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
@@ -124,17 +124,17 @@ export function ScriptsTab({ settings, onChange }: ScriptsTabProps) {
       </XStack>
 
       {allScripts.length === 0 ? (
-        <SizableText textAlign="center" padding="$6" borderWidth={2} borderStyle="dashed" borderRadius="$5" display="flex" flexDirection="column">
+        <YStack padding="$6" borderWidth={2} borderStyle="dashed" borderRadius="$5">
           <Code size={48} color="$color11" />
-          <H3 fontSize="$6" fontWeight="500" marginBottom="$2">No Scripts Added</H3>
-          <Paragraph fontSize="$3" color="$color11" marginBottom="$4">
+          <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">No Scripts Added</H3>
+          <Paragraph fontSize="$3" color="$color11" marginBottom="$4" textAlign="center">
             Add tracking scripts, analytics, or custom code to your deployment
           </Paragraph>
           <Button onClick={handleAddScript} variant="outline">
             <Plus size={16} />
             Add Your First Script
           </Button>
-        </SizableText>
+        </YStack>
       ) : (
         <YStack rowGap="$4">
           {allScripts.map((script) => (

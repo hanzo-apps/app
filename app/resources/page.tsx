@@ -103,9 +103,9 @@ function ResourcesBrowser() {
   };
 
   return (
-    <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
+    <YStack minHeight="100%" backgroundColor="$background">
       <Header />
-      <SizableText flex={1} backgroundColor="$background" color="$color" overflow="scroll" display="flex" flexDirection="column">
+      <YStack flex={1} backgroundColor="$background" overflow="scroll">
         {/* Hero */}
         <YStack borderBottomWidth={1} borderColor="$borderColor">
           <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$7">
@@ -164,7 +164,7 @@ function ResourcesBrowser() {
           </YStack>
 
           {filtered.length === 0 && (
-            <SizableText paddingVertical="$11" textAlign="center" display="flex" flexDirection="column">
+            <YStack paddingVertical="$11" alignItems="center">
               {loading ? (
                 <Loader2 size={24} color="$color11" />
               ) : (
@@ -181,10 +181,10 @@ function ResourcesBrowser() {
                   </Button>
                 </>
               )}
-            </SizableText>
+            </YStack>
           )}
         </YStack>
-      </SizableText>
+      </YStack>
 
       {/* Remix flow */}
       <TemplatePreviewModal
@@ -206,7 +206,7 @@ function ResourcesBrowser() {
         onOpenChange={setProgressOpen}
   />
       <SiteFooter />
-    </SizableText>
+    </YStack>
   );
 }
 
@@ -214,11 +214,11 @@ export default function ResourcesPage() {
   return (
     <Suspense
       fallback={
-        <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
+        <YStack minHeight="100%" backgroundColor="$background">
           <Header />
           <YStack flex={1} />
           <SiteFooter />
-        </SizableText>
+        </YStack>
       }
     >
       <ResourcesBrowser />
@@ -252,10 +252,10 @@ function ResourceCard({
             }}
   />
         ) : (
-          <SizableText height="100%" flexDirection="column" alignItems="center" justifyContent="center" gap="$1.5" color="$color11" display="flex">
+          <YStack height="100%" alignItems="center" justifyContent="center" gap="$1.5">
             <Gamepad2 size={32} />
-            <SizableText fontSize="$1">{item.framework}</SizableText>
-          </SizableText>
+            <SizableText fontSize="$1" color="$color11">{item.framework}</SizableText>
+          </YStack>
         )}
         {item.kind === 'game' ? (
           <Badge variant="outline" className="absolute right-2 top-2">
@@ -267,10 +267,10 @@ function ResourceCard({
           </Badge>
         )}
         {typeof item.rating === 'number' && (
-          <SizableText position="absolute" left="$2" top="$2" alignItems="center" gap="$1" borderRadius="$10" backgroundColor="$background" paddingHorizontal="$2" paddingVertical="$0.5" fontSize={11} color="$color" display="flex" flexDirection="row">
+          <XStack position="absolute" left="$2" top="$2" alignItems="center" gap="$1" borderRadius="$10" backgroundColor="$background" paddingHorizontal="$2" paddingVertical="$0.5">
             <Star size={12} />
-            {item.rating}
-          </SizableText>
+            <SizableText fontSize={11} color="$color">{item.rating}</SizableText>
+          </XStack>
         )}
       </YStack>
       <YStack flex={1} padding="$4">

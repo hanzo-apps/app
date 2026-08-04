@@ -116,15 +116,15 @@ export const LoadProject = ({
             <DialogTitle display="none" />
             <YStack backgroundColor="$color3" padding="$5" borderBottomWidth={1} borderColor="$borderColor">
               <XStack alignItems="center" justifyContent="center" columnGap="$4" marginBottom="$3">
-                <SizableText width={44} height={44} borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$8" display="flex" flexDirection="row">
-                  🎨
-                </SizableText>
-                <SizableText borderRadius="$10" backgroundColor="$color4" borderWidth={1} borderColor="$borderColor" elevation={4} alignItems="center" justifyContent="center" fontSize="$10" zIndex={2} display="flex" flexDirection="row" height={52} width={52}>
-                  🥳
-                </SizableText>
-                <SizableText width={44} height={44} borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$8" display="flex" flexDirection="row">
-                  💎
-                </SizableText>
+                <XStack width={44} height={44} borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center">
+                  <SizableText fontSize="$8">🎨</SizableText>
+                </XStack>
+                <XStack borderRadius="$10" backgroundColor="$color4" borderWidth={1} borderColor="$borderColor" elevation={4} alignItems="center" justifyContent="center" zIndex={2} height={52} width={52}>
+                  <SizableText fontSize="$10">🥳</SizableText>
+                </XStack>
+                <XStack width={44} height={44} borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center">
+                  <SizableText fontSize="$8">💎</SizableText>
+                </XStack>
               </XStack>
               <Paragraph fontSize="$8" fontWeight="500" color="$color" textAlign="center">
                 Import a Project

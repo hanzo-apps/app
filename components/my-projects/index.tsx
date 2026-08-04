@@ -27,7 +27,7 @@ export function MyProjects({
     <>
       <YStack maxWidth="86rem" paddingVertical="$8" paddingHorizontal="$4" alignSelf="center">
         <XStack alignItems="center" justifyContent="space-between" gap="$4" $lg={{ flexDirection: "column" }}>
-          <SizableText textAlign="left" display="flex" flexDirection="column">
+          <YStack>
             <H1 fontSize="$10" fontWeight="500" color="$color">
               <SizableText textTransform="capitalize">{user.fullname || user.name || 'Your'}</SizableText>&apos;s
               Hanzo Projects
@@ -35,7 +35,7 @@ export function MyProjects({
             <Paragraph color="$color11" fontSize="$4" marginTop="$1" maxWidth={576}>
               Create, manage, and explore your Hanzo projects.
             </Paragraph>
-          </SizableText>
+          </YStack>
           <LoadProject
             fullXsBtn
             onSuccess={(project: Project) => {
@@ -46,10 +46,10 @@ export function MyProjects({
         <YStack marginTop="$6" gap="$6">
           <Link
             href="/new"
-          ><SizableText backgroundColor="$background" borderRadius="$6" height="$18" alignItems="center" justifyContent="center" color="$color11" borderWidth={1} borderColor="$borderColor">
+          ><XStack backgroundColor="$background" borderRadius="$6" height="$18" alignItems="center" justifyContent="center" gap="$2" borderWidth={1} borderColor="$borderColor">
             <Plus size={20} />
-            Create Project
-          </SizableText></Link>
+            <SizableText color="$color11">Create Project</SizableText>
+          </XStack></Link>
           {projects.map((project: Project) => (
             <ProjectCard key={project._id} project={project} />
           ))}

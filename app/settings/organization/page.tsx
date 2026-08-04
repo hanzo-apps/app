@@ -58,9 +58,9 @@ function OrganizationSettingsInner() {
           <XStack alignItems="center" gap="$4">
             <OrgAvatar name={name} logo={serverLogo} size={48} />
             <YStack minWidth={0}>
-              <SizableText numberOfLines={1} fontWeight="500" color="$color" display="flex" flexDirection="column">{name}</SizableText>
+              <SizableText numberOfLines={1} fontWeight="500" color="$color">{name}</SizableText>
               {currentId && (
-                <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color11" display="flex" flexDirection="column">{currentId}</SizableText>
+                <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1" color="$color11">{currentId}</SizableText>
               )}
             </YStack>
           </XStack>

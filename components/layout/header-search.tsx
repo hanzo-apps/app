@@ -12,7 +12,7 @@
  * triggers its project fetch.
  */
 import { Button } from '@hanzo/ui';
-import { SizableText } from '@hanzo/gui';
+import { SizableText, XStack } from '@hanzo/gui';
 import { useCallback, useState } from 'react';
 import { Search } from 'lucide-react';
 import { CommandPalette } from '@/components/command-palette';
@@ -30,13 +30,15 @@ export function HeaderSearch({ className }: { className?: string }) {
         aria-label="Search (Command-K)"
         group height={36} alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2.5" outlineWidth={0} hoverStyle={{ borderColor: "$color" }} className={`${className}`}
       >
-        <SizableText color="$color11" $group-hover={{ color: "$color" }} display="flex" alignItems="center" gap="$2">
-          <Search size={16} />
+        <XStack alignItems="center" gap="$2">
+          <SizableText color="$color11" $group-hover={{ color: "$color" }}>
+            <Search size={16} />
+          </SizableText>
           <SizableText display="none">Search</SizableText>
           <kbd className="hs-kbd">
             ⌘K
           </kbd>
-        </SizableText>
+        </XStack>
       </Button>
       {open && <CommandPalette open={open} onOpenChange={setOpen} />}
     </>

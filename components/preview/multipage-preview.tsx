@@ -815,10 +815,10 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
       <YStack height="100%">
         <Header />
         <XStack flex={1} alignItems="center" justifyContent="center">
-          <SizableText textAlign="center" rowGap="$2" display="flex" flexDirection="column">
+          <YStack rowGap="$2">
             <RefreshCw size={32} color="$color12" />
-            <Paragraph color="$color11">Compiling project...</Paragraph>
-          </SizableText>
+            <Paragraph color="$color11" textAlign="center">Compiling project...</Paragraph>
+          </YStack>
         </XStack>
       </YStack>
     );
@@ -829,13 +829,13 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
       <YStack height="100%">
         <Header />
         <XStack flex={1} alignItems="center" justifyContent="center">
-          <SizableText textAlign="center" color="$red9" rowGap="$2" display="flex" flexDirection="column">
-            <Paragraph fontWeight="500">Error</Paragraph>
-            <Paragraph fontSize="$3" marginTop="$2">{error}</Paragraph>
+          <YStack rowGap="$2">
+            <Paragraph fontWeight="500" color="$red9" textAlign="center">Error</Paragraph>
+            <Paragraph fontSize="$3" marginTop="$2" color="$red9" textAlign="center">{error}</Paragraph>
             <Button onClick={handleRefresh} marginTop="$4">
               Try Again
             </Button>
-          </SizableText>
+          </YStack>
         </XStack>
       </YStack>
     );
@@ -990,7 +990,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
           )}
         </XStack>
 
-        <SizableText flex={1} paddingHorizontal="$3" paddingVertical="$1" backgroundColor="$color3" borderRadius="$2" fontSize="$3" display="flex" flexDirection="column">
+        <SizableText flex={1} paddingHorizontal="$3" paddingVertical="$1" backgroundColor="$color3" borderRadius="$2" fontSize="$3">
           {activePath}
         </SizableText>
 

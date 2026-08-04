@@ -33,9 +33,9 @@ interface Collaborator {
 /** One neutral, monochrome avatar — a single soft-rounded initial chip. No hue. */
 function Avatar({ name }: { name: string }) {
   return (
-    <SizableText width={28} height={28} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$10" backgroundColor="$color3" fontSize={11} fontWeight="500" color="$color" display="flex" flexDirection="row">
-      {name.charAt(0).toUpperCase()}
-    </SizableText>
+    <XStack width={28} height={28} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$10" backgroundColor="$color3">
+      <SizableText fontSize={11} fontWeight="500" color="$color">{name.charAt(0).toUpperCase()}</SizableText>
+    </XStack>
   );
 }
 
@@ -194,13 +194,13 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="public">
-                    <SizableText alignItems="center" gap="$2"><Globe size={14} />Public</SizableText>
+                    <XStack alignItems="center" gap="$2"><Globe size={14} /><SizableText>Public</SizableText></XStack>
                   </SelectItem>
                   <SelectItem value="workspace">
-                    <SizableText alignItems="center" gap="$2"><Users size={14} />Workspace</SizableText>
+                    <XStack alignItems="center" gap="$2"><Users size={14} /><SizableText>Workspace</SizableText></XStack>
                   </SelectItem>
                   <SelectItem value="private">
-                    <SizableText alignItems="center" gap="$2"><Lock size={14} />Private</SizableText>
+                    <XStack alignItems="center" gap="$2"><Lock size={14} /><SizableText>Private</SizableText></XStack>
                   </SelectItem>
                 </SelectContent>
               </Select>

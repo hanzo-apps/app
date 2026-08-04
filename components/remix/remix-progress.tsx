@@ -18,7 +18,7 @@
  * the user is never stranded.
  */
 
-import { SizableText, H2, Paragraph, YStack, XStack } from '@hanzo/gui';
+import { H2, Paragraph, YStack, XStack } from '@hanzo/gui';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogContent, DialogTitle } from '@hanzo/ui';
@@ -141,11 +141,11 @@ export function RemixProgress({
       >
         <DialogTitle position="absolute" width={1} height={1} overflow="hidden">Remixing project</DialogTitle>
 
-        <SizableText flexDirection="column" alignItems="center" paddingBottom="$1" paddingTop="$2" textAlign="center" display="flex">
+        <YStack alignItems="center" paddingBottom="$1" paddingTop="$2">
           <HanzoLogo animated size={32} style={{ marginBottom: 12 }} />
-          <H2 fontSize="$4" fontWeight="500">Remixing project</H2>
-          <Paragraph marginTop="$1" fontSize="$1" color="$color11">This may take a few moments.</Paragraph>
-        </SizableText>
+          <H2 fontSize="$4" fontWeight="500" textAlign="center">Remixing project</H2>
+          <Paragraph marginTop="$1" fontSize="$1" color="$color11" textAlign="center">This may take a few moments.</Paragraph>
+        </YStack>
 
         <YStack marginTop="$3" rowGap="$3">
           <Step state={s1} label="Creating project" />
@@ -160,7 +160,7 @@ export function RemixProgress({
 function Step({ state, label, subline }: { state: StepState; label: string; subline?: string }) {
   return (
     <XStack alignItems="flex-start" gap="$3">
-      <SizableText marginTop="$0.5" height="$4.5" width="$4.5" alignItems="center" justifyContent="center">
+      <XStack marginTop="$0.5" height="$4.5" width="$4.5" alignItems="center" justifyContent="center">
         {state === 'done' ? (
           <Check size={16} color="$green8" />
         ) : state === 'active' ? (
@@ -168,7 +168,7 @@ function Step({ state, label, subline }: { state: StepState; label: string; subl
         ) : (
           <Circle size={10} color="$color11" />
         )}
-      </SizableText>
+      </XStack>
       <YStack minWidth={0}>
         <Paragraph {...{ fontSize: state === 'pending' ? "$3" : "$3", color: state === 'pending' ? "$color11" : "$color" }}>{label}</Paragraph>
         {subline && <Paragraph marginTop="$0.5" fontSize="$1" color="$color11">{subline}</Paragraph>}

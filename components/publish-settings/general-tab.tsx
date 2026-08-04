@@ -102,12 +102,12 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
           {projectId !== originalProjectId && (
             <XStack alignItems="flex-start" gap="$3" padding="$3" backgroundColor="$yellow1" borderWidth={1} borderColor="$yellow3" borderRadius="$5" $theme-dark={{ backgroundColor: "$yellow12", borderColor: "$yellow11" }}>
               <AlertTriangle size={16} color="$yellow10" />
-              <SizableText fontSize="$3" color="$yellow11" display="flex" flexDirection="column" $theme-dark={{ color: "$yellow3" }}>
-                <Paragraph fontWeight="500">Changing the source project may break the published deployment.</Paragraph>
-                <Paragraph marginTop="$1" color="$yellow11" $theme-dark={{ color: "$yellow4" }}>
+              <YStack>
+                <Paragraph fontSize="$3" fontWeight="500" color="$yellow11" $theme-dark={{ color: "$yellow3" }}>Changing the source project may break the published deployment.</Paragraph>
+                <Paragraph fontSize="$3" marginTop="$1" color="$yellow11" $theme-dark={{ color: "$yellow4" }}>
                   The new project may have different files and structure. You will need to republish after saving.
                 </Paragraph>
-              </SizableText>
+              </YStack>
             </XStack>
           )}
         </YStack>
@@ -186,16 +186,16 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
 
         <YStack gap="$4">
           <YStack padding="$3" borderWidth={1} borderRadius="$5">
-            <SizableText fontSize="$3" color="$color11" marginBottom="$1" display="flex" flexDirection="column">Current Version</SizableText>
-            <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{settings.settingsVersion}</SizableText>
+            <YStack marginBottom="$1"><SizableText fontSize="$3" color="$color11">Current Version</SizableText></YStack>
+            <YStack><SizableText fontSize="$8" fontWeight="500">{settings.settingsVersion}</SizableText></YStack>
           </YStack>
           <YStack padding="$3" borderWidth={1} borderRadius="$5">
-            <SizableText fontSize="$3" color="$color11" marginBottom="$1" display="flex" flexDirection="column">Published Version</SizableText>
-            <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">
+            <YStack marginBottom="$1"><SizableText fontSize="$3" color="$color11">Published Version</SizableText></YStack>
+            <YStack><SizableText fontSize="$8" fontWeight="500">
               {settings.lastPublishedVersion !== null && settings.lastPublishedVersion !== undefined
                 ? settings.lastPublishedVersion
                 : '-'}
-            </SizableText>
+            </SizableText></YStack>
           </YStack>
         </YStack>
 

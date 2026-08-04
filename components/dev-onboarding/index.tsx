@@ -1,6 +1,6 @@
 "use client";
 
-import { XStack, YStack, SizableText, H1, Paragraph, H3, Image } from '@hanzo/gui';
+import { XStack, YStack, H1, Paragraph, H3, Image } from '@hanzo/gui';
 import { useState, useEffect } from "react";
 import {
   Sparkles,
@@ -115,16 +115,16 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
     return (
       <XStack flex={1} backgroundColor="$background" justifyContent="center" alignItems="flex-start" paddingHorizontal="$5" paddingVertical="$10" overflow="scroll">
         <YStack maxWidth={1152} width="100%">
-          <SizableText textAlign="center" marginBottom="$8" display="flex" flexDirection="column">
+          <YStack marginBottom="$8">
             {/* Names the ACTION, not the company. Someone who clicked "build with
                 app" has already chosen Hanzo — greeting them by brand answers a
                 question they did not ask and hides the one they did. Each surface
                 states its own verb: hanzo.app builds, hanzo.chat asks, the
                 extension (which drives the browser) does. */}
-            <H1 fontSize="$11" fontWeight="500" color="$color" marginBottom="$4">
+            <H1 fontSize="$11" fontWeight="500" color="$color" marginBottom="$4" textAlign="center">
               Build anything
             </H1>
-          </SizableText>
+          </YStack>
 
           {/* Quick Start Options */}
           <YStack gap="$5" marginBottom="$6">
@@ -231,27 +231,27 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
           {/* Features Grid */}
           <YStack gap="$4">
             {features.map((feature, i) => (
-              <SizableText key={i} textAlign="center" display="flex" flexDirection="column">
-                <SizableText width="$8" height="$8" backgroundColor="$background" borderRadius="$5" alignItems="center" justifyContent="center" color="$color" marginBottom="$2" alignSelf="center" display="flex" flexDirection="row">
+              <YStack key={i}>
+                <XStack width="$8" height="$8" backgroundColor="$background" borderRadius="$5" alignItems="center" justifyContent="center" marginBottom="$2" alignSelf="center">
                   {feature.icon}
-                </SizableText>
-                <Paragraph color="$color" fontSize="$3" fontWeight="500">{feature.title}</Paragraph>
-                <Paragraph color="$color11" fontSize="$1">{feature.description}</Paragraph>
-              </SizableText>
+                </XStack>
+                <Paragraph color="$color" fontSize="$3" fontWeight="500" textAlign="center">{feature.title}</Paragraph>
+                <Paragraph color="$color11" fontSize="$1" textAlign="center">{feature.description}</Paragraph>
+              </YStack>
             ))}
           </YStack>
 
           {/* Proof — real only: Techstars '17 backing + the real model count. */}
-          <SizableText justifyContent="center" gap="$6" marginTop="$6" textAlign="center" display="flex" flexDirection="row">
+          <XStack justifyContent="center" gap="$6" marginTop="$6">
             <div>
-              <Paragraph fontSize="$8" fontWeight="500" color="$color">Techstars &apos;17</Paragraph>
-              <Paragraph fontSize="$1" color="$color11">backed</Paragraph>
+              <Paragraph fontSize="$8" fontWeight="500" color="$color" textAlign="center">Techstars &apos;17</Paragraph>
+              <Paragraph fontSize="$1" color="$color11" textAlign="center">backed</Paragraph>
             </div>
             <div>
-              <Paragraph fontSize="$8" fontWeight="500" color="$color">400+</Paragraph>
-              <Paragraph fontSize="$1" color="$color11">AI models</Paragraph>
+              <Paragraph fontSize="$8" fontWeight="500" color="$color" textAlign="center">400+</Paragraph>
+              <Paragraph fontSize="$1" color="$color11" textAlign="center">AI models</Paragraph>
             </div>
-          </SizableText>
+          </XStack>
         </YStack>
       </XStack>
     );

@@ -371,39 +371,39 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
             </Badge>
           )}
         </XStack>
-        <SizableText alignItems="center" gap="$3" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+        <XStack alignItems="center" gap="$3">
           {model.contextLength !== undefined && (
-            <span>Context: {Math.round(model.contextLength / 1000)}K</span>
+            <SizableText fontSize="$1" color="$color11">Context: {Math.round(model.contextLength / 1000)}K</SizableText>
           )}
           {model.pricing && (
             model.pricing.input === 0 && model.pricing.output === 0 ? (
               <>
-                <span>·</span>
-                <span>Free</span>
+                <SizableText fontSize="$1" color="$color11">·</SizableText>
+                <SizableText fontSize="$1" color="$color11">Free</SizableText>
               </>
             ) : (
               <>
-                <span>·</span>
-                <span>
+                <SizableText fontSize="$1" color="$color11">·</SizableText>
+                <SizableText fontSize="$1" color="$color11">
                   {formatModelPrice(model.pricing.input)}/K | {formatModelPrice(model.pricing.output)}/K
-                </span>
+                </SizableText>
               </>
             )
           )}
           {!model.pricing && currentProvider !== 'openrouter' && (
             <>
-              <span>·</span>
-              <span>Pricing varies</span>
+              <SizableText fontSize="$1" color="$color11">·</SizableText>
+              <SizableText fontSize="$1" color="$color11">Pricing varies</SizableText>
             </>
           )}
-        </SizableText>
+        </XStack>
       </YStack>
     </Button>
   );
 
   const modelDetailsSection = !hideModelDetails && selectedModelData && (
-    <SizableText marginTop="$1" fontSize="$1" color="$color11" maxHeight={150} paddingRight="$2" overflow="scroll" display="flex" flexDirection="column">
-      <SizableText fontWeight="500" marginBottom="$1" display="flex" flexDirection="column">
+    <YStack marginTop="$1" maxHeight={150} paddingRight="$2" overflow="scroll">
+      <SizableText fontWeight="500" marginBottom="$1" fontSize="$1" color="$color11">
         {selectedModelData.pricing ? (
           selectedModelData.pricing.input === 0 && selectedModelData.pricing.output === 0 ?
             'Free' :
@@ -413,9 +413,9 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
         )}
       </SizableText>
       {selectedModelData.description && (
-        <div>{selectedModelData.description}</div>
+        <SizableText fontSize="$1" color="$color11">{selectedModelData.description}</SizableText>
       )}
-    </SizableText>
+    </YStack>
   );
 
   const reasoningSection = selectedModelData?.supportsReasoning && (
@@ -467,9 +467,9 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
           {/* Model list */}
           <YStack maxHeight={240} padding="$1" overflow="scroll">
             {filteredModels.length === 0 ? (
-              <SizableText paddingVertical="$4.5" textAlign="center" fontSize="$3" color="$color11" display="flex" flexDirection="column">
-                No models found
-              </SizableText>
+              <YStack paddingVertical="$4.5">
+                <SizableText textAlign="center" fontSize="$3" color="$color11">No models found</SizableText>
+              </YStack>
             ) : (
               filteredModels.map(renderModelItem)
             )}
@@ -494,10 +494,10 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
             justifyContent="space-between" minWidth={200}
           >
             {selectedModelData ? (
-              <SizableText alignItems="center" gap="$2" numberOfLines={1} fontWeight="400" display="flex" flexDirection="row">
+              <XStack alignItems="center" gap="$2">
                 {getModelIcon(selectedModelData)}
-                <SizableText numberOfLines={1}>{getModelName(selectedModelData)}</SizableText>
-              </SizableText>
+                <SizableText numberOfLines={1} fontWeight="400">{getModelName(selectedModelData)}</SizableText>
+              </XStack>
             ) : (
               <SizableText color="$color11" fontWeight="400">Select a model...</SizableText>
             )}
@@ -530,9 +530,9 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
           </XStack>
           <YStack maxHeight={400} minHeight={300} overflow="scroll">
             {filteredModels.length === 0 ? (
-              <SizableText paddingVertical="$5" textAlign="center" fontSize="$3" color="$color11" display="flex" flexDirection="column">
-                No models found
-              </SizableText>
+              <YStack paddingVertical="$5">
+                <SizableText textAlign="center" fontSize="$3" color="$color11">No models found</SizableText>
+              </YStack>
             ) : (
               filteredModels.map((model) => (
                 <Button
@@ -550,32 +550,32 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
                         </Badge>
                       )}
                     </XStack>
-                    <SizableText alignItems="center" gap="$3" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+                    <XStack alignItems="center" gap="$3">
                       {model.contextLength !== undefined && (
-                        <span>Context: {Math.round(model.contextLength / 1000)}K</span>
+                        <SizableText fontSize="$1" color="$color11">Context: {Math.round(model.contextLength / 1000)}K</SizableText>
                       )}
                       {model.pricing && (
                         model.pricing.input === 0 && model.pricing.output === 0 ? (
                           <>
-                            <span>•</span>
-                            <span>Free</span>
+                            <SizableText fontSize="$1" color="$color11">•</SizableText>
+                            <SizableText fontSize="$1" color="$color11">Free</SizableText>
                           </>
                         ) : (
                           <>
-                            <span>•</span>
-                            <span>
+                            <SizableText fontSize="$1" color="$color11">•</SizableText>
+                            <SizableText fontSize="$1" color="$color11">
                               {formatModelPrice(model.pricing.input)}/K | {formatModelPrice(model.pricing.output)}/K
-                            </span>
+                            </SizableText>
                           </>
                         )
                       )}
                       {!model.pricing && currentProvider !== 'openrouter' && (
                         <>
-                          <span>•</span>
-                          <span>Pricing varies</span>
+                          <SizableText fontSize="$1" color="$color11">•</SizableText>
+                          <SizableText fontSize="$1" color="$color11">Pricing varies</SizableText>
                         </>
                       )}
-                    </SizableText>
+                    </XStack>
                   </YStack>
                 </Button>
               ))

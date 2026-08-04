@@ -196,25 +196,26 @@ export function ScheduledFunctionEditor({
 
           {/* Cron Reference */}
           <YStack backgroundColor="$color3" borderWidth={1} borderRadius="$5" padding="$4" rowGap="$2">
-            <SizableText alignItems="center" gap="$2" fontSize="$3" fontWeight="500" display="flex" flexDirection="row">
+            <XStack alignItems="center" gap="$2">
               <Info size={16} />
-              Cron Patterns <SizableText fontWeight="400" color="$color11">(minimum 5 min interval)</SizableText>
-            </SizableText>
-            <SizableText gap="$1" fontSize="$1" fontFamily="$mono" display="flex" flexDirection="column">
-              <div><SizableText color="$color11">*/5 * * * *</SizableText>  Every 5 minutes</div>
-              <div><SizableText color="$color11">0 * * * *</SizableText>    Every hour</div>
-              <div><SizableText color="$color11">0 8 * * *</SizableText>    Daily at 8am</div>
-              <div><SizableText color="$color11">0 0 * * 1</SizableText>    Every Monday at midnight</div>
-              <div><SizableText color="$color11">0 0 1 * *</SizableText>    First of every month</div>
-            </SizableText>
+              <SizableText fontSize="$3" fontWeight="500">Cron Patterns</SizableText>
+              <SizableText fontWeight="400" color="$color11">(minimum 5 min interval)</SizableText>
+            </XStack>
+            <YStack gap="$1">
+              <SizableText fontFamily="$mono" fontSize="$1"><SizableText color="$color11">*/5 * * * *</SizableText>  Every 5 minutes</SizableText>
+              <SizableText fontFamily="$mono" fontSize="$1"><SizableText color="$color11">0 * * * *</SizableText>    Every hour</SizableText>
+              <SizableText fontFamily="$mono" fontSize="$1"><SizableText color="$color11">0 8 * * *</SizableText>    Daily at 8am</SizableText>
+              <SizableText fontFamily="$mono" fontSize="$1"><SizableText color="$color11">0 0 * * 1</SizableText>    Every Monday at midnight</SizableText>
+              <SizableText fontFamily="$mono" fontSize="$1"><SizableText color="$color11">0 0 1 * *</SizableText>    First of every month</SizableText>
+            </YStack>
           </YStack>
 
           {/* Error */}
           {error && (
-            <SizableText alignItems="center" gap="$2" fontSize="$3" color="$red9" backgroundColor="$red9" padding="$3" borderRadius="$5" display="flex" flexDirection="row">
+            <XStack alignItems="center" gap="$2" backgroundColor="$red9" padding="$3" borderRadius="$5">
               <AlertCircle size={16} />
-              {error}
-            </SizableText>
+              <SizableText fontSize="$3" color="$red9">{error}</SizableText>
+            </XStack>
           )}
         </YStack>
 

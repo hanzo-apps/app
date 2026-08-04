@@ -107,12 +107,12 @@ export function SyncDialog({ open, onOpenChange, onSyncComplete }: SyncDialogPro
           {error && (
             <XStack alignItems="flex-start" gap="$3" padding="$3" backgroundColor="$red9" borderWidth={1} borderColor="$red9" borderRadius="$5">
               <AlertTriangle size={20} color="$red9" />
-              <SizableText fontSize="$3" display="flex" flexDirection="column">
+              <YStack>
                 <Paragraph fontWeight="500" color="$red10" $theme-dark={{ color: "$red8" }}>
                   Error loading sync status
                 </Paragraph>
                 <Paragraph color="$color11" marginTop="$1">{error}</Paragraph>
-              </SizableText>
+              </YStack>
             </XStack>
           )}
 

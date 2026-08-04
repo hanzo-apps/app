@@ -146,30 +146,30 @@ export function ModelSelector({
       </Select>
 
       {error && (
-        <SizableText fontSize="$1" color="$red9" alignItems="flex-start" gap="$2" padding="$2" backgroundColor="$red9" borderRadius="$2" display="flex" flexDirection="row">
+        <XStack alignItems="flex-start" gap="$2" padding="$2" backgroundColor="$red9" borderRadius="$2">
           <Info size={12} />
-          <span>{error}</span>
-        </SizableText>
+          <SizableText fontSize="$1" color="$red9">{error}</SizableText>
+        </XStack>
       )}
 
       {/* Model Info */}
       {selectedModelInfo && (
-        <SizableText fontSize="$1" color="$color11" rowGap="$2" padding="$3" backgroundColor="$color3" borderRadius="$5" display="flex" flexDirection="column">
-          <SizableText fontWeight="500" display="flex" flexDirection="column">Model Information</SizableText>
+        <YStack rowGap="$2" padding="$3" backgroundColor="$color3" borderRadius="$5">
+          <SizableText fontWeight="500" fontSize="$1" color="$color11">Model Information</SizableText>
 
           <YStack gap="$2">
             {selectedModelInfo.contextLength !== undefined && (
               <div>
-                <SizableText color="$color11">Context Length:</SizableText>
-                <SizableText fontFamily="$mono" display="flex" flexDirection="column">
+                <SizableText fontSize="$1" color="$color11">Context Length:</SizableText>
+                <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
                   {(selectedModelInfo.contextLength / 1000).toFixed(0)}K tokens
                 </SizableText>
               </div>
             )}
             {selectedModelInfo.maxTokens && (
               <div>
-                <SizableText color="$color11">Max Output:</SizableText>
-                <SizableText fontFamily="$mono" display="flex" flexDirection="column">
+                <SizableText fontSize="$1" color="$color11">Max Output:</SizableText>
+                <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
                   {(selectedModelInfo.maxTokens / 1000).toFixed(0)}K tokens
                 </SizableText>
               </div>
@@ -178,12 +178,12 @@ export function ModelSelector({
 
           {selectedModelInfo.pricing && (
             <div>
-              <SizableText color="$color11">Pricing (per 1M tokens):</SizableText>
+              <SizableText fontSize="$1" color="$color11">Pricing (per 1M tokens):</SizableText>
               <XStack gap="$3" marginTop="$1">
-                <SizableText fontSize="$1">
+                <SizableText fontSize="$1" color="$color11">
                   Input: ${selectedModelInfo.pricing.input}
                 </SizableText>
-                <SizableText fontSize="$1">
+                <SizableText fontSize="$1" color="$color11">
                   Output: ${selectedModelInfo.pricing.output}
                 </SizableText>
               </XStack>
@@ -198,7 +198,7 @@ export function ModelSelector({
               <Badge variant="outline">Vision</Badge>
             )}
           </XStack>
-        </SizableText>
+        </YStack>
       )}
 
       {loading && (

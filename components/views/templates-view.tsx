@@ -34,7 +34,7 @@ export function TemplatesView({ onProjectSelect }: TemplatesViewProps) {
   };
 
   return (
-    <SizableText height="100%" flexDirection="column" backgroundColor="$background" color="$color" display="flex">
+    <YStack height="100%" backgroundColor="$background">
       {/* Mode toggle: the curated gallery vs. your imported/built-in templates. */}
       <YStack flexShrink={0} paddingHorizontal="$4.5" paddingTop="$4.5" $sm={{ paddingHorizontal: "$6", paddingTop: "$5" }}>
         <XStack alignSelf="center" maxWidth={1280} alignItems="center">
@@ -43,27 +43,33 @@ export function TemplatesView({ onProjectSelect }: TemplatesViewProps) {
               onClick={() => setMode('gallery')}
               group alignItems="center" gap="$1.5" borderRadius="$10" paddingHorizontal="$3.5" paddingVertical="$1.5" backgroundColor={mode === 'gallery' ? "$color12" : "transparent"}
             >
-              <SizableText display="flex" flexDirection="row" alignItems="center" gap="$1.5" fontSize="$3" color={mode === 'gallery' ? "$background" : "$color11"} $group-hover={{ color: mode === 'gallery' ? "$background" : "$color" }}>
+              <XStack alignItems="center" gap="$1.5">
                 <Sparkles size={16} />
-                Gallery
-              </SizableText>
+                <SizableText fontSize="$3" color={mode === 'gallery' ? "$background" : "$color11"} $group-hover={{ color: mode === 'gallery' ? "$background" : "$color" }}>
+                  Gallery
+                </SizableText>
+              </XStack>
             </Button>
             <Button
               onClick={() => setMode('custom')}
               group alignItems="center" gap="$1.5" borderRadius="$10" paddingHorizontal="$3.5" paddingVertical="$1.5" backgroundColor={mode === 'custom' ? "$color12" : "transparent"}
             >
-              <SizableText display="flex" flexDirection="row" alignItems="center" gap="$1.5" fontSize="$3" color={mode === 'custom' ? "$background" : "$color11"} $group-hover={{ color: mode === 'custom' ? "$background" : "$color" }}>
+              <XStack alignItems="center" gap="$1.5">
                 <Package size={16} />
-                My Templates
-              </SizableText>
+                <SizableText fontSize="$3" color={mode === 'custom' ? "$background" : "$color11"} $group-hover={{ color: mode === 'custom' ? "$background" : "$color" }}>
+                  My Templates
+                </SizableText>
+              </XStack>
             </Button>
           </XStack>
           <Link
             href="/community"
-          ><SizableText marginLeft="auto" alignItems="center" gap="$1.5" fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}>
+          ><XStack marginLeft="auto" alignItems="center" gap="$1.5">
             <Users size={16} />
-            See what people built
-          </SizableText></Link>
+            <SizableText fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}>
+              See what people built
+            </SizableText>
+          </XStack></Link>
         </XStack>
       </YStack>
 
@@ -76,6 +82,6 @@ export function TemplatesView({ onProjectSelect }: TemplatesViewProps) {
           <TemplateGallery />
         </YStack>
       )}
-    </SizableText>
+    </YStack>
   );
 }

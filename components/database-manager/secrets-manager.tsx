@@ -153,23 +153,23 @@ export function SecretsManager({ deploymentId, dataProvider }: SecretsManagerPro
 
       {/* Warning if encryption not configured */}
       {!encryptionConfigured && (
-        <SizableText alignItems="center" gap="$2" fontSize="$3" backgroundColor="$yellow9" borderWidth={1} borderColor="$yellow9" color="$yellow10" padding="$3" borderRadius="$5" marginBottom="$4" display="flex" flexDirection="row" $theme-dark={{ color: "$yellow8" }}>
-          <AlertTriangle size={16} />
+        <XStack alignItems="center" gap="$2" backgroundColor="$yellow9" borderWidth={1} borderColor="$yellow9" padding="$3" borderRadius="$5" marginBottom="$4">
+          <SizableText color="$yellow10" $theme-dark={{ color: "$yellow8" }}><AlertTriangle size={16} /></SizableText>
           <div>
-            <Paragraph fontWeight="500">Encryption not configured</Paragraph>
-            <Paragraph fontSize="$1" opacity={0.8}>
+            <Paragraph fontWeight="500" fontSize="$3" color="$yellow10" $theme-dark={{ color: "$yellow8" }}>Encryption not configured</Paragraph>
+            <Paragraph fontSize="$1" opacity={0.8} color="$yellow10" $theme-dark={{ color: "$yellow8" }}>
               Set the SECRETS_ENCRYPTION_KEY environment variable to enable secrets.
             </Paragraph>
           </div>
-        </SizableText>
+        </XStack>
       )}
 
       <YStack flex={1} overflow="scroll">
         {secrets.length === 0 ? (
-          <SizableText flexDirection="column" alignItems="center" justifyContent="center" height="100%" padding="$6" textAlign="center" borderWidth={1} borderRadius="$5" display="flex">
+          <YStack alignItems="center" justifyContent="center" height="100%" padding="$6" borderWidth={1} borderRadius="$5">
             <Key size={32} color="$color11" />
-            <Paragraph fontSize="$3" color="$color11">No secrets yet</Paragraph>
-            <Paragraph fontSize="$1" color="$color11" marginTop="$1" marginBottom="$4">
+            <Paragraph fontSize="$3" color="$color11" textAlign="center">No secrets yet</Paragraph>
+            <Paragraph fontSize="$1" color="$color11" marginTop="$1" marginBottom="$4" textAlign="center">
               Store API keys and tokens securely for your edge functions
             </Paragraph>
             <Button
@@ -180,7 +180,7 @@ export function SecretsManager({ deploymentId, dataProvider }: SecretsManagerPro
               <Plus size={16} />
               Create Secret
             </Button>
-          </SizableText>
+          </YStack>
         ) : (
           <YStack gap="$3">
             {secrets.map(secret => (
@@ -204,10 +204,10 @@ export function SecretsManager({ deploymentId, dataProvider }: SecretsManagerPro
                         {secret.description}
                       </Paragraph>
                     )}
-                    <SizableText alignItems="center" gap="$4" marginTop="$2" fontSize="$1" color="$color11" display="flex" flexDirection="row">
-                      <SizableText flexShrink={0}>Updated {formatDate(secret.updatedAt)}</SizableText>
-                      <SizableText fontFamily="$mono" numberOfLines={1}>secrets.get('{secret.name}')</SizableText>
-                    </SizableText>
+                    <XStack alignItems="center" gap="$4" marginTop="$2">
+                      <SizableText flexShrink={0} fontSize="$1" color="$color11">Updated {formatDate(secret.updatedAt)}</SizableText>
+                      <SizableText fontFamily="$mono" numberOfLines={1} fontSize="$1" color="$color11">secrets.get('{secret.name}')</SizableText>
+                    </XStack>
                   </YStack>
 
                   <DropdownMenu placement="bottom-end">

@@ -134,9 +134,11 @@ export function CreateDeploymentModal({
 
           {/* Error Message */}
           {error && (
-            <SizableText fontSize="$3" color="$red9" backgroundColor="$red9" padding="$3" borderRadius="$2" display="flex" flexDirection="column">
-              {error}
-            </SizableText>
+            <YStack backgroundColor="$red9" padding="$3" borderRadius="$2">
+              <SizableText fontSize="$3" color="$red9">
+                {error}
+              </SizableText>
+            </YStack>
           )}
         </YStack>
 

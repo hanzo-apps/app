@@ -135,9 +135,9 @@ export function MarkdownRenderer({ content, muted = false, skipNormalization = f
           return (
             <YStack position="relative">
               {language && (
-                <SizableText position="absolute" top="$2" right="$2" paddingHorizontal="$1.5" paddingVertical="$0.5" fontSize={10} fontWeight="500" color="$color11" backgroundColor="$background" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backdropFilter="blur(4px)" display="flex" flexDirection="column">
-                  {language}
-                </SizableText>
+                <YStack position="absolute" top="$2" right="$2" paddingHorizontal="$1.5" paddingVertical="$0.5" backgroundColor="$background" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backdropFilter="blur(4px)">
+                  <SizableText fontSize={10} fontWeight="500" color="$color11">{language}</SizableText>
+                </YStack>
               )}
               <pre {...props}>{children}</pre>
             </YStack>

@@ -286,10 +286,10 @@ export default function AgentsPage() {
       <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$4" paddingVertical="$5" $sm={{ paddingHorizontal: "$5" }}>
         {/* Loading */}
         {state.kind === "loading" && (
-          <SizableText flexDirection="column" alignItems="center" justifyContent="center" paddingVertical="$12" color="$color11" display="flex">
+          <YStack alignItems="center" justifyContent="center" paddingVertical="$12">
             <Loader2 size={32} />
-            <p>Loading agents…</p>
-          </SizableText>
+            <SizableText color="$color11">Loading agents…</SizableText>
+          </YStack>
         )}
 
         {/* Unauthenticated */}
@@ -504,13 +504,15 @@ export default function AgentsPage() {
                       </CardHeader>
 
                       <CardContent flex={1} flexDirection="column" gap="$3" paddingTop="$0">
-                        <SizableText flexWrap="wrap" alignItems="center" gap="$2" fontSize="$1" color="$color11" display="flex" flexDirection="row">
-                          <SizableText alignItems="center" gap="$1">
+                        <XStack flexWrap="wrap" alignItems="center" gap="$2">
+                          <XStack alignItems="center" gap="$1">
                             <Cpu size={12} />
-                            {agent.runs} {agent.runs === 1 ? "run" : "runs"}
-                          </SizableText>
+                            <SizableText fontSize="$1" color="$color11">
+                              {agent.runs} {agent.runs === 1 ? "run" : "runs"}
+                            </SizableText>
+                          </XStack>
                           {agent.tools.length > 0 && (
-                            <SizableText flexWrap="wrap" gap="$1">
+                            <XStack flexWrap="wrap" gap="$1">
                               {agent.tools.slice(0, 3).map((t) => (
                                 <Badge
                                   key={t}
@@ -520,13 +522,13 @@ export default function AgentsPage() {
                                 </Badge>
                               ))}
                               {agent.tools.length > 3 && (
-                                <SizableText color="$color11">
+                                <SizableText fontSize="$1" color="$color11">
                                   +{agent.tools.length - 3}
                                 </SizableText>
                               )}
-                            </SizableText>
+                            </XStack>
                           )}
-                        </SizableText>
+                        </XStack>
 
                         {/* Run input + action */}
                         <YStack marginTop="auto" gap="$2" $lg={{ flexDirection: "row" }}>

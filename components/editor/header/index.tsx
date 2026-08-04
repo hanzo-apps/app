@@ -115,9 +115,9 @@ export function Header({
         <Link
           href="/"
           aria-label="Hanzo home"
-        ><SizableText marginRight="$0.5" width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" color="$color" hoverStyle={{ backgroundColor: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}>
+        ><XStack marginRight="$0.5" width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}>
           <HanzoLogo size={20} />
-        </SizableText></Link>
+        </XStack></Link>
         <YStack minWidth={0}>
           <WorkspaceMenu project={project} onRenamed={onRenamed} />
         </YStack>

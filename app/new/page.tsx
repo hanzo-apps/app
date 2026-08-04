@@ -192,7 +192,7 @@ function NewProjectInner() {
   );
 
   return (
-    <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
+    <YStack minHeight="100%" backgroundColor="$background">
       {/* Header */}
       <YStack position="sticky" top="$0" zIndex={20} borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" backdropFilter="blur(24px)">
         <XStack alignSelf="center" height="$9" maxWidth={1152} alignItems="center" justifyContent="space-between" paddingHorizontal="$4" $sm={{ paddingHorizontal: "$5" }}>
@@ -242,17 +242,17 @@ function NewProjectInner() {
           pointerEvents="none" position="absolute" left="$0" right="$0" top="$0" alignSelf="center" height={420} maxWidth={768} backgroundColor="radial-gradient(60% 60% at 50% 0%,rgba(255,255,255,0.08),transparent 70%)"
   />
 
-        <SizableText position="relative" paddingTop="$10" textAlign="center" display="flex" flexDirection="column" $sm={{ paddingTop: "$11" }}>
-          <H1 fontSize="$11" fontWeight="500" letterSpacing={-0.32} $sm={{ fontSize: "$12" }}>
+        <YStack position="relative" paddingTop="$10" $sm={{ paddingTop: "$11" }}>
+          <H1 fontSize="$11" fontWeight="500" letterSpacing={-0.32} textAlign="center" $sm={{ fontSize: "$12" }}>
             Let&rsquo;s build something new
           </H1>
-          <Paragraph alignSelf="center" marginTop="$4" maxWidth={576} fontSize="$4" color="$color11" $sm={{ fontSize: "$6" }}>
+          <Paragraph alignSelf="center" marginTop="$4" maxWidth={576} textAlign="center" fontSize="$4" color="$color11" $sm={{ fontSize: "$6" }}>
             Describe an app to build, or paste a Git repository to deploy as a
             service. Hanzo builds, ships, and manages it.
           </Paragraph>
 
           {/* Composer */}
-          <SizableText alignSelf="center" marginTop="$6" maxWidth={672} textAlign="left" display="flex" flexDirection="column">
+          <YStack alignSelf="center" marginTop="$6" maxWidth={672}>
             <YStack
               onDrop={onComposerDrop}
               onDragOver={onComposerDragOver}
@@ -261,10 +261,10 @@ function NewProjectInner() {
             >
               {dragActive && (
                 <XStack pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} zIndex={10} alignItems="center" justifyContent="center" borderRadius="$8" borderWidth={2} borderStyle="dashed" borderColor="$color" backgroundColor="$background" backdropFilter="blur(4px)">
-                  <SizableText alignItems="center" gap="$2" fontSize="$3" fontWeight="500" color="$color">
+                  <XStack alignItems="center" gap="$2">
                     <FolderUp size={20} />
-                    Drop your project folder or .zip to import
-                  </SizableText>
+                    <SizableText fontSize="$3" fontWeight="500" color="$color">Drop your project folder or .zip to import</SizableText>
+                  </XStack>
                 </XStack>
               )}
               <Textarea
@@ -316,34 +316,34 @@ function NewProjectInner() {
             </YStack>
 
             {/* Import affordance — drag & drop, or pick a folder / .zip. */}
-            <SizableText marginTop="$2.5" flexWrap="wrap" alignItems="center" justifyContent="center" columnGap="$1.5" rowGap="$1" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+            <XStack marginTop="$2.5" flexWrap="wrap" alignItems="center" justifyContent="center" columnGap="$1.5" rowGap="$1">
               {importing ? (
-                <SizableText alignItems="center" gap="$1.5" color="$color11">
+                <XStack alignItems="center" gap="$1.5">
                   <Loader2 size={14} />
-                  Importing your project…
-                </SizableText>
+                  <SizableText fontSize="$1" color="$color11">Importing your project…</SizableText>
+                </XStack>
               ) : (
                 <>
                   <FolderUp size={14} color="$color11" />
-                  <span>Drag &amp; drop your project, or</span>
+                  <SizableText fontSize="$1" color="$color11">Drag &amp; drop your project, or</SizableText>
                   <Button
                     type="button"
                     onClick={() => folderInputRef.current?.click()}
                     borderRadius="$2"
                   >
-                    <SizableText color="$color" textDecorationLine="underline">choose a folder</SizableText>
+                    <SizableText fontSize="$1" color="$color" textDecorationLine="underline">choose a folder</SizableText>
                   </Button>
-                  <SizableText color="$color11">·</SizableText>
+                  <SizableText fontSize="$1" color="$color11">·</SizableText>
                   <Button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     borderRadius="$2"
                   >
-                    <SizableText color="$color" textDecorationLine="underline">.zip or files</SizableText>
+                    <SizableText fontSize="$1" color="$color" textDecorationLine="underline">.zip or files</SizableText>
                   </Button>
                 </>
               )}
-            </SizableText>
+            </XStack>
 
             {/* Hidden pickers — a .zip / loose files, or a whole directory. */}
             <Input
@@ -396,8 +396,8 @@ function NewProjectInner() {
                 );
               })}
             </XStack>
-          </SizableText>
-        </SizableText>
+          </YStack>
+        </YStack>
 
         {/* Import / Templates */}
         {/* [&>*]:min-w-0 lets each grid item shrink below its content's
@@ -429,10 +429,10 @@ function NewProjectInner() {
                 degraded state, so the hue was both off-palette and the least
                 accessible half of the signal. */}
             {!galleryLoading && !galleryLive && (
-              <SizableText marginBottom="$4" alignItems="flex-start" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2.5" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+              <XStack marginBottom="$4" alignItems="flex-start" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2.5">
                 <CloudOff size={16} />
-                <span>Showing built-in starters — the live gallery is unreachable right now.</span>
-              </SizableText>
+                <SizableText fontSize="$1" color="$color11">Showing built-in starters — the live gallery is unreachable right now.</SizableText>
+              </XStack>
             )}
 
             <YStack marginRight="-2" maxHeight={420} rowGap="$2" paddingRight="$2" overflow="scroll" className="thin-scrollbar">
@@ -450,12 +450,12 @@ function NewProjectInner() {
                       onClick={() => handleTemplate(t.source)}
                       group width="100%" alignItems="center" gap="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$3" hoverStyle={{ y: -1, borderColor: "$color", backgroundColor: "$color3" }}
                     >
-                      <SizableText height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" color="$color11" display="flex" flexDirection="row">
+                      <XStack height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
                         <FileCode2 size={18} />
-                      </SizableText>
+                      </XStack>
                       <YStack minWidth={0} flex={1}>
-                        <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" color="$color" display="flex" flexDirection="column">{t.title}</SizableText>
-                        <SizableText numberOfLines={1} fontSize="$1" color="$color11" display="flex" flexDirection="column">
+                        <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{t.title}</SizableText>
+                        <SizableText numberOfLines={1} fontSize="$1" color="$color11">
                           {[
                             t.framework,
                             t.category,
@@ -470,7 +470,7 @@ function NewProjectInner() {
                     </Button>
                   ))}
               {!galleryLoading && filteredTemplates.length === 0 && (
-                <SizableText paddingVertical="$7" textAlign="center" fontSize="$3" color="$color11" display="flex" flexDirection="column">
+                <SizableText paddingVertical="$7" textAlign="center" fontSize="$3" color="$color11">
                   No templates match &ldquo;{repoFilter}&rdquo;.
                 </SizableText>
               )}
@@ -478,10 +478,10 @@ function NewProjectInner() {
 
             <Link
               href="/gallery"
-            ><SizableText marginTop="$4" alignItems="center" gap="$1" fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}>
-              Browse all templates
+            ><XStack marginTop="$4" alignItems="center" gap="$1">
+              <SizableText fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}>Browse all templates</SizableText>
               <ChevronRight size={16} />
-            </SizableText></Link>
+            </XStack></Link>
           </YStack>
         </YStack>
       </YStack>
@@ -501,7 +501,7 @@ function NewProjectInner() {
           background: rgba(255, 255, 255, 0.22);
         }
       `}</style>
-    </SizableText>
+    </YStack>
   );
 }
 

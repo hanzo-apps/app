@@ -514,9 +514,9 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
   if (!isServerMode) {
     return (
       <XStack height="100%" alignItems="center" justifyContent="center">
-        <SizableText textAlign="center" color="$color11" display="flex" flexDirection="column">
-          <p>Deployments feature is only available in Server Mode</p>
-        </SizableText>
+        <YStack>
+          <SizableText textAlign="center" color="$color11">Deployments feature is only available in Server Mode</SizableText>
+        </YStack>
       </XStack>
     );
   }
@@ -524,10 +524,10 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
   if (loading) {
     return (
       <XStack height="100%" alignItems="center" justifyContent="center">
-        <SizableText textAlign="center" display="flex" flexDirection="column">
+        <YStack alignItems="center">
           <YStack borderRadius="$10" height="$8" width="$8" borderBottomWidth={2} borderColor="$orange9" alignSelf="center"></YStack>
-          <Paragraph marginTop="$4">Loading deployments...</Paragraph>
-        </SizableText>
+          <Paragraph marginTop="$4" textAlign="center">Loading deployments...</Paragraph>
+        </YStack>
       </XStack>
     );
   }
@@ -590,25 +590,25 @@ export function DeploymentsView({ onProjectSelect }: DeploymentsViewProps) {
         <YStack flex={1} paddingHorizontal="$4" paddingTop="$3" paddingBottom="$4" overflow="scroll" $sm={{ paddingHorizontal: "$5", paddingTop: "$3", paddingBottom: "$5" }}>
           <YStack alignSelf="center" maxWidth={1280}>
             {filteredAndSortedDeployments.length === 0 ? (
-              <SizableText flexDirection="column" alignItems="center" justifyContent="center" paddingVertical="$10" textAlign="center" display="flex">
+              <YStack alignItems="center" justifyContent="center" paddingVertical="$10">
                 <Globe size={64} color="$color11" />
                 {deployments.length === 0 ? (
                   <>
-                    <H2 fontSize="$7" fontWeight="500" marginBottom="$2">No Deployments Yet</H2>
-                    <Paragraph color="$color11" marginBottom="$4" maxWidth={448}>
+                    <H2 fontSize="$7" fontWeight="500" marginBottom="$2" textAlign="center">No Deployments Yet</H2>
+                    <Paragraph color="$color11" marginBottom="$4" maxWidth={448} textAlign="center">
                       Create your first deployment by clicking the "New" button above.
                       Deployments let you publish projects and manage their public settings independently.
                     </Paragraph>
                   </>
                 ) : (
                   <>
-                    <H2 fontSize="$7" fontWeight="500" marginBottom="$2">No deployments found</H2>
-                    <Paragraph color="$color11" marginBottom="$4" maxWidth={448}>
+                    <H2 fontSize="$7" fontWeight="500" marginBottom="$2" textAlign="center">No deployments found</H2>
+                    <Paragraph color="$color11" marginBottom="$4" maxWidth={448} textAlign="center">
                       Try adjusting your search or filter criteria
                     </Paragraph>
                   </>
                 )}
-              </SizableText>
+              </YStack>
             ) : (
               <YStack gap="$4">
                 {filteredAndSortedDeployments.map((deployment) => {

@@ -324,18 +324,22 @@ export default function Comparison() {
           delay={60}
           marginTop="$6" flexDirection="row" flexWrap="wrap" alignItems="center" justifyContent="center" columnGap="$4" rowGap="$2"
         >
-          <SizableText alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={11} color="$color11">
-            <Dot tone="good" /> Advantage
-          </SizableText>
-          <SizableText alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={11} color="$color11">
-            <Dot tone="mid" /> Caveat
-          </SizableText>
-          <SizableText alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={11} color="$color11">
-            <Dot tone="bad" /> Weakness
-          </SizableText>
-          <SizableText alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={11} color="$color11">
-            <Dot tone="na" /> N/A
-          </SizableText>
+          <XStack alignItems="center" gap="$1.5">
+            <Dot tone="good" />
+            <SizableText fontFamily="$mono" fontSize={11} color="$color11">Advantage</SizableText>
+          </XStack>
+          <XStack alignItems="center" gap="$1.5">
+            <Dot tone="mid" />
+            <SizableText fontFamily="$mono" fontSize={11} color="$color11">Caveat</SizableText>
+          </XStack>
+          <XStack alignItems="center" gap="$1.5">
+            <Dot tone="bad" />
+            <SizableText fontFamily="$mono" fontSize={11} color="$color11">Weakness</SizableText>
+          </XStack>
+          <XStack alignItems="center" gap="$1.5">
+            <Dot tone="na" />
+            <SizableText fontFamily="$mono" fontSize={11} color="$color11">N/A</SizableText>
+          </XStack>
         </Reveal>
 
         {/* ── Desktop / tablet-wide: sliding matrix ─────────────── */}
@@ -383,7 +387,7 @@ export default function Comparison() {
                 ref={scrollRef}
                 overflow="scroll" className="no-scrollbar"
               >
-                <SizableText textAlign="left" display="flex" flexDirection="column">
+                <YStack>
                   <thead>
                     <tr>
                       <SizableText position="sticky" left="$0" zIndex={10} width={188} minWidth={188} backgroundColor="$background" paddingBottom="$4" paddingRight="$4" verticalAlign="bottom" />
@@ -406,14 +410,14 @@ export default function Comparison() {
                         <SizableText
                           position="sticky" left="$0" zIndex={10} width={188} minWidth={188} whiteSpace="nowrap" paddingVertical="$3" paddingLeft="$1" paddingRight="$4.5" textAlign="left" verticalAlign="top" fontWeight="500" {...{ backgroundColor: r.hanzo ? "$color3" : "$background", color: r.hanzo ? "$color" : "$color" }}
                         >
-                          <SizableText alignItems="center" gap="$2">
-                            {r.name}
+                          <XStack alignItems="center" gap="$2">
+                            <SizableText fontWeight="500">{r.name}</SizableText>
                             {r.hanzo && (
                               <SizableText borderRadius="$10" borderWidth={1} borderColor="$color" backgroundColor="$color4" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={9} color="$color">
                                 Best
                               </SizableText>
                             )}
-                          </SizableText>
+                          </XStack>
                           {r.note && (
                             <SizableText marginTop="$0.5" fontFamily="$mono" fontSize={10} fontWeight="400" color="$color11">
                               {r.note}
@@ -430,12 +434,12 @@ export default function Comparison() {
                                 <Dot tone={r.hanzo ? "good" : cell.t} />
                               </SizableText>
                               <YStack minWidth={0}>
-                                <SizableText alignItems="center" gap="$1.5" fontSize={13} lineHeight={1.375} display="flex" flexDirection="row" color={r.hanzo ? "$color" : TEXT[cell.t]}>
+                                <XStack alignItems="center" gap="$1.5">
                                   <ColIcon i={ci} />
-                                  {cell.v}
-                                </SizableText>
+                                  <SizableText fontSize={13} lineHeight={1.375} color={r.hanzo ? "$color" : TEXT[cell.t]}>{cell.v}</SizableText>
+                                </XStack>
                                 {cell.d && (
-                                  <SizableText marginTop="$0.5" fontSize={11} lineHeight={1.375} color="$color11" display="flex" flexDirection="column">
+                                  <SizableText marginTop="$0.5" fontSize={11} lineHeight={1.375} color="$color11">
                                     {cell.d}
                                   </SizableText>
                                 )}
@@ -446,7 +450,7 @@ export default function Comparison() {
                       </YStack>
                     ))}
                   </tbody>
-                </SizableText>
+                </YStack>
               </YStack>
             </YStack>
           </Reveal>
@@ -475,10 +479,10 @@ export default function Comparison() {
                           <Dot tone="good" />
                         </SizableText>
                         <YStack minWidth={0}>
-                          <SizableText alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={10} color="$color11">
+                          <XStack alignItems="center" gap="$1.5">
                             <ColIcon i={ci} size={12} />
-                            {COLS[ci].short}
-                          </SizableText>
+                            <SizableText fontFamily="$mono" fontSize={10} color="$color11">{COLS[ci].short}</SizableText>
+                          </XStack>
                           <SizableText fontSize="$3" color="$color">
                             {cell.v}
                             {cell.d && (
@@ -505,12 +509,14 @@ export default function Comparison() {
                       </SizableText>
                     )}
                   </SizableText>
-                  <SizableText flex={0} alignItems="center" gap="$3">
+                  <XStack flex={0} alignItems="center" gap="$3">
                     {weak > 0 && (
-                      <SizableText alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={11} color="$color11">
+                      <XStack alignItems="center" gap="$1.5">
                         <Dot tone="bad" />
-                        {weak} weak {weak === 1 ? "area" : "areas"}
-                      </SizableText>
+                        <SizableText fontFamily="$mono" fontSize={11} color="$color11">
+                          {weak} weak {weak === 1 ? "area" : "areas"}
+                        </SizableText>
+                      </XStack>
                     )}
                     <svg
                       width={16}
@@ -527,7 +533,7 @@ export default function Comparison() {
                         strokeLinejoin="round"
   />
                     </svg>
-                  </SizableText>
+                  </XStack>
                 </summary>
                 <YStack columnGap="$5" rowGap="$3" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4.5" paddingVertical="$4">
                   {r.cells.map((cell, ci) => (
@@ -536,10 +542,10 @@ export default function Comparison() {
                         <Dot tone={cell.t} />
                       </SizableText>
                       <YStack minWidth={0}>
-                        <SizableText alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={10} color="$color11">
+                        <XStack alignItems="center" gap="$1.5">
                           <ColIcon i={ci} size={12} />
-                          {COLS[ci].short}
-                        </SizableText>
+                          <SizableText fontFamily="$mono" fontSize={10} color="$color11">{COLS[ci].short}</SizableText>
+                        </XStack>
                         <SizableText fontSize="$3" color={TEXT[cell.t]}>
                           {cell.v}
                           {cell.d && (

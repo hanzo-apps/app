@@ -65,7 +65,7 @@ function TemplateCard({ t, showAuthor = false }: { t: TemplateEntry; showAuthor?
             rides beside the category rather than opposite it, because top-right is
             the live-demo slot. Every catalog template is published by Hanzo itself,
             and a reader must not have to infer that from the author handle. */}
-        <SizableText position="absolute" left="$3" top="$3" flexWrap="wrap" alignItems="center" gap="$1.5">
+        <XStack position="absolute" left="$3" top="$3" flexWrap="wrap" alignItems="center" gap="$1.5">
           <SizableText borderRadius="$10" borderWidth={1} borderColor="white" backgroundColor="black" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="white" backdropFilter="blur(8px)">
             {t.category}
           </SizableText>
@@ -75,14 +75,14 @@ function TemplateCard({ t, showAuthor = false }: { t: TemplateEntry; showAuthor?
           >
             {OFFICIAL_LABEL}
           </SizableText>
-        </SizableText>
+        </XStack>
         {/* The grid keeps the (fast) screenshot — 105 iframes would be a page of
             them — but says which cards open on a template you can actually use. */}
         {t.demo && (
-          <SizableText position="absolute" right="$3" top="$3" alignItems="center" gap="$1.5" borderRadius="$10" borderWidth={1} borderColor="white" backgroundColor="black" paddingHorizontal="$2.5" paddingVertical="$1" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="white" backdropFilter="blur(8px)">
+          <XStack position="absolute" right="$3" top="$3" alignItems="center" gap="$1.5" borderRadius="$10" borderWidth={1} borderColor="white" backgroundColor="black" paddingHorizontal="$2.5" paddingVertical="$1" backdropFilter="blur(8px)">
             <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="white" />
-            Live
-          </SizableText>
+            <SizableText fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={1.92} color="white">Live</SizableText>
+          </XStack>
         )}
       </YStack>
 
@@ -104,10 +104,10 @@ function TemplateCard({ t, showAuthor = false }: { t: TemplateEntry; showAuthor?
           </SizableText>
           <Link
             href={t.fork}
-          ><SizableText position="relative" zIndex={10} flexShrink={0} alignItems="center" gap="$1" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$3.5" paddingVertical="$1.5" fontSize="$1" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
-            Use template
+          ><XStack position="relative" zIndex={10} flexShrink={0} alignItems="center" gap="$1" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$3.5" paddingVertical="$1.5" hoverStyle={{ backgroundColor: "$color12" }}>
+            <SizableText fontSize="$1" fontWeight="500" color="$background">Use template</SizableText>
             <ArrowRight size={14} strokeWidth={2} />
-          </SizableText></Link>
+          </XStack></Link>
         </XStack>
       </YStack>
 
@@ -208,10 +208,10 @@ export function TemplateGallery({
         </div>
         <Link
           href="/dev"
-        ><SizableText flexShrink={0} alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$4.5" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
+        ><XStack flexShrink={0} alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$4.5" paddingVertical="$2.5" hoverStyle={{ backgroundColor: "$color12" }}>
           <Sparkles size={16} strokeWidth={1.8} />
-          Start building
-        </SizableText></Link>
+          <SizableText fontSize="$3" fontWeight="500" color="$background">Start building</SizableText>
+        </XStack></Link>
       </YStack>
     </YStack>
   );

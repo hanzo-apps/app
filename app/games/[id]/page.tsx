@@ -49,16 +49,16 @@ export default function GameDetail() {
 
   if (!game) {
     return (
-      <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
+      <YStack minHeight="100%" backgroundColor="$background">
         <Header />
-        <SizableText flex={1} flexDirection="column" alignItems="center" justifyContent="center" gap="$4" backgroundColor="$background" color="$color" display="flex">
+        <YStack flex={1} alignItems="center" justifyContent="center" gap="$4" backgroundColor="$background">
           <Paragraph fontSize="$6" color="$color11">Game not found.</Paragraph>
           <Link href="/games"><SizableText color="$color" textDecorationLine="underline">
             Back to games
           </SizableText></Link>
-        </SizableText>
+        </YStack>
         <SiteFooter />
-      </SizableText>
+      </YStack>
     );
   }
 
@@ -70,16 +70,18 @@ export default function GameDetail() {
   };
 
   return (
-    <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
+    <YStack minHeight="100%" backgroundColor="$background">
       <Header />
-      <SizableText flex={1} backgroundColor="$background" color="$color" overflow="scroll" display="flex" flexDirection="column">
+      <YStack flex={1} backgroundColor="$background" overflow="scroll">
         <YStack width="100%" maxWidth={1024} alignSelf="center" paddingHorizontal="$5" paddingVertical="$6">
           <Link
             href="/games"
-          ><SizableText marginBottom="$5" alignItems="center" gap="$1.5" fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}>
+          ><XStack marginBottom="$5" alignItems="center" gap="$1.5" group>
             <ArrowLeft size={16} />
-            Games
-          </SizableText></Link>
+            <SizableText fontSize="$3" color="$color11" $group-hover={{ color: "$color" }}>
+              Games
+            </SizableText>
+          </XStack></Link>
 
           {/* Header */}
           <XStack flexWrap="wrap" alignItems="flex-start" justifyContent="space-between" gap="$4">
@@ -109,32 +111,34 @@ export default function GameDetail() {
           {/* Spec grid */}
           <YStack marginTop="$6" gap="$4">
             <Spec label="Targets">
-              <SizableText flexWrap="wrap" alignItems="center" gap="$2" color="$color" display="flex" flexDirection="row">
+              <XStack flexWrap="wrap" alignItems="center" gap="$2">
                 {game.targets.map((t) => {
                   const Icon = TARGET_ICON[t];
                   return (
-                    <SizableText key={t} alignItems="center" gap="$1" fontSize="$3">
+                    <XStack key={t} alignItems="center" gap="$1">
                       <Icon size={16} />
-                      {t}
-                    </SizableText>
+                      <SizableText fontSize="$3">{t}</SizableText>
+                    </XStack>
                   );
                 })}
-              </SizableText>
+              </XStack>
             </Spec>
             <Spec label="License">
               <SizableText fontSize="$3" color="$color">{game.license}</SizableText>
             </Spec>
             <Spec label="Build status">
-              <SizableText alignItems="center" gap="$1.5" fontSize="$3" color="$color">
+              <XStack alignItems="center" gap="$1.5">
                 {game.buildable && <Check size={16} color="$color" />}
-                {playable
-                  ? 'WebGL build (placeholder)'
-                  : webglCapable
-                    ? 'WebGL-capable — build not hosted'
-                    : game.buildable
-                      ? 'Desktop build'
-                      : 'Not buildable'}
-              </SizableText>
+                <SizableText fontSize="$3" color="$color">
+                  {playable
+                    ? 'WebGL build (placeholder)'
+                    : webglCapable
+                      ? 'WebGL-capable — build not hosted'
+                      : game.buildable
+                        ? 'Desktop build'
+                        : 'Not buildable'}
+                </SizableText>
+              </XStack>
             </Spec>
             <Spec label="Upstream">
               <Anchor
@@ -258,9 +262,9 @@ export default function GameDetail() {
             </YStack>
           </YStack>
         </YStack>
-      </SizableText>
+      </YStack>
       <SiteFooter />
-    </SizableText>
+    </YStack>
   );
 }
 

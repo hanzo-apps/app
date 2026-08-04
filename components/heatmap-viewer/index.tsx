@@ -278,7 +278,7 @@ export function HeatmapViewer({ deploymentId, pages }: HeatmapViewerProps) {
 
       {/* Sample Size */}
       {data && (
-        <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">
+        <SizableText fontSize="$3" color="$color11">
           Sample size: <SizableText fontWeight="500">{data.sampleSize.toLocaleString()}</SizableText> interactions
         </SizableText>
       )}
@@ -293,16 +293,16 @@ export function HeatmapViewer({ deploymentId, pages }: HeatmapViewerProps) {
       {!loading && data && data.type === 'click' && (
         <YStack borderWidth={1} borderRadius="$5" overflow="hidden">
           {!screenshotDataUrl && !screenshotLoading && (
-            <SizableText padding="$6" textAlign="center" display="flex" flexDirection="column">
-              <Paragraph color="$color11" marginBottom="$4">Capture a screenshot of the page to visualize click heatmap</Paragraph>
+            <YStack padding="$6">
+              <Paragraph color="$color11" marginBottom="$4" textAlign="center">Capture a screenshot of the page to visualize click heatmap</Paragraph>
               <Button onClick={captureScreenshot}>Capture Page Screenshot</Button>
-            </SizableText>
+            </YStack>
           )}
 
           {screenshotLoading && (
-            <SizableText padding="$6" textAlign="center" display="flex" flexDirection="column">
-              <Paragraph color="$color11">Capturing screenshot...</Paragraph>
-            </SizableText>
+            <YStack padding="$6">
+              <Paragraph color="$color11" textAlign="center">Capturing screenshot...</Paragraph>
+            </YStack>
           )}
 
           {screenshotDataUrl && (
@@ -314,32 +314,32 @@ export function HeatmapViewer({ deploymentId, pages }: HeatmapViewerProps) {
   />
               </YStack>
 
-              <SizableText padding="$4" backgroundColor="$color3" fontSize="$3" borderTopWidth={1} display="flex" flexDirection="column">
+              <YStack padding="$4" backgroundColor="$color3" borderTopWidth={1}>
                 <XStack alignItems="center" justifyContent="space-between">
                   <div>
-                    <Paragraph fontWeight="500" marginBottom="$2">Click Heatmap Legend:</Paragraph>
+                    <Paragraph fontWeight="500" fontSize="$3" marginBottom="$2">Click Heatmap Legend:</Paragraph>
                     <XStack gap="$4">
                       <XStack alignItems="center" gap="$2">
                         <YStack width="$4" height="$4" borderRadius="$2" backgroundColor="$red9" />
-                        <span>High activity</span>
+                        <SizableText fontSize="$3">High activity</SizableText>
                       </XStack>
                       <XStack alignItems="center" gap="$2">
                         <YStack width="$4" height="$4" borderRadius="$2" backgroundColor="$orange9" />
-                        <span>Medium activity</span>
+                        <SizableText fontSize="$3">Medium activity</SizableText>
                       </XStack>
                       <XStack alignItems="center" gap="$2">
                         <YStack width="$4" height="$4" borderRadius="$2" backgroundColor="$yellow9" />
-                        <span>Low activity</span>
+                        <SizableText fontSize="$3">Low activity</SizableText>
                       </XStack>
                     </XStack>
                   </div>
-                  <SizableText textAlign="right" display="flex" flexDirection="column">
+                  <YStack>
                     <Button variant="outline" size="sm" onClick={captureScreenshot}>
                       Recapture
                     </Button>
-                  </SizableText>
+                  </YStack>
                 </XStack>
-              </SizableText>
+              </YStack>
             </>
           )}
 

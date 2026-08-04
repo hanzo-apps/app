@@ -102,9 +102,9 @@ export default function CloudIntegration() {
                 group position="relative" height="100%" flexDirection="column" borderRadius="$8" borderWidth={1} padding="$5" {...{ borderColor: c.primary ? "$color" : "$borderColor", backgroundColor: c.primary ? "$color3" : "$color3", hoverStyle: c.primary ? {"borderColor":"$color"} : {"borderColor":"$color","backgroundColor":"$color3"} }}
               >
                 <XStack alignItems="center" justifyContent="space-between">
-                  <SizableText height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
+                  <XStack height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
                     <Icon size={20} color="var(--foreground)" strokeWidth={1.5} />
-                  </SizableText>
+                  </XStack>
                   <SizableText fontFamily="$mono" fontSize={10} color="$color11">
                     {c.product}
                   </SizableText>

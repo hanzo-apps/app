@@ -125,10 +125,10 @@ export function DeploymentCard({
         <YStack marginBottom="$3">
           <H3 fontWeight="500" fontSize="$6" numberOfLines={1} marginBottom="$1">{deployment.name}</H3>
           {project && (
-            <SizableText alignItems="center" gap="$1" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+            <XStack alignItems="center" gap="$1">
               <Folder size={12} />
-              <SizableText numberOfLines={1}>{project.name}</SizableText>
-            </SizableText>
+              <SizableText numberOfLines={1} fontSize="$1" color="$color11">{project.name}</SizableText>
+            </XStack>
           )}
           {deployment.slug && (
             <Paragraph fontSize="$1" color="$color11" marginTop="$1">
@@ -139,9 +139,9 @@ export function DeploymentCard({
 
         {/* URL */}
         {deployment.enabled && (
-          <SizableText alignItems="center" gap="$2" marginBottom="$3" padding="$2" backgroundColor="$color3" borderRadius="$2" fontSize="$1" display="flex" flexDirection="row">
+          <XStack alignItems="center" gap="$2" marginBottom="$3" padding="$2" backgroundColor="$color3" borderRadius="$2">
             <Globe size={12} color="$color11" />
-            <SizableText flex={1} numberOfLines={1}>{publicUrl}</SizableText>
+            <SizableText flex={1} numberOfLines={1} fontSize="$1">{publicUrl}</SizableText>
             <Button
               variant="ghost"
               size="icon"
@@ -151,23 +151,23 @@ export function DeploymentCard({
             >
               <Copy size={12} />
             </Button>
-          </SizableText>
+          </XStack>
         )}
 
         {/* Metadata */}
-        <SizableText alignItems="center" gap="$4" marginBottom="$3" fontSize="$1" color="$color11" display="flex" flexDirection="row">
-          <div>
+        <XStack alignItems="center" gap="$4" marginBottom="$3">
+          <SizableText fontSize="$1" color="$color11">
             Version: {deployment.settingsVersion}
             {deployment.lastPublishedVersion && (
               <> / {deployment.lastPublishedVersion}</>
             )}
-          </div>
+          </SizableText>
           {deployment.publishedAt && (
-            <div>
+            <SizableText fontSize="$1" color="$color11">
               Published {formatDistanceToNow(new Date(deployment.publishedAt), { addSuffix: true })}
-            </div>
+            </SizableText>
           )}
-        </SizableText>
+        </XStack>
 
         {/* Stats Badges */}
         <XStack flexWrap="wrap" gap="$2" marginBottom="$4">

@@ -57,14 +57,14 @@ function ModelRow({
       group
       width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$2" {...{ backgroundColor: selected ? "$color3" : undefined, hoverStyle: selected ? undefined : { backgroundColor: "$color3" } }}
     >
-      <SizableText minWidth={0} flex={1} textAlign="left" fontSize="$3" color={selected ? "$color" : "$color11"} $group-hover={{ color: "$color" }}>
-        <SizableText numberOfLines={1} fontWeight="500">{label}</SizableText>
+      <YStack minWidth={0} flex={1}>
+        <SizableText numberOfLines={1} fontWeight="500" textAlign="left" fontSize="$3" color={selected ? "$color" : "$color11"} $group-hover={{ color: "$color" }}>{label}</SizableText>
         {hint && (
           <SizableText marginTop="$0.5" numberOfLines={1} fontSize="$1" color="$color11">
             {hint}
           </SizableText>
         )}
-      </SizableText>
+      </YStack>
       {selected && <Check size={16} color="$color" />}
     </Button>
   );
@@ -128,9 +128,9 @@ export function Settings({
         sideOffset={8}
         width={384} overflow="hidden" padding="$0"
       >
-        <SizableText borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$4" paddingVertical="$3" textAlign="center" fontSize="$3" fontWeight="500" color="$color" display="flex" flexDirection="column">
-          Model
-        </SizableText>
+        <YStack borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$4" paddingVertical="$3">
+          <SizableText textAlign="center" fontSize="$3" fontWeight="500" color="$color">Model</SizableText>
+        </YStack>
         <YStack rowGap="$2.5" paddingHorizontal="$4" paddingTop="$4" paddingBottom="$4.5">
           {error && error !== "" && (
             <Paragraph alignItems="center" justifyContent="space-between" borderRadius="$3" backgroundColor="$red9" padding="$2" fontSize="$3" fontWeight="500" color="$red9">

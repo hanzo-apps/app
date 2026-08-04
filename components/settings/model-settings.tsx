@@ -175,12 +175,12 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
           <SelectTrigger id="provider" marginTop="$2" height="fit-content" width="100%">
             <SelectValue placeholder="Select a provider">
               {selectedProvider && (
-                <SizableText flexDirection="column" textAlign="left" display="flex">
+                <YStack>
                   <SizableText fontWeight="500">{providerConfig.name}</SizableText>
                   <SizableText fontSize="$1" color="$color11">
                     {providerConfig.description}
                   </SizableText>
-                </SizableText>
+                </YStack>
               )}
             </SelectValue>
           </SelectTrigger>
@@ -346,19 +346,19 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
       ) : null}
 
       {!providerConfig.apiKeyRequired && providerConfig.isLocal && (
-        <SizableText fontSize="$3" color="$color11" padding="$3" borderWidth={1} borderRadius="$3" backgroundColor="$color3" display="flex" flexDirection="column">
-          <Paragraph fontWeight="500" marginBottom="$1">Local Provider</Paragraph>
-          <p>Make sure {providerConfig.name} is running on your machine.</p>
-          <p>Default endpoint: <SizableText fontSize="$1">{providerConfig.baseUrl}</SizableText></p>
+        <YStack padding="$3" borderWidth={1} borderRadius="$3" backgroundColor="$color3">
+          <Paragraph fontSize="$3" color="$color11" fontWeight="500" marginBottom="$1">Local Provider</Paragraph>
+          <Paragraph fontSize="$3" color="$color11">Make sure {providerConfig.name} is running on your machine.</Paragraph>
+          <Paragraph fontSize="$3" color="$color11">Default endpoint: <SizableText fontSize="$1">{providerConfig.baseUrl}</SizableText></Paragraph>
           {selectedProvider === 'lmstudio' && (
-            <SizableText marginTop="$2" fontSize="$1" display="flex" flexDirection="column">
-              <Paragraph fontWeight="500">For tool use support:</Paragraph>
-              <p>• Load a model like qwen/qwen3-4b-thinking-2507</p>
-              <p>• Start the local server in LM Studio</p>
-              <p>• Models will be automatically discovered</p>
-            </SizableText>
+            <YStack marginTop="$2">
+              <Paragraph fontSize="$1" color="$color11" fontWeight="500">For tool use support:</Paragraph>
+              <Paragraph fontSize="$1" color="$color11">• Load a model like qwen/qwen3-4b-thinking-2507</Paragraph>
+              <Paragraph fontSize="$1" color="$color11">• Start the local server in LM Studio</Paragraph>
+              <Paragraph fontSize="$1" color="$color11">• Models will be automatically discovered</Paragraph>
+            </YStack>
           )}
-        </SizableText>
+        </YStack>
       )}
 
       {/* Divider */}
@@ -387,7 +387,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
       {!showJudgeModel && (
         <XStack alignItems="center" justifyContent="space-between" gap="$3">
           <div>
-            <SizableText fontSize="$3" fontWeight="500" display="flex" flexDirection="column">Use different model for chat</SizableText>
+            <YStack><SizableText fontSize="$3" fontWeight="500">Use different model for chat</SizableText></YStack>
             <Paragraph fontSize="$1" color="$color11" marginTop="$0.5">
               Select a separate (usually cheaper) model for chat/planning
             </Paragraph>

@@ -939,10 +939,10 @@ export function AskAI({
                     {msg.timestamp.toLocaleTimeString()}
                   </SizableText>
                   {index === 0 && (
-                    <SizableText fontSize="$1" color="$color11" alignItems="center" gap="$1">
+                    <XStack alignItems="center" gap="$1">
                       <YStack width="$1.5" height="$1.5" backgroundColor="$color" borderRadius="$10" />
-                      Next in queue
-                    </SizableText>
+                      <SizableText fontSize="$1" color="$color11">Next in queue</SizableText>
+                    </XStack>
                   )}
                   {/* REDIRECT. Queuing waits for a build to finish, which is right
                       when you are adding to it and wrong when you are correcting
@@ -994,29 +994,29 @@ export function AskAI({
         <YStack marginBottom="$2" rowGap="$1.5">
           <XStack alignItems="center" gap="$1.5" overflow="scroll" className="no-scrollbar">
             {remixPending.map((p) => (
-              <SizableText
+              <XStack
                 key={p.name}
-                flexShrink={0} alignItems="center" gap="$1.5" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1" fontSize="$1" display="flex" flexDirection="row"
+                flexShrink={0} alignItems="center" gap="$1.5" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1"
               >
-                <SizableText whiteSpace="nowrap" color="$color">🔥 {p.name}</SizableText>
+                <SizableText whiteSpace="nowrap" fontSize="$1" color="$color">🔥 {p.name}</SizableText>
                 {p.skippable !== false && (
                   <>
                     <Button
                       type="button"
                       onClick={() => skipIntegration(p.name)}
                     >
-                      <SizableText color="$color11">Skip</SizableText>
+                      <SizableText fontSize="$1" color="$color11">Skip</SizableText>
                     </Button>
-                    <SizableText color="$color11">·</SizableText>
+                    <SizableText fontSize="$1" color="$color11">·</SizableText>
                   </>
                 )}
                 <Button
                   type="button"
                   onClick={() => connectIntegration(p)}
                 >
-                  <SizableText fontWeight="500" color="$color" hoverStyle={{ textDecorationLine: "underline" }}>Connect</SizableText>
+                  <SizableText fontWeight="500" fontSize="$1" color="$color" hoverStyle={{ textDecorationLine: "underline" }}>Connect</SizableText>
                 </Button>
-              </SizableText>
+              </XStack>
             ))}
           </XStack>
           <Paragraph fontSize={11} color="$color11">
@@ -1301,10 +1301,10 @@ export function AskAI({
           <XStack flexShrink={0} alignItems="center" justifyContent="flex-end" gap="$2">
             {/* Build vs Plan mode. Build (default) generates/patches the app;
                 Plan is a conversational turn that never modifies it. Persisted. */}
-            <SizableText
+            <XStack
               role="group"
               aria-label="Composer mode"
-              flexShrink={0} alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$0.5" fontSize="$1" display="flex" flexDirection="row"
+              flexShrink={0} alignItems="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$0.5"
             >
               {(["build", "plan"] as const).map((m) => (
                 <Button
@@ -1319,10 +1319,10 @@ export function AskAI({
                   onClick={() => setMode(m)}
                   borderRadius="$10" paddingHorizontal="$2.5" paddingVertical="$1" focusVisibleStyle={{ outlineWidth: 0 }} backgroundColor={mode === m ? "var(--brand-accent)" : undefined}
                 >
-                  <SizableText fontWeight="500" textTransform="capitalize" color={mode === m ? "var(--brand-accent-fg)" : "$color11"}>{m}</SizableText>
+                  <SizableText fontWeight="500" fontSize="$1" textTransform="capitalize" color={mode === m ? "var(--brand-accent-fg)" : "$color11"}>{m}</SizableText>
                 </Button>
               ))}
-            </SizableText>
+            </XStack>
             {isSmartRouting(model) && routedModel && (
               <Tooltip>
                 <TooltipTrigger asChild>

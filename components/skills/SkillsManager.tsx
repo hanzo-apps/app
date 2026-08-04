@@ -218,10 +218,10 @@ export function SkillsManager() {
   if (loading) {
     return (
       <XStack alignItems="center" justifyContent="center" height="100%">
-        <SizableText textAlign="center" display="flex" flexDirection="column">
+        <YStack>
           <YStack borderRadius="$10" height="$8" width="$8" borderBottomWidth={2} borderColor="$color12" alignSelf="center"></YStack>
-          <Paragraph marginTop="$4">Loading skills...</Paragraph>
-        </SizableText>
+          <Paragraph marginTop="$4" textAlign="center">Loading skills...</Paragraph>
+        </YStack>
       </XStack>
     );
   }
@@ -303,10 +303,10 @@ export function SkillsManager() {
         <YStack flex={1} paddingHorizontal="$4" paddingTop="$3" paddingBottom="$4" overflow="scroll" $sm={{ paddingHorizontal: "$5", paddingTop: "$3", paddingBottom: "$5" }}>
           <YStack alignSelf="center" maxWidth={896}>
             {filteredSkills.length === 0 ? (
-              <SizableText textAlign="center" paddingVertical="$8" display="flex" flexDirection="column">
+              <YStack paddingVertical="$8" alignItems="center">
                 <Sparkles size={48} color="$color11" />
                 <H3 fontSize="$6" fontWeight="500" marginBottom="$2">No skills found</H3>
-                <Paragraph color="$color11" marginBottom="$4">
+                <Paragraph color="$color11" marginBottom="$4" textAlign="center">
                   {searchQuery ? 'Try a different search query' : 'Create your first custom skill'}
                 </Paragraph>
                 {!searchQuery && (
@@ -315,7 +315,7 @@ export function SkillsManager() {
                     Create Skill
                   </Button>
                 )}
-              </SizableText>
+              </YStack>
             ) : (
               <YStack rowGap="$5">
                 {/* Built-in Skills */}
@@ -479,22 +479,22 @@ function SkillCard({ skill, isEnabled, globalEnabled, onToggle, onEdit, onDelete
 
         <CollapsibleContent>
           <YStack borderTopWidth={1} paddingHorizontal="$4" paddingVertical="$3" backgroundColor="$color3">
-            <SizableText fontSize="$3" rowGap="$2" display="flex" flexDirection="column">
-              <SizableText alignItems="center" gap="$2" color="$color11" display="flex" flexDirection="row">
-                <SizableText fontWeight="500">Updated:</SizableText>
-                <span>{skill.updatedAt.toLocaleDateString()}</span>
-              </SizableText>
+            <YStack rowGap="$2">
+              <XStack alignItems="center" gap="$2">
+                <SizableText fontWeight="500" fontSize="$3" color="$color11">Updated:</SizableText>
+                <SizableText fontSize="$3" color="$color11">{skill.updatedAt.toLocaleDateString()}</SizableText>
+              </XStack>
               <div>
-                <SizableText fontWeight="500" color="$color11">Description:</SizableText>
+                <SizableText fontWeight="500" color="$color11" fontSize="$3">Description:</SizableText>
                 <Paragraph marginTop="$1">{skill.description}</Paragraph>
               </div>
               <div>
-                <SizableText fontWeight="500" color="$color11">Content:</SizableText>
+                <SizableText fontWeight="500" color="$color11" fontSize="$3">Content:</SizableText>
                 <SizableText marginTop="$1" fontSize="$1" backgroundColor="$background" padding="$3" borderRadius="$2" borderWidth={1} overflow="scroll" maxHeight={384} whiteSpace="pre" fontFamily="$mono">
                   {skill.markdown}
                 </SizableText>
               </div>
-            </SizableText>
+            </YStack>
           </YStack>
         </CollapsibleContent>
       </YStack>

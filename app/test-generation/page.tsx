@@ -957,10 +957,12 @@ export default function TestGenerationPage() {
                 A <strong>passing test</strong> means the model completed the task using the right tools.
                 A <strong>failing test</strong> means the model couldn&apos;t complete the task or encountered errors.
               </Paragraph>
-              <SizableText marginTop="$2" fontSize="$1" color="$blue11" display="flex" flexDirection="column" $theme-dark={{ color: "$blue4" }}>
-                <strong>Tip:</strong> Select your preferred provider and model below to benchmark specific configurations.
-                The generation output will show you what the AI is doing during execution.
-              </SizableText>
+              <YStack marginTop="$2">
+                <SizableText fontSize="$1" color="$blue11" $theme-dark={{ color: "$blue4" }}>
+                  <strong>Tip:</strong> Select your preferred provider and model below to benchmark specific configurations.
+                  The generation output will show you what the AI is doing during execution.
+                </SizableText>
+              </YStack>
             </YStack>
           </XStack>
         </YStack>
@@ -968,7 +970,7 @@ export default function TestGenerationPage() {
         {/* Cost Warning Banner */}
         <YStack backgroundColor="$yellow1" borderWidth={1} borderColor="$yellow3" borderRadius="$5" padding="$4" marginBottom="$5" $theme-dark={{ backgroundColor: "$yellow12", borderColor: "$yellow11" }}>
           <XStack alignItems="flex-start" gap="$3">
-            <SizableText color="$yellow10" marginTop="$0.5" display="flex" flexDirection="column" $theme-dark={{ color: "$yellow8" }}>💡</SizableText>
+            <YStack marginTop="$0.5"><SizableText color="$yellow10" $theme-dark={{ color: "$yellow8" }}>💡</SizableText></YStack>
             <YStack flex={1}>
               <H3 fontWeight="500" color="$yellow12" marginBottom="$1" $theme-dark={{ color: "$yellow2" }}>Cost Warning</H3>
               <Paragraph fontSize="$3" color="$yellow11" $theme-dark={{ color: "$yellow3" }}>
@@ -985,9 +987,11 @@ export default function TestGenerationPage() {
 
         {/* Round progress indicator */}
         {totalRounds > 1 && activeTrack && (
-          <SizableText backgroundColor="$blue1" borderWidth={1} borderColor="$blue3" borderRadius="$5" paddingHorizontal="$4" paddingVertical="$2" marginBottom="$4" fontSize="$3" color="$blue11" display="flex" flexDirection="column" $theme-dark={{ backgroundColor: "$blue12", borderColor: "$blue11", color: "$blue3" }}>
-            Round {currentRound + 1} of {totalRounds} ({roundHistory.length} completed)
-          </SizableText>
+          <YStack backgroundColor="$blue1" borderWidth={1} borderColor="$blue3" borderRadius="$5" paddingHorizontal="$4" paddingVertical="$2" marginBottom="$4" $theme-dark={{ backgroundColor: "$blue12", borderColor: "$blue11" }}>
+            <SizableText fontSize="$3" color="$blue11" $theme-dark={{ color: "$blue3" }}>
+              Round {currentRound + 1} of {totalRounds} ({roundHistory.length} completed)
+            </SizableText>
+          </YStack>
         )}
 
         {/* Stats Overview */}
@@ -1023,38 +1027,38 @@ export default function TestGenerationPage() {
               <YStack gap="$4" marginBottom="$4">
                 {stats.rounds !== undefined && (
                   <YStack backgroundColor="$background" borderWidth={1} borderRadius="$5" padding="$4">
-                    <SizableText fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1" display="flex" flexDirection="column">Rounds</SizableText>
-                    <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{stats.rounds}</SizableText>
+                    <YStack marginBottom="$1"><SizableText fontSize="$3" fontWeight="500" color="$color11">Rounds</SizableText></YStack>
+                    <YStack><SizableText fontSize="$8" fontWeight="500">{stats.rounds}</SizableText></YStack>
                   </YStack>
                 )}
                 <YStack backgroundColor="$background" borderWidth={1} borderRadius="$5" padding="$4">
-                  <SizableText fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1" display="flex" flexDirection="column">Total Tests</SizableText>
-                  <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{stats.total}</SizableText>
+                  <YStack marginBottom="$1"><SizableText fontSize="$3" fontWeight="500" color="$color11">Total Tests</SizableText></YStack>
+                  <YStack><SizableText fontSize="$8" fontWeight="500">{stats.total}</SizableText></YStack>
                 </YStack>
                 <YStack backgroundColor="$background" borderWidth={1} borderRadius="$5" padding="$4">
-                  <SizableText fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1" display="flex" flexDirection="column">Passed</SizableText>
-                  <SizableText fontSize="$8" fontWeight="500" color="$green10" display="flex" flexDirection="column">{stats.passed}</SizableText>
+                  <YStack marginBottom="$1"><SizableText fontSize="$3" fontWeight="500" color="$color11">Passed</SizableText></YStack>
+                  <YStack><SizableText fontSize="$8" fontWeight="500" color="$green10">{stats.passed}</SizableText></YStack>
                 </YStack>
                 <YStack backgroundColor="$background" borderWidth={1} borderRadius="$5" padding="$4">
-                  <SizableText fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1" display="flex" flexDirection="column">Failed</SizableText>
-                  <SizableText fontSize="$8" fontWeight="500" color="$red10" display="flex" flexDirection="column">{stats.failed}</SizableText>
+                  <YStack marginBottom="$1"><SizableText fontSize="$3" fontWeight="500" color="$color11">Failed</SizableText></YStack>
+                  <YStack><SizableText fontSize="$8" fontWeight="500" color="$red10">{stats.failed}</SizableText></YStack>
                 </YStack>
                 <YStack backgroundColor="$background" borderWidth={1} borderRadius="$5" padding="$4">
-                  <SizableText fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1" display="flex" flexDirection="column">Pass Rate</SizableText>
-                  <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{stats.successRate.toFixed(1)}%</SizableText>
+                  <YStack marginBottom="$1"><SizableText fontSize="$3" fontWeight="500" color="$color11">Pass Rate</SizableText></YStack>
+                  <YStack><SizableText fontSize="$8" fontWeight="500">{stats.successRate.toFixed(1)}%</SizableText></YStack>
                 </YStack>
                 <YStack backgroundColor="$background" borderWidth={1} borderRadius="$5" padding="$4">
-                  <SizableText fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1" display="flex" flexDirection="column">Cost</SizableText>
-                  <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">
+                  <YStack marginBottom="$1"><SizableText fontSize="$3" fontWeight="500" color="$color11">Cost</SizableText></YStack>
+                  <YStack><SizableText fontSize="$8" fontWeight="500">
                     {formatCost(stats.totalCost)}
-                  </SizableText>
+                  </SizableText></YStack>
                 </YStack>
                 <YStack backgroundColor="$background" borderWidth={1} borderRadius="$5" padding="$4">
-                  <SizableText fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1" display="flex" flexDirection="column">Tokens</SizableText>
-                  <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{stats.totalTokens.toLocaleString()}</SizableText>
-                  <SizableText fontSize="$1" color="$color11" marginTop="$0.5" display="flex" flexDirection="column">
+                  <YStack marginBottom="$1"><SizableText fontSize="$3" fontWeight="500" color="$color11">Tokens</SizableText></YStack>
+                  <YStack><SizableText fontSize="$8" fontWeight="500">{stats.totalTokens.toLocaleString()}</SizableText></YStack>
+                  <YStack marginTop="$0.5"><SizableText fontSize="$1" color="$color11">
                     {stats.promptTokens.toLocaleString()} in &rarr; {stats.completionTokens.toLocaleString()} out
-                  </SizableText>
+                  </SizableText></YStack>
                 </YStack>
               </YStack>
 
@@ -1070,36 +1074,36 @@ export default function TestGenerationPage() {
                       {ts.failed > 0 && <SizableText fontSize="$3" color="$red10">{ts.failed} failed</SizableText>}
                       {ts.invalid > 0 && <SizableText fontSize="$3" color="$orange9">{ts.invalid} invalid</SizableText>}
                     </XStack>
-                    <SizableText width="100%" fontSize="$3" display="flex" flexDirection="column">
+                    <YStack width="100%">
                       <thead>
-                        <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
-                          <SizableText textAlign="left" paddingHorizontal="$4" paddingVertical="$1.5" fontWeight="500">Tool</SizableText>
-                          <SizableText textAlign="right" paddingHorizontal="$4" paddingVertical="$1.5" fontWeight="500">Total</SizableText>
-                          <SizableText textAlign="right" paddingHorizontal="$4" paddingVertical="$1.5" fontWeight="500" color="$green10">OK</SizableText>
-                          <SizableText textAlign="right" paddingHorizontal="$4" paddingVertical="$1.5" fontWeight="500" color="$red9">Failed</SizableText>
-                        </SizableText>
+                        <YStack>
+                          <SizableText textAlign="left" paddingHorizontal="$4" paddingVertical="$1.5" fontWeight="500" fontSize="$1" color="$color11">Tool</SizableText>
+                          <SizableText textAlign="right" paddingHorizontal="$4" paddingVertical="$1.5" fontWeight="500" fontSize="$1" color="$color11">Total</SizableText>
+                          <SizableText textAlign="right" paddingHorizontal="$4" paddingVertical="$1.5" fontWeight="500" color="$green10" fontSize="$1">OK</SizableText>
+                          <SizableText textAlign="right" paddingHorizontal="$4" paddingVertical="$1.5" fontWeight="500" color="$red9" fontSize="$1">Failed</SizableText>
+                        </YStack>
                       </thead>
                       <tbody>
                         {knownEntries.map(([name, counts]) => (
                           <YStack key={name} borderTopWidth={1} borderColor="$borderColor">
-                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" fontWeight="500">{name}</SizableText>
-                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" textAlign="right" color="$color11">{counts.total}</SizableText>
-                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" textAlign="right" color="$green10">{counts.success}</SizableText>
-                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" textAlign="right" {...{ color: counts.failed > 0 ? "$red9" : "$red9", fontWeight: counts.failed > 0 ? "500" : undefined }}>
+                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" fontWeight="500" fontSize="$3">{name}</SizableText>
+                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" textAlign="right" color="$color11" fontSize="$3">{counts.total}</SizableText>
+                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" textAlign="right" color="$green10" fontSize="$3">{counts.success}</SizableText>
+                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" textAlign="right" fontSize="$3" {...{ color: counts.failed > 0 ? "$red9" : "$red9", fontWeight: counts.failed > 0 ? "500" : undefined }}>
                               {counts.failed}
                             </SizableText>
                           </YStack>
                         ))}
                         {ts.invalid > 0 && (
                           <YStack borderTopWidth={1} borderColor="$borderColor">
-                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" fontWeight="500" color="$orange9">invalid</SizableText>
-                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" textAlign="right" color="$orange9">{ts.invalid}</SizableText>
-                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" textAlign="right" color="$green10">0</SizableText>
-                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" textAlign="right" color="$red9" fontWeight="500">{ts.invalid}</SizableText>
+                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" fontWeight="500" color="$orange9" fontSize="$3">invalid</SizableText>
+                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" textAlign="right" color="$orange9" fontSize="$3">{ts.invalid}</SizableText>
+                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" textAlign="right" color="$green10" fontSize="$3">0</SizableText>
+                            <SizableText paddingHorizontal="$4" paddingVertical="$1.5" textAlign="right" color="$red9" fontWeight="500" fontSize="$3">{ts.invalid}</SizableText>
                           </YStack>
                         )}
                       </tbody>
-                    </SizableText>
+                    </YStack>
                   </YStack>
                 );
               })()}
@@ -1138,9 +1142,9 @@ export default function TestGenerationPage() {
             >
               <Minus size={12} />
             </Button>
-            <SizableText height={36} paddingHorizontal="$2" alignItems="center" justifyContent="center" fontSize="$3" fontWeight="500" minWidth="5rem" borderLeftWidth={1} borderRightWidth={1} borderColor="$color2" userSelect="none">
-              {totalRounds} Round{totalRounds > 1 ? 's' : ''}
-            </SizableText>
+            <XStack height={36} paddingHorizontal="$2" alignItems="center" justifyContent="center" minWidth="5rem" borderLeftWidth={1} borderRightWidth={1} borderColor="$color2">
+              <SizableText fontSize="$3" fontWeight="500" userSelect="none">{totalRounds} Round{totalRounds > 1 ? 's' : ''}</SizableText>
+            </XStack>
             <Button
               onClick={() => setTotalRounds(r => Math.min(10, r + 1))}
               disabled={isRunning || totalRounds >= 10}
@@ -1223,16 +1227,16 @@ export default function TestGenerationPage() {
                       <YStack key={result.id} backgroundColor="$background" borderWidth={1} borderRadius="$5" padding="$4">
                         <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
                           <div>
-                            <SizableText alignItems="center" gap="$2" fontWeight="500" display="flex" flexDirection="row">
+                            <XStack alignItems="center" gap="$2">
                               {getStatusIcon(result.status)}
-                              {result.name}
+                              <SizableText fontWeight="500">{result.name}</SizableText>
                               <SizableText fontSize="$3" fontWeight="400" color="$color11">
                                 ({scenario.category})
                               </SizableText>
-                            </SizableText>
-                            <SizableText fontSize="$3" color="$color11" marginTop="$1" display="flex" flexDirection="column">
+                            </XStack>
+                            <YStack marginTop="$1"><SizableText fontSize="$3" color="$color11">
                               {scenario.prompt.substring(0, 100)}...
-                            </SizableText>
+                            </SizableText></YStack>
                           </div>
                           <XStack alignItems="center" gap="$2">
                             {result.executionTime && (
@@ -1289,7 +1293,7 @@ export default function TestGenerationPage() {
                         {(result.status === 'running' || expandedTests.has(result.id)) && (result.generationOutput || generationOutputs.get(result.id)) && (
                           <YStack marginTop="$3" paddingTop="$3" borderTopWidth={1}>
                             <XStack alignItems="center" gap="$2" marginBottom="$2">
-                              <SizableText fontSize="$3" fontWeight="500" color="$color11" display="flex" flexDirection="column">Generation Output</SizableText>
+                              <YStack><SizableText fontSize="$3" fontWeight="500" color="$color11">Generation Output</SizableText></YStack>
                               {result.status === 'running' && (
                                 <XStack alignItems="center" gap="$1">
                                   <RefreshCw size={12} />
@@ -1313,97 +1317,97 @@ export default function TestGenerationPage() {
                         )}
 
                         {(result.status === 'success' || result.status === 'failed' || result.status === 'stopped') && (
-                          <SizableText marginTop="$3" paddingTop="$3" borderTopWidth={1} rowGap="$2" fontSize="$3" display="flex" flexDirection="column">
+                          <YStack marginTop="$3" paddingTop="$3" borderTopWidth={1} rowGap="$2">
                             {result.details && (
-                              <div>
+                              <SizableText fontSize="$3">
                                 <strong>Result:</strong> {result.details}
-                              </div>
+                              </SizableText>
                             )}
-                            <SizableText flexWrap="wrap" columnGap="$4" rowGap="$1" color="$color11" display="flex" flexDirection="row">
+                            <XStack flexWrap="wrap" columnGap="$4" rowGap="$1">
                               {result.totalCost !== undefined && (
-                                <span>
+                                <SizableText color="$color11" fontSize="$3">
                                   <SizableText color="$color">Cost:</SizableText>{' '}
                                   {formatCost(result.totalCost)}
-                                </span>
+                                </SizableText>
                               )}
                               {result.totalTokens !== undefined && (
-                                <span>
+                                <SizableText color="$color11" fontSize="$3">
                                   <SizableText color="$color">Tokens:</SizableText>{' '}
                                   {(result.promptTokens || 0).toLocaleString()} &rarr; {(result.completionTokens || 0).toLocaleString()} ({result.totalTokens.toLocaleString()} total)
-                                </span>
+                                </SizableText>
                               )}
                               {result.toolCalls !== undefined && (
-                                <span>
+                                <SizableText color="$color11" fontSize="$3">
                                   <SizableText color="$color">Tool Calls:</SizableText> {result.toolCalls}
-                                </span>
+                                </SizableText>
                               )}
-                            </SizableText>
+                            </XStack>
                             {result.toolCallDetails && result.toolCallDetails.length > 0 && (() => {
                               const ts = computeToolStats(result.toolCallDetails);
                               return (
                                 <YStack marginTop="$1">
-                                  <SizableText fontSize="$1" color="$color11" marginBottom="$1" display="flex" flexDirection="column">
+                                  <YStack marginBottom="$1"><SizableText fontSize="$1" color="$color11">
                                     <SizableText fontWeight="500" color="$color">{ts.total} tool call{ts.total !== 1 ? 's' : ''}</SizableText>
                                     {' — '}
                                     <SizableText color="$green10">{ts.success} ok</SizableText>
                                     {ts.failed > 0 && <>, <SizableText color="$red9">{ts.failed} failed</SizableText></>}
                                     {ts.invalid > 0 && <>, <SizableText color="$orange9">{ts.invalid} invalid</SizableText></>}
-                                  </SizableText>
-                                  <SizableText rowGap="$0.5" fontFamily="$mono" fontSize="$1" display="flex" flexDirection="column">
+                                  </SizableText></YStack>
+                                  <YStack rowGap="$0.5">
                                     {result.toolCallDetails.map((tc, i) => {
                                       const isInvalid = !KNOWN_TOOLS.has(tc.name);
                                       return (
                                         <XStack key={i} alignItems="center" gap="$1.5">
-                                          <SizableText {...{ color: tc.status === 'success' && !isInvalid ? '#22c55e' : isInvalid ? '#f97316' : '#ef4444' }}>
+                                          <SizableText fontFamily="$mono" fontSize="$1" {...{ color: tc.status === 'success' && !isInvalid ? '#22c55e' : isInvalid ? '#f97316' : '#ef4444' }}>
                                             {tc.status === 'success' && !isInvalid ? '\u2713' : '\u2717'}
                                           </SizableText>
-                                          <SizableText fontWeight="500" {...{ color: isInvalid ? "$orange9" : undefined }}>{tc.name}</SizableText>
+                                          <SizableText fontFamily="$mono" fontSize="$1" fontWeight="500" {...{ color: isInvalid ? "$orange9" : undefined }}>{tc.name}</SizableText>
                                           {isInvalid && (
-                                            <SizableText color="$orange9" fontSize={10} borderWidth={1} borderColor="$orange8" borderRadius="$2" paddingHorizontal="$1">invalid</SizableText>
+                                            <SizableText fontFamily="$mono" color="$orange9" fontSize={10} borderWidth={1} borderColor="$orange8" borderRadius="$2" paddingHorizontal="$1">invalid</SizableText>
                                           )}
                                           {tc.args && (
-                                            <SizableText color="$color11" numberOfLines={1} maxWidth={448}>
+                                            <SizableText fontFamily="$mono" fontSize="$1" color="$color11" numberOfLines={1} maxWidth={448}>
                                               &mdash; {tc.args}
                                             </SizableText>
                                           )}
                                         </XStack>
                                       );
                                     })}
-                                  </SizableText>
+                                  </YStack>
                                 </YStack>
                               );
                             })()}
                             {result.assertionResults && result.assertionResults.length > 0 && (
                               <YStack marginTop="$2" paddingTop="$2" borderTopWidth={1} borderStyle="dashed">
-                                <SizableText fontSize="$1" fontWeight="500" color="$color11" marginBottom="$1" display="flex" flexDirection="column">
+                                <YStack marginBottom="$1"><SizableText fontSize="$1" fontWeight="500" color="$color11">
                                   Assertions: {result.assertionResults.filter(a => a.passed).length}/{result.assertionResults.length} passed
                                   {result.assertionScore !== undefined && ` (${result.assertionScore.toFixed(0)}%)`}
-                                </SizableText>
-                                <SizableText rowGap="$0.5" fontFamily="$mono" fontSize="$1" display="flex" flexDirection="column">
+                                </SizableText></YStack>
+                                <YStack rowGap="$0.5">
                                   {result.assertionResults.map((ar, i) => (
                                     <XStack key={i} alignItems="flex-start" gap="$1.5">
-                                      <SizableText {...{ color: ar.passed ? "$green9" : "$red9" }}>
+                                      <SizableText fontFamily="$mono" fontSize="$1" {...{ color: ar.passed ? "$green9" : "$red9" }}>
                                         {ar.passed ? '\u2713' : '\u2717'}
                                       </SizableText>
-                                      <SizableText {...{ color: ar.passed ? "$color11" : "$color" }}>
+                                      <SizableText fontFamily="$mono" fontSize="$1" {...{ color: ar.passed ? "$color11" : "$color" }}>
                                         {ar.assertion.description}
                                       </SizableText>
                                       {!ar.passed && ar.actual && (
-                                        <SizableText color="$red8" numberOfLines={1} maxWidth={384}>
+                                        <SizableText fontFamily="$mono" fontSize="$1" color="$red8" numberOfLines={1} maxWidth={384}>
                                           &mdash; {ar.actual}
                                         </SizableText>
                                       )}
                                     </XStack>
                                   ))}
-                                </SizableText>
+                                </YStack>
                               </YStack>
                             )}
                             {result.errors && result.errors.length > 0 && (
-                              <SizableText color="$red10" display="flex" flexDirection="column">
+                              <YStack><SizableText color="$red10">
                                 <strong>Errors:</strong> {result.errors.join(', ')}
-                              </SizableText>
+                              </SizableText></YStack>
                             )}
-                          </SizableText>
+                          </YStack>
                         )}
                       </YStack>
                     );
@@ -1449,21 +1453,21 @@ export default function TestGenerationPage() {
                       {report.results.map(r => {
                         const isPass = r.status === 'success';
                         return (
-                          <SizableText key={r.id} alignItems="center" gap="$2" fontSize="$1" fontFamily="$mono" display="flex" flexDirection="row">
-                            <SizableText {...{ color: isPass ? "$green9" : "$red9" }}>
+                          <XStack key={r.id} alignItems="center" gap="$2">
+                            <SizableText fontFamily="$mono" fontSize="$1" {...{ color: isPass ? "$green9" : "$red9" }}>
                               {isPass ? '\u2713' : '\u2717'}
                             </SizableText>
-                            <SizableText width="$19" numberOfLines={1}>{r.id}</SizableText>
-                            <SizableText width="$10" textAlign="right" color="$color11">
+                            <SizableText fontFamily="$mono" fontSize="$1" width="$19" numberOfLines={1}>{r.id}</SizableText>
+                            <SizableText fontFamily="$mono" fontSize="$1" width="$10" textAlign="right" color="$color11">
                               {r.executionTime ? `${(r.executionTime / 1000).toFixed(1)}s` : '—'}
                             </SizableText>
-                            <SizableText width="$11" textAlign="right" color="$color11">
+                            <SizableText fontFamily="$mono" fontSize="$1" width="$11" textAlign="right" color="$color11">
                               {r.totalCost !== undefined ? formatCost(r.totalCost) : ''}
                             </SizableText>
-                            <SizableText width="$11" textAlign="right" color="$color11">
+                            <SizableText fontFamily="$mono" fontSize="$1" width="$11" textAlign="right" color="$color11">
                               {r.totalTokens !== undefined ? `${r.totalTokens.toLocaleString()} tok` : ''}
                             </SizableText>
-                            <SizableText width="$14" color="$color11">
+                            <SizableText fontFamily="$mono" fontSize="$1" width="$14" color="$color11">
                               {r.toolCallDetails && r.toolCallDetails.length > 0 ? (() => {
                                 const ts = computeToolStats(r.toolCallDetails);
                                 return (
@@ -1479,14 +1483,14 @@ export default function TestGenerationPage() {
                               })() : r.toolCalls !== undefined ? `${r.toolCalls} tools` : ''}
                             </SizableText>
                             {r.assertionScore !== undefined && (
-                              <SizableText width="$10" textAlign="right" {...{ color: r.assertionScore === 100 ? '#22c55e' : r.assertionScore > 0 ? '#eab308' : '#ef4444' }}>
+                              <SizableText fontFamily="$mono" fontSize="$1" width="$10" textAlign="right" {...{ color: r.assertionScore === 100 ? '#22c55e' : r.assertionScore > 0 ? '#eab308' : '#ef4444' }}>
                                 {r.assertionScore.toFixed(0)}%
                               </SizableText>
                             )}
                             {r.errors && r.errors.length > 0 && (
-                              <SizableText color="$red9" numberOfLines={1}>— {r.errors[0]}</SizableText>
+                              <SizableText fontFamily="$mono" fontSize="$1" color="$red9" numberOfLines={1}>— {r.errors[0]}</SizableText>
                             )}
-                          </SizableText>
+                          </XStack>
                         );
                       })}
                     </YStack>

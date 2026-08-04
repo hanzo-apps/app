@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, SizableText, Paragraph, H1 } from '@hanzo/gui';
+import { YStack, XStack, Paragraph, H1 } from '@hanzo/gui';
 import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { MarkdownRenderer } from '@/components/markdown-renderer';
@@ -225,21 +225,21 @@ function DocsViewContent() {
           >
           {loading && (
             <XStack alignItems="center" justifyContent="center" height="100%">
-              <SizableText textAlign="center" display="flex" flexDirection="column">
+              <YStack alignItems="center">
                 <YStack borderRadius="$10" height="$8" width="$8" borderBottomWidth={2} borderColor="$color12" alignSelf="center" />
                 <Paragraph marginTop="$4" color="$color11">Loading documentation...</Paragraph>
-              </SizableText>
+              </YStack>
             </XStack>
           )}
 
           {error && (
-            <SizableText alignItems="center" gap="$3" padding="$4" backgroundColor="$red9" borderWidth={1} borderColor="$red9" borderRadius="$5" color="$red9" display="flex" flexDirection="row">
+            <XStack alignItems="center" gap="$3" padding="$4" backgroundColor="$red9" borderWidth={1} borderColor="$red9" borderRadius="$5">
               <AlertCircle size={20} />
               <div>
                 <Paragraph fontWeight="500">Error loading document</Paragraph>
                 <Paragraph fontSize="$3">{error}</Paragraph>
               </div>
-            </SizableText>
+            </XStack>
           )}
 
           {!loading && !error && content && (

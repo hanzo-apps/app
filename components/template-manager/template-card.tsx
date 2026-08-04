@@ -109,7 +109,7 @@ export function TemplateCard({
             </Paragraph>
 
             {/* Metadata */}
-            <SizableText flexWrap="wrap" alignItems="center" columnGap="$2" rowGap="$1" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+            <XStack flexWrap="wrap" alignItems="center" columnGap="$2" rowGap="$1">
               {runtimeBadge && (
                 <Badge className="text-xs px-1.5 py-0 h-auto" style={runtimeBadge.tone}>{runtimeBadge.label}</Badge>
               )}
@@ -120,13 +120,13 @@ export function TemplateCard({
                 </Badge>
               )}
               {(customTemplate?.metadata.author || template.metadata?.author) && (
-                <SizableText numberOfLines={1} maxWidth={150}>
+                <SizableText numberOfLines={1} maxWidth={150} fontSize="$1" color="$color11">
                   by {customTemplate?.metadata.author || template.metadata?.author}
                 </SizableText>
               )}
               {customTemplate?.metadata.license && (
                 <>
-                  {customTemplate.metadata.author && <span>•</span>}
+                  {customTemplate.metadata.author && <SizableText fontSize="$1" color="$color11">•</SizableText>}
                   <Badge variant="secondary" className="text-xs px-1.5 py-0 h-auto">
                     {getLicenseLabel(customTemplate.metadata.license)}
                   </Badge>
@@ -134,13 +134,13 @@ export function TemplateCard({
               )}
               {customTemplate?.files && (
                 <>
-                  <span>•</span>
-                  <span>{customTemplate.files.length} files</span>
+                  <SizableText fontSize="$1" color="$color11">•</SizableText>
+                  <SizableText fontSize="$1" color="$color11">{customTemplate.files.length} files</SizableText>
                 </>
               )}
               {(customTemplate?.metadata.tags || template.metadata?.tags) && (
                 <>
-                  <span>•</span>
+                  <SizableText fontSize="$1" color="$color11">•</SizableText>
                   {(customTemplate?.metadata.tags || template.metadata?.tags || []).slice(0, 2).map((tag) => (
                     <Badge key={tag} variant="outline" className="text-xs px-1.5 py-0 h-auto">
                       {tag}
@@ -153,7 +153,7 @@ export function TemplateCard({
                   )}
                 </>
               )}
-            </SizableText>
+            </XStack>
           </YStack>
 
           {/* Actions - Desktop */}
@@ -321,22 +321,22 @@ export function TemplateCard({
         {/* Metadata */}
         <YStack rowGap="$2">
           {(customTemplate?.metadata.author || template.metadata?.author) && (
-            <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
+            <YStack>
               {customTemplate?.metadata.authorUrl ? (
                 <Anchor
                   href={customTemplate.metadata.authorUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  color="$color12" alignItems="center" gap="$1" hoverStyle={{ textDecorationLine: "underline" }}
+                  color="$color12" fontSize="$1" alignItems="center" gap="$1" hoverStyle={{ textDecorationLine: "underline" }}
                   onClick={(e) => e.stopPropagation()}
                 >
                   by {customTemplate.metadata.author}
                   <ExternalLink size={12} />
                 </Anchor>
               ) : (
-                <span>by {customTemplate?.metadata.author || template.metadata?.author}</span>
+                <SizableText fontSize="$1" color="$color11">by {customTemplate?.metadata.author || template.metadata?.author}</SizableText>
               )}
-            </SizableText>
+            </YStack>
           )}
 
           {/* Tags */}
@@ -365,7 +365,7 @@ export function TemplateCard({
           )}
 
           {/* License and file count */}
-          <SizableText alignItems="center" gap="$2" fontSize="$1" color="$color11" flexWrap="wrap" display="flex" flexDirection="row">
+          <XStack alignItems="center" gap="$2" flexWrap="wrap">
             {customTemplate?.metadata.license && (
               <Badge variant="outline" className="text-xs px-1.5 py-0 h-auto">
                 {getLicenseLabel(customTemplate.metadata.license)}
@@ -373,11 +373,11 @@ export function TemplateCard({
             )}
             {customTemplate?.files && (
               <>
-                {customTemplate.metadata.license && <span>•</span>}
-                <span>{customTemplate.files.length} files</span>
+                {customTemplate.metadata.license && <SizableText fontSize="$1" color="$color11">•</SizableText>}
+                <SizableText fontSize="$1" color="$color11">{customTemplate.files.length} files</SizableText>
               </>
             )}
-          </SizableText>
+          </XStack>
         </YStack>
 
         {/* Footer */}

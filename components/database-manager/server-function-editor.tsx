@@ -155,16 +155,16 @@ export function ServerFunctionEditor({
 
           {/* API Reference */}
           <YStack backgroundColor="$color3" borderWidth={1} borderRadius="$5" padding="$4" rowGap="$2">
-            <SizableText alignItems="center" gap="$2" fontSize="$3" fontWeight="500" display="flex" flexDirection="row">
+            <XStack alignItems="center" gap="$2">
               <Info size={16} />
-              Available in Server Functions
-            </SizableText>
-            <SizableText gap="$2" fontSize="$1" fontFamily="$mono" display="flex" flexDirection="column">
-              <div><SizableText color="$orange9">args</SizableText> - Array of arguments passed from edge function</div>
-              <div><SizableText color="$green9">db</SizableText>.query(sql, params), .run(sql, params), .all(sql, params)</div>
-              <div><SizableText color="$yellow9">fetch</SizableText>(url, options) - External HTTP requests</div>
-              <div><SizableText color="$blue9">console</SizableText>.log(), .error(), .warn() - Logging</div>
-            </SizableText>
+              <SizableText fontSize="$3" fontWeight="500">Available in Server Functions</SizableText>
+            </XStack>
+            <YStack gap="$2">
+              <SizableText fontSize="$1" fontFamily="$mono"><SizableText color="$orange9">args</SizableText> - Array of arguments passed from edge function</SizableText>
+              <SizableText fontSize="$1" fontFamily="$mono"><SizableText color="$green9">db</SizableText>.query(sql, params), .run(sql, params), .all(sql, params)</SizableText>
+              <SizableText fontSize="$1" fontFamily="$mono"><SizableText color="$yellow9">fetch</SizableText>(url, options) - External HTTP requests</SizableText>
+              <SizableText fontSize="$1" fontFamily="$mono"><SizableText color="$blue9">console</SizableText>.log(), .error(), .warn() - Logging</SizableText>
+            </YStack>
             <YStack marginTop="$3" paddingTop="$3" borderTopWidth={1}>
               <Paragraph fontSize="$1" color="$color11">
                 <strong>Note:</strong> Return a value to send data back to the calling edge function.
@@ -175,7 +175,7 @@ export function ServerFunctionEditor({
 
           {/* Example */}
           <YStack backgroundColor="$color3" borderWidth={1} borderRadius="$5" padding="$4" rowGap="$2">
-            <SizableText fontSize="$3" fontWeight="500" display="flex" flexDirection="column">Example: Using in Edge Function</SizableText>
+            <YStack><SizableText fontSize="$3" fontWeight="500">Example: Using in Edge Function</SizableText></YStack>
             <SizableText fontSize="$1" fontFamily="$mono" backgroundColor="$background" padding="$2" borderRadius="$2" overflow="scroll" whiteSpace="pre">
 {`// Edge function code
 const auth = server.${name || 'validateAuth'}(request.headers['x-api-key']);
@@ -192,10 +192,10 @@ Response.json({ products });`}
 
           {/* Error */}
           {error && (
-            <SizableText alignItems="center" gap="$2" fontSize="$3" color="$red9" backgroundColor="$red9" padding="$3" borderRadius="$5" display="flex" flexDirection="row">
+            <XStack alignItems="center" gap="$2" backgroundColor="$red9" padding="$3" borderRadius="$5">
               <AlertCircle size={16} />
-              {error}
-            </SizableText>
+              <SizableText fontSize="$3" color="$red9">{error}</SizableText>
+            </XStack>
           )}
         </YStack>
 

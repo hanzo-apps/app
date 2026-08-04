@@ -316,12 +316,12 @@ function SidebarContent({
                 title="Hanzo App"
               >
                 <HanzoLogo size={20} color="var(--foreground)" />
-                <SizableText minWidth={0} flexDirection="column" textAlign="left">
+                <YStack minWidth={0}>
                   <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" lineHeight={1}>Hanzo&nbsp;App</SizableText>
                   <SizableText marginTop="$0.5" fontSize={10} lineHeight={10} color="$color11">
                     {isServerMode ? `Server · v${VERSION}` : `v${VERSION}`}
                   </SizableText>
-                </SizableText>
+                </YStack>
               </Button>
 
               <Button
@@ -430,9 +430,11 @@ function SidebarContent({
             {recents.length > 0 && (
               <>
                 {collapsed ? <Divider /> : (
-                  <SizableText paddingHorizontal="$3" paddingBottom="$1" paddingTop="$3" fontSize={11} fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11" display="flex" flexDirection="column">
-                    Recents
-                  </SizableText>
+                  <YStack paddingHorizontal="$3" paddingBottom="$1" paddingTop="$3">
+                    <SizableText fontSize={11} fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11">
+                      Recents
+                    </SizableText>
+                  </YStack>
                 )}
                 {recents.map((project) => (
                   <Button
@@ -454,9 +456,11 @@ function SidebarContent({
 
             {/* Secondary (kept reachable) */}
             {collapsed ? <Divider /> : (
-              <SizableText paddingHorizontal="$3" paddingBottom="$1" paddingTop="$3" fontSize={11} fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11" display="flex" flexDirection="column">
-                More
-              </SizableText>
+              <YStack paddingHorizontal="$3" paddingBottom="$1" paddingTop="$3">
+                <SizableText fontSize={11} fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11">
+                  More
+                </SizableText>
+              </YStack>
             )}
             {visibleSecondary.map(renderNavButton)}
           </YStack>
@@ -580,8 +584,8 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
       aria-modal={true}
       aria-label="Share Hanzo"
     >
-      <SizableText
-        position="relative" width="100%" maxWidth={448} borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$5" color="$color" elevation={6} display="flex" flexDirection="column"
+      <YStack
+        position="relative" width="100%" maxWidth={448} borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$5" elevation={6}
         onClick={(e) => e.stopPropagation()}
       >
         <Button
@@ -592,9 +596,9 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
           <X size={16} />
         </Button>
 
-        <SizableText height={44} width={44} alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
+        <XStack height={44} width={44} alignItems="center" justifyContent="center" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3">
           <Gift size={20} strokeWidth={1.5} />
-        </SizableText>
+        </XStack>
         <H2 marginTop="$4" fontSize="$6" fontWeight="600" letterSpacing={-0.4}>
           Share Hanzo, earn free weeks
         </H2>
@@ -651,7 +655,7 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
           Free weeks are credited when a referred friend&apos;s paid subscription
           starts. Rewards cap at 52 weeks.
         </Paragraph>
-      </SizableText>
+      </YStack>
     </XStack>
   );
 }

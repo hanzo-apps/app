@@ -19,7 +19,7 @@ export function InviteFriends() {
             variant="outline"
             group borderColor="$borderColor" hoverStyle={{ borderColor: "$borderColor" }}
           >
-            <SizableText display="flex" color="$color11" $group-hover={{ color: "$color" }}>
+            <SizableText color="$color11" $group-hover={{ color: "$color" }}>
               <UserPlus size={16} />
             </SizableText>
           </Button>
@@ -28,15 +28,15 @@ export function InviteFriends() {
           <DialogTitle display="none" />
           <main>
             <XStack alignItems="center" justifyContent="flex-start" columnGap="$4" marginBottom="$4.5">
-              <SizableText width={44} height={44} borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$8" display="flex" flexDirection="row">
-                😎
-              </SizableText>
-              <SizableText width={44} height={44} borderRadius="$10" backgroundColor="$color4" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$8" zIndex={2} display="flex" flexDirection="row">
-                😇
-              </SizableText>
-              <SizableText width={44} height={44} borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" fontSize="$8" display="flex" flexDirection="row">
-                😜
-              </SizableText>
+              <XStack width={44} height={44} borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center">
+                <SizableText fontSize="$8">😎</SizableText>
+              </XStack>
+              <XStack width={44} height={44} borderRadius="$10" backgroundColor="$color4" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center" zIndex={2}>
+                <SizableText fontSize="$8">😇</SizableText>
+              </XStack>
+              <XStack width={44} height={44} borderRadius="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" elevation={1} alignItems="center" justifyContent="center">
+                <SizableText fontSize="$8">😜</SizableText>
+              </XStack>
             </XStack>
             <Paragraph fontSize="$7" fontWeight="500" color="$color" maxWidth={200}>
               Invite your friends to join us!

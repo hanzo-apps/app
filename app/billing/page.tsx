@@ -210,15 +210,15 @@ export default function BillingPage() {
 
   if (authLoading || loading) {
     return (
-      <SizableText minHeight="100%" backgroundColor="$background" color="$color" alignItems="center" justifyContent="center" display="flex" flexDirection="row">
+      <XStack minHeight="100%" backgroundColor="$background" alignItems="center" justifyContent="center">
         <Loader2 size={32} />
-      </SizableText>
+      </XStack>
     );
   }
 
   return (
     <AppShell currentView="billing">
-    <SizableText flex={1} backgroundColor="$background" color="$color" overflow="scroll" display="flex" flexDirection="column">
+    <YStack flex={1} backgroundColor="$background" overflow="scroll">
       <YStack maxWidth={1280} alignSelf="center" paddingHorizontal="$4" paddingVertical="$6" $md={{ paddingHorizontal: "$6", paddingVertical: "$8" }}>
         {/* Header */}
         <YStack justifyContent="space-between" alignItems="flex-start" gap="$4" marginBottom="$6" $sm={{ flexDirection: "row", alignItems: "center" }}>
@@ -322,20 +322,20 @@ export default function BillingPage() {
               <CardTitle fontSize="$3" fontWeight="500" color="$color11">This Month</CardTitle>
             </CardHeader>
             <CardContent>
-              <SizableText rowGap="$2" fontSize="$3" display="flex" flexDirection="column">
+              <YStack rowGap="$2">
                 <XStack justifyContent="space-between">
-                  <SizableText color="$color11">API Calls</SizableText>
-                  <span>{(usage.api_calls?.used ?? 0).toLocaleString()}</span>
+                  <SizableText fontSize="$3" color="$color11">API Calls</SizableText>
+                  <SizableText fontSize="$3">{(usage.api_calls?.used ?? 0).toLocaleString()}</SizableText>
                 </XStack>
                 <XStack justifyContent="space-between">
-                  <SizableText color="$color11">AI Responses</SizableText>
-                  <span>{(usage.ai_responses?.used ?? 0).toLocaleString()}</span>
+                  <SizableText fontSize="$3" color="$color11">AI Responses</SizableText>
+                  <SizableText fontSize="$3">{(usage.ai_responses?.used ?? 0).toLocaleString()}</SizableText>
                 </XStack>
                 <XStack justifyContent="space-between">
-                  <SizableText color="$color11">Storage</SizableText>
-                  <span>{usage.storage?.used ?? 0} GB</span>
+                  <SizableText fontSize="$3" color="$color11">Storage</SizableText>
+                  <SizableText fontSize="$3">{usage.storage?.used ?? 0} GB</SizableText>
                 </XStack>
-              </SizableText>
+              </YStack>
             </CardContent>
           </Card>
         </YStack>
@@ -408,11 +408,11 @@ export default function BillingPage() {
               </CardHeader>
               <CardContent>
                 {invoices.length === 0 ? (
-                  <SizableText textAlign="center" paddingVertical="$8" display="flex" flexDirection="column">
+                  <YStack alignItems="center" paddingVertical="$8">
                     <FileText size={48} color="$color11" />
-                    <Paragraph color="$color11" marginBottom="$1">No transactions yet</Paragraph>
-                    <Paragraph fontSize="$3" color="$color11">Purchase credits to see your transaction history</Paragraph>
-                  </SizableText>
+                    <Paragraph color="$color11" marginBottom="$1" textAlign="center">No transactions yet</Paragraph>
+                    <Paragraph fontSize="$3" color="$color11" textAlign="center">Purchase credits to see your transaction history</Paragraph>
+                  </YStack>
                 ) : (
                   <YStack rowGap="$3">
                     {invoices.slice(0, 3).map((invoice) => (
@@ -465,11 +465,11 @@ export default function BillingPage() {
               </CardHeader>
               <CardContent>
                 {invoices.length === 0 ? (
-                  <SizableText textAlign="center" paddingVertical="$8" display="flex" flexDirection="column">
+                  <YStack alignItems="center" paddingVertical="$8">
                     <FileText size={48} color="$color11" />
-                    <Paragraph color="$color11" marginBottom="$1">No transactions yet</Paragraph>
-                    <Paragraph fontSize="$3" color="$color11">Purchase credits to see your transaction history</Paragraph>
-                  </SizableText>
+                    <Paragraph color="$color11" marginBottom="$1" textAlign="center">No transactions yet</Paragraph>
+                    <Paragraph fontSize="$3" color="$color11" textAlign="center">Purchase credits to see your transaction history</Paragraph>
+                  </YStack>
                 ) : (
                   <YStack rowGap="$3">
                     {invoices.map((invoice) => (
@@ -546,20 +546,20 @@ export default function BillingPage() {
                 {/* Credit consumption */}
                 <YStack paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
                   <H4 fontSize="$3" fontWeight="500" color="$color11" marginBottom="$3">Credit Consumption</H4>
-                  <SizableText gap="$4" textAlign="center" display="flex" flexDirection="column">
+                  <YStack gap="$4">
                     <YStack padding="$3" borderRadius="$5" backgroundColor="$background" borderWidth={1} borderColor="$borderColor">
-                      <SizableText fontSize="$6" fontWeight="500" display="flex" flexDirection="column">{usage.ai_responses?.used ?? 0}</SizableText>
-                      <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">AI credits used</SizableText>
+                      <SizableText fontSize="$6" fontWeight="500" textAlign="center">{usage.ai_responses?.used ?? 0}</SizableText>
+                      <SizableText fontSize="$1" color="$color11" textAlign="center">AI credits used</SizableText>
                     </YStack>
                     <YStack padding="$3" borderRadius="$5" backgroundColor="$background" borderWidth={1} borderColor="$borderColor">
-                      <SizableText fontSize="$6" fontWeight="500" display="flex" flexDirection="column">
+                      <SizableText fontSize="$6" fontWeight="500" textAlign="center">
                         {balancePhase === 'ready' && balanceCents !== null
                           ? `$${(balanceCents / 100).toFixed(2)}`
                           : '--'}
                       </SizableText>
-                      <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">Credit remaining</SizableText>
+                      <SizableText fontSize="$1" color="$color11" textAlign="center">Credit remaining</SizableText>
                     </YStack>
-                  </SizableText>
+                  </YStack>
                 </YStack>
               </CardContent>
             </Card>
@@ -579,7 +579,7 @@ export default function BillingPage() {
           onSuccess={handleCryptoPaymentSuccess}
   />
       </WalletBoundary>
-    </SizableText>
+    </YStack>
     </AppShell>
   );
 }

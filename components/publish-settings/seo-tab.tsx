@@ -260,9 +260,7 @@ export function SeoTab({ settings, onChange }: SeoTabProps) {
           <XStack gap="$2" marginBottom="$2">
             <Search size={20} color="$blue10" />
             <YStack flex={1}>
-              <SizableText fontSize="$3" color="$blue10" marginBottom="$1" display="flex" flexDirection="column">
-                https://your-domain.com
-              </SizableText>
+              <YStack marginBottom="$1"><SizableText fontSize="$3" color="$blue10">https://your-domain.com</SizableText></YStack>
               <H3 fontSize="$6" color="$blue11" fontWeight="500" marginBottom="$1" $theme-dark={{ color: "$blue8" }}>
                 {settings.seo.title || settings.seo.ogTitle || 'Your Deployment Title'}
               </H3>
@@ -298,9 +296,7 @@ export function SeoTab({ settings, onChange }: SeoTabProps) {
                 </YStack>
               )}
               <YStack rowGap="$1">
-                <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
-                  your-domain.com
-                </SizableText>
+                <YStack><SizableText fontSize="$1" color="$color11">your-domain.com</SizableText></YStack>
                 <H4 fontWeight="500">
                   {settings.seo.ogTitle || settings.seo.title || 'Your Deployment Title'}
                 </H4>

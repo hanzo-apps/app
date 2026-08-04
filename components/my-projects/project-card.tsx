@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText, YStack, XStack, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, Paragraph } from '@hanzo/gui';
 import Link from "next/link";
 import { formatDistance } from "date-fns";
 import { EllipsisVertical, Settings } from "lucide-react";
@@ -10,7 +10,7 @@ import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownM
 
 export function ProjectCard({ project }: { project: Project }) {
   return (
-    <SizableText color="$color" rowGap="$4" group cursor="pointer" display="flex" flexDirection="column">
+    <YStack rowGap="$4" group cursor="pointer">
       <Link
         href={`/projects/${project.space_id}`}
       ><YStack position="relative" backgroundColor="$background" borderRadius="$8" overflow="hidden" height="$18" width="100%" alignItems="center" justifyContent="flex-end" paddingHorizontal="$3" borderWidth={1} borderColor="$borderColor">
@@ -63,6 +63,6 @@ export function ProjectCard({ project }: { project: Project }) {
           </DropdownMenuContent>
         </DropdownMenu>
       </XStack>
-    </SizableText>
+    </YStack>
   );
 }

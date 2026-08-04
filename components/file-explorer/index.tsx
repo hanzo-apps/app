@@ -499,8 +499,8 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
       >
         <ContextMenu>
           <ContextMenu.Trigger>
-            <SizableText
-            alignItems="center" gap="$2" paddingHorizontal="$2" paddingVertical="$1.5" cursor="pointer" borderRadius="$3" group display="flex" flexDirection="row" hoverStyle={{ backgroundColor: "$color3", color: "$color" }} {...{ backgroundColor: isDropTarget && item.type === 'directory' ? "$blue9" : isSelected ? "$color3" : undefined, color: isSelected ? "$color" : undefined, borderWidth: isDropTarget && item.type === 'directory' ? 1 : undefined, borderColor: isDropTarget && item.type === 'directory' ? "$blue9" : undefined, opacity: (isTransient || isHiddenDotFile) ? 0.75 : draggedItem?.path === item.path ? 0.5 : undefined }}
+            <XStack
+            alignItems="center" gap="$2" paddingHorizontal="$2" paddingVertical="$1.5" cursor="pointer" borderRadius="$3" group hoverStyle={{ backgroundColor: "$color3" }} {...{ backgroundColor: isDropTarget && item.type === 'directory' ? "$blue9" : isSelected ? "$color3" : undefined, borderWidth: isDropTarget && item.type === 'directory' ? 1 : undefined, borderColor: isDropTarget && item.type === 'directory' ? "$blue9" : undefined, opacity: (isTransient || isHiddenDotFile) ? 0.75 : draggedItem?.path === item.path ? 0.5 : undefined }}
             style={{ paddingLeft: `${level * 16 + 8}px` }}
             onClick={() => handleFileClick(item)}
           >
@@ -560,7 +560,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
                 {item.name === '.PROMPT.md' && <SizableText fontSize="$1" color="$yellow9" marginLeft="$1">(AI prompt)</SizableText>}
               </SizableText>
             )}
-            </SizableText>
+            </XStack>
           </ContextMenu.Trigger>
           <ContextMenu.Portal>
           <ContextMenu.Content>
@@ -725,13 +725,13 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
             )}
             {fileTree.length === 0 ? (
               <XStack flex={1} alignItems="center" justifyContent="center" paddingVertical="$6">
-                <SizableText textAlign="center" rowGap="$3" display="flex" flexDirection="column">
+                <YStack alignItems="center" rowGap="$3">
                   <Folder size={48} color="$color11" />
                   <YStack rowGap="$1">
-                    <Paragraph fontSize="$4" fontWeight="500" color="$color">No files yet</Paragraph>
-                    <Paragraph fontSize="$3" color="$color11">Create your first file to get started</Paragraph>
+                    <Paragraph fontSize="$4" fontWeight="500" color="$color" textAlign="center">No files yet</Paragraph>
+                    <Paragraph fontSize="$3" color="$color11" textAlign="center">Create your first file to get started</Paragraph>
                   </YStack>
-                </SizableText>
+                </YStack>
               </XStack>
             ) : (
               <YStack>
@@ -763,9 +763,9 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
       </ContextMenu>
       {/* Missing .PROMPT.md notification */}
       {onAddPromptFile && !promptDismissed && files.length > 0 && !files.some(f => f.path === '/.PROMPT.md') && (
-        <SizableText marginHorizontal="$2" marginBottom="$2" padding="$2" borderRadius="$3" borderWidth={1} borderColor="$yellow9" backgroundColor="$yellow9" fontSize="$1" display="flex" flexDirection="column">
-          <Paragraph color="$yellow10" marginBottom="$1.5" $theme-dark={{ color: "$yellow8" }}>No .PROMPT.md found</Paragraph>
-          <Paragraph color="$color11" marginBottom="$2">Add the default website prompt?</Paragraph>
+        <YStack marginHorizontal="$2" marginBottom="$2" padding="$2" borderRadius="$3" borderWidth={1} borderColor="$yellow9" backgroundColor="$yellow9">
+          <Paragraph color="$yellow10" marginBottom="$1.5" fontSize="$1" $theme-dark={{ color: "$yellow8" }}>No .PROMPT.md found</Paragraph>
+          <Paragraph color="$color11" marginBottom="$2" fontSize="$1">Add the default website prompt?</Paragraph>
           <XStack gap="$2">
             <Button
               size="sm"
@@ -787,7 +787,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
               <SizableText fontSize="$1">Dismiss</SizableText>
             </Button>
           </XStack>
-        </SizableText>
+        </YStack>
       )}
     </YStack>
   );

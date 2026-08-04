@@ -14,7 +14,7 @@
  * raise the same modal. Accessibility (focus trap, Esc, aria-labelled title +
  * description) comes from the @hanzo/ui Dialog (Radix).
  */
-import { YStack, SizableText } from '@hanzo/gui';
+import { YStack, XStack, SizableText } from '@hanzo/gui';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Button } from '@hanzo/ui';
 import { Wallet, Sparkles, ArrowRight, type LucideIcon } from 'lucide-react';
@@ -85,16 +85,16 @@ function OptionCard({
       onClick={onClick}
       group width="100%" alignItems="flex-start" gap="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4" outlineWidth={0} hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}
     >
-      <SizableText height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color" color="$color">
-        <Icon size={20} />
-      </SizableText>
-      <SizableText minWidth={0} flex={1}>
-        <SizableText alignItems="center" justifyContent="space-between" gap="$2">
+      <XStack height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color">
+        <SizableText color="$color"><Icon size={20} /></SizableText>
+      </XStack>
+      <YStack minWidth={0} flex={1}>
+        <XStack alignItems="center" justifyContent="space-between" gap="$2">
           <SizableText fontSize="$3" fontWeight="500" color="$color">{title}</SizableText>
           <ArrowRight size={16} color="$color11" />
-        </SizableText>
+        </XStack>
         <SizableText marginTop="$0.5" fontSize="$1" lineHeight={1.625} color="$color11">{desc}</SizableText>
-      </SizableText>
+      </YStack>
     </Button>
   );
 }
@@ -107,11 +107,11 @@ function BalanceLine() {
   const cents = spendableCents(balance);
   if (phase !== 'ready' || cents === null) return null;
   return (
-    <SizableText alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" fontSize="$1" color="$color11" display="flex" flexDirection="row">
-      <Wallet size={14} />
-      <span>Current balance</span>
-      <SizableText marginLeft="auto" fontFamily="$mono" color="$color">{fmtUsd(cents)}</SizableText>
-    </SizableText>
+    <XStack alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2">
+      <SizableText color="$color11"><Wallet size={14} /></SizableText>
+      <SizableText fontSize="$1" color="$color11">Current balance</SizableText>
+      <SizableText marginLeft="auto" fontFamily="$mono" fontSize="$1" color="$color">{fmtUsd(cents)}</SizableText>
+    </XStack>
   );
 }
 

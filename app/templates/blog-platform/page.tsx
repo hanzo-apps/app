@@ -221,15 +221,15 @@ export default function BlogPlatform() {
                                 {article.author.name.split(" ").map(n => n[0]).join("")}
                               </AvatarFallback>
                             </Avatar>
-                            <SizableText fontSize="$3" display="flex" flexDirection="column">
-                              <Paragraph fontWeight="500">{article.author.name}</Paragraph>
-                              <Paragraph color="$color11">
+                            <YStack>
+                              <Paragraph fontSize="$3" fontWeight="500">{article.author.name}</Paragraph>
+                              <Paragraph fontSize="$3" color="$color11">
                                 {article.publishDate} · {article.readTime}
                               </Paragraph>
-                            </SizableText>
+                            </YStack>
                           </XStack>
 
-                          <SizableText alignItems="center" gap="$3" fontSize="$3" color="$color11" display="flex" flexDirection="row">
+                          <XStack alignItems="center" gap="$3">
                             <Button alignItems="center" gap="$1">
                               <Heart size={16} />
                               {article.likes}
@@ -240,7 +240,7 @@ export default function BlogPlatform() {
                             <Button>
                               <Share2 size={16} />
                             </Button>
-                          </SizableText>
+                          </XStack>
                         </XStack>
                       </YStack>
                     </YStack>

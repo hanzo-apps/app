@@ -111,22 +111,22 @@ export function CodexAuthPanel({ onAuthChange }: CodexAuthPanelProps) {
   };
 
   const warningBanner = (
-    <SizableText padding="$2.5" borderWidth={1} borderColor="$yellow10" borderRadius="$3" backgroundColor="$yellow12" fontSize="$1" color="$yellow3" rowGap="$1" display="flex" flexDirection="column">
+    <YStack padding="$2.5" borderWidth={1} borderColor="$yellow10" borderRadius="$3" backgroundColor="$yellow12" rowGap="$1">
       <XStack alignItems="flex-start" gap="$2">
         <TriangleAlert size={14} color="$yellow9" />
         <div>
-          <p>
+          <Paragraph fontSize="$1" color="$yellow3">
             <SizableText fontWeight="500" color="$yellow8">Use at your own risk.</SizableText>{' '}
             This routes requests through an unofficial backend using your ChatGPT session token. Your token is sent to ChatGPT servers but the usage is outside the intended Codex CLI.
-          </p>
-          <Paragraph marginTop="$1">
+          </Paragraph>
+          <Paragraph marginTop="$1" fontSize="$1" color="$yellow3">
             OpenAI may restrict or revoke access to this endpoint at any time. For reliable, long-term use consider an{' '}
             <Anchor href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" color="$yellow8" hoverStyle={{ textDecorationLine: "underline" }}>OpenAI API key</Anchor>{' '}
             instead.
           </Paragraph>
         </div>
       </XStack>
-    </SizableText>
+    </YStack>
   );
 
   // --- Authenticated state ---
@@ -158,13 +158,13 @@ export function CodexAuthPanel({ onAuthChange }: CodexAuthPanelProps) {
       {warningBanner}
 
       <YStack padding="$3" borderWidth={1} borderRadius="$3" backgroundColor="$color3" rowGap="$3">
-        <SizableText alignItems="center" gap="$2" fontSize="$3" fontWeight="500" display="flex" flexDirection="row">
+        <XStack alignItems="center" gap="$2">
           <Terminal size={16} />
-          Setup Instructions
-        </SizableText>
+          <SizableText fontSize="$3" fontWeight="500">Setup Instructions</SizableText>
+        </XStack>
 
-        <SizableText fontSize="$1" color="$color11" rowGap="$2" display="flex" flexDirection="column">
-          <li>
+        <YStack rowGap="$2">
+          <SizableText fontSize="$1" color="$color11">
             Install the{' '}
             <Anchor
               href="https://github.com/openai/codex"
@@ -176,22 +176,22 @@ export function CodexAuthPanel({ onAuthChange }: CodexAuthPanelProps) {
             </Anchor>
             {': '}
             <SizableText backgroundColor="$color3" paddingHorizontal="$1" borderRadius="$2">npm i -g @openai/codex</SizableText>
-          </li>
-          <li>
+          </SizableText>
+          <SizableText fontSize="$1" color="$color11">
             Run <SizableText backgroundColor="$color3" paddingHorizontal="$1" borderRadius="$2">codex login</SizableText> and follow the browser prompts
-          </li>
-          <li>
+          </SizableText>
+          <SizableText fontSize="$1" color="$color11">
             Copy your token by running:<br />
             <SizableText backgroundColor="$color3" paddingHorizontal="$1" borderRadius="$2" userSelect="all">cat ~/.codex/auth.json | pbcopy</SizableText>
             <SizableText color="$color11" marginLeft="$1">(macOS)</SizableText>
             <br />
             <SizableText backgroundColor="$color3" paddingHorizontal="$1" borderRadius="$2" userSelect="all">cat ~/.codex/auth.json | xclip -sel c</SizableText>
             <SizableText color="$color11" marginLeft="$1">(Linux)</SizableText>
-          </li>
-          <li>
+          </SizableText>
+          <SizableText fontSize="$1" color="$color11">
             Paste below with <SizableText backgroundColor="$color3" paddingHorizontal="$1" borderRadius="$2">Cmd+V</SizableText> / <SizableText backgroundColor="$color3" paddingHorizontal="$1" borderRadius="$2">Ctrl+V</SizableText>
-          </li>
-        </SizableText>
+          </SizableText>
+        </YStack>
       </YStack>
 
       <YStack rowGap="$2">

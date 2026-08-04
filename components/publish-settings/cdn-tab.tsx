@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, H3, Paragraph, SizableText, H4 } from '@hanzo/gui';
+import { YStack, XStack, H3, Paragraph, H4 } from '@hanzo/gui';
 import { useState } from 'react';
 import { PublishSettings, CdnConfig } from '@/lib/vfs/types';
 import { Button, Input, Label, Switch, Badge, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
@@ -109,17 +109,17 @@ export function CdnTab({ settings, onChange }: CdnTabProps) {
       </XStack>
 
       {settings.cdnLinks.length === 0 ? (
-        <SizableText textAlign="center" padding="$6" borderWidth={2} borderStyle="dashed" borderRadius="$5" display="flex" flexDirection="column">
+        <YStack alignItems="center" padding="$6" borderWidth={2} borderStyle="dashed" borderRadius="$5">
           <Link2 size={48} color="$color11" />
-          <H3 fontSize="$6" fontWeight="500" marginBottom="$2">No CDN Resources</H3>
-          <Paragraph fontSize="$3" color="$color11" marginBottom="$4">
+          <H3 fontSize="$6" fontWeight="500" marginBottom="$2" textAlign="center">No CDN Resources</H3>
+          <Paragraph fontSize="$3" color="$color11" marginBottom="$4" textAlign="center">
             Add libraries like Bootstrap, Tailwind, or custom stylesheets
           </Paragraph>
           <Button onClick={handleAddCdn} variant="outline">
             <Plus size={16} />
             Add Your First Resource
           </Button>
-        </SizableText>
+        </YStack>
       ) : (
         <YStack rowGap="$4">
           {settings.cdnLinks.map((cdn) => (

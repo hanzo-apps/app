@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, Paragraph, SizableText, Anchor } from '@hanzo/gui';
+import { YStack, Paragraph, Anchor } from '@hanzo/gui';
 import React, { useEffect } from 'react';
 import type { TocItem } from '@/lib/hooks/use-table-of-contents';
 
@@ -45,7 +45,7 @@ export function TableOfContents({ items, activeId, visibleIds = [], onItemClick 
   return (
     <YStack rowGap="$1">
       <Paragraph fontSize="$3" fontWeight="500" marginBottom="$3" color="$color">On This Page</Paragraph>
-      <SizableText fontSize="$3" display="flex" flexDirection="column">
+      <YStack>
         {items.map((item) => (
           <li key={`${item.id}-${item.index}`}>
             <Anchor
@@ -79,7 +79,7 @@ export function TableOfContents({ items, activeId, visibleIds = [], onItemClick 
             )}
           </li>
         ))}
-      </SizableText>
+      </YStack>
     </YStack>
   );
 }

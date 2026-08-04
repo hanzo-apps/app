@@ -197,13 +197,13 @@ export function SkillEditor({ skill, mode, onSave, onCancel }: SkillEditorProps)
                   <FileText size={16} />
                   Tips for Writing Skills
                 </H3>
-                <SizableText fontSize="$3" color="$color11" rowGap="$1" marginLeft="$4.5" display="flex" flexDirection="column">
-                  <li>Be specific and actionable - provide clear guidelines and examples</li>
-                  <li>Use markdown formatting for better readability</li>
-                  <li>Include code examples where relevant</li>
-                  <li>Focus on practical knowledge the AI can apply</li>
-                  <li>Keep it concise but comprehensive</li>
-                </SizableText>
+                <YStack rowGap="$1" marginLeft="$4.5">
+                  <SizableText fontSize="$3" color="$color11">Be specific and actionable - provide clear guidelines and examples</SizableText>
+                  <SizableText fontSize="$3" color="$color11">Use markdown formatting for better readability</SizableText>
+                  <SizableText fontSize="$3" color="$color11">Include code examples where relevant</SizableText>
+                  <SizableText fontSize="$3" color="$color11">Focus on practical knowledge the AI can apply</SizableText>
+                  <SizableText fontSize="$3" color="$color11">Keep it concise but comprehensive</SizableText>
+                </YStack>
               </YStack>
             </YStack>
           </YStack>

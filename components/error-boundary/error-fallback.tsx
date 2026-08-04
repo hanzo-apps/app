@@ -167,7 +167,7 @@ export function ErrorFallback({
         </YStack>
 
         {isDevelopment && (
-          <SizableText marginTop="$4" textAlign="center" fontSize="$1" color="$color11" display="flex" flexDirection="column">
+          <SizableText marginTop="$4" textAlign="center" fontSize="$1" color="$color11">
             This detailed error view is only shown in development mode.
           </SizableText>
         )}

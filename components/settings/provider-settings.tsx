@@ -141,19 +141,19 @@ function ProviderCard({ provider, onValidate, onRemove, isValidating }: Provider
         )}
 
         {!provider.apiKeyRequired && (
-          <SizableText fontSize="$3" color="$color11" padding="$3" backgroundColor="$color3" borderRadius="$5" display="flex" flexDirection="column">
-            <p>
+          <YStack padding="$3" backgroundColor="$color3" borderRadius="$5">
+            <Paragraph fontSize="$3" color="$color11">
               {provider.isLocal
                 ? `This provider runs locally. Make sure ${provider.name} is running at ${provider.baseUrl}`
                 : 'No API key required for this provider'}
-            </p>
-          </SizableText>
+            </Paragraph>
+          </YStack>
         )}
 
-        <SizableText fontSize="$1" color="$color11" rowGap="$1" display="flex" flexDirection="column">
+        <YStack rowGap="$1">
           <XStack alignItems="center" gap="$2">
-            <SizableText fontWeight="500">Base URL:</SizableText>
-            <SizableText paddingHorizontal="$1.5" paddingVertical="$0.5" backgroundColor="$background" borderRadius="$2" fontSize="$1">
+            <SizableText fontWeight="500" fontSize="$1" color="$color11">Base URL:</SizableText>
+            <SizableText paddingHorizontal="$1.5" paddingVertical="$0.5" backgroundColor="$background" borderRadius="$2" fontSize="$1" color="$color11">
               {provider.baseUrl}
             </SizableText>
           </XStack>
@@ -168,7 +168,7 @@ function ProviderCard({ provider, onValidate, onRemove, isValidating }: Provider
               <Badge variant="outline">Auto-discovery</Badge>
             )}
           </XStack>
-        </SizableText>
+        </YStack>
       </CardContent>
     </Card>
   );
@@ -316,15 +316,15 @@ export function ProviderSettings() {
         <CardContent paddingTop="$5">
           <XStack gap="$3">
             <Key size={20} color="$yellow10" />
-            <SizableText fontSize="$3" rowGap="$2" display="flex" flexDirection="column">
-              <Paragraph fontWeight="500" color="$yellow10">Security Notice</Paragraph>
-              <SizableText color="$color11" rowGap="$1" display="flex" flexDirection="column">
-                <li>API keys are stored locally in your browser's localStorage</li>
-                <li>Keys are never sent to Hanzo servers</li>
-                <li>Clear your browser data to remove stored keys</li>
-                <li>Use dedicated API keys with usage limits when possible</li>
-              </SizableText>
-            </SizableText>
+            <YStack rowGap="$2">
+              <Paragraph fontWeight="500" fontSize="$3" color="$yellow10">Security Notice</Paragraph>
+              <YStack rowGap="$1">
+                <SizableText fontSize="$3" color="$color11">API keys are stored locally in your browser's localStorage</SizableText>
+                <SizableText fontSize="$3" color="$color11">Keys are never sent to Hanzo servers</SizableText>
+                <SizableText fontSize="$3" color="$color11">Clear your browser data to remove stored keys</SizableText>
+                <SizableText fontSize="$3" color="$color11">Use dedicated API keys with usage limits when possible</SizableText>
+              </YStack>
+            </YStack>
           </XStack>
         </CardContent>
       </Card>

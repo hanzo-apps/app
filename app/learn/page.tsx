@@ -100,20 +100,20 @@ export default function LearnPage() {
   ];
 
   return (
-    <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
+    <YStack minHeight="100%" backgroundColor="$background">
       <Header />
 
       {/* Hero Section */}
-      <SizableText paddingHorizontal="$4" paddingVertical="$10" textAlign="center" display="flex" flexDirection="column" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
+      <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
         <YStack maxWidth={896} alignSelf="center">
           <Badge variant="default" className="mb-4">
             <BookOpen size={16} />
             Hanzo Academy
           </Badge>
-          <H1 fontSize="$11" fontWeight="500" marginBottom="$5" $md={{ fontSize: "$13" }}>
+          <H1 fontSize="$11" fontWeight="500" marginBottom="$5" textAlign="center" $md={{ fontSize: "$13" }}>
             Learn to build with AI superpowers
           </H1>
-          <Paragraph fontSize="$7" color="$color11" marginBottom="$6" maxWidth={672} alignSelf="center">
+          <Paragraph fontSize="$7" color="$color11" marginBottom="$6" maxWidth={672} alignSelf="center" textAlign="center">
             Free courses, tutorials, and resources to help you master AI development
           </Paragraph>
           <XStack alignItems="center" gap="$4" justifyContent="center">
@@ -126,7 +126,7 @@ export default function LearnPage() {
             </Button>
           </XStack>
         </YStack>
-      </SizableText>
+      </YStack>
 
       {/* Learning Paths */}
       <YStack paddingHorizontal="$4" paddingVertical="$8" borderTopWidth={1} borderBottomWidth={1} borderColor="$borderColor" $md={{ paddingHorizontal: "$6" }}>
@@ -140,16 +140,16 @@ export default function LearnPage() {
                 </XStack>
                 <H3 fontSize="$6" fontWeight="500" marginBottom="$2">{path.title}</H3>
                 <Paragraph fontSize="$3" color="$color11" marginBottom="$4">{path.description}</Paragraph>
-                <SizableText alignItems="center" gap="$4" fontSize="$3" color="$color11" display="flex" flexDirection="row">
-                  <SizableText alignItems="center" gap="$1">
+                <XStack alignItems="center" gap="$4">
+                  <XStack alignItems="center" gap="$1">
                     <FileCode size={16} />
-                    {path.courses} courses
-                  </SizableText>
-                  <SizableText alignItems="center" gap="$1">
+                    <SizableText fontSize="$3" color="$color11">{path.courses} courses</SizableText>
+                  </XStack>
+                  <XStack alignItems="center" gap="$1">
                     <Clock size={16} />
-                    {path.duration}
-                  </SizableText>
-                </SizableText>
+                    <SizableText fontSize="$3" color="$color11">{path.duration}</SizableText>
+                  </XStack>
+                </XStack>
               </YStack>
             ))}
           </YStack>
@@ -186,10 +186,10 @@ export default function LearnPage() {
             {filteredCourses.map(course => (
               <YStack key={course.id} backgroundColor="$color3" borderRadius="$8" borderWidth={1} borderColor="$borderColor" overflow="hidden" hoverStyle={{ backgroundColor: "$color3" }}>
                 {course.featured && (
-                  <SizableText color="$color" fontSize="$1" paddingHorizontal="$3" paddingVertical="$1.5" alignItems="center" gap="$1" display="flex" flexDirection="row">
+                  <XStack paddingHorizontal="$3" paddingVertical="$1.5" alignItems="center" gap="$1">
                     <Trophy size={12} />
-                    Featured Course
-                  </SizableText>
+                    <SizableText color="$color" fontSize="$1">Featured Course</SizableText>
+                  </XStack>
                 )}
                 <YStack padding="$5">
                   <YStack marginBottom="$4">
@@ -205,16 +205,16 @@ export default function LearnPage() {
                     {course.description}
                   </Paragraph>
 
-                  <SizableText alignItems="center" justifyContent="space-between" fontSize="$3" color="$color11" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor" display="flex" flexDirection="row">
-                    <SizableText alignItems="center" gap="$1">
+                  <XStack alignItems="center" justifyContent="space-between" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
+                    <XStack alignItems="center" gap="$1">
                       <Video size={16} />
-                      {course.lessons} lessons
-                    </SizableText>
-                    <SizableText alignItems="center" gap="$1">
+                      <SizableText fontSize="$3" color="$color11">{course.lessons} lessons</SizableText>
+                    </XStack>
+                    <XStack alignItems="center" gap="$1">
                       <Clock size={16} />
-                      {course.duration}
-                    </SizableText>
-                  </SizableText>
+                      <SizableText fontSize="$3" color="$color11">{course.duration}</SizableText>
+                    </XStack>
+                  </XStack>
                 </YStack>
               </YStack>
             ))}
@@ -225,20 +225,20 @@ export default function LearnPage() {
       {/* Resources Section */}
       <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6" }}>
         <YStack maxWidth={1280} alignSelf="center">
-          <SizableText textAlign="center" marginBottom="$8" display="flex" flexDirection="column">
-            <H2 fontSize="$10" fontWeight="500" marginBottom="$4" $md={{ fontSize: "$11" }}>
+          <YStack marginBottom="$8">
+            <H2 fontSize="$10" fontWeight="500" marginBottom="$4" textAlign="center" $md={{ fontSize: "$11" }}>
               Additional Resources
             </H2>
-            <Paragraph fontSize="$6" color="$color11">
+            <Paragraph fontSize="$6" color="$color11" textAlign="center">
               Everything you need to succeed
             </Paragraph>
-          </SizableText>
+          </YStack>
           <YStack gap="$5">
             <YStack backgroundColor="$color3" borderRadius="$8" padding="$5" borderWidth={1} borderColor="$borderColor" hoverStyle={{ backgroundColor: "$color3" }}>
               <BookOpen size={32} color="$purple8" />
               <H3 fontSize="$7" fontWeight="500" marginBottom="$2">Documentation</H3>
               <Paragraph color="$color11" marginBottom="$4">Comprehensive guides and API references</Paragraph>
-              <Link href="/docs"><SizableText color="$purple8" alignItems="center" gap="$1" hoverStyle={{ color: "$purple4" }}>
+              <Link href="/docs"><SizableText color="$purple8" hoverStyle={{ color: "$purple4" }}>
                 Explore Docs <ArrowRight size={16} />
               </SizableText></Link>
             </YStack>
@@ -246,7 +246,7 @@ export default function LearnPage() {
               <Users size={32} color="$purple8" />
               <H3 fontSize="$7" fontWeight="500" marginBottom="$2">Community Forum</H3>
               <Paragraph color="$color11" marginBottom="$4">Get help and share knowledge with others</Paragraph>
-              <Link href="/community"><SizableText color="$purple8" alignItems="center" gap="$1" hoverStyle={{ color: "$purple4" }}>
+              <Link href="/community"><SizableText color="$purple8" hoverStyle={{ color: "$purple4" }}>
                 Join Community <ArrowRight size={16} />
               </SizableText></Link>
             </YStack>
@@ -263,12 +263,12 @@ export default function LearnPage() {
       </YStack>
 
       {/* CTA Section */}
-      <SizableText paddingHorizontal="$4" paddingVertical="$11" textAlign="center" display="flex" flexDirection="column" $md={{ paddingHorizontal: "$6" }}>
+      <YStack paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6" }}>
         <YStack maxWidth={896} alignSelf="center">
-          <H2 fontSize="$10" fontWeight="500" marginBottom="$5" $md={{ fontSize: "$11" }}>
+          <H2 fontSize="$10" fontWeight="500" marginBottom="$5" textAlign="center" $md={{ fontSize: "$11" }}>
             Start your learning journey today
           </H2>
-          <Paragraph fontSize="$7" color="$color11" marginBottom="$6">
+          <Paragraph fontSize="$7" color="$color11" marginBottom="$6" textAlign="center">
             Join thousands of developers mastering AI development
           </Paragraph>
           <Button size="lg" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}>
@@ -276,7 +276,7 @@ export default function LearnPage() {
             <ArrowRight size={20} />
           </Button>
         </YStack>
-      </SizableText>
-    </SizableText>
+      </YStack>
+    </YStack>
   );
 }

@@ -18,7 +18,7 @@ type FocusTarget = FocusContextPayload & { timestamp: number };
 // Helper to render user message content (string or ContentBlock[])
 function UserMessageContent({ content }: { content: string | ContentBlock[] }) {
   if (typeof content === 'string') {
-    return <SizableText fontSize="$3" color="$color" whiteSpace="pre-wrap" display="flex" flexDirection="column">{content}</SizableText>;
+    return <YStack><SizableText fontSize="$3" color="$color" whiteSpace="pre-wrap">{content}</SizableText></YStack>;
   }
 
   // Separate text and image blocks
@@ -29,9 +29,11 @@ function UserMessageContent({ content }: { content: string | ContentBlock[] }) {
     <YStack rowGap="$2">
       {/* Render text blocks */}
       {textBlocks.map((block, index) => (
-        <SizableText key={`text-${index}`} fontSize="$3" color="$color" whiteSpace="pre-wrap" display="flex" flexDirection="column">
-          {block.type === 'text' && block.text}
-        </SizableText>
+        <YStack key={`text-${index}`}>
+          <SizableText fontSize="$3" color="$color" whiteSpace="pre-wrap">
+            {block.type === 'text' && block.text}
+          </SizableText>
+        </YStack>
       ))}
 
       {/* Render images in a flex container */}
@@ -707,9 +709,11 @@ export function ChatPanel({
       </XStack>
       <YStack marginTop="$2" rowGap="$2">
         {focusContext.domPath && (
-          <SizableText fontSize={11} fontFamily="$mono" color="$color11" lineHeight={1.375} display="flex" flexDirection="column" className="break-all">
-            {focusContext.domPath}
-          </SizableText>
+          <YStack className="break-all">
+            <SizableText fontSize={11} fontFamily="$mono" color="$color11" lineHeight={1.375}>
+              {focusContext.domPath}
+            </SizableText>
+          </YStack>
         )}
         {trimmedSnippet && (
           <SizableText maxHeight="$12" overflow="scroll" borderRadius="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2" paddingVertical="$1" fontSize={11} color="$color" lineHeight={1.625} fontFamily="$mono" whiteSpace="pre">
@@ -768,9 +772,11 @@ export function ChatPanel({
       {/* Messages */}
       <YStack ref={scrollRef} flex={1} padding="$4" rowGap="$4" overflow="scroll">
         {turns.length === 0 ? (
-          <SizableText fontSize="$1" color="$color11" textAlign="center" padding="$4" display="flex" flexDirection="column">
-            No messages yet. Start a conversation to see it here.
-          </SizableText>
+          <YStack padding="$4">
+            <SizableText fontSize="$1" color="$color11" textAlign="center">
+              No messages yet. Start a conversation to see it here.
+            </SizableText>
+          </YStack>
         ) : (
           turns.map((turn) => (
             <TurnDisplay
@@ -1033,7 +1039,7 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
           case 'user':
             return (
               <YStack key={item.id} backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$2" borderWidth={1} borderColor="$color12">
-                <SizableText fontWeight="500" color="$color12" marginBottom="$1" fontSize="$1" display="flex" flexDirection="column">User</SizableText>
+                <YStack marginBottom="$1"><SizableText fontWeight="500" color="$color12" fontSize="$1">User</SizableText></YStack>
                 <UserMessageContent content={item.data} />
               </YStack>
             );
@@ -1057,10 +1063,12 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
                 <XStack alignItems="flex-start" gap="$2">
                   <XCircle size={16} color="$red9" />
                   <YStack flex={1}>
-                    <SizableText fontWeight="500" color="$red9" marginBottom="$1" fontSize="$3" display="flex" flexDirection="column">Error</SizableText>
-                    <SizableText color="$red9" whiteSpace="pre-wrap" fontFamily="$mono" fontSize="$1" display="flex" flexDirection="column">
-                      {item.data?.message || JSON.stringify(item.data, null, 2)}
-                    </SizableText>
+                    <YStack marginBottom="$1"><SizableText fontWeight="500" color="$red9" fontSize="$3">Error</SizableText></YStack>
+                    <YStack>
+                      <SizableText color="$red9" whiteSpace="pre-wrap" fontFamily="$mono" fontSize="$1">
+                        {item.data?.message || JSON.stringify(item.data, null, 2)}
+                      </SizableText>
+                    </YStack>
                     {item.data?.stack && (
                       <details className="error-disclosure">
                         <summary>
@@ -1086,11 +1094,13 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
         <XStack alignItems="center" justifyContent="space-between" gap="$2">
           {/* Usage info */}
           {turn.usage && (
-            <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
-              Tokens: {(turn.usage.usage?.totalTokens || turn.usage.totalTokens)?.toLocaleString() || 'N/A'}
-              {(turn.usage.totalCost !== undefined || turn.usage.cost !== undefined) &&
-                ` • Cost: $${((turn.usage.totalCost ?? turn.usage.cost) || 0).toFixed(4)}`}
-            </SizableText>
+            <YStack>
+              <SizableText fontSize="$1" color="$color11">
+                Tokens: {(turn.usage.usage?.totalTokens || turn.usage.totalTokens)?.toLocaleString() || 'N/A'}
+                {(turn.usage.totalCost !== undefined || turn.usage.cost !== undefined) &&
+                  ` • Cost: $${((turn.usage.totalCost ?? turn.usage.cost) || 0).toFixed(4)}`}
+              </SizableText>
+            </YStack>
           )}
 
           {/* Checkpoint actions */}
@@ -1174,9 +1184,11 @@ function ToolDisplay({ itemId, tool, isExpanded, onToggle }: ToolDisplayProps) {
           {/* Parameters */}
           {tool.parameters && Object.keys(tool.parameters).length > 0 && (
             <YStack paddingHorizontal="$2">
-              <SizableText fontSize={10} textTransform="uppercase" letterSpacing={0.8} color="$color11" marginBottom="$1" display="flex" flexDirection="column">
-                Parameters
-              </SizableText>
+              <YStack marginBottom="$1">
+                <SizableText fontSize={10} textTransform="uppercase" letterSpacing={0.8} color="$color11">
+                  Parameters
+                </SizableText>
+              </YStack>
               <SizableText fontSize="$1" backgroundColor="$color3" padding="$2" borderRadius="$2" overflow="scroll" fontFamily="$mono" whiteSpace="pre">
                 {JSON.stringify(tool.parameters, null, 2)}
               </SizableText>
@@ -1186,9 +1198,11 @@ function ToolDisplay({ itemId, tool, isExpanded, onToggle }: ToolDisplayProps) {
           {/* Result */}
           {tool.result && (
             <YStack paddingHorizontal="$2">
-              <SizableText fontSize={10} textTransform="uppercase" letterSpacing={0.8} color="$color11" marginBottom="$1" display="flex" flexDirection="column">
-                Result
-              </SizableText>
+              <YStack marginBottom="$1">
+                <SizableText fontSize={10} textTransform="uppercase" letterSpacing={0.8} color="$color11">
+                  Result
+                </SizableText>
+              </YStack>
               <SizableText fontSize="$1" backgroundColor="$color3" padding="$2" borderRadius="$2" maxHeight="$17" overflow="scroll" fontFamily="$mono" whiteSpace="pre">
                 {typeof tool.result === 'string' ? tool.result : JSON.stringify(tool.result, null, 2)}
               </SizableText>
@@ -1198,9 +1212,11 @@ function ToolDisplay({ itemId, tool, isExpanded, onToggle }: ToolDisplayProps) {
           {/* Error */}
           {tool.error && (
             <YStack paddingHorizontal="$2">
-              <SizableText fontSize={10} textTransform="uppercase" letterSpacing={0.8} color="$red9" marginBottom="$1" display="flex" flexDirection="column">
-                Error
-              </SizableText>
+              <YStack marginBottom="$1">
+                <SizableText fontSize={10} textTransform="uppercase" letterSpacing={0.8} color="$red9">
+                  Error
+                </SizableText>
+              </YStack>
               <SizableText fontSize="$1" backgroundColor="$red9" color="$red9" padding="$2" borderRadius="$2" overflow="scroll" fontFamily="$mono" whiteSpace="pre">
                 {tool.error}
               </SizableText>

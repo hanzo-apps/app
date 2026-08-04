@@ -74,19 +74,19 @@ export function DeploymentSelector({
 
   if (loading) {
     return (
-      <SizableText alignItems="center" gap="$2" fontSize="$3" color="$color11" display="flex" flexDirection="row" className={`${className}`}>
-        <Loader2 size={16} />
-        <span>Loading deployments...</span>
-      </SizableText>
+      <XStack alignItems="center" gap="$2" className={`${className}`}>
+        <Loader2 size={16} color="$color11" />
+        <SizableText fontSize="$3" color="$color11">Loading deployments...</SizableText>
+      </XStack>
     );
   }
 
   if (error) {
     return (
-      <SizableText alignItems="center" gap="$2" fontSize="$3" color="$red9" display="flex" flexDirection="row" className={`${className}`}>
-        <Server size={16} />
-        <span>{error}</span>
-      </SizableText>
+      <XStack alignItems="center" gap="$2" className={`${className}`}>
+        <Server size={16} color="$red9" />
+        <SizableText fontSize="$3" color="$red9">{error}</SizableText>
+      </XStack>
     );
   }
 
@@ -96,9 +96,9 @@ export function DeploymentSelector({
     <XStack alignItems="center" gap="$2" className={`${className}`}>
       <Tooltip placement="bottom">
         <TooltipTrigger asChild>
-          <SizableText alignItems="center" gap="$1.5" color="$color11" display="flex" flexDirection="row">
-            <Database size={16} />
-          </SizableText>
+          <XStack alignItems="center" gap="$1.5">
+            <Database size={16} color="$color11" />
+          </XStack>
         </TooltipTrigger>
         <TooltipContent>
           <p>Backend</p>

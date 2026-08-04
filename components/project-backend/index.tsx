@@ -226,16 +226,18 @@ function GeneralTab({ project, onProjectUpdate }: { project: Project; onProjectU
         <Label htmlFor="runtime">Runtime</Label>
         <Select value={project.settings?.runtime || 'static'} onValueChange={handleRuntimeChange}>
           <SelectTrigger id="runtime" width="100%">
-            <SizableText numberOfLines={1} flex={1} textAlign="left" display="flex" flexDirection="column">
-              {getProjectRuntimes().find(r => r.value === (project.settings?.runtime || 'static'))?.label}
-            </SizableText>
+            <YStack flex={1}>
+              <SizableText numberOfLines={1} textAlign="left">
+                {getProjectRuntimes().find(r => r.value === (project.settings?.runtime || 'static'))?.label}
+              </SizableText>
+            </YStack>
           </SelectTrigger>
           <SelectContent>
             {getProjectRuntimes().map(rt => (
               <SelectItem key={rt.value} value={rt.value}>
                 <YStack gap="$0.5">
-                  <SizableText fontWeight="500" display="flex" flexDirection="column">{rt.label}</SizableText>
-                  <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">{rt.description}</SizableText>
+                  <YStack><SizableText fontWeight="500">{rt.label}</SizableText></YStack>
+                  <YStack><SizableText fontSize="$1" color="$color11">{rt.description}</SizableText></YStack>
                 </YStack>
               </SelectItem>
             ))}
@@ -322,10 +324,10 @@ export function ProjectSettingsPanel({ project, onProjectUpdate, enabled }: Proj
                 {['functions', 'helpers', 'secrets', 'schedules', 'schema'].map(tab => (
                   <TabsContent key={tab} value={tab} height="100%" margin="$0">
                     <XStack height="100%" alignItems="center" justifyContent="center" padding="$6">
-                      <SizableText textAlign="center" maxWidth={384} display="flex" flexDirection="column">
+                      <YStack maxWidth={384} alignItems="center">
                         <Lock size={40} color="$color11" />
-                        <H4 fontWeight="500" marginBottom="$2">Server Mode Required</H4>
-                        <Paragraph fontSize="$3" color="$color11" marginBottom="$4">
+                        <H4 fontWeight="500" textAlign="center" marginBottom="$2">Server Mode Required</H4>
+                        <Paragraph fontSize="$3" textAlign="center" color="$color11" marginBottom="$4">
                           Backend features require Server Mode. Deploy to a self-hosted instance to use edge functions, secrets, and database features.
                         </Paragraph>
                         <Anchor
@@ -336,7 +338,7 @@ export function ProjectSettingsPanel({ project, onProjectUpdate, enabled }: Proj
                         >
                           View setup guide
                         </Anchor>
-                      </SizableText>
+                      </YStack>
                     </XStack>
                   </TabsContent>
                 ))}
@@ -347,12 +349,12 @@ export function ProjectSettingsPanel({ project, onProjectUpdate, enabled }: Proj
                 {['functions', 'helpers', 'secrets', 'schedules', 'schema'].map(tab => (
                   <TabsContent key={tab} value={tab} height="100%" margin="$0">
                     <XStack height="100%" alignItems="center" justifyContent="center">
-                      <SizableText textAlign="center" maxWidth={320} display="flex" flexDirection="column">
+                      <YStack maxWidth={320} alignItems="center">
                         <PowerOff size={32} color="$color11" />
-                        <Paragraph fontSize="$3" color="$color11">
+                        <Paragraph fontSize="$3" textAlign="center" color="$color11">
                           Backend features are disabled for this project. Enable them using the toggle above to manage edge functions, secrets, and more.
                         </Paragraph>
-                      </SizableText>
+                      </YStack>
                     </XStack>
                   </TabsContent>
                 ))}

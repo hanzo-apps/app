@@ -70,10 +70,10 @@ export function ProjectList({ showOrgSwitcher = true }: { showOrgSwitcher?: bool
   if (loading) {
     return (
       <XStack alignItems="center" justifyContent="center" paddingVertical="$12">
-        <SizableText textAlign="center" display="flex" flexDirection="column">
+        <YStack alignItems="center">
           <Loader2 size={40} color="$color12" />
-          <Paragraph marginTop="$4" fontSize="$3" color="$color11">Loading projects…</Paragraph>
-        </SizableText>
+          <Paragraph marginTop="$4" fontSize="$3" color="$color11" textAlign="center">Loading projects…</Paragraph>
+        </YStack>
       </XStack>
     );
   }
@@ -81,11 +81,11 @@ export function ProjectList({ showOrgSwitcher = true }: { showOrgSwitcher?: bool
   if (error) {
     return (
       <XStack alignItems="center" justifyContent="center" paddingVertical="$12">
-        <SizableText textAlign="center" maxWidth={384} display="flex" flexDirection="column">
-          <Paragraph color="$red9" fontWeight="500" marginBottom="$2">Error</Paragraph>
-          <Paragraph fontSize="$3" color="$color11" marginBottom="$4">{error}</Paragraph>
+        <YStack maxWidth={384} alignItems="center">
+          <Paragraph color="$red9" fontWeight="500" marginBottom="$2" textAlign="center">Error</Paragraph>
+          <Paragraph fontSize="$3" color="$color11" marginBottom="$4" textAlign="center">{error}</Paragraph>
           <Button variant="outline" onClick={load}>Retry</Button>
-        </SizableText>
+        </YStack>
       </XStack>
     );
   }
@@ -123,12 +123,12 @@ export function ProjectList({ showOrgSwitcher = true }: { showOrgSwitcher?: bool
       )}
 
       {filtered.length === 0 ? (
-        <SizableText textAlign="center" paddingVertical="$10" display="flex" flexDirection="column">
+        <YStack alignItems="center" paddingVertical="$10">
           <FolderOpen size={48} color="$color11" />
-          <H2 fontSize="$7" fontWeight="500" marginBottom="$2">
+          <H2 fontSize="$7" fontWeight="500" marginBottom="$2" textAlign="center">
             {searchQuery ? 'No projects found' : 'No projects yet'}
           </H2>
-          <Paragraph color="$color11" marginBottom="$5">
+          <Paragraph color="$color11" marginBottom="$5" textAlign="center">
             {searchQuery ? 'Try a different search term.' : 'Create your first project to get started.'}
           </Paragraph>
           {!searchQuery && (
@@ -137,7 +137,7 @@ export function ProjectList({ showOrgSwitcher = true }: { showOrgSwitcher?: bool
               Create Project
             </Button>
           )}
-        </SizableText>
+        </YStack>
       ) : (
         <YStack gap="$4">
           {filtered.map((project) => (

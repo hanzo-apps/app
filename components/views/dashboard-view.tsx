@@ -366,19 +366,19 @@ function WhatsNewCard({
         <Link
           href={docsHref}
           onClick={handleReadAll}
-        ><SizableText fontSize="$1" color="$orange9" alignItems="center" gap="$1" hoverStyle={{ color: "$orange8" }}>
-          Read all
+        ><XStack alignItems="center" gap="$1">
+          <SizableText fontSize="$1" color="$orange9" hoverStyle={{ color: "$orange8" }}>Read all</SizableText>
           <ExternalLink size={12} />
-        </SizableText></Link>
+        </XStack></Link>
       </XStack>
       <Paragraph fontSize="$3" fontWeight="500" color="$color" marginBottom="$2">{whatsNew.title}</Paragraph>
       {whatsNew.highlights && whatsNew.highlights.length > 0 && (
         <YStack rowGap="$1" flex={1}>
           {whatsNew.highlights.map((highlight, i) => (
-            <SizableText key={i} fontSize="$1" color="$color11" alignItems="flex-start" gap="$2">
-              <SizableText color="$orange9" marginTop="$0.5">•</SizableText>
-              <span>{highlight}</span>
-            </SizableText>
+            <XStack key={i} alignItems="flex-start" gap="$2">
+              <SizableText color="$orange9" marginTop="$0.5" fontSize="$1">•</SizableText>
+              <SizableText fontSize="$1" color="$color11">{highlight}</SizableText>
+            </XStack>
           ))}
         </YStack>
       )}
@@ -544,10 +544,10 @@ function RecentProjectsCard({
         <Link
           href={viewAllHref}
           onClick={handleViewAll}
-        ><SizableText fontSize="$1" color="$color11" alignItems="center" gap="$0.5" hoverStyle={{ color: "$color11" }}>
-          View all
+        ><XStack alignItems="center" gap="$0.5">
+          <SizableText fontSize="$1" color="$color11" hoverStyle={{ color: "$color11" }}>View all</SizableText>
           <ChevronRight size={12} />
-        </SizableText></Link>
+        </XStack></Link>
       </XStack>
       {projects.length === 0 ? (
         <Paragraph fontSize="$1" color="$color11" textAlign="center" paddingVertical="$2" flex={1} alignItems="center" justifyContent="center">
@@ -560,13 +560,13 @@ function RecentProjectsCard({
               key={project.id}
               href={isServerMode ? `/admin/projects?open=${project.id}` : '#'}
               onClick={(e) => handleProjectClick(e, project.id)}
-            ><SizableText alignItems="center" justifyContent="space-between" fontSize="$1" paddingVertical="$1.5" paddingHorizontal="$2" backgroundColor="$background" borderRadius="$2" hoverStyle={{ backgroundColor: "$color3" }}>
-              <SizableText color="$color11" numberOfLines={1} flex={1} marginRight="$2">{project.name}</SizableText>
-              <SizableText color="$color11" flexShrink={0} alignItems="center" gap="$1">
+            ><XStack alignItems="center" justifyContent="space-between" paddingVertical="$1.5" paddingHorizontal="$2" backgroundColor="$background" borderRadius="$2" hoverStyle={{ backgroundColor: "$color3" }}>
+              <SizableText color="$color11" numberOfLines={1} flex={1} marginRight="$2" fontSize="$1">{project.name}</SizableText>
+              <XStack flexShrink={0} alignItems="center" gap="$1">
                 <Clock size={12} />
-                {formatRelativeTime(project.updatedAt)}
-              </SizableText>
-            </SizableText></Link>
+                <SizableText color="$color11" fontSize="$1">{formatRelativeTime(project.updatedAt)}</SizableText>
+              </XStack>
+            </XStack></Link>
           ))}
         </YStack>
       )}
@@ -585,10 +585,10 @@ function RecentDeploymentsCard({ deployments }: { deployments: DashboardData['re
         </XStack>
         <Link
           href="/admin/deployments"
-        ><SizableText fontSize="$1" color="$color11" alignItems="center" gap="$0.5" hoverStyle={{ color: "$color11" }}>
-          View all
+        ><XStack alignItems="center" gap="$0.5">
+          <SizableText fontSize="$1" color="$color11" hoverStyle={{ color: "$color11" }}>View all</SizableText>
           <ChevronRight size={12} />
-        </SizableText></Link>
+        </XStack></Link>
       </XStack>
       {deployments.length === 0 ? (
         <Paragraph fontSize="$1" color="$color11" textAlign="center" paddingVertical="$2" flex={1} alignItems="center" justifyContent="center">
@@ -600,18 +600,18 @@ function RecentDeploymentsCard({ deployments }: { deployments: DashboardData['re
             <Link
               key={deployment.id}
               href={`/admin/deployments?open=${deployment.id}`}
-            ><SizableText alignItems="center" justifyContent="space-between" fontSize="$1" paddingVertical="$1.5" paddingHorizontal="$2" backgroundColor="$background" borderRadius="$2" hoverStyle={{ backgroundColor: "$color3" }}>
+            ><XStack alignItems="center" justifyContent="space-between" paddingVertical="$1.5" paddingHorizontal="$2" backgroundColor="$background" borderRadius="$2" hoverStyle={{ backgroundColor: "$color3" }}>
               <XStack alignItems="center" gap="$2" minWidth={0} flex={1}>
                 <SizableText
                   width="$1.5" height="$1.5" borderRadius="$10" flexShrink={0} {...{ backgroundColor: deployment.enabled ? "$green9" : "$color11" }}
   />
-                <SizableText color="$color11" numberOfLines={1}>{deployment.name}</SizableText>
+                <SizableText color="$color11" numberOfLines={1} fontSize="$1">{deployment.name}</SizableText>
               </XStack>
-              <SizableText color="$color11" flexShrink={0} alignItems="center" gap="$1">
+              <XStack flexShrink={0} alignItems="center" gap="$1">
                 <Clock size={12} />
-                {formatRelativeTime(deployment.updatedAt)}
-              </SizableText>
-            </SizableText></Link>
+                <SizableText color="$color11" fontSize="$1">{formatRelativeTime(deployment.updatedAt)}</SizableText>
+              </XStack>
+            </XStack></Link>
           ))}
         </YStack>
       )}
@@ -636,16 +636,16 @@ function TrafficLists({ data }: { data: DashboardData }) {
         ) : (
           <YStack rowGap="$1.5" flex={1}>
             {data.traffic.topDeployments.slice(0, 5).map((deployment, i) => (
-              <SizableText
+              <XStack
                 key={deployment.deploymentId}
-                alignItems="center" justifyContent="space-between" fontSize="$1" paddingVertical="$1" paddingHorizontal="$2" backgroundColor="$background" borderRadius="$2" display="flex" flexDirection="row"
+                alignItems="center" justifyContent="space-between" paddingVertical="$1" paddingHorizontal="$2" backgroundColor="$background" borderRadius="$2"
               >
                 <XStack alignItems="center" gap="$2" minWidth={0}>
-                  <SizableText color="$color11" width="$4">{i + 1}.</SizableText>
-                  <SizableText color="$color11" numberOfLines={1}>{deployment.deploymentName}</SizableText>
+                  <SizableText color="$color11" width="$4" fontSize="$1">{i + 1}.</SizableText>
+                  <SizableText color="$color11" numberOfLines={1} fontSize="$1">{deployment.deploymentName}</SizableText>
                 </XStack>
-                <SizableText color="$color11" flexShrink={0}>{formatNumber(deployment.count)}</SizableText>
-              </SizableText>
+                <SizableText color="$color11" flexShrink={0} fontSize="$1">{formatNumber(deployment.count)}</SizableText>
+              </XStack>
             ))}
           </YStack>
         )}
@@ -664,9 +664,9 @@ function TrafficLists({ data }: { data: DashboardData }) {
         ) : (
           <YStack rowGap="$1.5" flex={1}>
             {data.traffic.recentErrors.slice(0, 5).map((error, i) => (
-              <SizableText
+              <XStack
                 key={`${error.deploymentId}-${error.path}-${i}`}
-                alignItems="center" justifyContent="space-between" fontSize="$1" paddingVertical="$1" paddingHorizontal="$2" backgroundColor="$background" borderRadius="$2" display="flex" flexDirection="row"
+                alignItems="center" justifyContent="space-between" paddingVertical="$1" paddingHorizontal="$2" backgroundColor="$background" borderRadius="$2"
               >
                 <XStack alignItems="center" gap="$2" minWidth={0}>
                   <SizableText
@@ -674,7 +674,7 @@ function TrafficLists({ data }: { data: DashboardData }) {
                   >
                     {error.statusCode}
                   </SizableText>
-                  <SizableText color="$color11" numberOfLines={1} maxWidth={140}>{error.path}</SizableText>
+                  <SizableText color="$color11" numberOfLines={1} maxWidth={140} fontSize="$1">{error.path}</SizableText>
                 </XStack>
                 <SizableText color="$color11" flexShrink={0} fontSize={10}>
                   {new Date(error.timestamp).toLocaleTimeString([], {
@@ -682,7 +682,7 @@ function TrafficLists({ data }: { data: DashboardData }) {
                     minute: '2-digit',
                   })}
                 </SizableText>
-              </SizableText>
+              </XStack>
             ))}
           </YStack>
         )}
@@ -757,10 +757,10 @@ export function DashboardView({ onNavigate, onProjectSelect, onStartTour }: Dash
   if (loading && !hasData) {
     return (
       <XStack height="100%" alignItems="center" justifyContent="center">
-        <SizableText textAlign="center" display="flex" flexDirection="column">
+        <YStack>
           <YStack borderRadius="$10" height="$6" width="$6" borderBottomWidth={2} borderColor="$orange9" alignSelf="center"></YStack>
-          <Paragraph marginTop="$3" fontSize="$3" color="$color11">Loading dashboard...</Paragraph>
-        </SizableText>
+          <Paragraph marginTop="$3" fontSize="$3" color="$color11" textAlign="center">Loading dashboard...</Paragraph>
+        </YStack>
       </XStack>
     );
   }
@@ -769,13 +769,13 @@ export function DashboardView({ onNavigate, onProjectSelect, onStartTour }: Dash
   if (error && !hasData) {
     return (
       <XStack height="100%" alignItems="center" justifyContent="center">
-        <SizableText textAlign="center" display="flex" flexDirection="column">
+        <YStack alignItems="center">
           <AlertTriangle size={32} color="$red9" />
-          <Paragraph color="$color11" fontSize="$3">{error}</Paragraph>
+          <Paragraph color="$color11" fontSize="$3" textAlign="center">{error}</Paragraph>
           <Button variant="outline" size="sm" onClick={fetchData} marginTop="$4">
             Retry
           </Button>
-        </SizableText>
+        </YStack>
       </XStack>
     );
   }

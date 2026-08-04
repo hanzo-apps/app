@@ -220,21 +220,21 @@ export function CommandPalette({
           </XStack>
 
           {/* Footer hints */}
-          <SizableText alignItems="center" gap="$4" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$2" fontSize={11} color="$color11" display="flex" flexDirection="row">
-            <SizableText alignItems="center" gap="$1.5">
-              Open published project
+          <XStack alignItems="center" gap="$4" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$2">
+            <XStack alignItems="center" gap="$1.5">
+              <SizableText fontSize={11} color="$color11">Open published project</SizableText>
               <kbd>
                 <CommandIcon size={12} />
                 <CornerDownLeft size={12} />
               </kbd>
-            </SizableText>
-            <SizableText alignItems="center" gap="$1.5">
-              Open project
+            </XStack>
+            <XStack alignItems="center" gap="$1.5">
+              <SizableText fontSize={11} color="$color11">Open project</SizableText>
               <kbd>
                 <CornerDownLeft size={12} />
               </kbd>
-            </SizableText>
-          </SizableText>
+            </XStack>
+          </XStack>
         </Command>
       </DialogContent>
     </Dialog>
@@ -244,22 +244,22 @@ export function CommandPalette({
 function StatusDot({ status, alignEnd = false }: { status: string; alignEnd?: boolean }) {
   const st = statusOf(status);
   return (
-    <SizableText
-      alignItems="center" gap="$1" fontSize={10} textTransform="uppercase" letterSpacing={0.4} color={st.text}
+    <XStack
+      alignItems="center" gap="$1"
       {...(alignEnd ? { marginLeft: "auto" } : null)}
     >
-      <Circle size={6} />
-      {st.label}
-    </SizableText>
+      <Circle size={6} color={st.text} />
+      <SizableText fontSize={10} textTransform="uppercase" letterSpacing={0.4} color={st.text}>{st.label}</SizableText>
+    </XStack>
   );
 }
 
 function PreviewPanel({ project, authorName }: { project: PaletteProject | null; authorName: string }) {
   if (!project) {
     return (
-      <SizableText height="100%" alignItems="center" justifyContent="center" padding="$5" textAlign="center" fontSize="$3" color="$color11" display="flex" flexDirection="row">
-        Highlight a project to preview it.
-      </SizableText>
+      <XStack height="100%" alignItems="center" justifyContent="center" padding="$5">
+        <SizableText textAlign="center" fontSize="$3" color="$color11">Highlight a project to preview it.</SizableText>
+      </XStack>
     );
   }
   const opened = lastOpenedAt(project.slug || project.id);
@@ -283,10 +283,10 @@ function PreviewPanel({ project, authorName }: { project: PaletteProject | null;
       <H3 numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{project.name}</H3>
       <YStack marginTop="$3" rowGap="$1.5">
         {rows.map(([k, v]) => (
-          <SizableText key={k} alignItems="center" justifyContent="space-between" gap="$2" fontSize="$1" display="flex" flexDirection="row">
-            <SizableText color="$color11">{k}</SizableText>
-            <SizableText numberOfLines={1} color="$color">{v}</SizableText>
-          </SizableText>
+          <XStack key={k} alignItems="center" justifyContent="space-between" gap="$2">
+            <SizableText fontSize="$1" color="$color11">{k}</SizableText>
+            <SizableText fontSize="$1" numberOfLines={1} color="$color">{v}</SizableText>
+          </XStack>
         ))}
       </YStack>
       <Anchor

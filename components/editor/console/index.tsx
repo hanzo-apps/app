@@ -29,7 +29,7 @@ import { usePreviewConsole } from "./capture";
  */
 function Sep() {
   return (
-    <SizableText aria-hidden color="$color11">
+    <SizableText aria-hidden fontSize={11} color="$color11">
       ·
     </SizableText>
   );
@@ -171,42 +171,42 @@ export function Console({
         {/* State, inert: it rides on the bar but never eats the drag. Padded to
             clear the panel toggle on the left and the mic + Enso on the right —
             measured clearances, so they stay the measurements they are. */}
-        <SizableText pointerEvents="none" position="relative" height="100%" alignItems="center" gap="$2.5" paddingLeft="2.25rem" paddingRight="4.25rem" fontSize={11} color="$color11" display="flex" flexDirection="row">
-          <SizableText alignItems="center" gap="$1.5">
-            <SizableText position="relative" width="$1.5" height="$1.5" alignItems="center" justifyContent="center">
+        <XStack pointerEvents="none" position="relative" height="100%" alignItems="center" gap="$2.5" paddingLeft="2.25rem" paddingRight="4.25rem">
+          <XStack alignItems="center" gap="$1.5">
+            <XStack position="relative" width="$1.5" height="$1.5" alignItems="center" justifyContent="center">
               <SizableText position="absolute" width="$1.5" height="$1.5" borderRadius="$10" backgroundColor="var(--brand-accent)" opacity={0.6} />
               <SizableText position="relative" width="$1.5" height="$1.5" borderRadius="$10" backgroundColor="var(--brand-accent)" />
-            </SizableText>
-            Live
-          </SizableText>
+            </XStack>
+            <SizableText fontSize={11} color="$color11">Live</SizableText>
+          </XStack>
           <Sep />
           {/* The real save state. This said "Auto-saved" unconditionally, checked
               against nothing, while the project lived only in the browser. */}
-          <span>{isAiWorking ? "Building…" : saveText}</span>
+          <SizableText fontSize={11} color="$color11">{isAiWorking ? "Building…" : saveText}</SizableText>
           {branch && (
             <>
               <Sep />
-              <SizableText alignItems="center" gap="$1">
+              <XStack alignItems="center" gap="$1">
                 <GitBranch size={12} />
-                {branch}
-              </SizableText>
+                <SizableText fontSize={11} color="$color11">{branch}</SizableText>
+              </XStack>
             </>
           )}
           <Sep />
-          <span>
+          <SizableText fontSize={11} color="$color11">
             {pageCount} file{pageCount === 1 ? "" : "s"}
-          </span>
-          <SizableText marginLeft="auto" alignItems="center" gap="$1">
+          </SizableText>
+          <XStack marginLeft="auto" alignItems="center" gap="$1">
             {isAiWorking ? (
-              <SizableText className="thread-shimmer-text">Working</SizableText>
+              <SizableText className="thread-shimmer-text" fontSize={11} color="$color11">Working</SizableText>
             ) : (
               <>
                 <Check size={12} />
-                Ready
+                <SizableText fontSize={11} color="$color11">Ready</SizableText>
               </>
             )}
-          </SizableText>
-        </SizableText>
+          </XStack>
+        </XStack>
 
         {/* Far right — the workspace AI controls, floated over the bar so the
             separator underneath stays one clean, uninterrupted drag target.
@@ -233,9 +233,9 @@ export function Console({
       </YStack>
 
       {open && (
-        <SizableText minHeight={0} flex={1} borderTopWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" fontFamily="$mono" fontSize={11} lineHeight={1.625} overflow="scroll" display="flex" flexDirection="column">
+        <YStack minHeight={0} flex={1} borderTopWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" overflow="scroll">
           {entries.length === 0 ? (
-            <Paragraph color="$color11">
+            <Paragraph fontFamily="$mono" fontSize={11} lineHeight={1.625} color="$color11">
               Nothing logged yet — output and errors from the preview appear here.
             </Paragraph>
           ) : (
@@ -243,6 +243,7 @@ export function Console({
               <Paragraph
                 key={entry.id}
                 className="break-words"
+                fontFamily="$mono" fontSize={11} lineHeight={1.625}
                 whiteSpace="pre-wrap" {...{ color: entry.level === "error" ? "var(--destructive)" : entry.level === "warn"
                       ? "$color"
                       : "$color11" }}
@@ -252,7 +253,7 @@ export function Console({
             ))
           )}
           <div ref={tail} />
-        </SizableText>
+        </YStack>
       )}
     </YStack>
   );

@@ -96,20 +96,20 @@ export function SessionViewer({ deploymentId }: SessionViewerProps) {
       {data && data.summary && (
         <YStack gap="$4">
           <YStack borderWidth={1} borderRadius="$5" padding="$4">
-            <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">Total Sessions</SizableText>
-            <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{(data.summary.totalSessions || 0).toLocaleString()}</SizableText>
+            <YStack><SizableText fontSize="$3" color="$color11">Total Sessions</SizableText></YStack>
+            <YStack><SizableText fontSize="$8" fontWeight="500">{(data.summary.totalSessions || 0).toLocaleString()}</SizableText></YStack>
           </YStack>
           <YStack borderWidth={1} borderRadius="$5" padding="$4">
-            <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">Bounce Rate</SizableText>
-            <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{((data.summary.bounceRate || 0) * 100).toFixed(1)}%</SizableText>
+            <YStack><SizableText fontSize="$3" color="$color11">Bounce Rate</SizableText></YStack>
+            <YStack><SizableText fontSize="$8" fontWeight="500">{((data.summary.bounceRate || 0) * 100).toFixed(1)}%</SizableText></YStack>
           </YStack>
           <YStack borderWidth={1} borderRadius="$5" padding="$4">
-            <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">Avg. Duration</SizableText>
-            <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{formatDuration(data.summary.averageDuration || 0)}</SizableText>
+            <YStack><SizableText fontSize="$3" color="$color11">Avg. Duration</SizableText></YStack>
+            <YStack><SizableText fontSize="$8" fontWeight="500">{formatDuration(data.summary.averageDuration || 0)}</SizableText></YStack>
           </YStack>
           <YStack borderWidth={1} borderRadius="$5" padding="$4">
-            <SizableText fontSize="$3" color="$color11" display="flex" flexDirection="column">Avg. Pages/Session</SizableText>
-            <SizableText fontSize="$8" fontWeight="500" display="flex" flexDirection="column">{(data.summary.averagePageCount || 0).toFixed(1)}</SizableText>
+            <YStack><SizableText fontSize="$3" color="$color11">Avg. Pages/Session</SizableText></YStack>
+            <YStack><SizableText fontSize="$8" fontWeight="500">{(data.summary.averagePageCount || 0).toFixed(1)}</SizableText></YStack>
           </YStack>
         </YStack>
       )}
@@ -133,18 +133,22 @@ export function SessionViewer({ deploymentId }: SessionViewerProps) {
 
                   {/* Incoming links */}
                   {incomingLinks.length > 0 && (
-                    <SizableText fontSize="$1" color="$color11" marginBottom="$1" display="flex" flexDirection="column">
-                      ← From: {incomingLinks.slice(0, 3).map((l) => l.source).join(', ')}
-                      {incomingLinks.length > 3 && ` (+${incomingLinks.length - 3} more)`}
-                    </SizableText>
+                    <YStack marginBottom="$1">
+                      <SizableText fontSize="$1" color="$color11">
+                        ← From: {incomingLinks.slice(0, 3).map((l) => l.source).join(', ')}
+                        {incomingLinks.length > 3 && ` (+${incomingLinks.length - 3} more)`}
+                      </SizableText>
+                    </YStack>
                   )}
 
                   {/* Outgoing links */}
                   {outgoingLinks.length > 0 && (
-                    <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
-                      → To: {outgoingLinks.slice(0, 3).map((l) => l.target).join(', ')}
-                      {outgoingLinks.length > 3 && ` (+${outgoingLinks.length - 3} more)`}
-                    </SizableText>
+                    <YStack>
+                      <SizableText fontSize="$1" color="$color11">
+                        → To: {outgoingLinks.slice(0, 3).map((l) => l.target).join(', ')}
+                        {outgoingLinks.length > 3 && ` (+${outgoingLinks.length - 3} more)`}
+                      </SizableText>
+                    </YStack>
                   )}
                 </YStack>
               );
@@ -168,25 +172,31 @@ export function SessionViewer({ deploymentId }: SessionViewerProps) {
               >
                 <XStack justifyContent="space-between" alignItems="flex-start" marginBottom="$2">
                   <YStack flex={1}>
-                    <SizableText fontWeight="500" fontSize="$3" display="flex" flexDirection="column">
-                      {session.entryPage} → {session.exitPage}
-                    </SizableText>
-                    <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
-                      {new Date(session.createdAt).toLocaleString()}
-                    </SizableText>
+                    <YStack>
+                      <SizableText fontWeight="500" fontSize="$3">
+                        {session.entryPage} → {session.exitPage}
+                      </SizableText>
+                    </YStack>
+                    <YStack>
+                      <SizableText fontSize="$1" color="$color11">
+                        {new Date(session.createdAt).toLocaleString()}
+                      </SizableText>
+                    </YStack>
                   </YStack>
-                  <SizableText textAlign="right" display="flex" flexDirection="column">
-                    <SizableText fontSize="$3" display="flex" flexDirection="column">{session.pageCount} pages</SizableText>
-                    <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
-                      {formatDuration(session.totalDuration)}
-                    </SizableText>
-                  </SizableText>
+                  <YStack>
+                    <YStack><SizableText fontSize="$3" textAlign="right">{session.pageCount} pages</SizableText></YStack>
+                    <YStack>
+                      <SizableText fontSize="$1" color="$color11" textAlign="right">
+                        {formatDuration(session.totalDuration)}
+                      </SizableText>
+                    </YStack>
+                  </YStack>
                 </XStack>
 
                 {session.isBounce && (
-                  <SizableText alignItems="center" paddingHorizontal="$2" paddingVertical="$0.5" borderRadius="$2" fontSize="$1" backgroundColor="$red2" color="$red11" display="flex" flexDirection="row">
-                    Bounce
-                  </SizableText>
+                  <XStack alignItems="center" paddingHorizontal="$2" paddingVertical="$0.5" borderRadius="$2" backgroundColor="$red2">
+                    <SizableText fontSize="$1" color="$red11">Bounce</SizableText>
+                  </XStack>
                 )}
               </YStack>
             ))}
@@ -213,7 +223,7 @@ export function SessionViewer({ deploymentId }: SessionViewerProps) {
 
             <YStack rowGap="$4">
               {/* Session metadata */}
-              <SizableText gap="$4" fontSize="$3" display="flex" flexDirection="column">
+              <YStack gap="$4">
                 <div>
                   <SizableText color="$color11">Started:</SizableText>{' '}
                   {new Date(selectedSession.createdAt).toLocaleString()}
@@ -230,7 +240,7 @@ export function SessionViewer({ deploymentId }: SessionViewerProps) {
                   <SizableText color="$color11">Pages Visited:</SizableText>{' '}
                   {selectedSession.pageCount}
                 </div>
-              </SizableText>
+              </YStack>
 
               {/* Journey timeline */}
               <YStack borderTopWidth={1} paddingTop="$4">
@@ -239,19 +249,21 @@ export function SessionViewer({ deploymentId }: SessionViewerProps) {
                   {selectedSession.pages.map((page, index) => (
                     <XStack key={index} alignItems="flex-start" gap="$3">
                       <YStack alignItems="center">
-                        <SizableText width="$6" height="$6" borderRadius="$10" backgroundColor="$color12" color="$background" alignItems="center" justifyContent="center" fontSize="$1" fontWeight="500" display="flex" flexDirection="row">
-                          {index + 1}
-                        </SizableText>
+                        <XStack width="$6" height="$6" borderRadius="$10" backgroundColor="$color12" alignItems="center" justifyContent="center">
+                          <SizableText color="$background" fontSize="$1" fontWeight="500">{index + 1}</SizableText>
+                        </XStack>
                         {index < selectedSession.pages.length - 1 && (
                           <YStack width="$0.5" height="$6" backgroundColor="$borderColor" />
                         )}
                       </YStack>
                       <YStack flex={1}>
-                        <SizableText fontWeight="500" display="flex" flexDirection="column">{page.path}</SizableText>
-                        <SizableText fontSize="$1" color="$color11" display="flex" flexDirection="column">
-                          {new Date(page.timestamp).toLocaleTimeString()}
-                          {page.duration && ` • ${formatDuration(page.duration)}`}
-                        </SizableText>
+                        <YStack><SizableText fontWeight="500">{page.path}</SizableText></YStack>
+                        <YStack>
+                          <SizableText fontSize="$1" color="$color11">
+                            {new Date(page.timestamp).toLocaleTimeString()}
+                            {page.duration && ` • ${formatDuration(page.duration)}`}
+                          </SizableText>
+                        </YStack>
                       </YStack>
                     </XStack>
                   ))}

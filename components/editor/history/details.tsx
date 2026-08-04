@@ -160,7 +160,7 @@ export function RevisionDetails({
   };
 
   return (
-    <SizableText position="absolute" top={0} right={0} bottom={0} left={0} zIndex={30} flexDirection="column" backgroundColor="$background" color="$color" display="flex">
+    <YStack position="absolute" top={0} right={0} bottom={0} left={0} zIndex={30} backgroundColor="$background">
       {/* Header: back · title · Timeline|Changes · close */}
       <XStack alignItems="center" gap="$2" borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$2">
         <Button
@@ -203,7 +203,7 @@ export function RevisionDetails({
           <Changes rev={rev} files={files} onMention={mention} />
         )}
       </YStack>
-    </SizableText>
+    </YStack>
   );
 }
 
@@ -219,10 +219,10 @@ function Changes({
 }) {
   if (files === "loading") {
     return (
-      <SizableText alignItems="center" gap="$2" paddingHorizontal="$4" paddingVertical="$6" fontSize="$3" color="$color11" display="flex" flexDirection="row">
+      <XStack alignItems="center" gap="$2" paddingHorizontal="$4" paddingVertical="$6">
         <Loader2 size={16} />
-        Loading changes…
-      </SizableText>
+        <SizableText fontSize="$3" color="$color11">Loading changes…</SizableText>
+      </XStack>
     );
   }
   if (files === "error") {
@@ -301,28 +301,30 @@ function FileCard({
 function DiffView({ lines }: { lines: DiffLine[] }) {
   if (lines.length === 0) {
     return (
-      <SizableText borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$2" fontFamily="$mono" fontSize={11} color="$color11" display="flex" flexDirection="column">
-        No inline diff available — view the file to see its contents.
-      </SizableText>
+      <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$2">
+        <SizableText fontFamily="$mono" fontSize={11} color="$color11">
+          No inline diff available — view the file to see its contents.
+        </SizableText>
+      </YStack>
     );
   }
   return (
     <YStack borderTopWidth={1} borderColor="$borderColor" backgroundColor="$background" overflow="scroll">
-      <SizableText width="100%" fontFamily="$mono" fontSize={11} lineHeight={1.625} display="flex" flexDirection="column">
+      <YStack width="100%">
         <tbody>
           {lines.map((l, i) => (
             <YStack
               key={i}
               {...{ backgroundColor: l.type === "hunk" ? "white" : l.type === "del" ? "$red9" : l.type === "add" ? "$green9" : undefined }}
             >
-              <SizableText userSelect="none" borderRightWidth={1} borderColor="$borderColor" paddingHorizontal="$2" textAlign="right" color="$color11">
+              <SizableText userSelect="none" borderRightWidth={1} borderColor="$borderColor" paddingHorizontal="$2" textAlign="right" fontFamily="$mono" fontSize={11} color="$color11">
                 {l.oldNo ?? ""}
               </SizableText>
-              <SizableText userSelect="none" borderRightWidth={1} borderColor="$borderColor" paddingHorizontal="$2" textAlign="right" color="$color11">
+              <SizableText userSelect="none" borderRightWidth={1} borderColor="$borderColor" paddingHorizontal="$2" textAlign="right" fontFamily="$mono" fontSize={11} color="$color11">
                 {l.newNo ?? ""}
               </SizableText>
               <SizableText
-                width="100%" whiteSpace="pre" paddingHorizontal="$2" {...{ color: l.type === "ctx" ? "$color11" : l.type === "hunk" ? "$color11" : l.type === "del" ? "$red3" : l.type === "add" ? "$green3" : undefined }}
+                width="100%" whiteSpace="pre" paddingHorizontal="$2" fontFamily="$mono" fontSize={11} lineHeight={1.625} {...{ color: l.type === "ctx" ? "$color11" : l.type === "hunk" ? "$color11" : l.type === "del" ? "$red3" : l.type === "add" ? "$green3" : undefined }}
               >
                 <SizableText userSelect="none" color="$color11">
                   {l.type === "add" ? "+" : l.type === "del" ? "−" : l.type === "hunk" ? "" : " "}
@@ -332,7 +334,7 @@ function DiffView({ lines }: { lines: DiffLine[] }) {
             </YStack>
           ))}
         </tbody>
-      </SizableText>
+      </YStack>
     </YStack>
   );
 }
@@ -368,24 +370,24 @@ function Timeline({ rev, commit }: { rev: DetailsRev; commit: GitCommit | null }
 
   return (
     <YStack rowGap="$4" padding="$4">
-      <SizableText alignItems="center" gap="$2" fontSize={13} fontWeight="500" color="$color" display="flex" flexDirection="row">
+      <XStack alignItems="center" gap="$2">
         <GitCommitHorizontal size={16} color="$color11" />
-        {rev.title}
-      </SizableText>
+        <SizableText fontSize={13} fontWeight="500" color="$color">{rev.title}</SizableText>
+      </XStack>
       <YStack rowGap="$1.5">
         {rows.map((r) => (
-          <SizableText key={r.label} gap="$3" fontSize="$1" display="flex" flexDirection="row">
-            <SizableText width="$10" flexShrink={0} color="$color11">{r.label}</SizableText>
-            <SizableText minWidth={0} flex={1} color="$color">{r.value}</SizableText>
-          </SizableText>
+          <XStack key={r.label} gap="$3">
+            <SizableText width="$10" flexShrink={0} fontSize="$1" color="$color11">{r.label}</SizableText>
+            <SizableText minWidth={0} flex={1} fontSize="$1" color="$color">{r.value}</SizableText>
+          </XStack>
         ))}
       </YStack>
       {fullMessage && (
         <div>
-          <SizableText marginBottom="$1" alignItems="center" gap="$1.5" fontSize={11} textTransform="uppercase" letterSpacing={0.4} color="$color11" display="flex" flexDirection="row">
+          <XStack marginBottom="$1" alignItems="center" gap="$1.5">
             <FileText size={12} />
-            Message
-          </SizableText>
+            <SizableText fontSize={11} textTransform="uppercase" letterSpacing={0.4} color="$color11">Message</SizableText>
+          </XStack>
           <SizableText whiteSpace="pre" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="white" padding="$3" fontFamily="$mono" fontSize={11} lineHeight={1.625} color="$color">
             {fullMessage}
           </SizableText>

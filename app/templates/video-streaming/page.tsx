@@ -158,10 +158,10 @@ export default function VideoStreaming() {
                     {/* Progress Bar */}
                     <YStack marginBottom="$4">
                       <Progress value={progress} height="$1" backgroundColor="white" />
-                      <SizableText alignItems="center" justifyContent="space-between" marginTop="$1" fontSize="$1" color="white" display="flex" flexDirection="row">
-                        <span>5:32</span>
-                        <span>15:42</span>
-                      </SizableText>
+                      <XStack alignItems="center" justifyContent="space-between" marginTop="$1">
+                        <SizableText fontSize="$1" color="white">5:32</SizableText>
+                        <SizableText fontSize="$1" color="white">15:42</SizableText>
+                      </XStack>
                     </YStack>
 
                     {/* Controls */}
@@ -199,13 +199,15 @@ export default function VideoStreaming() {
               <CardHeader>
                 <CardTitle>{currentVideo.title}</CardTitle>
                 <XStack alignItems="center" justifyContent="space-between">
-                  <SizableText alignItems="center" gap="$4" fontSize="$3" color="$color11" display="flex" flexDirection="row">
-                    <SizableText alignItems="center" gap="$1">
+                  <XStack alignItems="center" gap="$4">
+                    <XStack alignItems="center" gap="$1">
                       <Eye size={16} />
-                      {currentVideo.views.toLocaleString()} views
-                    </SizableText>
-                    <span>{currentVideo.publishedAt}</span>
-                  </SizableText>
+                      <SizableText fontSize="$3" color="$color11">
+                        {currentVideo.views.toLocaleString()} views
+                      </SizableText>
+                    </XStack>
+                    <SizableText fontSize="$3" color="$color11">{currentVideo.publishedAt}</SizableText>
+                  </XStack>
                   <XStack alignItems="center" gap="$2">
                     <Button variant="ghost" gap="$2">
                       <ThumbsUp size={16} />
@@ -257,9 +259,11 @@ export default function VideoStreaming() {
                     <TabsTrigger value="chapters">Chapters</TabsTrigger>
                   </TabsList>
                   <TabsContent value="description" marginTop="$4">
-                    <SizableText whiteSpace="pre-wrap" fontSize="$3" display="flex" flexDirection="column">
-                      {currentVideo.description}
-                    </SizableText>
+                    <YStack>
+                      <SizableText whiteSpace="pre-wrap" fontSize="$3">
+                        {currentVideo.description}
+                      </SizableText>
+                    </YStack>
                   </TabsContent>
                 </Tabs>
               </CardContent>
@@ -351,9 +355,9 @@ export default function VideoStreaming() {
                               objectFit="cover" width="100%" height="100%" borderRadius="$2"
   />
                           </AspectRatio>
-                          <SizableText position="absolute" bottom="$1" right="$1" backgroundColor="black" color="white" fontSize="$1" paddingHorizontal="$1" borderRadius="$2" display="flex" flexDirection="column">
-                            {video.duration}
-                          </SizableText>
+                          <YStack position="absolute" bottom="$1" right="$1" backgroundColor="black" paddingHorizontal="$1" borderRadius="$2">
+                            <SizableText color="white" fontSize="$1">{video.duration}</SizableText>
+                          </YStack>
                         </YStack>
                         <YStack flex={1}>
                           <H4 fontWeight="500" fontSize="$3" numberOfLines={2} $group-hover={{ color: "$color12" }}>
@@ -362,11 +366,11 @@ export default function VideoStreaming() {
                           <Paragraph fontSize="$1" color="$color11" marginTop="$1">
                             {video.channel}
                           </Paragraph>
-                          <SizableText alignItems="center" gap="$2" fontSize="$1" color="$color11" marginTop="$1" display="flex" flexDirection="row">
-                            <span>{video.views} views</span>
-                            <span>•</span>
-                            <span>{video.publishedAt}</span>
-                          </SizableText>
+                          <XStack alignItems="center" gap="$2" marginTop="$1">
+                            <SizableText fontSize="$1" color="$color11">{video.views} views</SizableText>
+                            <SizableText fontSize="$1" color="$color11">•</SizableText>
+                            <SizableText fontSize="$1" color="$color11">{video.publishedAt}</SizableText>
+                          </XStack>
                         </YStack>
                       </XStack>
                     ))}

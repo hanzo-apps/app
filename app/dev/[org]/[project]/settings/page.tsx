@@ -110,7 +110,7 @@ export default function ProjectSettingsPage() {
   if (!project) {
     return (
       <AppShell currentView="all-projects">
-        <SizableText flex={1} alignItems="center" justifyContent="center" backgroundColor="$background" paddingHorizontal="$5" textAlign="center" display="flex" flexDirection="row">
+        <XStack flex={1} alignItems="center" justifyContent="center" backgroundColor="$background" paddingHorizontal="$5">
           <YStack maxWidth={384}>
             <H1 fontSize="$6" fontWeight="500" color="$color">Project not found</H1>
             <Paragraph marginTop="$2" fontSize="$3" color="$color11">
@@ -120,7 +120,7 @@ export default function ProjectSettingsPage() {
               Back to projects
             </SizableText></Link>
           </YStack>
-        </SizableText>
+        </XStack>
       </AppShell>
     );
   }
@@ -138,25 +138,27 @@ export default function ProjectSettingsPage() {
             <YStack minWidth={0}>
               <Link
                 href="/projects"
-              ><SizableText marginBottom="$2" alignItems="center" gap="$1.5" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}>
-                <ArrowLeft size={14} /> Projects
-              </SizableText></Link>
+              ><XStack marginBottom="$2" alignItems="center" gap="$1.5">
+                <ArrowLeft size={14} />
+                <SizableText fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}>Projects</SizableText>
+              </XStack></Link>
               <XStack alignItems="center" gap="$3">
                 <H1 numberOfLines={1} fontSize="$8" fontWeight="500" letterSpacing={-0.4} color="$color">
                   {project.name}
                 </H1>
-                <SizableText alignItems="center" gap="$1" fontSize={11} textTransform="uppercase" letterSpacing={0.4} color={st.text}>
-                  <Circle size={6} />
-                  {st.label}
-                </SizableText>
+                <XStack alignItems="center" gap="$1">
+                  <Circle size={6} color={st.text} />
+                  <SizableText fontSize={11} textTransform="uppercase" letterSpacing={0.4} color={st.text}>{st.label}</SizableText>
+                </XStack>
               </XStack>
               <Paragraph marginTop="$1" fontFamily="$mono" fontSize="$1" color="$color11">{org}/{slug}</Paragraph>
             </YStack>
             <Link
               href={builderLink(slug, org)}
-            ><SizableText alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$2" fontSize="$3" color="$color" hoverStyle={{ borderColor: "$color", color: "$color" }}>
-              <Pencil size={14} /> Open in builder
-            </SizableText></Link>
+            ><XStack alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$2" hoverStyle={{ borderColor: "$color" }}>
+              <Pencil size={14} />
+              <SizableText fontSize="$3" color="$color">Open in builder</SizableText>
+            </XStack></Link>
           </XStack>
 
           <YStack rowGap="$4.5">
@@ -254,9 +256,10 @@ export default function ProjectSettingsPage() {
               </Paragraph>
               <Link
                 href="/connectors"
-              ><SizableText marginTop="$3" alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$2" fontSize="$3" color="$color" hoverStyle={{ borderColor: "$color", color: "$color" }}>
-                <Plug size={14} /> Manage connectors
-              </SizableText></Link>
+              ><XStack marginTop="$3" alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$2" hoverStyle={{ borderColor: "$color" }}>
+                <Plug size={14} />
+                <SizableText fontSize="$3" color="$color">Manage connectors</SizableText>
+              </XStack></Link>
             </Section>
 
             {/* Base backend */}
@@ -266,9 +269,10 @@ export default function ProjectSettingsPage() {
               </Paragraph>
               <Link
                 href={builderLink(slug, org)}
-              ><SizableText marginTop="$3" alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$2" fontSize="$3" color="$color" hoverStyle={{ borderColor: "$color", color: "$color" }}>
-                <Database size={14} /> Open data & schema in builder
-              </SizableText></Link>
+              ><XStack marginTop="$3" alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$2" hoverStyle={{ borderColor: "$color" }}>
+                <Database size={14} />
+                <SizableText fontSize="$3" color="$color">Open data & schema in builder</SizableText>
+              </XStack></Link>
             </Section>
 
             {/* Danger */}
@@ -282,9 +286,10 @@ export default function ProjectSettingsPage() {
                   onClick={remove}
                   backgroundColor="transparent" borderRadius="$10" borderWidth={1} borderColor="$red9" paddingHorizontal="$4" paddingVertical="$2" hoverStyle={{ borderColor: "$red9", backgroundColor: "$red9" }}
                 >
-                  <SizableText display="flex" flexDirection="row" alignItems="center" gap="$1.5" color="$red8">
-                    <Trash2 size={14} /> Delete project
-                  </SizableText>
+                  <XStack alignItems="center" gap="$1.5">
+                    <Trash2 size={14} />
+                    <SizableText color="$red8">Delete project</SizableText>
+                  </XStack>
                 </Button>
               </XStack>
             </Section>
@@ -359,9 +364,10 @@ function DeploymentStatus({ slug }: { slug: string }) {
 
   if (state.kind === "loading") {
     return (
-      <SizableText marginTop="$3" alignItems="center" gap="$2" fontSize="$1" color="$color11" display="flex" flexDirection="row">
-        <Loader2 size={14} /> Loading deploy history…
-      </SizableText>
+      <XStack marginTop="$3" alignItems="center" gap="$2">
+        <Loader2 size={14} />
+        <SizableText fontSize="$1" color="$color11">Loading deploy history…</SizableText>
+      </XStack>
     );
   }
 
@@ -384,10 +390,10 @@ function DeploymentStatus({ slug }: { slug: string }) {
   return (
     <XStack marginTop="$3" flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$3" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2.5">
       <XStack flexWrap="wrap" alignItems="center" columnGap="$3" rowGap="$1">
-        <SizableText alignItems="center" gap="$1.5" fontSize="$1" color={c.text}>
-          <Circle size={8} />
-          {c.label}
-        </SizableText>
+        <XStack alignItems="center" gap="$1.5">
+          <Circle size={8} color={c.text} />
+          <SizableText fontSize="$1" color={c.text}>{c.label}</SizableText>
+        </XStack>
         {d.version > 0 && <SizableText fontFamily="$mono" fontSize={11} color="$color11">v{d.version}</SizableText>}
         {when && <SizableText fontSize={11} color="$color11">{when}</SizableText>}
       </XStack>

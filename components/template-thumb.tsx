@@ -158,9 +158,11 @@ export function TemplateThumb({
   />
       </XStack>
       {showLabel && category ? (
-        <SizableText position="absolute" bottom="$2.5" left="$3" fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={2.24} color="$color11" display="flex" flexDirection="column">
-          {category}
-        </SizableText>
+        <YStack position="absolute" bottom="$2.5" left="$3">
+          <SizableText fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={2.24} color="$color11">
+            {category}
+          </SizableText>
+        </YStack>
       ) : null}
       {/* crisp inner hairline */}
       <YStack pointerEvents="none" position="absolute" top={0} right={0} bottom={0} left={0} />

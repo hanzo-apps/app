@@ -341,12 +341,12 @@ export function GitSyncButton({
         </YStack>
 
         {needsConnect ? (
-          <SizableText flexDirection="column" alignItems="center" paddingHorizontal="$5" paddingVertical="$6" textAlign="center" display="flex">
+          <YStack alignItems="center" paddingHorizontal="$5" paddingVertical="$6">
             <XStack marginBottom="$4" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color">
               <ProviderIcon size={24} color="var(--foreground)" />
             </XStack>
-            <Paragraph fontSize="$3" fontWeight="500">Connect {providerName}</Paragraph>
-            <Paragraph alignSelf="center" marginTop="$1.5" maxWidth={320} fontSize="$3" color="$color11">
+            <Paragraph fontSize="$3" fontWeight="500" textAlign="center">Connect {providerName}</Paragraph>
+            <Paragraph alignSelf="center" marginTop="$1.5" maxWidth={320} fontSize="$3" color="$color11" textAlign="center">
               Link {providerName} to your Hanzo account, then push your project.
             </Paragraph>
             <Button
@@ -365,17 +365,17 @@ export function GitSyncButton({
             >
               <SizableText fontSize="$1">I&apos;ve connected — try again</SizableText>
             </Button>
-          </SizableText>
+          </YStack>
         ) : result?.ok ? (
-          <SizableText paddingHorizontal="$5" paddingVertical={28} textAlign="center" display="flex" flexDirection="column">
+          <YStack paddingHorizontal="$5" paddingVertical={28}>
             <XStack alignSelf="center" marginBottom="$4" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$green8" backgroundColor="$green8">
               <Check size={24} color="$green8" />
             </XStack>
-            <Paragraph fontSize="$3" fontWeight="500">
+            <Paragraph fontSize="$3" fontWeight="500" textAlign="center">
               {result.created ? "Repository created" : "Commit pushed"}
             </Paragraph>
 
-            <SizableText marginTop="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" padding="$3" textAlign="left" display="flex" flexDirection="column">
+            <YStack marginTop="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" padding="$3">
               <XStack alignItems="center" gap="$2">
                 {(() => {
                   const I = providerMeta(result.provider || provider).Icon;
@@ -412,13 +412,15 @@ export function GitSyncButton({
                 </Anchor>
               </XStack>
               {(result.branch || result.commitSha) && (
-                <SizableText marginTop="$2" alignItems="center" gap="$1.5" fontFamily="$mono" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+                <XStack marginTop="$2" alignItems="center" gap="$1.5">
                   <GitBranch size={12} />
-                  {result.branch}
-                  {result.commitSha ? ` · ${result.commitSha.slice(0, 7)}` : ""}
-                </SizableText>
+                  <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
+                    {result.branch}
+                    {result.commitSha ? ` · ${result.commitSha.slice(0, 7)}` : ""}
+                  </SizableText>
+                </XStack>
               )}
-            </SizableText>
+            </YStack>
 
             <XStack marginTop="$4" alignItems="center" justifyContent="center" gap="$2">
               <Button
@@ -447,14 +449,16 @@ export function GitSyncButton({
                 <SizableText fontSize="$1">Push elsewhere</SizableText>
               </Button>
             </XStack>
-          </SizableText>
+          </YStack>
         ) : linked && !showForm ? (
           <YStack padding="$4.5">
             <YStack borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" padding="$3.5">
-              <SizableText marginBottom="$1.5" alignItems="center" gap="$1.5" fontSize={11} textTransform="uppercase" letterSpacing={0.4} color="$color11" display="flex" flexDirection="row">
+              <XStack marginBottom="$1.5" alignItems="center" gap="$1.5">
                 <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$green8" />
-                Linked repository
-              </SizableText>
+                <SizableText fontSize={11} textTransform="uppercase" letterSpacing={0.4} color="$color11">
+                  Linked repository
+                </SizableText>
+              </XStack>
               <XStack alignItems="center" gap="$2">
                 {(() => {
                   const I = providerMeta(linked.provider).Icon;
@@ -490,10 +494,12 @@ export function GitSyncButton({
                   <ExternalLink size={14} />
                 </Anchor>
               </XStack>
-              <SizableText marginTop="$1.5" alignItems="center" gap="$1.5" fontFamily="$mono" fontSize="$1" color="$color11" display="flex" flexDirection="row">
+              <XStack marginTop="$1.5" alignItems="center" gap="$1.5">
                 <GitBranch size={12} />
-                {linked.branch}
-              </SizableText>
+                <SizableText fontFamily="$mono" fontSize="$1" color="$color11">
+                  {linked.branch}
+                </SizableText>
+              </XStack>
             </YStack>
 
             <YStack marginTop="$3">
@@ -548,10 +554,12 @@ export function GitSyncButton({
                     onClick={() => setProvider(id)}
                     height={36} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor={activeP ? "$color3" : "transparent"}
                   >
-                    <SizableText display="flex" alignItems="center" gap="$1.5" fontSize="$3" color={activeP ? "$color" : "$color11"}>
+                    <XStack alignItems="center" gap="$1.5">
                       <Icon size={16} />
-                      {label}
-                    </SizableText>
+                      <SizableText fontSize="$3" color={activeP ? "$color" : "$color11"}>
+                        {label}
+                      </SizableText>
+                    </XStack>
                   </Button>
                 );
               })}
@@ -577,10 +585,12 @@ export function GitSyncButton({
   />
 
             <Label cursor="pointer" alignItems="center" justifyContent="space-between" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$3" paddingVertical="$2.5">
-              <SizableText alignItems="center" gap="$2" fontSize="$3" color="$color">
+              <XStack alignItems="center" gap="$2">
                 <Lock size={14} color="$color11" />
-                Private repository
-              </SizableText>
+                <SizableText fontSize="$3" color="$color">
+                  Private repository
+                </SizableText>
+              </XStack>
               <Switch checked={isPrivate} onCheckedChange={setIsPrivate} />
             </Label>
 
@@ -664,9 +674,9 @@ function CommitMessageField({
 /** Inline, on-brand error note (semantic red — the one exception to monochrome). */
 function ErrorNote({ message }: { message: string }) {
   return (
-    <SizableText alignItems="flex-start" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$red9" backgroundColor="$red9" paddingHorizontal="$3" paddingVertical="$2.5" textAlign="left" display="flex" flexDirection="row">
+    <XStack alignItems="flex-start" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$red9" backgroundColor="$red9" paddingHorizontal="$3" paddingVertical="$2.5">
       <AlertCircle size={14} color="$red8" />
       <Paragraph fontSize="$1" color="$red3">{message}</Paragraph>
-    </SizableText>
+    </XStack>
   );
 }

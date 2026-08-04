@@ -21,7 +21,7 @@ export default function UsageView({
 }) {
   return (
     <AppShell currentView="usage">
-    <SizableText flex={1} backgroundColor="$background" color="$color" overflow="scroll" display="flex" flexDirection="column">
+    <YStack flex={1} backgroundColor="$background" overflow="scroll">
       <YStack maxWidth={1024} alignSelf="center" paddingHorizontal="$4" paddingVertical="$6" $md={{ paddingHorizontal: "$6", paddingVertical: "$8" }}>
         <YStack justifyContent="space-between" alignItems="flex-start" gap="$4" marginBottom="$6" $sm={{ flexDirection: "row", alignItems: "center" }}>
           <div>
@@ -73,7 +73,7 @@ export default function UsageView({
             Hanzo surface renders; reads this session's IAM bearer. */}
         <CloudUsagePanel />
       </YStack>
-    </SizableText>
+    </YStack>
     </AppShell>
   );
 }

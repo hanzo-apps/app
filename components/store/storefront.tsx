@@ -198,27 +198,27 @@ export function Storefront() {
       <YStack paddingVertical="$8">
         <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5">
           {loading && (
-            <SizableText alignItems="center" justifyContent="center" paddingVertical="$12" color="$color11" display="flex" flexDirection="row">
-              <Loader2 size={24} /> Loading catalog…
-            </SizableText>
+            <XStack alignItems="center" justifyContent="center" paddingVertical="$12">
+              <Loader2 size={24} /> <SizableText color="$color11">Loading catalog…</SizableText>
+            </XStack>
           )}
 
           {!loading && error && (
-            <SizableText maxWidth={448} alignSelf="center" textAlign="center" paddingVertical="$12" display="flex" flexDirection="column">
+            <YStack maxWidth={448} alignSelf="center" alignItems="center" paddingVertical="$12">
               <StoreIcon size={40} color="$color11" />
-              <Paragraph color="$color11">{error}</Paragraph>
-            </SizableText>
+              <Paragraph color="$color11" textAlign="center">{error}</Paragraph>
+            </YStack>
           )}
 
           {!loading && !error && products.length === 0 && (
-            <SizableText maxWidth={448} alignSelf="center" textAlign="center" paddingVertical="$12" display="flex" flexDirection="column">
+            <YStack maxWidth={448} alignSelf="center" alignItems="center" paddingVertical="$12">
               <StoreIcon size={40} color="$color11" />
-              <H2 fontSize="$6" fontWeight="500" marginBottom="$1">No products yet</H2>
-              <Paragraph color="$color11">
+              <H2 fontSize="$6" fontWeight="500" marginBottom="$1" textAlign="center">No products yet</H2>
+              <Paragraph color="$color11" textAlign="center">
                 This store is connected but its catalog is empty. Add a product
                 to see it here.
               </Paragraph>
-            </SizableText>
+            </YStack>
           )}
 
           {!loading && !error && products.length > 0 && (

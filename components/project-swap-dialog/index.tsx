@@ -151,27 +151,30 @@ export function ProjectSwapDialog({
               {/* Secrets diff */}
               {(diff.secrets.added.length > 0 || diff.secrets.removed.length > 0 || diff.secrets.overlapping.length > 0) && (
                 <YStack rowGap="$2">
-                  <SizableText alignItems="center" gap="$2" fontSize="$3" fontWeight="500" display="flex" flexDirection="row">
+                  <XStack alignItems="center" gap="$2">
                     <Key size={16} />
-                    Secrets
-                  </SizableText>
-                  <SizableText paddingLeft="$5" rowGap="$1" fontSize="$3" display="flex" flexDirection="column">
+                    <SizableText fontSize="$3" fontWeight="500">Secrets</SizableText>
+                  </XStack>
+                  <YStack paddingLeft="$5" rowGap="$1">
                     {diff.secrets.added.map(name => (
-                      <SizableText key={name} alignItems="center" gap="$1" color="$green10" display="flex" flexDirection="row">
-                        <Plus size={12} /> {name}
-                      </SizableText>
+                      <XStack key={name} alignItems="center" gap="$1">
+                        <Plus size={12} />
+                        <SizableText fontSize="$3" color="$green10">{name}</SizableText>
+                      </XStack>
                     ))}
                     {diff.secrets.removed.map(name => (
-                      <SizableText key={name} alignItems="center" gap="$1" color="$red10" display="flex" flexDirection="row">
-                        <Minus size={12} /> {name}
-                      </SizableText>
+                      <XStack key={name} alignItems="center" gap="$1">
+                        <Minus size={12} />
+                        <SizableText fontSize="$3" color="$red10">{name}</SizableText>
+                      </XStack>
                     ))}
                     {diff.secrets.overlapping.map(name => (
-                      <SizableText key={name} alignItems="center" gap="$1" color="$yellow10" display="flex" flexDirection="row">
-                        <RefreshCw size={12} /> {name} (values will be replaced)
-                      </SizableText>
+                      <XStack key={name} alignItems="center" gap="$1">
+                        <RefreshCw size={12} />
+                        <SizableText fontSize="$3" color="$yellow10">{name} (values will be replaced)</SizableText>
+                      </XStack>
                     ))}
-                  </SizableText>
+                  </YStack>
                 </YStack>
               )}
 
@@ -237,27 +240,30 @@ function DiffSection({
 
   return (
     <YStack rowGap="$2">
-      <SizableText alignItems="center" gap="$2" fontSize="$3" fontWeight="500" display="flex" flexDirection="row">
+      <XStack alignItems="center" gap="$2">
         {icon}
-        {title}
-      </SizableText>
-      <SizableText paddingLeft="$5" rowGap="$1" fontSize="$3" display="flex" flexDirection="column">
+        <SizableText fontSize="$3" fontWeight="500">{title}</SizableText>
+      </XStack>
+      <YStack paddingLeft="$5" rowGap="$1">
         {added.map(name => (
-          <SizableText key={name} alignItems="center" gap="$1" color="$green10" display="flex" flexDirection="row">
-            <Plus size={12} /> {name}
-          </SizableText>
+          <XStack key={name} alignItems="center" gap="$1">
+            <Plus size={12} />
+            <SizableText fontSize="$3" color="$green10">{name}</SizableText>
+          </XStack>
         ))}
         {removed.map(name => (
-          <SizableText key={name} alignItems="center" gap="$1" color="$red10" display="flex" flexDirection="row">
-            <Minus size={12} /> {name}
-          </SizableText>
+          <XStack key={name} alignItems="center" gap="$1">
+            <Minus size={12} />
+            <SizableText fontSize="$3" color="$red10">{name}</SizableText>
+          </XStack>
         ))}
         {changed.map(name => (
-          <SizableText key={name} alignItems="center" gap="$1" color="$yellow10" display="flex" flexDirection="row">
-            <RefreshCw size={12} /> {name}
-          </SizableText>
+          <XStack key={name} alignItems="center" gap="$1">
+            <RefreshCw size={12} />
+            <SizableText fontSize="$3" color="$yellow10">{name}</SizableText>
+          </XStack>
         ))}
-      </SizableText>
+      </YStack>
     </YStack>
   );
 }
