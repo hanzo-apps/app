@@ -50,6 +50,19 @@ RUN CI=false pnpm run build && \
     if ! find .next/server -name '*client-reference-manifest*' 2>/dev/null | head -1 | grep -q .; then \
       echo "ERROR: clientReferenceManifest not generated (CI env leak?)" && exit 1; \
     fi && \
+    if [ -z "${NEXT_PUBLIC_EVENT_INGEST_KEY}" ]; then \
+      echo "WARNING: NEXT_PUBLIC_EVENT_INGEST_KEY empty — bundle ships unkeyed; logged-out beacons are refused"; \
+    elif grep -rqF "${NEXT_PUBLIC_EVENT_INGEST_KEY}" .next/static; then \
+      echo "Build OK — ingest key inlined into .next/static, verified"; \
+    else \
+      echo "ERROR: NEXT_PUBLIC_EVENT_INGEST_KEY was supplied but is NOT present in .next/static."; \
+      echo "       Next inlines NEXT_PUBLIC_* at build; a value absent from the client"; \
+      echo "       bundle cannot reach the browser. Check that nothing re-declares it"; \
+      echo "       as an ARG after the ENV above — a build arg declared after an ENV of"; \
+      echo "       the same name shadows it, which is how hanzo.chat 1.0.58 published a"; \
+      echo "       bundle with an empty key from a fully green run."; \
+      exit 1; \
+    fi && \
     echo "Build OK — standalone output verified"
 
 # better-sqlite3 is a native module (the VFS/site-deploy store). Force-compile a

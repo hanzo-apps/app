@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
   if (!token) return unauthorized();
 
   const body = await request.json();
-  const { prompt, model, redesignMarkdown, previousPrompts, pages, base } = body;
+  const { prompt, model, redesignMarkdown, previousPrompts, pages, base, continueFrom } = body;
 
   if (!prompt && !redesignMarkdown) {
     return NextResponse.json(
@@ -148,6 +148,30 @@ export async function POST(request: NextRequest) {
         ? `Here is my current design as a markdown:\n\n${redesignMarkdown}\n\nNow, please create a new design based on this markdown.`
         : prompt,
     },
+    // CONTINUATION. A build that stops mid-element is the single thing users
+    // report most, and until now the only recovery was for the person to notice
+    // and retype. Handing the model back what it produced and asking for the
+    // REMAINDER is the only shape that cannot lose the first half — a re-run
+    // would start over and may truncate at a different place.
+    //
+    // The instruction is mostly a list of things not to do, because every one of
+    // them has a way of silently corrupting the join: a repeated fragment, a
+    // reopened fence, or a restated title marker all parse as new content and
+    // the page ends up with two of something.
+    ...(typeof continueFrom === "string" && continueFrom.trim()
+      ? [
+          { role: "assistant" as const, content: continueFrom },
+          {
+            role: "user" as const,
+            content:
+              "Your previous message was cut off mid-output. Continue from the EXACT character where it stopped and emit only what is still missing.\n" +
+              "- Do NOT repeat any text you already sent, not even the last line.\n" +
+              "- Do NOT restate the title marker and do NOT reopen the ```html fence.\n" +
+              "- Do NOT apologise, explain, or summarise — output resumes the file directly.\n" +
+              "- Finish every element you left open and close the document with </html>, then the closing fence.",
+          },
+        ]
+      : []),
   ];
 
   const gateway = await callGateway(token, messages, selectedModel, true);
@@ -636,10 +660,32 @@ function applyEdits(
     }
   }
 
+  // BARE SEARCH/REPLACE — no UPDATE_PAGE marker. This is the ordinary shape of a
+  // single-page follow-up, so it has to work; it did not.
+  //
+  // Two faults, and the second was latent data loss. It resolved the target as
+  // `path === "/" || "/index" || "index"` — generated pages are `index.html`, so
+  // it matched NOTHING and every edit was silently dropped ("No changes applied"
+  // on a project with one page). And `newHtml` started as the empty string, so on
+  // the day that lookup DID match, the page would have been overwritten with
+  // almost nothing.
+  //
+  // It now starts from the real page's html and resolves the entry page the way
+  // the rest of the builder does, matching `index.html` first and falling back to
+  // the only page when a project has one.
   if (
     updatedPages.length === pages?.length &&
     !chunk.includes(UPDATE_PAGE_START)
   ) {
+    const entryIndex = (() => {
+      const byName = updatedPages.findIndex((p) =>
+        /^\/?(index(\.html?)?)$/i.test(p.path),
+      );
+      if (byName !== -1) return byName;
+      return updatedPages.length === 1 ? 0 : -1;
+    })();
+    if (entryIndex !== -1) newHtml = updatedPages[entryIndex].html;
+
     let position = 0;
     let moreBlocks = true;
 
@@ -675,26 +721,29 @@ function applyEdits(
         newHtml = `${replaceBlock}\n${newHtml}`;
         updatedLines.push([1, replaceBlock.split("\n").length]);
       } else {
-        const blockPosition = newHtml.indexOf(searchBlock);
-        if (blockPosition !== -1) {
-          const beforeText = newHtml.substring(0, blockPosition);
+        // The same tolerant matcher the marked path uses — exact, then ignoring
+        // the delimiters' whitespace, then whitespace-insensitive when it names
+        // exactly one place. Two matchers would mean an edit that lands with a
+        // marker and vanishes without one.
+        const applied = applyEdit(newHtml, searchBlock, replaceBlock);
+        if (applied.ok) {
+          const beforeText = newHtml.substring(0, applied.index);
           const startLineNumber = beforeText.split("\n").length;
           const replaceLines = replaceBlock.split("\n").length;
           const endLineNumber = startLineNumber + replaceLines - 1;
 
           updatedLines.push([startLineNumber, endLineNumber]);
-          newHtml = newHtml.replace(searchBlock, replaceBlock);
+          newHtml = applied.html;
         }
       }
 
       position = replaceEndIndex + REPLACE_END.length;
     }
 
-    const mainPageIndex = updatedPages.findIndex(
-      (p) => p.path === "/" || p.path === "/index" || p.path === "index"
-    );
-    if (mainPageIndex !== -1) {
-      updatedPages[mainPageIndex].html = newHtml;
+    // Write back only if we actually resolved a page AND produced content —
+    // never assign an empty string over someone's site.
+    if (entryIndex !== -1 && newHtml.trim()) {
+      updatedPages[entryIndex].html = newHtml;
     }
   }
 

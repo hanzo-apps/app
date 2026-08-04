@@ -9,6 +9,7 @@
  *   <meta name="hanzo:branch"   content="main">         (optional, default main)
  *   <meta name="hanzo:provider" content="github">       (optional, default github)
  *   <meta name="hanzo:key"      content="pk_...">        (optional project key)
+ *   <meta name="hanzo:anchor"   content="#selector">     (optional launcher mount)
  *
  * ZERO manual path: the widget resolves the source file(s) for the CURRENT view
  * itself and pre-fills the field (the user may override). It ranks candidates
@@ -573,7 +574,24 @@
   // append throws, aborting the IIFE and leaving the widget absent. The shadow
   // root is already attached and usable while detached, so build into it now
   // and mount once the body exists.
+  // `hanzo:anchor` names an element the LAUNCHER should live inside — a toolbar
+  // slot, a status bar — instead of floating at the viewport corner. The fixed
+  // corner is right for a normal page and wrong wherever the product already
+  // owns that pixel: hanzo.app's builder had to disable the widget outright
+  // because the mark landed on top of the customer's preview, and a host page
+  // cannot restyle `.fab` from outside a shadow root.
+  //
+  // Anchoring moves the HOST, so the panel still opens from the launcher and the
+  // shadow boundary is untouched. A selector that matches nothing falls back to
+  // the corner rather than losing the widget.
   function mount() {
+    var sel = meta('hanzo:anchor');
+    var slot = sel ? document.querySelector(sel) : null;
+    if (slot) {
+      host.setAttribute('data-hanzo-anchored', '');
+      slot.appendChild(host);
+      return;
+    }
     document.body.appendChild(host);
   }
   if (document.body) {
@@ -624,6 +642,7 @@
     // circle framing a white ring read as two rings stacked. What is left is the
     // ensō itself, larger and heavier so it holds its own without a plate, and a
     // ring of light that blooms from the stroke on hover.
+    ':host([data-hanzo-anchored]) .fab{position:static;right:auto;bottom:auto;'+'width:20px;height:20px;}' +    ':host([data-hanzo-anchored]) .fab svg{width:18px;height:18px;}' +
     '.fab{position:fixed;right:16px;bottom:16px;z-index:2147483000;display:inline-flex;' +
     'align-items:center;justify-content:center;width:56px;height:56px;padding:0;' +
     'border-radius:999px;border:0;background:transparent;color:var(--hz-text);' +

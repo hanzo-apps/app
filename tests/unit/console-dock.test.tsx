@@ -63,7 +63,12 @@ function Composer({ voice }: { voice: ReturnType<typeof machine> }) {
   return null;
 }
 
-const setup = (onToggleSidebar = jest.fn(), voice: ReturnType<typeof machine> | null = machine()) => {
+/** The save state the bar is given. It is a PROP now — the bar used to print
+ *  "Auto-saved" unconditionally, checked against nothing — so the readout this
+ *  suite locates is whatever was passed in, named once here. */
+const SAVE_TEXT = "Saved 9:15 PM";
+
+const setup = (onToggleSidebar = jest.fn(), voice: ReturnType<typeof machine> | null = machine(), branch?: string) => {
   const view = render(
     // The app mounts one TooltipProvider in `app/providers.tsx`; the dock lives
     // under it, and the mic's tooltip needs it.
@@ -71,6 +76,8 @@ const setup = (onToggleSidebar = jest.fn(), voice: ReturnType<typeof machine> | 
       {voice && <Composer voice={voice} />}
       <Console
         isAiWorking={false}
+        saveText={SAVE_TEXT}
+        branch={branch}
         pageCount={1}
         sidebarCollapsed={false}
         onToggleSidebar={onToggleSidebar}
@@ -110,6 +117,19 @@ const dragTo = (handle: HTMLElement, from: number, to: number) => {
 };
 
 describe("the bar is a resize handle", () => {
+  it("shows NO branch when the project has no repo", () => {
+    // Most builder projects have none — only publish or an explicit git sync
+    // creates one. The bar used to print a hardcoded "main" regardless, drawing
+    // a version-control state that did not exist.
+    const { container } = setup(jest.fn(), machine(), undefined);
+    expect(container.textContent).not.toMatch(/\bmain\b/);
+  });
+
+  it("shows the REAL branch when the project is linked to a repo", () => {
+    const { container } = setup(jest.fn(), machine(), "release/v2");
+    expect(container.textContent).toContain("release/v2");
+  });
+
   it("renders a real, focusable separator in the console chrome", () => {
     const { handle } = setup();
     expect(handle).toBeInTheDocument();
@@ -266,7 +286,7 @@ describe("the workspace controls ride far right on the bar", () => {
     setup();
     const ai = screen.getByRole("button", { name: /chat panel/i });
     const mic = screen.getByRole("button", { name: /talk to hanzo/i });
-    const status = screen.getByText("Auto-saved");
+    const status = screen.getByText(SAVE_TEXT);
 
     // One cluster, not two controls that merely landed in the same dock: the
     // box they share holds them and leaves the status readout outside it.

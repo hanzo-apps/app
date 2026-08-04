@@ -855,9 +855,24 @@ export function AskAI({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prompt]);
 
+  /**
+   * Is there NOTHING built yet? A property of the PROJECT, not of one page.
+   *
+   * This asked `isTheSameHtml(currentPage.html)` — whether the SELECTED page
+   * still equals the starter document — and that answer chose between editing
+   * the project and regenerating it from scratch. In a multi-page build the
+   * selected page can be untouched while the rest of the site is finished, so
+   * one unedited page meant the whole thing was rebuilt. Every turn. That is
+   * the "it keeps starting over" report, and it survived fixing the page
+   * LOOKUP because the question itself was scoped wrong.
+   *
+   * Now: empty only when there is no page that differs from the starter. Any
+   * real page anywhere means this project exists and must be EDITED.
+   */
   const isSameHtml = useMemo(() => {
-    return isTheSameHtml(currentPage.html);
-  }, [currentPage.html]);
+    if (!pages.length) return isTheSameHtml(currentPage.html);
+    return pages.every((p) => isTheSameHtml(p.html));
+  }, [pages, currentPage.html]);
 
   // Drive the active turn's build phase + live activity from the ONE generation
   // stream: for a streaming turn (newProject/newPage), pages stay untouched
@@ -926,6 +941,27 @@ export function AskAI({
                       <YStack width="$1.5" height="$1.5" backgroundColor="$color" borderRadius="$10" />
                       Next in queue
                     </SizableText>
+                  )}
+                  {/* REDIRECT. Queuing waits for a build to finish, which is right
+                      when you are adding to it and wrong when you are correcting
+                      it — watching a wrong build run to completion before your
+                      correction is even read is the whole complaint. This stops
+                      the current turn and takes this message next; the queue
+                      drains as usual once the abort settles. */}
+                  {isAiWorking && (
+                    <Button
+                      onClick={() => {
+                        setMessageQueue((prev) => [
+                          msg,
+                          ...prev.filter((m) => m.id !== msg.id),
+                        ]);
+                        stopController();
+                      }}
+                      marginLeft="auto" fontSize="$1" color="$color11" textDecorationLine="underline" hoverStyle={{ color: "$color" }}
+                      title="Stop the current build and run this next"
+                    >
+                      Send now
+                    </Button>
                   )}
                 </XStack>
               </YStack>

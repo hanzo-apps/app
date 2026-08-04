@@ -65,6 +65,11 @@ describe("every route that draws the signed-in app is gated", () => {
   it("the gate is not a formality — it protects a real, non-trivial surface", () => {
     // Guards the derivation itself: a walk that silently found nothing would make
     // the test above pass while protecting nothing.
-    expect(shelledPrefixes().size).toBeGreaterThan(10);
+    //
+    // The floor is one below the true count, so it catches a walk that broke
+    // without pinning an exact number. It sat at 11 while /sessions drew the
+    // shell; that route is now a redirect to tabs.hanzo.ai and mounts nothing,
+    // and middleware dropped it from PROTECTED_PREFIXES for the same reason.
+    expect(shelledPrefixes().size).toBeGreaterThan(9);
   });
 });

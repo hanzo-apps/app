@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 /**
- * The builder declares no source repo, so the contribute widget never mounts here.
+ * The Enso launcher is ANCHORED into the console, not floating over the preview.
  *
  * `public/edit.js` is a viewport-corner control: `position: fixed; right: 16px;
  * bottom: 16px`. Measured on this route at 1430x832, that 56px box lands at
@@ -18,8 +18,12 @@ import type { Metadata } from "next";
  * not in hanzoai/app at all. The builder already has exactly one control for
  * changing what you are looking at, and it is the composer.
  *
- * Turning it off needs no flag and no env var, because the widget already has a
- * declarative contract: with no `hanzo:repo` it does nothing (edit.js:52).
+ * This route used to turn the widget OFF for that reason — no `hanzo:repo`, no
+ * widget. That removed the tool along with the collision: editing hanzo.app
+ * itself became unreachable from the builder. `hanzo:anchor` fixes the placement
+ * instead, mounting the launcher inside the console's control cluster
+ * (`#enso-dock`), where it is out of the canvas and beside the other workspace
+ * controls. The repo stays the app's own — that is what this launcher edits.
  *
  * The repo is BLANKED rather than the `other` object replaced. Measured on the
  * live route: an empty `other: {}` changed nothing and `hanzo:repo` still read
@@ -27,7 +31,12 @@ import type { Metadata } from "next";
  * object overrides nothing. Only naming the key overrides it.
  */
 export const metadata: Metadata = {
-  other: { "hanzo:repo": "" },
+  // ANCHORED, not disabled. The widget was blanked here because its fixed corner
+  // landed on the customer's preview; `hanzo:anchor` moves the launcher into the
+  // console's control cluster instead, so editing hanzo.app itself is reachable
+  // from the builder without drawing over the app being built. The repo stays
+  // the app's own — that is the thing this launcher edits.
+  other: { "hanzo:anchor": "#enso-dock" },
 };
 
 export default function DevLayout({ children }: { children: React.ReactNode }) {

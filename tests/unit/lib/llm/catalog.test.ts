@@ -36,7 +36,7 @@ const HANZO_ROWS = [
     // Verified present in the live catalog (GET https://api.hanzo.ai/v1/models),
     // and the builder's current DEFAULT_MODEL — enso cannot build until the zen
     // identity fix reaches its image (lib/providers.ts).
-    id: 'claude-opus-4.8',
+    id: 'anthropic-claude-opus-5',
     object: 'model',
     created: 1785777643,
     owned_by: 'anthropic',
@@ -178,7 +178,7 @@ describe('the catalogue follows the selected provider', () => {
       expect(model.id).not.toContain('/');
     }
     expect(models.map((m) => m.id).sort()).toEqual(
-      ['claude-4.5-sonnet', 'claude-haiku-4-5', 'claude-opus-4.8', 'enso', 'wan2-2-t2v-a14b'],
+      ['anthropic-claude-opus-5', 'claude-4.5-sonnet', 'claude-haiku-4-5', 'enso', 'wan2-2-t2v-a14b'],
     );
   });
 

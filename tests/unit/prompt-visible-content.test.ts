@@ -127,3 +127,24 @@ describe('the builder prompt loads each library once', () => {
     });
   }
 });
+
+describe('the builder prompt forbids referencing files it will not create', () => {
+  const { INITIAL_SYSTEM_PROMPT } = jest.requireActual('@/lib/prompts');
+  it('tells the model to inline JS/CSS, not reference a missing local file', () => {
+    expect(INITIAL_SYSTEM_PROMPT).toMatch(/SELF-CONTAINED FILES/i);
+    expect(INITIAL_SYSTEM_PROMPT).toContain('app.js');
+  });
+});
+
+describe('the builder prompt gives a maps path that works', () => {
+  const { INITIAL_SYSTEM_PROMPT } = jest.requireActual('@/lib/prompts');
+  it('uses keyless Leaflet, not the key-gated Google Maps JS API', () => {
+    expect(INITIAL_SYSTEM_PROMPT).toMatch(/Leaflet/);
+    expect(INITIAL_SYSTEM_PROMPT).toContain('leaflet@1.9.4');
+    // Google Maps JS needs a billed key the platform does not inject.
+    expect(INITIAL_SYSTEM_PROMPT).toMatch(/Do NOT use the Google Maps JavaScript API/i);
+  });
+  it('ties place/quest data to Base, not just the map UI', () => {
+    expect(INITIAL_SYSTEM_PROMPT.toLowerCase()).toMatch(/persist each pin through base|base is the backend/);
+  });
+});

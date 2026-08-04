@@ -26,6 +26,7 @@ import { requireSameOrigin } from '@/lib/org/csrf';
 import { slugifyProject } from '@/lib/org/policy';
 import { resolveConnection } from '@/lib/git/server';
 import { GitSyncError, pushProject, toFiles, type GitProvider } from '@/lib/git/sync';
+import { commitMessage } from '@/lib/git/coauthor';
 
 export const runtime = 'nodejs';
 
@@ -53,6 +54,27 @@ const CONNECT_HINT: Record<GitProvider, string> = {
 
 function providerOf(v: unknown): GitProvider | null {
   return v === 'hanzo' || v === 'github' || v === 'gitlab' ? v : null;
+}
+
+/**
+ * The caller's subscription slug, or '' when commerce names no plan.
+ *
+ * Asked of the same `/v1/entitlements` the paywall UI reads, so the commit and
+ * the upgrade prompt cannot disagree about whether someone is paying. Any
+ * failure answers '' — attribution stays, which is the safe direction.
+ */
+async function resolveTier(token: string): Promise<string> {
+  try {
+    const res = await fetch(`${cloudBase()}/v1/entitlements`, {
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+      cache: 'no-store',
+    });
+    if (!res.ok) return '';
+    const data = (await res.json()) as { tier?: unknown };
+    return typeof data?.tier === 'string' ? data.tier : '';
+  } catch {
+    return '';
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -84,6 +106,8 @@ export async function POST(req: NextRequest) {
     repo?: string;
     private?: boolean;
     message?: string;
+    /** Preference only — the server checks whether the plan permits it. */
+    omitAttribution?: boolean;
     pages?: PageIn[];
   };
 
@@ -200,7 +224,16 @@ export async function POST(req: NextRequest) {
       provider,
       token: conn.token,
       files,
-      message: (body.message || `Sync ${name} from hanzo.app`).slice(0, 500),
+      // Attribution: the trailer is added unless a PAYING caller asked to omit
+      // it. `omitAttribution` arrives from the browser and is only a preference;
+      // the tier is resolved here from the caller's own bearer, because a
+      // paywall the client can answer is not a paywall. An unreadable
+      // entitlements service leaves `tier` empty, which fails CLOSED — the
+      // trailer stays, which is the safe direction to be wrong in.
+      message: commitMessage(
+        (body.message || `Sync ${name} from hanzo.app`).slice(0, 500),
+        { omitAttribution: body.omitAttribution === true, tier: await resolveTier(id.token) },
+      ),
       existingRepoUrl: existingRepoUrl || undefined,
       account: body.account?.trim() || undefined,
       repoName: body.repo?.trim() || slug,

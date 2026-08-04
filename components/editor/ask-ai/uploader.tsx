@@ -12,6 +12,7 @@ import { useUser } from "@/hooks/useUser";
 import { LoginModal } from "@/components/login-modal";
 import { DeployButtonContent } from "../deploy-button/content";
 import { imageFilesFrom, uploadProjectImages } from "@/lib/upload-project-images";
+import { References } from "@/components/references";
 
 export const Uploader = ({
   pages,
@@ -227,6 +228,19 @@ export const Uploader = ({
   />
                 </div>
               </YStack>
+              {/* Bring images in from a board or folder instead of picking files
+                  one at a time. Lives here because this popover is already
+                  "where images come from" — a second place to add images would
+                  be a second thing to find. */}
+              <SizableText
+                borderTopWidth={1}
+                borderColor="$borderColor"
+                textAlign="left"
+                display="flex"
+                flexDirection="column"
+              >
+                <References project={project.space_id} />
+              </SizableText>
             </>
           ) : (
             <DeployButtonContent

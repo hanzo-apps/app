@@ -1,6 +1,6 @@
 "use client";
 import { SizableText, YStack, XStack } from '@hanzo/gui';
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast, Button } from '@hanzo/ui';
 import type { CodeEditorHandle } from "@/components/code-editor";
 import dynamic from "next/dynamic";
@@ -42,6 +42,10 @@ import { sendRewardSignal, getLastGenerationRequestId } from "@/lib/reward-signa
 import { SaveButton } from "./save-button";
 import { LoadProject } from "../my-projects/load-project";
 import { isTheSameHtml } from "@/lib/compare-html-diff";
+import { useAutosave } from "@/hooks/useAutosave";
+import { commitTurn } from "@/lib/git/commit-turn";
+import { loadWorkspace, projectRepoName, saveWorkspace } from "@/lib/dev/workspace";
+import { saveLabel } from "@/lib/pages/save-label";
 import { FileTree } from "./file-tree";
 import { HistoryPanel } from "./history";
 import { RevisionDetails, type DetailsRev } from "./history/details";
@@ -63,10 +67,27 @@ export const AppEditor = ({
 }) => {
   const [htmlStorage, , removeHtmlStorage] = useLocalStorage("pages");
   const [, copyToClipboard] = useCopyToClipboard();
+  /**
+   * A project with no server record had nowhere to come back from on reload:
+   * `initialPages` arrives only for a SAVED project, so a brand-new build came
+   * back empty — and an empty editor is what the replayed seed prompt then
+   * filled by regenerating the whole site. The local working copy closes the gap
+   * before a project record or a repo exists, which is exactly the window where
+   * someone reloads and loses everything.
+   *
+   * Read ONCE, on mount: making it reactive would let a stale snapshot fight the
+   * live pages mid-build.
+   */
+  const restored = useRef(
+    typeof window === "undefined"
+      ? null
+      : loadWorkspace(project?.title || (window as { __projectName?: string }).__projectName || "untitled-site"),
+  );
+
   const { htmlHistory, setHtmlHistory, prompts, setPrompts, pages, setPages } =
     useEditor(
-      initialPages,
-      project?.prompts ?? [],
+      initialPages?.length ? initialPages : restored.current?.pages ?? initialPages,
+      project?.prompts ?? restored.current?.prompts ?? [],
       typeof htmlStorage === "string" ? htmlStorage : undefined
     );
 
@@ -221,12 +242,48 @@ export const AppEditor = ({
     resetLayout();
   }, [currentTab, sidebarCollapsed]);
 
+  /**
+   * The page the composer is editing. Resolved by path, then by ANY real page,
+   * and only then by the starter document.
+   *
+   * That order is the whole of it. This used to fall straight from a missed
+   * lookup to `defaultHTML`, and `defaultHTML` is what the builder uses to mean
+   * "nothing has been built yet": ask-ai compares against it (`isTheSameHtml`)
+   * to choose between EDITING the project and GENERATING a new one. So any path
+   * that did not match — a page renamed by a follow-up, a multi-page build whose
+   * selected path changed, a stale selection after a restore — silently
+   * presented a project full of pages as an empty one, and the next turn rebuilt
+   * the whole site from scratch instead of editing it. Every turn, forever;
+   * "groundhog day" was the report.
+   *
+   * Falling back to `pages[0]` keeps the answer TRUE — with pages present, the
+   * project is not empty, and saying otherwise is the lie that caused the loop.
+   * The starter document remains the answer for a genuinely empty project, which
+   * is the one case where it is accurate.
+   */
+  /**
+   * Real persistence, replacing a status bar that printed "Auto-saved"
+   * unconditionally while nothing saved. Addressed exactly as the Save button
+   * addresses it, so there is ONE write path; a project with no record has
+   * nowhere to save and the bar says so instead of reassuring.
+   */
+  const [saveNs, saveRepo] = (project?.space_id ?? "").split("/");
+  const autosave = useAutosave(saveNs, saveRepo, pages, prompts, isAiWorking);
+
+  // Keep the working copy current. Debounced so a streaming build does not write
+  // on every chunk, and skipped while building because a partial document is not
+  // a state worth restoring into.
+  useEffect(() => {
+    if (isAiWorking || !pages.length) return;
+    const name = project?.title || (typeof window !== "undefined" ? (window as { __projectName?: string }).__projectName : "") || "untitled-site";
+    const t = setTimeout(() => saveWorkspace(name, pages, prompts), 800);
+    return () => clearTimeout(t);
+  }, [pages, prompts, isAiWorking, project?.title]);
+
   const currentPageData = useMemo(() => {
     return (
-      pages.find((page) => page.path === currentPage) ?? {
-        path: "index.html",
-        html: defaultHTML,
-      }
+      pages.find((page) => page.path === currentPage) ??
+      pages[0] ?? { path: "index.html", html: defaultHTML }
     );
   }, [pages, currentPage]);
 
@@ -325,6 +382,27 @@ export const AppEditor = ({
                 // user is building on it. Attaches the last gateway response id
                 // (no-ops if a generation produced none). Fire-and-forget.
                 sendRewardSignal(getLastGenerationRequestId(), "accept");
+
+                // VERSION HISTORY. Each finished turn is a commit on
+                // git.hanzo.ai, so the history panel has real revisions to show,
+                // bookmark and fork from. Fire-and-forget — the build is already
+                // on screen and a slow forge must not hold up the next prompt —
+                // but never silent: an unwired forge or a failed write says so,
+                // because implying a history that is not being written is the
+                // same defect as the status bar that read "Auto-saved".
+                // A STABLE name. Deriving it from the title meant every
+                // first-time project was called "untitled-site" and they
+                // overwrote each other's history in one shared repo.
+                const repoName = projectRepoName(project?.space_id?.split("/")[1]);
+                void (repoName
+                  ? commitTurn(repoName, newPages, p)
+                  : Promise.resolve({ ok: false as const, reason: "no project id", unconfigured: true })
+                ).then((r) => {
+                  if (!r.ok && !r.unconfigured) {
+                    toast.error(`Version not saved to git: ${r.reason}`);
+                  }
+                });
+
                 const currentHistory = [...htmlHistory];
                 currentHistory.unshift({
                   pages: newPages,
@@ -528,6 +606,8 @@ export const AppEditor = ({
           the dictation mic ride far right on the same bar. */}
       <Console
         isAiWorking={isAiWorking}
+        saveText={saveLabel(autosave.state, autosave.at)}
+        branch={project?.repo?.branch}
         pageCount={pages.length}
         sidebarCollapsed={sidebarCollapsed}
         onToggleSidebar={() => setSidebarCollapsed((v) => !v)}

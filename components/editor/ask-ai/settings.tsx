@@ -27,7 +27,7 @@ import { useMemo } from "react";
  */
 function toCatalogEntries(models: ModelOption[]): ModelCatalogEntry[] {
   return models
-    .filter(({ value }) => isBuildModel(value) && !isDeadModelId(value))
+    .filter(({ value }) => !isDeadModelId(value)) // show ALL live models — the user picks, we do not pre-hide
     .map(({ value, label, description }) => ({
       id: value,
       label,

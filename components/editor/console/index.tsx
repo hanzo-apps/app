@@ -37,11 +37,17 @@ function Sep() {
 
 export function Console({
   isAiWorking,
+  saveText,
+  branch,
   pageCount,
   sidebarCollapsed,
   onToggleSidebar,
 }: {
   isAiWorking: boolean;
+  /** Honest persistence state — see lib/pages/save-label. */
+  saveText: string;
+  /** The linked repo's branch, or undefined when the project has no repo. */
+  branch?: string;
   pageCount: number;
   sidebarCollapsed: boolean;
   onToggleSidebar: () => void;
@@ -51,10 +57,16 @@ export function Console({
   // The composer's voice, drawn here. Null until a composer is mounted.
   const voice = useMic();
 
+  // OLD: `const branch = "main"` — stated unconditionally. Builder projects are
+  // single-branch when they have a repo, but MOST HAVE NONE: the only paths that
+  // create one are publish and an explicit git sync. So the bar drew a branch
+  // icon and a branch name for a project that was never version-controlled,
+  // which is chrome asserting a fact nothing checked.
+  // Kept for reference; the real value now arrives as a prop.
   // Builder projects are single-branch by construction: git-on-publish commits
   // to `main`. The editor's Project carries no branch field, so state it rather
   // than invent one from a type that cannot hold it.
-  const branch = "main";
+  // (superseded by the `branch` prop)
 
   // One gesture, two meanings: a pointer that moved is a resize, a pointer that
   // did not is a click — so drag and click-to-expand act on the same height,
@@ -142,12 +154,18 @@ export function Console({
             Live
           </SizableText>
           <Sep />
-          <span>{isAiWorking ? "Building…" : "Auto-saved"}</span>
-          <Sep />
-          <SizableText alignItems="center" gap="$1">
-            <GitBranch size={12} />
-            {branch}
-          </SizableText>
+          {/* The real save state. This said "Auto-saved" unconditionally, checked
+              against nothing, while the project lived only in the browser. */}
+          <span>{isAiWorking ? "Building…" : saveText}</span>
+          {branch && (
+            <>
+              <Sep />
+              <SizableText alignItems="center" gap="$1">
+                <GitBranch size={12} />
+                {branch}
+              </SizableText>
+            </>
+          )}
           <Sep />
           <span>
             {pageCount} file{pageCount === 1 ? "" : "s"}
@@ -167,6 +185,14 @@ export function Console({
         {/* Far right — the workspace controls, floated over the bar so the
             separator underneath stays one clean, uninterrupted drag target. */}
         <XStack position="absolute" right="$2" top="$0" height="100%" alignItems="center" gap="$0.5">
+          {/* Enso mounts HERE (public/edit.js, `hanzo:anchor` in app/dev/layout).
+              It used to float at the viewport corner, where it sat on top of the
+              customer's preview — so /dev turned it off entirely. In the control
+              plane it is out of the canvas and beside the other workspace
+              controls, which is where a tool for editing hanzo.app belongs.
+              The host it injects is a descendant that arrives after render, so
+              THAT one rule lives in assets/globals.css — see #enso-dock. */}
+          <XStack id="enso-dock" alignItems="center" />
           <Button
             type="button"
             onClick={onToggleSidebar}

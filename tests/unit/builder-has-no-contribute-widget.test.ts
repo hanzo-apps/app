@@ -1,5 +1,5 @@
 /**
- * The builder route declares no source repo.
+ * The builder's Enso launcher is ANCHORED, never floating over the preview.
  *
  * `public/edit.js` pins itself to the viewport's bottom-right corner. Measured
  * live on /dev at 1430x832, its 56px box sits at x 1358-1414, y 760-816 — over
@@ -10,13 +10,15 @@
  * `margin-top` is 0px — there is no offset to correct, and no inset helps,
  * because the card fills the whole right side.
  *
- * The widget offers "contribute to THIS page", i.e. a PR against the page's own
- * source, and the page here is the customer's generated app. So it is turned off
- * the way the widget itself defines off — by declaring no repo — rather than with
- * a flag.
+ * It was previously turned off here entirely, by declaring no repo. That solved
+ * the collision by removing the tool: editing hanzo.app itself became
+ * unreachable from the builder. `hanzo:anchor` fixes the PLACEMENT instead — the
+ * launcher mounts inside the console's control cluster, out of the canvas and
+ * beside the other workspace controls.
  *
- * This is easy to undo by accident (deleting a layout that renders its children
- * unchanged looks like dead code), so the contract is pinned from both ends.
+ * The invariant here is unchanged and is about PIXELS, not the repo: the
+ * launcher may never be free to draw over the customer's app. Easy to undo by
+ * accident, so it is pinned from both ends.
  */
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
@@ -24,7 +26,7 @@ import { join } from "node:path";
 const ROOT = join(__dirname, "..", "..");
 const read = (p: string) => readFileSync(join(ROOT, p), "utf8");
 
-describe("the contribute widget cannot mount on the builder", () => {
+describe("the builder Enso launcher never floats over the preview", () => {
   it("edit.js still treats a missing repo as 'do nothing'", () => {
     const src = read("public/edit.js");
     // Two facts, checked apart. They used to be one regex requiring the bail to
@@ -39,15 +41,30 @@ describe("the contribute widget cannot mount on the builder", () => {
     expect(read("app/layout.tsx")).toContain('"hanzo:repo": "hanzoai/app"');
   });
 
-  it("/dev blanks that declaration by NAMING the key", () => {
+  it("edit.js honours an anchor and unpins itself when anchored", () => {
+    const src = read("public/edit.js");
+    expect(src).toMatch(/meta\('hanzo:anchor'\)/);
+    // Anchoring must actually unpin it — a launcher inside the status bar that
+    // is still `position: fixed` lands straight back on the preview.
+    expect(src).toMatch(/:host\(\[data-hanzo-anchored\]\) \.fab\{position:static/);
+    // A selector matching nothing falls back to the corner rather than vanishing.
+    expect(src).toMatch(/document\.body\.appendChild\(host\)/);
+  });
+
+  it("/dev anchors the launcher by NAMING the key", () => {
     const path = "app/dev/layout.tsx";
     expect(existsSync(join(ROOT, path))).toBe(true);
     const src = read(path);
     // Measured live: an empty `other: {}` changed nothing, because Next merges
     // `other` BY KEY into the parent's. The key has to be named to override it.
-    expect(src).toMatch(/other:\s*\{\s*"hanzo:repo":\s*""\s*\}/);
+    expect(src).toMatch(/other:\s*\{\s*"hanzo:anchor":\s*"#enso-dock"\s*\}/);
     // It must stay a pass-through: this layout exists for the metadata alone and
     // may never become a place that renders chrome.
     expect(src).toMatch(/return children;/);
+  });
+
+  it("the console renders the slot the anchor points at", () => {
+    // A dangling selector would silently put the launcher back in the corner.
+    expect(read("components/editor/console/index.tsx")).toContain('id="enso-dock"');
   });
 });

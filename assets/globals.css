@@ -1075,6 +1075,37 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
   }
 }
 
+/* Reference tiles — the imported-image gallery in the references panel. Three
+   equal columns (a grid, not a flex stack, for the same reason the card grids
+   above are one), and a remove control that appears on the tile you point at.
+   Both are selectors — an element laying out its OWN children, and a child
+   styled by its PARENT's state — so neither can be a prop on the tile. */
+.ref-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ref-grid li {
+  position: relative;
+}
+.ref-grid img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm, 6px);
+  object-fit: cover;
+}
+.ref-grid .ref-remove {
+  opacity: 0;
+}
+.ref-grid li:hover .ref-remove,
+.ref-grid .ref-remove:focus {
+  opacity: 1;
+}
+
 /* The visual editor's style-inspector fields are native <input>/<select>
    elements (they mirror raw CSS values); one control rule here. */
 .ve-input {
@@ -1124,6 +1155,14 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
 .voice-control svg {
   width: 14px;
   height: 14px;
+}
+
+/* Enso's anchor, the mic's neighbour in the console control row. public/edit.js
+   injects its host into #enso-dock at runtime and marks it data-hanzo-edit, so
+   the host is a descendant this app never draws — one rule here, the same way
+   the mic above is one rule. */
+#enso-dock [data-hanzo-edit] {
+  display: flex;
 }
 @media (prefers-reduced-motion: no-preference) {
   .voice-control[data-state="speaking"] {

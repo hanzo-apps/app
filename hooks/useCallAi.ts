@@ -3,6 +3,7 @@ import { toast } from '@hanzo/ui';
 import { Page } from "@/types";
 import { parsePages, parseSinglePage, stripThinkBlocks } from "@/lib/format-pages";
 import { setLastGenerationRequestId } from "@/lib/reward-signal";
+import { qualityReport } from "@/lib/pages/report";
 import { baseEnabled } from "@/lib/base/flag";
 // UNAVAILABLE is the ONE honest message for a failure THIS side detects: the
 // socket died, or the response arrived without a body. The caller's handleError
@@ -36,6 +37,11 @@ const safeJsonParse = (text: string): any | null => {
 // ledger's join key) reaches the reward-signal store — without ever corrupting
 // the page parser.
 const ROUTED_MODEL_SEP = "\u001e";
+
+/** A single continuation may take this long before it is abandoned — long
+ *  enough for the REMAINDER of one document, short enough that a hung stream
+ *  cannot lock the composer. */
+const CONTINUATION_TIMEOUT_MS = 90_000;
 const splitSideChannel = (
   text: string
 ): { content: string; model: string | null; id: string | null } => {
@@ -111,21 +117,33 @@ export const useCallAi = ({
     try {
       onNewPrompt(prompt);
 
-      const request = await fetch("/v1/generate", {
-        method: "POST",
-        body: JSON.stringify({
-          prompt,
-          provider,
-          model,
-          redesignMarkdown,
-          base: baseEnabled(),
-        }),
-        headers: {
-          "Content-Type": "application/json",
-          "x-forwarded-for": window.location.hostname,
-        },
-        signal: abortController.signal,
-      });
+      /** One generate call. `continueFrom` resumes a cut-off document; `extra`
+       *  is an additional signal (a timeout) so a continuation cannot hang. */
+      const ask = (continueFrom?: string, extra?: AbortSignal) =>
+        fetch("/v1/generate", {
+          method: "POST",
+          body: JSON.stringify({
+            prompt,
+            provider,
+            model,
+            redesignMarkdown,
+            base: baseEnabled(),
+            ...(continueFrom ? { continueFrom } : {}),
+          }),
+          headers: {
+            "Content-Type": "application/json",
+            "x-forwarded-for": window.location.hostname,
+          },
+          // AbortSignal.any is recent; fall back to the timeout alone where it is
+          // absent — still bounds the hang, and the loop already re-checks the
+          // user abort between attempts.
+          signal:
+            extra && typeof AbortSignal.any === "function"
+              ? AbortSignal.any([abortController.signal, extra])
+              : extra || abortController.signal,
+        });
+
+      const request = await ask();
 
       // Upstream infra failure (gateway 502/503/500): stop now with an honest
       // message instead of streaming an empty body into a stuck "Building…".
@@ -178,7 +196,7 @@ export const useCallAi = ({
               }
             }
 
-            const newPages = formatPages(contentResponse);
+            let newPages = formatPages(contentResponse);
 
             // No renderable page came back. SAY WHAT IS KNOWN, and never "try
             // again" — the two causes are both things retrying cannot change.
@@ -214,6 +232,55 @@ export const useCallAi = ({
             // page exists it always looks terminated, and this guard could never
             // fire where it was first written. The stream is the only place the
             // truth survives.
+            // AUTO-CONTINUE. A document that stopped mid-element is resumed by
+            // handing the model back what it wrote and asking for the remainder.
+            // Re-running the prompt instead would discard the finished half and
+            // can truncate somewhere else; only continuation is monotonic.
+            //
+            // CAPPED at two attempts, and the cap is not a style choice: each
+            // attempt is a paid model call, so an unbounded loop on a model that
+            // keeps stopping would spend real credit chasing itself. Two covers
+            // the ordinary long build; a document still open after that is a
+            // different problem and gets reported rather than retried.
+            //
+            // BEST-EFFORT AND BOUNDED. A continuation that stalls must never
+            // lock the composer: `await reader.read()` on a hung stream does not
+            // throw, it waits forever, and the flag that says "AI is working"
+            // would never clear — the "wait for the AI to finish generating"
+            // that never finishes. So each attempt carries a timeout, and the
+            // whole thing is wrapped: on any stall or error we KEEP the build we
+            // have, stop retrying, and fall through to clear the flag and report
+            // truncation. The continuation improves the result; it may not hold
+            // it hostage.
+            let attempts = 0;
+            while (
+              attempts < 2 &&
+              !abortController.signal.aborted &&
+              unterminatedDocument(splitSideChannel(contentResponse).content)
+            ) {
+              attempts += 1;
+              try {
+                const more = await ask(
+                  splitSideChannel(contentResponse).content,
+                  AbortSignal.timeout(CONTINUATION_TIMEOUT_MS),
+                );
+                if (!more.ok || !more.body) break;
+                const contReader = more.body.getReader();
+                for (;;) {
+                  const chunk = await contReader.read();
+                  if (chunk.done) break;
+                  contentResponse += decoder.decode(chunk.value, { stream: true });
+                  formatPages(contentResponse);
+                  onScrollToBottom();
+                }
+                newPages = formatPages(contentResponse);
+              } catch {
+                // Stall or network error on the continuation — deliver what the
+                // first pass produced rather than hang or discard it.
+                break;
+              }
+            }
+
             const cut = unterminatedDocument(splitSideChannel(contentResponse).content)
               ? newPages
               : [];
@@ -222,12 +289,26 @@ export const useCallAi = ({
             if (cut.length) {
               toast.error(
                 cut.length === 1
-                  ? `${cut[0].path} stopped mid-build — the model was cut off before finishing the page. Send it again, or ask for a smaller change.`
-                  : `${cut.length} pages stopped mid-build — the model was cut off. Send it again, or ask for a smaller change.`,
+                  ? `${cut[0].path} is still unfinished after ${attempts} continuation${attempts === 1 ? "" : "s"}. Ask for a smaller change, or split it across pages.`
+                  : `${cut.length} pages are still unfinished after ${attempts} continuation${attempts === 1 ? "" : "s"}. Ask for a smaller change, or split it across pages.`,
               );
             } else {
-              toast.success("AI responded successfully");
-              if (audio.current) audio.current.play();
+              // "Every control works" is asked for in the prompt; this is the
+              // half that CHECKS it. A nav pointing at a page the model never
+              // wrote is otherwise found by clicking it, which is the worst
+              // moment to find it. Reported, not repaired — rewriting someone's
+              // markup on a guess is a bigger liberty than naming the problem.
+              // Both checks read the built output, so neither guesses at intent.
+              // Reported in one message rather than two toasts: a build with a
+              // dead nav usually also has the layout problem that came with it,
+              // and stacking notifications buries the first.
+              const problem = qualityReport(newPages);
+              if (problem) {
+                toast.error(problem);
+              } else {
+                toast.success("AI responded successfully");
+                if (audio.current) audio.current.play();
+              }
             }
 
             onSuccess(newPages, prompt);
@@ -471,6 +552,11 @@ export const useCallAi = ({
         setLastGenerationRequestId(res.id);
         setPages(res.pages);
         onSuccess(res.pages, prompt, res.updatedLines);
+        // The SAME checks the first build runs. A link is no less dead for
+        // having arrived on the second prompt, and an edit is the likeliest way
+        // a nav gains an item pointing at a page nobody wrote.
+        const editProblem = qualityReport(res.pages);
+        if (editProblem) toast.error(editProblem);
 
         if (audio.current) audio.current.play();
 
