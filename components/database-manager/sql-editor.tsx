@@ -1,6 +1,7 @@
 'use client';
 
 import { XStack, YStack, SizableText, Paragraph } from '@hanzo/gui';
+import { glass } from "@/lib/chrome";
 import { useState, useEffect, useCallback } from 'react';
 import { CodeEditor } from '@/components/code-editor';
 import { Play, AlertCircle, CheckCircle2, History } from 'lucide-react';
@@ -196,7 +197,7 @@ export function SqlEditor({ deploymentId, queryEndpoint }: SqlEditorProps) {
             {result.columns && result.columns.length > 0 && result.rows ? (
               <YStack flex={1} overflow="scroll">
                 <YStack width="100%">
-                  <YStack position="sticky" top="$0" backgroundColor="$color3">
+                  <YStack {...glass(2)} position="sticky" top="$0">
                     <tr>
                       {result.columns.map((col, i) => (
                         <SizableText key={i} textAlign="left" padding="$2" fontWeight="500" fontSize="$3" borderRightWidth={1} className="last-flat-r">

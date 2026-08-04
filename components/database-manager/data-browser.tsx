@@ -1,6 +1,7 @@
 'use client';
 
 import { XStack, YStack, SizableText, Paragraph, H3 } from '@hanzo/gui';
+import { glass } from "@/lib/chrome";
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Input, Label } from '@hanzo/ui';
 import {
@@ -212,7 +213,7 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
             </YStack>
           ) : (
             <YStack width="100%">
-              <YStack position="sticky" top="$0" backgroundColor="$background">
+              <YStack {...glass(2)} position="sticky" top="$0">
                 <YStack borderBottomWidth={1} borderColor="$borderColor">
                   {cols.map((c) => (
                     <SizableText key={c} whiteSpace="nowrap" paddingHorizontal="$3" paddingVertical="$2" fontWeight="500" color="$color11">

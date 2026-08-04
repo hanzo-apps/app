@@ -13,6 +13,7 @@
  */
 
 import { SizableText, YStack, XStack, H1, Paragraph, Image, H3 } from '@hanzo/gui';
+import { glass } from "@/lib/chrome";
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Badge, Input, Button } from '@hanzo/ui';
@@ -133,7 +134,7 @@ function ResourcesBrowser() {
         </YStack>
 
         {/* Filters */}
-        <YStack position="sticky" top="$0" zIndex={30} borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" backdropFilter="blur(8px)">
+        <YStack {...glass(2)} position="sticky" top="$0" zIndex={30} borderBottomWidth={1}>
           <XStack width="100%" maxWidth={1280} alignSelf="center" flexWrap="wrap" alignItems="flex-start" gap="$3" paddingHorizontal="$5" paddingVertical="$3">
             <YStack position="relative" width="100%" $sm={{ width: "auto" }}>
               <Search size={16} />

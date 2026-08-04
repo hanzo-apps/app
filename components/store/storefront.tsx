@@ -1,6 +1,7 @@
 "use client";
 
 import { YStack, XStack, H1, SizableText, Paragraph, H2, Image, H3 } from '@hanzo/gui';
+import { glass } from "@/lib/chrome";
 // Ecommerce storefront — the REAL per-org store surface.
 //
 // This template used to render a hardcoded fixture array. It now BINDS to the
@@ -165,7 +166,7 @@ export function Storefront() {
 
   return (
     <YStack minHeight="100%" backgroundColor="$background">
-      <YStack borderBottomWidth={1} position="sticky" top="$0" backgroundColor="$background" backdropFilter="blur(8px)" zIndex={50}>
+      <YStack {...glass(2)} borderBottomWidth={1} position="sticky" top="$0" zIndex={50}>
         <XStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$4" alignItems="center" justifyContent="space-between" gap="$4">
           <H1 fontSize="$8" fontWeight="500" alignItems="center" gap="$2">
             <StoreIcon size={24} /> Store

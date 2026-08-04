@@ -8,6 +8,7 @@ import { Button } from '@hanzo/ui';
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { useUser } from "@/hooks/useUser";
 import { UserMenu } from "@/components/user-menu";
+import { glass } from "@/lib/chrome";
 
 const navigationLinks = [
   {
@@ -77,8 +78,14 @@ export default function Navigation() {
   };
 
   return (
+    // Clear over the hero, glass once you have scrolled off it. The two halves
+    // used to disagree: the blur was unconditional and only the TINT waited for
+    // `isScrolled`, so at the top the bar was a blur with no ground under it —
+    // the hero smeared behind an invisible band. Now the material arrives whole
+    // or not at all, and when it arrives it is the same glass every other bar in
+    // the app wears rather than this file's own blur(12px).
     <YStack
-      position="sticky" top="$0" zIndex={10} backdropFilter="blur(12px)" {...{ backgroundColor: isScrolled ? "$background" : undefined }}
+      position="sticky" top="$0" zIndex={10} {...(isScrolled ? glass(2) : {})}
     >
       <YStack padding="$4" maxWidth={1280} alignSelf="center" paddingHorizontal="$4" $sm={{ paddingHorizontal: "$5" }}>
         <Link href="/"><XStack alignItems="center" gap="$2">

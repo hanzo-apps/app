@@ -1,6 +1,7 @@
 "use client";
 
 import { YStack, XStack, Paragraph } from '@hanzo/gui';
+import { glass } from "@/lib/chrome";
 import { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, Button, Avatar, AvatarFallback, AvatarImage, Textarea, Badge, Tabs, TabsList, TabsTrigger, ScrollArea } from '@hanzo/ui';
 import {
@@ -106,7 +107,7 @@ export default function SocialFeed() {
         {/* Main Feed */}
         <YStack flex={1} borderRightWidth={1}>
           {/* Header */}
-          <YStack borderBottomWidth={1} position="sticky" top="$0" backgroundColor="$background" backdropFilter="blur(8px)">
+          <YStack {...glass(2)} borderBottomWidth={1} position="sticky" top="$0">
             <Tabs value={selectedTab} onValueChange={setSelectedTab}>
               <TabsList width="100%" justifyContent="flex-start" borderRadius={0} height="$8">
                 <TabsTrigger value="for-you" flex={1}>For You</TabsTrigger>
