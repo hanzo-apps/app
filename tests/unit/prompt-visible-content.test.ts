@@ -59,6 +59,24 @@ describe('the builder prompt never ships hide-until-JS content', () => {
   });
 });
 
+describe('the builder prompt refuses invented content', () => {
+  // A generated page can be PUBLISHED. "42,000+ explorers already questing"
+  // appeared on a real build for an app that had no users at all — a false
+  // claim shown to real visitors, produced because nothing forbade it.
+  it('INITIAL_SYSTEM_PROMPT forbids fabricated metrics and testimonials', () => {
+    expect(INITIAL_SYSTEM_PROMPT).toMatch(/NEVER INVENT FACTS/i);
+    const lower = INITIAL_SYSTEM_PROMPT.toLowerCase();
+    for (const kind of ['testimonial', 'user counts', 'ratings']) {
+      expect(lower).toContain(kind);
+    }
+  });
+
+  it('INITIAL_SYSTEM_PROMPT distinguishes an app from a page about the app', () => {
+    expect(INITIAL_SYSTEM_PROMPT).toMatch(/BUILD THE THING THAT WAS ASKED FOR/i);
+    expect(INITIAL_SYSTEM_PROMPT.toLowerCase()).toContain('is not the app');
+  });
+});
+
 describe('the builder prompt loads each library once', () => {
   for (const [name, prompt] of Object.entries({
     INITIAL_SYSTEM_PROMPT,
