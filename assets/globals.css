@@ -1092,6 +1092,23 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
   }
 }
 
+/* The scrim under a frosted dialog.
+   `DialogContent` mounts its own overlay, and that overlay dims TWICE — a
+   `rgba(0,0,0,0.5)` ground under a further `opacity: 0.5`, landing at about a
+   quarter black. Opaque chrome gets away with it; glass does not, because the
+   blur behind a translucent panel only reads as depth when the ground behind
+   it is genuinely darker.
+   Conditioned on a frosted dialog BEING OPEN rather than on where the overlay
+   sits relative to the panel: gui's portal puts the two in different subtrees
+   (the overlay's sibling is an unnamed wrapper, the panel two levels inside
+   it), so any adjacency selector would be pinned to internals that are not
+   ours and silently stop matching when they move. Every non-frosted dialog
+   keeps the shared default. */
+body:has([data-slot="dialog-content"].frosted) [data-slot="dialog-overlay"] {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.55);
+}
+
 /* Stretched link — the whole positioned ancestor becomes the anchor's hit
    area (catalog cards). */
 .stretch-link::after {
