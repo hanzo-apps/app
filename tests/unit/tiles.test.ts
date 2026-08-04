@@ -5,12 +5,14 @@ import {
   hasPane,
   geometry,
   neighbour,
+  pageGeometry,
   pane,
   paneIds,
   retain,
   setRatio,
   splitPane,
   stableOrder,
+  stackFor,
   type Tile,
 } from '@/lib/tiles';
 
@@ -212,5 +214,60 @@ describe('the DOM order is this browser’s, not the server’s', () => {
     const prev = ['a', 'b'];
     expect(stableOrder(prev, ['a', 'b'])).toBe(prev);
     expect(stableOrder(prev, [])).toBe(prev);
+  });
+});
+
+describe('a phone pages instead of tiling side by side', () => {
+  it('one pane is one page', () => {
+    const g = pageGeometry(pane('a'), 2);
+    expect(g.pages).toBe(1);
+    expect(g.rects).toEqual([{ id: 'a', left: 0, top: 0, width: 100, height: 100 }]);
+  });
+
+  it('a ROW split becomes two pages — 390px cannot hold two terminals', () => {
+    const g = pageGeometry(splitPane(pane('a'), 'a', 'row', 'b'), 2);
+    expect(g.pages).toBe(2);
+    expect(g.page).toEqual({ a: 0, b: 1 });
+    expect(g.rects.find((r) => r.id === 'b')!.left).toBe(100); // the second page
+    expect(g.rects.every((r) => r.width === 100)).toBe(true);  // each fills its page
+  });
+
+  it('a COL split STAYS stacked — height is what a phone has', () => {
+    const g = pageGeometry(setRatio(splitPane(pane('a'), 'a', 'col', 'b'), [], 0.4), 2);
+    expect(g.pages).toBe(1);
+    expect(g.rects).toEqual([
+      { id: 'a', left: 0, top: 0, width: 100, height: 40 },
+      { id: 'b', left: 0, top: 40, width: 100, height: 60 },
+    ]);
+    expect(g.dividers).toHaveLength(1); // and it can still be dragged
+  });
+
+  it('a stack deeper than the page allows spills to the next page', () => {
+    let t: Tile = splitPane(pane('a'), 'a', 'col', 'b');
+    t = splitPane(t, 'b', 'col', 'c');
+    expect(pageGeometry(t, 3).pages).toBe(1);  // room for three
+    expect(pageGeometry(t, 2).pages).toBe(2);  // room for two: the third spills
+    expect(pageGeometry(t, 1).pages).toBe(3);  // room for one: all separate
+  });
+
+  it('every pane lands on exactly one page, and fills its page width', () => {
+    let t: Tile = splitPane(pane('a'), 'a', 'row', 'b');
+    t = splitPane(t, 'b', 'col', 'c');
+    t = splitPane(t, 'c', 'row', 'd');
+    const g = pageGeometry(t, 2);
+    expect(Object.keys(g.page).sort()).toEqual(['a', 'b', 'c', 'd']);
+    expect(g.rects).toHaveLength(4);
+    for (const r of g.rects) {
+      expect(r.width).toBe(100);
+      expect(r.left % 100).toBe(0); // page-aligned
+      expect(g.page[r.id]).toBe(r.left / 100);
+    }
+  });
+
+  it('the stack count comes from the room, not from a number someone picked', () => {
+    expect(stackFor(670)).toBe(2);  // 390x844 portrait
+    expect(stackFor(254)).toBe(1);  // landscape: one, not three slivers
+    expect(stackFor(900)).toBe(3);  // a tablet
+    expect(stackFor(0)).toBe(1);    // never zero
   });
 });

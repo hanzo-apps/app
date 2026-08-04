@@ -211,3 +211,76 @@ export function stableOrder(prev: readonly string[], present: readonly string[])
   const added = present.filter((id) => !seen.has(id));
   return added.length === 0 ? (prev as string[]) : [...prev, ...added];
 }
+
+// ---- the phone projection ---------------------------------------------------
+//
+// A phone does not tile side by side. 390px cannot hold two terminals and stay
+// legible — Blink, Termius and Prompt all refuse to, and none of them is short of
+// design effort. What a phone HAS is 844px of height and a swipe.
+//
+// So the same tree is projected differently rather than modelled twice: a `row`
+// split (side by side) becomes two PAGES you swipe between, and a `col` split
+// (stacked) stays stacked, because vertical space is the space a phone has. The
+// renderer is unchanged — it still consumes `Rect[]`.
+
+export interface PageGeometry extends Geometry {
+  /** How many pages the layout occupies. `left` is `page * 100 + offset`. */
+  pages: number;
+  /** Which page each pane is on, for the tab strip. */
+  page: Record<string, number>;
+}
+
+/**
+ * Project a layout onto N pages of the unit square.
+ *
+ * `maxStack` bounds how many panes may share one page's height; a `col` group
+ * deeper than that spills onto the next page rather than rendering slivers.
+ */
+export function pageGeometry(t: Tile, maxStack: number): PageGeometry {
+  const rects: Rect[] = [];
+  const dividers: Divider[] = [];
+  const page: Record<string, number> = {};
+  const cap = Math.max(1, maxStack);
+  let next = 0;
+
+  /** How many panes a subtree wants to stack, if it were all on one page. */
+  const stackDepth = (n: Tile): number =>
+    n.kind === 'pane' ? 1 : n.dir === 'col' ? stackDepth(n.a) + stackDepth(n.b) : 1;
+
+  const place = (n: Tile, path: Path, pg: number, top: number, h: number) => {
+    if (n.kind === 'pane') {
+      rects.push({ id: n.id, left: pg * 100, top, width: 100, height: h });
+      page[n.id] = pg;
+      return;
+    }
+    if (n.dir === 'row') {
+      // Side by side does not fit: each half becomes its own page.
+      place(n.a, [...path, 'a'], pg, top, h);
+      place(n.b, [...path, 'b'], next++, 0, 100);
+      return;
+    }
+    // Stacked, at its ratio — unless the stack is deeper than the page allows.
+    if (stackDepth(n) > cap) {
+      place(n.a, [...path, 'a'], pg, top, h);
+      place(n.b, [...path, 'b'], next++, 0, 100);
+      return;
+    }
+    const r = clampRatio(n.ratio);
+    const ah = h * r;
+    place(n.a, [...path, 'a'], pg, top, ah);
+    place(n.b, [...path, 'b'], pg, top + ah, h - ah);
+    dividers.push({ path, dir: 'col', left: pg * 100, top: top + ah, width: 100, height: 0 });
+  };
+
+  next = 1;
+  place(t, [], 0, 0, 100);
+  return { rects, dividers, pages: Math.max(next, 1), page };
+}
+
+/** How many panes may share one phone page, from the room actually available.
+ *
+ * Derived, not decreed: the legibility floor is ~20 rows, which at 13px mono plus
+ * a header is about 260px. A 844px phone therefore holds two; in landscape it
+ * holds one, which is the honest answer rather than three slivers. */
+export const stackFor = (availableHeight: number): number =>
+  Math.min(3, Math.max(1, Math.floor(availableHeight / 260)));

@@ -14,7 +14,7 @@
 // half-open stream.
 
 import { useEffect, useMemo, useState } from 'react';
-import { Tiles, type TerminalPane } from '@/components/sessions/tiles';
+import { Tiles, type TerminalHost } from '@/components/sessions/tiles';
 import type { AgentSession } from '@/lib/sessions';
 import type { Machine } from '@/lib/machines';
 
@@ -130,20 +130,29 @@ export function SessionBoard({
     );
   }, [sessions, machines]);
 
-  // What the workspace can arrange: every session publishing a terminal right
-  // now. A session with no URL has nothing to frame, and a finished one's tunnel
-  // has stopped answering — neither belongs in a pane.
-  const terminals = useMemo<TerminalPane[]>(
-    () =>
-      sessions
-        .filter((s) => s.terminal && (s.status === 'running' || s.status === 'paused'))
-        .map((s) => ({
-          id: s.id,
-          title: `${s.host || s.agent}${s.cwd ? ` · ${shortPath(s.cwd)}` : ''}`,
-          url: s.terminal!,
-        })),
-    [sessions],
-  );
+  // The machines that can serve shells, and the tunnel each one's terminals live
+  // on. A machine's terminal URL is a fact about the MACHINE — one `hanzo link`,
+  // one ttyd, one tunnel — so it is read from whichever of its sessions published
+  // one rather than treated as a property of that session. The workspace then
+  // names a shell per pane with `?arg=`, so one link serves many.
+  const terminalHosts = useMemo<TerminalHost[]>(() => {
+    const base = new Map<string, string>();
+    for (const s of sessions) {
+      if (!s.terminal || !s.host) continue;
+      if (s.status !== 'running' && s.status !== 'paused') continue;
+      if (!base.has(s.host)) base.set(s.host, s.terminal);
+    }
+    const named = new Map<string, TerminalHost>();
+    for (const m of machines) {
+      const key = m.host || m.label || m.id;
+      named.set(key, { machine: key, base: base.get(key), status: m.status, label: m.capacity });
+    }
+    // A host with a live terminal that never registered as a target still counts.
+    for (const [host, url] of base) {
+      if (!named.has(host)) named.set(host, { machine: host, base: url, status: 'online' });
+    }
+    return [...named.values()];
+  }, [sessions, machines]);
 
   const [selected, setSelected] = useState<string | null>(
     sessions.find((s) => s.terminal)?.id ?? sessions[0]?.id ?? null,
@@ -317,7 +326,7 @@ export function SessionBoard({
         {/* The workspace takes the room that is left, rather than a fraction of
             the viewport chosen when the chrome above it was a different height. */}
         <div className="min-h-0 flex-1">
-          <Tiles panes={terminals} />
+          <Tiles hosts={terminalHosts} />
         </div>
       </section>
     </div>
