@@ -43,15 +43,22 @@ export default function ProfilePage() {
     setDraft((d) => ({ ...d, [key]: value }));
 
   /**
-   * THE SESSION THIS APP ACTUALLY HAS.
+   * Send the session EXPLICITLY, rather than relying on the cookie bridge.
    *
-   * `session()` on the server reads a bearer, falling back to a session COOKIE —
-   * and this app has no such cookie. Its session is an IAM access token in Web
-   * Storage, which every other authenticated surface sends explicitly
-   * (`useIamToken()` → `Authorization: Bearer`, e.g. components/usage). A plain
-   * `credentials: "same-origin"` fetch therefore arrives ANONYMOUS: the route
-   * answers 401 "Sign in to edit your profile" for a signed-in person, and every
-   * save fails while the page looks logged in. Nothing here works without this.
+   * `session()` on the server reads an `Authorization: Bearer`, falling back to
+   * the `hanzo_iam_access_token` cookie. That cookie does exist here —
+   * `IamClientProvider`'s bridge projects the SDK's token onto it and keeps it
+   * refresh-current — so a same-origin fetch is usually authenticated already.
+   *
+   * "Usually" is the reason for this. The bridge is an effect: it runs after
+   * mount, and after a refresh it rewrites the cookie only once the new token
+   * lands. A fetch that fires in that window carries a stale cookie or none, and
+   * the failure reads as being signed out while the page plainly is not. The
+   * bearer is the token this component is already holding, so sending it removes
+   * the ordering question entirely — and it is what every other authenticated
+   * surface here does (`useIamToken()`, e.g. components/usage).
+   *
+   * The load also waits for the token rather than racing it, for the same reason.
    */
   const { token } = useIamToken();
   const authed = (init: RequestInit = {}): RequestInit => ({
