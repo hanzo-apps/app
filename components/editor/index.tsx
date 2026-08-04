@@ -246,7 +246,11 @@ export const AppEditor = ({
 
   return (
     <OrgProvider>
-    <section className="h-[100dvh] bg-card flex flex-col">
+    {/* overflow-hidden as well as the exact height: the height alone only says
+        how tall this is, not that nothing may escape it. One child that forgets
+        `min-h-0` would otherwise put the whole app back on a scrolling document,
+        and that failure is invisible until a thread gets long enough. */}
+    <section className="h-[100dvh] overflow-hidden bg-card flex flex-col">
       <Header
         tab={currentTab}
         onNewTab={setCurrentTab}
@@ -290,7 +294,15 @@ export const AppEditor = ({
           <DeployButton pages={pages} prompts={prompts} disabled={isAiWorking} />
         )}
       </Header>
-      <main className="bg-card flex-1 max-lg:flex-col flex w-full max-lg:h-[calc(100%-82px)] relative">
+      {/* `min-h-0` is what keeps the builder a fixed shell instead of a long page.
+          A flex child defaults to `min-height: auto`, which means it will NOT
+          shrink below its own content — so a long thread grew this row past the
+          `h-[100dvh]` section, the DOCUMENT scrolled, and the header scrolled off
+          the top with it. The toolbar (Preview/Code/Publish) disappearing mid-build
+          is that, and it takes the user's bearings with it. With min-h-0 the row is
+          bounded by the viewport and the panes scroll INSIDE it, which is what the
+          chat pane's own `min-h-0 flex-1` below already assumed. */}
+      <main className="bg-card flex-1 min-h-0 max-lg:flex-col flex w-full max-lg:h-[calc(100%-82px)] relative">
         {/* LEFT — the chat pane, ALWAYS chat (never code). The composer is pinned
             to the bottom of this flex-col (AskAI is `mt-auto`), so messages scroll
             above it. Desktop: docked left unless collapsed; mobile: shown only on
