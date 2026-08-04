@@ -149,7 +149,7 @@ jobs:
         env:
           KMS_CLIENT_ID: ${{ secrets.KMS_CLIENT_ID }}
           KMS_CLIENT_SECRET: ${{ secrets.KMS_CLIENT_SECRET }}
-          KMS_ENDPOINT: ${{ vars.KMS_ENDPOINT || 'https://kms.hanzo.ai' }}
+          KMS_ENDPOINT: ${{ vars.KMS_ENDPOINT || 'https://api.hanzo.ai' }}
         run: |
           set -uo pipefail
           if [ -z "${KMS_CLIENT_ID:-}" ] || [ -z "${KMS_CLIENT_SECRET:-}" ]; then
@@ -163,8 +163,16 @@ jobs:
           if [ -z "$TOKEN" ]; then
             echo "::error::KMS login failed — shipping a bundle with no ingest key"; exit 0
           fi
-          V=$(curl -sf "$KMS_ENDPOINT/v1/kms/orgs/hanzo/secrets/deploy/EVENT_INGEST_KEY?env=prod" \
-            -H "Authorization: Bearer $TOKEN" | jq -r '.secret.value // empty')
+          # KMS is embedded in hanzoai/cloud now (HIP-0106): the org comes from
+          # the TOKEN, not the url, and the body is flat {"name","env","value"}.
+          # The old /v1/kms/orgs/<org>/... + .secret.value pair 404s and selects
+          # nothing, which `curl -sf` turns into "" — indistinguishable from a
+          # missing secret, so the guard below reported "absent from KMS" for a
+          # key that was sitting right there. The standalone host also still holds
+          # a STALE copy that cloud rejects at ingest with 403, so reading the old
+          # address ships a key that cannot write.
+          V=$(curl -sf "$KMS_ENDPOINT/v1/kms/secrets/deploy/EVENT_INGEST_KEY?env=prod" \
+            -H "Authorization: Bearer $TOKEN" | jq -r '.value // empty')
           if [ -z "$V" ]; then
             echo "::error::EVENT_INGEST_KEY absent from KMS (hanzo/deploy env=prod) — shipping a bundle with no ingest key"; exit 0
           fi
@@ -238,7 +246,7 @@ jobs:
         env:
           KMS_CLIENT_ID: ${{ secrets.KMS_CLIENT_ID }}
           KMS_CLIENT_SECRET: ${{ secrets.KMS_CLIENT_SECRET }}
-          KMS_ENDPOINT: ${{ vars.KMS_ENDPOINT || 'https://kms.hanzo.ai' }}
+          KMS_ENDPOINT: ${{ vars.KMS_ENDPOINT || 'https://api.hanzo.ai' }}
           KMS_ORG: ${{ vars.KMS_ORG || 'hanzo' }}
           KMS_SECRET_ENV: ${{ vars.KMS_SECRET_ENV || 'prod' }}
           # pin.sh probes the registry before it moves anything; these let it read
@@ -256,9 +264,14 @@ jobs:
             | jq -r '.accessToken // empty')
           [ -n "$KMS_TOKEN" ] || { echo "::error::KMS login failed at ${KMS_ENDPOINT} — image ${VERSION} is pushed but NOT deployed"; exit 1; }
 
+          # Embedded-KMS shape (HIP-0106): org from the TOKEN, flat {"value"}.
+          # Unlike the ingest-key read above this one is fatal by design — an
+          # image that cannot be pinned is an image that never deploys — so the
+          # url and the selector have to match the endpoint or every release
+          # stops here.
           PIN_TOKEN=$(curl -fsS \
-            "${KMS_ENDPOINT}/v1/kms/orgs/${KMS_ORG}/secrets/deploy/UNIVERSE_PIN_TOKEN?env=${KMS_SECRET_ENV}" \
-            -H "Authorization: Bearer ${KMS_TOKEN}" | jq -r '.secret.value // empty')
+            "${KMS_ENDPOINT}/v1/kms/secrets/deploy/UNIVERSE_PIN_TOKEN?env=${KMS_SECRET_ENV}" \
+            -H "Authorization: Bearer ${KMS_TOKEN}" | jq -r '.value // empty')
           [ -n "$PIN_TOKEN" ] || { echo "::error::UNIVERSE_PIN_TOKEN missing in KMS at ${KMS_ORG}/deploy (env ${KMS_SECRET_ENV}) — image ${VERSION} is pushed but NOT deployed"; exit 1; }
           echo "::add-mask::${PIN_TOKEN}"
 
