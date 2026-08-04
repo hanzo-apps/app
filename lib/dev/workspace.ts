@@ -114,3 +114,24 @@ export function projectRepoName(slug?: string | null): string {
     return "";
   }
 }
+
+/**
+ * A NEW build is starting — forget the last unsaved project's identity.
+ *
+ * The minted repo id lives under ONE key so a RELOAD of the same build reuses
+ * the same repo. But without clearing it, the NEXT unsaved build read the same
+ * id and committed into the previous project's repo — the cross-project
+ * overwrite the minting exists to prevent, one browser over. The composer calls
+ * this when it hands a fresh prompt to /dev, which is the one unambiguous
+ * "different project now" signal; a reload does not go through the composer, so
+ * it keeps its repo.
+ */
+export function startNewBuild(): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(ID_KEY);
+    window.localStorage.removeItem(keyFor("untitled-site"));
+  } catch {
+    /* nothing to do */
+  }
+}

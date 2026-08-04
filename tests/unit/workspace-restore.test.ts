@@ -94,3 +94,22 @@ describe('projectRepoName — a repo name that cannot collide', () => {
     spy.mockRestore();
   });
 });
+
+describe('startNewBuild — a fresh prompt is a different project', () => {
+  const { startNewBuild, projectRepoName } = jest.requireActual('@/lib/dev/workspace');
+
+  it('rotates the minted id so build 2 does not commit into build 1 repo', () => {
+    window.localStorage.clear();
+    const first = projectRepoName(undefined);       // build 1 mints site-xxx
+    expect(projectRepoName(undefined)).toBe(first);  // reload: same repo
+    startNewBuild();                                 // composer: new prompt
+    const second = projectRepoName(undefined);       // build 2 mints a DIFFERENT repo
+    expect(second).not.toBe(first);
+  });
+
+  it('does not throw when storage is blocked', () => {
+    const spy = jest.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => { throw new Error('x'); });
+    expect(() => startNewBuild()).not.toThrow();
+    spy.mockRestore();
+  });
+});

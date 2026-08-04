@@ -32,6 +32,7 @@ import {
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/overlay';
 import { cn } from '@/lib/utils';
 import { baseEnabled, setBaseEnabled } from '@/lib/base/flag';
+import { startNewBuild } from '@/lib/dev/workspace';
 
 export type ComposerMode = 'build' | 'plan';
 
@@ -153,6 +154,9 @@ export function BuildComposer({
     }
     // Default seed pipeline (PRESERVED contract + the one new mode key).
     try {
+      // A fresh prompt is a NEW project — drop the previous unsaved build's
+      // minted repo id so this one does not commit into that one's history.
+      startNewBuild();
       localStorage.setItem('initialPrompt', text);
       localStorage.setItem('initialMode', mode);
     } catch {
