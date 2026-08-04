@@ -1,24 +1,120 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Save, Camera, Link as LinkIcon, Twitter, Github, Globe } from "lucide-react";
+import { ArrowLeft, Save, Camera, Twitter, Github, Globe } from "lucide-react";
 import { Button } from "@hanzo/ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@hanzo/ui";
 import { useUser } from "@/hooks/useUser";
 import { toast } from "@hanzo/ui";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { MyBuilds } from "@/components/builds/my-builds";
+import { gravatarUrl } from "@/lib/avatar";
+import { avatarDataUrl } from "@/lib/image";
+
+/** Mirrors `lib/profile`'s AVATAR_LIMIT — the client reduces to fit, the server enforces. */
+const AVATAR_LIMIT = 96 * 1024;
+
+/** The editable profile. Empty strings, never undefined, so inputs stay controlled. */
+interface Draft {
+  displayName: string;
+  avatar: string;
+  bio: string;
+  homepage: string;
+  twitter: string;
+  github: string;
+}
+
+const EMPTY: Draft = { displayName: "", avatar: "", bio: "", homepage: "", twitter: "", github: "" };
 
 export default function ProfilePage() {
   // All hooks must be called unconditionally before any conditional returns
   const { user, loading } = useUser();
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
+  const [draft, setDraft] = useState<Draft>(EMPTY);
+  const [saved, setSaved] = useState<Draft>(EMPTY);
+  const [busy, setBusy] = useState(false);
+  const [imgFailed, setImgFailed] = useState(false);
+  const fileInput = useRef<HTMLInputElement>(null);
 
-  const handleSave = () => {
-    toast.success("Profile updated successfully");
+  const set = <K extends keyof Draft>(key: K, value: Draft[K]) =>
+    setDraft((d) => ({ ...d, [key]: value }));
+
+  // The stored profile. Until this lands the page shows the session's claims,
+  // which is what the header already renders.
+  useEffect(() => {
+    if (!user) return;
+    let live = true;
+    (async () => {
+      try {
+        const res = await fetch("/v1/me/profile", { credentials: "same-origin" });
+        const body = await res.json().catch(() => null);
+        if (!live || !res.ok || !body?.ok) return;
+        const p: Draft = { ...EMPTY, ...body.profile };
+        setSaved(p);
+        setDraft(p);
+      } catch {
+        // Unreadable stored profile is not an error worth interrupting for: the
+        // page still renders the session's identity and Save still works.
+      }
+    })();
+    return () => {
+      live = false;
+    };
+  }, [user]);
+
+  const pickPhoto = useCallback(async (file: File) => {
+    setBusy(true);
+    try {
+      // Reduce HERE. A 12 MB camera photo would fail the server's cap, and
+      // "your photo is too large" is a useless answer when the browser can
+      // simply make it the right size.
+      const dataUrl = await avatarDataUrl(file, AVATAR_LIMIT);
+      set("avatar", dataUrl);
+      setImgFailed(false);
+      toast.success("Photo ready — press Save Changes to keep it");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "That photo could not be used");
+    } finally {
+      setBusy(false);
+      // Clear the input so re-picking the SAME file fires change again.
+      if (fileInput.current) fileInput.current.value = "";
+    }
+  }, []);
+
+  const handleSave = async () => {
+    setBusy(true);
+    try {
+      const res = await fetch("/v1/me/profile", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(draft),
+      });
+      const body = await res.json().catch(() => null);
+      if (!res.ok || !body?.ok) {
+        // Say what the server said. "Profile updated successfully" on a failed
+        // write is the bug this page shipped with.
+        toast.error(body?.message || `Could not save your profile (${res.status})`);
+        return;
+      }
+      const p: Draft = { ...EMPTY, ...body.profile };
+      setSaved(p);
+      setDraft(p);
+      setIsEditing(false);
+      toast.success("Profile saved");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not reach the server");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const cancel = () => {
+    setDraft(saved);
     setIsEditing(false);
+    setImgFailed(false);
   };
 
   // Use effect for navigation to avoid calling router.push during render
@@ -58,6 +154,24 @@ export default function ProfilePage() {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
+  // The name to show: the stored profile wins, then the session's claims.
+  const shownName = (isEditing ? draft.displayName : saved.displayName) || user?.fullname || "";
+  const initial = (shownName || user?.email || "U").trim().charAt(0).toUpperCase() || "U";
+
+  /**
+   * The photo to render, in priority order — and '' when there is none, which
+   * the Avatar reads as "show the monogram" rather than as an image to fetch:
+   *   1. the draft (a photo just picked, not yet saved),
+   *   2. the stored profile avatar,
+   *   3. the session's `picture` claim,
+   *   4. this email's gravatar (`d=404`, so no gravatar → onError → monogram).
+   */
+  const photo =
+    draft.avatar ||
+    saved.avatar ||
+    user?.avatarUrl ||
+    (user?.email ? gravatarUrl(user.email, 192) : "");
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -78,12 +192,12 @@ export default function ProfilePage() {
           <div className="flex items-center gap-2">
             {isEditing ? (
               <>
-                <Button variant="outline" onClick={() => setIsEditing(false)}>
+                <Button variant="outline" onClick={cancel} disabled={busy}>
                   Cancel
                 </Button>
-                <Button onClick={handleSave} className="gap-2">
+                <Button onClick={handleSave} className="gap-2" disabled={busy}>
                   <Save className="w-4 h-4" />
-                  Save Changes
+                  {busy ? "Saving…" : "Save Changes"}
                 </Button>
               </>
             ) : (
@@ -102,15 +216,42 @@ export default function ProfilePage() {
             <div className="flex items-center gap-6">
               <div className="relative">
                 <Avatar className="w-24 h-24 border-4 border-black">
-                  <AvatarImage src={user?.avatarUrl} />
+                  {/* An `<img>` with src="" resolves to the PAGE url, loads HTML,
+                      fails to decode, and renders the browser's broken-image
+                      icon — which is exactly what this showed, because
+                      `useUser` defaults avatarUrl to ''. A src is passed only
+                      when there is one, and a load failure (a dead gravatar,
+                      d=404) falls through to the monogram. */}
+                  {photo && !imgFailed && (
+                    <AvatarImage src={photo} alt="" onError={() => setImgFailed(true)} />
+                  )}
                   <AvatarFallback className="text-2xl bg-purple-600">
-                    {user?.fullname?.charAt(0).toUpperCase() ?? "U"}
+                    {initial}
                   </AvatarFallback>
                 </Avatar>
                 {isEditing && (
-                  <button className="absolute bottom-0 right-0 p-1.5 bg-purple-500 rounded-full hover:bg-purple-600 transition-colors">
-                    <Camera className="w-4 h-4 text-foreground" />
-                  </button>
+                  <>
+                    <input
+                      ref={fileInput}
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/gif"
+                      className="sr-only"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) void pickPhoto(f);
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fileInput.current?.click()}
+                      disabled={busy}
+                      aria-label="Change profile photo"
+                      title="Change profile photo"
+                      className="absolute bottom-0 right-0 p-1.5 bg-purple-500 rounded-full hover:bg-purple-600 transition-colors disabled:opacity-50"
+                    >
+                      <Camera className="w-4 h-4 text-foreground" />
+                    </button>
+                  </>
                 )}
               </div>
 
@@ -118,11 +259,14 @@ export default function ProfilePage() {
                 {isEditing ? (
                   <input
                     type="text"
-                    defaultValue={user?.fullname}
+                    value={draft.displayName}
+                    onChange={(e) => set("displayName", e.target.value)}
+                    placeholder={user?.fullname || "Your name"}
+                    aria-label="Display name"
                     className="text-3xl font-medium bg-transparent text-foreground border-b border-border focus:border-purple-500 outline-none pb-2 mb-2"
                   />
                 ) : (
-                  <h2 className="text-3xl font-medium text-foreground mb-2">{user?.fullname}</h2>
+                  <h2 className="text-3xl font-medium text-foreground mb-2">{shownName}</h2>
                 )}
                 <p className="text-muted-foreground">@{handle}</p>
               </div>
@@ -143,42 +287,32 @@ export default function ProfilePage() {
                   {isEditing ? (
                     <input
                       type="text"
-                      defaultValue={user?.fullname}
+                      value={draft.displayName}
+                      onChange={(e) => set("displayName", e.target.value)}
+                      placeholder={user?.fullname || "Your name"}
                       className="w-full bg-muted text-foreground border border-border rounded-lg px-3 py-2"
                     />
                   ) : (
-                    <p className="text-foreground">{user?.fullname}</p>
+                    <p className="text-foreground">{shownName || "\u2014"}</p>
                   )}
                 </div>
 
+                {/* Email and username are shown, never edited here. Email is an
+                    identity claim that needs a verification round-trip, and the
+                    username is the IAM row's own key — offering an input for
+                    either would be a control that cannot do what it says. */}
                 <div>
                   <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Email
                   </label>
-                  {isEditing ? (
-                    <input
-                      type="email"
-                      defaultValue={user?.email}
-                      className="w-full bg-muted text-foreground border border-border rounded-lg px-3 py-2"
-                    />
-                  ) : (
-                    <p className="text-foreground break-all">{user?.email}</p>
-                  )}
+                  <p className="text-foreground break-all">{user?.email}</p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-muted-foreground mb-1">
                     Username
                   </label>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      defaultValue={handle}
-                      className="w-full bg-muted text-foreground border border-border rounded-lg px-3 py-2"
-                    />
-                  ) : (
-                    <p className="text-foreground">@{handle}</p>
-                  )}
+                  <p className="text-foreground">@{handle}</p>
                 </div>
               </div>
 
@@ -193,11 +327,15 @@ export default function ProfilePage() {
                   {isEditing ? (
                     <textarea
                       rows={4}
+                      value={draft.bio}
+                      onChange={(e) => set("bio", e.target.value)}
                       placeholder="Tell us about yourself..."
                       className="w-full bg-muted text-foreground border border-border rounded-lg px-3 py-2 resize-none"
                     />
                   ) : (
-                    <p className="text-muted-foreground">No bio added yet</p>
+                    <p className="text-muted-foreground whitespace-pre-wrap">
+                      {saved.bio || "No bio added yet"}
+                    </p>
                   )}
                 </div>
 
@@ -207,39 +345,57 @@ export default function ProfilePage() {
                   </label>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <Globe className="w-4 h-4 text-muted-foreground" />
+                      <Globe className="w-4 h-4 text-muted-foreground shrink-0" />
                       {isEditing ? (
                         <input
                           type="url"
-                          placeholder="Website"
+                          value={draft.homepage}
+                          onChange={(e) => set("homepage", e.target.value)}
+                          placeholder="https://example.com"
+                          aria-label="Website"
                           className="flex-1 bg-muted text-foreground border border-border rounded-lg px-3 py-1.5"
                         />
+                      ) : saved.homepage ? (
+                        <a
+                          href={saved.homepage}
+                          target="_blank"
+                          rel="noopener noreferrer nofollow"
+                          className="text-foreground hover:underline break-all"
+                        >
+                          {saved.homepage}
+                        </a>
                       ) : (
                         <span className="text-muted-foreground">Not set</span>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <Twitter className="w-4 h-4 text-muted-foreground" />
+                      <Twitter className="w-4 h-4 text-muted-foreground shrink-0" />
                       {isEditing ? (
                         <input
                           type="text"
+                          value={draft.twitter}
+                          onChange={(e) => set("twitter", e.target.value)}
                           placeholder="Twitter username"
+                          aria-label="Twitter username"
                           className="flex-1 bg-muted text-foreground border border-border rounded-lg px-3 py-1.5"
                         />
                       ) : (
-                        <span className="text-muted-foreground">Not set</span>
+                        <span className="text-foreground">{saved.twitter || <span className="text-muted-foreground">Not set</span>}</span>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <Github className="w-4 h-4 text-muted-foreground" />
+                      <Github className="w-4 h-4 text-muted-foreground shrink-0" />
                       {isEditing ? (
                         <input
                           type="text"
+                          value={draft.github}
+                          onChange={(e) => set("github", e.target.value)}
                           placeholder="GitHub username"
+                          aria-label="GitHub username"
                           className="flex-1 bg-muted text-foreground border border-border rounded-lg px-3 py-1.5"
                         />
                       ) : (
-                        <span className="text-muted-foreground">Not set</span>
+                        <span className="text-foreground">{saved.github || <span className="text-muted-foreground">Not set</span>}</span>
                       )}
                     </div>
                   </div>
