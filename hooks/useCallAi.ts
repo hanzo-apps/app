@@ -3,6 +3,7 @@ import { toast } from "@hanzo/ui";
 import { Page } from "@/types";
 import { parsePages, parseSinglePage, stripThinkBlocks } from "@/lib/format-pages";
 import { setLastGenerationRequestId } from "@/lib/reward-signal";
+import { deadLinks } from "@/lib/pages/links";
 import { baseEnabled } from "@/lib/base/flag";
 // UNAVAILABLE is the ONE honest message for a failure THIS side detects: the
 // socket died, or the response arrived without a body. The caller's handleError
@@ -264,8 +265,23 @@ export const useCallAi = ({
                   : `${cut.length} pages are still unfinished after ${attempts} continuation${attempts === 1 ? "" : "s"}. Ask for a smaller change, or split it across pages.`,
               );
             } else {
-              toast.success("AI responded successfully");
-              if (audio.current) audio.current.play();
+              // "Every control works" is asked for in the prompt; this is the
+              // half that CHECKS it. A nav pointing at a page the model never
+              // wrote is otherwise found by clicking it, which is the worst
+              // moment to find it. Reported, not repaired — rewriting someone's
+              // markup on a guess is a bigger liberty than naming the problem.
+              const dead = deadLinks(newPages);
+              if (dead.length) {
+                const first = dead[0];
+                toast.error(
+                  dead.length === 1
+                    ? `${first.href} on ${first.from} goes nowhere — ${first.reason}. Ask for that page, or for the link to be removed.`
+                    : `${dead.length} links go nowhere (first: ${first.href} on ${first.from}). Ask for those pages, or for the links to be removed.`,
+                );
+              } else {
+                toast.success("AI responded successfully");
+                if (audio.current) audio.current.play();
+              }
             }
 
             onSuccess(newPages, prompt);
