@@ -196,7 +196,7 @@ export default function PricingPage() {
                     }
                     title={catalogError ?? undefined}
                     variant={plan.highlighted ? 'default' : 'outline'}
-                    marginTop="$5" width="100%" alignItems="center" justifyContent="center" gap="$2" borderRadius="$10" paddingHorizontal="$4.5" paddingVertical="$3" disabledStyle={{ opacity: 0.6 }} {...{ backgroundColor: plan.highlighted ? "$color12" : "$color002", hoverStyle: plan.highlighted ? {"backgroundColor":"$color12"} : {"borderColor":"$color06","backgroundColor":"$color005"}, borderWidth: plan.highlighted ? undefined : 1, borderColor: plan.highlighted ? undefined : "$borderColor" }}
+                    marginTop="$5" width="100%" alignItems="center" justifyContent="center" gap="$2" borderRadius="$10" paddingHorizontal="$4.5" paddingVertical="$3" borderWidth={1} disabledStyle={{ opacity: 0.6 }} {...{ backgroundColor: plan.highlighted ? "$color5" : "$color002", hoverStyle: plan.highlighted ? {"backgroundColor":"$color6","borderColor":"$color7"} : {"borderColor":"$color06","backgroundColor":"$color005"}, borderColor: plan.highlighted ? "$color6" : "$borderColor" }}
                   >
                     <SizableText fontSize="$3" fontWeight="500">
                       {!isAuthenticated

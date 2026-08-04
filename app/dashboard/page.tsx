@@ -106,6 +106,7 @@ export default function DashboardPage() {
                 .getElementById("projects-panel")
                 ?.scrollIntoView({ behavior: "smooth", block: "start" })
             }
+            variant="ghost"
             group position="absolute" bottom="$5" left="50%" x="50%" flexDirection="column" alignItems="center" gap="$1"
           >
             <SizableText fontFamily="$mono" fontSize={10} color="$color11" $group-hover={{ color: "$color" }}>

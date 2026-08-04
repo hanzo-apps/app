@@ -185,12 +185,24 @@ a {
 
 :root {
   /* The one sweep, declared once and closing on the stop it opened with — a
-     conic gradient whose first and last stop differ shows a hard seam. It is
-     MONOCHROME: a travelling white highlight, bright at its crest and nearly
-     out at its trough, which is what gives the ring motion without giving it a
-     hue. Hanzo is monochrome everywhere, and the composer is not an exemption. */
-  --hz-spectrum: rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.75),
-    rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.3);
+     conic gradient whose first and last stop differ shows a hard seam.
+     PRISMATIC by design (owner-directed): the chrome everywhere else stays
+     monochrome ninja-stealth, and the composer ring is the ONE deliberate
+     spectrum — the Apple-Intelligence iridescence (blue → violet → pink →
+     amber and home again), moderated so it glows instead of shouting. */
+  --hz-spectrum: rgba(8, 148, 255, 0.55), rgba(201, 89, 221, 0.6),
+    rgba(255, 46, 84, 0.5), rgba(255, 144, 4, 0.5), rgba(8, 148, 255, 0.55);
+
+  /* Product hues — the same prism, cut per product. Category accents for
+     marks, badges and cards; chrome stays monochrome, these are ACCENTS. */
+  --hz-product-chat: #0894ff;
+  --hz-product-app: #ff9004;
+  --hz-product-dev: #c959dd;
+  --hz-product-bot: #ff2e54;
+  --hz-product-cloud: #22c1ee;
+  --hz-product-team: #2ecc71;
+  --hz-product-base: #10b981;
+  --hz-product-studio: #f5c518;
 }
 
 @keyframes hzComposerSpin {

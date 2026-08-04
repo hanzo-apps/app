@@ -413,7 +413,11 @@ export function CatalogBrowser({
       </XStack>
 
       <Paragraph marginTop="$5" fontFamily="$mono" fontSize={11} color="$color11">
-        {err ? `error: ${err}` : loading ? "searching…" : `${total} results`}
+        {err
+          ? "Couldn't load the community feed — check your connection and refresh."
+          : loading
+            ? "searching…"
+            : `${total} results`}
       </Paragraph>
 
       <YStack marginTop="$4" gap="$4">
