@@ -43,6 +43,7 @@ import { SaveButton } from "./save-button";
 import { LoadProject } from "../my-projects/load-project";
 import { isTheSameHtml } from "@/lib/compare-html-diff";
 import { useAutosave } from "@/hooks/useAutosave";
+import { commitTurn } from "@/lib/git/commit-turn";
 import { saveLabel } from "@/lib/pages/save-label";
 import { FileTree } from "./file-tree";
 import { HistoryPanel } from "./history";
@@ -362,6 +363,24 @@ export const AppEditor = ({
                 // user is building on it. Attaches the last gateway response id
                 // (no-ops if a generation produced none). Fire-and-forget.
                 sendRewardSignal(getLastGenerationRequestId(), "accept");
+
+                // VERSION HISTORY. Each finished turn is a commit on
+                // git.hanzo.ai, so the history panel has real revisions to show,
+                // bookmark and fork from. Fire-and-forget — the build is already
+                // on screen and a slow forge must not hold up the next prompt —
+                // but never silent: an unwired forge or a failed write says so,
+                // because implying a history that is not being written is the
+                // same defect as the status bar that read "Auto-saved".
+                void commitTurn(
+                  project?.title || (window as any).__projectName || "untitled-site",
+                  newPages,
+                  p,
+                ).then((r) => {
+                  if (!r.ok && !r.unconfigured) {
+                    toast.error(`Version not saved to git: ${r.reason}`);
+                  }
+                });
+
                 const currentHistory = [...htmlHistory];
                 currentHistory.unshift({
                   pages: newPages,
