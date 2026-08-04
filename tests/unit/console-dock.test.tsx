@@ -61,7 +61,7 @@ function Composer({ voice }: { voice: ReturnType<typeof machine> }) {
   return null;
 }
 
-const setup = (onToggleSidebar = jest.fn(), voice: ReturnType<typeof machine> | null = machine()) => {
+const setup = (onToggleSidebar = jest.fn(), voice: ReturnType<typeof machine> | null = machine(), branch?: string) => {
   const view = render(
     // The app mounts one TooltipProvider in `app/providers.tsx`; the dock lives
     // under it, and the mic's tooltip needs it.
@@ -70,6 +70,7 @@ const setup = (onToggleSidebar = jest.fn(), voice: ReturnType<typeof machine> | 
       <Console
         isAiWorking={false}
         saveText="Saved 9:15 PM"
+        branch={branch}
         pageCount={1}
         sidebarCollapsed={false}
         onToggleSidebar={onToggleSidebar}
@@ -91,6 +92,19 @@ const dragTo = (handle: HTMLElement, from: number, to: number) => {
 };
 
 describe("the bar is a resize handle", () => {
+  it("shows NO branch when the project has no repo", () => {
+    // Most builder projects have none — only publish or an explicit git sync
+    // creates one. The bar used to print a hardcoded "main" regardless, drawing
+    // a version-control state that did not exist.
+    const { container } = setup(jest.fn(), machine(), undefined);
+    expect(container.textContent).not.toMatch(/\bmain\b/);
+  });
+
+  it("shows the REAL branch when the project is linked to a repo", () => {
+    const { container } = setup(jest.fn(), machine(), "release/v2");
+    expect(container.textContent).toContain("release/v2");
+  });
+
   it("renders a real, focusable separator in the console chrome", () => {
     const { handle } = setup();
     expect(handle).toBeInTheDocument();

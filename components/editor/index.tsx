@@ -573,6 +573,7 @@ export const AppEditor = ({
       <Console
         isAiWorking={isAiWorking}
         saveText={saveLabel(autosave.state, autosave.at)}
+        branch={project?.repo?.branch}
         pageCount={pages.length}
         sidebarCollapsed={sidebarCollapsed}
         onToggleSidebar={() => setSidebarCollapsed((v) => !v)}
