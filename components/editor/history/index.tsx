@@ -676,7 +676,7 @@ export function HistoryPanel({
               repoResolved &&
               !showBookmarksOnly &&
               (projectError ? (
-                <div className="px-2 py-6 text-xs text-muted-foreground">{projectError}</div>
+                <SizableText paddingHorizontal="$2" paddingVertical="$6" fontSize={11} color="$color11">{projectError}</SizableText>
               ) : (
                 <ConnectRepoCta />
               ))}
