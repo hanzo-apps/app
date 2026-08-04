@@ -25,6 +25,7 @@ import {
   resourceCategories,
   type ResourceItem,
 } from '@/lib/resources-catalog';
+import { bySpectrum, tint } from '@/lib/template-hues';
 import { TemplatePreviewModal } from '@/components/remix/template-preview-modal';
 import { RemixDialog } from '@/components/remix/remix-dialog';
 import { RemixProgress } from '@/components/remix/remix-progress';
@@ -71,9 +72,12 @@ function ResourcesBrowser() {
 
   const categories = useMemo(() => resourceCategories(items), [items]);
 
+  // Spectrum order, so the grid reads as one gradient from purple down to the
+  // greyscale tail. It sorts the FILTERED list: narrowing to a category or a
+  // search still leaves the survivors in colour order.
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
-    return items.filter((it) => {
+    const matches = items.filter((it) => {
       const matchesCat = category === 'All' || it.category === category;
       const matchesSearch =
         !q ||
@@ -83,6 +87,7 @@ function ResourcesBrowser() {
         it.framework.toLowerCase().includes(q);
       return matchesCat && matchesSearch;
     });
+    return bySpectrum(matches, (it) => it.templateSlug);
   }, [items, category, query]);
 
   const openPreview = (item: ResourceItem) => {
@@ -233,11 +238,26 @@ function ResourceCard({
   item: ResourceItem;
   onOpen: (item: ResourceItem) => void;
 }) {
+  // The card's hairline carries the shot's own colour at low alpha — enough to
+  // make the spectrum order legible as you scan, not enough to be chrome. Cards
+  // with no dominant colour keep the monochrome border, which is the whole point
+  // of having measured one.
+  //
+  // Hover brightens that same hue rather than going white. Partly because the
+  // spectrum should survive being pointed at, and partly because rest and hover
+  // then come from ONE expression: a dynamic value and a theme token are placed
+  // by different paths in gui, and the runtime-inserted rule for the dynamic one
+  // carries the same specificity as the pseudo-state rule it would have to lose
+  // to (`:root ._btc-x._btc-x` against `:root ._btc-hover:hover`, both 0,3,0), so
+  // which one won came down to insertion order. That is not a thing to build on.
+  const colour = tint(item.templateSlug);
+  const hairline = colour ? `hsl(${colour.hue} 65% 55% / 0.35)` : "$borderColor";
+  const lit = colour ? `hsl(${colour.hue} 75% 62% / 0.8)` : "$color";
   return (
     <Button
       type="button"
       onClick={() => onOpen(item)}
-      group className="zoom-scope" flexDirection="column" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "-1", borderColor: "$color" }}
+      group className="zoom-scope" flexDirection="column" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor={hairline} backgroundColor="$background" hoverStyle={{ y: "-1", borderColor: lit }}
     >
       <YStack position="relative" overflow="hidden" backgroundColor="$background">
         {item.hasImage ? (

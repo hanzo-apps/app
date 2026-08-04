@@ -12,6 +12,7 @@ import Reveal from "@/components/landing/reveal";
 import LazySection from "@/components/landing/lazy-section";
 import { TemplateThumb } from "@/components/template-thumb";
 import { TEMPLATE_SHOTS } from "@/lib/template-shots";
+import { bySpectrum } from "@/lib/template-hues";
 import { BuildComposer, type ComposerMode } from "@/components/build-composer";
 import { ProjectThumb } from "@/components/project-thumb";
 
@@ -37,13 +38,16 @@ import {
 
 // The strip shows only templates with a hand-QC'd real screenshot, exactly one
 // per slug — a generated placeholder tile on the landing page reads as broken.
+// Ordered by the colour of the shot rather than by rating, so scrolling the
+// strip runs the spectrum instead of shuffling unrelated pictures.
 function qcTemplates(templates: GalleryTemplate[]): GalleryTemplate[] {
   const seen = new Set<string>();
-  return popularTemplates(templates, 100).filter((t) => {
+  const qc = popularTemplates(templates, 100).filter((t) => {
     if (!TEMPLATE_SHOTS.has(t.slug) || seen.has(t.slug)) return false;
     seen.add(t.slug);
     return true;
   });
+  return bySpectrum(qc, (t) => t.slug);
 }
 
 interface LandingProject {

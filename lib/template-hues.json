@@ -1,0 +1,330 @@
+{
+  "agenda-grid": {
+    "hue": 213,
+    "sat": 0.0035
+  },
+  "artist-epk": {
+    "hue": 296,
+    "sat": 0.0831
+  },
+  "band-setlist": {
+    "hue": 63,
+    "sat": 0.7501
+  },
+  "bistro-site": {
+    "hue": 17,
+    "sat": 0.2025
+  },
+  "blocks": {
+    "hue": 300,
+    "sat": 0
+  },
+  "booking-timeslot": {
+    "hue": 115,
+    "sat": 0.0127
+  },
+  "changelog-ship": {
+    "hue": 207,
+    "sat": 0.0154
+  },
+  "cipher-html": {
+    "hue": 300,
+    "sat": 0
+  },
+  "cipher-react": {
+    "hue": 201,
+    "sat": 0.0177
+  },
+  "circle": {
+    "hue": 43,
+    "sat": 0.039
+  },
+  "construct": {
+    "hue": 171,
+    "sat": 0.1085
+  },
+  "daily-standup": {
+    "hue": 68,
+    "sat": 0.0007
+  },
+  "deploy": {
+    "hue": 344,
+    "sat": 0.0001
+  },
+  "digital-dropstore": {
+    "hue": 77,
+    "sat": 0.0585
+  },
+  "dispatch-newsletter": {
+    "hue": 40,
+    "sat": 0.0233
+  },
+  "drive": {
+    "hue": 197,
+    "sat": 0.0289
+  },
+  "engineering-devlog": {
+    "hue": 216,
+    "sat": 0.0397
+  },
+  "event-rally": {
+    "hue": 334,
+    "sat": 0.3612
+  },
+  "expense-spend": {
+    "hue": 177,
+    "sat": 0.0064
+  },
+  "feature-upvote": {
+    "hue": 233,
+    "sat": 0.0276
+  },
+  "feedback-signal": {
+    "hue": 221,
+    "sat": 0.0532
+  },
+  "folio-about": {
+    "hue": 184,
+    "sat": 0.0241
+  },
+  "folio-contact": {
+    "hue": 222,
+    "sat": 0.0535
+  },
+  "folio-creative-agency-1": {
+    "hue": 250,
+    "sat": 0.5552
+  },
+  "folio-creative-agency-2": {
+    "hue": 226,
+    "sat": 0.0361
+  },
+  "folio-creative-designer-2": {
+    "hue": 221,
+    "sat": 0.0295
+  },
+  "folio-creative-developer-1": {
+    "hue": 201,
+    "sat": 0.0183
+  },
+  "folio-creative-developer-2": {
+    "hue": 224,
+    "sat": 0.0575
+  },
+  "folio-details-1": {
+    "hue": 189,
+    "sat": 0.1364
+  },
+  "folio-details-2": {
+    "hue": 214,
+    "sat": 0.1608
+  },
+  "folio-full": {
+    "hue": 13,
+    "sat": 0.0219
+  },
+  "folio-grid-2-columns": {
+    "hue": 208,
+    "sat": 0.0121
+  },
+  "folio-grid-3-columns": {
+    "hue": 230,
+    "sat": 0.0201
+  },
+  "folio-grid-3-fluid": {
+    "hue": 206,
+    "sat": 0.0121
+  },
+  "folio-grid-4-columns": {
+    "hue": 207,
+    "sat": 0.0131
+  },
+  "folio-grid-4-fluid": {
+    "hue": 315,
+    "sat": 0.0005
+  },
+  "folio-masonry-2-columns": {
+    "hue": 230,
+    "sat": 0.0198
+  },
+  "folio-masonry-3-columns": {
+    "hue": 37,
+    "sat": 0.0088
+  },
+  "folio-masonry-3-fluid": {
+    "hue": 210,
+    "sat": 0.0121
+  },
+  "folio-masonry-4-columns": {
+    "hue": 230,
+    "sat": 0.0187
+  },
+  "folio-masonry-4-fluid": {
+    "hue": 230,
+    "sat": 0.0193
+  },
+  "folio-photography-1": {
+    "hue": 84,
+    "sat": 0.0246
+  },
+  "folio-photography-2": {
+    "hue": 199,
+    "sat": 0.0491
+  },
+  "forge": {
+    "hue": 40,
+    "sat": 0.016
+  },
+  "gear-locker": {
+    "hue": 207,
+    "sat": 0.037
+  },
+  "habit-streak": {
+    "hue": 150,
+    "sat": 0.0066
+  },
+  "helpdesk-deskline": {
+    "hue": 273,
+    "sat": 0.0052
+  },
+  "hygge-html": {
+    "hue": 180,
+    "sat": 0.0175
+  },
+  "inventory-stockroom": {
+    "hue": 20,
+    "sat": 0.0029
+  },
+  "issue-press": {
+    "hue": 7,
+    "sat": 0.0244
+  },
+  "jobfinder": {
+    "hue": 300,
+    "sat": 0.0001
+  },
+  "kanban-lane": {
+    "hue": 180,
+    "sat": 0.0113
+  },
+  "kinetic": {
+    "hue": 27,
+    "sat": 0.0217
+  },
+  "launch": {
+    "hue": 223,
+    "sat": 0.0424
+  },
+  "link-onepage": {
+    "hue": 0,
+    "sat": 0
+  },
+  "longform-essays": {
+    "hue": 43,
+    "sat": 0.0431
+  },
+  "loop": {
+    "hue": 198,
+    "sat": 0.0898
+  },
+  "matrix": {
+    "hue": 300,
+    "sat": 0
+  },
+  "meetup-gather": {
+    "hue": 23,
+    "sat": 0.0698
+  },
+  "mint": {
+    "hue": 10,
+    "sat": 0.0144
+  },
+  "mosaic": {
+    "hue": 300,
+    "sat": 0
+  },
+  "oasis": {
+    "hue": 99,
+    "sat": 0.037
+  },
+  "photo-essay": {
+    "hue": 271,
+    "sat": 0.0484
+  },
+  "pixel": {
+    "hue": 300,
+    "sat": 0
+  },
+  "prism-react": {
+    "hue": 236,
+    "sat": 0.1608
+  },
+  "product-trailmap": {
+    "hue": 211,
+    "sat": 0.0398
+  },
+  "proposal-quotewright": {
+    "hue": 271,
+    "sat": 0.0056
+  },
+  "reading-shelf": {
+    "hue": 37,
+    "sat": 0.1154
+  },
+  "release-smartlink": {
+    "hue": 209,
+    "sat": 0.1114
+  },
+  "resume-curriculum": {
+    "hue": 0,
+    "sat": 0
+  },
+  "saas-landing": {
+    "hue": 186,
+    "sat": 0.0166
+  },
+  "savor": {
+    "hue": 354,
+    "sat": 0.1107
+  },
+  "shop-storefront": {
+    "hue": 39,
+    "sat": 0.0101
+  },
+  "soar": {
+    "hue": 277,
+    "sat": 0.0532
+  },
+  "solo": {
+    "hue": 9,
+    "sat": 0.0252
+  },
+  "sprint-retro": {
+    "hue": 38,
+    "sat": 0.0328
+  },
+  "studio": {
+    "hue": 20,
+    "sat": 0.0365
+  },
+  "team-roster": {
+    "hue": 222,
+    "sat": 0.0218
+  },
+  "unfixed": {
+    "hue": 40,
+    "sat": 0.0172
+  },
+  "unity": {
+    "hue": 180,
+    "sat": 0.0288
+  },
+  "vault": {
+    "hue": 198,
+    "sat": 0.0228
+  },
+  "waitlist-launchpad": {
+    "hue": 232,
+    "sat": 0.0776
+  }
+}
