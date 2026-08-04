@@ -957,6 +957,28 @@ export function AskAI({
                       Next in queue
                     </span>
                   )}
+                  {/* REDIRECT. Queuing waits for a build to finish, which is right
+                      when you are adding to it and wrong when you are correcting
+                      it — watching a wrong build run to completion before your
+                      correction is even read is the whole complaint. This stops
+                      the current turn and takes this message next; the queue
+                      drains as usual once the abort settles. */}
+                  {isAiWorking && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMessageQueue((prev) => [
+                          msg,
+                          ...prev.filter((m) => m.id !== msg.id),
+                        ]);
+                        stopController();
+                      }}
+                      className="ml-auto text-xs text-muted-foreground underline transition-colors hover:text-foreground"
+                      title="Stop the current build and run this next"
+                    >
+                      Send now
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
