@@ -49,6 +49,29 @@ export interface Project {
   updatedAt: number;
 }
 
+/**
+ * Cloud project record → the editor's Project shape (types/index.ts). The editor
+ * keys autosave, the SaveButton, per-turn git commits and the history panel off
+ * THIS object; opening a project WITHOUT it makes the editor treat an existing
+ * project as brand-new — "Not saved · 1 file", DeployButton instead of Save, and
+ * `projectRepoName(undefined)` → a minted `site-<id>` repo instead of the slug, so
+ * commits and history diverge. space_id = `${org}/${slug}` is the pivot the editor
+ * splits into ns/repo (components/editor/index.tsx) and reads the slug back from.
+ */
+export function toEditorProject(p: Project): import("@/types").Project {
+  return {
+    title: p.name,
+    html: "",
+    prompts: [],
+    user_id: p.org,
+    space_id: `${p.org}/${p.slug}`,
+    repo: p.repo?.url ? { url: p.repo.url, branch: p.repo.branch } : undefined,
+    _id: p.id,
+    _createdAt: new Date(p.createdAt * 1000),
+    _updatedAt: new Date(p.updatedAt * 1000),
+  };
+}
+
 export interface Deployment {
   id: string;
   projectId: string;

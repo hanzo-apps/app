@@ -21,9 +21,9 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { LockKeyhole } from "lucide-react";
 import { AppEditor } from "@/components/editor";
-import { fetchProject, fetchProjectSite } from "@/lib/api/projects";
+import { fetchProject, fetchProjectSite, toEditorProject } from "@/lib/api/projects";
 import { currentOrg, setCurrentOrg } from "@/lib/org-scope";
-import type { Page } from "@/types";
+import type { Page, Project as EditorProject } from "@/types";
 
 type Phase = "loading" | "open" | "denied";
 
@@ -34,6 +34,10 @@ export default function ProjectDevPage() {
 
   const [phase, setPhase] = useState<Phase>("loading");
   const [pages, setPages] = useState<Page[] | null>(null);
+  // The editor-shaped project record. WITHOUT it the editor treats an existing
+  // project as brand-new — "Not saved · 1 file", DeployButton, a minted repo. See
+  // toEditorProject; passed to <AppEditor project> below.
+  const [project, setProject] = useState<EditorProject | null>(null);
   // The org the signed-in user actually acts in (their bearer owner), read from
   // the ONE org context BFF. Used only to explain a denied open ("you're in X").
   const [signedInOrg, setSignedInOrg] = useState("");
@@ -79,20 +83,24 @@ export default function ProjectDevPage() {
 
       const name = record?.name || slug;
       (window as any).__projectName = name;
-      if (site.pages.length > 0) {
-        setPages(site.pages);
-        // Only promise the clock-icon history when a durable source backs it.
-        // Working edits seed [] and VFS checkpoints are per-device, so on a
-        // fresh/cross-device open the panel is empty UNLESS the project has a
-        // git repo (its commits reconstruct the timeline). Otherwise omit the
-        // clause rather than point at an empty panel.
-        const hasHistory = !!record?.repo?.url;
-        (window as any).__assistantGreeting = hasHistory
-          ? `${name} is loaded — your live site is in the preview, and its history is in the clock icon up top. ` +
-            `Tell me what to change and I'll build it.`
-          : `${name} is loaded — your live site is in the preview. ` +
-            `Tell me what to change and I'll build it.`;
-      }
+      if (site.pages.length > 0) setPages(site.pages);
+      // Give the editor the project's real IDENTITY (name, slug, repo). This is
+      // what stops an open from reading as "new" — it fixes the status bar
+      // ("Not saved · 1 file"), the Save-vs-Deploy button, per-turn commits
+      // landing in the slug repo, and restored prompts, because the editor
+      // already consumes `project` fully.
+      setProject(record ? toEditorProject(record) : null);
+      // Greet UNCONDITIONALLY. This used to sit inside `if (pages.length > 0)`, so
+      // when the published artifact came back empty (or was the wildcard shell)
+      // the chat opened 100% blank — reading as data loss on a project that in
+      // fact has a full conversation. The clock-icon clause only when a git repo
+      // actually backs the history.
+      const hasHistory = !!record?.repo?.url;
+      (window as any).__assistantGreeting = hasHistory
+        ? `${name} is loaded — your site is in the preview, and its history is in the clock icon up top. ` +
+          `Tell me what to change and I'll build it.`
+        : `${name} is loaded — your site is in the preview. ` +
+          `Tell me what to change and I'll build it.`;
       setPhase("open");
     })();
 
@@ -154,5 +162,8 @@ export default function ProjectDevPage() {
     );
   }
 
-  return <AppEditor isNew pages={pages ?? undefined} />;
+  // An EXISTING project passes its identity + isNew=false so the editor never
+  // auto-runs a stale composer seed (an open is never a build). Only a truly
+  // record-less open (site-only edge case) falls back to new.
+  return <AppEditor project={project ?? undefined} pages={pages ?? undefined} isNew={!project} />;
 }
