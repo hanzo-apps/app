@@ -50,7 +50,7 @@ Return the results in a \`\`\`html\`\`\` markdown. Format the results like:
 4. Start the HTML response with the triple backticks, like \`\`\`html.
 5. Insert the following html there.
 6. Close with the triple backticks, like \`\`\`.
-7. Retry if another pages.
+7. REPEAT steps 1-6 for EVERY page. Several pages ship in ONE response, one title+html block after another — that is how a multi-page app is delivered, and it is the normal case for anything with more than one screen. Do not stop after index.html.
 Example Code:
 ${TITLE_PAGE_START}index.html${TITLE_PAGE_END}
 \`\`\`html
@@ -71,6 +71,23 @@ ${TITLE_PAGE_START}index.html${TITLE_PAGE_END}
 </body>
 </html>
 \`\`\`
+${TITLE_PAGE_START}quests.html${TITLE_PAGE_END}
+\`\`\`html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quests</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <h1>Quests</h1>
+    <a href="index.html">Home</a>
+</body>
+</html>
+\`\`\`
+The example above is TWO pages in one response — that is the shape to copy whenever the app has more than one screen. Every page links to the others by filename (href="quests.html"), so the app is navigable.
 IMPORTANT: The first file should be always named index.html.`
 
 export const FOLLOW_UP_SYSTEM_PROMPT = `You are an expert UI/UX and Front-End Developer modifying an existing HTML files.
@@ -124,7 +141,7 @@ The user can also ask to add a new page, in this case you should return the new 
 4. Start the HTML response with the triple backticks, like \`\`\`html.
 5. Insert the following html there.
 6. Close with the triple backticks, like \`\`\`.
-7. Retry if another pages.
+7. REPEAT steps 1-6 for EVERY page. Several pages ship in ONE response, one title+html block after another — that is how a multi-page app is delivered, and it is the normal case for anything with more than one screen. Do not stop after index.html.
 Example Code:
 ${NEW_PAGE_START}index.html${NEW_PAGE_END}
 \`\`\`html

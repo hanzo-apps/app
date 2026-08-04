@@ -77,6 +77,27 @@ describe('the builder prompt refuses invented content', () => {
   });
 });
 
+describe('the builder prompt can express a multi-page app', () => {
+  // Every build came back "1 file", even for a spec describing several screens.
+  // The only instruction to emit more than one page read "7. Retry if another
+  // pages." — which parses as retrying a FAILURE, not repeating per page — and
+  // the worked example showed exactly one page. A model has to copy something.
+  it('says to repeat the block for every page, in words', () => {
+    expect(INITIAL_SYSTEM_PROMPT).toMatch(/REPEAT steps 1-6 for EVERY page/i);
+    expect(INITIAL_SYSTEM_PROMPT).not.toMatch(/Retry if another pages/i);
+    expect(FOLLOW_UP_SYSTEM_PROMPT).not.toMatch(/Retry if another pages/i);
+  });
+
+  it('SHOWS two pages in the worked example, not one', () => {
+    const { TITLE_PAGE_START } = jest.requireActual('@/lib/prompts');
+    const examples = INITIAL_SYSTEM_PROMPT.split('Example Code:')[1] ?? '';
+    const blocks = examples.split(TITLE_PAGE_START).length - 1;
+    expect(blocks).toBeGreaterThanOrEqual(2);
+    // …and the pages must reference each other, or the "app" is two dead ends.
+    expect(examples).toContain('href="index.html"');
+  });
+});
+
 describe('the builder prompt loads each library once', () => {
   for (const [name, prompt] of Object.entries({
     INITIAL_SYSTEM_PROMPT,
