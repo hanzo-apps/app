@@ -9,14 +9,15 @@ import { LoadingScreen } from "@/components/ui/loading-screen";
  * `logo` through `/v1/orgs`. Monochrome; matches the dashboard chrome.
  */
 import { Label, Input } from '@hanzo/ui';
-import { XStack, YStack, H1, Paragraph, SizableText } from '@hanzo/gui';
+import { XStack, YStack, Paragraph, SizableText } from '@hanzo/gui';
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
 import { AppShell } from "@/components/app-shell";
+import { panel } from "@/lib/chrome";
 import { OrgAvatar } from "@/components/org-switcher";
-import { OrgProvider, useOrg } from "@/lib/org/client";
+import { useOrg } from "@/lib/org/client";
 import { currentOrg, orgDisplayName } from "@/lib/org-scope";
 import { readOrgLogoOverride, setOrgLogoOverride, isEmoji } from "@/lib/avatar";
 import { useUser } from "@/hooks/useUser";
@@ -46,14 +47,7 @@ function OrganizationSettingsInner() {
   }
 
   return (
-    <YStack flex={1} backgroundColor="$background" overflow="scroll">
-      <YStack alignSelf="center" maxWidth={672} paddingHorizontal="$5" paddingVertical="$7">
-        <H1 fontSize="$8" fontWeight="500" color="$color">Organization settings</H1>
-        <Paragraph marginTop="$1" fontSize="$3" color="$color11">
-          Personalize how {name} appears across Hanzo.
-        </Paragraph>
-
-        <YStack marginTop="$6" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$5">
+        <YStack {...panel} padding="$5">
           {/* Current org — avatar live-previews the picked emoji. */}
           <XStack alignItems="center" gap="$4">
             <OrgAvatar name={name} logo={serverLogo} size={48} />
@@ -98,8 +92,6 @@ function OrganizationSettingsInner() {
             organization. Until then, this emoji is stored on this device.
           </Paragraph>
         </YStack>
-      </YStack>
-    </YStack>
   );
 }
 
@@ -117,11 +109,16 @@ export default function OrganizationSettingsPage() {
     );
   }
 
+  // No OrgProvider here: AppShell already scopes the whole shell to ONE, and a
+  // nested second one gave the sidebar's switcher and this page separate copies
+  // of the same org state.
   return (
-    <AppShell currentView="settings">
-      <OrgProvider>
-        <OrganizationSettingsInner />
-      </OrgProvider>
+    <AppShell
+      currentView="settings"
+      title="Organization"
+      subtitle="How your organization appears across Hanzo"
+    >
+      <OrganizationSettingsInner />
     </AppShell>
   );
 }

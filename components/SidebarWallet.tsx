@@ -20,6 +20,7 @@ import {useRouter} from 'next/navigation'
 import {User, Wallet} from 'lucide-react'
 import {UserMenu, resolveIdentity} from '@hanzo/iam/react'
 
+import {portrait} from '@/lib/avatar'
 import {useUser} from '@/hooks/useUser'
 import {useOrg} from '@/lib/org/client'
 import {currentOrg, orgDisplayName} from '@/lib/org-scope'
@@ -70,10 +71,16 @@ export function SidebarWallet({collapsed}: {collapsed: boolean}) {
   // resolveIdentity is the ONE identity resolution (@hanzo/iam): it refuses
   // id-shaped values wherever they arrive, which is why this used to render
   // `e7d7fda0-4c53-…` — hanzo.app's user object carries the uuid in `name`.
-  const identity = resolveIdentity(
+  const resolved = resolveIdentity(
     user as unknown as Record<string, unknown>,
     {},
   )
+  // UserMenu renders `avatarUrl ? <img> : <monogram>` and puts no onError on that
+  // img, so a URL that fails to load is a broken-image glyph — permanently, for
+  // everyone. IAM gives every photo-less account a stand-in that 404s, which is
+  // exactly that case, and it is what put a question mark in the account row.
+  // `portrait` decides there is no photo, so the monogram renders instead.
+  const identity = resolved && { ...resolved, avatarUrl: portrait(resolved.avatarUrl) || null }
   const name = identity?.name ?? 'Account'
   // The ACTIVE org the wallet (and every scoped call) attributes to — resolved
   // exactly like the OrgSwitcher, so the person's identity is bound to a
@@ -88,7 +95,9 @@ export function SidebarWallet({collapsed}: {collapsed: boolean}) {
   // mounts. hanzo.app supplies only what is its own (profile, top-up, the live
   // per-org balance) and, when collapsed, hides the label so the rail stays narrow.
   return (
-    <YStack borderTopWidth={1} padding="$2">
+    // Collapsed, the sidebar is an icon rail: `.rail` (assets/globals.css) hides
+    // the label so the trigger is just the avatar.
+    <YStack borderTopWidth={1} padding="$2" className={collapsed ? 'rail' : undefined}>
       <UserMenu
         identity={identity}
         isAuthenticated
@@ -120,13 +129,12 @@ export function SidebarWallet({collapsed}: {collapsed: boolean}) {
           },
         ]}
         brand={{name: 'Hanzo AI', href: 'https://hanzo.ai'}}
-        classNames={{
-          trigger:
-            'flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left hover:bg-accent',
-          triggerLabel: collapsed
-            ? 'hidden'
-            : 'min-w-0 flex-1 truncate text-sm font-medium',
-        }}
+        // No `classNames`: each one REPLACES the component's own class rather
+        // than adding to it (`classNames.trigger ?? 'hz-iam-trigger'`), and the
+        // values here were Tailwind — a vocabulary this app does not compile. So
+        // the trigger lost the `display:flex; width:100%; align-items:center`
+        // that IS the row, and the name dropped under the avatar in a 33px
+        // column; `hidden` never hid anything either.
   />
     </YStack>
   )

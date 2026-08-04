@@ -151,6 +151,7 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
     <YStack position="relative">
       <Button
         onClick={() => setOpen((o) => !o)}
+        variant="outline"
         alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5" hoverStyle={{ backgroundColor: "$color3" }}
         title="Active organization"
       >
@@ -195,7 +196,7 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Filter organizations…"
-                    flex={1} backgroundColor="transparent" fontSize="$3" outlineWidth={0} placeholderTextColor="$color11"
+                    flex={1} backgroundColor="transparent" fontSize="$3" borderWidth={0} outlineWidth={0} placeholderTextColor="$color11"
   />
                 </XStack>
                 <Paragraph paddingHorizontal="$2" paddingVertical="$1" fontSize={10} fontWeight="500" letterSpacing={0.4} color="$color11">
@@ -211,7 +212,8 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
                         <Button
                           key={org.name}
                           onClick={() => select(org)}
-                          width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$2" {...{ backgroundColor: isCurrent ? "$color3" : undefined, hoverStyle: isCurrent ? undefined : {"backgroundColor":"$color3"} }}
+                          variant="ghost"
+                          width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$2" {...{ backgroundColor: isCurrent ? "$color3" : undefined }}
                         >
                           <OrgAvatar name={orgDisplayName(allOrgs, org.name)} logo={org.logo} />
                           <SizableText flex={1} numberOfLines={1} textAlign="left" fontSize="$3" color="$color">
@@ -238,7 +240,8 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
                 </XStack></Link>
                 <Button
                   onClick={() => { setCreating(true); setErr(null); }}
-                  marginTop="$1" width="100%" alignItems="center" gap="$2" borderRadius="$3" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$2" hoverStyle={{ backgroundColor: "$color3" }}
+                  variant="ghost"
+                  marginTop="$1" width="100%" alignItems="center" gap="$2" borderRadius="$3" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$2"
                 >
                   <Plus size={16} />
                   <SizableText fontSize="$3" color="$color">Create organization</SizableText>

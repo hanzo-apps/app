@@ -158,7 +158,7 @@ export function TemplateDetail({
                     <ProjectThumb
                       name={t.name}
                       liveUrl={t.demo}
-                      aspect="aspect-[16/10]"
+                      aspect={16 / 10}
                       fallback={
                         <TemplateThumb
                           name={t.name}

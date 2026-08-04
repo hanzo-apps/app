@@ -11,7 +11,7 @@ export const AskAi = () => {
       <YStack backgroundColor="$color005" borderWidth={1} borderColor="$borderColor" borderRadius="$8" group focusStyle={{ borderColor: "$color" }}>
         <Textarea
           rows={3}
-          width="100%" backgroundColor="transparent" fontSize="$3" outlineWidth={0} color="$color" placeholderTextColor="$color11" padding="$4" marginBottom="$1"
+          width="100%" backgroundColor="transparent" fontSize="$3" borderWidth={0} outlineWidth={0} color="$color" placeholderTextColor="$color11" padding="$4" marginBottom="$1"
           placeholder="Ask Hanzo anything..."
           onChangeText={() => {}}
           onKeyDown={() => {}}

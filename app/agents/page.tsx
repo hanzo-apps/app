@@ -31,6 +31,7 @@ import {
 import { toast, Button, Input, Badge, Card, CardContent, CardDescription, CardHeader, CardTitle, Textarea } from '@hanzo/ui';
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { AppShell } from "@/components/app-shell";
+import { accent, panel } from "@/lib/chrome";
 import { DEFAULT_MODEL } from "@/lib/providers";
 import Link from "next/link";
 
@@ -223,67 +224,50 @@ export default function AgentsPage() {
   };
 
   return (
-    <AppShell currentView="agents">
-    <YStack flex={1} backgroundColor="$background" overflow="scroll">
-      {/* Header */}
-      <YStack borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$4" $sm={{ paddingHorizontal: "$5" }}>
-        <YStack width="100%" maxWidth={1280} alignSelf="center">
-          <YStack gap="$4" $sm={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-            <XStack flexWrap="wrap" alignItems="center" gap="$3">
-              <Link href="/"><XStack alignItems="center" gap="$2">
-                <HanzoLogo size={32} color="var(--brand-accent)" />
-                <SizableText fontSize="$7" fontWeight="500" color="$color">Agents</SizableText>
-              </XStack></Link>
-              {state.kind === "ready" && (
-                <Badge variant="outline">
-                  <Activity size={12} />
-                  {stats.total} {stats.total === 1 ? "agent" : "agents"}
-                </Badge>
-              )}
-            </XStack>
-
-            <YStack gap="$2" $lg={{ width: "auto" }}>
-              <Link href="/dev">
-                <Button variant="outline" width="100%" gap="$2" $lg={{ width: "auto" }}>
-                  <Code2 size={16} />
-                  Dev
-                </Button>
-              </Link>
-              {state.kind === "ready" && (
-                <Button
-                  size="sm"
-                  gap="$2"
-                  onClick={() => {
-                    setForm({
-                      name: "",
-                      model: agents[0]?.model || DEFAULT_MODEL,
-                      instructions: "",
-                    });
-                    setCreating(true);
-                  }}
-                >
-                  <Plus size={16} />
-                  New Agent
-                </Button>
-              )}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={load}
-                disabled={state.kind === "loading"}
-                gap="$2"
-              >
-                <RefreshCw
-                  size={16}
-  />
-                Refresh
-              </Button>
-            </YStack>
-          </YStack>
-        </YStack>
-      </YStack>
-
-      <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$4" paddingVertical="$5" $sm={{ paddingHorizontal: "$5" }}>
+    <AppShell
+      currentView="agents"
+      title="Agents"
+      subtitle="Agents you have created and can run"
+      actions={
+        <>
+          {state.kind === "ready" && (
+            <Badge variant="outline">
+              <Activity size={12} />
+              {stats.total} {stats.total === 1 ? "agent" : "agents"}
+            </Badge>
+          )}
+          {state.kind === "ready" && (
+            <Button
+              {...accent}
+              size="sm"
+              gap="$2"
+              onClick={() => {
+                setForm({
+                  name: "",
+                  model: agents[0]?.model || DEFAULT_MODEL,
+                  instructions: "",
+                });
+                setCreating(true);
+              }}
+            >
+              <Plus size={16} />
+              New Agent
+            </Button>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={load}
+            disabled={state.kind === "loading"}
+            gap="$2"
+          >
+            <RefreshCw size={16} />
+            Refresh
+          </Button>
+        </>
+      }
+    >
+      <YStack>
         {/* Loading */}
         {state.kind === "loading" && (
           <YStack alignItems="center" justifyContent="center" paddingVertical="$12">
@@ -294,7 +278,7 @@ export default function AgentsPage() {
 
         {/* Unauthenticated */}
         {state.kind === "unauthenticated" && (
-          <Card backgroundColor="$background" borderColor="$borderColor" alignSelf="center" maxWidth={512} marginTop="$8">
+          <Card {...panel} alignSelf="center" maxWidth={512} marginTop="$8">
             <CardHeader alignItems="center">
               <XStack alignSelf="center" marginBottom="$2" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$10" backgroundColor="$purple9">
                 <Bot size={24} />
@@ -307,7 +291,7 @@ export default function AgentsPage() {
             </CardHeader>
             <CardContent justifyContent="center">
               <Link href="/">
-                <Button gap="$2">Sign in</Button>
+                <Button variant="outline" gap="$2">Sign in</Button>
               </Link>
             </CardContent>
           </Card>
@@ -380,6 +364,7 @@ export default function AgentsPage() {
   />
                   <XStack gap="$2">
                     <Button
+                      {...accent}
                       gap="$2"
                       disabled={submitting}
                       onClick={createAgent}
@@ -441,7 +426,7 @@ export default function AgentsPage() {
 
             {/* Empty — no agents at all */}
             {agents.length === 0 && (
-              <Card backgroundColor="$background" borderColor="$borderColor" alignSelf="center" maxWidth={512} marginTop="$8">
+              <Card {...panel} alignSelf="center" maxWidth={512} marginTop="$8">
                 <CardHeader alignItems="center">
                   <XStack alignSelf="center" marginBottom="$2" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$10" backgroundColor="$purple9">
                     <Bot size={24} />
@@ -553,6 +538,7 @@ export default function AgentsPage() {
                             }}
   />
                           <Button
+                            {...accent}
                             size="sm"
                             gap="$2" flexShrink={0}
                             disabled={isRunning}
@@ -571,6 +557,7 @@ export default function AgentsPage() {
                         {result && (
                           <div>
                             <Button
+                              variant="ghost"
                               onClick={() =>
                                 setExpanded(isOpen ? null : agent.name)
                               }
@@ -614,7 +601,6 @@ export default function AgentsPage() {
           </>
         )}
       </YStack>
-    </YStack>
     </AppShell>
   );
 }

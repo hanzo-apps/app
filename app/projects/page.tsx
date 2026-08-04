@@ -11,7 +11,6 @@ import { LoadingScreen } from "@/components/ui/loading-screen";
  * shell, one look, everywhere.
  */
 
-import { YStack, H1 } from '@hanzo/gui';
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
@@ -34,17 +33,10 @@ export default function ProjectsPage() {
   }
 
   return (
-    <AppShell currentView="all-projects">
-      <YStack flex={1} backgroundColor="$background" overflow="scroll">
-        <YStack alignSelf="center" maxWidth={1152} paddingHorizontal="$4" paddingVertical="$6" $sm={{ paddingHorizontal: "$5" }} $lg={{ paddingVertical: "$7" }}>
-          <H1 marginBottom="$5" fontSize="$8" fontWeight="500" letterSpacing={-0.4} color="$color">
-            Projects
-          </H1>
-          {/* Sidebar already renders the org switcher — suppress the duplicate in
-              the list toolbar so there's one org control, not two. */}
-          <ProjectList showOrgSwitcher={false} />
-        </YStack>
-      </YStack>
+    <AppShell currentView="all-projects" title="Projects">
+      {/* Sidebar already renders the org switcher — suppress the duplicate in
+          the list toolbar so there's one org control, not two. */}
+      <ProjectList showOrgSwitcher={false} />
     </AppShell>
   );
 }

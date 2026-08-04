@@ -10,12 +10,11 @@
  * (the same store console.hanzo.ai uses) so config is consistent everywhere.
  */
 
-import { XStack, SizableText, YStack, H1, Paragraph, Anchor, H2 } from '@hanzo/gui';
+import { XStack, SizableText, YStack, Paragraph, Anchor, H2 } from '@hanzo/gui';
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
-  ArrowLeft,
   Globe,
   Plug,
   Database,
@@ -29,6 +28,7 @@ import {
 } from "lucide-react";
 
 import { AppShell } from "@/components/app-shell";
+import { accent } from "@/lib/chrome";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import {
   fetchProject,
@@ -109,14 +109,14 @@ export default function ProjectSettingsPage() {
 
   if (!project) {
     return (
-      <AppShell currentView="all-projects">
+      <AppShell currentView="all-projects" title="Project settings">
         <XStack flex={1} alignItems="center" justifyContent="center" backgroundColor="$background" paddingHorizontal="$5">
           <YStack maxWidth={384}>
-            <H1 fontSize="$6" fontWeight="500" color="$color">Project not found</H1>
+            <H2 fontSize="$6" fontWeight="500" color="$color">Project not found</H2>
             <Paragraph marginTop="$2" fontSize="$3" color="$color11">
               <SizableText fontFamily="$mono">{org}/{slug}</SizableText> isn’t available to your account.
             </Paragraph>
-            <Link href="/projects"><SizableText marginTop="$4" borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$4.5" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$color12" hoverStyle={{ backgroundColor: "$color6" }}>
+            <Link href="/projects"><SizableText marginTop="$4" borderRadius="$10" {...accent} paddingHorizontal="$4.5" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$color12">
               Back to projects
             </SizableText></Link>
           </YStack>
@@ -130,37 +130,25 @@ export default function ProjectSettingsPage() {
   const dirty = name.trim() !== (project.name || "") || framework !== (project.framework || "static");
 
   return (
-    <AppShell currentView="all-projects">
-      <YStack flex={1} backgroundColor="$background" overflow="scroll">
-        <YStack alignSelf="center" maxWidth={768} paddingHorizontal="$4" paddingVertical="$6" $sm={{ paddingHorizontal: "$5" }} $lg={{ paddingVertical: "$7" }}>
-          {/* Header */}
-          <XStack marginBottom="$6" flexWrap="wrap" alignItems="center" justifyContent="space-between" gap="$4">
-            <YStack minWidth={0}>
-              <Link
-                href="/projects"
-              ><XStack marginBottom="$2" alignItems="center" gap="$1.5">
-                <ArrowLeft size={14} />
-                <SizableText fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}>Projects</SizableText>
-              </XStack></Link>
-              <XStack alignItems="center" gap="$3">
-                <H1 numberOfLines={1} fontSize="$8" fontWeight="500" letterSpacing={-0.4} color="$color">
-                  {project.name}
-                </H1>
-                <XStack alignItems="center" gap="$1">
-                  <Circle size={6} color={st.text} />
-                  <SizableText fontSize={11} letterSpacing={0.4} color={st.text}>{st.label}</SizableText>
-                </XStack>
-              </XStack>
-              <Paragraph marginTop="$1" fontFamily="$mono" fontSize="$1" color="$color11">{org}/{slug}</Paragraph>
-            </YStack>
-            <Link
-              href={builderLink(slug, org)}
-            ><XStack alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$2" hoverStyle={{ borderColor: "$color" }}>
-              <Pencil size={14} />
-              <SizableText fontSize="$3" color="$color">Open in builder</SizableText>
-            </XStack></Link>
+    <AppShell
+      currentView="all-projects"
+      title={project.name}
+      subtitle={`${org}/${slug}`}
+      actions={
+        <>
+          <XStack alignItems="center" gap="$1">
+            <Circle size={6} color={st.text} />
+            <SizableText fontSize={11} letterSpacing={0.4} color={st.text}>{st.label}</SizableText>
           </XStack>
-
+          <Link href={builderLink(slug, org)}>
+            <Button variant="outline" gap="$2">
+              <Pencil size={14} />
+              Open in builder
+            </Button>
+          </Link>
+        </>
+      }
+    >
           <YStack rowGap="$4.5">
             {/* General */}
             <Section icon={Pencil} title="General">
@@ -186,7 +174,7 @@ export default function ProjectSettingsPage() {
                   type="button"
                   onClick={save}
                   disabled={!dirty || saving}
-                  alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" paddingHorizontal="$4.5" paddingVertical="$2" hoverStyle={{ backgroundColor: "$color6" }} disabledStyle={{ cursor: "not-allowed", backgroundColor: "$color3" }}
+                  alignItems="center" gap="$2" borderRadius="$10" {...accent} paddingHorizontal="$4.5" paddingVertical="$2" disabledStyle={{ cursor: "not-allowed", backgroundColor: "$color3" }}
                 >
                   {saving && <Loader2 size={14} />}
                   Save changes
@@ -282,6 +270,7 @@ export default function ProjectSettingsPage() {
                   Delete this project and its live site. This cannot be undone.
                 </Paragraph>
                 <Button
+                  variant="outline"
                   type="button"
                   onClick={remove}
                   backgroundColor="transparent" borderRadius="$10" borderWidth={1} borderColor="$red9" paddingHorizontal="$4" paddingVertical="$2" hoverStyle={{ borderColor: "$red9", backgroundColor: "$red9" }}
@@ -294,8 +283,6 @@ export default function ProjectSettingsPage() {
               </XStack>
             </Section>
           </YStack>
-        </YStack>
-      </YStack>
     </AppShell>
   );
 }

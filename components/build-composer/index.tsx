@@ -300,7 +300,8 @@ export function BuildComposer({
                 onClick={() => submit()}
                 disabled={!idea.trim()}
                 aria-label="Start building"
-                height="$6" width="$6" alignItems="center" justifyContent="center" borderRadius="$10" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }} disabledStyle={{ cursor: "not-allowed", backgroundColor: "$color3" }}
+                variant="outline"
+                height="$6" width="$6" alignItems="center" justifyContent="center" borderRadius="$10" backgroundColor="$color5" borderWidth={1} borderColor="$color6" hoverStyle={{ backgroundColor: "$color6" }} disabledStyle={{ cursor: "not-allowed", backgroundColor: "$color3", borderColor: "$borderColor" }}
               >
                 <ArrowUp size={16} strokeWidth={2.5} />
               </Button>
@@ -338,12 +339,21 @@ export function BuildComposer({
         </XStack>
       )}
 
-      {/* Subtle honest sub-line — no fabricated claims. */}
+      {/* Subtle honest sub-line — no fabricated claims.
+
+          The row is an XStack because the icon sits BESIDE the sentence, and only
+          a stack can say that: `alignItems`/`justifyContent`/`gap` on the
+          Paragraph were flex properties on a text host, where they do nothing.
+          The icon then took its own line — svg is display:block under the reset,
+          and a block box ignores the parent's `textAlign` — so it hung off the
+          left edge while the sentence stayed centered under it. */}
       {subline && (
-        <Paragraph marginTop="$3" display="flex" alignItems="center" justifyContent="center" gap="$1.5" textAlign="center" fontSize="$1" color="$color11">
+        <XStack marginTop="$3" alignItems="center" justifyContent="center" gap="$1.5">
           <Sparkles size={12} />
-          UI, database, auth, and 400+ AI models — wired in and deployed to Hanzo Cloud.
-        </Paragraph>
+          <Paragraph textAlign="center" fontSize="$1" color="$color11">
+            UI, database, auth, and 400+ AI models — wired in and deployed to Hanzo Cloud.
+          </Paragraph>
+        </XStack>
       )}
     </YStack>
   );

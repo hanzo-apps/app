@@ -28,15 +28,25 @@ export function ProjectThumb({
   name,
   liveUrl,
   fallback,
-  aspect = 'aspect-video',
+  aspect = 16 / 9,
   className = '',
 }: {
   name: string;
   liveUrl?: string | null;
   /** Rendered when there is no live URL (or the frame fails). */
   fallback?: ReactNode;
-  /** Box shape when the parent doesn't set a height (cards: 16/9, heroes: 16/10). */
-  aspect?: string;
+  /**
+   * Box shape when the parent doesn't set a height (cards: 16/9, heroes: 16/10).
+   *
+   * A RATIO, not a class name. This was `'aspect-video'` — a Tailwind utility,
+   * in an app that no longer loads Tailwind — so it named a shape and delivered
+   * none. Anywhere the parent supplied a height that went unnoticed; where the
+   * parent did not, `height="100%"` resolved against an auto-height box and the
+   * thumbnail collapsed to 0. In the ⌘K palette that read as a stray horizontal
+   * rule across the detail pane: the container's own top and bottom hairlines,
+   * with nothing left between them.
+   */
+  aspect?: number;
   className?: string;
 }) {
   const [failed, setFailed] = useState(false);
@@ -61,7 +71,7 @@ export function ProjectThumb({
   return (
     <YStack
       ref={hostRef}
-      position="relative" height="100%" width="100%" overflow="hidden" className={`${aspect} ${className}`}
+      position="relative" height="100%" width="100%" aspectRatio={aspect} overflow="hidden" className={className}
     >
       {showLive ? (
         <iframe

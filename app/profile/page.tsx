@@ -1,12 +1,14 @@
 "use client";
 
 import { LoadingScreen } from "@/components/ui/loading-screen";
-import { XStack, SizableText, Paragraph, YStack, H1, H2, H3, Anchor } from '@hanzo/gui';
+import { XStack, SizableText, Paragraph, YStack, H2, H3, Anchor } from '@hanzo/gui';
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Save, Camera, Twitter, Github, Globe } from "lucide-react";
+import { Save, Camera, Twitter, Github, Globe } from "lucide-react";
 import { Button, Avatar, AvatarFallback, AvatarImage, toast, Input, Label, Textarea } from '@hanzo/ui';
 import { useIamToken } from "@hanzo/iam/react";
+import { AppShell } from "@/components/app-shell";
+import { accent, panel } from "@/lib/chrome";
 import { useUser } from "@/hooks/useUser";
 import { MyBuilds } from "@/components/builds/my-builds";
 import { gravatarUrl } from "@/lib/avatar";
@@ -111,6 +113,27 @@ export default function ProfilePage() {
     }
   }, []);
 
+  /**
+   * The avatar IS the photo control — one gesture, from anywhere on the page.
+   *
+   * It used to be inert until you had first pressed "Edit Profile", which made
+   * changing your picture a two-step ritual whose first step looked like it had
+   * nothing to do with pictures. Editing is now something clicking the photo
+   * TURNS ON, not something you have to arrange beforehand.
+   *
+   * This is why the file input below renders unconditionally rather than inside
+   * the `isEditing` branch: `setIsEditing` only schedules a render, so an input
+   * mounted by that render does not exist yet on this tick and `ref.current`
+   * would still be null. Opening the picker also has to stay inside the user
+   * gesture — a browser discards a `.click()` made after an await — so it
+   * cannot wait for the state to land either. An always-mounted input satisfies
+   * both: the ref is live now, and the picker opens in the same gesture.
+   */
+  const choosePhoto = useCallback(() => {
+    setIsEditing(true);
+    fileInput.current?.click();
+  }, []);
+
   const handleSave = async () => {
     setBusy(true);
     try {
@@ -193,65 +216,47 @@ export default function ProfilePage() {
     (user?.email ? gravatarUrl(user.email, 192) : "");
 
   return (
-    <YStack minHeight="100%" backgroundColor="$background">
-      {/* Header */}
-      <YStack borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$5" paddingVertical="$4">
-        <XStack maxWidth={896} alignSelf="center" alignItems="center" justifyContent="space-between">
-          <XStack alignItems="center" gap="$4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => router.back()}
-              gap="$2"
-            >
-              <ArrowLeft size={16} />
-              Back
+    <AppShell
+      currentView="profile"
+      title="Profile"
+      actions={
+        isEditing ? (
+          <>
+            <Button variant="outline" onClick={cancel} disabled={busy}>
+              Cancel
             </Button>
-            <H1 fontSize="$8" fontWeight="500" color="$color">Profile</H1>
-          </XStack>
-          <XStack alignItems="center" gap="$2">
-            {isEditing ? (
-              <>
-                <Button variant="outline" onClick={cancel} disabled={busy}>
-                  Cancel
-                </Button>
-                <Button onClick={handleSave} gap="$2" disabled={busy}>
-                  <Save size={16} />
-                  {busy ? "Saving…" : "Save Changes"}
-                </Button>
-              </>
-            ) : (
-              <Button onClick={() => setIsEditing(true)}>
-                Edit Profile
-              </Button>
-            )}
-          </XStack>
-        </XStack>
-      </YStack>
-
-      <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$6">
-        <YStack maxWidth={896} alignSelf="center">
-          {/* Profile Header */}
-          <YStack borderTopLeftRadius="$5" borderTopRightRadius="$5" padding="$6">
-            <XStack alignItems="center" gap="$5">
+            <Button {...accent} onClick={handleSave} gap="$2" disabled={busy}>
+              <Save size={16} />
+              {busy ? "Saving…" : "Save Changes"}
+            </Button>
+          </>
+        ) : (
+          <Button {...accent} onClick={() => setIsEditing(true)}>
+            Edit Profile
+          </Button>
+        )
+      }
+    >
+      {/* ONE panel: identity and fields were two cards faking a single one with
+          matching half-radii, so the seam between them showed whenever their
+          fills disagreed — and they did, one being transparent. */}
+      <YStack {...panel}>
+        <YStack padding="$6">
+          <XStack alignItems="center" gap="$5">
               <YStack
                 position="relative"
-                {...(isEditing
-                  ? {
-                      role: "button" as const,
-                      tabIndex: 0,
-                      "aria-label": "Change profile photo",
-                      cursor: "pointer",
-                      group: true,
-                      onClick: () => fileInput.current?.click(),
-                      onKeyDown: (e: { key: string; preventDefault: () => void }) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          fileInput.current?.click();
-                        }
-                      },
-                    }
-                  : null)}
+                role="button"
+                tabIndex={0}
+                aria-label="Change profile photo"
+                cursor="pointer"
+                group
+                onClick={choosePhoto}
+                onKeyDown={(e: { key: string; preventDefault: () => void }) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    choosePhoto();
+                  }
+                }}
               >
                 <Avatar width="$12" height="$12" borderWidth={4} borderColor="$background">
                   {/* An `<img>` with src="" resolves to the PAGE url, loads HTML,
@@ -267,66 +272,64 @@ export default function ProfilePage() {
                     {initial}
                   </AvatarFallback>
                 </Avatar>
-                {isEditing && (
-                  <>
-                    {/* The whole avatar is the target; this veil says so on
-                        hover/focus without stealing the click. */}
-                    <XStack
-                      pointerEvents="none"
-                      position="absolute"
-                      top={4}
-                      right={4}
-                      bottom={4}
-                      left={4}
-                      alignItems="center"
-                      justifyContent="center"
-                      borderRadius="$10"
-                      backgroundColor="transparent"
-                      opacity={0}
-                      $group-hover={{ backgroundColor: "rgba(0,0,0,0.55)", opacity: 1 }}
-                      $group-focus={{ backgroundColor: "rgba(0,0,0,0.55)", opacity: 1 }}
-                    >
-                      <Camera size={20} color="#fff" />
-                    </XStack>
-                    {/* Visually hidden, still in the a11y tree — the `sr-only`
-                        class upstream used came from Tailwind, which this app no
-                        longer loads, so the class would leave a bare file input
-                        sitting next to the avatar. The camera button is the
-                        pointer affordance; this input is what it clicks. */}
-                    <input
-                      ref={fileInput}
-                      type="file"
-                      accept="image/png,image/jpeg,image/webp,image/gif"
-                      style={{
-                        position: "absolute",
-                        width: 1,
-                        height: 1,
-                        padding: 0,
-                        margin: -1,
-                        overflow: "hidden",
-                        clip: "rect(0,0,0,0)",
-                        whiteSpace: "nowrap",
-                        border: 0,
-                      }}
-                      onChange={(e) => {
-                        const f = e.target.files?.[0];
-                        if (f) void pickPhoto(f);
-                      }}
-                    />
-                    <Button
-                      onClick={(e: { stopPropagation: () => void }) => {
-                        e.stopPropagation();
-                        fileInput.current?.click();
-                      }}
-                      disabled={busy}
-                      aria-label="Change profile photo"
-                      title="Change profile photo"
-                      position="absolute" bottom="$0" right="$0" padding="$1.5" backgroundColor="$color5" borderWidth={1} borderColor="$color6" borderRadius="$10" hoverStyle={{ backgroundColor: "$color6" }} disabledStyle={{ opacity: 0.5 }}
-                    >
-                      <Camera size={16} />
-                    </Button>
-                  </>
-                )}
+                {/* The whole avatar is the target; this veil says so on
+                    hover/focus without stealing the click. */}
+                <XStack
+                  pointerEvents="none"
+                  position="absolute"
+                  top={4}
+                  right={4}
+                  bottom={4}
+                  left={4}
+                  alignItems="center"
+                  justifyContent="center"
+                  borderRadius="$10"
+                  backgroundColor="transparent"
+                  opacity={0}
+                  $group-hover={{ backgroundColor: "rgba(0,0,0,0.55)", opacity: 1 }}
+                  $group-focus={{ backgroundColor: "rgba(0,0,0,0.55)", opacity: 1 }}
+                >
+                  <Camera size={20} color="#fff" />
+                </XStack>
+                {/* Visually hidden, still in the a11y tree — the `sr-only`
+                    class upstream used came from Tailwind, which this app no
+                    longer loads, so the class would leave a bare file input
+                    sitting next to the avatar. The avatar is the control; this
+                    input is what it opens. */}
+                <input
+                  ref={fileInput}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  style={{
+                    position: "absolute",
+                    width: 1,
+                    height: 1,
+                    padding: 0,
+                    margin: -1,
+                    overflow: "hidden",
+                    clip: "rect(0,0,0,0)",
+                    whiteSpace: "nowrap",
+                    border: 0,
+                  }}
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) void pickPhoto(f);
+                  }}
+                />
+                {/* A MARKER, not a control. The veil only appears on hover, so
+                    at rest something has to say the photo is changeable — but
+                    this used to be a real Button, which put a button inside an
+                    element that is itself `role="button"`, and gave one action
+                    two handlers to keep in step. It is `pointerEvents="none"`,
+                    so the click it looks like it takes belongs to the avatar
+                    underneath, and there is exactly one control here. */}
+                <XStack
+                  pointerEvents="none"
+                  aria-hidden
+                  position="absolute" bottom="$0" right="$0" padding="$1.5" backgroundColor="$color5" borderWidth={1} borderColor="$color6" borderRadius="$10" opacity={busy ? 0.5 : 1} $group-hover={{ backgroundColor: "$color6" }}
+                >
+                  <Camera size={16} />
+                </XStack>
               </YStack>
 
               <YStack flex={1}>
@@ -337,18 +340,20 @@ export default function ProfilePage() {
                     onChange={(e) => set("displayName", e.target.value)}
                     placeholder={user?.fullname || "Your name"}
                     aria-label="Display name"
-                    fontSize="$10" fontWeight="500" backgroundColor="transparent" color="$color" borderBottomWidth={1} borderColor="$borderColor" outlineWidth={0} paddingBottom="$2" marginBottom="$2" focusStyle={{ borderColor: "$color06" }}
+                    fontSize="$7" fontWeight="500" backgroundColor="transparent" color="$color" borderWidth={0} borderBottomWidth={1} borderColor="$borderColor" outlineWidth={0} paddingBottom="$2" marginBottom="$2" focusStyle={{ borderColor: "$color06" }}
   />
                 ) : (
-                  <H2 fontSize="$10" fontWeight="500" color="$color" marginBottom="$2">{shownName}</H2>
+                  /* $7, not $10: at $10 the name outshouted the page's own title
+                     and overhung the avatar beside it. */
+                  <H2 fontSize="$7" fontWeight="500" color="$color" marginBottom="$2">{shownName}</H2>
                 )}
                 <Paragraph color="$color11">@{handle}</Paragraph>
               </YStack>
             </XStack>
           </YStack>
 
-          {/* Profile Content */}
-          <YStack backgroundColor="$background" borderBottomLeftRadius="$5" borderBottomRightRadius="$5" borderWidth={1} borderColor="$borderColor" padding="$5">
+          {/* Fields — divided from the identity above by the panel's own hairline. */}
+          <YStack borderTopWidth={1} borderColor="$borderColor" padding="$5">
             <YStack gap="$5">
               {/* Basic Info */}
               <YStack rowGap="$4">
@@ -482,8 +487,7 @@ export default function ProfilePage() {
                 every account and true for none. */}
             <MyBuilds />
           </YStack>
-        </YStack>
       </YStack>
-    </YStack>
+    </AppShell>
   );
 }
