@@ -170,6 +170,11 @@ export function HistoryPanel({
   onOpenDetails?: (rev: DetailsRev) => void;
 }) {
   const [checkpoints, setCheckpoints] = useState<CheckpointMetadata[]>([]);
+  // Why the project record could not be read, when it could not. The fallback
+  // below still guesses the native repo, so a refusal is otherwise indistinguishable
+  // from a project that simply has no repo link — and only one of those is the
+  // user's to act on.
+  const [projectError, setProjectError] = useState<string | null>(null);
   const [bookmarks, setBookmarks] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState<"all" | "bookmarks">("all");
   const [busyKey, setBusyKey] = useState<string | null>(null);
@@ -257,6 +262,7 @@ export function HistoryPanel({
     let alive = true;
     (async () => {
       let ref: RepoRef | null = null;
+      let failure: string | null = null;
       try {
         const res = await fetch(`/v1/projects/${encodeURIComponent(pk)}`, { credentials: "include" });
         if (res.ok) {
@@ -264,9 +270,18 @@ export function HistoryPanel({
           if (p?.repo?.url) {
             ref = { provider: providerFromRepoUrl(p.repo.url), repo: p.repo.url, branch: p.repo.branch || "main" };
           }
+        } else if (res.status === 401 || res.status === 403) {
+          // The projects service scopes every read to the org on the caller's
+          // bearer ("X-Org-Id required"), so a session with no org claim is
+          // REFUSED — not empty. The fallback below still guesses the native repo,
+          // which is right, but if that turns up nothing the panel must not imply
+          // the project has no history when the truth is we were not allowed to ask.
+          failure = "Your session has no organization, so this project could not be read. Sign in again.";
+        } else {
+          failure = `Couldn't load this project (${res.status}).`;
         }
       } catch {
-        /* best-effort */
+        failure = "Couldn't reach the projects service.";
       }
       // THE FIX for "no revisions yet". A saved project carries its repo link, and
       // the fetch above finds it. But a brand-new build has NO project record —
@@ -285,6 +300,7 @@ export function HistoryPanel({
         if (name) ref = { provider: "hanzo", repo: name, branch: "main" };
       }
       if (!alive) return;
+      setProjectError(failure);
       setRepo(ref);
       setRepoResolved(true);
       if (!ref) return;
@@ -652,7 +668,14 @@ export function HistoryPanel({
               </section>
             )}
 
-            {!hasRepo && repoResolved && !showBookmarksOnly && <ConnectRepoCta />}
+            {!hasRepo &&
+              repoResolved &&
+              !showBookmarksOnly &&
+              (projectError ? (
+                <div className="px-2 py-6 text-xs text-muted-foreground">{projectError}</div>
+              ) : (
+                <ConnectRepoCta />
+              ))}
           </>
         )}
       </YStack>
