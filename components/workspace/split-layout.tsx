@@ -1,6 +1,6 @@
 'use client';
 
-import { XStack, YStack } from '@hanzo/gui';
+import { XStack, YStack, type GuiElement } from '@hanzo/gui';
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 
 interface SplitLayoutProps {
@@ -24,7 +24,7 @@ export function SplitLayout({
 }: SplitLayoutProps) {
   const [split, setSplit] = useState(defaultSplit);
   const [isDragging, setIsDragging] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<GuiElement>(null);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -32,9 +32,9 @@ export function SplitLayout({
   };
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging || !containerRef.current) return;
-
     const container = containerRef.current;
+    if (!isDragging || !container || !('getBoundingClientRect' in container)) return;
+
     const rect = container.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const percentage = (x / rect.width) * 100;

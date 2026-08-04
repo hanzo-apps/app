@@ -160,7 +160,7 @@ export function CommandPalette({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        maxWidth={672} overflow="hidden" borderColor="$borderColor" backgroundColor="$background" padding="$0" color="$color" gap="$0"
+        maxWidth={672} overflow="hidden" borderColor="$borderColor" backgroundColor="$background" padding="$0" gap="$0"
       >
         <DialogTitle position="absolute" width={1} height={1} overflow="hidden">Search projects and commands</DialogTitle>
         <Command
@@ -176,7 +176,7 @@ export function CommandPalette({
           <XStack minHeight={320}>
             {/* Left: results */}
             <CommandList maxHeight={320} width="50%" borderRightWidth={1} borderColor="$borderColor" paddingVertical="$1">
-              <CommandEmpty color="$color11">No results found.</CommandEmpty>
+              <CommandEmpty><SizableText color="$color11">No results found.</SizableText></CommandEmpty>
 
               {projects.length > 0 && (
                 <CommandGroup heading="Recent projects">
@@ -185,7 +185,7 @@ export function CommandPalette({
                       key={p.slug}
                       value={`project:${p.slug}`}
                       onSelect={() => openProject(p)}
-                      gap="$2" color="$color"
+                      gap="$2"
                     >
                       <FolderOpen size={16} color="$color11" />
                       <SizableText numberOfLines={1}>{p.name}</SizableText>
@@ -204,7 +204,7 @@ export function CommandPalette({
                       onOpenChange(false);
                       router.push(c.route);
                     }}
-                    gap="$2" color="$color"
+                    gap="$2"
                   >
                     <c.icon size={16} color="var(--muted-foreground)" />
                     <span>{c.label}</span>

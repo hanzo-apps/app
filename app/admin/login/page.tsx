@@ -88,7 +88,8 @@ export default function LoginPage() {
         <Paragraph color="$color11" marginBottom="$6">Enter your password to continue</Paragraph>
 
         {/* Login Form */}
-        <YStack onSubmit={handleSubmit} rowGap="$4">
+        <form onSubmit={handleSubmit}>
+          <YStack rowGap="$4">
           <SizableText textAlign="left" display="flex" flexDirection="column">
             <Label htmlFor="password" fontSize="$3" fontWeight="500" color="$color11" marginBottom="$2">
               Password
@@ -97,7 +98,7 @@ export default function LoginPage() {
               id="password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChangeText={(value) => setPassword(value)}
               width="100%" paddingHorizontal="$4" paddingVertical="$3" backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$5" color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0, borderColor: "transparent" }}
               placeholder="Enter your password"
               required
@@ -114,11 +115,12 @@ export default function LoginPage() {
           <Button
             type="submit"
             disabled={isLoading}
-            width="100%" backgroundColor="$orange10" color="white" fontWeight="500" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$orange11" }} disabledStyle={{ backgroundColor: "$color3", color: "$color11", cursor: "not-allowed" }}
+            width="100%" backgroundColor="$orange10" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$orange11" }} disabledStyle={{ backgroundColor: "$color3", cursor: "not-allowed" }}
           >
-            {isLoading ? 'Logging in...' : 'Login'}
+            <SizableText color={isLoading ? "$color11" : "white"} fontWeight="500">{isLoading ? 'Logging in...' : 'Login'}</SizableText>
           </Button>
-        </YStack>
+          </YStack>
+        </form>
 
         {/* Footer */}
         <SizableText marginTop="$8" paddingTop="$5" borderTopWidth={1} borderColor="$borderColor" alignItems="center" justifyContent="center" gap="$2" fontSize="$3" color="$color11" display="flex" flexDirection="row">

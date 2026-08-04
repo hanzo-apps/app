@@ -38,7 +38,7 @@ export function UsageLimitDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent borderColor="$borderColor" backgroundColor="$background" color="$color" $sm={{ maxWidth: 448 }}>
+      <DialogContent borderColor="$borderColor" backgroundColor="$background" $sm={{ maxWidth: 448 }}>
         <DialogHeader>
           <DialogTitle fontSize="$7" fontWeight="500" letterSpacing={-0.4}>Need more usage?</DialogTitle>
           <DialogDescription color="$color11">
@@ -83,7 +83,7 @@ function OptionCard({
     <Button
       type="button"
       onClick={onClick}
-      group width="100%" alignItems="flex-start" gap="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4" textAlign="left" outlineWidth={0} hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}
+      group width="100%" alignItems="flex-start" gap="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4" outlineWidth={0} hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}
     >
       <SizableText height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$color" color="$color">
         <Icon size={20} />

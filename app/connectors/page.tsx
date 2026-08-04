@@ -28,6 +28,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
+  type LucideIcon,
   ArrowLeft,
   Search,
   RefreshCw,
@@ -58,7 +59,7 @@ import {
 
 /** Known provider marks (lucide). Unknown providers get a neutral plug — honest,
  *  never a wrong logo. */
-const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+const ICONS: Record<string, LucideIcon> = {
   github: Github,
   slack: Slack,
   discord: MessageSquare,
@@ -230,7 +231,7 @@ function ConnectorsInner() {
           </XStack>
           <XStack flexShrink={0} alignItems="center" gap="$2">
             {connectedCount > 0 && (
-              <Badge variant="outline" gap="$1.5">
+              <Badge variant="outline">
                 <SizableText width="$1.5" height="$1.5" borderRadius="$10" backgroundColor="$green9" />
                 {connectedCount} connected
               </Badge>
@@ -267,9 +268,9 @@ function ConnectorsInner() {
               <Button
                 key={c}
                 onClick={() => setCategory(c)}
-                borderRadius="$10" paddingHorizontal="$3" paddingVertical="$1" fontSize="$1" textTransform="capitalize" {...{ backgroundColor: category === c ? "$color" : undefined, color: category === c ? "$background" : "$color11", hoverStyle: category === c ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
+                borderRadius="$10" paddingHorizontal="$3" paddingVertical="$1" backgroundColor={category === c ? "$color" : undefined} hoverStyle={category === c ? undefined : { backgroundColor: "$color3" }}
               >
-                {c}
+                <SizableText fontSize="$1" textTransform="capitalize" color={category === c ? "$background" : "$color11"}>{c}</SizableText>
               </Button>
             ))}
           </XStack>
@@ -381,9 +382,9 @@ function ConnectorRow({
             </SizableText>
           )}
           {p.category && !p.connected && (
-            <Badge variant="outline" display="none" textTransform="capitalize">
-              {p.category}
-            </Badge>
+            <YStack display="none">
+              <Badge variant="outline">{p.category}</Badge>
+            </YStack>
           )}
         </XStack>
         <Paragraph numberOfLines={1} fontSize="$3" color="$color11">
@@ -408,7 +409,7 @@ function ConnectorRow({
         ) : p.available ? (
           <Button
             size="sm"
-            gap="$1.5" backgroundColor="$color" color="$background" hoverStyle={{ backgroundColor: "$color" }}
+            gap="$1.5" backgroundColor="$color" hoverStyle={{ backgroundColor: "$color" }}
             disabled={busy || disabled}
             onClick={() => onConnect(p)}
           >

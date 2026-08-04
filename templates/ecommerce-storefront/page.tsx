@@ -83,9 +83,10 @@ export default function EcommerceStorefront() {
                   <Button
                     key={category}
                     onClick={() => setSelectedCategory(category)}
-                    fontSize="$3" fontWeight="500" hoverStyle={{ color: "$color12" }} {...{ color: selectedCategory === category ? "$color12" : "$color11" }}
                   >
-                    {category}
+                    <SizableText fontSize="$3" fontWeight="500" color={selectedCategory === category ? "$color12" : "$color11"} hoverStyle={{ color: "$color12" }}>
+                      {category}
+                    </SizableText>
                   </Button>
                 ))}
               </YStack>
@@ -103,7 +104,7 @@ export default function EcommerceStorefront() {
               <Button variant="ghost" size="icon" position="relative">
                 <ShoppingCart size={20} />
                 {cartItemsCount > 0 && (
-                  <Badge position="absolute" top="-1" right="-1" height="$4.5" width="$4.5" borderRadius="$10" padding="$0" alignItems="center" justifyContent="center">
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center">
                     {cartItemsCount}
                   </Badge>
                 )}
@@ -174,7 +175,7 @@ export default function EcommerceStorefront() {
   />
                   </AspectRatio>
                   {product.badge && (
-                    <Badge position="absolute" top="$2" left="$2">
+                    <Badge className="absolute top-2 left-2">
                       {product.badge}
                     </Badge>
                   )}
@@ -212,7 +213,7 @@ export default function EcommerceStorefront() {
                   {/* Variant Selector */}
                   <YStack marginBottom="$3">
                     <Select defaultValue={product.variants[0]}>
-                      <SelectTrigger width="100%" height="$6" fontSize="$3">
+                      <SelectTrigger width="100%" height="$6">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>

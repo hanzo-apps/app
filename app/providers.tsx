@@ -61,7 +61,7 @@ export function Providers({ children }: ProvidersProps) {
                   skip-delay are a property of the SESSION, not of each button, so
                   adjacent controls in a toolbar share it instead of each mounting
                   a provider with its own timing. */}
-              <TooltipProvider delayDuration={200} skipDelayDuration={300}>
+              <TooltipProvider delay={200}>
                 {children}
               </TooltipProvider>
             </UsageLimitProvider>

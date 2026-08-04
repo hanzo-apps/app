@@ -1,7 +1,6 @@
 'use client';
 
-import { YStack, XStack } from '@hanzo/gui';
-import Image from "next/image";
+import { YStack, XStack, Image } from '@hanzo/gui';
 
 import { Button } from '@hanzo/ui';
 import { Minus } from "lucide-react";
@@ -27,9 +26,10 @@ export const SelectedFiles = ({
             <Image
               src={file}
               alt="uploaded image"
-              width="$8" height="$8" borderRadius="$3" objectFit="cover"
               width={40}
               height={40}
+              borderRadius="$3"
+              objectFit="cover"
   />
             <Button
               size="icon"

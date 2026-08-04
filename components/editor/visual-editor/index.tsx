@@ -490,8 +490,8 @@ export function VisualEditor({
   const dividerProps = isVertical
     ? { marginVertical: "$0.5", height: 1, width: 20 }
     : { marginHorizontal: "$0.5", height: 20, width: 1 };
-  const menuSide =
-    position === "bottom" ? "top" : position === "top" ? "bottom" : position === "left" ? "right" : "left";
+  const menuPlacement =
+    position === "bottom" ? "top-end" : position === "top" ? "bottom-end" : position === "left" ? "right-end" : "left-end";
 
   const dockPositionOptions: { value: DockPosition; label: string; icon: typeof PanelBottom }[] = [
     { value: "bottom", label: "Bottom", icon: PanelBottom },
@@ -503,12 +503,12 @@ export function VisualEditor({
   // The `⋮` overflow menu — rendered inline at the end of the dock's icon row.
   // Check marks come free from Radix radio/checkbox items.
   const overflowMenu = (
-    <DropdownMenu>
+    <DropdownMenu placement={menuPlacement}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
           size="icon"
-          flexShrink={0} padding="$0" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+          flexShrink={0} padding="$0" {...{ color: "$color11" }} hoverStyle={{ backgroundColor: "$color3" }}
           title="More"
           aria-label="Visual editor options"
         >
@@ -516,8 +516,6 @@ export function VisualEditor({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        side={menuSide}
-        align="end"
         sideOffset={8}
         minWidth={224}
       >
@@ -610,7 +608,7 @@ export function VisualEditor({
           onClick={() => setIsHidden(false)}
           title="Show visual editor"
           aria-label="Show visual editor"
-          position="absolute" bottom="$3" right="$3" zIndex={50} width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" color="$color11" elevation={4} backdropFilter="blur(8px)" hoverStyle={{ backgroundColor: "$color3", color: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
+          position="absolute" bottom="$3" right="$3" zIndex={50} width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" {...{ color: "$color11" }} elevation={4} backdropFilter="blur(8px)" hoverStyle={{ backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}
           style={anchorStyle}
         >
           <Wand2 size={16} />
@@ -623,7 +621,7 @@ export function VisualEditor({
             onClick={() => setIsMinimized(false)}
             title="Expand visual editor"
             aria-label="Expand visual editor"
-            width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" color="$color11" elevation={4} backdropFilter="blur(8px)" hoverStyle={{ backgroundColor: "$color3", color: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
+            width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" {...{ color: "$color11" }} elevation={4} backdropFilter="blur(8px)" hoverStyle={{ backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}
           >
             {isVertical ? <GripVertical size={16} /> : <GripHorizontal size={16} />}
           </Button>
@@ -643,7 +641,7 @@ export function VisualEditor({
             onClick={() => onToggle(!isEnabled)}
             title={isEnabled ? "Disable visual editing" : "Enable visual editing"}
             aria-pressed={isEnabled}
-            width="$6" height="$6" flexShrink={0} padding="$0" {...{ backgroundColor: isEnabled ? "$color12" : undefined, color: isEnabled ? "$background" : "$color11", hoverStyle: isEnabled ? {"backgroundColor":"$color12"} : {"backgroundColor":"$color3","color":"$color"} }}
+            width="$6" height="$6" flexShrink={0} padding="$0" {...{ backgroundColor: isEnabled ? "$color12" : undefined, color: isEnabled ? "$background" : "$color11", hoverStyle: isEnabled ? {"backgroundColor":"$color12"} : {"backgroundColor":"$color3"} }}
           >
             <Wand2 size={16} />
           </Button>
@@ -654,7 +652,7 @@ export function VisualEditor({
               <Button
                 variant={editMode === "select" ? "secondary" : "ghost"}
                 size="sm"
-                width="$6" height="$6" flexShrink={0} padding="$0" {...{ color: editMode !== "select" ? "$color11" : undefined, hoverStyle: editMode !== "select" ? {"backgroundColor":"$color3","color":"$color"} : undefined }}
+                width="$6" height="$6" flexShrink={0} padding="$0" {...{ color: editMode !== "select" ? "$color11" : undefined, hoverStyle: editMode !== "select" ? {"backgroundColor":"$color3"} : undefined }}
                 onClick={() => setEditMode("select")}
                 title="Select (V)"
                 aria-pressed={editMode === "select"}
@@ -664,7 +662,7 @@ export function VisualEditor({
               <Button
                 variant={editMode === "edit" ? "secondary" : "ghost"}
                 size="sm"
-                width="$6" height="$6" flexShrink={0} padding="$0" {...{ color: editMode !== "edit" ? "$color11" : undefined, hoverStyle: editMode !== "edit" ? {"backgroundColor":"$color3","color":"$color"} : undefined }}
+                width="$6" height="$6" flexShrink={0} padding="$0" {...{ color: editMode !== "edit" ? "$color11" : undefined, hoverStyle: editMode !== "edit" ? {"backgroundColor":"$color3"} : undefined }}
                 onClick={() => setEditMode("edit")}
                 title="Edit (E)"
                 aria-pressed={editMode === "edit"}
@@ -674,7 +672,7 @@ export function VisualEditor({
               <Button
                 variant={editMode === "move" ? "secondary" : "ghost"}
                 size="sm"
-                width="$6" height="$6" flexShrink={0} padding="$0" {...{ color: editMode !== "move" ? "$color11" : undefined, hoverStyle: editMode !== "move" ? {"backgroundColor":"$color3","color":"$color"} : undefined }}
+                width="$6" height="$6" flexShrink={0} padding="$0" {...{ color: editMode !== "move" ? "$color11" : undefined, hoverStyle: editMode !== "move" ? {"backgroundColor":"$color3"} : undefined }}
                 onClick={() => setEditMode("move")}
                 title="Move (M)"
                 aria-pressed={editMode === "move"}
@@ -685,7 +683,7 @@ export function VisualEditor({
               <Button
                 variant={showPanel ? "secondary" : "ghost"}
                 size="sm"
-                width="$6" height="$6" flexShrink={0} padding="$0" {...{ color: !showPanel ? "$color11" : undefined, hoverStyle: !showPanel ? {"backgroundColor":"$color3","color":"$color"} : undefined }}
+                width="$6" height="$6" flexShrink={0} padding="$0" {...{ color: !showPanel ? "$color11" : undefined, hoverStyle: !showPanel ? {"backgroundColor":"$color3"} : undefined }}
                 onClick={() => setShowPanel(!showPanel)}
                 title="Properties panel (P)"
                 aria-pressed={showPanel}
@@ -751,7 +749,7 @@ export function VisualEditor({
                   <XStack gap="$2" marginTop="$1">
                     <Input
                       value={elementText}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setElementText(e.target.value)}
+                      onChangeText={(value) => setElementText(value)}
                       flex={1} backgroundColor="$color3" borderColor="$borderColor" color="$color" fontSize="$3"
   />
                     <Button size="sm" onClick={applyTextChange}>
@@ -782,7 +780,7 @@ export function VisualEditor({
   />
                     <Input
                       value={elementStyles.color}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("color", e.target.value)}
+                      onChangeText={(value) => applyStyleChange("color", value)}
                       flex={1} backgroundColor="$color3" borderColor="$borderColor" color="$color" fontSize="$3"
   />
                   </XStack>
@@ -801,7 +799,7 @@ export function VisualEditor({
   />
                     <Input
                       value={elementStyles.backgroundColor}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("backgroundColor", e.target.value)}
+                      onChangeText={(value) => applyStyleChange("backgroundColor", value)}
                       flex={1} backgroundColor="$color3" borderColor="$borderColor" color="$color" fontSize="$3"
   />
                   </XStack>
@@ -811,7 +809,7 @@ export function VisualEditor({
                   <Label fontSize="$1" color="$color11">Font Size</Label>
                   <Input
                     value={elementStyles.fontSize}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("fontSize", e.target.value)}
+                    onChangeText={(value) => applyStyleChange("fontSize", value)}
                     backgroundColor="$color3" borderColor="$borderColor" color="$color" fontSize="$3" marginTop="$1"
   />
                 </div>
@@ -844,7 +842,7 @@ export function VisualEditor({
                     <Label fontSize="$1" color="$color11">Width</Label>
                     <Input
                       value={elementStyles.width}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("width", e.target.value)}
+                      onChangeText={(value) => applyStyleChange("width", value)}
                       placeholder="auto"
                       backgroundColor="$color3" borderColor="$borderColor" color="$color" fontSize="$3" marginTop="$1"
   />
@@ -853,7 +851,7 @@ export function VisualEditor({
                     <Label fontSize="$1" color="$color11">Height</Label>
                     <Input
                       value={elementStyles.height}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("height", e.target.value)}
+                      onChangeText={(value) => applyStyleChange("height", value)}
                       placeholder="auto"
                       backgroundColor="$color3" borderColor="$borderColor" color="$color" fontSize="$3" marginTop="$1"
   />
@@ -864,7 +862,7 @@ export function VisualEditor({
                   <Label fontSize="$1" color="$color11">Padding</Label>
                   <Input
                     value={elementStyles.padding}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("padding", e.target.value)}
+                    onChangeText={(value) => applyStyleChange("padding", value)}
                     placeholder="0px"
                     backgroundColor="$color3" borderColor="$borderColor" color="$color" fontSize="$3" marginTop="$1"
   />
@@ -874,7 +872,7 @@ export function VisualEditor({
                   <Label fontSize="$1" color="$color11">Margin</Label>
                   <Input
                     value={elementStyles.margin}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => applyStyleChange("margin", e.target.value)}
+                    onChangeText={(value) => applyStyleChange("margin", value)}
                     placeholder="0px"
                     backgroundColor="$color3" borderColor="$borderColor" color="$color" fontSize="$3" marginTop="$1"
   />

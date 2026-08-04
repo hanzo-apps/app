@@ -158,7 +158,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
                   type="button"
                   onClick={() => setSelectedMode(opt.mode)}
                   aria-pressed={active}
-                  group width="100%" alignItems="flex-start" gap="$3.5" borderRadius="$6" borderWidth={1} padding="$3.5" textAlign="left" {...{ borderColor: active ? "$color" : "$borderColor", backgroundColor: active ? "$color3" : "$color3", hoverStyle: active ? undefined : {"borderColor":"$color","backgroundColor":"$color3"} }}
+                  group width="100%" alignItems="flex-start" gap="$3.5" borderRadius="$6" borderWidth={1} padding="$3.5" {...{ borderColor: active ? "$color" : "$borderColor", backgroundColor: active ? "$color3" : "$color3", hoverStyle: active ? undefined : {"borderColor":"$color","backgroundColor":"$color3"} }}
                 >
                   <XStack
                     height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} {...(opt.mode === "deploy"
@@ -199,7 +199,7 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
               <Textarea
                 id="tpl-first-msg"
                 value={firstMessage}
-                onChange={(e) => setFirstMessage(e.target.value)}
+                onChangeText={(t) => setFirstMessage(t)}
                 onKeyDown={(e) => {
                   // Enter (without Shift) proceeds — a chat-like affordance.
                   if (e.key === "Enter" && !e.shiftKey) {
@@ -209,7 +209,8 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
                 }}
                 rows={2}
                 placeholder="e.g. rename the brand to Bean & Bloom and rewrite the hero copy…"
-                width="100%" resize="none" backgroundColor="transparent" paddingHorizontal="$3.5" paddingVertical="$3" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0 }}
+                className="resize-none"
+                width="100%" backgroundColor="transparent" paddingHorizontal="$3.5" paddingVertical="$3" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0 }}
   />
             </YStack>
             <Paragraph marginTop="$1.5" fontSize="$1" color="$color11">
@@ -222,14 +223,14 @@ export function TemplateLoader({ templateRepo, action, onProceed }: TemplateLoad
             <Button
               variant="outline"
               onClick={() => window.history.back()}
-              flex={1} borderColor="$borderColor" backgroundColor="transparent" color="$color" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+              flex={1} borderColor="$borderColor" backgroundColor="transparent" hoverStyle={{ backgroundColor: "$color3" }}
               disabled={loading}
             >
               Back
             </Button>
             <Button
               onClick={handleProceed}
-              flex={2} backgroundColor="$color12" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
+              flex={2} backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}
               disabled={loading}
             >
               {loading ? (

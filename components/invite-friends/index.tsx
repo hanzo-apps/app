@@ -17,12 +17,14 @@ export function InviteFriends() {
           <Button
             size="icon"
             variant="outline"
-            borderColor="$borderColor" color="$color11" hoverStyle={{ borderColor: "$borderColor", color: "$color" }}
+            group borderColor="$borderColor" hoverStyle={{ borderColor: "$borderColor" }}
           >
-            <UserPlus size={16} />
+            <SizableText display="flex" color="$color11" $group-hover={{ color: "$color" }}>
+              <UserPlus size={16} />
+            </SizableText>
           </Button>
         </DialogTrigger>
-        <DialogContent borderRadius="$6" backgroundColor="$background" color="$color" borderColor="$borderColor" $sm={{ maxWidth: 512 }} $lg={{ padding: "$6" }}>
+        <DialogContent borderRadius="$6" backgroundColor="$background" borderColor="$borderColor" $sm={{ maxWidth: 512 }} $lg={{ padding: "$6" }}>
           <DialogTitle display="none" />
           <main>
             <XStack alignItems="center" justifyContent="flex-start" columnGap="$4" marginBottom="$4.5">

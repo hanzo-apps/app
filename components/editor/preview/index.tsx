@@ -1,5 +1,5 @@
 "use client";
-import { XStack, YStack, Paragraph, SizableText } from '@hanzo/gui';
+import { XStack, YStack, Paragraph, SizableText, type GuiElement } from '@hanzo/gui';
 import { useUpdateEffect } from "react-use";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast, Button } from '@hanzo/ui';
@@ -309,7 +309,7 @@ export const Preview = ({
 
   return (
     <XStack
-      ref={ref}
+      ref={ref as React.Ref<GuiElement>}
       width="100%" position="relative" zIndex={0} alignItems="center" justifyContent="center" backgroundColor="$background" {...{ $lg: currentTab === "preview" ? {"height":"100%"} : currentTab === "chat" && !isFullscreen ? {"height":"$0"} : undefined, height: isFullscreen ? "100%" : "100%", padding: isFullscreen ? "$0" : undefined }}
       onClick={(e) => {
         if (isAiWorking) {
@@ -327,13 +327,16 @@ export const Preview = ({
         title={isFullscreen ? "Exit fullscreen (Esc)" : "Fullscreen preview"}
         aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
         aria-pressed={isFullscreen}
-        position="absolute" right="$3" zIndex={20} width={36} height={36} alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$background" color="$color11" backdropFilter="blur(8px)" hoverStyle={{ backgroundColor: "$color3", color: "$color" }} {...{ top: isFullscreen ? "$3" : "$5", opacity: isFullscreen ? 1 : 0, "$group-preview-hover": isFullscreen ? undefined : {"opacity":1}, focusVisibleStyle: isFullscreen ? { outlineWidth: 0 } : {"opacity":1} }}
+        group
+        position="absolute" right="$3" zIndex={20} width={36} height={36} alignItems="center" justifyContent="center" borderRadius="$5" backgroundColor="$background" backdropFilter="blur(8px)" hoverStyle={{ backgroundColor: "$color3" }} {...{ top: isFullscreen ? "$3" : "$5", opacity: isFullscreen ? 1 : 0, "$group-preview-hover": isFullscreen ? undefined : {"opacity":1}, focusVisibleStyle: isFullscreen ? { outlineWidth: 0 } : {"opacity":1} }}
       >
-        {isFullscreen ? (
-          <Minimize2 size={16} />
-        ) : (
-          <Maximize2 size={16} />
-        )}
+        <SizableText color="$color11" $group-hover={{ color: "$color" }}>
+          {isFullscreen ? (
+            <Minimize2 size={16} />
+          ) : (
+            <Maximize2 size={16} />
+          )}
+        </SizableText>
       </Button>
       <GridPattern
         x={-1}

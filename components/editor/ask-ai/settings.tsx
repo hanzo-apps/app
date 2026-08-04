@@ -1,7 +1,7 @@
 'use client';
 
 import { SizableText, YStack, Paragraph } from '@hanzo/gui';
-import { Check, Settings } from "lucide-react";
+import { Check, Settings as SettingsIcon } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger, Button } from '@hanzo/ui';
 import { ModelSelector, type ModelCatalogEntry } from '@hanzo/ui/models';
@@ -54,9 +54,10 @@ function ModelRow({
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$2" textAlign="left" fontSize="$3" {...{ backgroundColor: selected ? "$color3" : undefined, color: selected ? "$color" : "$color11", hoverStyle: selected ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
+      group
+      width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$2" {...{ backgroundColor: selected ? "$color3" : undefined, hoverStyle: selected ? undefined : { backgroundColor: "$color3" } }}
     >
-      <SizableText minWidth={0} flex={1}>
+      <SizableText minWidth={0} flex={1} textAlign="left" fontSize="$3" color={selected ? "$color" : "$color11"} $group-hover={{ color: "$color" }}>
         <SizableText numberOfLines={1} fontWeight="500">{label}</SizableText>
         {hint && (
           <SizableText marginTop="$0.5" numberOfLines={1} fontSize="$1" color="$color11">
@@ -104,23 +105,25 @@ export function Settings({
   const isAuto = !model || model === AUTO_MODEL;
 
   return (
-    <Popover open={open} onOpenChange={onClose}>
+    <Popover open={open} onOpenChange={onClose} placement="top-end">
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
           size="icon"
           title="Settings — model, mode & options"
           aria-label="Settings"
-          borderRadius="$10" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+          group
+          borderRadius="$10" hoverStyle={{ backgroundColor: "$color3" }}
         >
-          <Settings size={16} />
+          <SizableText color="$color11" $group-hover={{ color: "$color" }}>
+            <SettingsIcon size={16} />
+          </SizableText>
         </Button>
       </PopoverTrigger>
       {/* ONE popover surface: solid bg-card, a single hairline border, high
           z-index. The model list is inline (not a nested Select portal), so the
           menu can no longer render a second overlapping layer. */}
       <PopoverContent
-        side="top"
         align="end"
         sideOffset={8}
         width={384} overflow="hidden" padding="$0"

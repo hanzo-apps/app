@@ -51,7 +51,7 @@ export function ReImagine({
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} placement="top-start">
       <form>
         <PopoverTrigger asChild>
           <Button
@@ -59,16 +59,15 @@ export function ReImagine({
             variant="ghost"
             aria-label="Redesign from a URL"
             title="Redesign: recreate an existing site's look from its URL"
-            borderRadius="$10" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+            borderRadius="$10"
           >
             <Paintbrush size={16} />
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          side="top"
           align="start"
           sideOffset={8}
-          overflow="hidden" padding="$0" textAlign="center" minWidth={320}
+          overflow="hidden" padding="$0" minWidth={320}
         >
           <YStack backgroundColor="$color3" padding="$5" borderBottomWidth={1} borderColor="$borderColor">
             <XStack alignItems="center" justifyContent="center" columnGap="$4" marginBottom="$3">
@@ -82,16 +81,16 @@ export function ReImagine({
                 💎
               </SizableText>
             </XStack>
-            <Paragraph fontSize="$7" fontWeight="500" color="$color">
+            <Paragraph fontSize="$7" fontWeight="500" color="$color" textAlign="center">
               Redesign your Site!
             </Paragraph>
-            <Paragraph fontSize="$3" color="$color11" marginTop="$1.5">
+            <Paragraph fontSize="$3" color="$color11" marginTop="$1.5" textAlign="center">
               Try our new Redesign feature to give your site a fresh look.
             </Paragraph>
           </YStack>
           <YStack rowGap="$4" padding="$5">
             <div>
-              <Paragraph fontSize="$3" color="$color11" marginBottom="$2">
+              <Paragraph fontSize="$3" color="$color11" marginBottom="$2" textAlign="center">
                 Enter your website URL to get started:
               </Paragraph>
               <Input
@@ -115,7 +114,7 @@ export function ReImagine({
   />
             </div>
             <div>
-              <Paragraph fontSize="$3" color="$color11" marginBottom="$2">
+              <Paragraph fontSize="$3" color="$color11" marginBottom="$2" textAlign="center">
                 Then, let&apos;s redesign it!
               </Paragraph>
               <Button

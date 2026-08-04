@@ -245,7 +245,7 @@ export default function ProfilePage() {
                   {photo && !imgFailed && (
                     <AvatarImage src={photo} alt="" onError={() => setImgFailed(true)} />
                   )}
-                  <AvatarFallback fontSize="$8" backgroundColor="$purple10">
+                  <AvatarFallback backgroundColor="$purple10">
                     {initial}
                   </AvatarFallback>
                 </Avatar>
@@ -339,7 +339,7 @@ export default function ProfilePage() {
                   <Label fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1">
                     Email
                   </Label>
-                  <Paragraph color="$color" wordBreak="break-all">{user?.email}</Paragraph>
+                  <Paragraph color="$color">{user?.email}</Paragraph>
                 </div>
 
                 <div>
@@ -364,7 +364,7 @@ export default function ProfilePage() {
                       value={draft.bio}
                       onChange={(e) => set("bio", e.target.value)}
                       placeholder="Tell us about yourself..."
-                      width="100%" backgroundColor="$color3" color="$color" borderWidth={1} borderColor="$borderColor" borderRadius="$5" paddingHorizontal="$3" paddingVertical="$2" resize="none"
+                      width="100%" backgroundColor="$color3" color="$color" borderWidth={1} borderColor="$borderColor" borderRadius="$5" paddingHorizontal="$3" paddingVertical="$2"
   />
                   ) : (
                     <Paragraph color="$color11" whiteSpace="pre-wrap">
@@ -394,7 +394,7 @@ export default function ProfilePage() {
                           href={saved.homepage}
                           target="_blank"
                           rel="noopener noreferrer nofollow"
-                          color="$color" wordBreak="break-all" hoverStyle={{ textDecorationLine: "underline" }}
+                          color="$color" hoverStyle={{ textDecorationLine: "underline" }}
                         >
                           {saved.homepage}
                         </Anchor>

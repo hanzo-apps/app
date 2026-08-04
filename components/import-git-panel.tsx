@@ -272,7 +272,7 @@ export function ImportGitPanel() {
           {/* Account dropdown + repo search */}
           <YStack gap="$2" $sm={{ flexDirection: "row", alignItems: "center" }}>
             <YStack $sm={{ width: "46%" }}>
-              <DropdownMenu>
+              <DropdownMenu placement="bottom-start">
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="lg" width="100%">
                     {(() => {
@@ -296,7 +296,7 @@ export function ImportGitPanel() {
                 {/* Sized by its content, not by the trigger: the menu panel
                     already caps height to the room it measured and width to the
                     phone, so pinning the trigger width only forced wraps. */}
-                <DropdownMenuContent align="start" minWidth={240}>
+                <DropdownMenuContent minWidth={240}>
                   {accounts.map((a) => {
                     const Icon = PROVIDER_META[a.provider]?.Icon ?? Github;
                     return (
@@ -335,7 +335,7 @@ export function ImportGitPanel() {
                     <GitlabIcon size={16} />
                     Add GitLab Account
                     {!gitlabConnectable && (
-                      <Badge variant="outline" marginLeft="auto">
+                      <Badge variant="outline" className="ml-auto">
                         Needs setup
                       </Badge>
                     )}
@@ -351,7 +351,7 @@ export function ImportGitPanel() {
                       <SizableText paddingHorizontal="$1" fontSize={11} textTransform="uppercase" letterSpacing={0.4} color="$color11">
                         Providers
                       </SizableText>
-                      <Badge variant="outline" gap="$1.5">
+                      <Badge variant="outline" className="gap-1.5">
                         <Github size={14} /> GitHub
                       </Badge>
                       {gitlabConnectable ? (
@@ -359,11 +359,11 @@ export function ImportGitPanel() {
                           <GitlabIcon size={14} /> GitLab
                         </Button>
                       ) : (
-                        <Badge variant="outline" gap="$1.5" title="GitLab connect is being set up">
+                        <Badge variant="outline" className="gap-1.5" title="GitLab connect is being set up">
                           <GitlabIcon size={14} /> GitLab · Setup
                         </Badge>
                       )}
-                      <Badge variant="outline" gap="$1.5">
+                      <Badge variant="outline" className="gap-1.5">
                         <Globe size={14} /> Bitbucket · Soon
                       </Badge>
                     </YStack>

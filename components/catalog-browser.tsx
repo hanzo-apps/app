@@ -48,9 +48,12 @@ function Pill({
   return (
     <Button
       onClick={onClick}
-      flexShrink={0} whiteSpace="nowrap" borderRadius="$10" paddingHorizontal="$3.5" paddingVertical="$1.5" fontSize="$1" fontWeight="500" {...{ backgroundColor: active ? "$color12" : "$color3", color: active ? "$background" : "$color11", borderWidth: active ? undefined : 1, borderColor: active ? undefined : "$borderColor", hoverStyle: active ? undefined : {"borderColor":"$color","color":"$color"} }}
+      group
+      flexShrink={0} borderRadius="$10" paddingHorizontal="$3.5" paddingVertical="$1.5" {...{ backgroundColor: active ? "$color12" : "$color3", borderWidth: active ? undefined : 1, borderColor: active ? undefined : "$borderColor", hoverStyle: active ? undefined : { borderColor: "$color" } }}
     >
-      {label}
+      <SizableText whiteSpace="nowrap" fontSize="$1" fontWeight="500" color={active ? "$background" : "$color11"} $group-hover={active ? undefined : { color: "$color" }}>
+        {label}
+      </SizableText>
       {count !== undefined && (
         <SizableText marginLeft="$1.5" fontFamily="$mono" fontSize={10} opacity={0.6}>{count}</SizableText>
       )}
@@ -133,9 +136,9 @@ function Card({
           {onParent ? (
             <Button
               onClick={() => onParent(e.template!)}
-              position="relative" zIndex={10} textDecorationLine="underline" hoverStyle={{ color: "$color" }}
+              position="relative" zIndex={10}
             >
-              {e.template}
+              <SizableText textDecorationLine="underline" hoverStyle={{ color: "$color" }}>{e.template}</SizableText>
             </Button>
           ) : (
             <SizableText color="$color">{e.template}</SizableText>

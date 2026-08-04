@@ -30,16 +30,18 @@ export function ConnectionBadge({ method, extra, info, onDisconnect, disconnecti
         <Button
           size="sm"
           variant="ghost"
-          gap="$1" color="$color11" height={28} paddingHorizontal="$2" fontSize="$1" hoverStyle={{ color: "$red9" }}
+          group height={28} paddingHorizontal="$2"
           onClick={onDisconnect}
           disabled={disconnecting}
         >
-          {disconnecting ? (
-            <Loader2 size={12} />
-          ) : (
-            <LogOut size={12} />
-          )}
-          Disconnect
+          <SizableText display="flex" flexDirection="row" alignItems="center" gap="$1" color="$color11" fontSize="$1" $group-hover={{ color: "$red9" }}>
+            {disconnecting ? (
+              <Loader2 size={12} />
+            ) : (
+              <LogOut size={12} />
+            )}
+            Disconnect
+          </SizableText>
         </Button>
       </XStack>
       {info && (

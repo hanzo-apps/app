@@ -212,19 +212,21 @@ export function FunctionsManager({ deploymentId, dataProvider, hideRuntimeFeatur
                       {!hideRuntimeFeatures && deploymentId && (
                         <Button
                           onClick={() => copyUrl(fn)}
-                          alignItems="center" gap="$1" flexShrink={0} hoverStyle={{ color: "$color" }}
+                          backgroundColor="transparent" alignItems="center" gap="$1" flexShrink={0} group
                         >
-                          {copiedUrl === fn.id ? (
-                            <>
-                              <CheckCircle2 size={12} color="$green9" />
-                              Copied!
-                            </>
-                          ) : (
-                            <>
-                              <Copy size={12} />
-                              Copy URL
-                            </>
-                          )}
+                          <SizableText display="flex" flexDirection="row" alignItems="center" gap="$1" fontSize="$1" color="$color11" $group-hover={{ color: "$color" }}>
+                            {copiedUrl === fn.id ? (
+                              <>
+                                <CheckCircle2 size={12} color="$green9" />
+                                Copied!
+                              </>
+                            ) : (
+                              <>
+                                <Copy size={12} />
+                                Copy URL
+                              </>
+                            )}
+                          </SizableText>
                         </Button>
                       )}
                     </SizableText>
@@ -236,7 +238,7 @@ export function FunctionsManager({ deploymentId, dataProvider, hideRuntimeFeatur
                         <MoreVertical size={16} />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent>
                       <DropdownMenuItem onClick={() => setEditingFunction(fn)}>
                         <Pencil size={16} />
                         Edit
@@ -264,7 +266,7 @@ export function FunctionsManager({ deploymentId, dataProvider, hideRuntimeFeatur
                       )}
                       <DropdownMenuItem
                         onClick={() => deleteFunction(fn)}
-                        color="$red9"
+                        variant="destructive"
                       >
                         <Trash2 size={16} />
                         Delete

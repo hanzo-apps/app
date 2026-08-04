@@ -184,7 +184,7 @@ export default function ProjectSettingsPage() {
                   type="button"
                   onClick={save}
                   disabled={!dirty || saving}
-                  alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$4.5" paddingVertical="$2" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }} disabledStyle={{ cursor: "not-allowed", backgroundColor: "$color3", color: "$color11" }}
+                  alignItems="center" gap="$2" borderRadius="$10" backgroundColor="$color12" paddingHorizontal="$4.5" paddingVertical="$2" hoverStyle={{ backgroundColor: "$color12" }} disabledStyle={{ cursor: "not-allowed", backgroundColor: "$color3" }}
                 >
                   {saving && <Loader2 size={14} />}
                   Save changes
@@ -225,13 +225,14 @@ export default function ProjectSettingsPage() {
                 </SizableText>
                 <Button
                   type="button"
+                  variant="ghost"
                   onClick={() => {
                     navigator.clipboard?.writeText(`https://git.hanzo.ai/${org}/${slug}.git`);
                     toast.success("Clone URL copied.");
                   }}
-                  flexShrink={0} borderRadius="$2" paddingHorizontal="$2" paddingVertical="$1" fontSize="$1" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+                  flexShrink={0} borderRadius="$2" paddingHorizontal="$2" paddingVertical="$1"
                 >
-                  Copy
+                  <SizableText fontSize="$1" color="$color11">Copy</SizableText>
                 </Button>
               </XStack>
             </Section>
@@ -279,9 +280,11 @@ export default function ProjectSettingsPage() {
                 <Button
                   type="button"
                   onClick={remove}
-                  alignItems="center" gap="$1.5" borderRadius="$10" borderWidth={1} borderColor="$red9" paddingHorizontal="$4" paddingVertical="$2" fontSize="$3" color="$red8" hoverStyle={{ borderColor: "$red9", backgroundColor: "$red9" }}
+                  backgroundColor="transparent" borderRadius="$10" borderWidth={1} borderColor="$red9" paddingHorizontal="$4" paddingVertical="$2" hoverStyle={{ borderColor: "$red9", backgroundColor: "$red9" }}
                 >
-                  <Trash2 size={14} /> Delete project
+                  <SizableText display="flex" flexDirection="row" alignItems="center" gap="$1.5" color="$red8">
+                    <Trash2 size={14} /> Delete project
+                  </SizableText>
                 </Button>
               </XStack>
             </Section>

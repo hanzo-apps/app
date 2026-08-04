@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText, YStack, XStack, H3, Paragraph } from '@hanzo/gui';
+import { SizableText, YStack, XStack, H3, Paragraph, ContextMenu } from '@hanzo/gui';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { VirtualFile, isFileSupported, FILE_SIZE_LIMITS, getFileTypeFromPath } from '@/lib/vfs/types';
 import { vfs } from '@/lib/vfs';
@@ -498,7 +498,7 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
         onDrop={(e) => item.type === 'directory' && !isTransient && handleItemDrop(e, item)}
       >
         <ContextMenu>
-          <ContextMenuTrigger>
+          <ContextMenu.Trigger>
             <SizableText
             alignItems="center" gap="$2" paddingHorizontal="$2" paddingVertical="$1.5" cursor="pointer" borderRadius="$3" group display="flex" flexDirection="row" hoverStyle={{ backgroundColor: "$color3", color: "$color" }} {...{ backgroundColor: isDropTarget && item.type === 'directory' ? "$blue9" : isSelected ? "$color3" : undefined, color: isSelected ? "$color" : undefined, borderWidth: isDropTarget && item.type === 'directory' ? 1 : undefined, borderColor: isDropTarget && item.type === 'directory' ? "$blue9" : undefined, opacity: (isTransient || isHiddenDotFile) ? 0.75 : draggedItem?.path === item.path ? 0.5 : undefined }}
             style={{ paddingLeft: `${level * 16 + 8}px` }}
@@ -561,55 +561,56 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
               </SizableText>
             )}
             </SizableText>
-          </ContextMenuTrigger>
-          <ContextMenuContent>
+          </ContextMenu.Trigger>
+          <ContextMenu.Portal>
+          <ContextMenu.Content>
           {/* Only show edit options for non-transient paths */}
           {!isTransient && (
             <>
               {item.type === 'directory' && (
                 <>
-                  <ContextMenuItem onClick={() => handleCreateFile(item.path)}>
+                  <ContextMenu.Item onSelect={() => handleCreateFile(item.path)}>
                     <File size={16} />
                     New File
-                  </ContextMenuItem>
-                  <ContextMenuItem onClick={() => handleCreateDirectory(item.path)}>
+                  </ContextMenu.Item>
+                  <ContextMenu.Item onSelect={() => handleCreateDirectory(item.path)}>
                     <Folder size={16} />
                     New Folder
-                  </ContextMenuItem>
-                  <ContextMenuItem onClick={() => fileInputRef.current?.click()}>
+                  </ContextMenu.Item>
+                  <ContextMenu.Item onSelect={() => fileInputRef.current?.click()}>
                     <Upload size={16} />
                     Upload Files
-                  </ContextMenuItem>
+                  </ContextMenu.Item>
                 </>
               )}
               {item.type === 'file' && onSetEntryPoint && item.path !== (entryPoint || '/index.html') && (
-                <ContextMenuItem onClick={() => onSetEntryPoint(item.path)}>
+                <ContextMenu.Item onSelect={() => onSetEntryPoint(item.path)}>
                   <Home size={16} />
                   Set as Entry Point
-                </ContextMenuItem>
+                </ContextMenu.Item>
               )}
-              <ContextMenuItem onClick={() => {
+              <ContextMenu.Item onSelect={() => {
                 setRenamingPath(item.path);
                 setNewName(item.name);
               }}>
                 Rename
-              </ContextMenuItem>
-              <ContextMenuItem
-                onClick={() => handleDelete(item.path, item.type)}
-                color="var(--destructive)"
+              </ContextMenu.Item>
+              <ContextMenu.Item
+                onSelect={() => handleDelete(item.path, item.type)}
               >
-                Delete
-              </ContextMenuItem>
+                <SizableText color="var(--destructive)">Delete</SizableText>
+              </ContextMenu.Item>
             </>
           )}
           {/* For transient files, just show a read-only indicator */}
           {isTransient && (
-            <ContextMenuItem disabled>
+            <ContextMenu.Item disabled>
               <Eye size={16} />
               Read-only {isServerContext ? 'server context' : 'skill'}
-            </ContextMenuItem>
+            </ContextMenu.Item>
           )}
-          </ContextMenuContent>
+          </ContextMenu.Content>
+          </ContextMenu.Portal>
         </ContextMenu>
         {item.type === 'directory' && isExpanded && item.children && (
           <div>
@@ -651,9 +652,10 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
           {onClose ? (
             <Button
               type="button"
+              variant="ghost"
               onClick={onClose}
               aria-label="Hide file explorer"
-              position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" color="$color11" group hoverStyle={{ color: "$red9" }}
+              position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" group
             >
               <FolderTree 
                 size={16} 
@@ -697,8 +699,8 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
         </XStack>
       </XStack>
       <ContextMenu>
-        <ContextMenuTrigger asChild>
-          <YStack 
+        <ContextMenu.Trigger asChild>
+          <YStack
             flex={1} padding="$3" rowGap="$0.5" position="relative" overflow="scroll" {...{ backgroundColor: isDraggingOver ? "$blue9" : undefined }}
             onDragOver={(e) => {
               if (draggedItem) {
@@ -737,25 +739,27 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
               </YStack>
             )}
           </YStack>
-        </ContextMenuTrigger>
-        <ContextMenuContent>
-          <ContextMenuItem onClick={() => handleCreateFile('/')}>
+        </ContextMenu.Trigger>
+        <ContextMenu.Portal>
+        <ContextMenu.Content>
+          <ContextMenu.Item onSelect={() => handleCreateFile('/')}>
             <File size={16} />
             New File
-          </ContextMenuItem>
-          <ContextMenuItem onClick={() => handleCreateDirectory('/')}>
+          </ContextMenu.Item>
+          <ContextMenu.Item onSelect={() => handleCreateDirectory('/')}>
             <Folder size={16} />
             New Folder
-          </ContextMenuItem>
-          <ContextMenuItem onClick={() => fileInputRef.current?.click()}>
+          </ContextMenu.Item>
+          <ContextMenu.Item onSelect={() => fileInputRef.current?.click()}>
             <Upload size={16} />
             Upload Files
-          </ContextMenuItem>
-          <ContextMenuItem onClick={() => setShowHidden(!showHidden)}>
+          </ContextMenu.Item>
+          <ContextMenu.Item onSelect={() => setShowHidden(!showHidden)}>
             {showHidden ? <EyeOff size={16} /> : <Eye size={16} />}
             {showHidden ? 'Hide Hidden Files' : 'Show Hidden Files'}
-          </ContextMenuItem>
-        </ContextMenuContent>
+          </ContextMenu.Item>
+        </ContextMenu.Content>
+        </ContextMenu.Portal>
       </ContextMenu>
       {/* Missing .PROMPT.md notification */}
       {onAddPromptFile && !promptDismissed && files.length > 0 && !files.some(f => f.path === '/.PROMPT.md') && (
@@ -766,21 +770,21 @@ export function FileExplorer({ projectId, onFileSelect, selectedPath, onClose, e
             <Button
               size="sm"
               variant="outline"
-              height="$5" fontSize="$1" paddingHorizontal="$2"
+              height="$5" paddingHorizontal="$2"
               onClick={onAddPromptFile}
             >
-              Add
+              <SizableText fontSize="$1">Add</SizableText>
             </Button>
             <Button
               size="sm"
               variant="ghost"
-              height="$5" fontSize="$1" paddingHorizontal="$2"
+              height="$5" paddingHorizontal="$2"
               onClick={() => {
                 setPromptDismissed(true);
                 localStorage.setItem(`osw-prompt-dismissed-${projectId}`, 'true');
               }}
             >
-              Dismiss
+              <SizableText fontSize="$1">Dismiss</SizableText>
             </Button>
           </XStack>
         </SizableText>

@@ -126,12 +126,12 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
               <Globe size={16} color="$color11" />
               <SizableText fontSize="$3" flex={1}>{publicUrl}</SizableText>
               {settings.enabled && (
-                <Badge variant="default" marginLeft="$2">
+                <Badge variant="default" className="ml-2">
                   Live
                 </Badge>
               )}
               {!settings.enabled && (
-                <Badge variant="secondary" marginLeft="$2">
+                <Badge variant="secondary" className="ml-2">
                   Not Published
                 </Badge>
               )}
@@ -170,7 +170,7 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
             type="text"
             placeholder="example.com"
             value={settings.customDomain || ''}
-            onChange={(e) => handleChange('customDomain', e.target.value || undefined)}
+            onChangeText={(value) => handleChange('customDomain', value || undefined)}
   />
           <Paragraph fontSize="$1" color="$color11">
             Enter your custom domain if you've configured a reverse proxy to point it to this deployment. This is used for SEO meta tags and sitemaps. See documentation for setup instructions.
@@ -203,7 +203,7 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
           settings.settingsVersion > settings.lastPublishedVersion && (
             <YStack padding="$3" backgroundColor="$yellow1" borderWidth={1} borderColor="$yellow3" borderRadius="$5" $theme-dark={{ backgroundColor: "$yellow12", borderColor: "$yellow11" }}>
               <XStack alignItems="center" gap="$2">
-                <Badge variant="outline" backgroundColor="$yellow2" $theme-dark={{ backgroundColor: "$yellow12" }}>
+                <Badge variant="outline">
                   Pending Changes
                 </Badge>
                 <SizableText fontSize="$3">

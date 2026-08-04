@@ -76,17 +76,17 @@ export function TemplateDetail({
             <nav aria-label="Breadcrumb">
               <SizableText flexWrap="wrap" alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.24} color="$color11" display="flex" flexDirection="row">
                 <li>
-                  <Link href="/templates"><XStack hoverStyle={{ color: "$color" }}>
+                  <Link href="/templates"><SizableText hoverStyle={{ color: "$color" }}>
                     Templates
-                  </XStack></Link>
+                  </SizableText></Link>
                 </li>
                 <li aria-hidden="true">
                   <ChevronRight size={12} color="$color11" />
                 </li>
                 <li>
-                  <Link href={catHref}><XStack hoverStyle={{ color: "$color" }}>
+                  <Link href={catHref}><SizableText hoverStyle={{ color: "$color" }}>
                     {t.category}
-                  </XStack></Link>
+                  </SizableText></Link>
                 </li>
               </SizableText>
             </nav>
@@ -183,7 +183,7 @@ export function TemplateDetail({
 
         {/* ── Key highlights ────────────────────────────────────── */}
         {t.keyHighlights.length > 0 && (
-          <YStack marginTop="$6" $md={{ marginTop: "$8" }} {...SECTION}>
+          <YStack marginTop="$6" {...SECTION} $md={{ ...SECTION.$md, marginTop: "$8" }}>
             <YStack alignSelf="center" maxWidth={1152}>
               <Reveal>
                 <Paragraph {...EYEBROW}>Key highlights</Paragraph>
@@ -282,7 +282,7 @@ export function TemplateDetail({
   />
                     </YStack>
                     <YStack flex={1} padding="$4">
-                      <H3 numberOfLines={1} fontSize="$3" fontWeight="500" color="$color" title={r.name}>
+                      <H3 numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">
                         {r.name}
                       </H3>
                       <Paragraph marginTop="$1" numberOfLines={1} fontSize="$1" color="$color11">{r.framework}</Paragraph>
@@ -296,11 +296,11 @@ export function TemplateDetail({
 
         {/* ── Final CTA ─────────────────────────────────────────── */}
         <YStack borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$12" $md={{ paddingHorizontal: "$6", paddingVertical: "$13" }}>
-          <Reveal alignSelf="center" width="100%" maxWidth={672} textAlign="center">
-            <H2 fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
+          <Reveal alignSelf="center" width="100%" maxWidth={672}>
+            <H2 textAlign="center" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
               Make {t.name} yours.
             </H2>
-            <Paragraph alignSelf="center" marginTop="$4" maxWidth={448} fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
+            <Paragraph alignSelf="center" textAlign="center" marginTop="$4" maxWidth={448} fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
               Fork it into the Hanzo builder, edit it with AI, and ship it to a live
               hanzo.app URL — database, auth, and AI wired in.
             </Paragraph>

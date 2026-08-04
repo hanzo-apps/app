@@ -181,17 +181,17 @@ export default function FeaturesPage() {
             <YStack gap="$4" justifyContent="center" alignItems="center" $sm={{ flexDirection: "row" }}>
               <Button
                 onClick={() => user ? router.push('/dev') : openLoginWindow()}
-                color="white" paddingHorizontal="$6" paddingVertical="$3" borderRadius="$6" fontWeight="500" fontSize="$6"
+                paddingHorizontal="$6" paddingVertical="$3" borderRadius="$6"
               >
                 <Zap size={20} />
-                Start Building
+                <SizableText color="white" fontWeight="500" fontSize="$6">Start Building</SizableText>
               </Button>
               <Button
                 onClick={() => router.push('/docs')}
                 variant="outline"
-                borderColor="$borderColor" color="$color" paddingHorizontal="$6" paddingVertical="$3" borderRadius="$6" fontWeight="500" fontSize="$6" hoverStyle={{ backgroundColor: "$color3" }}
+                borderColor="$borderColor" paddingHorizontal="$6" paddingVertical="$3" borderRadius="$6" hoverStyle={{ backgroundColor: "$color3" }}
               >
-                View Documentation
+                <SizableText color="$color" fontWeight="500" fontSize="$6">View Documentation</SizableText>
                 <ArrowRight size={20} />
               </Button>
             </YStack>
@@ -202,7 +202,7 @@ export default function FeaturesPage() {
         <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
           <YStack maxWidth={1280} alignSelf="center">
             <SizableText textAlign="center" marginBottom="$10" display="flex" flexDirection="column">
-              <Badge marginBottom="$4" color="white" borderWidth={0} paddingHorizontal="$4" paddingVertical="$1.5">
+              <Badge className="mb-4 px-4 py-1.5">
                 <Settings size={16} />
                 Core Features
               </Badge>
@@ -244,7 +244,7 @@ export default function FeaturesPage() {
         <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
           <YStack maxWidth={1280} alignSelf="center">
             <SizableText textAlign="center" marginBottom="$10" display="flex" flexDirection="column">
-              <Badge marginBottom="$4" color="white" borderWidth={0} paddingHorizontal="$4" paddingVertical="$1.5">
+              <Badge className="mb-4 px-4 py-1.5">
                 <Brain size={16} />
                 AI Capabilities
               </Badge>
@@ -276,7 +276,7 @@ export default function FeaturesPage() {
         <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
           <YStack maxWidth={1280} alignSelf="center">
             <SizableText textAlign="center" marginBottom="$10" display="flex" flexDirection="column">
-              <Badge marginBottom="$4" color="white" borderWidth={0} paddingHorizontal="$4" paddingVertical="$1.5">
+              <Badge className="mb-4 px-4 py-1.5">
                 <Layers size={16} />
                 Technology Stack
               </Badge>
@@ -316,7 +316,7 @@ export default function FeaturesPage() {
         <YStack paddingHorizontal="$4" paddingVertical="$10" $md={{ paddingHorizontal: "$6", paddingVertical: "$11" }}>
           <YStack maxWidth={1280} alignSelf="center">
             <SizableText textAlign="center" marginBottom="$10" display="flex" flexDirection="column">
-              <Badge marginBottom="$4" color="white" borderWidth={0} paddingHorizontal="$4" paddingVertical="$1.5">
+              <Badge className="mb-4 px-4 py-1.5">
                 <BarChart size={16} />
                 Simple Pricing
               </Badge>
@@ -334,12 +334,12 @@ export default function FeaturesPage() {
                 >
                   {plan.popular && (
                     <YStack position="absolute" top="-3" left="50%" x="50%">
-                      <Badge color="white" borderWidth={0} paddingHorizontal="$4" paddingVertical="$1">
+                      <Badge className="px-4 py-1">
                         Most Popular
                       </Badge>
                     </YStack>
                   )}
-                  <CardHeader textAlign="center" paddingBottom="$5">
+                  <CardHeader alignItems="center" paddingBottom="$5">
                     <CardTitle fontSize="$8" color="$color">{plan.name}</CardTitle>
                     <YStack marginTop="$4">
                       <SizableText fontSize="$11" fontWeight="500" color="$color">{plan.price}</SizableText>
@@ -397,18 +397,18 @@ export default function FeaturesPage() {
             <YStack gap="$4" justifyContent="center" alignItems="center" $sm={{ flexDirection: "row" }}>
               <Button
                 onClick={() => user ? router.push('/dev') : openLoginWindow()}
-                color="white" paddingHorizontal="$6" paddingVertical="$3" borderRadius="$6" fontWeight="500" fontSize="$6"
+                paddingHorizontal="$6" paddingVertical="$3" borderRadius="$6"
               >
                 <Zap size={20} />
-                Start Building Now
+                <SizableText color="white" fontWeight="500" fontSize="$6">Start Building Now</SizableText>
               </Button>
               <Button
                 onClick={() => router.push('/community')}
                 variant="outline"
-                borderColor="$borderColor" color="$color" paddingHorizontal="$6" paddingVertical="$3" borderRadius="$6" fontWeight="500" fontSize="$6" hoverStyle={{ backgroundColor: "$color3" }}
+                borderColor="$borderColor" paddingHorizontal="$6" paddingVertical="$3" borderRadius="$6" hoverStyle={{ backgroundColor: "$color3" }}
               >
                 <Users size={20} />
-                Explore Community
+                <SizableText color="$color" fontWeight="500" fontSize="$6">Explore Community</SizableText>
               </Button>
             </YStack>
           </SizableText>

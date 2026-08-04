@@ -276,7 +276,8 @@ export default function ChatPage() {
           <YStack padding="$3" borderBottomWidth={1} borderColor="$borderColor">
             <Button
               onClick={newChat}
-              width="100%" justifyContent="flex-start" gap="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
+              variant="outline"
+              width="100%" justifyContent="flex-start" gap="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ backgroundColor: "$color3" }}
               data-testid="new-chat"
             >
               <Plus size={16} />
@@ -302,10 +303,14 @@ export default function ChatPage() {
                 <Button
                   key={c.id}
                   onClick={() => openConversation(c.id)}
-                  width="100%" justifyContent="flex-start" alignItems="flex-start" gap="$2" padding="$2.5" borderRadius="$5" textAlign="left" {...{ backgroundColor: activeId === c.id ? "$color3" : undefined, color: activeId === c.id ? "$color" : "$color11", hoverStyle: activeId === c.id ? undefined : { backgroundColor: "$color3", color: "$color" } }}
+                  variant="ghost"
+                  group
+                  width="100%" justifyContent="flex-start" alignItems="flex-start" gap="$2" padding="$2.5" borderRadius="$5"
+                  backgroundColor={activeId === c.id ? "$color3" : undefined}
+                  hoverStyle={{ backgroundColor: "$color3" }}
                 >
                   <MessageCircle size={16} />
-                  <SizableText flex={1} minWidth={0} fontSize="$3" numberOfLines={1}>{c.title}</SizableText>
+                  <SizableText flex={1} minWidth={0} fontSize="$3" numberOfLines={1} color={activeId === c.id ? "$color" : "$color11"} $group-hover={{ color: "$color" }}>{c.title}</SizableText>
                 </Button>
               ))}
               {!filtered.length && !signedOut && (
@@ -321,15 +326,17 @@ export default function ChatPage() {
             <Button
               variant="ghost"
               size="sm"
+              group
               onClick={() => setRailOpen((o) => !o)}
               aria-label={railOpen ? 'Hide conversations' : 'Show conversations'}
-              color="$color11" hoverStyle={{ color: "$color" }}
             >
-              {railOpen ? <PanelLeftClose size={16} /> : <PanelLeft size={16} />}
+              <SizableText color="$color11" $group-hover={{ color: "$color" }}>
+                {railOpen ? <PanelLeftClose size={16} /> : <PanelLeft size={16} />}
+              </SizableText>
             </Button>
             <Select value={model} onValueChange={setModel}>
               <SelectTrigger
-                width={160} minWidth={0} backgroundColor="$background" borderColor="$borderColor" color="$color"
+                width={160} minWidth={0} backgroundColor="$background" borderColor="$borderColor"
                 data-testid="model-picker"
               >
                 <SelectValue />
@@ -406,11 +413,11 @@ export default function ChatPage() {
                             variant="ghost"
                             size="sm"
                             onClick={regenerate}
-                            paddingHorizontal="$2" color="$color11" hoverStyle={{ color: "$color" }}
+                            paddingHorizontal="$2"
                             data-testid="regenerate"
                           >
                             <RefreshCw size={12} />
-                            Regenerate
+                            <SizableText fontSize="$2" color="$color11">Regenerate</SizableText>
                           </Button>
                         </XStack>
                       )}
@@ -429,8 +436,8 @@ export default function ChatPage() {
                 <Textarea
                   ref={textareaRef}
                   value={input}
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInput(e.target.value)}
-                  onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+                  onChangeText={(t) => setInput(t)}
+                  onKeyDown={(e: React.KeyboardEvent) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
                       void send();
@@ -438,7 +445,7 @@ export default function ChatPage() {
                   }}
                   placeholder="Message Hanzo…"
                   rows={1}
-                  minHeight={48} maxHeight={200} resize="none" paddingRight="$8" backgroundColor="$background" borderColor="$borderColor" color="$color" placeholderTextColor="$color11"
+                  minHeight={48} maxHeight={200} className="resize-none" paddingRight="$8" backgroundColor="$background" borderColor="$borderColor" color="$color" placeholderTextColor="$color11"
                   data-testid="composer"
   />
                 {streaming ? (
@@ -446,7 +453,7 @@ export default function ChatPage() {
                     onClick={stop}
                     size="sm"
                     aria-label="Stop generating"
-                    position="absolute" right="$2" bottom="$2" height="$6" width="$6" padding="$0" backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
+                    position="absolute" right="$2" bottom="$2" height="$6" width="$6" padding="$0" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}
                     data-testid="stop"
                   >
                     <Square size={14} />
@@ -457,7 +464,7 @@ export default function ChatPage() {
                     disabled={!input.trim()}
                     size="sm"
                     aria-label="Send"
-                    position="absolute" right="$2" bottom="$2" height="$6" width="$6" padding="$0" backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }} disabledStyle={{ opacity: 0.5 }}
+                    position="absolute" right="$2" bottom="$2" height="$6" width="$6" padding="$0" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }} disabledStyle={{ opacity: 0.5 }}
                     data-testid="send"
                   >
                     <ArrowUp size={16} />

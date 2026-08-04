@@ -96,10 +96,9 @@ export function LogsViewer({ deploymentId }: LogsViewerProps) {
             size="sm"
             onClick={clearLogs}
             disabled={logs.length === 0}
-            color="$red9" hoverStyle={{ color: "$red9" }}
           >
             <Trash2 size={16} />
-            Clear
+            <SizableText color="$red9">Clear</SizableText>
           </Button>
         </XStack>
       </XStack>

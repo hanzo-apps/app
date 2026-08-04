@@ -31,7 +31,7 @@ export function TemplatePreviewModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent maxWidth={768} overflow="hidden" borderColor="$borderColor" backgroundColor="$background" padding="$0" color="$color">
+      <DialogContent maxWidth={768} overflow="hidden" borderColor="$borderColor" backgroundColor="$background" padding="$0">
         <DialogTitle position="absolute" width={1} height={1} overflow="hidden">{item.title} preview</DialogTitle>
 
         {/* Header */}
@@ -44,7 +44,7 @@ export function TemplatePreviewModal({
           </YStack>
           {isGame ? (
             <Link href={item.href || '#'} onClick={() => onOpenChange(false)}>
-              <Button size="sm" gap="$1.5" backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
+              <Button size="sm" gap="$1.5" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}>
                 <Gamepad2 size={16} />
                 Open game
               </Button>
@@ -52,7 +52,7 @@ export function TemplatePreviewModal({
           ) : (
             <Button
               size="sm"
-              gap="$1.5" backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
+              gap="$1.5" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}
               onClick={() => onUse(item)}
             >
               <Sparkles size={16} />

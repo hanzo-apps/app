@@ -72,7 +72,7 @@ const setup = (onToggleSidebar = jest.fn(), voice: ReturnType<typeof machine> | 
   const view = render(
     // The app mounts one TooltipProvider in `app/providers.tsx`; the dock lives
     // under it, and the mic's tooltip needs it.
-    <TooltipProvider>
+    <TooltipProvider delay={0}>
       {voice && <Composer voice={voice} />}
       <Console
         isAiWorking={false}
@@ -149,26 +149,28 @@ describe("the bar is a resize handle", () => {
     expect(getComputedStyle(handle).cursor).toBe("row-resize");
     // And it must actually draw something — a grip, not just a cursor. Each
     // affordance is inert and invisible while the bar is at rest, is keyed to the
-    // dock group's hover, focus AND press states — so it fades in for a mouse,
+    // handle group's hover, focus AND press states — so it fades in for a mouse,
     // for a keyboard, and mid-drag alike — and hangs off the handle that IS that
-    // group. Both halves have to be present: `$group-dock-hover={{
-    // backgroundColor: "$color" }}` on a SizableText emits
-    // `_bg-_groupdock-hover_color`, `group="dock"` on the handle emits the
-    // `t_group_dock` those are selected against, and gui compiles the pair into
-    // one `.t_group_dock:hover ._bg-_groupdock-hover_color`. A descendant class
-    // with no host above it is dead markup — precisely what the Tailwind-era
-    // `className="group/dock"` left behind — so `closest` is the assertion that
-    // the two halves meet. Whether it then paints is a browser's business: jsdom
-    // has no `:hover`, so that half belongs in an e2e, not here.
+    // group. Both halves have to be present: `$group-hover={{ backgroundColor:
+    // "$color" }}` on a SizableText emits `_bg-_grouptrue-hover_color`, and a bare
+    // `group` on the handle emits the `t_group_true` those are selected against
+    // (gui types `group` as a boolean, not a string name — the DEFAULT group is
+    // the one form that typechecks, so the emitted name is `true`, not `dock`),
+    // and gui compiles the pair into one `.t_group_true:hover
+    // ._bg-_grouptrue-hover_color`. A descendant class with no host above it is
+    // dead markup — precisely what the Tailwind-era `className="group/dock"` left
+    // behind — so `closest` is the assertion that the two halves meet. Whether it
+    // then paints is a browser's business: jsdom has no `:hover`, so that half
+    // belongs in an e2e, not here.
     const affordances = Array.from(handle.querySelectorAll("span"));
     expect(affordances.length).toBeGreaterThanOrEqual(2);
     for (const grip of affordances) {
       expect(getComputedStyle(grip).backgroundColor).toBe("transparent");
       expect(getComputedStyle(grip).pointerEvents).toBe("none");
       for (const state of ["hover", "focus", "press"]) {
-        expect(grip.className).toContain(`_bg-_groupdock-${state}_color`);
+        expect(grip.className).toContain(`_bg-_grouptrue-${state}_color`);
       }
-      expect(grip.closest(".t_group_dock")).toBe(handle);
+      expect(grip.closest(".t_group_true")).toBe(handle);
     }
   });
 

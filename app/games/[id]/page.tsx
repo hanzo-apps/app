@@ -96,7 +96,7 @@ export default function GameDetail() {
             </div>
             {playable && (
               <Button
-                gap="$2" backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
+                gap="$2" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}
                 onClick={() => router.push(`/games/${game.id}/play`)}
                 data-testid="play-button"
               >
@@ -238,14 +238,14 @@ export default function GameDetail() {
             <YStack gap="$3" $sm={{ flexDirection: "row" }}>
               <Textarea
                 value={ask}
-                onChange={(e) => setAsk(e.target.value)}
+                onChangeText={(t) => setAsk(t)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) submitAsk();
                 }}
                 placeholder="e.g. add a second enemy type and a score multiplier…"
                 rows={2}
                 data-testid="builder-prompt"
-                flex={1} resize="none" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$4" paddingVertical="$3" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ borderColor: "$color8", outlineWidth: 0 }}
+                flex={1} borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$4" paddingVertical="$3" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ borderColor: "$color8", outlineWidth: 0 }}
   />
               <Button
                 gap="$2" alignSelf="flex-end"

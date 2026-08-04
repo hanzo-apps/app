@@ -48,7 +48,7 @@ export default function EnterprisePage() {
       {/* Hero Section */}
       <SizableText paddingHorizontal="$4" paddingVertical="$10" textAlign="center" display="flex" flexDirection="column" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
         <YStack maxWidth={896} alignSelf="center">
-          <Badge marginBottom="$4" backgroundColor="$color12" color="$background" borderWidth={0}>
+          <Badge className="mb-4">
             <Building size={16} />
             Enterprise Ready
           </Badge>
@@ -62,11 +62,11 @@ export default function EnterprisePage() {
             Build, deploy, and scale AI applications with enterprise-grade security, compliance, and dedicated support
           </Paragraph>
           <YStack alignItems="center" gap="$4" justifyContent="center" $sm={{ flexDirection: "row" }}>
-            <Button size="lg" width="100%" backgroundColor="$color12" color="$background" $sm={{ width: "auto" }} hoverStyle={{ backgroundColor: "$color12" }}>
+            <Button size="lg" width="100%" backgroundColor="$color12" $sm={{ width: "auto" }} hoverStyle={{ backgroundColor: "$color12" }}>
               Schedule Demo
               <ArrowRight size={20} />
             </Button>
-            <Button size="lg" variant="outline" width="100%" borderColor="$borderColor" color="$color" $sm={{ width: "auto" }} hoverStyle={{ backgroundColor: "$color3" }}>
+            <Button size="lg" variant="outline" width="100%" borderColor="$borderColor" $sm={{ width: "auto" }} hoverStyle={{ backgroundColor: "$color3" }}>
               Download Whitepaper
             </Button>
           </YStack>
@@ -107,7 +107,7 @@ export default function EnterprisePage() {
         <YStack maxWidth={1280} alignSelf="center">
           <YStack gap="$10" alignItems="center">
             <div>
-              <Badge marginBottom="$4" backgroundColor="$purple9" color="$purple8" borderColor="$purple9">
+              <Badge variant="secondary" className="mb-4">
                 Security First
               </Badge>
               <H2 fontSize="$10" fontWeight="500" marginBottom="$5" $md={{ fontSize: "$11" }}>
@@ -196,7 +196,7 @@ export default function EnterprisePage() {
           <Paragraph fontSize="$7" color="$color11" marginBottom="$6">
             Join leading companies using Hanzo to build the future
           </Paragraph>
-          <Button size="lg" backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
+          <Button size="lg" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}>
             Schedule Enterprise Demo
             <ArrowRight size={20} />
           </Button>

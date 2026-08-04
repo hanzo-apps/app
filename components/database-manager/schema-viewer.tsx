@@ -88,17 +88,16 @@ export function SchemaViewer({ deploymentId, schemaEndpoint, showSystemTablesTog
             variant="ghost"
             size="sm"
             onClick={() => setShowSystemTables(!showSystemTables)}
-            fontSize="$1"
           >
             {showSystemTables ? (
               <>
                 <EyeOff size={14} />
-                Hide System Tables
+                <SizableText fontSize="$1">Hide System Tables</SizableText>
               </>
             ) : (
               <>
                 <Eye size={14} />
-                Show System Tables
+                <SizableText fontSize="$1">Show System Tables</SizableText>
               </>
             )}
           </Button>
@@ -120,7 +119,7 @@ export function SchemaViewer({ deploymentId, schemaEndpoint, showSystemTablesTog
               <YStack key={table.name} {...{ backgroundColor: table.isSystemTable ? "$color3" : undefined }}>
                 <Button
                   onClick={() => toggleTable(table.name)}
-                  width="100%" alignItems="center" gap="$2" padding="$3" textAlign="left" hoverStyle={{ backgroundColor: "$color3" }}
+                  width="100%" alignItems="center" gap="$2" padding="$3" justifyContent="flex-start" hoverStyle={{ backgroundColor: "$color3" }}
                 >
                   {expandedTables.has(table.name) ? (
                     <ChevronDown size={16} color="$color11" />

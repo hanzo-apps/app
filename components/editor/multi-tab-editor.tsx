@@ -335,13 +335,15 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
               type="button"
               onClick={onClose}
               aria-label="Hide code editor"
-              position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" color="$color11" group hoverStyle={{ color: "$red9" }}
+              position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" group
             >
-              <Code2 
-                size={16} 
-                style={{ color: 'var(--brand-accent)' }} 
+              <Code2
+                size={16}
+                style={{ color: 'var(--brand-accent)' }}
   />
-              <X size={12} />
+              <SizableText color="$color11" $group-hover={{ color: "$red9" }}>
+                <X size={12} />
+              </SizableText>
             </Button>
           ) : (
             <Code2 
@@ -407,7 +409,7 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
                       type="button"
                       onClick={() => openFile(file)}
                       title={file.path}
-                      width="100%" alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$1.5" textAlign="left" hoverStyle={{ backgroundColor: "$color3", color: "$color" }} focusStyle={{ outlineWidth: 0 }} {...{ paddingLeft: group.folder ? 28 : undefined }}
+                      width="100%" alignItems="center" gap="$2" paddingHorizontal="$3" paddingVertical="$1.5" justifyContent="flex-start" hoverStyle={{ backgroundColor: "$color3" }} focusStyle={{ outlineWidth: 0 }} {...{ paddingLeft: group.folder ? 28 : undefined }}
                     >
                       {getFileType(file.path).type === 'image' ? (
                         <ImageIcon size={14} color="$color11" />
@@ -469,7 +471,7 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
                           <Image 
                             src={`data:image/${activeFile.file.path.split('.').pop()};base64,${activeFile.content}`}
                             alt={activeFile.file.name}
-                            maxWidth="100%" height="auto" borderRadius="$2" elevation={1}
+                            maxWidth="100%" height="auto" borderRadius="$2"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
                               target.style.display = 'none';

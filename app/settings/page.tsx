@@ -73,7 +73,8 @@ export default function SettingsPage() {
                 <Button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  width="100%" alignItems="center" gap="$3" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$5" fontSize="$3" whiteSpace="nowrap" {...{ backgroundColor: activeTab === tab.id ? "$color3" : undefined, color: activeTab === tab.id ? "$color" : "$color11", borderWidth: activeTab === tab.id ? 1 : undefined, borderColor: activeTab === tab.id ? "$borderColor" : undefined, hoverStyle: activeTab === tab.id ? undefined : {"color":"$color","backgroundColor":"$color3"} }}
+                  variant={activeTab === tab.id ? "secondary" : "ghost"}
+                  width="100%" alignItems="center" gap="$3" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$5"
                 >
                   {tab.icon}
                   {tab.label}
@@ -199,8 +200,8 @@ export default function SettingsPage() {
                       </Button>
                     </Anchor>
                     <Anchor href="https://hanzo.id/account" target="_blank" rel="noopener noreferrer">
-                      <Button variant="outline" width="100%" justifyContent="flex-start" color="$red9" hoverStyle={{ color: "$red8" }}>
-                        Delete Account
+                      <Button variant="outline" width="100%" justifyContent="flex-start">
+                        <SizableText color="$red9">Delete Account</SizableText>
                       </Button>
                     </Anchor>
                   </YStack>

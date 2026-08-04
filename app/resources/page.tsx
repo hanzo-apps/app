@@ -114,7 +114,7 @@ function ResourcesBrowser() {
                 <Sparkles size={24} color="$color" />
               </XStack>
               <H1 fontSize="$10" fontWeight="500">Resources</H1>
-              <Badge variant="secondary" marginLeft="$1">
+              <Badge variant="secondary">
                 {items.length} resources
               </Badge>
             </XStack>
@@ -143,13 +143,13 @@ function ResourcesBrowser() {
                 <Button
                   key={cat}
                   onClick={() => setCategory(cat)}
-                  borderRadius="$10" paddingHorizontal="$3" paddingVertical="$2" fontSize="$1" fontWeight="500" flexShrink={0} whiteSpace="nowrap" $sm={{ paddingVertical: "$1.5" }} {...{ backgroundColor: category === cat ? "$color12" : "$background", color: category === cat ? "$background" : "$color11", hoverStyle: category === cat ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
+                  borderRadius="$10" paddingHorizontal="$3" paddingVertical="$2" flexShrink={0} $sm={{ paddingVertical: "$1.5" }} {...{ backgroundColor: category === cat ? "$color12" : "$background", hoverStyle: category === cat ? undefined : { backgroundColor: "$color3" } }}
                 >
-                  {cat}
+                  <SizableText fontSize="$1" fontWeight="500" whiteSpace="nowrap" color={category === cat ? "$background" : "$color11"}>{cat}</SizableText>
                 </Button>
               ))}
             </XStack>
-            <Badge variant="secondary" marginLeft="auto">
+            <Badge variant="secondary" className="ml-auto">
               {filtered.length} shown{loading ? ' · syncing…' : ''}
             </Badge>
           </XStack>
@@ -175,9 +175,9 @@ function ResourcesBrowser() {
                       setCategory('All');
                       setQuery('');
                     }}
-                    marginTop="$2" color="$color" textDecorationLine="underline"
+                    backgroundColor="transparent" marginTop="$2"
                   >
-                    Clear filters
+                    <SizableText color="$color" textDecorationLine="underline">Clear filters</SizableText>
                   </Button>
                 </>
               )}
@@ -237,7 +237,7 @@ function ResourceCard({
     <Button
       type="button"
       onClick={() => onOpen(item)}
-      group className="zoom-scope" flexDirection="column" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" textAlign="left" hoverStyle={{ y: "-1", borderColor: "$color" }}
+      group className="zoom-scope" flexDirection="column" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "-1", borderColor: "$color" }}
     >
       <YStack position="relative" overflow="hidden" backgroundColor="$background">
         {item.hasImage ? (
@@ -258,11 +258,11 @@ function ResourceCard({
           </SizableText>
         )}
         {item.kind === 'game' ? (
-          <Badge position="absolute" right="$2" top="$2" borderColor="$borderColor" backgroundColor="$background" fontSize={11} color="$color">
+          <Badge variant="outline" className="absolute right-2 top-2">
             Game
           </Badge>
         ) : (
-          <Badge position="absolute" right="$2" top="$2" borderColor="$borderColor" backgroundColor="$background" fontSize={11} color="$color">
+          <Badge variant="outline" className="absolute right-2 top-2">
             {item.category}
           </Badge>
         )}

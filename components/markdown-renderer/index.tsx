@@ -144,13 +144,13 @@ export function MarkdownRenderer({ content, muted = false, skipNormalization = f
           );
         },
 
-        code: ({ className: codeClassName, children, ...props }) => {
+        code: ({ className: codeClassName, children }) => {
           const match = /language-(\w+)/.exec(codeClassName || '');
           const isInline = !match;
 
           if (isInline) {
             return (
-              <SizableText paddingHorizontal="$1.5" paddingVertical="$0.5" borderRadius="$2" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" fontFamily="$mono" color="0.85em" {...props}>
+              <SizableText paddingHorizontal="$1.5" paddingVertical="$0.5" borderRadius="$2" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" fontFamily="$mono">
                 {children}
               </SizableText>
             );
@@ -158,7 +158,7 @@ export function MarkdownRenderer({ content, muted = false, skipNormalization = f
 
           // Fenced code block with language
           return (
-            <SizableText fontFamily="$mono" fontSize={12} lineHeight={1.625} {...props}>
+            <SizableText fontFamily="$mono" fontSize={12} lineHeight={1.625}>
               {children}
             </SizableText>
           );
@@ -178,7 +178,7 @@ export function MarkdownRenderer({ content, muted = false, skipNormalization = f
           const shouldOpenNewTab = isExternal;
 
           // Handle special link types with router navigation
-          const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+          const handleClick = (e: React.MouseEvent<HTMLElement>) => {
             if (isInternalDoc) {
               e.preventDefault();
               router.push(`/${href}`);

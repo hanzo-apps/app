@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from '@hanzo/ui';
-import { YStack, XStack, SizableText, H3, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, SizableText, H3, Paragraph, type GuiElement } from '@hanzo/gui';
 // Hero focal visual — a faithful miniature of the ACTUAL /dev builder chrome:
 // chat rail on the left (with the rounded composer input), the generated app in
 // a rounded browser frame on the right — shown on desktop AND a phone frame side
@@ -115,7 +115,7 @@ function VibeApp({ v, compact }: { v: number; compact?: boolean }): ReactElement
               <YStack height="$1.5" flex={1} overflow="hidden" borderRadius="$10" backgroundColor="$color">
                 <YStack height="100%" borderRadius="$10" backgroundColor="$color" style={{ width: o.w }} />
               </YStack>
-              <SizableText width="$4" flexShrink={0} textAlign="right" fontFamily="$mono" fontVariant="tabular-nums" color="$color" {...{ fontSize: compact ? 7 : 9 }}>
+              <SizableText width="$4" flexShrink={0} textAlign="right" fontFamily="$mono" fontVariant={["tabular-nums"]} color="$color" {...{ fontSize: compact ? 7 : 9 }}>
                 {o.n}
               </SizableText>
             </XStack>
@@ -147,8 +147,8 @@ export default function HeroPreview() {
   const [typed, setTyped] = useState("");
   const [device, setDevice] = useState<"desktop" | "mobile">("desktop");
   const played = useRef(false);
-  const rootRef = useRef<HTMLDivElement | null>(null);
-  const chatRef = useRef<HTMLDivElement | null>(null);
+  const rootRef = useRef<GuiElement | null>(null);
+  const chatRef = useRef<GuiElement | null>(null);
 
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const clearTimers = () => {
@@ -163,7 +163,8 @@ export default function HeroPreview() {
   // Keep the transcript pinned to the newest line while the demo runs.
   useEffect(() => {
     const el = chatRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
+    if (!(el instanceof HTMLElement)) return;
+    el.scrollTop = el.scrollHeight;
   }, [bubbles, streamLine, typed]);
 
   const run = () => {
@@ -210,7 +211,7 @@ export default function HeroPreview() {
   // Animate on scroll: the first time the frame is properly in view, run once.
   useEffect(() => {
     const el = rootRef.current;
-    if (!el) return;
+    if (!el || !(el instanceof Element)) return;
     const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     if (reduce || !("IntersectionObserver" in window)) return; // settled frame
     const io = new IntersectionObserver(
@@ -284,9 +285,9 @@ export default function HeroPreview() {
               type="button"
               aria-label="Replay the demo build"
               onClick={() => run()}
-              height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" color="$color" hoverStyle={{ color: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
+              height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" focusVisibleStyle={{ outlineWidth: 0 }}
             >
-              <RotateCcw size={12} />
+              <SizableText color="$color"><RotateCcw size={12} /></SizableText>
             </Button>
             <SizableText height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" color="$color">
               <Clock size={12} />

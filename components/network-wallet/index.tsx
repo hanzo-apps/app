@@ -54,9 +54,12 @@ function WalletInner() {
           onClick={() => disconnect()}
           title="Disconnect wallet"
           aria-label="Disconnect wallet"
-          width={28} height={28} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
+          group
+          width={28} height={28} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" hoverStyle={{ backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}
         >
-          <LogOut size={14} />
+          <SizableText color="$color11" $group-hover={{ color: "$color" }}>
+            <LogOut size={14} />
+          </SizableText>
         </Button>
       </XStack>
     );
@@ -67,14 +70,14 @@ function WalletInner() {
       type="button"
       onClick={() => injectedConnector && connect({ connector: injectedConnector })}
       disabled={isPending || !injectedConnector}
-      width="100%" alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3" color="$color" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3", color: "$color" }} disabledStyle={{ opacity: 0.5 }} focusVisibleStyle={{ outlineWidth: 0 }}
+      width="100%" alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }} disabledStyle={{ opacity: 0.5 }} focusVisibleStyle={{ outlineWidth: 0 }}
     >
       {isPending ? (
         <Loader2 size={16} color="$color11" />
       ) : (
         <Wallet size={16} color="$color11" />
       )}
-      <SizableText flex={1} textAlign="left">
+      <SizableText flex={1} textAlign="left" fontSize="$3" color="$color">
         {isPending ? "Connecting…" : "Connect wallet"}
       </SizableText>
     </Button>

@@ -120,7 +120,7 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent maxWidth={512} backgroundColor="$background" borderColor="$borderColor" color="$color">
+      <DialogContent maxWidth={512} backgroundColor="$background" borderColor="$borderColor">
         <DialogHeader>
           <DialogTitle alignItems="center" fontSize="$7">
             <Wallet size={20} />
@@ -163,7 +163,7 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
                 key={connector.uid}
                 onClick={() => connect({ connector })}
                 variant="outline"
-                width="100%" borderColor="$borderColor" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
+                width="100%" borderColor="$borderColor" hoverStyle={{ backgroundColor: "$color3" }}
               >
                 <Wallet size={16} />
                 {connector.name}
@@ -174,7 +174,7 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
           <YStack paddingVertical="$4" rowGap="$4">
             <SizableText alignItems="center" justifyContent="space-between" fontSize="$3" display="flex" flexDirection="row">
               <SizableText color="$color11">Connected: {address?.slice(0, 6)}...{address?.slice(-4)}</SizableText>
-              <Button variant="ghost" size="sm" onClick={() => disconnect()} color="$color11" hoverStyle={{ color: "$color" }}>
+              <Button variant="ghost" size="sm" onClick={() => disconnect()}>
                 Disconnect
               </Button>
             </SizableText>
@@ -196,7 +196,7 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
                     <Button
                       key={c.id}
                       onClick={() => { setSelectedChainId(c.id); setChainMenuOpen(false) }}
-                      width="100%" textAlign="left" paddingHorizontal="$4" paddingVertical="$3" fontSize="$3" hoverStyle={{ backgroundColor: "$color3" }} {...{ backgroundColor: selectedChainId === c.id ? "$color3" : undefined, color: selectedChainId === c.id ? "$color" : "$color" }}
+                      width="100%" justifyContent="flex-start" paddingHorizontal="$4" paddingVertical="$3" hoverStyle={{ backgroundColor: "$color3" }} backgroundColor={selectedChainId === c.id ? "$color3" : undefined}
                     >
                       {c.name}
                     </Button>
@@ -213,9 +213,9 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
                   position="relative" padding="$4" borderRadius="$5" cursor="pointer" borderWidth={1} {...{ borderColor: selectedAmount === option.amount ? "$purple9" : "$borderColor", backgroundColor: selectedAmount === option.amount ? "$purple9" : "$background", hoverStyle: selectedAmount === option.amount ? undefined : {"borderColor":"$color"} }}
                 >
                   {option.popular && (
-                    <Badge position="absolute" top="-2" right="-2" color="$color" fontSize="$1">
-                      Popular
-                    </Badge>
+                    <YStack position="absolute" top={-2} right={-2}>
+                      <Badge>Popular</Badge>
+                    </YStack>
                   )}
                   <SizableText fontSize="$7" fontWeight="500" display="flex" flexDirection="column">${option.amount}</SizableText>
                   <SizableText alignItems="center" fontSize="$3" color="$color11" marginTop="$1" display="flex" flexDirection="row">
@@ -223,9 +223,9 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
                     {option.credits.toLocaleString()} credits
                   </SizableText>
                   {option.bonus > 0 && (
-                    <Badge variant="secondary" marginTop="$2" fontSize="$1" backgroundColor="$color3">
-                      +{option.bonus.toLocaleString()} bonus
-                    </Badge>
+                    <YStack marginTop="$2">
+                      <Badge variant="secondary">+{option.bonus.toLocaleString()} bonus</Badge>
+                    </YStack>
                   )}
                 </YStack>
               ))}
@@ -268,7 +268,7 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
               <Button
                 variant="outline"
                 onClick={() => setStep('select')}
-                flex={1} borderColor="$borderColor" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
+                flex={1} borderColor="$borderColor" hoverStyle={{ backgroundColor: "$color3" }}
               >
                 Back
               </Button>

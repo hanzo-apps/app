@@ -426,7 +426,7 @@ function SkillCard({ skill, isEnabled, globalEnabled, onToggle, onEdit, onDelete
           <XStack alignItems="flex-start" justifyContent="space-between" gap="$4">
             <YStack flex={1} minWidth={0}>
               <XStack alignItems="center" gap="$2" marginBottom="$2">
-                <CollapsibleTrigger alignItems="center" gap="$2" hoverStyle={{ color: "$color12" }}>
+                <CollapsibleTrigger alignItems="center" gap="$2">
                   {isOpen ? (
                     <ChevronDown size={16} />
                   ) : (
@@ -435,12 +435,12 @@ function SkillCard({ skill, isEnabled, globalEnabled, onToggle, onEdit, onDelete
                   <H3 fontWeight="500" numberOfLines={1}>{skill.name}</H3>
                 </CollapsibleTrigger>
                 {skill.isBuiltIn && (
-                  <Badge variant="secondary" fontSize="$1">
+                  <Badge variant="secondary">
                     Built-in
                   </Badge>
                 )}
                 {!effectiveEnabled && (
-                  <Badge variant="outline" fontSize="$1" color="$color11">
+                  <Badge variant="outline">
                     Disabled
                   </Badge>
                 )}

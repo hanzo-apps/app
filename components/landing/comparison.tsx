@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from '@hanzo/ui';
-import { SizableText, YStack, Paragraph, H2, XStack, H3 } from '@hanzo/gui';
+import { SizableText, YStack, Paragraph, H2, XStack, H3, type GuiElement } from '@hanzo/gui';
 // Why Hanzo — the competitive-advantage matrix.
 //
 // A single conversion centerpiece: ten buyer criteria across Hanzo and the
@@ -295,24 +295,24 @@ function ColIcon({ i, size = 14 }: { i: number; size?: number }) {
 }
 
 export default function Comparison() {
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<GuiElement>(null);
   // Page the criteria columns; the pinned Company column stays put.
   const slide = (dir: 1 | -1) => {
     const el = scrollRef.current;
-    if (!el) return;
+    if (!el || !("scrollBy" in el)) return;
     el.scrollBy({ left: dir * Math.max(340, el.clientWidth * 0.8), behavior: "smooth" });
   };
   return (
     <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$13" }}>
       <YStack alignSelf="center" maxWidth={1152}>
-        <Reveal alignSelf="center" width="100%" maxWidth={672} textAlign="center">
-          <Paragraph fontFamily="$mono" fontSize={11} color="$color11">
+        <Reveal alignSelf="center" width="100%" maxWidth={672}>
+          <Paragraph textAlign="center" fontFamily="$mono" fontSize={11} color="$color11">
             Why Hanzo
           </Paragraph>
-          <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ color: "2.75rem", lineHeight: 1.1 }}>
+          <H2 textAlign="center" marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ color: "2.75rem", lineHeight: 1.1 }}>
             One platform beats the whole stack.
           </H2>
-          <Paragraph marginTop="$4" fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
+          <Paragraph textAlign="center" marginTop="$4" fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
             Site builders lock you in. AI coding tools hand you bugs to clean up.
             Hanzo ships production apps you own — fast, secure, and built to
             scale.
@@ -350,21 +350,27 @@ export default function Comparison() {
                   type="button"
                   onClick={() => slide(-1)}
                   aria-label="Previous criteria"
-                  height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" color="$color11" hoverStyle={{ borderColor: "$color", color: "$color" }}
+                  group
+                  height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" hoverStyle={{ borderColor: "$color" }}
                 >
-                  <svg width={16} height={16} viewBox="0 0 16 16" fill="none" aria-hidden>
-                    <path d="M10 4L6 8l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+                  <SizableText color="$color11" $group-hover={{ color: "$color" }}>
+                    <svg width={16} height={16} viewBox="0 0 16 16" fill="none" aria-hidden>
+                      <path d="M10 4L6 8l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </SizableText>
                 </Button>
                 <Button
                   type="button"
                   onClick={() => slide(1)}
                   aria-label="Next criteria"
-                  height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" color="$color11" hoverStyle={{ borderColor: "$color", color: "$color" }}
+                  group
+                  height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" hoverStyle={{ borderColor: "$color" }}
                 >
-                  <svg width={16} height={16} viewBox="0 0 16 16" fill="none" aria-hidden>
-                    <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+                  <SizableText color="$color11" $group-hover={{ color: "$color" }}>
+                    <svg width={16} height={16} viewBox="0 0 16 16" fill="none" aria-hidden>
+                      <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </SizableText>
                 </Button>
               </XStack>
             </XStack>
@@ -398,7 +404,6 @@ export default function Comparison() {
                     {ROWS.map((r) => (
                       <YStack key={r.name} group>
                         <SizableText
-                          scope="row"
                           position="sticky" left="$0" zIndex={10} width={188} minWidth={188} whiteSpace="nowrap" paddingVertical="$3" paddingLeft="$1" paddingRight="$4.5" textAlign="left" verticalAlign="top" fontWeight="500" {...{ backgroundColor: r.hanzo ? "$color3" : "$background", color: r.hanzo ? "$color" : "$color" }}
                         >
                           <SizableText alignItems="center" gap="$2">
@@ -551,12 +556,13 @@ export default function Comparison() {
         </YStack>
 
         <Reveal
-          as="p"
           delay={120}
-          marginTop="$8" textAlign="center" fontFamily="$mono" fontSize={12} color="$color11"
+          marginTop="$8"
         >
-          Every app ships on Hanzo Cloud — database, auth, AI, and storage wired
-          in. No lock-in, ever.
+          <Paragraph textAlign="center" fontFamily="$mono" fontSize={12} color="$color11">
+            Every app ships on Hanzo Cloud — database, auth, AI, and storage wired
+            in. No lock-in, ever.
+          </Paragraph>
         </Reveal>
       </YStack>
     </YStack>

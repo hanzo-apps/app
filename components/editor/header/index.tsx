@@ -130,7 +130,7 @@ export function Header({
             title={historyOpen ? "Back to chat" : "Version history"}
             aria-label={historyOpen ? "Back to chat" : "Version history"}
             aria-pressed={Boolean(historyOpen)}
-            display="none" width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" focusVisibleStyle={{ outlineWidth: 0 }} {...{ backgroundColor: historyOpen ? "$color3" : undefined, color: historyOpen ? "$color" : "$color11", hoverStyle: historyOpen ? undefined : {"backgroundColor":"$color","color":"$color"} }}
+            display="none" width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" focusVisibleStyle={{ outlineWidth: 0 }} {...{ backgroundColor: historyOpen ? "$color3" : undefined, hoverStyle: historyOpen ? undefined : { backgroundColor: "$color" } }}
           >
             <History size={16} />
           </Button>
@@ -160,7 +160,7 @@ export function Header({
                 // device group beside it and every icon button. Padding + line-height
                 // computed to 32px of CONTENT, so the group rendered 36px and sat 4px
                 // taller than its own sibling. Set the height; never let padding decide it.
-                height={28} alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal="$2.5" fontSize="$3" fontWeight="500" focusVisibleStyle={{ outlineWidth: 0 }} {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, backgroundColor: active ? "$color3" : undefined, color: active ? "$color" : "$color11", elevation: active ? 1 : undefined, hoverStyle: active ? undefined : {"backgroundColor":"$color","color":"$color"} }}
+                height={28} alignItems="center" gap="$1.5" borderRadius="$3" paddingHorizontal="$2.5" focusVisibleStyle={{ outlineWidth: 0 }} {...{ $lg: "mobileOnly" in item && item.mobileOnly ? {"display":"none"} : undefined, backgroundColor: active ? "$color3" : undefined, elevation: active ? 1 : undefined, hoverStyle: active ? undefined : { backgroundColor: "$color" } }}
               >
                 <item.icon size={16} />
                 <SizableText display="none">{item.label}</SizableText>
@@ -187,7 +187,7 @@ export function Header({
                   aria-selected={active}
                   title={`${d.name[0].toUpperCase()}${d.name.slice(1)} preview`}
                   onClick={() => setDevice(d.name as "desktop" | "mobile")}
-                  width={28} height={28} alignItems="center" justifyContent="center" borderRadius="$3" fontSize="$3" focusVisibleStyle={{ outlineWidth: 0 }} {...{ backgroundColor: active ? "$color3" : undefined, color: active ? "$color" : "$color11", elevation: active ? 1 : undefined, hoverStyle: active ? undefined : {"backgroundColor":"$color","color":"$color"} }}
+                  width={28} height={28} alignItems="center" justifyContent="center" borderRadius="$3" focusVisibleStyle={{ outlineWidth: 0 }} {...{ backgroundColor: active ? "$color3" : undefined, elevation: active ? 1 : undefined, hoverStyle: active ? undefined : { backgroundColor: "$color" } }}
                 >
                   <d.icon size={16} />
                 </Button>
@@ -198,7 +198,7 @@ export function Header({
             type="button"
             onClick={handleRefreshIframe}
             title="Refresh preview"
-            width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" color="$color11" hoverStyle={{ backgroundColor: "$color", color: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
+            width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
           >
             <RefreshCcw size={14} />
           </Button>
@@ -215,7 +215,7 @@ export function Header({
                   type="button"
                   title="Browse pages"
                   aria-label="Browse pages"
-                  maxWidth="12rem" height={32} alignItems="center" gap="$1.5" borderRadius="$5" backgroundColor="$color" paddingHorizontal="$2.5" fontSize="$3" color="$color" hoverStyle={{ backgroundColor: "$color", color: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
+                  maxWidth="12rem" height={32} alignItems="center" gap="$1.5" borderRadius="$5" backgroundColor="$color" paddingHorizontal="$2.5" hoverStyle={{ backgroundColor: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
                 >
                   <SizableText numberOfLines={1} fontFamily="$mono" fontSize="$1">
                     {currentPage}
@@ -244,7 +244,7 @@ export function Header({
             onClick={onOpenExternal}
             title="Open preview in a new tab"
             aria-label="Open preview in a new tab"
-            width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" color="$color11" hoverStyle={{ backgroundColor: "$color", color: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
+            width="$6" height="$6" alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
           >
             <ExternalLink size={14} />
           </Button>

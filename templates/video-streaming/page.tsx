@@ -170,23 +170,23 @@ export default function VideoStreaming() {
                         <Button
                           size="icon"
                           variant="ghost"
-                          color="white" hoverStyle={{ backgroundColor: "white" }}
+                          hoverStyle={{ backgroundColor: "white" }}
                           onClick={() => setIsPlaying(!isPlaying)}
                         >
-                          {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+                          {isPlaying ? <Pause size={20} color="white" /> : <Play size={20} color="white" />}
                         </Button>
-                        <Button size="icon" variant="ghost" color="white" hoverStyle={{ backgroundColor: "white" }}>
-                          <SkipBack size={20} />
+                        <Button size="icon" variant="ghost" hoverStyle={{ backgroundColor: "white" }}>
+                          <SkipBack size={20} color="white" />
                         </Button>
-                        <Button size="icon" variant="ghost" color="white" hoverStyle={{ backgroundColor: "white" }}>
-                          <SkipForward size={20} />
+                        <Button size="icon" variant="ghost" hoverStyle={{ backgroundColor: "white" }}>
+                          <SkipForward size={20} color="white" />
                         </Button>
-                        <Button size="icon" variant="ghost" color="white" hoverStyle={{ backgroundColor: "white" }}>
-                          <Volume2 size={20} />
+                        <Button size="icon" variant="ghost" hoverStyle={{ backgroundColor: "white" }}>
+                          <Volume2 size={20} color="white" />
                         </Button>
                       </XStack>
-                      <Button size="icon" variant="ghost" color="white" hoverStyle={{ backgroundColor: "white" }}>
-                        <Maximize size={20} />
+                      <Button size="icon" variant="ghost" hoverStyle={{ backgroundColor: "white" }}>
+                        <Maximize size={20} color="white" />
                       </Button>
                     </XStack>
                   </YStack>
@@ -236,7 +236,7 @@ export default function VideoStreaming() {
                       <XStack alignItems="center" gap="$2">
                         <Paragraph fontWeight="600">{currentVideo.channel.name}</Paragraph>
                         {currentVideo.channel.verified && (
-                          <Badge variant="outline" height="$4.5" paddingHorizontal="$1" borderColor="$red8" color="$red10">✓</Badge>
+                          <Badge variant="outline">✓</Badge>
                         )}
                       </XStack>
                       <Paragraph fontSize="$3" color="$color11">
@@ -279,7 +279,7 @@ export default function VideoStreaming() {
                     <Textarea
                       placeholder="Add a comment..."
                       value={comment}
-                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setComment(e.target.value)}
+                      onChangeText={(t) => setComment(t)}
                       minHeight={80}
   />
                     <XStack justifyContent="flex-end" gap="$2" marginTop="$2">
@@ -317,8 +317,8 @@ export default function VideoStreaming() {
                           </Button>
                         </XStack>
                         {comment.replies > 0 && (
-                          <Button variant="ghost" size="sm" marginTop="$2" padding="$0" color="$red10">
-                            View {comment.replies} replies
+                          <Button variant="ghost" size="sm" marginTop="$2" padding="$0">
+                            <SizableText color="$red10">View {comment.replies} replies</SizableText>
                           </Button>
                         )}
                       </YStack>

@@ -17,7 +17,7 @@
  * preview fills any aspect the caller sizes it to (16/9 cards, 16/10 heroes).
  */
 
-import { YStack, XStack, SizableText } from '@hanzo/gui';
+import { YStack, XStack, SizableText, type GuiElement } from '@hanzo/gui';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 // The logical viewport the site is rendered at before scaling — a desktop width
@@ -40,12 +40,12 @@ export function ProjectThumb({
   className?: string;
 }) {
   const [failed, setFailed] = useState(false);
-  const hostRef = useRef<HTMLDivElement>(null);
+  const hostRef = useRef<GuiElement>(null);
   const [box, setBox] = useState({ scale: 0.25, h: 720 });
 
   useEffect(() => {
     const el = hostRef.current;
-    if (!el || typeof ResizeObserver === 'undefined') return;
+    if (!el || !('scrollTo' in el) || typeof ResizeObserver === 'undefined') return;
     const measure = () => {
       const w = el.clientWidth;
       if (w > 0) setBox({ scale: w / LOGICAL_W, h: (el.clientHeight * LOGICAL_W) / w });

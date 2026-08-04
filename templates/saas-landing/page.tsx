@@ -54,7 +54,7 @@ export default function SaaSLandingPage() {
         <YStack position="absolute" top={0} right={0} bottom={0} left={0} opacity={0.05} className="bg-grid-pattern" />
         <YStack width="100%" maxWidth={1280} alignSelf="center" paddingHorizontal="$5" paddingVertical="$12" position="relative">
           <SizableText textAlign="center" maxWidth={896} alignSelf="center" display="flex" flexDirection="column">
-            <Badge marginBottom="$4" variant="outline">
+            <Badge className="mb-4" variant="outline">
               Built with @hanzo/ui
             </Badge>
             <H1 fontSize="$12" fontWeight="700" marginBottom="$5" backgroundClip="text" color="transparent" $md={{ fontSize: "$13" }}>
@@ -129,7 +129,7 @@ export default function SaaSLandingPage() {
               >
                 <CardHeader>
                   {plan.popular && (
-                    <Badge width="fit-content" marginBottom="$2">Most Popular</Badge>
+                    <Badge className="w-fit mb-2">Most Popular</Badge>
                   )}
                   <CardTitle>{plan.name}</CardTitle>
                   <YStack marginTop="$4">

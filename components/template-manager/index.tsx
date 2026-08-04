@@ -325,7 +325,7 @@ export function TemplateManager({ onProjectCreated }: TemplateManagerProps) {
         <XStack alignItems="center" gap="$2">
           {/* Type Filter */}
           <Select value={typeFilter} onValueChange={(value) => setTypeFilter(value as TypeFilter)}>
-            <SelectTrigger width={110} height={36} fontSize="$3">
+            <SelectTrigger width={110} height={36}>
               <Filter size={16} />
               <SelectValue />
             </SelectTrigger>

@@ -151,8 +151,8 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
       <YStack width="$20" flexShrink={0} borderRightWidth={1} borderColor="$borderColor" padding="$2" overflow="scroll">
         <XStack alignItems="center" justifyContent="space-between" paddingHorizontal="$2" paddingVertical="$1.5">
           <SizableText fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.4}>Collections</SizableText>
-          <Button onClick={loadSchema} title="Refresh" color="$color11" hoverStyle={{ color: "$color" }}>
-            <RefreshCw size={14} />
+          <Button onClick={loadSchema} title="Refresh">
+            <RefreshCw size={14} color="$color11" />
           </Button>
         </XStack>
         {tables.length === 0 && (
@@ -162,10 +162,10 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
           <Button
             key={t.name}
             onClick={() => setSelected(t.name)}
-            width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$3" {...{ backgroundColor: selected === t.name ? "$color3" : undefined, color: selected === t.name ? "$color" : "$color11", hoverStyle: selected === t.name ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
+            width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1.5" {...{ backgroundColor: selected === t.name ? "$color3" : undefined, hoverStyle: selected === t.name ? undefined : { backgroundColor: "$color3" } }}
           >
-            <TableProperties size={14} />
-            <SizableText numberOfLines={1}>{t.name}</SizableText>
+            <TableProperties size={14} color={selected === t.name ? "$color" : "$color11"} />
+            <SizableText numberOfLines={1} fontSize="$3" color={selected === t.name ? "$color" : "$color11"}>{t.name}</SizableText>
           </Button>
         ))}
       </YStack>
@@ -180,7 +180,7 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
             <Search size={14} color="$color11" />
             <Input
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChangeText={(t) => setSearch(t)}
               placeholder="Filter…"
               height="$6" width="$17" paddingLeft={28} fontSize="$3"
   />
@@ -224,17 +224,17 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
                 {filtered.map((row, ri) => (
                   <YStack key={ri} group borderBottomWidth={1} borderColor="$borderColor" hoverStyle={{ backgroundColor: "$color3" }}>
                     {row.map((cell, ci) => (
-                      <SizableText key={ci} maxWidth={320} numberOfLines={1} paddingHorizontal="$3" paddingVertical="$1.5" color="$color" title={String(cell ?? '')}>
+                      <SizableText key={ci} maxWidth={320} numberOfLines={1} paddingHorizontal="$3" paddingVertical="$1.5" color="$color">
                         {cell == null ? <SizableText color="$color11">null</SizableText> : String(cell)}
                       </SizableText>
                     ))}
                     <SizableText paddingHorizontal="$3" paddingVertical="$1.5">
                       <XStack alignItems="center" gap="$1" opacity={0} $group-hover={{ opacity: 1 }}>
-                        <Button onClick={() => openEdit(row)} title="Edit" color="$color11" hoverStyle={{ color: "$color" }}>
-                          <Pencil size={14} />
+                        <Button onClick={() => openEdit(row)} title="Edit">
+                          <Pencil size={14} color="$color11" />
                         </Button>
-                        <Button onClick={() => del(row)} title="Delete" color="$color11" hoverStyle={{ color: "$red9" }}>
-                          <Trash2 size={14} />
+                        <Button onClick={() => del(row)} title="Delete">
+                          <Trash2 size={14} color="$color11" />
                         </Button>
                       </XStack>
                     </SizableText>
@@ -254,8 +254,8 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
               <H3 fontSize="$6" fontWeight="500" color="$color">
                 {editing.mode === 'new' ? 'New record' : 'Edit record'} · <SizableText color="$color11">{selected}</SizableText>
               </H3>
-              <Button onClick={() => !saving && setEditing(null)} color="$color11" hoverStyle={{ color: "$color" }}>
-                <X size={20} />
+              <Button onClick={() => !saving && setEditing(null)}>
+                <X size={20} color="$color11" />
               </Button>
             </XStack>
             <YStack rowGap="$3">
@@ -266,7 +266,7 @@ export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: Dat
                   </Label>
                   <Input
                     value={editing.values[c] ?? ''}
-                    onChange={(e) => setEditing((s) => (s ? { ...s, values: { ...s.values, [c]: e.target.value } } : s))}
+                    onChangeText={(t) => setEditing((s) => (s ? { ...s, values: { ...s.values, [c]: t } } : s))}
                     disabled={editing.mode === 'edit' && c === pkCol}
                     placeholder={editing.mode === 'new' && c === pkCol ? 'auto' : ''}
                     fontSize="$3"

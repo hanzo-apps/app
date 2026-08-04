@@ -233,7 +233,7 @@ export function ProjectCard({
                         if (e.key === 'Escape') cancelEdit();
                       }}
                       placeholder="Add a description..."
-                      minHeight={60} fontSize="$3" resize="none"
+                      minHeight={60} fontSize="$3" className="resize-none"
                       maxLength={200}
   />
                     <SizableText fontSize="$1" color="$color11">{editedDescription.length}/200</SizableText>
@@ -244,7 +244,7 @@ export function ProjectCard({
                   {/* Title row */}
                   <XStack alignItems="center" gap="$2">
                     <H3 fontWeight="500" numberOfLines={1}>{project.name}</H3>
-                    <Badge fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0" height="auto" flexShrink={0} {...runtimeBadge.tone}>{runtimeBadge.label}</Badge>
+                    <Badge variant="outline" className="shrink-0 h-auto px-1.5 py-0 text-[11px]" style={runtimeBadge.tone}>{runtimeBadge.label}</Badge>
                     <Button
                       size="icon"
                       variant="ghost"
@@ -310,7 +310,7 @@ export function ProjectCard({
           </YStack>
 
           <XStack alignItems="center" gap="$2" marginLeft="$4">
-            <DropdownMenu open={forceMenuOpen ? true : menuOpen} onOpenChange={handleMenuOpenChange}>
+            <DropdownMenu open={forceMenuOpen ? true : menuOpen} onOpenChange={handleMenuOpenChange} placement="bottom-end">
               <DropdownMenuTrigger
                 asChild
                 onClick={(e) => e.stopPropagation()}
@@ -320,7 +320,7 @@ export function ProjectCard({
                   <MoreVertical size={16} />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent>
                 <DropdownMenuItem onClick={(e) => {
                   e.stopPropagation();
                   onPreview(project);
@@ -373,7 +373,7 @@ export function ProjectCard({
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  color="$red9"
+                  variant="destructive"
                   onClick={(e) => {
                     e.stopPropagation();
                     onDelete(project);
@@ -407,7 +407,7 @@ export function ProjectCard({
           size="md"
   />
         <YStack position="absolute" bottom="$2" left="$2">
-          <Badge fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0.5" elevation={1} {...runtimeBadge.tone}>{runtimeBadge.label}</Badge>
+          <Badge variant="outline" className="px-1.5 py-0.5 text-[11px] shadow-sm" style={runtimeBadge.tone}>{runtimeBadge.label}</Badge>
         </YStack>
       </YStack>
 
@@ -467,7 +467,7 @@ export function ProjectCard({
                 <MoreVertical size={16} />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent>
               <DropdownMenuItem onClick={(e) => {
                 e.stopPropagation();
                 onPreview(project);
@@ -520,7 +520,7 @@ export function ProjectCard({
               )}
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                color="$red9"
+                variant="destructive"
                 onClick={(e) => {
                   e.stopPropagation();
                   onDelete(project);
@@ -543,7 +543,7 @@ export function ProjectCard({
                 if (e.key === 'Escape') cancelEdit();
               }}
               placeholder="Add a description..."
-              minHeight={60} fontSize="$3" resize="none"
+              minHeight={60} fontSize="$3" className="resize-none"
               maxLength={200}
   />
             <XStack alignItems="center" justifyContent="space-between" marginTop="$1">

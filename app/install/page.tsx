@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from '@hanzo/ui';
-import { Anchor, XStack, SizableText, Paragraph, YStack, H1, H2 } from '@hanzo/gui';
+import { Anchor, XStack, SizableText, Paragraph, YStack, H1, H2, type GuiElement } from '@hanzo/gui';
 // /apps — the Hanzo apps & integrations catalog. True-black monochrome to match
 // the rest of the site. The surfaces are laid out as a horizontal filmstrip that
 // is PINNED while you scroll: scrolling the page down pans left→right through
@@ -66,8 +66,8 @@ function AppCell({ app }: { app: AppEntry }) {
 
 export default function AppsPage() {
   const [active, setActive] = useState(0);
-  const wrapRef = useRef<HTMLDivElement>(null); // tall pin scroll-track
-  const trackRef = useRef<HTMLDivElement>(null); // the horizontally-translated filmstrip
+  const wrapRef = useRef<GuiElement>(null); // tall pin scroll-track
+  const trackRef = useRef<GuiElement>(null); // the horizontally-translated filmstrip
   const N = CATEGORIES.length;
 
   // Scroll → pan. The wrapper is N screens tall; while its sticky child holds the
@@ -78,7 +78,7 @@ export default function AppsPage() {
   useEffect(() => {
     const wrap = wrapRef.current;
     const track = trackRef.current;
-    if (!wrap || !track) return;
+    if (!(wrap instanceof HTMLElement) || !(track instanceof HTMLElement)) return;
     let raf = 0;
     const apply = () => {
       raf = 0;
@@ -105,7 +105,7 @@ export default function AppsPage() {
   // Nav chip → scroll the page to the point in the pin where surface `i` is centered.
   const jumpTo = (i: number) => {
     const wrap = wrapRef.current;
-    if (!wrap) return;
+    if (!(wrap instanceof HTMLElement)) return;
     const total = wrap.offsetHeight - window.innerHeight;
     const y = wrap.offsetTop + (N > 1 ? i / (N - 1) : 0) * total;
     window.scrollTo({ top: y, behavior: "smooth" });
@@ -143,11 +143,12 @@ export default function AppsPage() {
                   type="button"
                   onClick={() => jumpTo(i)}
                   aria-pressed={on}
-                  borderRadius="$10" paddingHorizontal="$5" paddingVertical="$2" fontSize="$6" borderWidth={1} {...(on
-                    ? { borderColor: "$color", color: "$color" }
-                    : { borderColor: "transparent", color: "$color11", hoverStyle: { color: "$color" } })}
+                  group
+                  borderRadius="$10" paddingHorizontal="$5" paddingVertical="$2" borderWidth={1} borderColor={on ? "$color" : "transparent"}
                 >
-                  {c.label}
+                  <SizableText fontSize="$6" color={on ? "$color" : "$color11"} $group-hover={{ color: "$color" }}>
+                    {c.label}
+                  </SizableText>
                 </Button>
               );
             })}

@@ -194,7 +194,7 @@ export function SecretsManager({ deploymentId, dataProvider }: SecretsManagerPro
                       <Key size={16} color="$yellow9" />
                       <SizableText fontFamily="$mono" fontWeight="500" numberOfLines={1}>{secret.name}</SizableText>
                       {!secret.hasValue && (
-                        <Badge variant="outline" color="$yellow10" borderColor="$yellow9" backgroundColor="$yellow9" fontSize="$1" flexShrink={0}>
+                        <Badge variant="outline" className="shrink-0 border-yellow-500 text-yellow-600">
                           Value not set
                         </Badge>
                       )}
@@ -210,20 +210,20 @@ export function SecretsManager({ deploymentId, dataProvider }: SecretsManagerPro
                     </SizableText>
                   </YStack>
 
-                  <DropdownMenu>
+                  <DropdownMenu placement="bottom-end">
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="sm">
                         <MoreVertical size={16} />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent>
                       <DropdownMenuItem onClick={() => setEditingSecret(secret)}>
                         <Pencil size={16} />
                         Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => deleteSecret(secret)}
-                        color="$red9"
+                        variant="destructive"
                       >
                         <Trash2 size={16} />
                         Delete

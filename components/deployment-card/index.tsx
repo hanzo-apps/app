@@ -99,19 +99,19 @@ export function DeploymentCard({
         {/* Status Badge Overlay */}
         <XStack position="absolute" top="$2" right="$2" gap="$2">
           {!deployment.enabled && (
-            <Badge variant="outline" backgroundColor="$color2" borderColor="$color4" $theme-dark={{ backgroundColor: "$color12", borderColor: "$color11" }}>
+            <Badge variant="outline">
               <EyeOff size={12} />
               Disabled
             </Badge>
           )}
           {deployment.underConstruction && deployment.enabled && (
-            <Badge variant="outline" backgroundColor="$orange2" borderColor="$orange4" $theme-dark={{ backgroundColor: "$orange12", borderColor: "$orange11" }}>
+            <Badge variant="outline">
               <Construction size={12} />
               Under Construction
             </Badge>
           )}
           {hasPendingChanges && deployment.enabled && (
-            <Badge variant="outline" backgroundColor="$yellow2" borderColor="$yellow4" $theme-dark={{ backgroundColor: "$yellow12", borderColor: "$yellow11" }}>
+            <Badge variant="outline">
               <AlertCircle size={12} />
               Pending Changes
             </Badge>
@@ -174,7 +174,7 @@ export function DeploymentCard({
           {deployment.headScripts.filter(s => s.enabled).length +
             deployment.bodyScripts.filter(s => s.enabled).length >
             0 && (
-            <Badge variant="secondary" fontSize="$1">
+            <Badge variant="secondary">
               {deployment.headScripts.filter(s => s.enabled).length +
                 deployment.bodyScripts.filter(s => s.enabled).length}{' '}
               Script
@@ -184,23 +184,23 @@ export function DeploymentCard({
             </Badge>
           )}
           {deployment.cdnLinks.filter(c => c.enabled).length > 0 && (
-            <Badge variant="secondary" fontSize="$1">
+            <Badge variant="secondary">
               {deployment.cdnLinks.filter(c => c.enabled).length} CDN Resource
               {deployment.cdnLinks.filter(c => c.enabled).length !== 1 && 's'}
             </Badge>
           )}
           {deployment.analytics.enabled && (
-            <Badge variant="secondary" fontSize="$1">
+            <Badge variant="secondary">
               Analytics
             </Badge>
           )}
           {(deployment.seo.title || deployment.seo.description) && (
-            <Badge variant="secondary" fontSize="$1">
+            <Badge variant="secondary">
               SEO Configured
             </Badge>
           )}
           {deployment.compliance.enabled && (
-            <Badge variant="secondary" fontSize="$1">
+            <Badge variant="secondary">
               Compliance
             </Badge>
           )}
@@ -253,7 +253,7 @@ export function DeploymentCard({
                 <MoreVertical size={16} />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent>
               <DropdownMenuItem onClick={() => onEditProject(deployment)}>
                 <Pencil size={16} />
                 Edit Project
@@ -301,7 +301,7 @@ export function DeploymentCard({
               )}
               <DropdownMenuItem
                 onClick={() => onDelete(deployment.id)}
-                color="$red9" focusStyle={{ color: "$red9" }}
+                variant="destructive"
               >
                 <Trash2 size={16} />
                 Delete Deployment

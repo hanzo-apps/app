@@ -83,7 +83,7 @@ export function LivePreview({
           type="button"
           onClick={onClose}
           aria-label="Hide preview"
-          position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" color="$color11" group hoverStyle={{ color: "$red9" }}
+          position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" group
         >
           <Eye
             size={16}
@@ -425,8 +425,8 @@ export function LivePreview({
           <SizableText textAlign="center" color="$red9" rowGap="$2" display="flex" flexDirection="column">
             <Paragraph fontWeight="500">Error</Paragraph>
             <Paragraph fontSize="$3" marginTop="$2">{error}</Paragraph>
-            <Button onClick={handleRefresh} marginTop="$4" paddingHorizontal="$4" paddingVertical="$2" backgroundColor="$color12" color="$background" borderRadius="$3">
-              Try Again
+            <Button onClick={handleRefresh} marginTop="$4" paddingHorizontal="$4" paddingVertical="$2" backgroundColor="$color12" borderRadius="$3">
+              <SizableText color="$background">Try Again</SizableText>
             </Button>
           </SizableText>
         </XStack>

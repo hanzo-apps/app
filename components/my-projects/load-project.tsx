@@ -80,13 +80,13 @@ export const LoadProject = ({
           <Button
             variant="outline"
             size="sm"
-            height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1" borderColor="$borderColor" backgroundColor="$color3" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
+            height={28} gap="$1.5" paddingHorizontal="$2.5" borderColor="$borderColor" backgroundColor="$color3" hoverStyle={{ backgroundColor: "$color3" }}
             onClick={() => setOpenLoginModal(true)}
           >
             <View $lg={{ display: "none" }}>
               <Import size={14} />
             </View>
-            Load<SizableText fontSize="$2" $lg={{ display: "none" }}> existing Project</SizableText>
+            <SizableText fontSize="$1">Load</SizableText><SizableText fontSize="$2" $lg={{ display: "none" }}> existing Project</SizableText>
           </Button>
           <LoginModal
             open={openLoginModal}
@@ -103,16 +103,16 @@ export const LoadProject = ({
               <Button
                 variant="outline"
                 size="sm"
-                height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1" borderColor="$borderColor" backgroundColor="$color3" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
+                height={28} gap="$1.5" paddingHorizontal="$2.5" borderColor="$borderColor" backgroundColor="$color3" hoverStyle={{ backgroundColor: "$color3" }}
               >
                 <View $lg={{ display: "none" }}>
                   <Import size={14} />
                 </View>
-                Load
+                <SizableText fontSize="$1">Load</SizableText>
               </Button>
             </div>
           </DialogTrigger>
-          <DialogContent padding="$0" borderRadius="$6" backgroundColor="$background" color="$color" borderColor="$borderColor" overflow="hidden" textAlign="center" $sm={{ maxWidth: 448 }}>
+          <DialogContent padding="$0" borderRadius="$6" backgroundColor="$background" borderColor="$borderColor" overflow="hidden" $sm={{ maxWidth: 448 }}>
             <DialogTitle display="none" />
             <YStack backgroundColor="$color3" padding="$5" borderBottomWidth={1} borderColor="$borderColor">
               <XStack alignItems="center" justifyContent="center" columnGap="$4" marginBottom="$3">
@@ -126,17 +126,17 @@ export const LoadProject = ({
                   💎
                 </SizableText>
               </XStack>
-              <Paragraph fontSize="$8" fontWeight="500" color="$color">
+              <Paragraph fontSize="$8" fontWeight="500" color="$color" textAlign="center">
                 Import a Project
               </Paragraph>
-              <Paragraph fontSize="$4" color="$color11" marginTop="$1.5">
+              <Paragraph fontSize="$4" color="$color11" marginTop="$1.5" textAlign="center">
                 Enter the URL of your Hanzo project to import an existing
                 project.
               </Paragraph>
             </YStack>
             <YStack rowGap="$4" paddingHorizontal={36} paddingBottom={36} paddingTop="$2">
               <div>
-                <Paragraph fontSize="$3" color="$color11" marginBottom="$2">
+                <Paragraph fontSize="$3" color="$color11" marginBottom="$2" textAlign="center">
                   Enter your Hanzo project URL
                 </Paragraph>
                 <Input
@@ -160,7 +160,7 @@ export const LoadProject = ({
   />
               </div>
               <div>
-                <Paragraph fontSize="$3" color="$color11" marginBottom="$2">
+                <Paragraph fontSize="$3" color="$color11" marginBottom="$2" textAlign="center">
                   Then, let&apos;s import it!
                 </Paragraph>
                 <Button

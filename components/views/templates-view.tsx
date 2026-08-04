@@ -41,17 +41,21 @@ export function TemplatesView({ onProjectSelect }: TemplatesViewProps) {
           <XStack borderRadius="$10" borderWidth={1} borderColor="$borderColor" padding="$0.5">
             <Button
               onClick={() => setMode('gallery')}
-              alignItems="center" gap="$1.5" borderRadius="$10" paddingHorizontal="$3.5" paddingVertical="$1.5" fontSize="$3" {...{ backgroundColor: mode === 'gallery' ? "$color12" : undefined, color: mode === 'gallery' ? "$background" : "$color11", hoverStyle: mode === 'gallery' ? undefined : {"color":"$color"} }}
+              group alignItems="center" gap="$1.5" borderRadius="$10" paddingHorizontal="$3.5" paddingVertical="$1.5" backgroundColor={mode === 'gallery' ? "$color12" : "transparent"}
             >
-              <Sparkles size={16} />
-              Gallery
+              <SizableText display="flex" flexDirection="row" alignItems="center" gap="$1.5" fontSize="$3" color={mode === 'gallery' ? "$background" : "$color11"} $group-hover={{ color: mode === 'gallery' ? "$background" : "$color" }}>
+                <Sparkles size={16} />
+                Gallery
+              </SizableText>
             </Button>
             <Button
               onClick={() => setMode('custom')}
-              alignItems="center" gap="$1.5" borderRadius="$10" paddingHorizontal="$3.5" paddingVertical="$1.5" fontSize="$3" {...{ backgroundColor: mode === 'custom' ? "$color12" : undefined, color: mode === 'custom' ? "$background" : "$color11", hoverStyle: mode === 'custom' ? undefined : {"color":"$color"} }}
+              group alignItems="center" gap="$1.5" borderRadius="$10" paddingHorizontal="$3.5" paddingVertical="$1.5" backgroundColor={mode === 'custom' ? "$color12" : "transparent"}
             >
-              <Package size={16} />
-              My Templates
+              <SizableText display="flex" flexDirection="row" alignItems="center" gap="$1.5" fontSize="$3" color={mode === 'custom' ? "$background" : "$color11"} $group-hover={{ color: mode === 'custom' ? "$background" : "$color" }}>
+                <Package size={16} />
+                My Templates
+              </SizableText>
             </Button>
           </XStack>
           <Link

@@ -32,7 +32,7 @@ export default function UsageView({
             </Paragraph>
           </div>
           <Link href="https://console.hanzo.ai/ai-accounts" target="_blank" rel="noopener noreferrer">
-            <Button variant="outline" borderColor="$borderColor" color="$color" hoverStyle={{ backgroundColor: "$color3" }}>
+            <Button variant="outline" borderColor="$borderColor" hoverStyle={{ backgroundColor: "$color3" }}>
               <ExternalLink size={16} />
               Multi-provider dashboard
             </Button>

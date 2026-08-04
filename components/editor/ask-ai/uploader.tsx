@@ -93,23 +93,23 @@ export const Uploader = ({
   };
 
   return user?.id ? (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} placement="top-start">
       <form>
         <PopoverTrigger asChild>
           <Button
             size="icon"
             variant="ghost"
             aria-label="Add images"
-            borderRadius="$10" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+            group borderRadius="$10" hoverStyle={{ backgroundColor: "$color3" }}
           >
-            <Plus size={16} />
+            <SizableText display="flex" color="$color11" $group-hover={{ color: "$color" }}>
+              <Plus size={16} />
+            </SizableText>
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          side="top"
-          align="start"
           sideOffset={8}
-          overflow="hidden" padding="$0" textAlign="center" minWidth={320}
+          overflow="hidden" padding="$0" minWidth={320}
         >
           {project?.space_id ? (
             <>
@@ -125,10 +125,10 @@ export const Uploader = ({
                     💻
                   </SizableText>
                 </XStack>
-                <Paragraph fontSize="$7" fontWeight="500" color="$color">
+                <Paragraph fontSize="$7" fontWeight="500" color="$color" textAlign="center">
                   Add Custom Images
                 </Paragraph>
-                <Paragraph fontSize="$3" color="$color11" marginTop="$1.5">
+                <Paragraph fontSize="$3" color="$color11" marginTop="$1.5" textAlign="center">
                   Upload images to your project and use them with Hanzo AI!
                 </Paragraph>
               </YStack>
@@ -149,7 +149,7 @@ export const Uploader = ({
                           alt="uploaded image"
                           width={56}
                           height={56}
-                          objectFit="cover" width="100%" borderRadius="$1"
+                          style={{ objectFit: "cover", width: "100%", borderRadius: 4 }}
   />
                         {selectedFiles.includes(file) && (
                           <XStack position="absolute" top="$0" right="$0" height="100%" width="100%" alignItems="center" justifyContent="center" backgroundColor="black" borderRadius="$3">
@@ -260,10 +260,12 @@ export const Uploader = ({
         size="icon"
         variant="ghost"
         aria-label="Add images"
-        borderRadius="$10" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+        group borderRadius="$10" hoverStyle={{ backgroundColor: "$color3" }}
         onClick={() => setOpen(true)}
       >
-        <Plus size={16} />
+        <SizableText display="flex" color="$color11" $group-hover={{ color: "$color" }}>
+          <Plus size={16} />
+        </SizableText>
       </Button>
       <LoginModal
         open={open}

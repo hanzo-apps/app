@@ -43,13 +43,13 @@ export function ProjectCard({ project }: { project: Project }) {
             )}
           </Paragraph>
         </div>
-        <DropdownMenu>
+        <DropdownMenu placement="bottom-start">
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
               <EllipsisVertical size={20} color="$color11" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent width={224} align="start">
+          <DropdownMenuContent width={224}>
             <DropdownMenuGroup>
               <a
                 href={`/projects/${project.space_id}/settings`}

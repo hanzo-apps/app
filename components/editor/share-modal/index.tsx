@@ -103,7 +103,7 @@ export function ShareModal({ isOpen, onClose, projectId, projectName = "Untitled
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent maxWidth={512} backgroundColor="$background" color="$color" borderColor="$borderColor">
+      <DialogContent maxWidth={512} backgroundColor="$background" borderColor="$borderColor">
         <DialogHeader rowGap="$1">
           <DialogTitle fontSize="$4" fontWeight="500">Invite</DialogTitle>
           <DialogDescription fontSize="$1" color="$color11">

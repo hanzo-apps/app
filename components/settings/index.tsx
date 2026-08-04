@@ -387,10 +387,9 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
         <Button
           variant="ghost"
           size="sm"
-          color="$red9" hoverStyle={{ color: "$red9" }}
           onClick={clearSettings}
         >
-          Clear All Settings
+          <SizableText color="$red9">Clear All Settings</SizableText>
         </Button>
         <Button
           variant="ghost"

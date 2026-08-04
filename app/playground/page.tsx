@@ -221,7 +221,7 @@ export default function PlaygroundPage() {
         <Label>System Prompt</Label>
         <Textarea
           value={config.systemPrompt}
-          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setConfig({ ...config, systemPrompt: e.target.value })}
+          onChangeText={(value) => setConfig({ ...config, systemPrompt: value })}
           backgroundColor="$background" borderColor="$borderColor" color="$color" minHeight={80}
           placeholder="Enter system prompt..."
   />
@@ -303,8 +303,8 @@ export default function PlaygroundPage() {
                 <YStack rowGap="$2">
                   <XStack justifyContent="space-between" alignItems="center">
                     <Label>Quick Templates</Label>
-                    <Button variant="ghost" size="sm" height="$5" fontSize="$1">
-                      View All
+                    <Button variant="ghost" size="sm" height="$5">
+                      <SizableText fontSize="$1">View All</SizableText>
                     </Button>
                   </XStack>
                   <YStack rowGap="$1">
@@ -313,10 +313,10 @@ export default function PlaygroundPage() {
                         key={i}
                         variant="ghost"
                         size="sm"
-                        width="100%" justifyContent="flex-start" fontSize="$1" height="$6"
+                        width="100%" justifyContent="flex-start" height="$6"
                         onClick={() => setPrompt(template.prompt)}
                       >
-                        {template.label}
+                        <SizableText fontSize="$1">{template.label}</SizableText>
                       </Button>
                     ))}
                   </YStack>
@@ -326,7 +326,7 @@ export default function PlaygroundPage() {
                   <Label>Your Prompt</Label>
                   <Textarea
                     value={prompt}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPrompt(e.target.value)}
+                    onChangeText={(value) => setPrompt(value)}
                     placeholder="Enter your prompt here..."
                     backgroundColor="$color3" borderColor="$borderColor" color="$color" minHeight={150}
   />
@@ -364,7 +364,7 @@ export default function PlaygroundPage() {
                           <Button
                             key={result.id}
                             onClick={() => setActiveResult(result)}
-                            width="100%" textAlign="left" padding="$2" borderRadius="$5" {...{ backgroundColor: activeResult?.id === result.id ? "$purple9" : "$color3", borderWidth: activeResult?.id === result.id ? 1 : undefined, borderColor: activeResult?.id === result.id ? "$purple9" : undefined, hoverStyle: activeResult?.id === result.id ? undefined : {"backgroundColor":"$color3"} }}
+                            width="100%" alignItems="flex-start" padding="$2" borderRadius="$5" {...{ backgroundColor: activeResult?.id === result.id ? "$purple9" : "$color3", borderWidth: activeResult?.id === result.id ? 1 : undefined, borderColor: activeResult?.id === result.id ? "$purple9" : undefined, hoverStyle: activeResult?.id === result.id ? undefined : {"backgroundColor":"$color3"} }}
                           >
                             <Paragraph fontSize="$1" color="$color11" marginBottom="$1">
                               {result.timestamp.toLocaleTimeString()}
@@ -374,7 +374,7 @@ export default function PlaygroundPage() {
                             </Paragraph>
                             <XStack gap="$2" marginTop="$1">
                               {result.models.map(model => (
-                                <Badge key={model.model} variant="outline" fontSize="$1">
+                                <Badge key={model.model} variant="outline">
                                   {model.model}
                                 </Badge>
                               ))}
@@ -400,13 +400,13 @@ export default function PlaygroundPage() {
                       <YStack width="$2" height="$2" backgroundColor="$color11" borderRadius="$10" />
                       <CardTitle fontSize="$6">{leftConfig.model}</CardTitle>
                     </XStack>
-                    <DropdownMenu>
+                    <DropdownMenu placement="bottom-end">
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="sm">
                           <Settings size={16} />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" width={320}>
+                      <DropdownMenuContent width={320}>
                         <YStack padding="$4">
                           <ModelConfigPanel config={leftConfig} setConfig={setLeftConfig} side="left" />
                         </YStack>
@@ -483,13 +483,13 @@ export default function PlaygroundPage() {
                         <YStack width="$2" height="$2" backgroundColor="$color11" borderRadius="$10" />
                         <CardTitle fontSize="$6">{rightConfig.model}</CardTitle>
                       </XStack>
-                      <DropdownMenu>
+                      <DropdownMenu placement="bottom-end">
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="sm">
                             <Settings size={16} />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" width={320}>
+                        <DropdownMenuContent width={320}>
                           <YStack padding="$4">
                             <ModelConfigPanel config={rightConfig} setConfig={setRightConfig} side="right" />
                           </YStack>
@@ -580,11 +580,11 @@ export default function PlaygroundPage() {
                         ))}
                       </YStack>
                       {activeResult.models[0].latency < activeResult.models[1].latency ? (
-                        <Badge marginTop="$2" fontSize="$1">
+                        <Badge className="mt-2">
                           {leftConfig.model} is {((1 - activeResult.models[0].latency / activeResult.models[1].latency) * 100).toFixed(0)}% faster
                         </Badge>
                       ) : (
-                        <Badge marginTop="$2" fontSize="$1">
+                        <Badge className="mt-2">
                           {rightConfig.model} is {((1 - activeResult.models[1].latency / activeResult.models[0].latency) * 100).toFixed(0)}% faster
                         </Badge>
                       )}
@@ -617,11 +617,11 @@ export default function PlaygroundPage() {
                         ))}
                       </YStack>
                       {activeResult.models[0].cost < activeResult.models[1].cost ? (
-                        <Badge variant="outline" marginTop="$2" fontSize="$1" borderColor="$green9" color="$green8">
+                        <Badge variant="outline" className="mt-2 border-green-600 text-green-500">
                           {leftConfig.model} is {((1 - activeResult.models[0].cost / activeResult.models[1].cost) * 100).toFixed(0)}% cheaper
                         </Badge>
                       ) : (
-                        <Badge variant="outline" marginTop="$2" fontSize="$1" borderColor="$green9" color="$green8">
+                        <Badge variant="outline" className="mt-2 border-green-600 text-green-500">
                           {rightConfig.model} is {((1 - activeResult.models[1].cost / activeResult.models[0].cost) * 100).toFixed(0)}% cheaper
                         </Badge>
                       )}

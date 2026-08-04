@@ -224,7 +224,8 @@ export const DeployButtonContent = ({
                   () => {},
                 );
               }}
-              width={28} height={28} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+              variant="ghost"
+              width={28} height={28} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3"
             >
               {copied ? <Check size={16} color="$green8" /> : <Copy size={16} />}
             </Button>
@@ -240,7 +241,8 @@ export const DeployButtonContent = ({
           <Button
             type="button"
             onClick={() => router.push(builderLink(published.slug, published.org))}
-            width="100%" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+            variant="outline"
+            width="100%" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$2" hoverStyle={{ backgroundColor: "$color3" }}
           >
             Back to editor
           </Button>
@@ -255,7 +257,7 @@ export const DeployButtonContent = ({
       <YStack borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4">
         <XStack marginBottom="$2" alignItems="center" justifyContent="center">
           <XStack width={36} height={36} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color">
-            <Image src={SpaceIcon} alt="" width="$4.5" height="$4.5" />
+            <Image src={SpaceIcon} alt="" width={28} height={28} />
           </XStack>
         </XStack>
         <Paragraph textAlign="center" fontSize="$4" fontWeight="500" color="$color">Publish your project</Paragraph>
@@ -281,7 +283,7 @@ export const DeployButtonContent = ({
           variant="default"
           size="sm"
           onClick={publish}
-          position="relative" width="100%" gap="$1.5" backgroundColor="$color12" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
+          position="relative" width="100%" gap="$1.5" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}
           disabled={loading}
         >
           {loading ? (

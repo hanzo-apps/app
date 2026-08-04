@@ -227,7 +227,7 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
               type="button"
               onClick={onClose}
               aria-label="Hide code editor"
-              position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" color="$color11" group hoverStyle={{ color: "$red9" }}
+              position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" group {...{ color: "$color11" }}
             >
               <Code2
                 size={16}
@@ -313,7 +313,7 @@ export function MultiTabEditor({ projectId, onFilesChange: _onFilesChange, onClo
                           <Image
                             src={`data:image/${activeFile.file.path.split('.').pop()};base64,${activeFile.content}`}
                             alt={activeFile.file.name}
-                            maxWidth="100%" height="auto" borderRadius="$2" elevation={1}
+                            maxWidth="100%" height="auto"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
                               target.style.display = 'none';

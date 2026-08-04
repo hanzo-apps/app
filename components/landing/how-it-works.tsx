@@ -29,11 +29,11 @@ export default function HowItWorks() {
   return (
     <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$13" }}>
       <YStack alignSelf="center" maxWidth={1152}>
-        <Reveal alignSelf="center" width="100%" maxWidth={672} textAlign="center">
-          <Paragraph fontFamily="$mono" fontSize={11} color="$color11">
+        <Reveal alignSelf="center" width="100%" maxWidth={672}>
+          <Paragraph fontFamily="$mono" fontSize={11} color="$color11" textAlign="center">
             How it works
           </Paragraph>
-          <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ fontSize: "$11" }}>
+          <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} textAlign="center" $md={{ fontSize: "$11" }}>
             From a sentence to a shipped app.
           </H2>
         </Reveal>

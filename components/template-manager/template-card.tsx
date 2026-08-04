@@ -94,7 +94,7 @@ export function TemplateCard({
           {/* Template Info */}
           <YStack flex={1} minWidth={0}>
             <XStack alignItems="center" gap="$2" marginBottom="$1">
-              <H3 fontWeight="500" fontSize="$4" numberOfLines={1} title={template.name}>
+              <H3 fontWeight="500" fontSize="$4" numberOfLines={1}>
                 {template.name}
               </H3>
               {customTemplate && (
@@ -104,30 +104,30 @@ export function TemplateCard({
               )}
             </XStack>
 
-            <Paragraph fontSize="$3" color="$color11" numberOfLines={1} marginBottom="$2" title={template.description}>
+            <Paragraph fontSize="$3" color="$color11" numberOfLines={1} marginBottom="$2">
               {template.description}
             </Paragraph>
 
             {/* Metadata */}
             <SizableText flexWrap="wrap" alignItems="center" columnGap="$2" rowGap="$1" fontSize="$1" color="$color11" display="flex" flexDirection="row">
               {runtimeBadge && (
-                <Badge fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0" height="auto" {...runtimeBadge.tone}>{runtimeBadge.label}</Badge>
+                <Badge className="text-xs px-1.5 py-0 h-auto" style={runtimeBadge.tone}>{runtimeBadge.label}</Badge>
               )}
               {hasBackendFeatures && (
-                <Badge fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0" height="auto" backgroundColor="$orange2" color="$orange11" borderColor="$orange3" $theme-dark={{ backgroundColor: "$orange12", color: "$orange8", borderColor: "$orange11" }}>
+                <Badge className="text-xs px-1.5 py-0 h-auto bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800">
                   <Server size={12} />
                   Backend
                 </Badge>
               )}
               {(customTemplate?.metadata.author || template.metadata?.author) && (
-                <SizableText numberOfLines={1} maxWidth={150} title={customTemplate?.metadata.author || template.metadata?.author}>
+                <SizableText numberOfLines={1} maxWidth={150}>
                   by {customTemplate?.metadata.author || template.metadata?.author}
                 </SizableText>
               )}
               {customTemplate?.metadata.license && (
                 <>
                   {customTemplate.metadata.author && <span>•</span>}
-                  <Badge variant="secondary" fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0" height="auto">
+                  <Badge variant="secondary" className="text-xs px-1.5 py-0 h-auto">
                     {getLicenseLabel(customTemplate.metadata.license)}
                   </Badge>
                 </>
@@ -142,12 +142,12 @@ export function TemplateCard({
                 <>
                   <span>•</span>
                   {(customTemplate?.metadata.tags || template.metadata?.tags || []).slice(0, 2).map((tag) => (
-                    <Badge key={tag} variant="outline" fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0" height="auto">
+                    <Badge key={tag} variant="outline" className="text-xs px-1.5 py-0 h-auto">
                       {tag}
                     </Badge>
                   ))}
                   {(customTemplate?.metadata.tags || template.metadata?.tags || []).length > 2 && (
-                    <Badge variant="outline" fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0" height="auto">
+                    <Badge variant="outline" className="text-xs px-1.5 py-0 h-auto">
                       +{(customTemplate?.metadata.tags || template.metadata?.tags || []).length - 2}
                     </Badge>
                   )}
@@ -168,7 +168,7 @@ export function TemplateCard({
                   <MoreVertical size={16} />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent>
                 <DropdownMenuItem onClick={() => onSelect(template)}>
                   <Plus size={16} />
                   Create Project
@@ -189,7 +189,7 @@ export function TemplateCard({
                       <TooltipTrigger asChild>
                         <div>
                           <DropdownMenuItem
-                            color="$red9"
+                            variant="destructive"
                             onClick={handleDelete}
                             disabled={isBuiltIn}
                           >
@@ -216,7 +216,7 @@ export function TemplateCard({
                   <MoreVertical size={16} />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent>
                 <DropdownMenuItem onClick={() => onSelect(template)}>
                   <Plus size={16} />
                   Create Project
@@ -234,7 +234,7 @@ export function TemplateCard({
                   <>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
-                      color="$red9"
+                      variant="destructive"
                       onClick={handleDelete}
                       disabled={isBuiltIn}
                     >
@@ -304,7 +304,7 @@ export function TemplateCard({
         {/* Header */}
         <YStack rowGap="$1">
           <XStack alignItems="center" gap="$2">
-            <H3 fontWeight="500" fontSize="$4" numberOfLines={1} flex={1} title={template.name}>
+            <H3 fontWeight="500" fontSize="$4" numberOfLines={1} flex={1}>
               {template.name}
             </H3>
             {customTemplate && (
@@ -313,7 +313,7 @@ export function TemplateCard({
               </SizableText>
             )}
           </XStack>
-          <Paragraph fontSize="$3" color="$color11" numberOfLines={2} title={template.description}>
+          <Paragraph fontSize="$3" color="$color11" numberOfLines={2}>
             {template.description}
           </Paragraph>
         </YStack>
@@ -343,21 +343,21 @@ export function TemplateCard({
           {((customTemplate?.metadata.tags || template.metadata?.tags || []).length > 0 || (isBuiltIn && 'runtime' in template) || hasBackendFeatures) && (
             <XStack flexWrap="wrap" gap="$1">
               {runtimeBadge && (
-                <Badge fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0.5" {...runtimeBadge.tone}>{runtimeBadge.label}</Badge>
+                <Badge className="text-xs px-1.5 py-0.5" style={runtimeBadge.tone}>{runtimeBadge.label}</Badge>
               )}
               {hasBackendFeatures && (
-                <Badge fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0.5" backgroundColor="$orange2" color="$orange11" borderColor="$orange3" $theme-dark={{ backgroundColor: "$orange12", color: "$orange8", borderColor: "$orange11" }}>
+                <Badge className="text-xs px-1.5 py-0.5 bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800">
                   <Server size={12} />
                   Backend
                 </Badge>
               )}
               {(customTemplate?.metadata.tags || template.metadata?.tags || []).slice(0, 3).map((tag) => (
-                <Badge key={tag} variant="secondary" fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0.5">
+                <Badge key={tag} variant="secondary" className="text-xs px-1.5 py-0.5">
                   {tag}
                 </Badge>
               ))}
               {(customTemplate?.metadata.tags || template.metadata?.tags || []).length > 3 && (
-                <Badge variant="secondary" fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0.5">
+                <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
                   +{(customTemplate?.metadata.tags || template.metadata?.tags || []).length - 3}
                 </Badge>
               )}
@@ -367,7 +367,7 @@ export function TemplateCard({
           {/* License and file count */}
           <SizableText alignItems="center" gap="$2" fontSize="$1" color="$color11" flexWrap="wrap" display="flex" flexDirection="row">
             {customTemplate?.metadata.license && (
-              <Badge variant="outline" fontSize="$1" paddingHorizontal="$1.5" paddingVertical="$0" height="auto">
+              <Badge variant="outline" className="text-xs px-1.5 py-0 h-auto">
                 {getLicenseLabel(customTemplate.metadata.license)}
               </Badge>
             )}
@@ -392,7 +392,7 @@ export function TemplateCard({
                 <MoreVertical size={16} />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent>
               <DropdownMenuItem onClick={() => onSelect(template)}>
                 <Plus size={16} />
                 Create Project
@@ -413,7 +413,7 @@ export function TemplateCard({
                     <TooltipTrigger asChild>
                       <div>
                         <DropdownMenuItem
-                          color="$red9"
+                          variant="destructive"
                           onClick={handleDelete}
                           disabled={isBuiltIn}
                         >

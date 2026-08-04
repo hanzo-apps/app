@@ -1,6 +1,6 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, SizableText, Paragraph, type GuiElement } from '@hanzo/gui';
 import { useState, useMemo, useRef, useEffect } from "react";
 import { toast, Button, DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger, Tooltip, TooltipTrigger, TooltipContent, Textarea } from '@hanzo/ui';
 import { useLocalStorage } from "react-use";
@@ -204,16 +204,18 @@ export function AskAI({
   const composerHRef = useRef(COMPOSER_MIN_H);
   const manualResizeRef = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const rootRef = useRef<HTMLDivElement | null>(null);
+  const rootRef = useRef<GuiElement>(null);
 
-  const maxComposerH = () =>
-    Math.max(
-      COMPOSER_MIN_H,
-      Math.round(
-        (rootRef.current?.clientHeight ??
-          (typeof window !== "undefined" ? window.innerHeight : 800)) * 0.4
-      )
-    );
+  const maxComposerH = () => {
+    const el = rootRef.current;
+    const base =
+      el && "clientHeight" in el
+        ? el.clientHeight
+        : typeof window !== "undefined"
+          ? window.innerHeight
+          : 800;
+    return Math.max(COMPOSER_MIN_H, Math.round(base * 0.4));
+  };
   const setComposerHeight = (h: number, persist: boolean) => {
     const clamped = Math.min(maxComposerH(), Math.max(COMPOSER_MIN_H, Math.round(h)));
     composerHRef.current = clamped;
@@ -907,9 +909,8 @@ export function AskAI({
             </SizableText>
             <Button
               onClick={() => setMessageQueue([])}
-              fontSize="$1" color="$color11" textDecorationLine="underline" hoverStyle={{ color: "$color" }}
             >
-              Clear all
+              <SizableText fontSize="$1" color="$color11" textDecorationLine="underline">Clear all</SizableText>
             </Button>
           </XStack>
           <YStack rowGap="$2" maxHeight={256} overflow="scroll">
@@ -925,11 +926,12 @@ export function AskAI({
                   <Paragraph fontSize="$3" color="$color11" flex={1}>{msg.message}</Paragraph>
                   <Button
                     onClick={() => setMessageQueue(prev => prev.filter(m => m.id !== msg.id))}
-                    color="$color11" hoverStyle={{ color: "$color" }}
                   >
-                    <svg width={16} height={16} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    <SizableText color="$color11">
+                      <svg width={16} height={16} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </SizableText>
                   </Button>
                 </XStack>
                 <XStack alignItems="center" gap="$2" marginTop="$2">
@@ -957,10 +959,10 @@ export function AskAI({
                         ]);
                         stopController();
                       }}
-                      marginLeft="auto" fontSize="$1" color="$color11" textDecorationLine="underline" hoverStyle={{ color: "$color" }}
+                      marginLeft="auto"
                       title="Stop the current build and run this next"
                     >
-                      Send now
+                      <SizableText fontSize="$1" color="$color11" textDecorationLine="underline">Send now</SizableText>
                     </Button>
                   )}
                 </XStack>
@@ -1002,9 +1004,8 @@ export function AskAI({
                     <Button
                       type="button"
                       onClick={() => skipIntegration(p.name)}
-                      color="$color11" hoverStyle={{ color: "$color" }}
                     >
-                      Skip
+                      <SizableText color="$color11">Skip</SizableText>
                     </Button>
                     <SizableText color="$color11">·</SizableText>
                   </>
@@ -1012,9 +1013,8 @@ export function AskAI({
                 <Button
                   type="button"
                   onClick={() => connectIntegration(p)}
-                  fontWeight="500" color="$color" hoverStyle={{ textDecorationLine: "underline" }}
                 >
-                  Connect
+                  <SizableText fontWeight="500" color="$color" hoverStyle={{ textDecorationLine: "underline" }}>Connect</SizableText>
                 </Button>
               </SizableText>
             ))}
@@ -1037,9 +1037,9 @@ export function AskAI({
                 key={s}
                 type="button"
                 onClick={() => runSuggestion(s)}
-                flexShrink={0} whiteSpace="nowrap" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$color8", backgroundColor: "$color3", color: "$color" }}
+                flexShrink={0} borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1" hoverStyle={{ borderColor: "$color8", backgroundColor: "$color3" }}
               >
-                {s}
+                <SizableText whiteSpace="nowrap" fontSize="$1" color="$color11">{s}</SizableText>
               </Button>
             ))}
           </XStack>
@@ -1047,9 +1047,9 @@ export function AskAI({
             type="button"
             aria-label="Dismiss suggestions"
             onClick={() => setSuggestionsDismissed(true)}
-            flexShrink={0} borderRadius="$10" padding="$1" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+            flexShrink={0} borderRadius="$10" padding="$1" hoverStyle={{ backgroundColor: "$color3" }}
           >
-            <X size={14} />
+            <X size={14} color="$color11" />
           </Button>
         </XStack>
       )}
@@ -1110,7 +1110,7 @@ export function AskAI({
         <XStack width="100%" position="relative" alignItems="center" justifyContent="space-between">
           {(isAiWorking || isUploading) && (
             <XStack position="absolute" top="$0" left="$4" right="$8" height="$6" zIndex={10} alignItems="center" justifyContent="space-between" pointerEvents="none">
-              <XStack alignItems="center" justifyContent="flex-start" gap="$2" backgroundColor="$color3" paddingHorizontal="$2" paddingVertical="$1" borderRadius="$3">
+              <XStack alignItems="center" justifyContent="flex-start" gap="$2">
                 <Loading overlay={false} size={12} />
                 <Paragraph color="$color11" fontSize="$1">
                   {isUploading ? (
@@ -1192,7 +1192,7 @@ export function AskAI({
             ref={textareaRef}
             disabled={isUploading}
             style={{ height: composerH, maxHeight: "40dvh" }}
-            width="100%" backgroundColor="transparent" fontSize="$3" outlineWidth={0} color="$color" placeholderTextColor="$color11" padding="$4" resize="none" overflow="scroll" {...{ paddingTop: selectedElement && !isAiWorking ? "$2.5" : undefined, opacity: isAiWorking && !isUploading ? 1 : undefined }}
+            width="100%" backgroundColor="transparent" fontSize="$3" outlineWidth={0} color="$color" placeholderTextColor="$color11" padding="$4" overflow="scroll" {...{ paddingTop: selectedElement && !isAiWorking ? "$2.5" : undefined, opacity: isAiWorking && !isUploading ? 1 : undefined }}
             placeholder={
               isAiWorking
                 ? // Empty while working (unless queueing) so no text sits UNDER
@@ -1211,7 +1211,7 @@ export function AskAI({
                 : "Ask Hanzo anything..."
             }
             value={prompt}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPrompt(e.target.value)}
+            onChangeText={(t) => setPrompt(t)}
             onPaste={handlePaste}
             onKeyDown={(e: React.KeyboardEvent) => {
               if (e.key === "Enter" && !e.shiftKey) {
@@ -1248,7 +1248,7 @@ export function AskAI({
                 one trigger. It accents when either mode is on, so nothing is
                 hidden that is currently doing something. */}
             {!isSameHtml && (
-              <DropdownMenu>
+              <DropdownMenu placement="top-start">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <DropdownMenuTrigger asChild>
@@ -1260,19 +1260,17 @@ export function AskAI({
                             ? `More — ${modes.join(", ")} on`
                             : "More composer modes"
                         }
-                        borderRadius="$10" {...(modes.length > 0
-                          ? { color: "var(--brand-accent)", hoverStyle: { color: "var(--brand-accent)" } }
-                          : { color: "$color11", hoverStyle: { backgroundColor: "$color3", color: "$color" } })}
+                        borderRadius="$10"
                       >
-                        <MoreHorizontal size={16} />
+                        <MoreHorizontal size={16} color={modes.length > 0 ? "var(--brand-accent)" : "$color11"} />
                       </Button>
                     </DropdownMenuTrigger>
                   </TooltipTrigger>
-                  <TooltipContent align="start">
+                  <TooltipContent>
                     {modes.length ? `${modes.join(", ")} on` : "More"}
                   </TooltipContent>
                 </Tooltip>
-                <DropdownMenuContent align="start" side="top" width={256}>
+                <DropdownMenuContent width={256}>
                   <DropdownMenuCheckboxItem
                     checked={isEditableModeEnabled}
                     onCheckedChange={(v: boolean) => setIsEditableModeEnabled?.(!!v)}
@@ -1319,9 +1317,9 @@ export function AskAI({
                       : "Build: generate and modify your app"
                   }
                   onClick={() => setMode(m)}
-                  borderRadius="$10" paddingHorizontal="$2.5" paddingVertical="$1" fontWeight="500" textTransform="capitalize" focusVisibleStyle={{ outlineWidth: 0 }} {...{ backgroundColor: mode === m ? "var(--brand-accent)" : undefined, color: mode === m ? "var(--brand-accent-fg)" : "$color11", hoverStyle: mode === m ? undefined : {"color":"$color"} }}
+                  borderRadius="$10" paddingHorizontal="$2.5" paddingVertical="$1" focusVisibleStyle={{ outlineWidth: 0 }} backgroundColor={mode === m ? "var(--brand-accent)" : undefined}
                 >
-                  {m}
+                  <SizableText fontWeight="500" textTransform="capitalize" color={mode === m ? "var(--brand-accent-fg)" : "$color11"}>{m}</SizableText>
                 </Button>
               ))}
             </SizableText>
@@ -1332,7 +1330,7 @@ export function AskAI({
                     Routed: {routedModel}
                   </SizableText>
                 </TooltipTrigger>
-                <TooltipContent align="end">
+                <TooltipContent>
                   Smart routing sent this request to {routedModel}. You&apos;re
                   billed as what served you.
                 </TooltipContent>

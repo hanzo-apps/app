@@ -155,7 +155,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
           type="button"
           onClick={onClose}
           aria-label="Hide preview"
-          position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" color="$color11" group hoverStyle={{ color: "$red9" }}
+          position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" group {...{ color: "$color11" }}
         >
           <Eye 
             size={16} 
@@ -911,7 +911,7 @@ const MultipagePreviewComponent = forwardRef<MultipagePreviewHandle, MultipagePr
         {compiledProject && compiledProject.routes.length > 1 && (
           <Select value={activePath} onValueChange={handleNavigation}>
             <SelectTrigger flex={1} height="$6" minWidth={0} maxWidth="100%">
-              <SelectValue ellipse numberOfLines={1} />
+              <SelectValue numberOfLines={1} />
             </SelectTrigger>
             <SelectContent>
               {compiledProject.routes.map(route => (

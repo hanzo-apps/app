@@ -93,7 +93,7 @@ export function AboutModal({ open, onOpenChange }: AboutModalProps) {
         </YStack>
 
         <XStack justifyContent="space-between" alignItems="center" paddingTop="$4" borderTopWidth={1}>
-          <Badge variant="secondary" fontSize="$1">
+          <Badge variant="secondary">
             v{VERSION}
           </Badge>
           <Button onClick={() => onOpenChange(false)}>

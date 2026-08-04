@@ -58,9 +58,9 @@ export function SyncItemRow({
             size="sm"
             onClick={onResolve}
             disabled={disabled || syncing}
-            height={28} fontSize="$1"
+            height={28}
           >
-            Resolve
+            <SizableText fontSize="$1" color="$color12">Resolve</SizableText>
           </Button>
         ) : (
           <>

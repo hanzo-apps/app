@@ -30,7 +30,7 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
       <YStack padding="$4" paddingBottom="$3">
         <XStack alignItems="flex-start" justifyContent="space-between" gap="$2">
           <XStack alignItems="center" gap="$2" minWidth={0} flex={1}>
-            <SizableText height="$2.5" width="$2.5" borderRadius="$10" flexShrink={0} backgroundColor={status.dot} title={status.label} />
+            <SizableText height="$2.5" width="$2.5" borderRadius="$10" flexShrink={0} backgroundColor={status.dot} />
             <H3 fontWeight="500" fontSize="$4" numberOfLines={1}>{project.name}</H3>
           </XStack>
 
@@ -40,7 +40,7 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
                 <MoreVertical size={16} />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent>
               <DropdownMenuItem onClick={() => router.push(builderLink(project.slug, project.org))}>
                 <Pencil size={16} />
                 Edit in builder
@@ -56,7 +56,7 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
-              <DropdownMenuItem color="$red9" onClick={() => onDelete(project)}>
+              <DropdownMenuItem variant="destructive" onClick={() => onDelete(project)}>
                 <Trash2 size={16} />
                 Delete
               </DropdownMenuItem>
@@ -82,11 +82,11 @@ export function ProjectCard({ project, onDelete }: ProjectCardProps) {
           <Button
             size="sm"
             variant="ghost"
-            height={28} paddingHorizontal="$2" fontSize="$1"
+            height={28} paddingHorizontal="$2"
             onClick={() => router.push(builderLink(project.slug, project.org))}
           >
             <Pencil size={12} />
-            Edit
+            <SizableText fontSize="$1">Edit</SizableText>
           </Button>
           {visitUrl && (
             // Plain anchor, NOT the shared Button with `asChild`: the @hanzo/ui

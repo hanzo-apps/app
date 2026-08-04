@@ -237,13 +237,13 @@ export function ScheduledFunctionsManager({ deploymentId, dataProvider }: Schedu
                     </SizableText>
                   </YStack>
 
-                  <DropdownMenu>
+                  <DropdownMenu placement="bottom-end">
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="sm">
                         <MoreVertical size={16} />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent>
                       <DropdownMenuItem onClick={() => setEditingFunction(fn)}>
                         <Pencil size={16} />
                         Edit
@@ -263,7 +263,7 @@ export function ScheduledFunctionsManager({ deploymentId, dataProvider }: Schedu
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => deleteFunction(fn)}
-                        color="$red9"
+                        variant="destructive"
                       >
                         <Trash2 size={16} />
                         Delete

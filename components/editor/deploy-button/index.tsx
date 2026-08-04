@@ -1,7 +1,7 @@
 'use client';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { View, XStack } from '@hanzo/gui';
+import { View, XStack, SizableText } from '@hanzo/gui';
 import { useState } from "react";
 
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@hanzo/ui';
@@ -48,13 +48,13 @@ export function DeployButton({
                 <Button
                   variant="default"
                   size="sm"
-                  height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1"
+                  height={28} gap="$1.5" paddingHorizontal="$2.5"
                   disabled={disabled}
                 >
                   <View $lg={{ display: "none" }}>
                     <Save size={14} />
                   </View>
-                  {disabled ? "Building…" : "Publish"}
+                  <SizableText fontSize="$1">{disabled ? "Building…" : "Publish"}</SizableText>
                 </Button>
               </div>
             </PopoverTrigger>
@@ -70,14 +70,14 @@ export function DeployButton({
           <Button
             variant="default"
             size="sm"
-            height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1"
+            height={28} gap="$1.5" paddingHorizontal="$2.5"
             onClick={() => setOpen(true)}
             disabled={disabled}
           >
             <View $lg={{ display: "none" }}>
               <Save size={14} />
             </View>
-            {disabled ? "Building…" : "Publish"}
+            <SizableText fontSize="$1">{disabled ? "Building…" : "Publish"}</SizableText>
           </Button>
         )}
         <LoginModal

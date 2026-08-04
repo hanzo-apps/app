@@ -46,7 +46,7 @@ export function RemixDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent maxWidth={448} borderColor="$borderColor" backgroundColor="$background" color="$color">
+      <DialogContent maxWidth={448} borderColor="$borderColor" backgroundColor="$background">
         <DialogTitle fontSize="$6" fontWeight="500">Remix project</DialogTitle>
         <DialogDescription color="$color11">
           By remixing a project, you’ll create a copy that you own.
@@ -60,7 +60,7 @@ export function RemixDialog({
             <Input
               id="remix-name"
               value={name}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+              onChangeText={(t) => setName(t)}
               onKeyDown={(e: React.KeyboardEvent) => {
                 if (e.key === 'Enter') confirm();
               }}
@@ -80,13 +80,13 @@ export function RemixDialog({
         </YStack>
 
         <XStack marginTop="$2" justifyContent="flex-end" gap="$2">
-          <Button variant="ghost" onClick={() => onOpenChange(false)} color="$color">
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
           <Button
             onClick={confirm}
             disabled={!ack || !name.trim()}
-            backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }} disabledStyle={{ opacity: 0.4 }}
+            backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }} disabledStyle={{ opacity: 0.4 }}
           >
             Acknowledge and remix
           </Button>

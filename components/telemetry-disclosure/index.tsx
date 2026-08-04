@@ -42,9 +42,9 @@ export function TelemetryDisclosure({ open, onDismiss }: TelemetryDisclosureProp
 
           <Collapsible>
             <YStack borderRadius="$5" backgroundColor="$color3">
-              <CollapsibleTrigger alignItems="center" gap="$1.5" width="100%" padding="$3" fontSize="$1" color="$color" group hoverStyle={{ color: "$color" }}>
+              <CollapsibleTrigger alignItems="center" gap="$1.5" width="100%" padding="$3">
                 <ChevronDown size={14} />
-                Details
+                <SizableText fontSize="$1" color="$color">Details</SizableText>
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <SizableText paddingHorizontal="$4" paddingBottom="$4" rowGap="$3" fontSize="$3" color="$color11" display="flex" flexDirection="column">
@@ -81,10 +81,10 @@ export function TelemetryDisclosure({ open, onDismiss }: TelemetryDisclosureProp
         <DialogFooter alignItems="center" justifyContent="space-between" gap="$2" $sm={{ justifyContent: "space-between" }}>
           <Button
             type="button"
-            fontSize="$1" color="$color11" textDecorationLine="underline" hoverStyle={{ color: "$color" }}
+            variant="linkMuted"
             onClick={handleDisable}
           >
-            Disable analytics
+            <SizableText fontSize="$1" textDecorationLine="underline">Disable analytics</SizableText>
           </Button>
           <Button onClick={() => { track('telemetry_accepted'); onDismiss(); }}>
             Got it

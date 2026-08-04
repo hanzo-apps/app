@@ -258,7 +258,7 @@ function SidebarContent({
       <Button
         key={item.id}
         variant="ghost"
-        width="100%" gap="$2" {...{ justifyContent: collapsed ? "center" : "flex-start", paddingHorizontal: collapsed ? "$2" : undefined, backgroundColor: isActive ? "var(--brand-accent-soft)" : undefined, color: isActive ? "var(--brand-accent-muted)" : "$color11", hoverStyle: isActive ? {"backgroundColor":"var(--brand-accent-soft)","color":"var(--brand-accent-muted)"} : {"backgroundColor":"$color3","color":"$color"} }}
+        width="100%" gap="$2" {...{ justifyContent: collapsed ? "center" : "flex-start", paddingHorizontal: collapsed ? "$2" : undefined, backgroundColor: isActive ? "var(--brand-accent-soft)" : undefined, color: isActive ? "var(--brand-accent-muted)" : "$color11", hoverStyle: isActive ? {"backgroundColor":"var(--brand-accent-soft)"} : {"backgroundColor":"$color3"} }}
         onClick={() => handleItemAction(item)}
         title={collapsed ? item.label : undefined}
       >
@@ -319,7 +319,7 @@ function SidebarContent({
                 onClick={toggleCollapsed}
                 title="Collapse sidebar"
                 aria-label="Collapse sidebar"
-                display="none" height="$6" width="$6" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+                display="none" height="$6" width="$6" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" {...{ color: "$color11" }} hoverStyle={{ backgroundColor: "$color3" }}
               >
                 <PanelLeft size={16} />
               </Button>
@@ -328,7 +328,7 @@ function SidebarContent({
                 onClick={() => onMobileOpenChange?.(false)}
                 title="Close menu"
                 aria-label="Close menu"
-                height="$6" width="$6" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" color="$color11" $md={{ display: "none" }} hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+                height="$6" width="$6" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" {...{ color: "$color11" }} $md={{ display: "none" }} hoverStyle={{ backgroundColor: "$color3" }}
               >
                 <X size={16} />
               </Button>
@@ -357,16 +357,16 @@ function SidebarContent({
                 <SizableText fontSize={11} fontWeight="500" textTransform="uppercase" letterSpacing={0.8} color="$color11">
                   Projects
                 </SizableText>
-                <DropdownMenu>
+                <DropdownMenu placement="bottom-end">
                   <DropdownMenuTrigger asChild>
                     <Button
                       aria-label="Project actions"
-                      borderRadius="$2" padding="$0.5" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+                      borderRadius="$2" padding="$0.5" {...{ color: "$color11" }} hoverStyle={{ backgroundColor: "$color3" }}
                     >
                       <MoreHorizontal size={14} />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
+                  <DropdownMenuContent>
                     <DropdownMenuItem onClick={() => router.push('/dev')}>
                       <Plus size={16} />
                       Create project
@@ -386,7 +386,7 @@ function SidebarContent({
               <Input
                 autoFocus
                 value={newFolderName}
-                onChange={(e) => setNewFolderName(e.target.value)}
+                onChangeText={(value) => setNewFolderName(value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') submitNewFolder();
                   else if (e.key === 'Escape') {
@@ -465,7 +465,7 @@ function SidebarContent({
                     key={item.id}
                     variant="ghost"
                     size="sm"
-                    position="relative" width="100%" gap="$2" {...{ justifyContent: collapsed ? "center" : "flex-start", paddingHorizontal: collapsed ? "$2" : undefined, color: isLogout ? "$red9" : undefined, hoverStyle: isLogout ? {"backgroundColor":"$red9","color":"$red9"} : undefined }}
+                    position="relative" width="100%" gap="$2" {...{ justifyContent: collapsed ? "center" : "flex-start", paddingHorizontal: collapsed ? "$2" : undefined, color: isLogout ? "$red9" : undefined, hoverStyle: isLogout ? {"backgroundColor":"$red9"} : undefined }}
                     onClick={() => handleItemAction(item)}
                     title={collapsed ? item.label : undefined}
                   >
@@ -509,10 +509,10 @@ function ShareCard() {
       <Button
         onClick={() => setOpen(true)}
         title="Share Hanzo, earn free weeks"
-        width="100%" alignItems="center" gap="$2" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1.5" textAlign="left" fontSize="$1" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+        width="100%" alignItems="center" gap="$2" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2.5" paddingVertical="$1.5" {...{ color: "$color11" }} hoverStyle={{ backgroundColor: "$color3" }}
       >
         <Share2 size={14} />
-        <SizableText numberOfLines={1} fontWeight="500">Share app</SizableText>
+        <SizableText numberOfLines={1} fontWeight="500" fontSize="$1" color="$color11">Share app</SizableText>
       </Button>
       {open && <ReferralDialog onClose={() => setOpen(false)} />}
     </>
@@ -568,7 +568,7 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
       position="fixed" top={0} right={0} bottom={0} left={0} zIndex={70} alignItems="center" justifyContent="center" backgroundColor="black" padding="$4"
       onClick={onClose}
       role="dialog"
-      aria-modal="true"
+      aria-modal={true}
       aria-label="Share Hanzo"
     >
       <SizableText
@@ -578,7 +578,7 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
         <Button
           onClick={onClose}
           aria-label="Close"
-          position="absolute" right="$4" top="$4" borderRadius="$3" padding="$1" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+          position="absolute" right="$4" top="$4" borderRadius="$3" padding="$1" {...{ color: "$color11" }} hoverStyle={{ backgroundColor: "$color3" }}
         >
           <X size={16} />
         </Button>
@@ -606,19 +606,19 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
   />
           <Button
             onClick={copy}
-            flexShrink={0} alignItems="center" gap="$1.5" borderRadius="$3" backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$1" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
+            flexShrink={0} alignItems="center" gap="$1.5" borderRadius="$3" backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$1.5" {...{ color: "$background" }} hoverStyle={{ backgroundColor: "$color12" }}
           >
             {copied ? <Check size={14} /> : <Copy size={14} />}
-            {copied ? 'Copied' : 'Copy'}
+            <SizableText fontSize="$1" fontWeight="500" color="$background">{copied ? 'Copied' : 'Copy'}</SizableText>
           </Button>
         </XStack>
 
         <XStack marginTop="$3" flexWrap="wrap" gap="$2">
           <Button
             onClick={nativeShare}
-            alignItems="center" gap="$1.5" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$borderColor", color: "$color" }}
+            alignItems="center" gap="$1.5" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5" {...{ color: "$color11" }} hoverStyle={{ borderColor: "$borderColor" }}
           >
-            <Share2 size={14} /> Share
+            <Share2 size={14} /> <SizableText fontSize="$1" color="$color11">Share</SizableText>
           </Button>
           <Anchor
             href={`https://x.com/intent/post?text=${shareText}&url=${enc}`}
@@ -663,10 +663,10 @@ function UpgradeCard({ onClick }: { onClick: () => void }) {
     <Button
       onClick={onClick}
       title="More credits & private apps"
-      width="100%" alignItems="center" gap="$2" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$1.5" textAlign="left" fontSize="$1" color="$color"
+      width="100%" alignItems="center" gap="$2" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$1.5" {...{ color: "$color" }}
     >
       <Zap size={14} />
-      <SizableText numberOfLines={1} fontWeight="500">Upgrade to Pro</SizableText>
+      <SizableText numberOfLines={1} fontWeight="500" fontSize="$1" color="$color">Upgrade to Pro</SizableText>
     </Button>
   );
 }

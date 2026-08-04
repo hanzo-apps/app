@@ -75,7 +75,7 @@ function ProviderCard({ provider, onValidate, onRemove, isValidating }: Provider
             </CardDescription>
           </div>
           {hasKey && (
-            <Badge backgroundColor="$green9" color="$green9">
+            <Badge variant="secondary">
               <CheckCircle size={12} />
               Configured
             </Badge>
@@ -159,13 +159,13 @@ function ProviderCard({ provider, onValidate, onRemove, isValidating }: Provider
           </XStack>
           <XStack flexWrap="wrap" gap="$2" marginTop="$2">
             {provider.supportsFunctions && (
-              <Badge variant="outline" fontSize="$1">Functions</Badge>
+              <Badge variant="outline">Functions</Badge>
             )}
             {provider.supportsStreaming && (
-              <Badge variant="outline" fontSize="$1">Streaming</Badge>
+              <Badge variant="outline">Streaming</Badge>
             )}
             {provider.supportsModelDiscovery && (
-              <Badge variant="outline" fontSize="$1">Auto-discovery</Badge>
+              <Badge variant="outline">Auto-discovery</Badge>
             )}
           </XStack>
         </SizableText>

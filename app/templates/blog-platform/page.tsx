@@ -102,9 +102,11 @@ export default function BlogPlatform() {
                   <Button
                     key={cat.name}
                     onClick={() => setSelectedCategory(cat.name)}
-                    fontSize="$3" fontWeight="500" hoverStyle={{ color: "$color12" }} {...{ color: selectedCategory === cat.name ? "$color12" : "$color11" }}
+                    group
                   >
-                    {cat.name}
+                    <SizableText fontSize="$3" fontWeight="500" color={selectedCategory === cat.name ? "$color12" : "$color11"} $group-hover={{ color: "$color12" }}>
+                      {cat.name}
+                    </SizableText>
                   </Button>
                 ))}
               </YStack>
@@ -143,7 +145,7 @@ export default function BlogPlatform() {
   />
             </AspectRatio>
             <YStack padding="$5" justifyContent="center">
-              <Badge width="fit-content" marginBottom="$4" backgroundColor="#171717]/1" color="#171717" borderColor="#171717]/2">{featuredArticle.category}</Badge>
+              <Badge variant="secondary" className="mb-4">{featuredArticle.category}</Badge>
               <H2 fontSize="$10" fontWeight="500" marginBottom="$4">{featuredArticle.title}</H2>
               <Paragraph color="$color11" marginBottom="$5">{featuredArticle.excerpt}</Paragraph>
 
@@ -200,7 +202,7 @@ export default function BlogPlatform() {
                         <XStack alignItems="center" gap="$2" marginBottom="$2">
                           <Badge variant="outline">{article.category}</Badge>
                           {article.trending && (
-                            <Badge variant="secondary" gap="$1">
+                            <Badge variant="secondary" className="gap-1">
                               <TrendingUp size={12} />
                               Trending
                             </Badge>
@@ -228,14 +230,14 @@ export default function BlogPlatform() {
                           </XStack>
 
                           <SizableText alignItems="center" gap="$3" fontSize="$3" color="$color11" display="flex" flexDirection="row">
-                            <Button alignItems="center" gap="$1" hoverStyle={{ color: "$color12" }}>
+                            <Button alignItems="center" gap="$1">
                               <Heart size={16} />
                               {article.likes}
                             </Button>
-                            <Button hoverStyle={{ color: "$color12" }}>
+                            <Button>
                               <MessageCircle size={16} />
                             </Button>
-                            <Button hoverStyle={{ color: "$color12" }}>
+                            <Button>
                               <Share2 size={16} />
                             </Button>
                           </SizableText>

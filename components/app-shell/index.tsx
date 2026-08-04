@@ -80,7 +80,8 @@ export function AppShell({ children, currentView = 'templates' }: AppShellProps)
           <Button
             onClick={() => setMobileOpen(true)}
             aria-label="Open menu"
-            height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$3" color="$color" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+            variant="ghost"
+            height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$3"
           >
             <Menu size={20} />
           </Button>
@@ -88,7 +89,8 @@ export function AppShell({ children, currentView = 'templates' }: AppShellProps)
           <Button
             onClick={() => setPaletteOpen(true)}
             aria-label="Search"
-            marginLeft="auto" height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$3" color="$color" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+            variant="ghost"
+            marginLeft="auto" height={36} width={36} alignItems="center" justifyContent="center" borderRadius="$3"
           >
             <Search size={20} />
           </Button>

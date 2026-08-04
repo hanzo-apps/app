@@ -279,7 +279,7 @@ function NewProjectInner() {
                   }
                 }}
                 placeholder="Describe the app you want, or paste a GitHub / GitLab repository URL…"
-                maxHeight="$17" minHeight={52} width="100%" resize="none" backgroundColor="transparent" paddingHorizontal="$3" paddingTop="$2" fontSize={15} lineHeight={1.625} color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0 }}
+                maxHeight="$17" minHeight={52} width="100%" backgroundColor="transparent" paddingHorizontal="$3" paddingTop="$2" fontSize={15} lineHeight={1.625} color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0 }}
   />
               <XStack alignItems="center" justifyContent="space-between" paddingHorizontal="$2" paddingBottom="$1" paddingTop="$1">
                 <XStack alignItems="center" gap="$1">
@@ -287,7 +287,8 @@ function NewProjectInner() {
                     type="button"
                     title="Import a project — .zip or files"
                     onClick={() => fileInputRef.current?.click()}
-                    height="$6" width="$6" alignItems="center" justifyContent="center" borderRadius="$5" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+                    variant="ghost"
+                    height="$6" width="$6" alignItems="center" justifyContent="center" borderRadius="$5"
                   >
                     <Paperclip size={18} />
                   </Button>
@@ -328,17 +329,17 @@ function NewProjectInner() {
                   <Button
                     type="button"
                     onClick={() => folderInputRef.current?.click()}
-                    borderRadius="$2" color="$color" textDecorationLine="underline" hoverStyle={{ color: "$color" }}
+                    borderRadius="$2"
                   >
-                    choose a folder
+                    <SizableText color="$color" textDecorationLine="underline">choose a folder</SizableText>
                   </Button>
                   <SizableText color="$color11">·</SizableText>
                   <Button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    borderRadius="$2" color="$color" textDecorationLine="underline" hoverStyle={{ color: "$color" }}
+                    borderRadius="$2"
                   >
-                    .zip or files
+                    <SizableText color="$color" textDecorationLine="underline">.zip or files</SizableText>
                   </Button>
                 </>
               )}
@@ -387,10 +388,10 @@ function NewProjectInner() {
                       setValue(q.prompt);
                       taRef.current?.focus();
                     }}
-                    alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$1.5" fontSize="$3" color="$color" hoverStyle={{ y: -1, borderColor: "$color", backgroundColor: "$color3", color: "$color" }}
+                    alignItems="center" gap="$2" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$1.5" hoverStyle={{ y: -1, borderColor: "$color", backgroundColor: "$color3" }}
                   >
                     <Icon size={16} color="var(--muted-foreground)" />
-                    {q.label}
+                    <SizableText fontSize="$3" color="$color">{q.label}</SizableText>
                   </Button>
                 );
               })}
@@ -447,7 +448,7 @@ function NewProjectInner() {
                       key={t.slug}
                       type="button"
                       onClick={() => handleTemplate(t.source)}
-                      group width="100%" alignItems="center" gap="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$3" textAlign="left" hoverStyle={{ y: -1, borderColor: "$color", backgroundColor: "$color3" }}
+                      group width="100%" alignItems="center" gap="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$3" hoverStyle={{ y: -1, borderColor: "$color", backgroundColor: "$color3" }}
                     >
                       <SizableText height={36} width={36} flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" color="$color11" display="flex" flexDirection="row">
                         <FileCode2 size={18} />

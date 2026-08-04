@@ -125,9 +125,8 @@ export function ModelSelector({
       <Select
         value={selectedModel}
         onValueChange={handleModelChange}
-        disabled={loading || models.length === 0}
       >
-        <SelectTrigger>
+        <SelectTrigger disabled={loading || models.length === 0}>
           <SelectValue placeholder={loading ? 'Loading models...' : 'Select a model'} />
         </SelectTrigger>
         <SelectContent>
@@ -193,10 +192,10 @@ export function ModelSelector({
 
           <XStack flexWrap="wrap" gap="$1" marginTop="$2">
             {selectedModelInfo.supportsFunctions && (
-              <Badge variant="outline" fontSize="$1">Functions</Badge>
+              <Badge variant="outline">Functions</Badge>
             )}
             {selectedModelInfo.supportsVision && (
-              <Badge variant="outline" fontSize="$1">Vision</Badge>
+              <Badge variant="outline">Vision</Badge>
             )}
           </XStack>
         </SizableText>

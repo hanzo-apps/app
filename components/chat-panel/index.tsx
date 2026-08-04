@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText, YStack, XStack, Image } from '@hanzo/gui';
+import { SizableText, YStack, XStack, Image, type GuiElement } from '@hanzo/gui';
 import { useState, useEffect, useRef, useMemo, useCallback, DragEvent, ClipboardEvent } from 'react';
 import { MessageSquare, Loader2, CheckCircle, XCircle, ChevronRight, FileCode, ClipboardList, Bot, RotateCcw, RefreshCw, Send, ChevronUp, ChevronDown, Code, Trash2, X, Brain, Image as ImageIcon } from 'lucide-react';
 import { DebugEvent } from '@/components/debug-panel';
@@ -146,7 +146,7 @@ export function ChatPanel({
   providerReady = true,
 }: ChatPanelProps) {
   const analytics = useAnalytics();
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<GuiElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
   const [showMobileSettings, setShowMobileSettings] = useState(false);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
@@ -200,7 +200,7 @@ export function ChatPanel({
   }, []);
 
   // Handle paste
-  const handlePaste = useCallback((e: ClipboardEvent<HTMLTextAreaElement>) => {
+  const handlePaste = useCallback((e: ClipboardEvent<HTMLElement>) => {
     if (!supportsVision) return;
 
     const items = e.clipboardData?.items;
@@ -629,18 +629,17 @@ export function ChatPanel({
 
   // Auto-scroll when turns change (throttled with requestAnimationFrame)
   useEffect(() => {
-    if (!autoScroll || !scrollRef.current) return;
+    const el = scrollRef.current;
+    if (!autoScroll || !el || !('scrollTo' in el)) return;
 
     // Use requestAnimationFrame to batch scroll updates and avoid layout thrashing
     const rafId = requestAnimationFrame(() => {
-      if (scrollRef.current) {
-        isScrollingProgrammatically.current = true;
-        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-        // Reset flag after scroll completes
-        setTimeout(() => {
-          isScrollingProgrammatically.current = false;
-        }, 50);
-      }
+      isScrollingProgrammatically.current = true;
+      el.scrollTop = el.scrollHeight;
+      // Reset flag after scroll completes
+      setTimeout(() => {
+        isScrollingProgrammatically.current = false;
+      }, 50);
     });
 
     return () => cancelAnimationFrame(rafId);
@@ -656,7 +655,7 @@ export function ChatPanel({
   // Scroll position detection
   useEffect(() => {
     const scrollEl = scrollRef.current;
-    if (!scrollEl) return;
+    if (!scrollEl || !('scrollTo' in scrollEl)) return;
 
     const handleScroll = () => {
       // Ignore programmatic scrolls
@@ -699,16 +698,16 @@ export function ChatPanel({
         <Button
           size="sm"
           variant="ghost"
-          height="$5" paddingHorizontal="$2" fontSize="$1"
+          height="$5" paddingHorizontal="$2"
           onClick={() => setFocusContext(null)}
           title="Clear focus context"
         >
-          Clear
+          <SizableText fontSize="$1">Clear</SizableText>
         </Button>
       </SizableText>
       <YStack marginTop="$2" rowGap="$2">
         {focusContext.domPath && (
-          <SizableText fontSize={11} fontFamily="$mono" color="$color11" wordBreak="break-all" lineHeight={1.375} display="flex" flexDirection="column">
+          <SizableText fontSize={11} fontFamily="$mono" color="$color11" lineHeight={1.375} display="flex" flexDirection="column" className="break-all">
             {focusContext.domPath}
           </SizableText>
         )}
@@ -732,13 +731,15 @@ export function ChatPanel({
               type="button"
               onClick={onClose}
               aria-label="Hide chat panel"
-              position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" color="$color11" group hoverStyle={{ color: "$red9" }}
+              position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" group
             >
               <MessageSquare
                 size={16}
                 style={{ color: 'var(--brand-accent)' }}
   />
-              <X size={12} />
+              <SizableText color="$color11" display="flex" $group-hover={{ color: "$red9" }}>
+                <X size={12} />
+              </SizableText>
             </Button>
           ) : (
             <MessageSquare
@@ -808,10 +809,10 @@ export function ChatPanel({
   />
                   <Button
                     onClick={() => removeImage(img.id)}
-                    position="absolute" top="-1" right="-1" height="$4" width="$4" backgroundColor="$red9" color="$background" borderRadius="$10" alignItems="center" justifyContent="center" opacity={0} $group-hover={{ opacity: 1 }}
+                    position="absolute" top="-1" right="-1" height="$4" width="$4" backgroundColor="$red9" borderRadius="$10" alignItems="center" justifyContent="center" opacity={0} $group-hover={{ opacity: 1 }}
                     title="Remove image"
                   >
-                    <X size={12} />
+                    <SizableText color="$background" display="flex"><X size={12} /></SizableText>
                   </Button>
                 </YStack>
               ))}
@@ -846,7 +847,7 @@ export function ChatPanel({
               }}
               onPaste={handlePaste}
               placeholder={!providerReady ? "Select a provider to start..." : supportsVision ? "Describe what you want to build... (paste or drop images)" : "Describe what you want to build..."}
-              flex={1} paddingHorizontal="$3" paddingVertical="$2" backgroundColor="transparent" borderWidth={0} resize="none" fontSize="$3" placeholderTextColor="$color11" color="$color" focusStyle={{ outlineWidth: 0 }}
+              flex={1} paddingHorizontal="$3" paddingVertical="$2" backgroundColor="transparent" borderWidth={0} fontSize="$3" placeholderTextColor="$color11" color="$color" focusStyle={{ outlineWidth: 0 }}
               rows={3}
               disabled={generating || isTourLockingInput || !providerReady}
   />
@@ -880,10 +881,10 @@ export function ChatPanel({
                   <Button
                     variant="outline"
                     size="sm"
-                    height={28} fontSize="$1" {...{ borderColor: !providerReady ? "$color12" : undefined }}
+                    height={28} {...{ borderColor: !providerReady ? "$color12" : undefined }}
                     data-tour-id="provider-settings-trigger"
                   >
-                    <span>{providerReady ? getModelDisplayName(currentModel) : 'Select provider'}</span>
+                    <SizableText fontSize="$1">{providerReady ? getModelDisplayName(currentModel) : 'Select provider'}</SizableText>
                     {showMobileSettings ? (
                       <ChevronDown size={12} />
                     ) : (
@@ -904,11 +905,11 @@ export function ChatPanel({
                 onValueChange={(value) => setChatMode(value === 'chat')}
               >
                 <TabsList gap="$1">
-                  <TabsTrigger value="chat" h={28} px="$2" gap="$1">
+                  <TabsTrigger value="chat" height={28} paddingHorizontal="$2" gap="$1">
                     <MessageSquare size={12} />
                     Chat
                   </TabsTrigger>
-                  <TabsTrigger value="code" h={28} px="$2" gap="$1">
+                  <TabsTrigger value="code" height={28} paddingHorizontal="$2" gap="$1">
                     <Code size={12} />
                     Code
                   </TabsTrigger>
@@ -1013,7 +1014,7 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
               <YStack key={item.id} borderRadius="$3" {...{ backgroundColor: expandedItems.has(item.id) ? "$color3" : undefined, padding: expandedItems.has(item.id) ? "$2" : "$1.5" }}>
                 <Button
                   onClick={() => onToggleExpanded(item.id)}
-                  alignItems="center" gap="$2" width="100%" textAlign="left" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color3" }}
+                  alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color3" }}
                 >
                   <ChevronRight size={12} color="$color11" />
                   <FileCode size={12} color="$color11" />
@@ -1100,11 +1101,11 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
                   size="sm"
                   variant="ghost"
                   onClick={() => onRestore(turn.checkpointId!)}
-                  height="$5" paddingHorizontal="$2" fontSize="$1"
+                  height="$5" paddingHorizontal="$2"
                   title="Restore to this checkpoint"
                 >
                   <RotateCcw size={12} />
-                  Restore
+                  <SizableText fontSize="$1">Restore</SizableText>
                 </Button>
               )}
               {onRetry && (
@@ -1112,11 +1113,11 @@ function TurnDisplay({ turn, onRestore, onRetry, expandedItems, onToggleExpanded
                   size="sm"
                   variant="ghost"
                   onClick={() => onRetry(turn.checkpointId!)}
-                  height="$5" paddingHorizontal="$2" fontSize="$1"
+                  height="$5" paddingHorizontal="$2"
                   title="Restore files and retry from this checkpoint"
                 >
                   <RefreshCw size={12} />
-                  Retry
+                  <SizableText fontSize="$1">Retry</SizableText>
                 </Button>
               )}
             </XStack>
@@ -1141,7 +1142,7 @@ function ToolDisplay({ itemId, tool, isExpanded, onToggle }: ToolDisplayProps) {
     >
       <Button
         onClick={onToggle}
-        alignItems="center" gap="$2" width="100%" textAlign="left" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color3" }}
+        alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color3" }}
       >
         <XStack alignItems="center" gap="$1.5">
           {toolIcons[tool.name] || <ChevronRight size={12} />}
@@ -1223,7 +1224,7 @@ function SyntheticErrorDisplay({ itemId, content, isExpanded, onToggle }: Synthe
     <YStack backgroundColor="$yellow9" borderRadius="$3" {...{ padding: isExpanded ? "$2" : "$1.5" }}>
       <Button
         onClick={onToggle}
-        alignItems="center" gap="$2" width="100%" textAlign="left" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$yellow9" }}
+        alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$yellow9" }}
       >
         <XStack alignItems="center" gap="$1.5">
           <RefreshCw size={12} color="$yellow10" />
@@ -1263,7 +1264,7 @@ function ReasoningDisplay({ itemId, content, isExpanded, onToggle }: ReasoningDi
     <YStack backgroundColor="$purple9" borderRadius="$3" padding="$1.5" borderWidth={1} borderColor="$purple9">
       <Button
         onClick={onToggle}
-        alignItems="center" gap="$2" width="100%" textAlign="left" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$purple9" }}
+        alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$purple9" }}
       >
         <XStack alignItems="center" gap="$1.5">
           {isStreaming ? (
@@ -1308,7 +1309,7 @@ function PlanDisplay({ itemId, content, isExpanded, onToggle }: PlanDisplayProps
     <YStack backgroundColor="$color3" borderRadius="$3" padding="$1.5">
       <Button
         onClick={onToggle}
-        alignItems="center" gap="$2" width="100%" textAlign="left" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color3" }}
+        alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color3" }}
       >
         <XStack alignItems="center" gap="$1.5">
           <ClipboardList size={12} color="$orange9" />
@@ -1349,7 +1350,7 @@ function AgentDisplay({ itemId, content, isExpanded, onToggle }: AgentDisplayPro
     <YStack backgroundColor="$color3" borderRadius="$3" padding="$1.5">
       <Button
         onClick={onToggle}
-        alignItems="center" gap="$2" width="100%" textAlign="left" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color3" }}
+        alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color3" }}
       >
         <XStack alignItems="center" gap="$1.5">
           <Bot size={12} color="$purple9" />
@@ -1390,7 +1391,7 @@ function ProgressDisplay({ itemId, content, isExpanded, onToggle }: ProgressDisp
     <YStack backgroundColor="$color3" borderRadius="$3" padding="$1.5">
       <Button
         onClick={onToggle}
-        alignItems="center" gap="$2" width="100%" textAlign="left" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color3" }}
+        alignItems="center" gap="$2" width="100%" borderRadius="$2" paddingHorizontal="$1" hoverStyle={{ backgroundColor: "$color3" }}
       >
         <XStack alignItems="center" gap="$1.5">
           {isCompleted ? (

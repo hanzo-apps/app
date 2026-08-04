@@ -351,13 +351,13 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
     <Button
       key={model.id}
       onClick={() => handleModelSelect(model.id)}
-      width="100%" textAlign="left" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$5" {...(mode === 'inline'
+      width="100%" justifyContent="flex-start" paddingHorizontal="$3" paddingVertical="$2" borderRadius="$5" {...(mode === 'inline'
         ? selectedModel === model.id
           ? { backgroundColor: "color-mix(in srgb, var(--primary) 10%, transparent)", borderWidth: 1, borderColor: "color-mix(in srgb, var(--primary) 30%, transparent)" }
           : { borderWidth: 1, borderColor: "transparent", hoverStyle: { backgroundColor: "var(--accent)" } }
         : selectedModel === model.id
           ? { backgroundColor: "var(--accent)" }
-          : { hoverStyle: { backgroundColor: "var(--accent)", color: "var(--accent-foreground)" } })}
+          : { hoverStyle: { backgroundColor: "var(--accent)" } })}
     >
       <YStack gap="$0.5">
         <XStack alignItems="center" gap="$2">
@@ -366,7 +366,7 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
             {getModelName(model)}
           </SizableText>
           {currentProvider === 'openrouter' && (
-            <Badge variant="secondary" fontSize="$1" className={`${getProviderColor(model.id)}`}>
+            <Badge variant="secondary" className={`${getProviderColor(model.id)}`}>
               {model.id.split('/')[0]}
             </Badge>
           )}
@@ -491,15 +491,15 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            justifyContent="space-between" fontWeight="400" minWidth={200}
+            justifyContent="space-between" minWidth={200}
           >
             {selectedModelData ? (
-              <SizableText alignItems="center" gap="$2" numberOfLines={1} display="flex" flexDirection="row">
+              <SizableText alignItems="center" gap="$2" numberOfLines={1} fontWeight="400" display="flex" flexDirection="row">
                 {getModelIcon(selectedModelData)}
                 <SizableText numberOfLines={1}>{getModelName(selectedModelData)}</SizableText>
               </SizableText>
             ) : (
-              <SizableText color="$color11">Select a model...</SizableText>
+              <SizableText color="$color11" fontWeight="400">Select a model...</SizableText>
             )}
             <ChevronDown size={16} />
           </Button>
@@ -507,7 +507,6 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
         <PopoverContent
           width="32rem" padding="$0"
           align="start"
-          side="bottom"
           sideOffset={5}
         >
           <XStack alignItems="center" borderBottomWidth={1} paddingHorizontal="$3">
@@ -539,14 +538,14 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
                 <Button
                   key={model.id}
                   onClick={() => handleModelSelect(model.id)}
-                  width="100%" textAlign="left" paddingHorizontal="$3" paddingVertical="$3" hoverStyle={{ backgroundColor: "$color3", color: "$color" }} {...{ backgroundColor: selectedModel === model.id ? "$color3" : undefined }}
+                  width="100%" justifyContent="flex-start" paddingHorizontal="$3" paddingVertical="$3" hoverStyle={{ backgroundColor: "$color3" }} {...{ backgroundColor: selectedModel === model.id ? "$color3" : undefined }}
                 >
                   <YStack gap="$1">
                     <XStack alignItems="center" gap="$2">
                       {getModelIcon(model)}
                       <SizableText fontWeight="500">{getModelName(model)}</SizableText>
                       {currentProvider === 'openrouter' && (
-                        <Badge variant="secondary" fontSize="$1" className={`${getProviderColor(model.id)}`}>
+                        <Badge variant="secondary" className={`${getProviderColor(model.id)}`}>
                           {model.id.split('/')[0]}
                         </Badge>
                       )}

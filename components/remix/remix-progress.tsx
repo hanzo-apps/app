@@ -137,7 +137,7 @@ export function RemixProgress({
     <Dialog open={open} onOpenChange={() => {}}>
       <DialogContent
         showCloseButton={false}
-        maxWidth={384} borderColor="$borderColor" backgroundColor="$background" color="$color"
+        maxWidth={384} borderColor="$borderColor" backgroundColor="$background"
       >
         <DialogTitle position="absolute" width={1} height={1} overflow="hidden">Remixing project</DialogTitle>
 

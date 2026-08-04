@@ -26,7 +26,7 @@ export const ProModal = ({
   };
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent borderRadius="$6" backgroundColor="$background" color="$color" borderColor="$borderColor" $sm={{ maxWidth: 512 }} $lg={{ padding: "$6" }}>
+      <DialogContent borderRadius="$6" backgroundColor="$background" borderColor="$borderColor" $sm={{ maxWidth: 512 }} $lg={{ padding: "$6" }}>
         <DialogTitle display="none" />
         <SizableText flexDirection="column" alignItems="flex-start" textAlign="left" position="relative" paddingTop="$2" display="flex">
           <XStack alignItems="center" justifyContent="flex-start" columnGap="$4" marginBottom="$4.5">
@@ -73,10 +73,10 @@ export const ProModal = ({
           </SizableText>
           <Button
             size="lg"
-            width="100%" fontSize="$4" height={44} marginTop="$6"
+            width="100%" height={44} marginTop="$6"
             onClick={handleProClick}
           >
-            Subscribe to PRO ($9/month)
+            <SizableText fontSize="$4">Subscribe to PRO ($9/month)</SizableText>
           </Button>
         </SizableText>
       </DialogContent>

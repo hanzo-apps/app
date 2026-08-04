@@ -1,6 +1,6 @@
 "use client";
 
-import { YStack, XStack, Paragraph, SizableText, Anchor } from '@hanzo/gui';
+import { YStack, XStack, Paragraph, SizableText, Anchor, type GuiElement, type GuiTextElement } from '@hanzo/gui';
 import { useRef, useState } from "react";
 import Link from "next/link";
 import { useMount, useUnmount } from "react-use";
@@ -36,8 +36,8 @@ export default function Navigation() {
   const { openLoginWindow, user } = useUser();
   const [hash, setHash] = useState("");
 
-  const selectorRef = useRef<HTMLDivElement>(null);
-  const linksRef = useRef<HTMLLIElement[]>(
+  const selectorRef = useRef<GuiElement>(null);
+  const linksRef = useRef<GuiTextElement[]>(
     new Array(navigationLinks.length).fill(null)
   );
   const [isScrolled, setIsScrolled] = useState(false);
@@ -67,15 +67,13 @@ export default function Navigation() {
   };
 
   const calculateSelectorPosition = (href: string) => {
-    if (selectorRef.current && linksRef.current) {
-      const index = navigationLinks.findIndex((l) => l.href === href);
-      const targetLink = linksRef.current[index];
-      if (targetLink) {
-        const targetRect = targetLink.getBoundingClientRect();
-        selectorRef.current.style.left = targetRect.left + "px";
-        selectorRef.current.style.width = targetRect.width + "px";
-      }
-    }
+    const sel = selectorRef.current;
+    const index = navigationLinks.findIndex((l) => l.href === href);
+    const targetLink = linksRef.current[index];
+    if (!(sel instanceof HTMLElement) || !(targetLink instanceof HTMLElement)) return;
+    const targetRect = targetLink.getBoundingClientRect();
+    sel.style.left = targetRect.left + "px";
+    sel.style.width = targetRect.width + "px";
   };
 
   return (

@@ -179,7 +179,7 @@ export function TemplateExportDialog({
             <Input
               id="template-name"
               value={metadata.name}
-              onChange={(e) => setMetadata({ ...metadata, name: e.target.value.slice(0, 50) })}
+              onChangeText={(value) => setMetadata({ ...metadata, name: value.slice(0, 50) })}
               placeholder="My Awesome Template"
               maxLength={50}
               required
@@ -199,9 +199,8 @@ export function TemplateExportDialog({
             <Textarea
               id="template-description"
               value={metadata.description}
-              onChange={(e) => setMetadata({ ...metadata, description: e.target.value.slice(0, 500) })}
+              onChangeText={(value) => setMetadata({ ...metadata, description: value.slice(0, 500) })}
               placeholder="A complete multi-page template with..."
-              resize="none"
               rows={3}
               maxLength={500}
               required
@@ -216,7 +215,7 @@ export function TemplateExportDialog({
             <Input
               id="template-version"
               value={metadata.version}
-              onChange={(e) => setMetadata({ ...metadata, version: e.target.value })}
+              onChangeText={(value) => setMetadata({ ...metadata, version: value })}
               placeholder="1.0.0"
               pattern="^\d+\.\d+\.\d+$"
               required
@@ -232,7 +231,7 @@ export function TemplateExportDialog({
             <Input
               id="template-author"
               value={metadata.author}
-              onChange={(e) => setMetadata({ ...metadata, author: e.target.value.slice(0, 50) })}
+              onChangeText={(value) => setMetadata({ ...metadata, author: value.slice(0, 50) })}
               placeholder="Your Name"
               maxLength={50}
   />
@@ -245,7 +244,7 @@ export function TemplateExportDialog({
               id="template-author-url"
               type="url"
               value={metadata.authorUrl}
-              onChange={(e) => setMetadata({ ...metadata, authorUrl: e.target.value })}
+              onChangeText={(value) => setMetadata({ ...metadata, authorUrl: value })}
               placeholder="https://yourwebsite.com"
   />
           </YStack>
@@ -284,7 +283,7 @@ export function TemplateExportDialog({
             <Input
               id="template-tags"
               value={tagsInput}
-              onChange={(e) => setTagsInput(e.target.value)}
+              onChangeText={(value) => setTagsInput(value)}
               placeholder="saas, marketing, landing (comma-separated)"
   />
             <Paragraph fontSize="$1" color="$color11">
@@ -299,7 +298,7 @@ export function TemplateExportDialog({
               id="template-download-url"
               type="url"
               value={metadata.downloadUrl}
-              onChange={(e) => setMetadata({ ...metadata, downloadUrl: e.target.value })}
+              onChangeText={(value) => setMetadata({ ...metadata, downloadUrl: value })}
               placeholder="https://example.com/templates/..."
   />
             <Paragraph fontSize="$1" color="$color11">

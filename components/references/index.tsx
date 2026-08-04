@@ -365,9 +365,6 @@ export function References({ project }: { project?: string | null }) {
                       <SizableText
                         fontSize="$1"
                         color="$color"
-                        // How many images vouched for it — the difference between
-                        // a brand trait and one photo's accident.
-                        title={`from ${t.from.length} image${t.from.length === 1 ? "" : "s"}`}
                       >
                         {t.text}
                       </SizableText>

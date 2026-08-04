@@ -43,9 +43,9 @@ function RailPill({
   return (
     <Button
       onClick={onClick}
-      flexShrink={0} whiteSpace="nowrap" borderRadius="$10" paddingHorizontal="$3.5" paddingVertical="$1.5" fontSize="$1" fontWeight="500" {...{ backgroundColor: active ? "$color12" : "$color3", color: active ? "$background" : "$color11", borderWidth: active ? undefined : 1, borderColor: active ? undefined : "$borderColor", hoverStyle: active ? undefined : {"borderColor":"$color","color":"$color"} }}
+      group flexShrink={0} borderRadius="$10" paddingHorizontal="$3.5" paddingVertical="$1.5" {...{ backgroundColor: active ? "$color12" : "$color3", borderWidth: active ? undefined : 1, borderColor: active ? undefined : "$borderColor", hoverStyle: active ? undefined : {"borderColor":"$color"} }}
     >
-      {label}
+      <SizableText whiteSpace="nowrap" fontSize="$1" fontWeight="500" color={active ? "$background" : "$color11"} $group-hover={active ? undefined : { color: "$color" }}>{label}</SizableText>
     </Button>
   );
 }

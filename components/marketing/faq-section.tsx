@@ -56,7 +56,7 @@ export default function FaqSection({
                   type="button"
                   aria-expanded={isOpen}
                   onClick={() => setOpen(isOpen ? null : i)}
-                  width="100%" alignItems="center" justifyContent="space-between" gap="$4" paddingVertical="$4.5" textAlign="left" hoverStyle={{ color: "$color" }}
+                  width="100%" alignItems="center" justifyContent="space-between" gap="$4" paddingVertical="$4.5"
                 >
                   <SizableText fontSize="$4" fontWeight="500" color="$color" $md={{ fontSize: "$6" }}>
                     {it.q}

@@ -132,15 +132,17 @@ export function SkillEditor({ skill, mode, onSave, onCancel }: SkillEditorProps)
           <XStack gap="$2">
             <Button
               onClick={() => setActiveTab('form')}
-              paddingHorizontal="$4" paddingVertical="$2" fontSize="$3" fontWeight="500" borderBottomWidth={2} {...{ borderColor: activeTab === 'form' ? "$color12" : "transparent", color: activeTab === 'form' ? "$color12" : "$color11", hoverStyle: activeTab === 'form' ? undefined : {"color":"$color"} }}
+              variant="ghost"
+              paddingHorizontal="$4" paddingVertical="$2" borderBottomWidth={2} borderColor={activeTab === 'form' ? "$color12" : "transparent"}
             >
-              Form Editor
+              <SizableText fontSize="$3" fontWeight="500" color={activeTab === 'form' ? "$color12" : "$color11"}>Form Editor</SizableText>
             </Button>
             <Button
               onClick={() => setActiveTab('raw')}
-              paddingHorizontal="$4" paddingVertical="$2" fontSize="$3" fontWeight="500" borderBottomWidth={2} {...{ borderColor: activeTab === 'raw' ? "$color12" : "transparent", color: activeTab === 'raw' ? "$color12" : "$color11", hoverStyle: activeTab === 'raw' ? undefined : {"color":"$color"} }}
+              variant="ghost"
+              paddingHorizontal="$4" paddingVertical="$2" borderBottomWidth={2} borderColor={activeTab === 'raw' ? "$color12" : "transparent"}
             >
-              Raw Markdown
+              <SizableText fontSize="$3" fontWeight="500" color={activeTab === 'raw' ? "$color12" : "$color11"}>Raw Markdown</SizableText>
             </Button>
           </XStack>
         </YStack>

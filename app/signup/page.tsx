@@ -41,7 +41,7 @@ export default function SignupPage() {
             <SizableText fontSize="$7" fontWeight="500">Hanzo</SizableText>
           </XStack></Link>
           <Link href="/login">
-            <Button variant="outline" borderColor="$borderColor" color="$color" hoverStyle={{ backgroundColor: "$color3" }}>
+            <Button variant="outline" borderColor="$borderColor" hoverStyle={{ backgroundColor: "$color3" }}>
               Sign in
             </Button>
           </Link>
@@ -52,11 +52,11 @@ export default function SignupPage() {
       <XStack flex={1} alignItems="center" justifyContent="center" padding="$4" paddingVertical="$8">
         <YStack width="100%" maxWidth={448}>
           <Card backgroundColor="$background" borderColor="$borderColor">
-            <CardHeader rowGap="$1" textAlign="center" paddingBottom="$6">
+            <CardHeader rowGap="$1" alignItems="center" paddingBottom="$6">
               <XStack justifyContent="center" marginBottom="$5">
                 <XStack width="$10" height="$10" backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" borderRadius="$8" alignItems="center" justifyContent="center" position="relative">
                   <HanzoLogo size={40} color="var(--foreground)" />
-                  <Badge position="absolute" top="-2" right="-2" backgroundColor="$color12" color="$background" borderWidth={0}>
+                  <Badge className="absolute -top-2 -right-2">
                     Free
                   </Badge>
                 </XStack>
@@ -94,7 +94,7 @@ export default function SignupPage() {
               <Button
                 onClick={handleSignup}
                 disabled={loading}
-                width="100%" backgroundColor="$color12" color="$background" fontWeight="500" hoverStyle={{ backgroundColor: "$color12" }}
+                width="100%" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}
                 size="lg"
               >
                 {loading ? (

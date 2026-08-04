@@ -144,9 +144,9 @@ export function SqlEditor({ deploymentId, queryEndpoint }: SqlEditorProps) {
                   setSql(query);
                   setShowHistory(false);
                 }}
-                width="100%" textAlign="left" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3" fontFamily="$mono" borderBottomWidth={1} numberOfLines={1} hoverStyle={{ backgroundColor: "$color3" }} className="last-flat"
+                width="100%" paddingHorizontal="$3" paddingVertical="$2" borderBottomWidth={1} hoverStyle={{ backgroundColor: "$color3" }} className="last-flat"
               >
-                {query}
+                <SizableText width="100%" textAlign="left" fontSize="$3" fontFamily="$mono" numberOfLines={1}>{query}</SizableText>
               </Button>
             ))}
           </YStack>

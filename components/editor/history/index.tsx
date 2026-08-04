@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
   type ComponentType,
+  type CSSProperties,
   type ReactNode,
 } from "react";
 import {
@@ -98,7 +99,7 @@ const PROVIDER_LABEL: Record<GitProvider, string> = {
   gitlab: "GitLab",
 };
 
-const PROVIDER_ICON: Record<GitProvider, ComponentType<{ className?: string }>> = {
+const PROVIDER_ICON: Record<GitProvider, ComponentType<{ size?: number; className?: string; style?: CSSProperties }>> = {
   hanzo: HanzoLogo,
   github: Github,
   gitlab: GitlabIcon,
@@ -572,18 +573,19 @@ export function HistoryPanel({
                 key={f}
                 type="button"
                 onClick={() => setFilter(f)}
-                borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1" fontSize={11} fontWeight="500" {...{ backgroundColor: filter === f ? "$color3" : undefined, color: filter === f ? "$color" : "$color11", elevation: filter === f ? 1 : undefined, hoverStyle: filter === f ? undefined : {"backgroundColor":"white","color":"$color"} }}
+                group borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1" {...{ backgroundColor: filter === f ? "$color3" : "transparent", elevation: filter === f ? 1 : undefined, hoverStyle: filter === f ? undefined : { backgroundColor: "white" } }}
               >
-                {f === "all" ? "All" : "Bookmarks"}
+                <SizableText fontSize={11} fontWeight="500" color={filter === f ? "$color" : "$color11"} $group-hover={filter === f ? undefined : { color: "$color" }}>{f === "all" ? "All" : "Bookmarks"}</SizableText>
               </Button>
             ))}
           </XStack>
           {onClose && (
             <Button
               type="button"
+              variant="ghost"
               onClick={onClose}
               title="Close history"
-              width={28} height={28} alignItems="center" justifyContent="center" borderRadius="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+              width={28} height={28} alignItems="center" justifyContent="center" borderRadius="$3"
             >
               <X size={16} />
             </Button>
@@ -601,9 +603,9 @@ export function HistoryPanel({
           <Button
             type="button"
             onClick={exitPreview}
-            flexShrink={0} borderRadius="$3" backgroundColor="$color3" paddingHorizontal="$2" paddingVertical="$1" fontWeight="500" color="$color" hoverStyle={{ backgroundColor: "white" }}
+            flexShrink={0} borderRadius="$3" backgroundColor="$color3" paddingHorizontal="$2" paddingVertical="$1" hoverStyle={{ backgroundColor: "white" }}
           >
-            Back to working
+            <SizableText fontWeight="500" color="$color">Back to working</SizableText>
           </Button>
         </SizableText>
       )}
@@ -619,11 +621,13 @@ export function HistoryPanel({
                   <Button
                     type="button"
                     onClick={openGitSync}
-                    alignItems="center" gap="$1" borderRadius="$3" paddingHorizontal="$1.5" paddingVertical="$1" fontSize={11} fontWeight="500" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+                    backgroundColor="transparent" group alignItems="center" gap="$1" borderRadius="$3" paddingHorizontal="$1.5" paddingVertical="$1" hoverStyle={{ backgroundColor: "$color3" }}
                     title="Commit & push these changes"
                   >
-                    <UploadCloud size={12} />
-                    Commit &amp; push
+                    <SizableText display="flex" flexDirection="row" alignItems="center" gap="$1" fontSize={11} fontWeight="500" color="$color11" $group-hover={{ color: "$color" }}>
+                      <UploadCloud size={12} />
+                      Commit &amp; push
+                    </SizableText>
                   </Button>
                 </GroupHeader>
                 <YStack rowGap="$1">{working.map(renderCard)}</YStack>
@@ -734,9 +738,11 @@ function RevCard({
           onClick={onBookmark}
           title={isBookmarked ? "Remove bookmark" : "Bookmark this revision"}
           aria-pressed={isBookmarked}
-          width="$5" height="$5" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" {...{ color: isBookmarked ? "$color" : "$color11", hoverStyle: isBookmarked ? undefined : {"color":"$color"} }}
+          backgroundColor="transparent" group width="$5" height="$5" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3"
         >
-          {isBookmarked ? <BookmarkCheck size={14} /> : <Bookmark size={14} />}
+          <SizableText display="flex" alignItems="center" justifyContent="center" color={isBookmarked ? "$color" : "$color11"} $group-hover={isBookmarked ? undefined : { color: "$color" }}>
+            {isBookmarked ? <BookmarkCheck size={14} /> : <Bookmark size={14} />}
+          </SizableText>
         </Button>
       </XStack>
 
@@ -765,14 +771,14 @@ function RevCard({
             <DropdownMenuTrigger asChild>
               <Button
                 type="button"
+                variant="ghost"
                 title="More"
-                width="$5" height="$5" alignItems="center" justifyContent="center" borderRadius="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+                width="$5" height="$5" alignItems="center" justifyContent="center" borderRadius="$3"
               >
                 <MoreVertical size={14} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              align="end"
               minWidth={190}
             >
               <MenuItem onSelect={onRestore}>
@@ -828,9 +834,11 @@ function CardButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      alignItems="center" gap="$1" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1" fontSize={11} fontWeight="500" disabledStyle={{ opacity: 0.5 }} {...{ backgroundColor: active ? "$yellow8" : "white", color: active ? "$yellow2" : "$color11", hoverStyle: active ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
+      group alignItems="center" gap="$1" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1" disabledStyle={{ opacity: 0.5 }} {...{ backgroundColor: active ? "$yellow8" : "white", hoverStyle: active ? undefined : { backgroundColor: "$color3" } }}
     >
-      {children}
+      <SizableText display="flex" flexDirection="row" alignItems="center" gap="$1" fontSize={11} fontWeight="500" color={active ? "$yellow2" : "$color11"} $group-hover={active ? undefined : { color: "$color" }}>
+        {children}
+      </SizableText>
     </Button>
   );
 }
@@ -849,7 +857,7 @@ function MenuItem({ onSelect, children }: { onSelect: () => void; children: Reac
   return (
     <DropdownMenuItem
       onSelect={onSelect}
-      cursor="pointer" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$1" color="$color" focusStyle={{ backgroundColor: "$color3", color: "$color" }}
+      cursor="pointer" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1.5" focusStyle={{ backgroundColor: "$color3" }}
     >
       {children}
     </DropdownMenuItem>
@@ -869,10 +877,12 @@ function ConnectRepoCta() {
       <Button
         type="button"
         onClick={openGitSync}
-        marginTop="$2.5" alignItems="center" gap="$1.5" borderRadius="$5" backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$1" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
+        marginTop="$2.5" alignItems="center" gap="$1.5" borderRadius="$5" backgroundColor="$color12" paddingHorizontal="$3" paddingVertical="$1.5" hoverStyle={{ backgroundColor: "$color12" }}
       >
-        <UploadCloud size={14} />
-        Connect a repo
+        <SizableText display="flex" flexDirection="row" alignItems="center" gap="$1.5" fontSize="$1" fontWeight="500" color="$background">
+          <UploadCloud size={14} />
+          Connect a repo
+        </SizableText>
       </Button>
     </YStack>
   );

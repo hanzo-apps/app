@@ -62,7 +62,7 @@ export function OrgAvatar({
       <Image
         src={resolved}
         alt=""
-        aria-hidden="true"
+        aria-hidden={true}
         onError={() => setImgError(true)}
         flexShrink={0} borderRadius="$3" borderWidth={1} borderColor="$borderColor" objectFit="cover" width={box.width} height={box.height}
   />
@@ -75,7 +75,7 @@ export function OrgAvatar({
       <SizableText
         flexShrink={0} alignItems="center" justifyContent="center" lineHeight={1} width={box.width} height={box.height}
         style={{ fontSize: "1.05rem" }}
-        aria-hidden="true"
+        aria-hidden={true}
       >
         {resolved}
       </SizableText>
@@ -86,7 +86,7 @@ export function OrgAvatar({
   return (
     <SizableText
       flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" fontWeight="600" color="$color" width={box.width} height={box.height} fontSize={box.fontSize}
-      aria-hidden="true"
+      aria-hidden={true}
     >
       {initial}
     </SizableText>
@@ -152,11 +152,11 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
     <YStack position="relative">
       <Button
         onClick={() => setOpen((o) => !o)}
-        alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$3" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
+        alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5" hoverStyle={{ backgroundColor: "$color3" }}
         title="Active organization"
       >
         <OrgAvatar name={currentName} logo={currentLogo} />
-        <SizableText maxWidth="7.5rem" numberOfLines={1} fontWeight="500" color="$color">{currentName}</SizableText>
+        <SizableText maxWidth="7.5rem" numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{currentName}</SizableText>
         {isScopedAway() && <SizableText borderRadius="$2" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$1" fontSize={10} color="$color11">scoped</SizableText>}
         <ChevronsUpDown size={14} color="$color11" />
       </Button>
@@ -212,10 +212,10 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
                         <Button
                           key={org.name}
                           onClick={() => select(org)}
-                          width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$2" fontSize="$3" {...{ backgroundColor: isCurrent ? "$color3" : undefined, hoverStyle: isCurrent ? undefined : {"backgroundColor":"$color3"} }}
+                          width="100%" alignItems="center" gap="$2" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$2" {...{ backgroundColor: isCurrent ? "$color3" : undefined, hoverStyle: isCurrent ? undefined : {"backgroundColor":"$color3"} }}
                         >
                           <OrgAvatar name={orgDisplayName(allOrgs, org.name)} logo={org.logo} />
-                          <SizableText flex={1} numberOfLines={1} textAlign="left" color="$color">
+                          <SizableText flex={1} numberOfLines={1} textAlign="left" fontSize="$3" color="$color">
                             {orgDisplayName(allOrgs, org.name)}
                           </SizableText>
                           {org.isPersonal && (
@@ -239,10 +239,10 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
                 </SizableText></Link>
                 <Button
                   onClick={() => { setCreating(true); setErr(null); }}
-                  marginTop="$1" width="100%" alignItems="center" gap="$2" borderRadius="$3" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$2" fontSize="$3" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
+                  marginTop="$1" width="100%" alignItems="center" gap="$2" borderRadius="$3" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$2" hoverStyle={{ backgroundColor: "$color3" }}
                 >
                   <Plus size={16} />
-                  Create organization
+                  <SizableText fontSize="$3" color="$color">Create organization</SizableText>
                 </Button>
               </YStack>
             )}

@@ -64,7 +64,7 @@ export function CrossSurfaceLinks() {
         href={chatProjectUrl(slug)}
         target="_blank"
         rel="noopener noreferrer"
-        title="Chat about this project in hanzo.chat"
+        aria-label="Chat about this project in hanzo.chat"
         className={`${linkClass}`}
       >
         <MessageSquare size={16} />
@@ -74,7 +74,7 @@ export function CrossSurfaceLinks() {
         href={consoleProjectUrl(slug)}
         target="_blank"
         rel="noopener noreferrer"
-        title="Manage this project in console.hanzo.ai"
+        aria-label="Manage this project in console.hanzo.ai"
         className={`${linkClass}`}
       >
         <LayoutGrid size={16} />

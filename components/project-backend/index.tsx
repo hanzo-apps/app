@@ -275,11 +275,11 @@ export function ProjectSettingsPanel({ project, onProjectUpdate, enabled }: Proj
     const trigger = (
       <TabsTrigger
         value={value}
-        alignItems="center" gap="$1" fontSize="$1"
+        alignItems="center" gap="$1"
         disabled={backendTabsDisabled}
       >
         {icon}
-        {label}
+        <SizableText fontSize="$1">{label}</SizableText>
       </TabsTrigger>
     );
 
@@ -287,7 +287,7 @@ export function ProjectSettingsPanel({ project, onProjectUpdate, enabled }: Proj
       return (
         <Tooltip>
           <TooltipTrigger asChild>{trigger}</TooltipTrigger>
-          <TooltipContent side="bottom">Requires Server Mode</TooltipContent>
+          <TooltipContent>Requires Server Mode</TooltipContent>
         </Tooltip>
       );
     }
@@ -300,9 +300,9 @@ export function ProjectSettingsPanel({ project, onProjectUpdate, enabled }: Proj
       <YStack flex={1} overflow="hidden" padding="$3">
         <Tabs value={activeTab} onValueChange={setActiveTab} height="100%" flexDirection="column">
           <TabsList width="100%">
-            <TabsTrigger value="general" alignItems="center" gap="$1" fontSize="$1">
+            <TabsTrigger value="general" alignItems="center" gap="$1">
               <Settings2 size={12} />
-              General
+              <SizableText fontSize="$1">General</SizableText>
             </TabsTrigger>
             {backendTabTrigger('functions', <Code2 size={12} />, 'Functions')}
             {backendTabTrigger('helpers', <Wrench size={12} />, 'Helpers')}

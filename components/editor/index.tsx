@@ -1,5 +1,5 @@
 "use client";
-import { SizableText, YStack, XStack } from '@hanzo/gui';
+import { SizableText, YStack, XStack, type GuiElement } from '@hanzo/gui';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast, Button } from '@hanzo/ui';
 import type { CodeEditorHandle } from "@/components/code-editor";
@@ -97,9 +97,9 @@ export const AppEditor = ({
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const preview = useRef<HTMLDivElement>(null);
-  const editor = useRef<HTMLDivElement>(null);
+  const editor = useRef<GuiElement>(null);
   const editorRef = useRef<CodeEditorHandle | null>(null);
-  const resizer = useRef<HTMLDivElement>(null);
+  const resizer = useRef<GuiElement>(null);
 
   // The ONE view state ("chat" | "preview" | "code"): the chat pane is always
   // docked on the left; this drives what the RIGHT pane shows — preview or the
@@ -137,7 +137,8 @@ export const AppEditor = ({
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const resetLayout = () => {
-    if (!editor.current) return;
+    const el = editor.current;
+    if (!el || !('scrollTo' in el)) return;
 
     // ONLY the LEFT chat pane carries an explicit width; the RIGHT region is
     // `flex-1` and fills every remaining pixel to the viewport's right edge.
@@ -147,19 +148,22 @@ export const AppEditor = ({
     // lg breakpoint is 1024px (Tailwind default). Collapsed/mobile → clear the
     // width so the pane is hidden or the flex-col fills naturally.
     if (window.innerWidth >= 1024 && !sidebarCollapsedRef.current) {
-      const resizerWidth = resizer.current?.offsetWidth ?? 8; // w-2 = 8px
+      const r = resizer.current;
+      const resizerWidth = r && 'scrollTo' in r ? r.offsetWidth : 8; // w-2 = 8px
       const availableWidth = window.innerWidth - resizerWidth;
       // Chat ~27% (v2: 24–28%); the preview gets the room.
-      editor.current.style.width = `${Math.round(availableWidth * 0.27)}px`;
+      el.style.width = `${Math.round(availableWidth * 0.27)}px`;
     } else {
-      editor.current.style.width = "";
+      el.style.width = "";
     }
   };
 
   const handleResize = (e: MouseEvent) => {
-    if (!editor.current || !resizer.current) return;
+    const el = editor.current;
+    const r = resizer.current;
+    if (!el || !('scrollTo' in el) || !r || !('scrollTo' in r)) return;
 
-    const resizerWidth = resizer.current.offsetWidth;
+    const resizerWidth = r.offsetWidth;
     const minWidth = 240; // keep the composer usable
     const maxWidth = window.innerWidth - resizerWidth - 320; // leave room to build
 
@@ -168,7 +172,7 @@ export const AppEditor = ({
       Math.min(e.clientX, maxWidth)
     );
     // Set ONLY the chat pane; the preview region (flex-1) absorbs the rest.
-    editor.current.style.width = `${clampedEditorWidth}px`;
+    el.style.width = `${clampedEditorWidth}px`;
   };
 
   const handleMouseDown = () => {
@@ -214,15 +218,17 @@ export const AppEditor = ({
     }
 
     resetLayout();
-    if (!resizer.current) return;
-    resizer.current.addEventListener("mousedown", handleMouseDown);
+    const r = resizer.current;
+    if (!r || !('scrollTo' in r)) return;
+    r.addEventListener("mousedown", handleMouseDown);
     window.addEventListener("resize", resetLayout);
   });
   useUnmount(() => {
     document.removeEventListener("mousemove", handleResize);
     document.removeEventListener("mouseup", handleMouseUp);
-    if (resizer.current) {
-      resizer.current.removeEventListener("mousedown", handleMouseDown);
+    const r = resizer.current;
+    if (r && 'scrollTo' in r) {
+      r.removeEventListener("mousedown", handleMouseDown);
     }
     window.removeEventListener("resize", resetLayout);
   });
@@ -332,7 +338,7 @@ export const AppEditor = ({
           variant="outline"
           size="sm"
           onClick={() => setIsShareModalOpen(true)}
-          height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1" borderColor="$borderColor" backgroundColor="$color3" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
+          height={28} gap="$1.5" paddingHorizontal="$2.5" borderColor="$borderColor" backgroundColor="$color3" hoverStyle={{ backgroundColor: "$color3" }}
         >
           <Share2 size={14} />
           <SizableText display="none">Share</SizableText>
@@ -365,7 +371,7 @@ export const AppEditor = ({
             the Chat tab. Kept mounted so generation state persists across views. */}
         <YStack
           ref={editor}
-          position="relative" overflow="hidden" height="100%" $lg={{ flex: 1 }} {...{ display: currentTab === "chat" ? undefined : "none", $lg: sidebarCollapsed ? {"display":"none"} : { flexShrink: 0 } }}
+          position="relative" overflow="hidden" height="100%" display={currentTab === "chat" ? undefined : "none"} $lg={{ flex: 1, ...(sidebarCollapsed ? { display: "none" } : { flexShrink: 0 }) }}
         >
           {/* Chat — ALWAYS the left pane (composer/thread live here permanently);
               the history panel OVERLAYS it when toggled from the header icon. */}
@@ -461,14 +467,15 @@ export const AppEditor = ({
           role="separator"
           aria-orientation="vertical"
           aria-label="Resize chat and preview panes"
-          position="relative" width="$2" height="100%" flexShrink={0} cursor="col-resize" alignItems="center" justifyContent="center" $lg={{ display: "none" }} {...{ $lg: sidebarCollapsed ? {"display":"none"} : undefined }} className="group/resizer"
+          position="relative" width="$3" height="100%" flexShrink={0} cursor="col-resize" alignItems="center" justifyContent="center" $lg={{ display: "none" }} className="group/resizer"
         >
-          {/* No static bar — the two panes share one flat field. A hairline seam
-              plus a small centered grip pill fade in ONLY on hover/drag, so the
-              resize target is discoverable and grabbable without ever drawing a
-              permanent divider or a middle scrollbar. */}
-          <YStack pointerEvents="none" position="absolute" top="$0" bottom="$0" left="50%" width={1} x="50%" backgroundColor="transparent" $group-resizer-hover={{ backgroundColor: "$color" }} $group-resizer-press={{ backgroundColor: "$color" }} />
-          <YStack pointerEvents="none" position="relative" height="$6" width="$1" borderRadius="$10" backgroundColor="transparent" $group-resizer-hover={{ backgroundColor: "$color" }} $group-resizer-press={{ backgroundColor: "$color" }} />
+          {/* A REAL, grabbable handle: an always-present hairline seam (so the
+              divider is never invisible — you can see where the panes meet and
+              where to grab) that strengthens on hover/drag, a wide-enough hit
+              target (w-3) to grab from either panel's edge, and an always-visible
+              centered grip pill for the affordance. */}
+          <YStack pointerEvents="none" position="absolute" top="$0" bottom="$0" left="50%" width={1} x="50%" backgroundColor="$borderColor" $group-resizer-hover={{ backgroundColor: "$color" }} $group-resizer-press={{ backgroundColor: "$color" }} />
+          <YStack pointerEvents="none" position="relative" height="$8" width="$1" borderRadius="$10" backgroundColor="$color8" $group-resizer-hover={{ backgroundColor: "$color" }} $group-resizer-press={{ backgroundColor: "$color" }} />
         </XStack>
         {/* RIGHT — Preview OR Code as a RAISED, rounded card that fills the whole
             remaining width to the viewport's right edge (flex-1, min-w-0). The

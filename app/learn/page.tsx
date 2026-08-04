@@ -106,7 +106,7 @@ export default function LearnPage() {
       {/* Hero Section */}
       <SizableText paddingHorizontal="$4" paddingVertical="$10" textAlign="center" display="flex" flexDirection="column" $md={{ paddingHorizontal: "$6", paddingVertical: "$12" }}>
         <YStack maxWidth={896} alignSelf="center">
-          <Badge marginBottom="$4" backgroundColor="$color12" color="$background" borderWidth={0}>
+          <Badge variant="default" className="mb-4">
             <BookOpen size={16} />
             Hanzo Academy
           </Badge>
@@ -117,11 +117,11 @@ export default function LearnPage() {
             Free courses, tutorials, and resources to help you master AI development
           </Paragraph>
           <XStack alignItems="center" gap="$4" justifyContent="center">
-            <Button size="lg" backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
+            <Button size="lg" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}>
               <PlayCircle size={20} />
               Start Learning
             </Button>
-            <Button size="lg" variant="outline" borderColor="$color" color="$color" hoverStyle={{ backgroundColor: "$color3" }}>
+            <Button size="lg" variant="outline" borderColor="$color" hoverStyle={{ backgroundColor: "$color3" }}>
               Browse Courses
             </Button>
           </XStack>
@@ -161,7 +161,7 @@ export default function LearnPage() {
         <YStack maxWidth={1280} alignSelf="center">
           <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
             <H2 fontSize="$8" fontWeight="500" $md={{ fontSize: "$10" }}>All Courses</H2>
-            <Button variant="outline" borderColor="$color" color="$color" hoverStyle={{ backgroundColor: "$color3" }}>
+            <Button variant="outline" borderColor="$color" hoverStyle={{ backgroundColor: "$color3" }}>
               <Video size={20} />
               Watch Live Classes
             </Button>
@@ -173,7 +173,8 @@ export default function LearnPage() {
               <Button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                paddingHorizontal="$4" paddingVertical="$2" borderRadius="$6" fontSize="$3" fontWeight="500" whiteSpace="nowrap" {...{ backgroundColor: selectedCategory === cat ? "$color12" : "$color3", color: selectedCategory === cat ? "$background" : "$color", borderWidth: selectedCategory === cat ? undefined : 1, borderColor: selectedCategory === cat ? undefined : "$borderColor", hoverStyle: selectedCategory === cat ? undefined : {"color":"$color","backgroundColor":"$color3"} }}
+                variant={selectedCategory === cat ? "default" : "outline"}
+                paddingHorizontal="$4" paddingVertical="$2" borderRadius="$6" className="whitespace-nowrap"
               >
                 {cat}
               </Button>
@@ -192,7 +193,7 @@ export default function LearnPage() {
                 )}
                 <YStack padding="$5">
                   <YStack marginBottom="$4">
-                    <Badge backgroundColor="$color3" color="$color" borderColor="$borderColor">
+                    <Badge variant="secondary">
                       {course.level}
                     </Badge>
                   </YStack>
@@ -270,7 +271,7 @@ export default function LearnPage() {
           <Paragraph fontSize="$7" color="$color11" marginBottom="$6">
             Join thousands of developers mastering AI development
           </Paragraph>
-          <Button size="lg" backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }}>
+          <Button size="lg" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}>
             Start Free Course
             <ArrowRight size={20} />
           </Button>

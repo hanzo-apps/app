@@ -79,12 +79,12 @@ export function SyncStatusBadge({ status, showLabel = true, className }: SyncSta
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Badge variant="outline" cursor="help" className={className}>
+        <Badge variant="outline" className={['cursor-help', className].filter(Boolean).join(' ')}>
           <Icon size={14} className={status === 'syncing' ? 'spin' : undefined} />
           {showLabel && config.label}
         </Badge>
       </TooltipTrigger>
-      <TooltipContent side="top" maxWidth={320}>
+      <TooltipContent maxWidth={320}>
         <Paragraph fontSize="$3">{config.description}</Paragraph>
       </TooltipContent>
     </Tooltip>

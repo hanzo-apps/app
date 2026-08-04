@@ -32,14 +32,14 @@ export const UserMenu = ({ className }: { className?: string }) => {
         <Button variant="ghost" className={`${className}`}>
           <Avatar width="$6" height="$6" marginRight="$1">
             <AvatarImage src={user?.avatarUrl} alt={displayName} />
-            <AvatarFallback fontSize="$3">
+            <AvatarFallback>
               {userInitial}
             </AvatarFallback>
           </Avatar>
           <SizableText display="none" maxWidth="12rem" numberOfLines={1}>{displayName}</SizableText>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent width={224} align="start">
+      <DropdownMenuContent width={224}>
         <DropdownMenuLabel>
           <YStack rowGap="$1">
             <Paragraph fontSize="$3" fontWeight="500" lineHeight={1}>{displayName}</Paragraph>
@@ -138,7 +138,7 @@ export const UserMenu = ({ className }: { className?: string }) => {
               logout();
             }
           }}
-          color="$red9" focusStyle={{ color: "$red10" }}
+          variant="destructive"
         >
           <LogOut size={16} />
           Log out

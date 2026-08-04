@@ -14,14 +14,14 @@ export default function HanzoModels() {
   return (
     <YStack position="relative" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$4" paddingVertical="$11" $md={{ paddingHorizontal: "$6", paddingVertical: "$13" }}>
       <YStack alignSelf="center" maxWidth={1152}>
-        <Reveal alignSelf="center" width="100%" maxWidth={672} textAlign="center">
-          <Paragraph fontFamily="$mono" fontSize={11} color="$color11">
+        <Reveal alignSelf="center" width="100%" maxWidth={672}>
+          <Paragraph fontFamily="$mono" fontSize={11} color="$color11" textAlign="center">
             Hanzo models
           </Paragraph>
-          <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} $md={{ color: "2.75rem", lineHeight: 1.1 }}>
+          <H2 marginTop="$4" fontSize="$10" fontWeight="500" letterSpacing={-0.4} textAlign="center" $md={{ color: "2.75rem", lineHeight: 1.1 }}>
             Frontier intelligence, without the frontier bill.
           </H2>
-          <Paragraph marginTop="$4" fontSize="$4" color="$color11" $md={{ fontSize: "$6" }}>
+          <Paragraph marginTop="$4" fontSize="$4" color="$color11" textAlign="center" $md={{ fontSize: "$6" }}>
             Two models we build in-house: Enso, our flagship that routes every
             request to the cheapest model that can nail it — and Zen, the
             open-source family you can run anywhere.

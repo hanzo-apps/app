@@ -49,10 +49,10 @@ export default function Header() {
   const accountMenu = (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" gap="$2" color="$color" hoverStyle={{ color: "$color" }}>
+        <Button variant="ghost" gap="$2">
           <Avatar height={28} width={28}>
             <AvatarImage src={user?.avatarUrl} alt={displayName} />
-            <AvatarFallback backgroundColor="$color" fontSize="$1" color="$color">
+            <AvatarFallback backgroundColor="$color">
               {userInitial}
             </AvatarFallback>
           </Avatar>
@@ -60,7 +60,7 @@ export default function Header() {
           <ChevronDown size={16} />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" width={224}>
+      <DropdownMenuContent minWidth={224}>
         <DropdownMenuLabel>
           <YStack rowGap="$1">
             <Paragraph fontSize="$3" fontWeight="500" lineHeight={1}>{displayName}</Paragraph>
@@ -83,7 +83,7 @@ export default function Header() {
           Billing
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => logout()} color="$color">
+        <DropdownMenuItem onClick={() => logout()}>
           <LogOut size={16} />
           Log out
         </DropdownMenuItem>
@@ -96,13 +96,12 @@ export default function Header() {
       <Button
         onClick={() => login()}
         variant="ghost"
-        fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ color: "$color" }}
       >
         Sign In
       </Button>
       <Button
         onClick={getStarted}
-        borderRadius="$6" backgroundColor="$color12" paddingHorizontal="$4.5" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
+        borderRadius="$6" backgroundColor="$color12" paddingHorizontal="$4.5" paddingVertical="$2.5" hoverStyle={{ backgroundColor: "$color12" }}
       >
         Get started
       </Button>
@@ -152,7 +151,7 @@ export default function Header() {
           onClick={() => setMobileOpen((v) => !v)}
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
           aria-expanded={mobileOpen}
-          height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" color="$color" hoverStyle={{ backgroundColor: "$background" }} $lg={{ display: "none" }}
+          height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" hoverStyle={{ backgroundColor: "$background" }} $lg={{ display: "none" }}
         >
           {mobileOpen ? <X size={20} /> : <Menu size={20} />}
         </Button>
@@ -180,13 +179,13 @@ export default function Header() {
                 <Button
                   onClick={() => login()}
                   variant="ghost"
-                  justifyContent="flex-start" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ color: "$color" }}
+                  justifyContent="flex-start"
                 >
                   Sign In
                 </Button>
                 <Button
                   onClick={getStarted}
-                  borderRadius="$6" backgroundColor="$color12" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
+                  borderRadius="$6" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}
                 >
                   Get started
                 </Button>

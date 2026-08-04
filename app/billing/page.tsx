@@ -231,7 +231,7 @@ export default function BillingPage() {
           </div>
           <Button
             onClick={() => setActiveTab('add-credits')}
-            backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
+            backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}
           >
             <Plus size={16} />
             Add Credits
@@ -247,7 +247,7 @@ export default function BillingPage() {
             </CardHeader>
             <CardContent>
               <YStack rowGap="$3">
-                <Badge {...{ backgroundColor: subscription?.plan === 'Pro' ? "$color12" : "$color3", color: subscription?.plan === 'Pro' ? "$background" : "$color" }}>
+                <Badge variant={subscription?.plan === 'Pro' ? 'default' : 'secondary'}>
                   {subscription?.plan || 'Free'}
                 </Badge>
                 {subscription?.nextBillingDate && (
@@ -267,7 +267,7 @@ export default function BillingPage() {
                     <Button
                       onClick={handleManageSubscription}
                       variant="outline"
-                      width="100%" borderColor="$borderColor" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
+                      width="100%" borderColor="$borderColor" hoverStyle={{ backgroundColor: "$color3" }}
                       size="sm"
                     >
                       Manage Subscription
@@ -307,7 +307,7 @@ export default function BillingPage() {
                   onClick={() => setActiveTab('add-credits')}
                   variant="outline"
                   size="sm"
-                  width="100%" borderColor="$borderColor" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
+                  width="100%" borderColor="$borderColor" hoverStyle={{ backgroundColor: "$color3" }}
                 >
                   <Plus size={16} />
                   Add Credit
@@ -358,7 +358,7 @@ export default function BillingPage() {
               <CardContent gap="$3">
                 {CRYPTO_PAYMENTS_ENABLED && (
                   <Button
-                    backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
+                    backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}
                     onClick={() => { setPaymentMethod('crypto'); setCreditModalOpen(true); }}
                   >
                     <Wallet size={16} />
@@ -367,7 +367,7 @@ export default function BillingPage() {
                 )}
                 <Button
                   variant="outline"
-                  borderColor="$borderColor" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
+                  borderColor="$borderColor" hoverStyle={{ backgroundColor: "$color3" }}
                   onClick={() => setActiveTab('add-credits')}
                 >
                   <CreditCard size={16} />
@@ -375,7 +375,7 @@ export default function BillingPage() {
                 </Button>
                 <Button
                   variant="outline"
-                  borderColor="$borderColor" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
+                  borderColor="$borderColor" hoverStyle={{ backgroundColor: "$color3" }}
                   onClick={() => router.push('/pricing')}
                 >
                   <Sparkles size={16} />
@@ -383,7 +383,7 @@ export default function BillingPage() {
                 </Button>
                 <Button
                   variant="outline"
-                  borderColor="$borderColor" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
+                  borderColor="$borderColor" hoverStyle={{ backgroundColor: "$color3" }}
                   onClick={() => setActiveTab('usage')}
                 >
                   <Activity size={16} />
@@ -400,7 +400,6 @@ export default function BillingPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    color="$color11" hoverStyle={{ color: "$color" }}
                     onClick={() => setActiveTab('history')}
                   >
                     View All <ArrowRight size={16} />
@@ -433,14 +432,16 @@ export default function BillingPage() {
             <XStack gap="$2" padding="$1" backgroundColor="$background" borderWidth={1} borderColor="$borderColor" borderRadius="$5" width="fit-content">
               <Button
                 onClick={() => setPaymentMethod('card')}
-                paddingHorizontal="$4" paddingVertical="$2" borderRadius="$3" fontSize="$3" fontWeight="500" {...{ backgroundColor: paymentMethod === 'card' ? "$color3" : undefined, color: paymentMethod === 'card' ? "$color" : "$color11", hoverStyle: paymentMethod === 'card' ? undefined : {"color":"$color"} }}
+                variant={paymentMethod === 'card' ? 'secondary' : 'ghost'}
+                paddingHorizontal="$4" paddingVertical="$2" borderRadius="$3"
               >
                 <CreditCard size={16} />
                 Credit Card
               </Button>
               <Button
                 onClick={() => setPaymentMethod('crypto')}
-                paddingHorizontal="$4" paddingVertical="$2" borderRadius="$3" fontSize="$3" fontWeight="500" {...{ backgroundColor: paymentMethod === 'crypto' ? "$color3" : undefined, color: paymentMethod === 'crypto' ? "$color" : "$color11", hoverStyle: paymentMethod === 'crypto' ? undefined : {"color":"$color"} }}
+                variant={paymentMethod === 'crypto' ? 'secondary' : 'ghost'}
+                paddingHorizontal="$4" paddingVertical="$2" borderRadius="$3"
               >
                 <Wallet size={16} />
                 USDC
@@ -606,7 +607,7 @@ function TransactionRow({ invoice }: { invoice: Invoice }) {
         <div>
           <XStack alignItems="center" gap="$2">
             <Paragraph fontWeight="500">{invoice.description || 'Payment'}</Paragraph>
-            <Badge variant="secondary" fontSize="$1" backgroundColor="$color3">
+            <Badge variant="secondary">
               {invoice.type === 'crypto' ? 'USDC' : 'Card'}
             </Badge>
           </XStack>
@@ -631,7 +632,6 @@ function TransactionRow({ invoice }: { invoice: Invoice }) {
             variant="ghost"
             size="sm"
             onClick={() => window.open(invoice.pdfUrl || invoice.hostedUrl, '_blank')}
-            color="$color11" hoverStyle={{ color: "$color" }}
           >
             <Download size={16} />
           </Button>

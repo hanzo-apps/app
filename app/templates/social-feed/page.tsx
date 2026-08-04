@@ -127,8 +127,8 @@ export default function SocialFeed() {
                   <Textarea
                     placeholder="What's happening?"
                     value={newPost}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNewPost(e.target.value)}
-                    borderWidth={0} padding="$0" resize="none"
+                    onChangeText={(value) => setNewPost(value)}
+                    borderWidth={0} padding="$0"
   />
                   <XStack alignItems="center" justifyContent="space-between" marginTop="$4">
                     <XStack gap="$2">
@@ -162,7 +162,7 @@ export default function SocialFeed() {
                       <XStack alignItems="center" gap="$1">
                         <Paragraph fontWeight="500">{post.author.name}</Paragraph>
                         {post.author.verified && (
-                          <Badge variant="outline" height="$4.5" paddingHorizontal="$1">✓</Badge>
+                          <Badge variant="outline">✓</Badge>
                         )}
                       </XStack>
                       <Paragraph fontSize="$3" color="$color11">
@@ -251,7 +251,7 @@ export default function SocialFeed() {
                         <XStack alignItems="center" gap="$1">
                           <Paragraph fontWeight="500" fontSize="$3">{user.name}</Paragraph>
                           {user.verified && (
-                            <Badge variant="outline" height="$4" paddingHorizontal="$1" fontSize="$1" borderColor="#171717" color="#171717">✓</Badge>
+                            <Badge variant="outline">✓</Badge>
                           )}
                         </XStack>
                         <Paragraph fontSize="$1" color="$color11">{user.username}</Paragraph>

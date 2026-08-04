@@ -249,8 +249,8 @@ Start writing your content above!
               <Textarea
                 id="markdown-input"
                 value={markdown}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMarkdown(e.target.value)}
-                minHeight="100%" padding="$5" resize="none" borderWidth={0} fontFamily="$mono" fontSize="$3"
+                onChangeText={(value) => setMarkdown(value)}
+                minHeight="100%" padding="$5" borderWidth={0} fontFamily="$mono" fontSize="$3"
                 placeholder="Start writing in markdown..."
   />
             </ScrollArea>

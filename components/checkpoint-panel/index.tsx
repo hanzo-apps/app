@@ -106,7 +106,7 @@ export function CheckpointPanel({
                   <XStack alignItems="center" gap="$1.5" marginBottom="$1">
                     <Badge
                       variant={cp.kind === 'manual' ? 'default' : 'secondary'}
-                      fontSize={9} paddingHorizontal="$1.5" paddingVertical="$0" height="$4" lineHeight={1}
+                      className="h-4 px-1.5 text-[9px] leading-none"
                     >
                       {cp.kind === 'manual' ? 'save' : cp.kind}
                     </Badge>
@@ -122,7 +122,7 @@ export function CheckpointPanel({
                         {cp.description}
                       </Paragraph>
                     </TooltipTrigger>
-                    <TooltipContent side="bottom" maxWidth={300}>
+                    <TooltipContent maxWidth={300}>
                       <Paragraph fontSize="$1">{cp.description}</Paragraph>
                     </TooltipContent>
                   </Tooltip>
@@ -133,21 +133,21 @@ export function CheckpointPanel({
                       <Button
                         variant="ghost"
                         size="sm"
-                        paddingHorizontal="$1.5" fontSize={10} color="$color11" hoverStyle={{ color: "$color" }}
+                        paddingHorizontal="$1.5"
                         onClick={() => onScrollToTurn(cp.id)}
                       >
                         <ArrowRight size={12} />
-                        Jump
+                        <SizableText fontSize={10} color="$color11">Jump</SizableText>
                       </Button>
                     )}
                     <Button
                       variant="ghost"
                       size="sm"
-                      paddingHorizontal="$1.5" fontSize={10} color="$color11" marginLeft="auto" hoverStyle={{ color: "$color" }}
+                      paddingHorizontal="$1.5" marginLeft="auto"
                       onClick={() => onRestore(cp.id, cp.description)}
                     >
                       <RotateCcw size={12} />
-                      Restore
+                      <SizableText fontSize={10} color="$color11">Restore</SizableText>
                     </Button>
                   </XStack>
                 </SizableText>

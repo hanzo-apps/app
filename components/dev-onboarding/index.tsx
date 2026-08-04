@@ -136,10 +136,10 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                 placeholder="Describe what you want to build..."
                 backgroundColor="$color3" borderColor="$borderColor" color="$color" marginBottom="$4" minHeight={100}
                 value={prompt}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPrompt(e.target.value)}
+                onChangeText={(t) => setPrompt(t)}
   />
               <Button
-                width="100%" gap="$2" backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
+                width="100%" gap="$2" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}
                 onClick={() => prompt && onComplete(prompt)}
                 disabled={!prompt.trim()}
               >
@@ -200,7 +200,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                 <Button
                   key={template.slug}
                   onClick={() => handleTemplateSelect(template)}
-                  flexDirection="column" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" textAlign="left" group className="zoom-scope" hoverStyle={{ borderColor: "$color", y: "-0.5" }}
+                  flexDirection="column" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" group className="zoom-scope" hoverStyle={{ borderColor: "$color", y: "-0.5" }}
                 >
                   <YStack position="relative" backgroundColor="$background" overflow="hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -213,9 +213,9 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                         (e.currentTarget as HTMLImageElement).style.display = "none";
                       }}
   />
-                    <Badge position="absolute" top="$1.5" right="$1.5" backgroundColor="black" color="white" borderColor="$color11" fontSize={10}>
-                      {template.category}
-                    </Badge>
+                    <YStack position="absolute" top="$1.5" right="$1.5">
+                      <Badge variant="tags">{template.category}</Badge>
+                    </YStack>
                   </YStack>
                   <YStack padding="$3">
                     <Paragraph color="$color" fontWeight="500" fontSize="$3" numberOfLines={1}>{template.displayName}</Paragraph>

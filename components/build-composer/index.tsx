@@ -218,7 +218,7 @@ export function BuildComposer({
           <Textarea
             ref={textareaRef}
             value={idea}
-            onChange={(e) => setIdea(e.target.value)}
+            onChangeText={(t) => setIdea(t)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -230,7 +230,7 @@ export function BuildComposer({
             onBlur={() => setFocused(false)}
             placeholder={placeholder}
             aria-label="Ask Hanzo to build"
-            width="100%" resize="none" backgroundColor="transparent" paddingHorizontal="$4" paddingBottom="$2" paddingTop="$4" fontSize={15} lineHeight={1.625} color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0 }}
+            width="100%" backgroundColor="transparent" paddingHorizontal="$4" paddingBottom="$2" paddingTop="$4" fontSize={15} lineHeight={1.625} color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0 }}
   />
           <XStack alignItems="center" justifyContent="space-between" gap="$2" paddingHorizontal="$2.5" paddingBottom="$2.5">
             <XStack alignItems="center" gap="$1">
@@ -239,15 +239,16 @@ export function BuildComposer({
                 <DropdownMenuTrigger asChild>
                   <Button
                     type="button"
-                    alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$1.5" fontSize="$1" color="$color" hoverStyle={{ borderColor: "$borderColor", color: "$color" }}
+                    alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: "$borderColor" }}
                   >
-                    <CurrentMode.icon size={14} />
-                    {CurrentMode.label}
-                    <ChevronDown size={12} color="$color11" />
+                    <SizableText display="flex" flexDirection="row" alignItems="center" gap="$1.5" fontSize="$1" color="$color">
+                      <CurrentMode.icon size={14} />
+                      {CurrentMode.label}
+                      <ChevronDown size={12} color="$color11" />
+                    </SizableText>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
-                  align="start"
                   width={224}
                 >
                   {MODES.map((m) => (
@@ -272,10 +273,12 @@ export function BuildComposer({
                 onClick={toggleBase}
                 aria-pressed={withBase}
                 title="Hanzo Base backend — database, auth, realtime for this app"
-                alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} paddingHorizontal="$2.5" paddingVertical="$1.5" fontSize="$1" {...{ borderColor: withBase ? "$borderColor" : "$borderColor", backgroundColor: withBase ? "$color3" : undefined, color: withBase ? "$color" : "$color11", hoverStyle: withBase ? undefined : {"borderColor":"$borderColor","color":"$color"} }}
+                group alignItems="center" gap="$1.5" borderRadius="$5" borderWidth={1} paddingHorizontal="$2.5" paddingVertical="$1.5" {...{ borderColor: withBase ? "$borderColor" : "$borderColor", backgroundColor: withBase ? "$color3" : undefined, hoverStyle: withBase ? undefined : {"borderColor":"$borderColor"} }}
               >
-                <Database size={14} />
-                Base
+                <SizableText display="flex" flexDirection="row" alignItems="center" gap="$1.5" fontSize="$1" color={withBase ? "$color" : "$color11"} $group-hover={{ color: "$color" }}>
+                  <Database size={14} />
+                  Base
+                </SizableText>
               </Button>
             </XStack>
 
@@ -293,7 +296,7 @@ export function BuildComposer({
                 onClick={() => submit()}
                 disabled={!idea.trim()}
                 aria-label="Start building"
-                height="$6" width="$6" alignItems="center" justifyContent="center" borderRadius="$10" backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }} disabledStyle={{ cursor: "not-allowed", backgroundColor: "$color3", color: "$color11" }}
+                height="$6" width="$6" alignItems="center" justifyContent="center" borderRadius="$10" backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }} disabledStyle={{ cursor: "not-allowed", backgroundColor: "$color3" }}
               >
                 <ArrowUp size={16} strokeWidth={2.5} />
               </Button>
@@ -315,9 +318,9 @@ export function BuildComposer({
                 setIdea(s);
                 submit(s);
               }}
-              borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$borderColor", color: "$color" }}
+              group borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$1.5" hoverStyle={{ borderColor: "$borderColor" }}
             >
-              {s}
+              <SizableText fontSize="$1" color="$color11" $group-hover={{ color: "$color" }}>{s}</SizableText>
             </Button>
           ))}
         </XStack>

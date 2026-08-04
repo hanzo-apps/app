@@ -160,7 +160,7 @@ export function WorkspaceMenu({
           <Button
             type="button"
             title="Workspace"
-            minWidth={0} alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$2.5" paddingVertical="$1.5" fontSize="$3" color="$color" hoverStyle={{ borderColor: "$borderColor", backgroundColor: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
+            minWidth={0} alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" paddingHorizontal="$2.5" paddingVertical="$1.5" hoverStyle={{ borderColor: "$borderColor", backgroundColor: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
           >
             <OrgAvatar name={orgName} logo={activeOrg?.logo} />
             <SizableText maxWidth="9rem" numberOfLines={1} fontWeight="500" color="$color">
@@ -171,8 +171,6 @@ export function WorkspaceMenu({
         </DropdownMenuTrigger>
 
         <DropdownMenuContent
-          side="bottom"
-          align="start"
           sideOffset={8}
           width="19rem" padding="$1.5"
         >
@@ -190,8 +188,8 @@ export function WorkspaceMenu({
           <XStack alignItems="center" gap="$2.5" paddingHorizontal="$2" paddingVertical="$1.5">
             <Avatar width={28} height={28}>
               <AvatarImage src={avatarSrc} alt={uname} />
-              <AvatarFallback backgroundColor="$color3" fontSize="$1" color="$color">
-                {initial}
+              <AvatarFallback backgroundColor="$color3">
+                <SizableText fontSize="$1" color="$color">{initial}</SizableText>
               </AvatarFallback>
             </Avatar>
             <YStack minWidth={0}>
@@ -209,7 +207,7 @@ export function WorkspaceMenu({
           {/* Active workspace + plan badge — a switcher when there's more than one. */}
           {canSwitch ? (
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger display="flex" alignItems="center" gap="$2.5" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$3" color="$color" focusStyle={{ backgroundColor: "$color3" }}>
+              <DropdownMenuSubTrigger display="flex" alignItems="center" gap="$2.5" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1.5" focusStyle={{ backgroundColor: "$color3" }}>
                 <OrgAvatar name={orgName} logo={activeOrg?.logo} size={28} />
                 <SizableText minWidth={0} flex={1}>
                   <SizableText numberOfLines={1} fontSize="$3" fontWeight="500" color="$color">{orgName}</SizableText>
@@ -226,10 +224,10 @@ export function WorkspaceMenu({
                     <DropdownMenuItem
                       key={o.name}
                       onSelect={() => !isCurrent && switchOrg(o.name)}
-                      cursor="pointer" gap="$2" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$2" fontSize="$3" color="$color" focusStyle={{ backgroundColor: "$color", color: "$color" }}
+                      cursor="pointer" gap="$2" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$2" focusStyle={{ backgroundColor: "$color" }}
                     >
                       <OrgAvatar name={orgDisplayName(orgs, o.name)} logo={o.logo} />
-                      <SizableText minWidth={0} flex={1} numberOfLines={1}>{orgDisplayName(orgs, o.name)}</SizableText>
+                      <SizableText minWidth={0} flex={1} numberOfLines={1} fontSize="$3" color="$color">{orgDisplayName(orgs, o.name)}</SizableText>
                       {isCurrent && <Check size={16} color="$color" />}
                     </DropdownMenuItem>
                   );
@@ -260,7 +258,7 @@ export function WorkspaceMenu({
                   <Wallet size={14} color="$color11" />
                   Credits
                 </SizableText>
-                <SizableText fontFamily="$mono" fontSize="$3" fontVariant="tabular-nums" color="$color">{balanceText}</SizableText>
+                <SizableText fontFamily="$mono" fontSize="$3" fontVariant={["tabular-nums"]} color="$color">{balanceText}</SizableText>
               </XStack>
               <YStack
                 role="progressbar"
@@ -317,7 +315,7 @@ export function WorkspaceMenu({
 
           <DropdownMenuItem
             onSelect={() => void logout()}
-            color="$color" {...ITEM}
+            {...ITEM}
           >
             <LogOut size={16} />
             Sign out
@@ -327,7 +325,7 @@ export function WorkspaceMenu({
 
       {/* Rename — a small modal so the menu's typeahead never fights the input. */}
       <Dialog open={renameOpen} onOpenChange={setRenameOpen}>
-        <DialogContent maxWidth={384} borderColor="$borderColor" backgroundColor="$background" color="$color">
+        <DialogContent maxWidth={384} borderColor="$borderColor" backgroundColor="$background">
           <DialogHeader>
             <DialogTitle>Rename project</DialogTitle>
             <DialogDescription color="$color11">
@@ -354,7 +352,7 @@ export function WorkspaceMenu({
               variant="outline"
               size="sm"
               onClick={() => setRenameOpen(false)}
-              borderColor="$borderColor" backgroundColor="transparent" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
+              borderColor="$borderColor" backgroundColor="transparent" hoverStyle={{ backgroundColor: "$color3" }}
               disabled={renaming}
             >
               Cancel
@@ -363,7 +361,7 @@ export function WorkspaceMenu({
               size="sm"
               onClick={() => void submitRename()}
               disabled={renaming || !renameValue.trim()}
-              backgroundColor="$color12" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
+              backgroundColor="$color12" hoverStyle={{ backgroundColor: "$color12" }}
             >
               {renaming ? "Saving…" : "Save"}
             </Button>
@@ -373,7 +371,7 @@ export function WorkspaceMenu({
 
       {/* Project details — real known fields only. */}
       <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
-        <DialogContent maxWidth={384} borderColor="$borderColor" backgroundColor="$background" color="$color">
+        <DialogContent maxWidth={384} borderColor="$borderColor" backgroundColor="$background">
           <DialogHeader>
             <DialogTitle>Project details</DialogTitle>
             <DialogDescription color="$color11">

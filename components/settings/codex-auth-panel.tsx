@@ -198,7 +198,7 @@ export function CodexAuthPanel({ onAuthChange }: CodexAuthPanelProps) {
         <Label htmlFor="codex-token" fontSize="$1">Auth Token JSON</Label>
         <Textarea
           id="codex-token"
-          width="100%" height="$12" fontSize="$1" fontFamily="$mono" padding="$2" borderRadius="$3" borderWidth={1} backgroundColor="$background" resize="none"
+          width="100%" height="$12" fontSize="$1" fontFamily="$mono" padding="$2" borderRadius="$3" borderWidth={1} backgroundColor="$background" className="resize-none"
           placeholder={'{\n  "access_token": "ey...",\n  "refresh_token": "v1.ey...",\n  "expires_at": 1234567890\n}'}
           value={pasteValue}
           onChange={(e) => setPasteValue(e.target.value)}

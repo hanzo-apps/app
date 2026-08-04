@@ -235,7 +235,7 @@ export default function AgentsPage() {
                 <SizableText fontSize="$7" fontWeight="500" color="$color">Agents</SizableText>
               </XStack></Link>
               {state.kind === "ready" && (
-                <Badge variant="outline" gap="$1">
+                <Badge variant="outline">
                   <Activity size={12} />
                   {stats.total} {stats.total === 1 ? "agent" : "agents"}
                 </Badge>
@@ -295,7 +295,7 @@ export default function AgentsPage() {
         {/* Unauthenticated */}
         {state.kind === "unauthenticated" && (
           <Card backgroundColor="$background" borderColor="$borderColor" alignSelf="center" maxWidth={512} marginTop="$8">
-            <CardHeader textAlign="center">
+            <CardHeader alignItems="center">
               <XStack alignSelf="center" marginBottom="$2" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$10" backgroundColor="$purple9">
                 <Bot size={24} color="$purple8" />
               </XStack>
@@ -316,7 +316,7 @@ export default function AgentsPage() {
         {/* Error */}
         {state.kind === "error" && (
           <Card backgroundColor="$red12" borderColor="$red12" alignSelf="center" maxWidth={512} marginTop="$8">
-            <CardHeader textAlign="center">
+            <CardHeader alignItems="center">
               <XStack alignSelf="center" marginBottom="$2" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$10" backgroundColor="$red9">
                 <AlertCircle size={24} color="$red8" />
               </XStack>
@@ -374,8 +374,8 @@ export default function AgentsPage() {
                     minHeight="$12" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$3" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ outlineWidth: 0 }}
                     value={form.instructions}
                     disabled={submitting}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                      setForm((f) => ({ ...f, instructions: e.target.value }))
+                    onChangeText={(t) =>
+                      setForm((f) => ({ ...f, instructions: t }))
                     }
   />
                   <XStack gap="$2">
@@ -442,7 +442,7 @@ export default function AgentsPage() {
             {/* Empty — no agents at all */}
             {agents.length === 0 && (
               <Card backgroundColor="$background" borderColor="$borderColor" alignSelf="center" maxWidth={512} marginTop="$8">
-                <CardHeader textAlign="center">
+                <CardHeader alignItems="center">
                   <XStack alignSelf="center" marginBottom="$2" height="$8" width="$8" alignItems="center" justifyContent="center" borderRadius="$10" backgroundColor="$purple9">
                     <Bot size={24} color="$purple8" />
                   </XStack>
@@ -479,7 +479,7 @@ export default function AgentsPage() {
                       <CardHeader paddingBottom="$3">
                         <XStack alignItems="flex-start" justifyContent="space-between" gap="$2">
                           <YStack minWidth={0} rowGap="$1">
-                            <CardTitle fontSize="$4" color="$color" ellipse numberOfLines={1}>
+                            <CardTitle fontSize="$4" color="$color" numberOfLines={1}>
                               {agent.name}
                             </CardTitle>
                             <CardDescription alignItems="center" gap="$1" fontSize="$1">
@@ -515,7 +515,6 @@ export default function AgentsPage() {
                                 <Badge
                                   key={t}
                                   variant="outline"
-                                  fontSize={10} paddingVertical="$0"
                                 >
                                   {t}
                                 </Badge>
@@ -573,14 +572,14 @@ export default function AgentsPage() {
                               onClick={() =>
                                 setExpanded(isOpen ? null : agent.name)
                               }
-                              alignItems="center" gap="$1" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}
+                              alignItems="center" gap="$1"
                             >
                               {isOpen ? (
                                 <ChevronDown size={12} />
                               ) : (
                                 <ChevronRight size={12} />
                               )}
-                              Latest run
+                              <SizableText fontSize="$1" color="$color11">Latest run</SizableText>
                               <SizableText
                                 marginLeft="$1" {...{ color: statusColor(
                                     result.status === "ok" ? "ready" : "error"
@@ -592,11 +591,11 @@ export default function AgentsPage() {
                             {isOpen && (
                               <YStack marginTop="$2" borderRadius="$2" backgroundColor="$background" padding="$3">
                                 {result.status === "ok" ? (
-                                  <SizableText whiteSpace="pre" wordBreak="break-word" fontSize="$1" color="$color11" maxHeight={256} overflow="scroll" fontFamily="$mono">
+                                  <SizableText whiteSpace="pre" fontSize="$1" color="$color11" maxHeight={256} overflow="scroll" fontFamily="$mono">
                                     {result.output || "(empty response)"}
                                   </SizableText>
                                 ) : (
-                                  <SizableText whiteSpace="pre" wordBreak="break-word" fontSize="$1" color="$red8" maxHeight={256} overflow="scroll" fontFamily="$mono">
+                                  <SizableText whiteSpace="pre" fontSize="$1" color="$red8" maxHeight={256} overflow="scroll" fontFamily="$mono">
                                     {result.error || "Run failed"}
                                   </SizableText>
                                 )}

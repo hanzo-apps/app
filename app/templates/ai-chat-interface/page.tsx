@@ -129,9 +129,9 @@ The UI is built entirely with @hanzo/ui primitives like Card, Button, ScrollArea
                     </Avatar>
                   )}
 
-                  <Card maxWidth="70%" {...{ color: message.role === "user" ? "white" : undefined, backgroundColor: message.role === "user" ? undefined : "$color3" }}>
+                  <Card maxWidth="70%" {...{ backgroundColor: message.role === "user" ? undefined : "$color3" }}>
                     <CardContent padding="$3">
-                      <Paragraph whiteSpace="pre-wrap">
+                      <Paragraph whiteSpace="pre-wrap" color={message.role === "user" ? "white" : undefined}>
                         {message.content}
                         {message.isStreaming && (
                           <SizableText width="$2" height="$4" marginLeft="$1" backgroundColor="$color" />
@@ -173,8 +173,8 @@ The UI is built entirely with @hanzo/ui primitives like Card, Button, ScrollArea
               <Textarea
                 placeholder="Type your message..."
                 value={input}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInput(e.target.value)}
-                onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+                onChangeText={(t) => setInput(t)}
+                onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
                     handleSend();

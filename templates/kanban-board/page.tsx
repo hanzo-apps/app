@@ -185,7 +185,7 @@ export default function KanbanBoard() {
                     <Input
                       placeholder="Task title"
                       value={newTaskTitle}
-                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNewTaskTitle(e.target.value)}
+                      onChangeText={(t) => setNewTaskTitle(t)}
   />
                   </div>
                   <div>
@@ -225,7 +225,7 @@ export default function KanbanBoard() {
                   <XStack alignItems="center" gap="$2">
                     <YStack width="$3" height="$3" borderRadius="$10" className={`${column.color}`} />
                     <CardTitle fontSize="$4">{column.title}</CardTitle>
-                    <Badge variant="secondary" marginLeft="$2">
+                    <Badge variant="secondary" className="ml-2">
                       {column.tasks.length}
                     </Badge>
                   </XStack>
@@ -253,7 +253,7 @@ export default function KanbanBoard() {
                           <MoreHorizontal size={12} />
                         </Button>
                       </XStack>
-                      <CardDescription fontSize="$1" numberOfLines={2} ellipse>
+                      <CardDescription fontSize="$1" numberOfLines={2}>
                         {task.description}
                       </CardDescription>
                     </CardHeader>
@@ -265,7 +265,7 @@ export default function KanbanBoard() {
                           <Badge
                             key={label}
                             variant="secondary"
-                            fontSize="$1" paddingHorizontal="$2" paddingVertical="$0" className={`${labelColors[label as keyof typeof labelColors] || ""}`}
+                            className={`${labelColors[label as keyof typeof labelColors] || ""}`}
                           >
                             {label}
                           </Badge>
@@ -303,8 +303,8 @@ export default function KanbanBoard() {
                           )}
                         </XStack>
                         <Avatar height="$5" width="$5">
-                          <AvatarFallback fontSize="$1">
-                            {task.assignee.split(" ").map(n => n[0]).join("")}
+                          <AvatarFallback>
+                            <SizableText fontSize="$1">{task.assignee.split(" ").map(n => n[0]).join("")}</SizableText>
                           </AvatarFallback>
                         </Avatar>
                       </SizableText>

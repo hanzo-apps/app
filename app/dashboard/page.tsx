@@ -106,12 +106,12 @@ export default function DashboardPage() {
                 .getElementById("projects-panel")
                 ?.scrollIntoView({ behavior: "smooth", block: "start" })
             }
-            group position="absolute" bottom="$5" left="50%" x="50%" flexDirection="column" alignItems="center" gap="$1" color="$color11" hoverStyle={{ color: "$color" }}
+            group position="absolute" bottom="$5" left="50%" x="50%" flexDirection="column" alignItems="center" gap="$1"
           >
-            <SizableText fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={2.56}>
+            <SizableText fontFamily="$mono" fontSize={10} textTransform="uppercase" letterSpacing={2.56} color="$color11" $group-hover={{ color: "$color" }}>
               Your projects
             </SizableText>
-            <ChevronDown size={16} />
+            <ChevronDown size={16} color="$color11" />
           </Button>
         </YStack>
 
@@ -234,7 +234,7 @@ function ProjectGrid({
           <Button
             key={p.id}
             onClick={() => onOpen(p)}
-            group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" textAlign="left" hoverStyle={{ y: "-0.5", borderColor: "$color", backgroundColor: "$color3" }}
+            group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "-0.5", borderColor: "$color", backgroundColor: "$color3" }}
           >
             {/* Real thumbnail: the live site itself (inert); monogram otherwise. */}
             <YStack position="relative">

@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, SizableText } from '@hanzo/gui';
+import { YStack, XStack, SizableText, type GuiElement } from '@hanzo/gui';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { Button, Collapsible, CollapsibleContent, CollapsibleTrigger, Input, Label } from '@hanzo/ui';
 import { ChevronDown, ChevronUp, Bug, X, Trash2, Terminal } from 'lucide-react';
@@ -33,7 +33,7 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
   const [command, setCommand] = useState('');
   const [shellOutput, setShellOutput] = useState<{cmd: string, output: string, isError?: boolean}[]>([]);
   const [isRunning, setIsRunning] = useState(false);
-  const shellOutputRef = useRef<HTMLDivElement>(null);
+  const shellOutputRef = useRef<GuiElement>(null);
 
   // Compress consecutive assistant_delta, tool_param_delta, and reasoning_delta events
   // Only store count, not individual events - prevents O(N²) memory growth
@@ -129,7 +129,9 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
       setIsRunning(false);
       // Scroll to bottom of shell output
       setTimeout(() => {
-        shellOutputRef.current?.scrollTo({ top: shellOutputRef.current.scrollHeight, behavior: 'smooth' });
+        const el = shellOutputRef.current;
+        if (!el || !('scrollTo' in el)) return;
+        el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
       }, 50);
     }
   };
@@ -156,7 +158,7 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
               type="button"
               onClick={onClose}
               aria-label="Hide debug panel"
-              position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" color="$color11" group hoverStyle={{ color: "$red9" }}
+              position="relative" display="none" height="$5" width="$5" alignItems="center" justifyContent="center" borderRadius="$1" group
             >
               <Bug
                 size={16}
@@ -186,10 +188,10 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
             variant="ghost"
             size="sm"
             onClick={handleExport}
-            paddingHorizontal="$2" fontSize="$1" hoverStyle={{ backgroundColor: "$color3" }}
+            paddingHorizontal="$2" hoverStyle={{ backgroundColor: "$color3" }}
             title="Export to JSON"
           >
-            Export
+            <SizableText fontSize="$1">Export</SizableText>
           </Button>
         </XStack>
       </XStack>
@@ -257,9 +259,9 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
             {shellOutput.length > 0 && (
               <Button
                 onClick={() => setShellOutput([])}
-                marginLeft="auto" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}
+                marginLeft="auto"
               >
-                Clear
+                <SizableText fontSize="$1" color="$color11">Clear</SizableText>
               </Button>
             )}
           </XStack>
@@ -298,9 +300,9 @@ export function DebugPanel({ events, onClear, onClose, projectId }: DebugPanelPr
               size="sm"
               onClick={handleRunCommand}
               disabled={isRunning || !command.trim()}
-              paddingHorizontal="$2" fontSize="$1" color="$color8" hoverStyle={{ color: "$color2", backgroundColor: "$color11" }}
+              paddingHorizontal="$2" hoverStyle={{ backgroundColor: "$color11" }}
             >
-              {isRunning ? '...' : 'Run'}
+              <SizableText fontSize="$1" color="$color8">{isRunning ? '...' : 'Run'}</SizableText>
             </Button>
           </XStack>
         </YStack>
@@ -326,7 +328,7 @@ function EventItem({ event }: { event: DebugEvent }) {
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <CollapsibleTrigger width="100%" textAlign="left">
+      <CollapsibleTrigger width="100%">
         <SizableText alignItems="center" gap="$2" padding="$1.5" borderRadius="$2" fontSize="$1" display="flex" flexDirection="row" hoverStyle={{ backgroundColor: "$color3" }}>
           {isOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
           <SizableText color="$color11" fontFamily="$mono">{time}</SizableText>

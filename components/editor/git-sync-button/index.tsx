@@ -46,7 +46,7 @@ import { Page } from "@/types";
 const PROVIDERS: {
   id: GitProvider;
   label: string;
-  Icon: ComponentType<{ className?: string }>;
+  Icon: ComponentType<{ className?: string; size?: number; color?: string }>;
 }[] = [
   { id: "hanzo", label: "Hanzo", Icon: HanzoLogo },
   { id: "github", label: "GitHub", Icon: Github },
@@ -315,7 +315,7 @@ export function GitSyncButton({
           variant="outline"
           size="sm"
           disabled={disabled}
-          height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1" borderColor="$borderColor" backgroundColor="$color" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
+          height={28} gap="$1.5" paddingHorizontal="$2.5" borderColor="$borderColor" backgroundColor="$color" hoverStyle={{ backgroundColor: "$color3" }}
           title="Push your project to Hanzo git, GitHub, or GitLab"
         >
           <UploadCloud size={14} />
@@ -352,7 +352,7 @@ export function GitSyncButton({
             <Button
               type="button"
               onClick={connect}
-              marginTop="$4.5" alignItems="center" gap="$2" borderRadius="$5" backgroundColor="$color12" paddingHorizontal="$4" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
+              marginTop="$4.5" alignItems="center" gap="$2" borderRadius="$5" backgroundColor="$color12" paddingHorizontal="$4" paddingVertical="$2.5" hoverStyle={{ backgroundColor: "$color12" }}
             >
               <ProviderIcon size={16} />
               Connect {providerName}
@@ -360,9 +360,10 @@ export function GitSyncButton({
             <Button
               type="button"
               onClick={() => setNeedsConnect(false)}
-              marginTop="$3" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}
+              variant="linkMuted"
+              marginTop="$3"
             >
-              I&apos;ve connected — try again
+              <SizableText fontSize="$1">I&apos;ve connected — try again</SizableText>
             </Button>
           </SizableText>
         ) : result?.ok ? (
@@ -391,7 +392,7 @@ export function GitSyncButton({
                 <Button
                   type="button"
                   onClick={() => copyUrl(result.htmlUrl || result.repoUrl || "")}
-                  color="$color11" hoverStyle={{ color: "$color" }}
+                  variant="linkMuted"
                   title="Copy URL"
                 >
                   {copied ? (
@@ -405,7 +406,7 @@ export function GitSyncButton({
                   target="_blank"
                   rel="noopener noreferrer"
                   color="$color11" hoverStyle={{ color: "$color" }}
-                  title="Open repository"
+                  aria-label="Open repository"
                 >
                   <ExternalLink size={14} />
                 </Anchor>
@@ -440,9 +441,10 @@ export function GitSyncButton({
                   setResult(null);
                   setShowForm(true);
                 }}
-                borderRadius="$5" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}
+                variant="linkMuted"
+                borderRadius="$5" paddingHorizontal="$3" paddingVertical="$1.5"
               >
-                Push elsewhere
+                <SizableText fontSize="$1">Push elsewhere</SizableText>
               </Button>
             </XStack>
           </SizableText>
@@ -469,7 +471,7 @@ export function GitSyncButton({
                 <Button
                   type="button"
                   onClick={() => copyUrl(linked.htmlUrl)}
-                  color="$color11" hoverStyle={{ color: "$color" }}
+                  variant="linkMuted"
                   title="Copy URL"
                 >
                   {copied ? (
@@ -483,7 +485,7 @@ export function GitSyncButton({
                   target="_blank"
                   rel="noopener noreferrer"
                   color="$color11" hoverStyle={{ color: "$color" }}
-                  title="Open repository"
+                  aria-label="Open repository"
                 >
                   <ExternalLink size={14} />
                 </Anchor>
@@ -526,9 +528,10 @@ export function GitSyncButton({
                 setShowForm(true);
                 setError(null);
               }}
-              marginTop="$2" width="100%" textAlign="center" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}
+              variant="linkMuted"
+              marginTop="$2" width="100%"
             >
-              Push to a different repository
+              <SizableText textAlign="center" fontSize="$1">Push to a different repository</SizableText>
             </Button>
           </YStack>
         ) : (
@@ -541,11 +544,14 @@ export function GitSyncButton({
                   <Button
                     key={id}
                     type="button"
+                    variant="ghost"
                     onClick={() => setProvider(id)}
-                    height={36} alignItems="center" justifyContent="center" gap="$1.5" borderRadius="$5" borderWidth={1} fontSize="$3" {...{ borderColor: activeP ? "$borderColor" : "$borderColor", backgroundColor: activeP ? "$color3" : "transparent", color: activeP ? "$color" : "$color11", hoverStyle: activeP ? undefined : {"borderColor":"$borderColor","color":"$color"} }}
+                    height={36} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor={activeP ? "$color3" : "transparent"}
                   >
-                    <Icon size={16} />
-                    {label}
+                    <SizableText display="flex" alignItems="center" gap="$1.5" fontSize="$3" color={activeP ? "$color" : "$color11"}>
+                      <Icon size={16} />
+                      {label}
+                    </SizableText>
                   </Button>
                 );
               })}
@@ -601,9 +607,10 @@ export function GitSyncButton({
                   setShowForm(false);
                   setError(null);
                 }}
-                width="100%" numberOfLines={1} textAlign="center" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}
+                variant="linkMuted"
+                width="100%"
               >
-                Back to {linked.label}
+                <SizableText numberOfLines={1} textAlign="center" fontSize="$1">Back to {linked.label}</SizableText>
               </Button>
             )}
 

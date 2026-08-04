@@ -49,9 +49,11 @@ export function ErrorFallback({
               </Paragraph>
               <Button
                 onClick={resetErrorBoundary}
-                marginTop="$3" fontSize="$3" color="$red10" textDecorationLine="underline" $theme-dark={{ color: "$red4" }} hoverStyle={{ color: "$red9" }}
+                marginTop="$3"
               >
-                Try again
+                <SizableText fontSize="$3" color="$red10" textDecorationLine="underline" $theme-dark={{ color: "$red4" }} hoverStyle={{ color: "$red9" }}>
+                  Try again
+                </SizableText>
               </Button>
             </YStack>
           </XStack>
@@ -90,7 +92,7 @@ export function ErrorFallback({
                   <H2 fontSize="$3" fontWeight="500" color="$color11" marginBottom="$2">
                     Error Details (Development Only)
                   </H2>
-                  <Paragraph fontSize="$3" color="$color" fontFamily="$mono" wordBreak="break-all">
+                  <Paragraph fontSize="$3" color="$color" fontFamily="$mono">
                     {error.message}
                   </Paragraph>
                 </YStack>
@@ -126,38 +128,38 @@ export function ErrorFallback({
               {!isPermanent && (
                 <Button
                   onClick={resetErrorBoundary}
-                  width="100%" alignItems="center" justifyContent="center" columnGap="$2" backgroundColor="$color12" color="$background" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" fontWeight="500" hoverStyle={{ backgroundColor: "$color12" }}
+                  width="100%" alignItems="center" justifyContent="center" columnGap="$2" backgroundColor="$color12" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$color12" }}
                 >
-                  <RefreshCw size={16} />
-                  <span>Try Again</span>
+                  <RefreshCw size={16} color="$background" />
+                  <SizableText color="$background" fontWeight="500">Try Again</SizableText>
                 </Button>
               )}
 
               {isPermanent && (
                 <Button
                   onClick={() => window.location.reload()}
-                  width="100%" alignItems="center" justifyContent="center" columnGap="$2" backgroundColor="$color12" color="$background" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" fontWeight="500" hoverStyle={{ backgroundColor: "$color12" }}
+                  width="100%" alignItems="center" justifyContent="center" columnGap="$2" backgroundColor="$color12" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$color12" }}
                 >
-                  <RefreshCw size={16} />
-                  <span>Refresh Page</span>
+                  <RefreshCw size={16} color="$background" />
+                  <SizableText color="$background" fontWeight="500">Refresh Page</SizableText>
                 </Button>
               )}
 
               <Button
                 onClick={handleGoHome}
-                width="100%" alignItems="center" justifyContent="center" columnGap="$2" backgroundColor="$color4" color="$color" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$color4" }}
+                width="100%" alignItems="center" justifyContent="center" columnGap="$2" backgroundColor="$color4" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$color4" }}
               >
-                <Home size={16} />
-                <span>Go to Homepage</span>
+                <Home size={16} color="$color" />
+                <SizableText color="$color">Go to Homepage</SizableText>
               </Button>
 
               {!isDevelopment && (
                 <Button
                   onClick={handleReportBug}
-                  width="100%" alignItems="center" justifyContent="center" columnGap="$2" borderWidth={1} borderColor="$borderColor" color="$color" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
+                  width="100%" alignItems="center" justifyContent="center" columnGap="$2" borderWidth={1} borderColor="$borderColor" paddingVertical="$3" paddingHorizontal="$4" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
                 >
-                  <Bug size={16} />
-                  <span>Report This Issue</span>
+                  <Bug size={16} color="$color" />
+                  <SizableText color="$color">Report This Issue</SizableText>
                 </Button>
               )}
             </YStack>

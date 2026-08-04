@@ -1,6 +1,6 @@
 "use client";
 
-import { YStack, XStack } from '@hanzo/gui';
+import { YStack, XStack, SizableText } from '@hanzo/gui';
 import { ArrowUp, Settings, UserPlus } from "lucide-react";
 
 import { Button, Textarea } from '@hanzo/ui';
@@ -11,9 +11,9 @@ export const AskAi = () => {
       <YStack backgroundColor="$color3" borderWidth={1} borderColor="$borderColor" borderRadius="$8" group focusStyle={{ borderColor: "$borderColor" }}>
         <Textarea
           rows={3}
-          width="100%" backgroundColor="transparent" fontSize="$3" outlineWidth={0} color="$color" placeholderTextColor="$color11" padding="$4" resize="none" marginBottom="$1"
+          width="100%" backgroundColor="transparent" fontSize="$3" outlineWidth={0} color="$color" placeholderTextColor="$color11" padding="$4" marginBottom="$1"
           placeholder="Ask Hanzo anything..."
-          onChange={() => {}}
+          onChangeText={() => {}}
           onKeyDown={() => {}}
   />
         <XStack alignItems="center" justifyContent="space-between" gap="$2" paddingHorizontal="$4" paddingBottom="$3">
@@ -21,15 +21,15 @@ export const AskAi = () => {
             <Button
               size="icon"
               variant="outline"
-              borderColor="$borderColor" color="$color11" hoverStyle={{ borderColor: "$color", color: "$color" }}
+              borderColor="$borderColor" hoverStyle={{ borderColor: "$color" }}
             >
-              <UserPlus size={16} />
+              <UserPlus size={16} color="$color11" />
             </Button>
           </XStack>
           <XStack alignItems="center" justifyContent="flex-end" gap="$2">
-            <Button backgroundColor="$color12" color="$color4" size="sm">
-              <Settings size={16} />
-              Settings
+            <Button backgroundColor="$color12" size="sm">
+              <Settings size={16} color="$color4" />
+              <SizableText color="$color4">Settings</SizableText>
             </Button>
             <Button size="icon">
               <ArrowUp size={16} />

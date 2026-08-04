@@ -24,7 +24,6 @@ export function ListPagesItem({
       key={index}
       paddingLeft="$5" paddingVertical="$3" cursor="pointer" fontSize="$3" alignItems="center" justifyContent="center" gap="$1" group whiteSpace="nowrap" borderRightWidth={1} borderColor="$borderColor" display="flex" flexDirection="row" hoverStyle={{ backgroundColor: "$background" }} {...{ backgroundColor: currentPage === page.path ? "$background" : undefined, color: currentPage === page.path ? "$color" : "$color11", paddingRight: index === 0 ? "$5" : "$1" }}
       onClick={() => onSelectPage(page.path)}
-      title={page.path}
     >
             {page.path}
       {index > 0 && (

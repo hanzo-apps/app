@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from '@hanzo/ui';
-import { YStack, XStack, SizableText } from '@hanzo/gui';
+import { YStack, XStack, SizableText, type GuiElement } from '@hanzo/gui';
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Check, ChevronDown } from "lucide-react";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
@@ -37,13 +37,13 @@ export function ChatThread({
   messages: ThreadMessage[];
   className?: string;
 }) {
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<GuiElement>(null);
 
   // Smooth scroll-to-bottom on every new message OR streamed update. Scrolls
   // only this container (never the page) so the layout can't jump.
   useEffect(() => {
     const el = scrollRef.current;
-    if (!el) return;
+    if (!el || !('scrollTo' in el)) return;
     const reduce =
       typeof window !== "undefined" &&
       !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
@@ -74,7 +74,7 @@ export function ChatThread({
 function UserBubble({ text }: { text: string }) {
   return (
     <XStack justifyContent="flex-end">
-      <SizableText maxWidth="85%" whiteSpace="pre-wrap" wordBreak="break-word" borderRadius="$5" borderBottomRightRadius="$1" backgroundColor="$color4" paddingHorizontal="$3" paddingVertical="$1.5" fontSize={13} color="$color" display="flex" flexDirection="column">
+      <SizableText maxWidth="85%" whiteSpace="pre-wrap" borderRadius="$5" borderBottomRightRadius="$1" backgroundColor="$color4" paddingHorizontal="$3" paddingVertical="$1.5" fontSize={13} color="$color" display="flex" flexDirection="column">
         {text}
       </SizableText>
     </XStack>
@@ -106,7 +106,7 @@ function AssistantMessage({ message }: { message: ThreadMessage }) {
     }
     return (
       <XStack width="100%" justifyContent="flex-start">
-        <SizableText maxWidth="95%" wordBreak="break-word" borderRadius="$5" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1.5" fontSize={13} color="$color" display="flex" flexDirection="column">
+        <SizableText maxWidth="95%" borderRadius="$5" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$1.5" fontSize={13} color="$color" display="flex" flexDirection="column">
           {text ? (
             <XStack flexWrap="wrap" alignItems="flex-end">
               {/* Render the assistant reply as formatted markdown (headings, lists,
@@ -204,7 +204,7 @@ function CollapsibleSection({
       <Button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        width="100%" alignItems="center" justifyContent="space-between" paddingHorizontal="$3" paddingVertical="$1.5" textAlign="left" hoverStyle={{ backgroundColor: "$color3" }}
+        width="100%" alignItems="center" justifyContent="space-between" paddingHorizontal="$3" paddingVertical="$1.5" hoverStyle={{ backgroundColor: "$color3" }}
       >
         <SizableText
           fontSize={13} fontWeight="500" {...{ color: live ? undefined : "$color11" }} className="thread-shimmer-text"

@@ -1,7 +1,7 @@
 'use client';
 
 import { Button, Input } from '@hanzo/ui';
-import { YStack, Image, XStack } from '@hanzo/gui';
+import { YStack, Image, XStack, SizableText } from '@hanzo/gui';
 import React, { useRef, useState } from 'react';
 import { Camera, ImageUp, X, Loader2 } from 'lucide-react';
 import { compressImage } from '@/lib/utils/image-compress';
@@ -80,10 +80,10 @@ export function ThumbnailArea({
         <Button
           type="button"
           onClick={handleRemove}
-          position="absolute" alignItems="center" justifyContent="center" backgroundColor="$background" color="$color" opacity={0} borderWidth={1} borderColor="$borderColor" elevation={1} $group-hover={{ opacity: 1 }} {...{ top: isSm ? "$0" : "$1.5", right: isSm ? "$0" : "$1.5", y: isSm ? "33.333%" : undefined, x: isSm ? "33.333%" : undefined }} {...(isSm ? { width: 20, height: 20, borderRadius: 4 } : { width: 28, height: 28, borderRadius: 6 })}
+          position="absolute" alignItems="center" justifyContent="center" backgroundColor="$background" opacity={0} borderWidth={1} borderColor="$borderColor" elevation={1} $group-hover={{ opacity: 1 }} {...{ top: isSm ? "$0" : "$1.5", right: isSm ? "$0" : "$1.5", y: isSm ? "33.333%" : undefined, x: isSm ? "33.333%" : undefined }} {...(isSm ? { width: 20, height: 20, borderRadius: 4 } : { width: 28, height: 28, borderRadius: 6 })}
           title="Remove thumbnail"
         >
-          <X />
+          <SizableText color="$color"><X /></SizableText>
         </Button>
       </YStack>
     );
@@ -99,19 +99,21 @@ export function ThumbnailArea({
               type="button"
               onClick={handleCapture}
               disabled={isCapturing}
-              height="$5" width="$5" borderRadius="$2" alignItems="center" justifyContent="center" color="$color11" hoverStyle={{ color: "$color", backgroundColor: "$color11" }}
+              variant="ghost"
+              height="$5" width="$5" borderRadius="$2" alignItems="center" justifyContent="center" hoverStyle={{ backgroundColor: "$color11" }}
               title="Capture"
             >
-              {isCapturing ? <Loader2 size={12} /> : <Camera size={12} />}
+              <SizableText color="$color11">{isCapturing ? <Loader2 size={12} /> : <Camera size={12} />}</SizableText>
             </Button>
           )}
           <Button
             type="button"
             onClick={handleUploadClick}
-            height="$5" width="$5" borderRadius="$2" alignItems="center" justifyContent="center" color="$color11" hoverStyle={{ color: "$color", backgroundColor: "$color11" }}
+            variant="ghost"
+            height="$5" width="$5" borderRadius="$2" alignItems="center" justifyContent="center" hoverStyle={{ backgroundColor: "$color11" }}
             title="Upload image"
           >
-            <ImageUp size={12} />
+            <SizableText color="$color11"><ImageUp size={12} /></SizableText>
           </Button>
         </XStack>
       ) : (
@@ -121,19 +123,19 @@ export function ThumbnailArea({
               type="button"
               onClick={handleCapture}
               disabled={isCapturing}
-              height={36} width={36} borderRadius="$5" alignItems="center" justifyContent="center" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" color="$color11" elevation={1} hoverStyle={{ color: "$color", backgroundColor: "$background" }}
+              height={36} width={36} borderRadius="$5" alignItems="center" justifyContent="center" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" elevation={1} hoverStyle={{ backgroundColor: "$background" }}
               title="Capture screenshot"
             >
-              {isCapturing ? <Loader2 size={16} /> : <Camera size={16} />}
+              <SizableText color="$color11">{isCapturing ? <Loader2 size={16} /> : <Camera size={16} />}</SizableText>
             </Button>
           )}
           <Button
             type="button"
             onClick={handleUploadClick}
-            height={36} width={36} borderRadius="$5" alignItems="center" justifyContent="center" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" color="$color11" elevation={1} hoverStyle={{ color: "$color", backgroundColor: "$background" }}
+            height={36} width={36} borderRadius="$5" alignItems="center" justifyContent="center" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" elevation={1} hoverStyle={{ backgroundColor: "$background" }}
             title="Upload image"
           >
-            <ImageUp size={16} />
+            <SizableText color="$color11"><ImageUp size={16} /></SizableText>
           </Button>
         </XStack>
       )}

@@ -53,7 +53,7 @@ export function GameCard({ game }: { game: GameEntry }) {
       <YStack flex={1} padding="$4">
         <XStack marginBottom="$1" alignItems="center" gap="$2">
           <H3 fontWeight="500" color="$color">{game.name}</H3>
-          <Badge variant="secondary" fontSize={11}>
+          <Badge variant="secondary">
             {game.genre}
           </Badge>
         </XStack>

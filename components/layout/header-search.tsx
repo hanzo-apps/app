@@ -28,13 +28,15 @@ export function HeaderSearch({ className }: { className?: string }) {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Search (Command-K)"
-        group height={36} alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2.5" fontSize="$3" color="$color11" outlineWidth={0} hoverStyle={{ borderColor: "$color", color: "$color" }} className={`${className}`}
+        group height={36} alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$2.5" outlineWidth={0} hoverStyle={{ borderColor: "$color" }} className={`${className}`}
       >
-        <Search size={16} />
-        <SizableText display="none">Search</SizableText>
-        <kbd className="hs-kbd">
-          ⌘K
-        </kbd>
+        <SizableText color="$color11" $group-hover={{ color: "$color" }} display="flex" alignItems="center" gap="$2">
+          <Search size={16} />
+          <SizableText display="none">Search</SizableText>
+          <kbd className="hs-kbd">
+            ⌘K
+          </kbd>
+        </SizableText>
       </Button>
       {open && <CommandPalette open={open} onOpenChange={setOpen} />}
     </>

@@ -827,7 +827,7 @@ export function ProjectManager({ onProjectSelect, hideHeader = false, hideFooter
                 value={newProjectDescription}
                 onChange={(e) => setNewProjectDescription(e.target.value.slice(0, 200))}
                 placeholder="A brief description of your project"
-                marginTop="$2" resize="none"
+                marginTop="$2"
                 rows={3}
                 maxLength={200}
   />

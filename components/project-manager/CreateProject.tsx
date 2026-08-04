@@ -117,8 +117,8 @@ export function CreateProject({ open, onOpenChange, onCreated }: CreateProjectPr
           {/* Framework */}
           <div>
             <Label fontSize="$3" fontWeight="500">Framework</Label>
-            <Select value={framework} onValueChange={(v) => setFramework(v as Framework)} disabled={submitting}>
-              <SelectTrigger marginTop="$1.5" backgroundColor="$background">
+            <Select value={framework} onValueChange={(v) => setFramework(v as Framework)}>
+              <SelectTrigger marginTop="$1.5" backgroundColor="$background" disabled={submitting}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

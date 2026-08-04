@@ -61,15 +61,16 @@ export function MemoryMonitor() {
   };
 
   return (
-    <SizableText
-      fontSize="$1" fontFamily="$mono" alignItems="center" gap="$1" display="flex" flexDirection="row" {...{ color: getColor() }}
-      title={`JS Heap: ${memory.usedMB}MB used / ${memory.totalMB}MB limit (${memory.percent}%)`}
-    >
-      <SizableText opacity={0.6}>MEM:</SizableText>
-      <span>{memory.usedMB}MB</span>
-      {memory.percent > 60 && (
-        <SizableText opacity={0.6}>({memory.percent}%)</SizableText>
-      )}
-    </SizableText>
+    <span title={`JS Heap: ${memory.usedMB}MB used / ${memory.totalMB}MB limit (${memory.percent}%)`}>
+      <SizableText
+        fontSize="$1" fontFamily="$mono" alignItems="center" gap="$1" display="flex" flexDirection="row" {...{ color: getColor() }}
+      >
+        <SizableText opacity={0.6}>MEM:</SizableText>
+        <span>{memory.usedMB}MB</span>
+        {memory.percent > 60 && (
+          <SizableText opacity={0.6}>({memory.percent}%)</SizableText>
+        )}
+      </SizableText>
+    </span>
   );
 }

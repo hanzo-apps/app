@@ -202,7 +202,7 @@ export function ServerFunctionsManager({ deploymentId, dataProvider }: ServerFun
                         <MoreVertical size={16} />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent>
                       <DropdownMenuItem onClick={() => setEditingFunction(fn)}>
                         <Pencil size={16} />
                         Edit
@@ -222,7 +222,7 @@ export function ServerFunctionsManager({ deploymentId, dataProvider }: ServerFun
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => deleteFunction(fn)}
-                        color="$red9"
+                        variant="destructive"
                       >
                         <Trash2 size={16} />
                         Delete

@@ -184,7 +184,7 @@ export function ModelSettingsPanel({ onClose, onModelChange, showJudgeModel, onJ
               )}
             </SelectValue>
           </SelectTrigger>
-          <SelectContent maxHeight={400}>
+          <SelectContent>
             {getAllProviders()
               .filter(p => codexAvailable || p.id !== 'openai-codex')
               .map(provider => (

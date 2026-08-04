@@ -88,9 +88,9 @@ export function BuildTranscript({ build }: { build: Build }) {
             <nav aria-label="Breadcrumb">
               <SizableText flexWrap="wrap" alignItems="center" gap="$1.5" fontFamily="$mono" fontSize={11} textTransform="uppercase" letterSpacing={2.24} color="$color11" display="flex" flexDirection="row">
                 <li>
-                  <Link href="/builds"><XStack hoverStyle={{ color: "$color" }}>
+                  <Link href="/builds"><SizableText hoverStyle={{ color: "$color" }}>
                     Builds
-                  </XStack></Link>
+                  </SizableText></Link>
                 </li>
                 <li aria-hidden="true">
                   <ChevronRight size={12} color="$color11" />
@@ -177,7 +177,7 @@ export function BuildTranscript({ build }: { build: Build }) {
                           {t.actor}
                         </SizableText>
                       ) : null}
-                      <SizableText tag="time" fontFamily="$mono" fontSize={11} color="$color11" opacity={0.7}>{t.at}</SizableText>
+                      <SizableText fontFamily="$mono" fontSize={11} color="$color11" opacity={0.7}>{t.at}</SizableText>
                     </XStack>
 
                     <YStack marginTop="$2">

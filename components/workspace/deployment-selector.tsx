@@ -94,13 +94,13 @@ export function DeploymentSelector({
 
   return (
     <XStack alignItems="center" gap="$2" className={`${className}`}>
-      <Tooltip>
+      <Tooltip placement="bottom">
         <TooltipTrigger asChild>
           <SizableText alignItems="center" gap="$1.5" color="$color11" display="flex" flexDirection="row">
             <Database size={16} />
           </SizableText>
         </TooltipTrigger>
-        <TooltipContent side="bottom">
+        <TooltipContent>
           <p>Backend</p>
           <Paragraph fontSize="$1" color="$color11">
             Connect to a deployment for database, edge functions, and secrets

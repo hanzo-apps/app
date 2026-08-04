@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { toast, Button } from '@hanzo/ui';
+import { SizableText } from '@hanzo/gui';
 import { useParams } from "next/navigation";
 
 import Loading from "@/components/loading";
@@ -62,22 +63,22 @@ export function SaveButton({
       <Button
         variant="default"
         size="sm"
-        height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1" position="relative" $lg={{ display: "none" }}
+        height={28} gap="$1.5" paddingHorizontal="$2.5" position="relative" $lg={{ display: "none" }}
         onClick={updateSpace}
         disabled={loading}
       >
         <Save size={14} />
-        {loading ? "Publishing…" : "Publish"}
+        <SizableText fontSize="$1">{loading ? "Publishing…" : "Publish"}</SizableText>
         {loading && <Loading overlay={false} size={14} />}
       </Button>
       <Button
         variant="default"
         size="sm"
-        height={28} paddingHorizontal="$2.5" fontSize="$1" position="relative" $lg={{ display: "none" }}
+        height={28} paddingHorizontal="$2.5" position="relative" $lg={{ display: "none" }}
         onClick={updateSpace}
         disabled={loading}
       >
-        {loading ? "Publishing…" : "Publish"}
+        <SizableText fontSize="$1">{loading ? "Publishing…" : "Publish"}</SizableText>
         {loading && <Loading overlay={false} size={14} />}
       </Button>
     </>

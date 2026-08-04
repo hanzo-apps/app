@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, H4, Paragraph } from '@hanzo/gui';
+import { YStack, XStack, H4, Paragraph, SizableText } from '@hanzo/gui';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Button, toast, Textarea } from '@hanzo/ui';
 import { Play, Loader2 } from 'lucide-react';
@@ -150,9 +150,11 @@ export function SchemaEditor({ projectId, enabled, onSchemaChange }: SchemaEdito
           <Button
             key={tab}
             onClick={() => setActiveSubTab(tab)}
-            paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$1" fontWeight="500" borderRadius="$3" {...{ backgroundColor: activeSubTab === tab ? "$color12" : undefined, color: activeSubTab === tab ? "$background" : "$color11", hoverStyle: activeSubTab === tab ? undefined : {"color":"$color","backgroundColor":"$color3"} }}
+            paddingHorizontal="$3" paddingVertical="$1.5" borderRadius="$3" {...{ backgroundColor: activeSubTab === tab ? "$color12" : undefined, hoverStyle: activeSubTab === tab ? undefined : { backgroundColor: "$color3" } }}
           >
-            {tab === 'tables' ? 'Tables' : tab === 'sql' ? 'SQL' : 'DDL'}
+            <SizableText fontSize="$1" fontWeight="500" color={activeSubTab === tab ? "$background" : "$color11"}>
+              {tab === 'tables' ? 'Tables' : tab === 'sql' ? 'SQL' : 'DDL'}
+            </SizableText>
           </Button>
         ))}
       </XStack>
@@ -182,7 +184,7 @@ export function SchemaEditor({ projectId, enabled, onSchemaChange }: SchemaEdito
               </div>
               <Button
                 size="sm"
-                height={28} paddingHorizontal="$2" fontSize="$1"
+                height={28} paddingHorizontal="$2"
                 onClick={applyDDL}
                 disabled={applying || !ddl.trim()}
               >
@@ -196,10 +198,10 @@ export function SchemaEditor({ projectId, enabled, onSchemaChange }: SchemaEdito
             </XStack>
             <Textarea
               data-schema-editor
-              flex={1} width="100%" borderRadius="$3" borderWidth={1} borderColor="$color2" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3" fontFamily="$mono" resize="none" placeholderTextColor="$color11" focusVisibleStyle={{ outlineWidth: 0 }}
+              flex={1} width="100%" borderRadius="$3" borderWidth={1} borderColor="$color2" backgroundColor="$background" paddingHorizontal="$3" paddingVertical="$2" fontSize="$3" fontFamily="$mono" placeholderTextColor="$color11" focusVisibleStyle={{ outlineWidth: 0 }}
               placeholder={`-- Create or modify tables\nCREATE TABLE IF NOT EXISTS example (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  name TEXT NOT NULL,\n  created_at DATETIME DEFAULT CURRENT_TIMESTAMP\n);`}
               value={ddl}
-              onChange={(e) => setDdl(e.target.value)}
+              onChangeText={(t) => setDdl(t)}
               spellCheck={false}
   />
           </YStack>

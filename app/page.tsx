@@ -223,7 +223,7 @@ export default function LandingPage() {
                             key={t.slug}
                             type="button"
                             onClick={() => startFromTemplate(t)}
-                            group className="zoom-scope" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" textAlign="left" hoverStyle={{ borderColor: "$color", backgroundColor: "$color" }}
+                            group className="zoom-scope" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" hoverStyle={{ borderColor: "$color", backgroundColor: "$color" }}
                           >
                             <YStack position="relative" overflow="hidden" backgroundColor="$color">
                               <TemplateThumb
@@ -314,7 +314,7 @@ export default function LandingPage() {
                   <Button
                     key={project.slug}
                     onClick={() => router.push(builderLink(project.slug, project.org))}
-                    group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" textAlign="left" hoverStyle={{ borderColor: "$color", backgroundColor: "$color" }}
+                    group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color" hoverStyle={{ borderColor: "$color", backgroundColor: "$color" }}
                   >
                     <ProjectThumb name={project.name} liveUrl={project.liveUrl} />
                     <YStack padding="$4.5">

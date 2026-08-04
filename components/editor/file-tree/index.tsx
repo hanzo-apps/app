@@ -54,7 +54,7 @@ export function FileTree({
           type="button"
           onClick={onNewPage}
           title="New file"
-          height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
+          height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" {...{ color: "$color11" }} hoverStyle={{ backgroundColor: "$color3" }} focusVisibleStyle={{ outlineWidth: 0 }}
         >
           <Plus size={14} />
         </Button>
@@ -74,7 +74,7 @@ export function FileTree({
                 <Input
                   autoFocus
                   value={draft}
-                  onChange={(e) => setDraft(e.target.value)}
+                  onChangeText={(value) => setDraft(value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") commitRename(page.path);
                     if (e.key === "Escape") setRenaming(null);
@@ -86,10 +86,10 @@ export function FileTree({
                 <Button
                   type="button"
                   onClick={() => onSelectPage(page.path)}
-                  minWidth={0} flex={1} numberOfLines={1} textAlign="left" fontFamily="$mono"
+                  minWidth={0} flex={1}
                   title={page.path}
                 >
-                  {page.path}
+                  <SizableText flex={1} minWidth={0} numberOfLines={1} textAlign="left" fontFamily="$mono">{page.path}</SizableText>
                 </Button>
               )}
 
@@ -97,7 +97,7 @@ export function FileTree({
                 <Button
                   type="button"
                   onClick={() => commitRename(page.path)}
-                  flexShrink={0} color="$color11" hoverStyle={{ color: "$color" }}
+                  flexShrink={0} {...{ color: "$color11" }}
                 >
                   <Check size={12} />
                 </Button>
@@ -107,7 +107,7 @@ export function FileTree({
                     type="button"
                     onClick={() => startRename(page.path)}
                     title="Rename"
-                    color="$color11" hoverStyle={{ color: "$color" }}
+                    {...{ color: "$color11" }}
                   >
                     <Pencil size={12} />
                   </Button>
@@ -116,7 +116,7 @@ export function FileTree({
                       type="button"
                       onClick={() => onDeletePage(page.path)}
                       title="Delete"
-                      color="$color11" hoverStyle={{ color: "$red8" }}
+                      {...{ color: "$color11" }}
                     >
                       <Trash2 size={12} />
                     </Button>

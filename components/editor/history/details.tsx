@@ -166,10 +166,10 @@ export function RevisionDetails({
         <Button
           type="button"
           onClick={onClose}
-          alignItems="center" gap="$1" borderRadius="$3" paddingHorizontal="$1.5" paddingVertical="$1" fontSize="$1" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+          alignItems="center" gap="$1" borderRadius="$3" paddingHorizontal="$1.5" paddingVertical="$1" hoverStyle={{ backgroundColor: "$color3" }}
         >
-          <ArrowLeft size={14} />
-          Back to latest
+          <ArrowLeft size={14} color="$color11" />
+          <SizableText fontSize="$1" color="$color11">Back to latest</SizableText>
         </Button>
         <SizableText marginLeft="$1" numberOfLines={1} fontSize={13} fontWeight="500" color="$color">Details</SizableText>
         <XStack marginLeft="auto" alignItems="center" gap="$1.5">
@@ -179,9 +179,9 @@ export function RevisionDetails({
                 key={v}
                 type="button"
                 onClick={() => setView(v)}
-                borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$1" fontSize="$1" fontWeight="500" textTransform="capitalize" {...{ backgroundColor: view === v ? "$color3" : undefined, color: view === v ? "$color" : "$color11", elevation: view === v ? 1 : undefined, hoverStyle: view === v ? undefined : {"backgroundColor":"white","color":"$color"} }}
+                borderRadius="$3" paddingHorizontal="$2.5" paddingVertical="$1" {...{ backgroundColor: view === v ? "$color3" : undefined, elevation: view === v ? 1 : undefined, hoverStyle: view === v ? undefined : { backgroundColor: "white" } }}
               >
-                {v}
+                <SizableText fontSize="$1" fontWeight="500" textTransform="capitalize" color={view === v ? "$color" : "$color11"}>{v}</SizableText>
               </Button>
             ))}
           </XStack>
@@ -189,9 +189,9 @@ export function RevisionDetails({
             type="button"
             onClick={onClose}
             title="Close details"
-            width={28} height={28} alignItems="center" justifyContent="center" borderRadius="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+            width={28} height={28} alignItems="center" justifyContent="center" borderRadius="$3" hoverStyle={{ backgroundColor: "$color3" }}
           >
-            <X size={16} />
+            <X size={16} color="$color11" />
           </Button>
         </XStack>
       </XStack>
@@ -257,7 +257,7 @@ function FileCard({
         <Button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          minWidth={0} flex={1} alignItems="center" gap="$2" textAlign="left"
+          minWidth={0} flex={1} alignItems="center" gap="$2"
         >
           <ChevronRight
             size={14} color="$color11"
@@ -308,17 +308,17 @@ function DiffView({ lines }: { lines: DiffLine[] }) {
   }
   return (
     <YStack borderTopWidth={1} borderColor="$borderColor" backgroundColor="$background" overflow="scroll">
-      <SizableText width="100%" borderCollapse="collapse" fontFamily="$mono" fontSize={11} lineHeight={1.625} display="flex" flexDirection="column">
+      <SizableText width="100%" fontFamily="$mono" fontSize={11} lineHeight={1.625} display="flex" flexDirection="column">
         <tbody>
           {lines.map((l, i) => (
             <YStack
               key={i}
               {...{ backgroundColor: l.type === "hunk" ? "white" : l.type === "del" ? "$red9" : l.type === "add" ? "$green9" : undefined }}
             >
-              <SizableText userSelect="none" borderRightWidth={1} borderColor="$borderColor" paddingHorizontal="$2" textAlign="right" color="$color11" fontVariant="tabular-nums">
+              <SizableText userSelect="none" borderRightWidth={1} borderColor="$borderColor" paddingHorizontal="$2" textAlign="right" color="$color11">
                 {l.oldNo ?? ""}
               </SizableText>
-              <SizableText userSelect="none" borderRightWidth={1} borderColor="$borderColor" paddingHorizontal="$2" textAlign="right" color="$color11" fontVariant="tabular-nums">
+              <SizableText userSelect="none" borderRightWidth={1} borderColor="$borderColor" paddingHorizontal="$2" textAlign="right" color="$color11">
                 {l.newNo ?? ""}
               </SizableText>
               <SizableText
@@ -428,9 +428,9 @@ function IconBtn({
       type="button"
       title={title}
       onClick={onClick}
-      width="$5" height="$5" alignItems="center" justifyContent="center" borderRadius="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
+      width="$5" height="$5" alignItems="center" justifyContent="center" borderRadius="$3" hoverStyle={{ backgroundColor: "$color3" }}
     >
-      {children}
+      <SizableText color="$color11">{children}</SizableText>
     </Button>
   );
 }

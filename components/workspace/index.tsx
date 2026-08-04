@@ -350,16 +350,16 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
           <Button
             size="sm"
             variant="ghost"
-            paddingHorizontal="$2" fontSize="$1"
+            paddingHorizontal="$2"
             onClick={() => setFocusContext(null)}
             title="Clear focus context"
           >
-            Clear
+            <SizableText fontSize="$1">Clear</SizableText>
           </Button>
         </SizableText>
         <YStack marginTop="$2" rowGap="$2">
         {focusContext.domPath && (
-          <SizableText fontSize={11} fontFamily="$mono" color="$color11" wordBreak="break-all" lineHeight={1.375} display="flex" flexDirection="column">
+          <SizableText fontSize={11} fontFamily="$mono" color="$color11" lineHeight={1.375} display="flex" flexDirection="column" className="break-all">
             {focusContext.domPath}
           </SizableText>
         )}
@@ -1250,10 +1250,10 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
         <YStack display="none" flex={1} overflow="hidden" backgroundColor="$background">
           {/* Left sidebar for panel toggles */}
           <YStack width="$7" backgroundColor="$color3" borderRightWidth={1} borderColor="$borderColor" alignItems="center" paddingVertical="$3" gap="$1.5">
-            <Tooltip>
+            <Tooltip placement="right">
               <TooltipTrigger asChild>
                 <Button
-                  height="$4.5" width="$4.5" paddingHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ elevation: showChat ? 1 : undefined, backgroundColor: showChat ? undefined : "transparent", color: showChat ? undefined : "$color11", hoverStyle: showChat ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
+                  height="$4.5" width="$4.5" paddingHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ elevation: showChat ? 1 : undefined, backgroundColor: showChat ? undefined : "transparent", color: showChat ? undefined : "$color11", hoverStyle: showChat ? undefined : {"backgroundColor":"$color3"} }}
                   style={{
                     backgroundColor: showChat ? 'var(--brand-accent)' : undefined,
                     color: showChat ? 'var(--brand-accent-fg)' : undefined
@@ -1263,15 +1263,15 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   <MessageSquare size={14} />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="right">
+              <TooltipContent>
                 <p>Chat</p>
               </TooltipContent>
             </Tooltip>
 
-            <Tooltip>
+            <Tooltip placement="right">
               <TooltipTrigger asChild>
                 <Button
-                  height="$4.5" width="$4.5" paddingHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ elevation: showFiles ? 1 : undefined, backgroundColor: showFiles ? undefined : "transparent", color: showFiles ? undefined : "$color11", hoverStyle: showFiles ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
+                  height="$4.5" width="$4.5" paddingHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ elevation: showFiles ? 1 : undefined, backgroundColor: showFiles ? undefined : "transparent", color: showFiles ? undefined : "$color11", hoverStyle: showFiles ? undefined : {"backgroundColor":"$color3"} }}
                   style={{
                     backgroundColor: showFiles ? 'var(--brand-accent)' : undefined,
                     color: showFiles ? 'var(--brand-accent-fg)' : undefined
@@ -1281,15 +1281,15 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   <FolderTree size={14} />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="right">
+              <TooltipContent>
                 <p>File Explorer</p>
               </TooltipContent>
             </Tooltip>
           
-            <Tooltip>
+            <Tooltip placement="right">
               <TooltipTrigger asChild>
                 <Button
-                  height="$4.5" width="$4.5" paddingHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ elevation: showEditor ? 1 : undefined, backgroundColor: showEditor ? undefined : "transparent", color: showEditor ? undefined : "$color11", hoverStyle: showEditor ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
+                  height="$4.5" width="$4.5" paddingHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ elevation: showEditor ? 1 : undefined, backgroundColor: showEditor ? undefined : "transparent", color: showEditor ? undefined : "$color11", hoverStyle: showEditor ? undefined : {"backgroundColor":"$color3"} }}
                   style={{
                     backgroundColor: showEditor ? 'var(--brand-accent)' : undefined,
                     color: showEditor ? 'var(--brand-accent-fg)' : undefined
@@ -1299,15 +1299,15 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   <Code2 size={14} />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="right">
+              <TooltipContent>
                 <p>Code Editor</p>
               </TooltipContent>
             </Tooltip>
           
-            <Tooltip>
+            <Tooltip placement="right">
               <TooltipTrigger asChild>
                 <Button
-                  height="$4.5" width="$4.5" marginHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ elevation: showPreview ? 1 : undefined, backgroundColor: showPreview ? undefined : "transparent", color: showPreview ? undefined : "$color11", hoverStyle: showPreview ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
+                  height="$4.5" width="$4.5" marginHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ elevation: showPreview ? 1 : undefined, backgroundColor: showPreview ? undefined : "transparent", color: showPreview ? undefined : "$color11", hoverStyle: showPreview ? undefined : {"backgroundColor":"$color3"} }}
                   style={{
                     backgroundColor: showPreview ? 'var(--brand-accent)' : undefined,
                     color: showPreview ? 'var(--brand-accent-fg)' : undefined
@@ -1317,15 +1317,15 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   <Eye size={14} />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="right">
+              <TooltipContent>
                 <p>Preview</p>
               </TooltipContent>
             </Tooltip>
 
-            <Tooltip>
+            <Tooltip placement="right">
               <TooltipTrigger asChild>
                 <Button
-                  height="$4.5" width="$4.5" paddingHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ elevation: showCheckpoints ? 1 : undefined, backgroundColor: showCheckpoints ? undefined : "transparent", color: showCheckpoints ? undefined : "$color11", hoverStyle: showCheckpoints ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
+                  height="$4.5" width="$4.5" paddingHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ elevation: showCheckpoints ? 1 : undefined, backgroundColor: showCheckpoints ? undefined : "transparent", color: showCheckpoints ? undefined : "$color11", hoverStyle: showCheckpoints ? undefined : {"backgroundColor":"$color3"} }}
                   style={{
                     backgroundColor: showCheckpoints ? 'var(--brand-accent)' : undefined,
                     color: showCheckpoints ? 'var(--brand-accent-fg)' : undefined
@@ -1335,15 +1335,15 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   <History size={14} />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="right">
+              <TooltipContent>
                 <p>Checkpoints</p>
               </TooltipContent>
             </Tooltip>
 
-            <Tooltip>
+            <Tooltip placement="right">
               <TooltipTrigger asChild>
                 <Button
-                  height="$4.5" width="$4.5" paddingHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ backgroundColor: showDebugPanel ? "$color" : "transparent", elevation: showDebugPanel ? 1 : undefined, color: showDebugPanel ? undefined : "$color11", hoverStyle: showDebugPanel ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
+                  height="$4.5" width="$4.5" paddingHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ backgroundColor: showDebugPanel ? "$color" : "transparent", elevation: showDebugPanel ? 1 : undefined, color: showDebugPanel ? undefined : "$color11", hoverStyle: showDebugPanel ? undefined : {"backgroundColor":"$color3"} }}
                   style={{
                     color: showDebugPanel ? 'var(--background)' : undefined
                   }}
@@ -1352,7 +1352,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   <Bug size={14} />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="right">
+              <TooltipContent>
                 <p>Debug Events</p>
               </TooltipContent>
             </Tooltip>
@@ -1590,7 +1590,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
           <YStack position="fixed" bottom="$0" left="$0" right="$0" backgroundColor="$background" borderTopWidth={1} borderColor="$borderColor">
             <XStack justifyContent="center" alignItems="center" padding="$2" gap="$2">
               <Button
-                alignItems="center" justifyContent="center" paddingVertical="$2" paddingHorizontal="$2" borderRadius="$5" elevation={1} {...{ color: activeMobilePanel === 'chat' ? undefined : "$color11", backgroundColor: activeMobilePanel === 'chat' ? undefined : "transparent", hoverStyle: activeMobilePanel === 'chat' ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
+                alignItems="center" justifyContent="center" paddingVertical="$2" paddingHorizontal="$2" borderRadius="$5" elevation={1} {...{ color: activeMobilePanel === 'chat' ? undefined : "$color11", backgroundColor: activeMobilePanel === 'chat' ? undefined : "transparent", hoverStyle: activeMobilePanel === 'chat' ? undefined : {"backgroundColor":"$color3"} }}
                 style={{
                   backgroundColor: activeMobilePanel === 'chat' ? 'var(--brand-accent)' : undefined,
                   color: activeMobilePanel === 'chat' ? 'var(--brand-accent-fg)' : undefined,
@@ -1601,7 +1601,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
               </Button>
             
               <Button
-                alignItems="center" justifyContent="center" paddingVertical="$2" paddingHorizontal="$2" borderRadius="$5" elevation={1} {...{ color: activeMobilePanel === 'files' ? undefined : "$color11", backgroundColor: activeMobilePanel === 'files' ? undefined : "transparent", hoverStyle: activeMobilePanel === 'files' ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
+                alignItems="center" justifyContent="center" paddingVertical="$2" paddingHorizontal="$2" borderRadius="$5" elevation={1} {...{ color: activeMobilePanel === 'files' ? undefined : "$color11", backgroundColor: activeMobilePanel === 'files' ? undefined : "transparent", hoverStyle: activeMobilePanel === 'files' ? undefined : {"backgroundColor":"$color3"} }}
                 style={{
                   backgroundColor: activeMobilePanel === 'files' ? 'var(--brand-accent)' : undefined,
                   color: activeMobilePanel === 'files' ? 'var(--brand-accent-fg)' : undefined,
@@ -1612,7 +1612,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
               </Button>
             
               <Button
-                alignItems="center" justifyContent="center" paddingVertical="$2" paddingHorizontal="$2" borderRadius="$5" elevation={1} {...{ color: activeMobilePanel === 'editor' ? undefined : "$color11", backgroundColor: activeMobilePanel === 'editor' ? undefined : "transparent", hoverStyle: activeMobilePanel === 'editor' ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
+                alignItems="center" justifyContent="center" paddingVertical="$2" paddingHorizontal="$2" borderRadius="$5" elevation={1} {...{ color: activeMobilePanel === 'editor' ? undefined : "$color11", backgroundColor: activeMobilePanel === 'editor' ? undefined : "transparent", hoverStyle: activeMobilePanel === 'editor' ? undefined : {"backgroundColor":"$color3"} }}
                 style={{
                   backgroundColor: activeMobilePanel === 'editor' ? 'var(--brand-accent)' : undefined,
                   color: activeMobilePanel === 'editor' ? 'var(--brand-accent-fg)' : undefined,
@@ -1623,7 +1623,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
               </Button>
             
               <Button
-                alignItems="center" justifyContent="center" paddingVertical="$2" paddingHorizontal="$2" borderRadius="$5" elevation={1} {...{ color: activeMobilePanel === 'preview' ? undefined : "$color11", backgroundColor: activeMobilePanel === 'preview' ? undefined : "transparent", hoverStyle: activeMobilePanel === 'preview' ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
+                alignItems="center" justifyContent="center" paddingVertical="$2" paddingHorizontal="$2" borderRadius="$5" elevation={1} {...{ color: activeMobilePanel === 'preview' ? undefined : "$color11", backgroundColor: activeMobilePanel === 'preview' ? undefined : "transparent", hoverStyle: activeMobilePanel === 'preview' ? undefined : {"backgroundColor":"$color3"} }}
                 style={{
                   backgroundColor: activeMobilePanel === 'preview' ? 'var(--brand-accent)' : undefined,
                   color: activeMobilePanel === 'preview' ? 'var(--brand-accent-fg)' : undefined,

@@ -1,6 +1,6 @@
 'use client';
 
-import { YStack, XStack, H3, Paragraph, SizableText, H2 } from '@hanzo/gui';
+import { YStack, XStack, H3, Paragraph, SizableText, H2, type GuiElement } from '@hanzo/gui';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { Button, toast, Popover, PopoverContent, PopoverTrigger } from '@hanzo/ui';
 import { MultiAgentOrchestrator } from '@/lib/llm/multi-agent-orchestrator';
@@ -143,7 +143,7 @@ export default function TestGenerationPage() {
   const [orchestratorInstances, setOrchestratorInstances] = useState<Map<string, MultiAgentOrchestrator>>(new Map());
   const [generationOutputs, setGenerationOutputs] = useState<Map<string, string>>(new Map());
   const [expandedTests, setExpandedTests] = useState<Set<string>>(new Set());
-  const generationOutputRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const generationOutputRefs = useRef<Map<string, GuiElement>>(new Map());
   const batchCancelledRef = useRef(false);
   const [overallStats, setOverallStats] = useState({
     total: 0,
@@ -230,7 +230,7 @@ export default function TestGenerationPage() {
         ));
         setTimeout(() => {
           const outputElement = generationOutputRefs.current.get(scenarioId);
-          if (outputElement) {
+          if (outputElement && 'scrollTo' in outputElement) {
             outputElement.scrollTop = outputElement.scrollHeight;
           }
         }, 0);
@@ -263,7 +263,7 @@ export default function TestGenerationPage() {
 
             setTimeout(() => {
               const outputElement = generationOutputRefs.current.get(scenarioId);
-              if (outputElement) {
+              if (outputElement && 'scrollTo' in outputElement) {
                 outputElement.scrollTop = outputElement.scrollHeight;
               }
             }, 0);
@@ -1120,7 +1120,7 @@ export default function TestGenerationPage() {
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent width={384} align="start" side="bottom" sideOffset={4} avoidCollisions={false}>
+            <PopoverContent width={384} align="start" sideOffset={4}>
               <ModelSettingsPanel
                 onClose={() => setShowModelSettings(false)}
                 onModelChange={(modelId) => setCurrentModel(modelId)}

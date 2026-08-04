@@ -136,12 +136,12 @@ export function Console({
             else return;
             e.preventDefault();
           }}
-          position="absolute" top={0} right={0} bottom={0} left={0} cursor="row-resize" userSelect="none" borderTopWidth={1} borderColor="$borderColor" focusVisibleStyle={{ outlineWidth: 0 }} group="dock"
+          position="absolute" top={0} right={0} bottom={0} left={0} cursor="row-resize" userSelect="none" borderTopWidth={1} borderColor="$borderColor" focusVisibleStyle={{ outlineWidth: 0 }} group
         >
           {/* The affordance: a hairline that lifts and a grip that fades in on
               hover, focus or drag. Nothing is drawn while the bar is at rest. */}
-          <SizableText pointerEvents="none" position="absolute" left="$0" right="$0" top="$0" height={1} backgroundColor="transparent" $group-dock-hover={{ backgroundColor: "$color" }} $group-dock-focus={{ backgroundColor: "$color" }} $group-dock-press={{ backgroundColor: "$color" }} />
-          <SizableText pointerEvents="none" position="absolute" left="50%" top={3} height="$1" width="$6" x="50%" borderRadius="$10" backgroundColor="transparent" $group-dock-hover={{ backgroundColor: "$color" }} $group-dock-focus={{ backgroundColor: "$color" }} $group-dock-press={{ backgroundColor: "$color" }} />
+          <SizableText pointerEvents="none" position="absolute" left="$0" right="$0" top="$0" height={1} backgroundColor="transparent" $group-hover={{ backgroundColor: "$color" }} $group-focus={{ backgroundColor: "$color" }} $group-press={{ backgroundColor: "$color" }} />
+          <SizableText pointerEvents="none" position="absolute" left="50%" top={3} height="$1" width="$6" x="50%" borderRadius="$10" backgroundColor="transparent" $group-hover={{ backgroundColor: "$color" }} $group-focus={{ backgroundColor: "$color" }} $group-press={{ backgroundColor: "$color" }} />
         </YStack>
 
         {/* Far LEFT — the chat/AI panel toggle. It shows and hides the LEFT pane,
@@ -155,13 +155,16 @@ export function Console({
             onClick={onToggleSidebar}
             aria-label="Chat panel"
             aria-expanded={!sidebarCollapsed}
-            width="$4.5" height="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" color="$color11" hoverStyle={{ backgroundColor: "$color", color: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
+            group
+            width="$4.5" height="$4.5" alignItems="center" justifyContent="center" borderRadius="$2" hoverStyle={{ backgroundColor: "$color" }} focusVisibleStyle={{ outlineWidth: 0 }}
           >
-            {sidebarCollapsed ? (
-              <PanelLeft size={14} />
-            ) : (
-              <PanelLeftClose size={14} />
-            )}
+            <SizableText color="$color11" $group-hover={{ color: "$color" }}>
+              {sidebarCollapsed ? (
+                <PanelLeft size={14} />
+              ) : (
+                <PanelLeftClose size={14} />
+              )}
+            </SizableText>
           </Button>
         </XStack>
 
@@ -239,7 +242,8 @@ export function Console({
             entries.map((entry) => (
               <Paragraph
                 key={entry.id}
-                whiteSpace="pre-wrap" wordBreak="break-word" {...{ color: entry.level === "error" ? "var(--destructive)" : entry.level === "warn"
+                className="break-words"
+                whiteSpace="pre-wrap" {...{ color: entry.level === "error" ? "var(--destructive)" : entry.level === "warn"
                       ? "$color"
                       : "$color11" }}
               >
