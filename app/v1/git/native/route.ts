@@ -20,6 +20,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { session } from '@/lib/iam';
 import { requireSameOrigin } from '@/lib/org/csrf';
 import { slugifyProject } from '@/lib/org/policy';
+import { cloudBase } from '@/lib/org/server';
 import { commitMessage } from '@/lib/git/coauthor';
 import { ForgeError, commitFiles, ensureRepo, forgeConfigured } from '@/lib/git/forge';
 import type { Page } from '@/types';
@@ -83,6 +84,28 @@ export async function POST(request: NextRequest) {
       pages.map((p) => ({ path: p.path, content: p.html ?? '' })),
       commitMessage((body?.message || 'Update from hanzo.app').slice(0, 500), {}),
     );
+    // LINK IT. The history panel finds commits through `project.repo` — without
+    // this, repos are created and committed to and the UI can see none of it, so
+    // revisions, bookmarks and fork all read an empty list. `/v1/git/sync` has
+    // always recorded the same link for the same reason.
+    //
+    // Best-effort: the commit is already durable, and a project with no record
+    // yet (a brand-new build) has nothing to patch. Failing the request here
+    // would discard a successful commit over a bookkeeping step.
+    try {
+      await fetch(`${cloudBase()}/v1/projects/${encodeURIComponent(repo)}`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${id.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ repo: { url: created.html_url, branch } }),
+        cache: 'no-store',
+      });
+    } catch {
+      /* the repo is committed; the link is a convenience the UI re-reads later */
+    }
+
     return NextResponse.json({
       ok: true,
       repo: created.full_name,

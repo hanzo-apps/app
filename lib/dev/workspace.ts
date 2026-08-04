@@ -22,6 +22,7 @@
 import type { Page } from "@/types";
 
 const KEY = "hanzo.dev.workspace";
+const ID_KEY = "hanzo.dev.project-id";
 const VERSION = 1;
 
 /** Bound: localStorage throws past a few MB, and a throw here loses the work. */
@@ -75,5 +76,41 @@ export function clearWorkspace(project: string): void {
     window.localStorage.removeItem(keyFor(project));
   } catch {
     /* nothing to do */
+  }
+}
+
+/**
+ * A STABLE, UNIQUE name for this project's repo — minted once, never re-derived.
+ *
+ * The first version of the per-turn commit derived the repo name from
+ * `project.title || "untitled-site"`. For a brand-new build there is no project
+ * record, so EVERY first project of EVERY user resolved to the literal
+ * "untitled-site" — two unrelated projects would share one repo and overwrite
+ * each other's history. That is data loss, not untidiness.
+ *
+ * It is also why the name may never be re-derived from a mutable title: renaming
+ * a project would point it at a DIFFERENT repo and orphan every commit already
+ * made. So a saved project uses its own slug (stable by definition), and an
+ * unsaved one mints an id once and keeps it.
+ */
+export function projectRepoName(slug?: string | null): string {
+  const fromRecord = (slug || "").trim();
+  if (fromRecord) return fromRecord;
+  if (typeof window === "undefined") return "";
+  try {
+    const existing = window.localStorage.getItem(ID_KEY);
+    if (existing) return existing;
+    // Short, lowercase, forge-safe. Random rather than time-based: two tabs
+    // opened in the same second must not mint the same name.
+    const minted = `site-${Math.random().toString(36).slice(2, 8)}${Math.random()
+      .toString(36)
+      .slice(2, 6)}`;
+    window.localStorage.setItem(ID_KEY, minted);
+    return minted;
+  } catch {
+    // No storage: return nothing rather than a shared constant. The caller skips
+    // the commit, which loses history for that session — strictly better than
+    // writing this session's pages over another project's repo.
+    return "";
   }
 }

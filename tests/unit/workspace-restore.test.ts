@@ -64,3 +64,33 @@ describe('workspace working copy', () => {
     spy.mockRestore();
   });
 });
+
+describe('projectRepoName — a repo name that cannot collide', () => {
+  const { projectRepoName } = jest.requireActual('@/lib/dev/workspace');
+
+  it('uses the project slug when the project is saved', () => {
+    expect(projectRepoName('luxquest')).toBe('luxquest');
+  });
+
+  it('mints ONE id for an unsaved project and reuses it', () => {
+    const a = projectRepoName(undefined);
+    const b = projectRepoName(undefined);
+    expect(a).toMatch(/^site-[a-z0-9]+$/);
+    expect(b).toBe(a); // never re-minted — a new name orphans every commit
+  });
+
+  it('never returns a shared constant', () => {
+    // THE BUG: "untitled-site" for every user's first project meant unrelated
+    // projects shared one repo and overwrote each other's history.
+    expect(projectRepoName(undefined)).not.toBe('untitled-site');
+  });
+
+  it('returns nothing rather than a shared name when storage is blocked', () => {
+    const spy = jest.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('blocked');
+    });
+    // Losing this session's history beats writing it over another project's repo.
+    expect(projectRepoName(undefined)).toBe('');
+    spy.mockRestore();
+  });
+});

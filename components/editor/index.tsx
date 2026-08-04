@@ -44,7 +44,7 @@ import { LoadProject } from "../my-projects/load-project";
 import { isTheSameHtml } from "@/lib/compare-html-diff";
 import { useAutosave } from "@/hooks/useAutosave";
 import { commitTurn } from "@/lib/git/commit-turn";
-import { loadWorkspace, saveWorkspace } from "@/lib/dev/workspace";
+import { loadWorkspace, projectRepoName, saveWorkspace } from "@/lib/dev/workspace";
 import { saveLabel } from "@/lib/pages/save-label";
 import { FileTree } from "./file-tree";
 import { HistoryPanel } from "./history";
@@ -399,10 +399,13 @@ export const AppEditor = ({
                 // but never silent: an unwired forge or a failed write says so,
                 // because implying a history that is not being written is the
                 // same defect as the status bar that read "Auto-saved".
-                void commitTurn(
-                  project?.title || (window as any).__projectName || "untitled-site",
-                  newPages,
-                  p,
+                // A STABLE name. Deriving it from the title meant every
+                // first-time project was called "untitled-site" and they
+                // overwrote each other's history in one shared repo.
+                const repoName = projectRepoName(project?.space_id?.split("/")[1]);
+                void (repoName
+                  ? commitTurn(repoName, newPages, p)
+                  : Promise.resolve({ ok: false as const, reason: "no project id", unconfigured: true })
                 ).then((r) => {
                   if (!r.ok && !r.unconfigured) {
                     toast.error(`Version not saved to git: ${r.reason}`);
