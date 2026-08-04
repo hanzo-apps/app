@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import classNames from "classnames";
 import { toast } from "@hanzo/ui";
+import { stageProject } from "@/lib/import/staging";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/overlay";
 
 import { HtmlHistory, Page } from "@/types";
@@ -392,6 +393,43 @@ export function HistoryPanel({
     [bookmarks, appId, org],
   );
 
+  /**
+   * Fork a revision into a NEW build, leaving this one untouched.
+   *
+   * Restore rewrites the working tree in place, so the only way to act on an
+   * older revision was to lose the current one. Forking is the other half of
+   * that: take the code somewhere new and keep what you have. It goes through
+   * the same staging path an imported project uses, so the fresh session seeds
+   * from these files exactly as a drag-and-drop import does — one seeding
+   * mechanism, not a second one that can drift from it.
+   */
+  const fork = useCallback(
+    async (rev: Revision) => {
+      let files: { path: string; text: string }[] = [];
+      if (rev.kind === "edit") {
+        files = rev.pages.map((p) => ({ path: p.path, text: p.html }));
+      } else if (rev.kind === "checkpoint") {
+        const read = await checkpointManager.readCheckpointFiles(rev.id);
+        if (read) files = Object.entries(read).map(([path, text]) => ({ path, text }));
+      }
+      // A commit lives on the provider, not here — "Open on GitHub" already
+      // covers it, and inventing a fork that silently forked something else
+      // would be worse than not offering one.
+      if (!files.length) {
+        toast.error("This revision has no local files to fork.");
+        return;
+      }
+      try {
+        await stageProject(`${rev.title || "Revision"} (fork)`, files);
+        toast.success("Forked — opening a new build");
+        window.location.assign("/dev");
+      } catch {
+        toast.error("Could not stage the fork.");
+      }
+    },
+    []
+  );
+
   const restore = useCallback(
     async (rev: Revision) => {
       if (rev.kind === "edit") {
@@ -492,6 +530,7 @@ export function HistoryPanel({
       onRestore={() => restore(rev)}
       onBookmark={() => toggleBookmark(rev.key)}
       onDetails={() => openDetails(rev)}
+      onFork={rev.kind === "commit" ? undefined : () => fork(rev)}
       onPreview={rev.kind === "commit" ? () => previewCommit(rev.sha) : undefined}
     />
   );
@@ -620,6 +659,7 @@ function RevCard({
   onRestore,
   onBookmark,
   onDetails,
+  onFork,
   onPreview,
 }: {
   rev: Revision;
@@ -631,6 +671,7 @@ function RevCard({
   canPreview: boolean;
   providerLabel: string;
   onRestore: () => void;
+  onFork?: () => void;
   onBookmark: () => void;
   onDetails: () => void;
   onPreview?: () => void;
@@ -734,6 +775,12 @@ function RevCard({
                 <MenuItem onSelect={onDetails}>
                   <ListTree className="size-3.5" />
                   View details
+                </MenuItem>
+              )}
+              {onFork && (
+                <MenuItem onSelect={onFork}>
+                  <GitBranch className="size-3.5" />
+                  Fork into a new build
                 </MenuItem>
               )}
               <MenuItem onSelect={onBookmark}>

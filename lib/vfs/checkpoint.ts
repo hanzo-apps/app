@@ -425,6 +425,43 @@ class CheckpointManager {
   }
   
   /**
+   * Read a checkpoint's files WITHOUT touching the current project.
+   *
+   * `restoreCheckpoint` is the only other way to reach this content, and it
+   * overwrites the working tree — which is precisely wrong for forking, where
+   * the point is to take an old revision somewhere new and leave the session
+   * you took it from exactly as it was. Reading and restoring are two different
+   * intents and only one of them was expressible.
+   *
+   * Returns the text files as plain path → content. Binary entries (stored
+   * base64) are skipped rather than handed back corrupted: the caller writes
+   * these into a new project as UTF-8 text, so a silently mis-decoded image
+   * would be worse than an absent one.
+   */
+  async readCheckpointFiles(checkpointId: string): Promise<Record<string, string> | null> {
+    if (typeof checkpointId !== 'string' || !checkpointId.startsWith('cp_')) return null;
+
+    // Unreadable storage answers "no files", never a throw. This is called from
+    // a menu handler inside the history panel: an exception here would take the
+    // panel down rather than fail the one action the user asked for, and the
+    // whole point of the fork is that nothing else is disturbed.
+    let cp: Checkpoint | null = null;
+    try {
+      cp = await this.loadSingleCheckpointFromDB(checkpointId);
+    } catch {
+      return null;
+    }
+    if (!cp) return null;
+
+    const out: Record<string, string> = {};
+    for (const [path, content] of cp.files) {
+      if (typeof content === 'string') out[path] = content;
+      else if (content && content.encoding !== 'base64') out[path] = content.data;
+    }
+    return out;
+  }
+
+  /**
    * Restore project to a checkpoint
    */
   async restoreCheckpoint(checkpointId: string): Promise<boolean> {
