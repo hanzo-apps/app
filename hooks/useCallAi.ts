@@ -111,21 +111,26 @@ export const useCallAi = ({
     try {
       onNewPrompt(prompt);
 
-      const request = await fetch("/v1/generate", {
-        method: "POST",
-        body: JSON.stringify({
-          prompt,
-          provider,
-          model,
-          redesignMarkdown,
-          base: baseEnabled(),
-        }),
-        headers: {
-          "Content-Type": "application/json",
-          "x-forwarded-for": window.location.hostname,
-        },
-        signal: abortController.signal,
-      });
+      /** One generate call. `continueFrom` resumes a cut-off document. */
+      const ask = (continueFrom?: string) =>
+        fetch("/v1/generate", {
+          method: "POST",
+          body: JSON.stringify({
+            prompt,
+            provider,
+            model,
+            redesignMarkdown,
+            base: baseEnabled(),
+            ...(continueFrom ? { continueFrom } : {}),
+          }),
+          headers: {
+            "Content-Type": "application/json",
+            "x-forwarded-for": window.location.hostname,
+          },
+          signal: abortController.signal,
+        });
+
+      const request = await ask();
 
       // Upstream infra failure (gateway 502/503/500): stop now with an honest
       // message instead of streaming an empty body into a stuck "Building…".
@@ -178,7 +183,7 @@ export const useCallAi = ({
               }
             }
 
-            const newPages = formatPages(contentResponse);
+            let newPages = formatPages(contentResponse);
 
             // No renderable page came back. SAY WHAT IS KNOWN, and never "try
             // again" — the two causes are both things retrying cannot change.
@@ -214,6 +219,39 @@ export const useCallAi = ({
             // page exists it always looks terminated, and this guard could never
             // fire where it was first written. The stream is the only place the
             // truth survives.
+            // AUTO-CONTINUE. A document that stopped mid-element is resumed by
+            // handing the model back what it wrote and asking for the remainder.
+            // Re-running the prompt instead would discard the finished half and
+            // can truncate somewhere else; only continuation is monotonic.
+            //
+            // CAPPED at two attempts, and the cap is not a style choice: each
+            // attempt is a paid model call, so an unbounded loop on a model that
+            // keeps stopping would spend real credit chasing itself. Two covers
+            // the ordinary long build; a document still open after that is a
+            // different problem and gets reported rather than retried.
+            let attempts = 0;
+            while (
+              attempts < 2 &&
+              !abortController.signal.aborted &&
+              unterminatedDocument(splitSideChannel(contentResponse).content)
+            ) {
+              attempts += 1;
+              const more = await ask(splitSideChannel(contentResponse).content);
+              if (!more.ok || !more.body) break;
+              const contReader = more.body.getReader();
+              // Appended verbatim: the model was told to emit only what is
+              // missing, so the join is a concatenation. Trimming or re-parsing
+              // here would be a second opinion about where the file resumes.
+              for (;;) {
+                const chunk = await contReader.read();
+                if (chunk.done) break;
+                contentResponse += decoder.decode(chunk.value, { stream: true });
+                formatPages(contentResponse);
+                onScrollToBottom();
+              }
+              newPages = formatPages(contentResponse);
+            }
+
             const cut = unterminatedDocument(splitSideChannel(contentResponse).content)
               ? newPages
               : [];
@@ -222,8 +260,8 @@ export const useCallAi = ({
             if (cut.length) {
               toast.error(
                 cut.length === 1
-                  ? `${cut[0].path} stopped mid-build — the model was cut off before finishing the page. Send it again, or ask for a smaller change.`
-                  : `${cut.length} pages stopped mid-build — the model was cut off. Send it again, or ask for a smaller change.`,
+                  ? `${cut[0].path} is still unfinished after ${attempts} continuation${attempts === 1 ? "" : "s"}. Ask for a smaller change, or split it across pages.`
+                  : `${cut.length} pages are still unfinished after ${attempts} continuation${attempts === 1 ? "" : "s"}. Ask for a smaller change, or split it across pages.`,
               );
             } else {
               toast.success("AI responded successfully");

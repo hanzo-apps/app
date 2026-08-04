@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
   if (!token) return unauthorized();
 
   const body = await request.json();
-  const { prompt, model, redesignMarkdown, previousPrompts, pages, base } = body;
+  const { prompt, model, redesignMarkdown, previousPrompts, pages, base, continueFrom } = body;
 
   if (!prompt && !redesignMarkdown) {
     return NextResponse.json(
@@ -148,6 +148,30 @@ export async function POST(request: NextRequest) {
         ? `Here is my current design as a markdown:\n\n${redesignMarkdown}\n\nNow, please create a new design based on this markdown.`
         : prompt,
     },
+    // CONTINUATION. A build that stops mid-element is the single thing users
+    // report most, and until now the only recovery was for the person to notice
+    // and retype. Handing the model back what it produced and asking for the
+    // REMAINDER is the only shape that cannot lose the first half — a re-run
+    // would start over and may truncate at a different place.
+    //
+    // The instruction is mostly a list of things not to do, because every one of
+    // them has a way of silently corrupting the join: a repeated fragment, a
+    // reopened fence, or a restated title marker all parse as new content and
+    // the page ends up with two of something.
+    ...(typeof continueFrom === "string" && continueFrom.trim()
+      ? [
+          { role: "assistant" as const, content: continueFrom },
+          {
+            role: "user" as const,
+            content:
+              "Your previous message was cut off mid-output. Continue from the EXACT character where it stopped and emit only what is still missing.\n" +
+              "- Do NOT repeat any text you already sent, not even the last line.\n" +
+              "- Do NOT restate the title marker and do NOT reopen the ```html fence.\n" +
+              "- Do NOT apologise, explain, or summarise — output resumes the file directly.\n" +
+              "- Finish every element you left open and close the document with </html>, then the closing fence.",
+          },
+        ]
+      : []),
   ];
 
   const gateway = await callGateway(token, messages, selectedModel, true);
