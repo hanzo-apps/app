@@ -1,6 +1,7 @@
 'use client';
 
 import { XStack, YStack, Paragraph, H3, SizableText } from '@hanzo/gui';
+import { glass } from "@/lib/chrome";
 import { useState, useEffect } from 'react';
 import { FunctionLog } from '@/lib/vfs/types';
 import {
@@ -115,7 +116,7 @@ export function LogsViewer({ deploymentId }: LogsViewerProps) {
           </SizableText>
         ) : (
           <SizableText width="100%" fontSize="$3" display="flex" flexDirection="column">
-            <YStack position="sticky" top="$0" backgroundColor="$color3">
+            <YStack {...glass(2)} position="sticky" top="$0">
               <tr>
                 <SizableText textAlign="left" padding="$3" fontWeight="500">Status</SizableText>
                 <SizableText textAlign="left" padding="$3" fontWeight="500">Function</SizableText>

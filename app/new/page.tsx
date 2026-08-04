@@ -1,6 +1,7 @@
 "use client";
 
 import { SizableText, YStack, XStack, H1, Paragraph, H2 } from '@hanzo/gui';
+import { glass } from "@/lib/chrome";
 import { Suspense, useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button, toast, Textarea, Input } from '@hanzo/ui';
@@ -194,7 +195,7 @@ function NewProjectInner() {
   return (
     <YStack minHeight="100%" backgroundColor="$background">
       {/* Header */}
-      <YStack position="sticky" top="$0" zIndex={20} borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" backdropFilter="blur(24px)">
+      <YStack {...glass(2)} position="sticky" top="$0" zIndex={20} borderBottomWidth={1}>
         <XStack alignSelf="center" height="$9" maxWidth={1152} alignItems="center" justifyContent="space-between" paddingHorizontal="$4" $sm={{ paddingHorizontal: "$5" }}>
           <XStack alignItems="center" gap="$5">
             <Link href="/"><XStack alignItems="center" gap="$2">
