@@ -412,11 +412,15 @@ export function HistoryPanel({
         const read = await checkpointManager.readCheckpointFiles(rev.id);
         if (read) files = Object.entries(read).map(([path, text]) => ({ path, text }));
       }
-      // A commit lives on the provider, not here — "Open on GitHub" already
-      // covers it, and inventing a fork that silently forked something else
-      // would be worse than not offering one.
+      // A COMMIT forks by reading its files back from the repo — the same
+      // path the preview uses. Before the forge read landed this had nothing
+      // to fork and refused; now the revision's own pages seed the new build.
+      if (!files.length && rev.kind === "commit" && repo) {
+        const pages = await fetchCommitPages(repo.provider, repo.repo, rev.sha);
+        files = (pages ?? []).map((pg) => ({ path: pg.path, text: pg.html }));
+      }
       if (!files.length) {
-        toast.error("This revision has no local files to fork.");
+        toast.error("This revision has no files to fork.");
         return;
       }
       try {
@@ -467,10 +471,7 @@ export function HistoryPanel({
   // pages first so "Back to working" is always safe.
   const previewCommit = useCallback(
     async (sha: string) => {
-      if (!repo || repo.provider === "hanzo") {
-        toast("Preview from a Hanzo git commit isn't available yet.");
-        return;
-      }
+      if (!repo) return;
       setPreviewBusy(sha);
       const commitPages = await fetchCommitPages(repo.provider, repo.repo, sha);
       setPreviewBusy(null);
@@ -530,7 +531,7 @@ export function HistoryPanel({
       onRestore={() => restore(rev)}
       onBookmark={() => toggleBookmark(rev.key)}
       onDetails={() => openDetails(rev)}
-      onFork={rev.kind === "commit" ? undefined : () => fork(rev)}
+      onFork={() => fork(rev)}
       onPreview={rev.kind === "commit" ? () => previewCommit(rev.sha) : undefined}
     />
   );

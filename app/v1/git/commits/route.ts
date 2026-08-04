@@ -20,6 +20,9 @@ import { type NextRequest, NextResponse } from 'next/server';
 
 import type { GitProvider } from '@/lib/api/git';
 import { resolveConnection } from '@/lib/git/server';
+import { session } from '@/lib/iam';
+import { parseOwnerRepo } from '@/lib/git/sync';
+import { forgeCommitPages, forgeConfigured, listForgeCommits } from '@/lib/git/forge';
 import { GitSyncError } from '@/lib/git/sync';
 import { listCommits, getCommit, getCommitPages } from '@/lib/git/log';
 
@@ -51,6 +54,38 @@ export async function GET(req: NextRequest) {
   const branch = sp.get('branch')?.trim() || 'main';
   const sha = sp.get('sha')?.trim() || '';
   const wantPages = sp.get('pages') === '1';
+
+  // NATIVE git (git.hanzo.ai) reads the FORGE, not the third-party path. The
+  // write path committed here; reading the timeline anywhere else is why every
+  // native repo showed an empty history. The forge is read with the server
+  // credential, scoped to the caller: the repo's owner must be THIS session's
+  // username, so an admin-capable token cannot read another account's repo.
+  if (provider === 'hanzo') {
+    const me = await session(req);
+    if (!me?.name) {
+      return NextResponse.json({ connected: false, commits: [], provider }, { status: 401, headers: NO_STORE });
+    }
+    if (!forgeConfigured()) {
+      return NextResponse.json({ commits: [], supported: false, reason: 'git.hanzo.ai not configured', provider }, { headers: NO_STORE });
+    }
+    const parsed = parseOwnerRepo(repo);
+    const owner = parsed?.owner || me.name;
+    const name = parsed?.repo || repo;
+    if (owner !== me.name) {
+      return NextResponse.json({ error: 'not your repository', commits: [], provider }, { status: 403, headers: NO_STORE });
+    }
+    try {
+      if (sha && wantPages) {
+        const pages = await forgeCommitPages(owner, name, sha);
+        return NextResponse.json({ pages, supported: true }, { headers: NO_STORE });
+      }
+      const commits = await listForgeCommits(owner, name, branch);
+      return NextResponse.json({ commits, supported: true, provider, branch }, { headers: NO_STORE });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'forge read failed';
+      return NextResponse.json({ commits: [], supported: false, reason: msg, provider }, { headers: NO_STORE });
+    }
+  }
 
   // The user's own bearer ⇒ the provider token comes back unmasked. Fail-closed
   // to an honest "connect first" when unlinked.

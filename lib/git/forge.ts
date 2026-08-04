@@ -158,3 +158,76 @@ export async function commitFiles(
   );
   return { commit: res?.commit?.sha ?? null };
 }
+
+/* --------------------------------------------------------------------------- *
+ * READS — the history timeline, one commit, and a commit's pages.
+ *
+ * The write path put commits on git.hanzo.ai; the read path used to look for
+ * them on api.hanzo.ai with the owner stripped, so every native repo's history
+ * rendered empty and fork/preview threw "not available yet". These read the
+ * forge, by owner AND name, with the same server credential the writes use.
+ * The caller (the /v1/git/commits route) verifies the owner is the session's,
+ * so an admin-scoped token cannot be turned into a read of someone else's repo.
+ * --------------------------------------------------------------------------- */
+
+export interface ForgeCommit {
+  sha: string;
+  message: string;
+  author: string;
+  at: string;
+  url: string;
+}
+
+/** Newest-first commit history for a branch. */
+export async function listForgeCommits(
+  owner: string,
+  name: string,
+  branch: string,
+  limit = 50,
+): Promise<ForgeCommit[]> {
+  const o = encodeURIComponent(owner);
+  const n = encodeURIComponent(name);
+  const raw = await forge<
+    { sha: string; html_url?: string; commit?: { message?: string; author?: { name?: string; date?: string } } }[]
+  >(`/repos/${o}/${n}/commits?sha=${encodeURIComponent(branch)}&limit=${limit}&page=1`);
+  return (raw ?? []).map((c) => ({
+    sha: c.sha,
+    message: c.commit?.message ?? '',
+    author: c.commit?.author?.name ?? '',
+    at: c.commit?.author?.date ?? '',
+    url: c.html_url ?? '',
+  }));
+}
+
+/**
+ * A commit's files as { path, html } — for previewing and FORKING a revision.
+ *
+ * The tree at the sha names the blobs; each text blob is fetched raw. Binary
+ * files are skipped rather than decoded as text, exactly as the checkpoint
+ * reader does, because a fork writes these into a new project as UTF-8.
+ */
+export async function forgeCommitPages(
+  owner: string,
+  name: string,
+  sha: string,
+): Promise<{ path: string; html: string }[]> {
+  const o = encodeURIComponent(owner);
+  const n = encodeURIComponent(name);
+  const tree = await forge<{ tree?: { path: string; type: string }[] }>(
+    `/repos/${o}/${n}/git/trees/${encodeURIComponent(sha)}?recursive=true`,
+  );
+  const blobs = (tree?.tree ?? []).filter((e) => e.type === 'blob' && /\.html?$/i.test(e.path));
+  const pages: { path: string; html: string }[] = [];
+  for (const b of blobs) {
+    try {
+      const res = await fetch(
+        `${BASE}/v1/repos/${o}/${n}/raw/${encodeURIComponent(sha)}/${b.path.split('/').map(encodeURIComponent).join('/')}`,
+        { headers: { Authorization: `token ${TOKEN}` }, cache: 'no-store' },
+      );
+      if (res.ok) pages.push({ path: b.path, html: await res.text() });
+    } catch {
+      /* skip a blob we cannot read rather than fail the whole revision */
+    }
+  }
+  return pages;
+}
