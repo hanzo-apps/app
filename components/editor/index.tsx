@@ -222,12 +222,29 @@ export const AppEditor = ({
     resetLayout();
   }, [currentTab, sidebarCollapsed]);
 
+  /**
+   * The page the composer is editing. Resolved by path, then by ANY real page,
+   * and only then by the starter document.
+   *
+   * That order is the whole of it. This used to fall straight from a missed
+   * lookup to `defaultHTML`, and `defaultHTML` is what the builder uses to mean
+   * "nothing has been built yet": ask-ai compares against it (`isTheSameHtml`)
+   * to choose between EDITING the project and GENERATING a new one. So any path
+   * that did not match — a page renamed by a follow-up, a multi-page build whose
+   * selected path changed, a stale selection after a restore — silently
+   * presented a project full of pages as an empty one, and the next turn rebuilt
+   * the whole site from scratch instead of editing it. Every turn, forever;
+   * "groundhog day" was the report.
+   *
+   * Falling back to `pages[0]` keeps the answer TRUE — with pages present, the
+   * project is not empty, and saying otherwise is the lie that caused the loop.
+   * The starter document remains the answer for a genuinely empty project, which
+   * is the one case where it is accurate.
+   */
   const currentPageData = useMemo(() => {
     return (
-      pages.find((page) => page.path === currentPage) ?? {
-        path: "index.html",
-        html: defaultHTML,
-      }
+      pages.find((page) => page.path === currentPage) ??
+      pages[0] ?? { path: "index.html", html: defaultHTML }
     );
   }, [pages, currentPage]);
 
