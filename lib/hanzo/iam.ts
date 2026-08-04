@@ -7,7 +7,7 @@ import type { IAM, IAMConfig } from '@hanzo/iam/browser';
  * discovery. hanzo brand → serverUrl `hanzo.id` (the per-brand OIDC issuer —
  * hanzo.id/lux.id/zoo.id/pars.id each self-issue; hanzo.id serves
  * `/.well-known` + `/v1/iam/*`); client_id `<org>-<app>` = `hanzo-app`. PKCE
- * S256, public client (no secret). No legacy `/oauth/*`, no `/api/`, no
+ * S256, public client (no secret). No legacy `/oauth/*`, no `/v1/`, no
  * hand-rolled OAuth. (Token `iss` becomes `hanzo.id` once IAM discovery is
  * flipped host-relative — empty `originFrontend`, HIP-0111 — do those together.)
  *

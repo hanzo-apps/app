@@ -1,5 +1,5 @@
 "use client";
-import { YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
+import { View, YStack, XStack, SizableText, Paragraph } from '@hanzo/gui';
 import { useState } from "react";
 import { Import } from "lucide-react";
 
@@ -74,24 +74,19 @@ export const LoadProject = ({
     <>
       {!user ? (
         <>
+          {/* ONE Load. See deploy-button: a whole button per breakpoint renders
+              twice the moment a variant fails to compile, and the toolbar showed
+              Load above Load. The breakpoint now moves only the words that differ. */}
           <Button
             variant="outline"
             size="sm"
-            height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1" borderColor="$borderColor" backgroundColor="$color3" color="$color" hoverStyle={{ backgroundColor: "$color3" }} $lg={{ display: "none" }}
+            height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1" borderColor="$borderColor" backgroundColor="$color3" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
             onClick={() => setOpenLoginModal(true)}
           >
-            <Import size={14} />
-            Load existing Project
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1" borderColor="$borderColor" backgroundColor="$color3" color="$color" hoverStyle={{ backgroundColor: "$color3" }} $lg={{ display: "none" }}
-            onClick={() => setOpenLoginModal(true)}
-          >
-            {fullXsBtn && <Import size={14} />}
-            Load
-            {fullXsBtn && " existing Project"}
+            <View $lg={{ display: "none" }}>
+              <Import size={14} />
+            </View>
+            Load<SizableText fontSize="$2" $lg={{ display: "none" }}> existing Project</SizableText>
           </Button>
           <LoginModal
             open={openLoginModal}
@@ -104,20 +99,15 @@ export const LoadProject = ({
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <div>
+              {/* ONE Load — the breakpoint moves the icon, not the control. */}
               <Button
                 variant="outline"
                 size="sm"
-                height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1" borderColor="$borderColor" backgroundColor="$color3" color="$color" hoverStyle={{ backgroundColor: "$color3" }} $lg={{ display: "none" }}
+                height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1" borderColor="$borderColor" backgroundColor="$color3" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
               >
-                <Import size={14} />
-                Load
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1" borderColor="$borderColor" backgroundColor="$color3" color="$color" hoverStyle={{ backgroundColor: "$color3" }} $lg={{ display: "none" }}
-              >
-                {fullXsBtn && <Import size={14} />}
+                <View $lg={{ display: "none" }}>
+                  <Import size={14} />
+                </View>
                 Load
               </Button>
             </div>

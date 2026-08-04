@@ -125,7 +125,7 @@ export async function autoSyncProject(projectId: string): Promise<void> {
     const files = await vfs.listFiles(projectId);
 
     // Push to server
-    const response = await fetch(`/api/sync/projects/${projectId}`, {
+    const response = await fetch(`/v1/sync/projects/${projectId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -185,7 +185,7 @@ export async function checkServerUpdates(projectId: string): Promise<boolean> {
   }
 
   try {
-    const response = await fetch(`/api/sync/projects/${projectId}`);
+    const response = await fetch(`/v1/sync/projects/${projectId}`);
     if (!response.ok) {
       if (response.status === 404) {
         // Project doesn't exist on server
@@ -224,7 +224,7 @@ export async function pullServerUpdates(projectId: string, showToast = true): Pr
   }
 
   try {
-    const response = await fetch(`/api/sync/projects/${projectId}`);
+    const response = await fetch(`/v1/sync/projects/${projectId}`);
     if (!response.ok) {
       throw new Error(`Failed to pull updates: ${response.status}`);
     }
@@ -291,7 +291,7 @@ export async function getSyncOverviewStatus(): Promise<SyncOverviewStatus> {
 
   try {
     // Fetch server status
-    const response = await fetch('/api/sync/status');
+    const response = await fetch('/v1/sync/status');
     if (!response.ok) {
       throw new Error(`Server error: ${response.status}`);
     }
@@ -357,7 +357,7 @@ export async function autoPullAllProjects(): Promise<{
 
   try {
     // Get all server project statuses
-    const response = await fetch('/api/sync/status');
+    const response = await fetch('/v1/sync/status');
     if (!response.ok) {
       logger.debug('[AutoSync] Server not available for pull');
       return { pulled: 0, skipped: 0, errors: 0 };
@@ -374,7 +374,7 @@ export async function autoPullAllProjects(): Promise<{
 
         if (!localProject) {
           // Project doesn't exist locally - pull it
-          const pullResponse = await fetch(`/api/sync/projects/${serverStatus.id}`);
+          const pullResponse = await fetch(`/v1/sync/projects/${serverStatus.id}`);
           if (!pullResponse.ok) {
             errors++;
             continue;

@@ -2,7 +2,7 @@
 import { SESSION_COOKIE } from "@hanzo/iam/server";
 
 /**
- * Same-origin browser client for the app's own `/api/*` surface.
+ * Same-origin browser client for the app's own `/v1/*` surface.
  *
  * The bearer comes from the ONE cookie the IAM provider projects the SDK token
  * onto (`components/providers/IamClientProvider`) — there is no second token

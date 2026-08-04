@@ -63,7 +63,7 @@ export function SessionViewer({ deploymentId }: SessionViewerProps) {
   const fetchSessionData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/analytics/${deploymentId}/sessions?limit=100`);
+      const response = await fetch(`/v1/analytics/${deploymentId}/sessions?limit=100`);
       if (!response.ok) throw new Error('Failed to fetch session data');
 
       const sessionData: SessionData = await response.json();

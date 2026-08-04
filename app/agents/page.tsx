@@ -31,6 +31,7 @@ import {
 import { toast, Button, Input, Badge, Card, CardContent, CardDescription, CardHeader, CardTitle, Textarea } from '@hanzo/ui';
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { AppShell } from "@/components/app-shell";
+import { DEFAULT_MODEL } from "@/lib/providers";
 import Link from "next/link";
 
 // The canonical cloud agentView shape (cloud/clients/agents/agents.go).
@@ -255,7 +256,7 @@ export default function AgentsPage() {
                   onClick={() => {
                     setForm({
                       name: "",
-                      model: agents[0]?.model || "zen5",
+                      model: agents[0]?.model || DEFAULT_MODEL,
                       instructions: "",
                     });
                     setCreating(true);
@@ -360,7 +361,7 @@ export default function AgentsPage() {
                     }
   />
                   <Input
-                    placeholder="Model (e.g. zen5)"
+                    placeholder={`Model (e.g. ${DEFAULT_MODEL})`}
                     backgroundColor="$background" borderColor="$borderColor"
                     value={form.model}
                     disabled={submitting}

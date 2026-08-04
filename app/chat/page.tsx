@@ -1,648 +1,476 @@
-"use client";
+'use client';
 
-import { XStack, YStack, Paragraph, SizableText, H2 } from '@hanzo/gui';
-import { useState, useEffect, useRef } from "react";
-import { useUser } from "@/hooks/useUser";
-import Link from "next/link";
-import { MessageCircle, Plus, Search, Settings, Code2, Paperclip, Edit3, Trash2, Copy, Share2, Sparkles, Image as ImageIcon, Mic, StopCircle, PanelLeftClose, PanelLeft, RefreshCw, Bot, User, ArrowUp, MoreHorizontal, Users } from "lucide-react";
-import { Button, Input, ScrollArea, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea } from '@hanzo/ui';
-import { DEFAULT_MODEL } from "@/lib/providers";
-import { useModels } from "@/lib/hooks/use-models";
-import { type BotAgent, TEAM_PRESETS, getBotGateway } from "@/lib/bot-gateway";
+/**
+ * /chat — the chat mode of the one webapp (chat | dev | work).
+ *
+ * hanzo.chat's product, ported: real streaming completions via the app's
+ * /v1/chat/completions relay (the gateway debits the caller's own hk- key),
+ * conversations persisted in cloud /v1/agents/sessions via the
+ * /v1/chat/conversations BFF (NOT a local store), zen-only model picker,
+ * markdown rendering, stop + regenerate. No simulated responses — a signed-out
+ * visitor gets an honest sign-in prompt.
+ */
+import { XStack, YStack, Paragraph, SizableText, H1 } from '@hanzo/gui';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  ArrowUp,
+  MessageCircle,
+  PanelLeft,
+  PanelLeftClose,
+  Plus,
+  RefreshCw,
+  Search,
+  Square,
+} from 'lucide-react';
+
+import {
+  Button,
+  Input,
+  ScrollArea,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Textarea,
+} from '@hanzo/ui';
+import { AppShell } from '@/components/app-shell';
+import { MarkdownRenderer } from '@/components/markdown-renderer';
+import { DEFAULT_MODEL } from '@/lib/providers';
+import { useModels } from '@/lib/hooks/use-models';
+import { readSseDeltas } from '@/lib/chat/sse';
+
+interface Conversation {
+  id: string;
+  title: string;
+  updatedAt: string;
+  messageCount: number;
+}
 
 interface Message {
-  id: string;
-  role: "user" | "assistant" | "system";
+  role: 'user' | 'assistant' | 'system';
   content: string;
-  timestamp: Date;
-  attachments?: string[];
   model?: string;
-  agentId?: string;
-  agentName?: string;
-  agentEmoji?: string;
-  isStreaming?: boolean;
+  streaming?: boolean;
   error?: boolean;
 }
 
-interface Chat {
-  id: string;
-  title: string;
-  messages: Message[];
-  createdAt: Date;
-  updatedAt: Date;
-  model: string;
-  agentId?: string;
+/**
+ * Chat offers the HOUSE families only, by direction — the picker never shows a
+ * third-party id (claude-*, gpt-*), whatever the gateway resells.
+ *
+ * Both house families count. This read `^zen` alone, and the gateway carries no
+ * zen id at all, so the filter emptied the picker and the hardcoded `zen5`
+ * default answered 403 — the chat page could not send a message. Enso is the
+ * house frontier family and is what the gateway actually serves; zen stays in
+ * the pattern so the ladder reappears here the moment it is served again.
+ */
+const houseOnly = (models: { value: string; label: string }[]) =>
+  models.filter((m) => /^(zen|enso)/i.test(m.value));
+
+// The default is DEFAULT_MODEL — stated ONCE, in lib/providers.ts. A second
+// literal here is how this page came to name a model nothing serves.
+const CHAT_DEFAULT = DEFAULT_MODEL;
+
+async function api<T>(url: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(url, {
+    credentials: 'same-origin',
+    headers: init?.body ? { 'Content-Type': 'application/json' } : undefined,
+    ...init,
+  });
+  if (!res.ok) throw Object.assign(new Error(`HTTP ${res.status}`), { status: res.status });
+  return res.json() as Promise<T>;
 }
 
 export default function ChatPage() {
-  const { user } = useUser();
-  const [chats, setChats] = useState<Chat[]>([
-    {
-      id: "1",
-      title: "React Performance Optimization",
-      messages: [
-        {
-          id: "1",
-          role: "user",
-          content: "What are the best practices for optimizing React app performance?",
-          timestamp: new Date(Date.now() - 3600000),
-        },
-        {
-          id: "2",
-          role: "assistant",
-          content: "Here are key strategies for optimizing React performance:\n\n1. **Code Splitting & Lazy Loading**\n   - Use React.lazy() and Suspense for route-based splitting\n   - Implement dynamic imports for heavy components\n\n2. **Memoization Techniques**\n   - Use React.memo() for expensive components\n   - Apply useMemo() for costly computations\n   - Utilize useCallback() for function references\n\n3. **Virtual List Rendering**\n   - Implement react-window or react-virtualized for long lists\n   - Only render visible items in viewport\n\n4. **State Management**\n   - Keep state as local as possible\n   - Use context API judiciously\n   - Consider state management libraries for complex apps\n\n5. **Bundle Optimization**\n   - Tree shaking and dead code elimination\n   - Minimize bundle size with tools like webpack-bundle-analyzer\n\nWould you like me to elaborate on any of these techniques?",
-          timestamp: new Date(Date.now() - 3500000),
-          model: DEFAULT_MODEL
-        }
-      ],
-      createdAt: new Date(Date.now() - 86400000),
-      updatedAt: new Date(Date.now() - 3500000),
-      model: DEFAULT_MODEL
-    },
-    {
-      id: "2",
-      title: "TypeScript Best Practices",
-      messages: [],
-      createdAt: new Date(Date.now() - 172800000),
-      updatedAt: new Date(Date.now() - 172800000),
-      model: "gpt-5.2"
-    },
-    {
-      id: "3",
-      title: "Building a REST API",
-      messages: [],
-      createdAt: new Date(Date.now() - 259200000),
-      updatedAt: new Date(Date.now() - 259200000),
-      model: DEFAULT_MODEL
-    }
-  ]);
-
-  const [activeChat, setActiveChat] = useState<Chat | null>(chats[0]);
-  const [inputMessage, setInputMessage] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(
-    () => typeof window !== "undefined" && !window.matchMedia("(min-width:1024px)").matches
-  );
-  // Default and list both come from the one catalog — no literals here.
-  const { models } = useModels();
-  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [isStreaming, setIsStreaming] = useState(false);
-
-  // Agent/bot selection
-  const [agents, setAgents] = useState<BotAgent[]>(TEAM_PRESETS);
-  const [selectedAgentId, setSelectedAgentId] = useState<string>("dev");
-  const [gatewayConnected, setGatewayConnected] = useState(false);
-
-  const selectedAgent = agents.find((a) => a.id === selectedAgentId) ?? agents[0];
-
-  // Load agents from gateway
+  const { models: allModels } = useModels();
+  const models = houseOnly(allModels);
+  const [model, setModel] = useState(CHAT_DEFAULT);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
+  const [search, setSearch] = useState('');
+  const [streaming, setStreaming] = useState(false);
+  const [signedOut, setSignedOut] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
+  // SSR-stable default (closed); opens on mount at lg+ — reading matchMedia in
+  // the initializer would render server/client differently and break hydration.
+  const [railOpen, setRailOpen] = useState(false);
   useEffect(() => {
-    const gw = getBotGateway();
-    gw.listAgents()
-      .then((list) => {
-        if (list.length > 0) setAgents(list);
-        setGatewayConnected(true);
-      })
-      .catch(() => {
-        // Gateway unavailable - use static presets
-        setGatewayConnected(false);
-      });
+    if (window.matchMedia('(min-width:1024px)').matches) setRailOpen(true);
+  }, []);
+  const abortRef = useRef<AbortController | null>(null);
+  const endRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    // Listen for agent streaming events
-    const unsub = gw.on("agent", (payload: unknown) => {
-      const p = payload as { text?: string; runId?: string; done?: boolean };
-      if (!p?.text) return;
-      // Update the streaming message content
-      setActiveChat((prev) => {
-        if (!prev) return prev;
-        const msgs = [...prev.messages];
-        const last = msgs[msgs.length - 1];
-        if (last?.role === "assistant" && last.isStreaming) {
-          msgs[msgs.length - 1] = {
-            ...last,
-            content: last.content + p.text,
-            isStreaming: !p.done,
-          };
-          return { ...prev, messages: msgs, updatedAt: new Date() };
-        }
-        return prev;
-      });
-      if (p.done) setIsStreaming(false);
-    });
+  // Keep the selected model valid once the live zen list lands.
+  useEffect(() => {
+    if (models.length && !models.some((m) => m.value === model)) setModel(models[0].value);
+  }, [models, model]);
 
-    return () => { unsub(); };
+  // Conversation list from cloud (via the BFF). 401 → honest signed-out state.
+  useEffect(() => {
+    api<{ conversations: Conversation[] }>('/v1/chat/conversations')
+      .then((b) => setConversations(b.conversations))
+      .catch((err: { status?: number }) => {
+        if (err.status === 401) setSignedOut(true);
+      });
   }, []);
 
-  // Auto-scroll to bottom
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [activeChat?.messages]);
+    endRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
-  // Auto-resize textarea
   useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+    const el = textareaRef.current;
+    if (el) {
+      el.style.height = 'auto';
+      el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
     }
-  }, [inputMessage]);
+  }, [input]);
 
-  const sendMessage = async () => {
-    if (!inputMessage.trim() || !activeChat || isStreaming) return;
+  const openConversation = useCallback((id: string) => {
+    setActiveId(id);
+    setNotice(null);
+    api<{ messages: Message[] }>(`/v1/chat/conversations/${encodeURIComponent(id)}`)
+      .then((b) => setMessages(b.messages))
+      .catch(() => setNotice('Could not load this conversation.'));
+    if (typeof window !== 'undefined' && !window.matchMedia('(min-width:1024px)').matches) {
+      setRailOpen(false);
+    }
+  }, []);
 
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content: inputMessage,
-      timestamp: new Date(),
-    };
+  const newChat = useCallback(() => {
+    abortRef.current?.abort();
+    setActiveId(null);
+    setMessages([]);
+    setNotice(null);
+  }, []);
 
-    // Update current chat
-    const updatedChat: Chat = {
-      ...activeChat,
-      messages: [...activeChat.messages, newMessage],
-      updatedAt: new Date(),
-      agentId: selectedAgentId,
-    };
+  /** Persist one turn to the cloud log; history failures never break the stream. */
+  const persist = useCallback((id: string, m: Message) => {
+    fetch(`/v1/chat/conversations/${encodeURIComponent(id)}/messages`, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role: m.role, content: m.content, model: m.model }),
+    }).catch(() => {});
+  }, []);
 
-    setActiveChat(updatedChat);
-    setChats(prev => prev.map(c => c.id === activeChat.id ? updatedChat : c));
-    setInputMessage("");
-    setIsStreaming(true);
+  /** Stream a completion for `history` and append the assistant turn. */
+  const complete = useCallback(
+    async (history: Message[], convId: string | null) => {
+      setStreaming(true);
+      setNotice(null);
+      setMessages([...history, { role: 'assistant', content: '', model, streaming: true }]);
 
-    // Create streaming response placeholder
-    const aiResponse: Message = {
-      id: (Date.now() + 1).toString(),
-      role: "assistant",
-      content: "",
-      timestamp: new Date(),
-      model: selectedModel,
-      agentId: selectedAgentId,
-      agentName: selectedAgent?.name,
-      agentEmoji: selectedAgent?.emoji,
-      isStreaming: true
-    };
+      const controller = new AbortController();
+      abortRef.current = controller;
+      let text = '';
+      const paint = (streamingNow: boolean, error = false) =>
+        setMessages([
+          ...history,
+          { role: 'assistant', content: text, model, streaming: streamingNow, error },
+        ]);
 
-    const chatWithStreamingResponse = {
-      ...updatedChat,
-      messages: [...updatedChat.messages, aiResponse],
-      updatedAt: new Date(),
-    };
-
-    setActiveChat(chatWithStreamingResponse);
-    setChats(prev => prev.map(c => c.id === activeChat.id ? chatWithStreamingResponse : c));
-
-    // Try bot gateway first, fall back to simulated response
-    if (gatewayConnected) {
       try {
-        const gw = getBotGateway();
-        await gw.sendMessage({
-          message: inputMessage,
-          agentId: selectedAgentId,
-          sessionKey: `agent:${selectedAgentId}:main`,
+        const res = await fetch('/v1/chat/completions', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model,
+            messages: history.map(({ role, content }) => ({ role, content })),
+          }),
+          signal: controller.signal,
         });
-        // Response will come via the "agent" event listener
-        return;
-      } catch {
-        // Fall through to simulated response
+        if (!res.ok || !res.body) {
+          const body = await res.json().catch(() => ({}) as { message?: string });
+          if (res.status === 401) {
+            setSignedOut(true);
+            setMessages(history);
+          } else {
+            text = '';
+            setNotice(
+              res.status === 402
+                ? body.message || "You're out of credits."
+                : body.message || 'The model is unavailable right now.',
+            );
+            setMessages(history);
+          }
+          return;
+        }
+        await readSseDeltas(res.body, (delta) => {
+          text += delta;
+          paint(true);
+        });
+        paint(false);
+        if (convId && text) persist(convId, { role: 'assistant', content: text, model });
+      } catch (err) {
+        if ((err as Error).name === 'AbortError') {
+          // Stopped by the user — keep the partial turn, honestly persisted.
+          paint(false);
+          if (convId && text) persist(convId, { role: 'assistant', content: text, model });
+        } else {
+          paint(false, true);
+          setNotice('The stream was interrupted.');
+        }
+      } finally {
+        setStreaming(false);
+        abortRef.current = null;
+      }
+    },
+    [model, persist],
+  );
+
+  const send = useCallback(async () => {
+    const content = input.trim();
+    if (!content || streaming) return;
+    setInput('');
+
+    // Lazily create the conversation in cloud on the first turn.
+    let convId = activeId;
+    if (!convId && !signedOut) {
+      try {
+        const b = await api<{ conversation: Conversation }>('/v1/chat/conversations', {
+          method: 'POST',
+          body: JSON.stringify({ title: content.slice(0, 80) }),
+        });
+        convId = b.conversation.id;
+        setActiveId(convId);
+        setConversations((prev) => [b.conversation, ...prev]);
+      } catch (err) {
+        if ((err as { status?: number }).status === 401) setSignedOut(true);
+        // Persistence being down doesn't block the answer; convId stays null.
       }
     }
 
-    // Simulated streaming response (when gateway is unavailable)
-    const fullResponse = `${selectedAgent?.emoji ?? ""} **${selectedAgent?.name ?? "Hanzo"}** here.\n\n${inputMessage.length > 20 ? `I'll help you with that.` : `I'll help you with "${inputMessage}".`}\n\nThis is a simulated response - connect to the bot gateway for real AI responses.\n\nTo start the bot gateway:\n\`\`\`\ncd ~/work/hanzo/bot && make dev\n\`\`\``;
+    const userMsg: Message = { role: 'user', content };
+    if (convId) persist(convId, userMsg);
+    await complete([...messages, userMsg], convId);
+  }, [input, streaming, activeId, signedOut, messages, complete, persist]);
 
-    let currentText = "";
-    const words = fullResponse.split(" ");
-    let wordIndex = 0;
+  const stop = useCallback(() => abortRef.current?.abort(), []);
 
-    const streamInterval = setInterval(() => {
-      if (wordIndex < words.length) {
-        currentText += (wordIndex > 0 ? " " : "") + words[wordIndex];
-        wordIndex++;
+  const regenerate = useCallback(() => {
+    if (streaming) return;
+    // Re-run from the last user turn: drop the trailing assistant message.
+    const history = [...messages];
+    while (history.length && history[history.length - 1].role === 'assistant') history.pop();
+    if (history.length) void complete(history, activeId);
+  }, [messages, streaming, activeId, complete]);
 
-        const updatedResponse = {
-          ...aiResponse,
-          content: currentText
-        };
-
-        const chatWithUpdatedResponse = {
-          ...chatWithStreamingResponse,
-          messages: [...updatedChat.messages, updatedResponse],
-          updatedAt: new Date(),
-        };
-
-        setActiveChat(chatWithUpdatedResponse);
-        setChats(prev => prev.map(c => c.id === activeChat.id ? chatWithUpdatedResponse : c));
-      } else {
-        clearInterval(streamInterval);
-        setIsStreaming(false);
-
-        const finalResponse = {
-          ...aiResponse,
-          content: currentText,
-          isStreaming: false
-        };
-
-        const finalChat = {
-          ...chatWithStreamingResponse,
-          messages: [...updatedChat.messages, finalResponse],
-          updatedAt: new Date(),
-        };
-
-        setActiveChat(finalChat);
-        setChats(prev => prev.map(c => c.id === activeChat.id ? finalChat : c));
-      }
-    }, 50);
-  };
-
-  const selectChat = (chat: Chat) => {
-    setActiveChat(chat);
-    // Below lg the sidebar is an overlay — dismiss it once a chat is chosen
-    if (typeof window !== "undefined" && !window.matchMedia("(min-width:1024px)").matches) {
-      setSidebarCollapsed(true);
-    }
-  };
-
-  const createNewChat = () => {
-    const newChat: Chat = {
-      id: Date.now().toString(),
-      title: "New Chat",
-      messages: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      model: selectedModel
-    };
-
-    setChats([newChat, ...chats]);
-    setActiveChat(newChat);
-  };
-
-  const deleteChat = (chatId: string) => {
-    setChats(prev => prev.filter(c => c.id !== chatId));
-    if (activeChat?.id === chatId) {
-      setActiveChat(chats.find(c => c.id !== chatId) || null);
-    }
-  };
-
-  const duplicateChat = (chatId: string) => {
-    const chatToDuplicate = chats.find(c => c.id === chatId);
-    if (chatToDuplicate) {
-      const newChat: Chat = {
-        ...chatToDuplicate,
-        id: Date.now().toString(),
-        title: `${chatToDuplicate.title} (Copy)`,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      setChats([newChat, ...chats]);
-    }
-  };
-
-  const copyMessage = (content: string) => {
-    navigator.clipboard.writeText(content);
-  };
-
-  // Filter chats based on search
-  const filteredChats = chats.filter(chat =>
-    chat.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    chat.messages.some(m => m.content.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filtered = conversations.filter((c) =>
+    c.title.toLowerCase().includes(search.toLowerCase()),
   );
-
-  // Sort chats by date
-  const sortedChats = [...filteredChats].sort((a, b) =>
-    b.updatedAt.getTime() - a.updatedAt.getTime()
-  );
-
-  // Format relative time
-  const formatRelativeTime = (date: Date) => {
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-
-    if (minutes < 1) return "Just now";
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    if (days < 7) return `${days}d ago`;
-    return date.toLocaleDateString();
-  };
 
   return (
-    <XStack position="relative" height="100%" backgroundColor="$background">
-      {/* Sidebar — overlay drawer below lg so it never steals width; in flow at lg+ */}
-      <YStack position="absolute" top="$0" bottom="$0" left="$0" zIndex={30} backgroundColor="$background" borderRightWidth={1} borderColor="$borderColor" $lg={{ position: "relative", zIndex: 0 }} {...{ width: sidebarCollapsed ? "$0" : 256, overflow: sidebarCollapsed ? "hidden" : undefined }}>
-        {/* Sidebar Header */}
-        <YStack padding="$3" borderBottomWidth={1} borderColor="$borderColor">
-          <Button
-            onClick={createNewChat}
-            width="100%" backgroundColor="$background" color="$color" borderWidth={1} borderColor="$borderColor" justifyContent="flex-start" gap="$2" hoverStyle={{ backgroundColor: "$color3" }}
-          >
-            <Plus size={16} />
-            New chat
-          </Button>
-        </YStack>
+    <AppShell currentView="chat">
+      <XStack position="relative" flex={1} minHeight={0}>
+        {/* Conversation rail — in flow at lg+, overlay drawer below. */}
+        <YStack
+          position="absolute" top="$0" bottom="$0" left="$0" zIndex={30} backgroundColor="$background" borderRightWidth={1} borderColor="$borderColor" $lg={{ position: "relative", zIndex: 0 }} {...{ width: railOpen ? 256 : 0, overflow: railOpen ? undefined : "hidden" }}
+          data-testid="chat-rail"
+        >
+          <YStack padding="$3" borderBottomWidth={1} borderColor="$borderColor">
+            <Button
+              onClick={newChat}
+              width="100%" justifyContent="flex-start" gap="$2" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" color="$color" hoverStyle={{ backgroundColor: "$color3" }}
+              data-testid="new-chat"
+            >
+              <Plus size={16} />
+              New chat
+            </Button>
+          </YStack>
 
-        {/* Search */}
-        <YStack padding="$3">
-          <YStack position="relative">
-            <Search size={16} color="$color11" />
-            <Input
-              placeholder="Search"
-              value={searchQuery}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-              paddingLeft={36} backgroundColor="$background" borderColor="$borderColor" color="$color" placeholderTextColor="$color11"
+          <YStack padding="$3">
+            <YStack position="relative">
+              <Search size={16} color="$color11" />
+              <Input
+                placeholder="Search chats"
+                value={search}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+                paddingLeft={36} backgroundColor="$background" borderColor="$borderColor" color="$color" placeholderTextColor="$color11"
   />
-          </YStack>
-        </YStack>
-
-        {/* Chat List */}
-        <ScrollArea flex={1}>
-          <YStack padding="$2" rowGap="$1">
-            {sortedChats.map(chat => (
-              <Button
-                key={chat.id}
-                onClick={() => selectChat(chat)}
-                width="100%" textAlign="left" padding="$3" borderRadius="$5" group position="relative" {...{ backgroundColor: activeChat?.id === chat.id ? "$color3" : undefined, color: activeChat?.id === chat.id ? "$color" : "$color11", hoverStyle: activeChat?.id === chat.id ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
-              >
-                <XStack alignItems="flex-start" gap="$3">
-                  <MessageCircle size={16} />
-                  <YStack flex={1} minWidth={0}>
-                    <Paragraph fontSize="$3" fontWeight="500" numberOfLines={1}>{chat.title}</Paragraph>
-                    <Paragraph fontSize="$1" color="$color11" marginTop="$0.5">
-                      {formatRelativeTime(chat.updatedAt)}
-                    </Paragraph>
-                  </YStack>
-                </XStack>
-
-                {/* Hover Actions */}
-                <YStack position="absolute" right="$2" top="$2" opacity={0} $group-hover={{ opacity: 1 }}>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" padding="$0">
-                        <MoreHorizontal size={16} />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" width="$19">
-                      <DropdownMenuItem onClick={() => duplicateChat(chat.id)}>
-                        <Copy size={16} />
-                        Duplicate
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Edit3 size={16} />
-                        Rename
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Share2 size={16} />
-                        Share
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={() => deleteChat(chat.id)}
-                        color="$red9"
-                      >
-                        <Trash2 size={16} />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </YStack>
-              </Button>
-            ))}
-          </YStack>
-        </ScrollArea>
-      </YStack>
-
-      {/* Main Chat Area */}
-      <YStack flex={1} minWidth={0}>
-        {/* Chat Header */}
-        <YStack borderBottomWidth={1} borderColor="$borderColor" padding="$3">
-          <XStack alignItems="center" justifyContent="space-between" flexWrap="wrap" rowGap="$2">
-            <XStack alignItems="center" gap="$3">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                color="$color11" hoverStyle={{ color: "$color" }}
-              >
-                {sidebarCollapsed ? <PanelLeft size={16} /> : <PanelLeftClose size={16} />}
-              </Button>
-              <XStack alignItems="center" gap="$2">
-                {/* Agent Selector */}
-                <Select value={selectedAgentId} onValueChange={setSelectedAgentId}>
-                  <SelectTrigger minWidth={0} flex={1} backgroundColor="$background" borderColor="$borderColor" color="$color" $md={{ flex: 0, width: 160 }}>
-                    <SelectValue>
-                      <SizableText alignItems="center" gap="$2">
-                        <span>{selectedAgent?.emoji}</span>
-                        <span>{selectedAgent?.name}</span>
-                      </SizableText>
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <DropdownMenuLabel color="$color11" fontSize="$1" paddingHorizontal="$2" paddingVertical="$1">
-                      <Users size={12} />
-                      Team Agents
-                    </DropdownMenuLabel>
-                    {agents.map((agent) => (
-                      <SelectItem key={agent.id} value={agent.id}>
-                        <SizableText alignItems="center" gap="$2">
-                          <span>{agent.emoji}</span>
-                          <span>{agent.name}</span>
-                          {agent.description && (
-                            <SizableText fontSize="$1" color="$color11" marginLeft="$1">{agent.description}</SizableText>
-                          )}
-                        </SizableText>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                {/* Model Selector */}
-                <Select value={selectedModel} onValueChange={setSelectedModel}>
-                  <SelectTrigger minWidth={0} flex={1} backgroundColor="$background" borderColor="$borderColor" color="$color" $md={{ flex: 0, width: 180 }}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {models.map((m) => (
-                      <SelectItem key={m.value} value={m.value}>
-                        {m.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                {/* Gateway status indicator */}
-                <YStack width="$2" height="$2" borderRadius="$10" {...{ backgroundColor: gatewayConnected ? "$green9" : "$color11" }} title={gatewayConnected ? "Bot gateway connected" : "Bot gateway offline"} />
-              </XStack>
-            </XStack>
-            <XStack alignItems="center" gap="$2">
-              <Link href="/playground">
-                <Button variant="ghost" size="sm" color="$color11" hoverStyle={{ color: "$color" }}>
-                  <Code2 size={16} />
-                  <SizableText display="none">Playground</SizableText>
-                </Button>
-              </Link>
-              <Link href="/agents">
-                <Button variant="ghost" size="sm" color="$color11" hoverStyle={{ color: "$color" }}>
-                  <Bot size={16} />
-                  <SizableText display="none">Agents</SizableText>
-                </Button>
-              </Link>
-              <Link href="/integrations">
-                <Button variant="ghost" size="sm" color="$color11" hoverStyle={{ color: "$color" }}>
-                  <Settings size={16} />
-                </Button>
-              </Link>
-            </XStack>
-          </XStack>
-        </YStack>
-
-        {/* Messages */}
-        <ScrollArea flex={1}>
-          <YStack padding="$5" maxWidth={896} alignSelf="center">
-            {activeChat ? (
-              <YStack rowGap="$5">
-                {activeChat.messages.map((message, index) => (
-                  <YStack key={message.id} group>
-                    <XStack gap="$4">
-                      {message.role === "assistant" ? (
-                        <XStack width="$6" height="$6" borderRadius="$5" alignItems="center" justifyContent="center" flexShrink={0}>
-                          <SizableText color="white" fontWeight="500" fontSize="$3">
-                            {message.agentEmoji ?? "H"}
-                          </SizableText>
-                        </XStack>
-                      ) : (
-                        <XStack width="$6" height="$6" borderRadius="$10" backgroundColor="$color3" alignItems="center" justifyContent="center" flexShrink={0}>
-                          <User size={16} color="$color11" />
-                        </XStack>
-                      )}
-                      <YStack flex={1} rowGap="$2">
-                        <XStack alignItems="center" gap="$2">
-                          <SizableText fontWeight="500" color="$color">
-                            {message.role === "assistant"
-                              ? (message.agentName ?? "Hanzo")
-                              : "You"}
-                          </SizableText>
-                          {message.model && (
-                            <SizableText fontSize="$1" color="$color11">{message.model}</SizableText>
-                          )}
-                          <SizableText fontSize="$1" color="$color11">
-                            {formatRelativeTime(message.timestamp)}
-                          </SizableText>
-                        </XStack>
-                        <SizableText color="$color" maxWidth="none" display="flex" flexDirection="column">
-                          <Paragraph whiteSpace="pre-wrap">{message.content}</Paragraph>
-                          {message.isStreaming && (
-                            <SizableText width="$2" height="$4" marginLeft="$1" backgroundColor="$color" />
-                          )}
-                        </SizableText>
-                        {message.role === "assistant" && !message.isStreaming && (
-                          <XStack alignItems="center" gap="$2" opacity={0} $group-hover={{ opacity: 1 }}>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              paddingHorizontal="$2" color="$color11" hoverStyle={{ color: "$color" }}
-                              onClick={() => copyMessage(message.content)}
-                            >
-                              <Copy size={12} />
-                              Copy
-                            </Button>
-                            <Button variant="ghost" size="sm" paddingHorizontal="$2" color="$color11" hoverStyle={{ color: "$color" }}>
-                              <RefreshCw size={12} />
-                              Regenerate
-                            </Button>
-                            <Button variant="ghost" size="sm" paddingHorizontal="$2" color="$color11" hoverStyle={{ color: "$color" }}>
-                              <Share2 size={12} />
-                            </Button>
-                          </XStack>
-                        )}
-                      </YStack>
-                    </XStack>
-                  </YStack>
-                ))}
-                <div ref={messagesEndRef} />
-              </YStack>
-            ) : (
-              <XStack alignItems="center" justifyContent="center" height="100%">
-                <SizableText textAlign="center" rowGap="$4" display="flex" flexDirection="column">
-                  <XStack width="$11" height="$11" borderRadius="$8" alignItems="center" justifyContent="center" alignSelf="center">
-                    <SizableText color="white" fontWeight="500" fontSize="$11">{selectedAgent?.emoji ?? "H"}</SizableText>
-                  </XStack>
-                  <H2 fontSize="$8" fontWeight="500" color="$color">Chat with {selectedAgent?.name ?? "Hanzo"}</H2>
-                  <Paragraph color="$color11" maxWidth={448}>
-                    {selectedAgent?.description ?? "Start a new chat or select an existing one to continue your conversation"}
-                  </Paragraph>
-                  <Button onClick={createNewChat} gap="$2">
-                    <Plus size={16} />
-                    New Chat
-                  </Button>
-                </SizableText>
-              </XStack>
-            )}
-          </YStack>
-        </ScrollArea>
-
-        {/* Input Area */}
-        {activeChat && (
-          <YStack borderTopWidth={1} borderColor="$borderColor" padding="$4">
-            <YStack maxWidth={896} alignSelf="center">
-              <XStack alignItems="flex-end" gap="$3">
-                <XStack gap="$1">
-                  <Button variant="ghost" size="sm" color="$color11" hoverStyle={{ color: "$color" }}>
-                    <Paperclip size={16} />
-                  </Button>
-                  <Button variant="ghost" size="sm" color="$color11" hoverStyle={{ color: "$color" }}>
-                    <ImageIcon size={16} />
-                  </Button>
-                  <Button variant="ghost" size="sm" color="$color11" hoverStyle={{ color: "$color" }}>
-                    <Mic size={16} />
-                  </Button>
-                </XStack>
-                <YStack flex={1} position="relative">
-                  <Textarea
-                    ref={textareaRef}
-                    value={inputMessage}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInputMessage(e.target.value)}
-                    onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        sendMessage();
-                      }
-                    }}
-                    placeholder={`Message ${selectedAgent?.name ?? "Hanzo"}...`}
-                    minHeight={44} maxHeight={200} backgroundColor="$background" borderColor="$borderColor" color="$color" placeholderTextColor="$color11" resize="none" paddingRight="$8"
-                    rows={1}
-  />
-                  <Button
-                    onClick={sendMessage}
-                    disabled={!inputMessage.trim() || isStreaming}
-                    size="sm"
-                    position="absolute" right="$2" bottom="$2" height="$6" width="$6" padding="$0" backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }} disabledStyle={{ opacity: 0.5 }}
-                  >
-                    {isStreaming ? (
-                      <StopCircle size={16} />
-                    ) : (
-                      <ArrowUp size={16} />
-                    )}
-                  </Button>
-                </YStack>
-              </XStack>
-              <XStack alignItems="center" justifyContent="space-between" marginTop="$2">
-                <Paragraph fontSize="$1" color="$color11">
-                  {isStreaming ? "Generating..." : "Press Enter to send, Shift+Enter for new line"}
-                </Paragraph>
-                <XStack alignItems="center" gap="$2">
-                  <Button variant="ghost" size="sm" height="$5" fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}>
-                    <Sparkles size={12} />
-                    Enhance prompt
-                  </Button>
-                </XStack>
-              </XStack>
             </YStack>
           </YStack>
-        )}
-      </YStack>
-    </XStack>
+
+          <ScrollArea flex={1}>
+            <YStack padding="$2" rowGap="$1" data-testid="conversation-list">
+              {filtered.map((c) => (
+                <Button
+                  key={c.id}
+                  onClick={() => openConversation(c.id)}
+                  width="100%" justifyContent="flex-start" alignItems="flex-start" gap="$2" padding="$2.5" borderRadius="$5" textAlign="left" {...{ backgroundColor: activeId === c.id ? "$color3" : undefined, color: activeId === c.id ? "$color" : "$color11", hoverStyle: activeId === c.id ? undefined : { backgroundColor: "$color3", color: "$color" } }}
+                >
+                  <MessageCircle size={16} />
+                  <SizableText flex={1} minWidth={0} fontSize="$3" numberOfLines={1}>{c.title}</SizableText>
+                </Button>
+              ))}
+              {!filtered.length && !signedOut && (
+                <Paragraph paddingHorizontal="$3" paddingVertical="$2" fontSize="$1" color="$color11">No conversations yet.</Paragraph>
+              )}
+            </YStack>
+          </ScrollArea>
+        </YStack>
+
+        {/* Thread */}
+        <YStack flex={1} minWidth={0}>
+          <XStack alignItems="center" gap="$2" borderBottomWidth={1} borderColor="$borderColor" padding="$3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setRailOpen((o) => !o)}
+              aria-label={railOpen ? 'Hide conversations' : 'Show conversations'}
+              color="$color11" hoverStyle={{ color: "$color" }}
+            >
+              {railOpen ? <PanelLeftClose size={16} /> : <PanelLeft size={16} />}
+            </Button>
+            <Select value={model} onValueChange={setModel}>
+              <SelectTrigger
+                width={160} minWidth={0} backgroundColor="$background" borderColor="$borderColor" color="$color"
+                data-testid="model-picker"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {(models.length ? models : [{ value: CHAT_DEFAULT, label: 'Zen 5' }]).map((m) => (
+                  <SelectItem key={m.value} value={m.value}>
+                    {m.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </XStack>
+
+          <ScrollArea flex={1}>
+            <YStack width="100%" maxWidth={768} alignSelf="center" padding="$4" $md={{ padding: "$6" }}>
+              {signedOut && (
+                <YStack
+                  marginBottom="$4" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$4"
+                  data-testid="signin-notice"
+                >
+                  <Paragraph fontSize="$3" color="$color">Sign in to chat</Paragraph>
+                  <Paragraph marginTop="$1" fontSize="$3" color="$color11">
+                    Answers are metered to your own account, so chatting needs a session.
+                  </Paragraph>
+                  <a href="/login?next=/chat">
+                    <Button size="sm" marginTop="$3">Sign in</Button>
+                  </a>
+                </YStack>
+              )}
+              {notice && (
+                <YStack
+                  marginBottom="$4" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" padding="$3"
+                  data-testid="chat-notice"
+                >
+                  <Paragraph fontSize="$3" color="$color11">{notice}</Paragraph>
+                </YStack>
+              )}
+              {!messages.length && !signedOut && (
+                <YStack alignItems="center" justifyContent="center" paddingVertical={96}>
+                  <H1 fontSize="$8" fontWeight="500" color="$color" textAlign="center">What can I help with?</H1>
+                  <Paragraph marginTop="$2" maxWidth={384} fontSize="$3" color="$color11" textAlign="center">
+                    Ask anything — answers stream from your Zen models and every chat is saved
+                    to your account.
+                  </Paragraph>
+                </YStack>
+              )}
+              <YStack rowGap="$5">
+                {messages.map((m, i) =>
+                  m.role === 'user' ? (
+                    <XStack key={i} justifyContent="flex-end" data-testid="message-user">
+                      <Paragraph maxWidth="85%" whiteSpace="pre-wrap" borderRadius="$8" backgroundColor="$color3" paddingHorizontal="$4" paddingVertical="$2.5" fontSize="$3" color="$color">
+                        {m.content}
+                      </Paragraph>
+                    </XStack>
+                  ) : (
+                    <YStack key={i} group data-testid="message-assistant">
+                      <XStack alignItems="center" gap="$2" paddingBottom="$1">
+                        <SizableText fontSize="$3" fontWeight="500" color="$color">Hanzo</SizableText>
+                        {m.model && (
+                          <SizableText fontSize="$1" color="$color11">{m.model}</SizableText>
+                        )}
+                      </XStack>
+                      <MarkdownRenderer content={m.content} compact />
+                      {m.streaming && (
+                        <SizableText
+                          width={8} height={16} marginLeft="$0.5" backgroundColor="$color"
+                          data-testid="streaming-cursor"
+                        />
+                      )}
+                      {!m.streaming && i === messages.length - 1 && (
+                        <XStack marginTop="$2" opacity={0} $group-hover={{ opacity: 1 }}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={regenerate}
+                            paddingHorizontal="$2" color="$color11" hoverStyle={{ color: "$color" }}
+                            data-testid="regenerate"
+                          >
+                            <RefreshCw size={12} />
+                            Regenerate
+                          </Button>
+                        </XStack>
+                      )}
+                    </YStack>
+                  ),
+                )}
+              </YStack>
+              <div ref={endRef} />
+            </YStack>
+          </ScrollArea>
+
+          {/* Composer */}
+          <YStack borderTopWidth={1} borderColor="$borderColor" padding="$3" $md={{ padding: "$4" }}>
+            <YStack width="100%" maxWidth={768} alignSelf="center">
+              <YStack position="relative">
+                <Textarea
+                  ref={textareaRef}
+                  value={input}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInput(e.target.value)}
+                  onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      void send();
+                    }
+                  }}
+                  placeholder="Message Hanzo…"
+                  rows={1}
+                  minHeight={48} maxHeight={200} resize="none" paddingRight="$8" backgroundColor="$background" borderColor="$borderColor" color="$color" placeholderTextColor="$color11"
+                  data-testid="composer"
+  />
+                {streaming ? (
+                  <Button
+                    onClick={stop}
+                    size="sm"
+                    aria-label="Stop generating"
+                    position="absolute" right="$2" bottom="$2" height="$6" width="$6" padding="$0" backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
+                    data-testid="stop"
+                  >
+                    <Square size={14} />
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => void send()}
+                    disabled={!input.trim()}
+                    size="sm"
+                    aria-label="Send"
+                    position="absolute" right="$2" bottom="$2" height="$6" width="$6" padding="$0" backgroundColor="$color12" color="$background" hoverStyle={{ backgroundColor: "$color12" }} disabledStyle={{ opacity: 0.5 }}
+                    data-testid="send"
+                  >
+                    <ArrowUp size={16} />
+                  </Button>
+                )}
+              </YStack>
+              <Paragraph marginTop="$2" fontSize="$1" color="$color11">
+                {streaming ? 'Generating…' : 'Enter to send, Shift+Enter for a new line'}
+              </Paragraph>
+            </YStack>
+          </YStack>
+        </YStack>
+      </XStack>
+    </AppShell>
   );
 }

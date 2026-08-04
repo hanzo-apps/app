@@ -48,11 +48,7 @@ export function SyncItemRow({
       </YStack>
 
       {/* Status Badge */}
-      <SyncStatusBadge
-        status={syncing ? 'syncing' : item.status}
-        showLabel={true}
-        size="sm"
-  />
+      <SyncStatusBadge status={syncing ? 'syncing' : item.status} showLabel />
 
       {/* Actions */}
       <XStack alignItems="center" gap="$1">

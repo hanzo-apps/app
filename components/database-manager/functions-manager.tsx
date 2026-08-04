@@ -36,7 +36,7 @@ export function FunctionsManager({ deploymentId, dataProvider, hideRuntimeFeatur
       if (dataProvider) {
         setFunctions(await dataProvider.list());
       } else if (deploymentId) {
-        const res = await fetch(`/api/admin/deployments/${deploymentId}/functions`);
+        const res = await fetch(`/v1/admin/deployments/${deploymentId}/functions`);
         if (!res.ok) {
           const data = await res.json();
           throw new Error(data.error || 'Failed to load functions');
@@ -56,7 +56,7 @@ export function FunctionsManager({ deploymentId, dataProvider, hideRuntimeFeatur
       if (dataProvider) {
         await dataProvider.toggle(fn.id, !fn.enabled);
       } else if (deploymentId) {
-        const res = await fetch(`/api/admin/deployments/${deploymentId}/functions/${fn.id}`, {
+        const res = await fetch(`/v1/admin/deployments/${deploymentId}/functions/${fn.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ enabled: !fn.enabled }),
@@ -79,7 +79,7 @@ export function FunctionsManager({ deploymentId, dataProvider, hideRuntimeFeatur
       if (dataProvider) {
         await dataProvider.remove(fn.id);
       } else if (deploymentId) {
-        const res = await fetch(`/api/admin/deployments/${deploymentId}/functions/${fn.id}`, {
+        const res = await fetch(`/v1/admin/deployments/${deploymentId}/functions/${fn.id}`, {
           method: 'DELETE',
         });
         if (!res.ok) throw new Error('Failed to delete function');
@@ -108,7 +108,7 @@ export function FunctionsManager({ deploymentId, dataProvider, hideRuntimeFeatur
       } else if (!deploymentId) {
         throw new Error('No deployment ID available');
       } else if (editingFunction) {
-        const res = await fetch(`/api/admin/deployments/${deploymentId}/functions/${editingFunction.id}`, {
+        const res = await fetch(`/v1/admin/deployments/${deploymentId}/functions/${editingFunction.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
@@ -118,7 +118,7 @@ export function FunctionsManager({ deploymentId, dataProvider, hideRuntimeFeatur
           throw new Error(err.error || 'Failed to update function');
         }
       } else {
-        const res = await fetch(`/api/admin/deployments/${deploymentId}/functions`, {
+        const res = await fetch(`/v1/admin/deployments/${deploymentId}/functions`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
@@ -256,7 +256,7 @@ export function FunctionsManager({ deploymentId, dataProvider, hideRuntimeFeatur
                       </DropdownMenuItem>
                       {!hideRuntimeFeatures && deploymentId && (
                         <DropdownMenuItem
-                          onClick={() => window.open(`/api/deployments/${deploymentId}/functions/${fn.name}`, '_blank')}
+                          onClick={() => window.open(`/v1/deployments/${deploymentId}/functions/${fn.name}`, '_blank')}
                         >
                           <ExternalLink size={16} />
                           Open in Browser

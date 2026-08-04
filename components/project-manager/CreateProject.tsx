@@ -12,6 +12,9 @@ import {
   type Project,
 } from '@/lib/api/projects';
 
+// Dialog comes from @hanzo/ui. The wrappers that used to live here rebuilt what
+// it already does — DialogContent self-portals and renders its own overlay — so
+// they were a Radix copy of a component the design system ships.
 // --- CreateProject Component ---
 
 interface CreateProjectProps {
@@ -90,7 +93,7 @@ export function CreateProject({ open, onOpenChange, onCreated }: CreateProjectPr
               marginTop="$1.5"
               maxLength={64}
               disabled={submitting}
-  />
+            />
             <SizableText fontSize="$1" color="$color11">{name.length}/64</SizableText>
           </div>
 
@@ -107,7 +110,7 @@ export function CreateProject({ open, onOpenChange, onCreated }: CreateProjectPr
               marginTop="$1.5"
               maxLength={256}
               disabled={submitting}
-  />
+            />
             <SizableText fontSize="$1" color="$color11">{description.length}/256</SizableText>
           </div>
 

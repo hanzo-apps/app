@@ -11,9 +11,15 @@ describe('Utils', () => {
       expect(cn('base', false && 'hidden', 'active')).toBe('base active');
     });
 
-    it('merges tailwind classes with conflicts correctly', () => {
-      expect(cn('px-4', 'px-8')).toBe('px-8');
-      expect(cn('bg-red-500', 'bg-blue-500')).toBe('bg-blue-500');
+    // `cn` JOINS, it does not de-conflict. It used to be clsx wrapped in
+    // tailwind-merge, so `cn('px-4','px-8')` resolved to 'px-8' by knowing
+    // Tailwind's grammar. lib/utils.ts now re-exports @hanzo/ui's clsx-only
+    // `cn`, because there is no Tailwind left for it to arbitrate: styling is
+    // gui props and tokens, and a class name is a stable handle onto app-owned
+    // CSS. Two handles are two handles — last-one-wins would silently drop one.
+    it('joins repeated names rather than resolving them', () => {
+      expect(cn('px-4', 'px-8')).toBe('px-4 px-8');
+      expect(cn('thin-scrollbar', 'spin')).toBe('thin-scrollbar spin');
     });
 
     it('handles arrays of class names', () => {

@@ -115,8 +115,17 @@ export default function Header() {
         {/* Brand mark = the cross-app switcher trigger (the ONE way in) */}
         <AppSwitcher currentApp="app" />
 
-        {/* One nav */}
-        <YStack display="none" alignItems="center" gap="$1" aria-label="Primary">
+        {/* One nav — the landmark itself, gated at lg rather than md: five
+            marketing routes plus the search pill do not fit a tablet width, so
+            the hamburger owns everything below lg. */}
+        <XStack
+          role="navigation"
+          aria-label="Primary"
+          display="none"
+          alignItems="center"
+          gap="$1"
+          $lg={{ display: "flex" }}
+        >
           {NAV.map((link) => (
             <Link
               key={link.href}
@@ -125,17 +134,17 @@ export default function Header() {
               {link.label}
             </SizableText></Link>
           ))}
-        </YStack>
+        </XStack>
 
         <YStack flex={1} />
 
         {/* Search — opens the command palette (⌘K / `/`). Always visible. */}
         <HeaderSearch />
 
-        {/* Auth (desktop) */}
-        <YStack display="none" alignItems="center" gap="$2">
+        {/* Auth (desktop) — same lg gate as the nav; below it the sheet carries it */}
+        <XStack display="none" alignItems="center" gap="$2" $lg={{ display: "flex" }}>
           {isAuthenticated && user ? accountMenu : signedOutCTAs}
-        </YStack>
+        </XStack>
 
         {/* Mobile toggle */}
         <Button
@@ -143,7 +152,7 @@ export default function Header() {
           onClick={() => setMobileOpen((v) => !v)}
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
           aria-expanded={mobileOpen}
-          height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" color="$color" hoverStyle={{ backgroundColor: "$background" }} $md={{ display: "none" }}
+          height="$7" width="$7" alignItems="center" justifyContent="center" borderRadius="$5" color="$color" hoverStyle={{ backgroundColor: "$background" }} $lg={{ display: "none" }}
         >
           {mobileOpen ? <X size={20} /> : <Menu size={20} />}
         </Button>
@@ -151,8 +160,8 @@ export default function Header() {
 
       {/* Mobile sheet */}
       {mobileOpen && (
-        <YStack borderTopWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$4" paddingVertical="$3" $md={{ display: "none" }}>
-          <YStack aria-label="Primary">
+        <YStack borderTopWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$4" paddingVertical="$3" $lg={{ display: "none" }}>
+          <YStack role="navigation" aria-label="Primary">
             {NAV.map((link) => (
               <Link
                 key={link.href}

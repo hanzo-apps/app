@@ -34,7 +34,7 @@ export function ServerFunctionsManager({ deploymentId, dataProvider }: ServerFun
       if (dataProvider) {
         setFunctions(await dataProvider.list());
       } else if (deploymentId) {
-        const res = await fetch(`/api/admin/deployments/${deploymentId}/server-functions`);
+        const res = await fetch(`/v1/admin/deployments/${deploymentId}/server-functions`);
         if (!res.ok) {
           const data = await res.json();
           throw new Error(data.error || 'Failed to load server functions');
@@ -54,7 +54,7 @@ export function ServerFunctionsManager({ deploymentId, dataProvider }: ServerFun
       if (dataProvider) {
         await dataProvider.toggle(fn.id, !fn.enabled);
       } else if (deploymentId) {
-        const res = await fetch(`/api/admin/deployments/${deploymentId}/server-functions/${fn.id}`, {
+        const res = await fetch(`/v1/admin/deployments/${deploymentId}/server-functions/${fn.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ enabled: !fn.enabled }),
@@ -77,7 +77,7 @@ export function ServerFunctionsManager({ deploymentId, dataProvider }: ServerFun
       if (dataProvider) {
         await dataProvider.remove(fn.id);
       } else if (deploymentId) {
-        const res = await fetch(`/api/admin/deployments/${deploymentId}/server-functions/${fn.id}`, {
+        const res = await fetch(`/v1/admin/deployments/${deploymentId}/server-functions/${fn.id}`, {
           method: 'DELETE',
         });
         if (!res.ok) throw new Error('Failed to delete server function');
@@ -98,7 +98,7 @@ export function ServerFunctionsManager({ deploymentId, dataProvider }: ServerFun
       } else if (!deploymentId) {
         throw new Error('No deployment ID available');
       } else if (editingFunction) {
-        const res = await fetch(`/api/admin/deployments/${deploymentId}/server-functions/${editingFunction.id}`, {
+        const res = await fetch(`/v1/admin/deployments/${deploymentId}/server-functions/${editingFunction.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
@@ -108,7 +108,7 @@ export function ServerFunctionsManager({ deploymentId, dataProvider }: ServerFun
           throw new Error(err.error || 'Failed to update server function');
         }
       } else {
-        const res = await fetch(`/api/admin/deployments/${deploymentId}/server-functions`, {
+        const res = await fetch(`/v1/admin/deployments/${deploymentId}/server-functions`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),

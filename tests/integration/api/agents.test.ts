@@ -88,17 +88,45 @@ describe("BFF: GET /v1/agents", () => {
     expect(body.agents[0].name).toBe("helper");
   });
 
-  it("collapses gateway 403 to 401 openLogin", async () => {
+  // This used to assert the opposite — that a 403 was collapsed into a 401 with
+  // `openLogin` — which is the bug, not the contract. The caller already holds a
+  // JWKS-verified session (it is what got the request to the gateway at all), so
+  // reopening login answers a question nobody asked and hides the real one:
+  // this identity is not permitted. See lib/gateway.ts.
+  it("keeps a gateway 403 a 403, with the reason, and does not reopen login", async () => {
     server.use(
       http.get(`${GATEWAY}/agents`, () =>
-        HttpResponse.json({ error: "forbidden" }, { status: 403 })
+        HttpResponse.json({ msg: "agents are not enabled for this org" }, { status: 403 })
       )
     );
     const res = await listAgents(
       req("http://localhost/v1/agents", { token: "tok-abc" })
     );
+    const body = await res.json();
+
+    expect(res.status).toBe(403);
+    expect(body.message).toMatch(/not enabled for this org/);
+    expect(body.openLogin).toBeUndefined();
+  });
+
+  it("keeps a gateway 401 a credential problem, never an outage", async () => {
+    server.use(
+      http.get(`${GATEWAY}/agents`, () =>
+        HttpResponse.json(
+          { status: "error", msg: "API key hk-902abd… is not recognized — it was revoked or replaced." },
+          { status: 401 }
+        )
+      )
+    );
+    const res = await listAgents(
+      req("http://localhost/v1/agents", { token: "tok-abc" })
+    );
+    const body = await res.json();
+
     expect(res.status).toBe(401);
-    expect((await res.json()).openLogin).toBe(true);
+    expect(body.message).toMatch(/revoked or replaced/);
+    expect(body.message).not.toMatch(/try again/i);
+    expect(body.openLogin).toBeUndefined();
   });
 
   it("returns 502 on an unexpected gateway error", async () => {

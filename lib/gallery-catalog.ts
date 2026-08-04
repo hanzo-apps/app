@@ -103,14 +103,23 @@ export function popularTemplates(templates: GalleryTemplate[], count = 6): Galle
   const byRating = [...(pool.length ? pool : apps)].sort(
     (a, b) => b.rating - a.rating || a.tier - b.tier,
   );
-  // Rotate among the top shelf: shuffle the best 3×count so the strip stays
-  // fresh between visits while never dipping below the quality bar.
-  const shelf = byRating.slice(0, count * 3);
-  for (let i = shelf.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shelf[i], shelf[j]] = [shelf[j], shelf[i]];
-  }
-  byRating.splice(0, shelf.length, ...shelf);
+  // No rotation. This picker is a pure function of the catalog, and it has to be:
+  // the page is prerendered, so the "server render" happened at BUILD time and the
+  // client render happens whenever someone visits. Anything that varies between
+  // those two moments is a hydration mismatch.
+  //
+  // Math.random() here was the first version and gave React #418 immediately. The
+  // fix was an hour bucket — Math.floor(Date.now() / 3_600_000) — on the reasoning
+  // that "server and client agree within a render". They do not: the build ran
+  // hours ago, so every visitor outside that one hour got a different shelf order
+  // than the HTML they were served, and #418 came straight back. It has been live
+  // on hanzo.app ever since, verified by diffing the served HTML against the
+  // hydrated DOM (server: Landing/Circle/Savor/Kinetic; client: Mosaic/Prism/Soar).
+  //
+  // Freshness on a statically exported page cannot come from the render. It comes
+  // from getCatalog(), which refetches gallery.hanzo.ai hourly (next.revalidate),
+  // so the shelf already changes as the gallery does — from new DATA, not from a
+  // clock read during render.
   const picked: GalleryTemplate[] = [];
   const usedCategory = new Set<string>();
   for (const t of byRating) {

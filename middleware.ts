@@ -4,14 +4,32 @@ import { SESSION_COOKIE } from "@hanzo/iam/server";
 import { applySecurityHeaders, applyRateLimiting } from "@/lib/security/middleware";
 
 // Routes that require authentication (prefix match).
+//
+// THE RULE IS "IT DRAWS THE SIGNED-IN APP". Every route below mounts `AppShell`
+// — the sidebar with Dashboard, Projects, Connectors, Settings — and that chrome
+// is meaningless to someone who cannot open any of it. A signed-out visitor was
+// shown the whole navigation wrapped around an empty page, because this list had
+// seven entries while seventeen routes mounted the shell.
+//
+// A hand-kept list that has to track something else drifts, so it no longer has
+// to be kept by hand: `tests/unit/protected-routes.test.ts` derives the set from
+// the pages that import AppShell and fails when the two disagree. Add a shelled
+// page and the test names the prefix to add — or says the page should not be
+// wearing the shell, which is the other honest answer.
 const PROTECTED_PREFIXES = [
-  "/dashboard",
-  "/settings",
-  "/profile",
+  "/agents",
   "/billing",
   "/chat",
-  "/dev",
   "/connectors",
+  "/dashboard",
+  "/dev",
+  "/profile",
+  "/projects",
+  "/sessions",
+  "/settings",
+  "/skills",
+  "/usage",
+  "/work",
 ];
 
 // Routes that are always accessible without a token (exact or prefix match).

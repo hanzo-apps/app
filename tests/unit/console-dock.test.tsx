@@ -17,6 +17,8 @@ import { Console } from "@/components/editor/console";
 import { offer } from "@/components/editor/ask-ai/mic";
 import { BAR, COLLAPSE_AT, MIN_OPEN, resolveHeight, maxOpen } from "@/components/editor/console/dock";
 
+import { WithGui } from "../gui-wrapper";
+
 // jsdom has no PointerEvent and no pointer capture; the dock only needs the
 // capture calls to be harmless and clientY to arrive.
 beforeAll(() => {
@@ -74,6 +76,10 @@ const setup = (onToggleSidebar = jest.fn(), voice: ReturnType<typeof machine> | 
         onToggleSidebar={onToggleSidebar}
       />
     </TooltipProvider>,
+    // The Console renders @hanzo/gui primitives, which read a createGui config
+    // at render and throw "Missing hanzogui config" without one. The app mounts
+    // it once in app/providers.tsx — see tests/gui-wrapper.
+    { wrapper: WithGui },
   );
   const handle = screen.getByRole("separator", { name: /console/i });
   const dock = view.container.querySelector("[data-console]") as HTMLElement;
@@ -82,6 +88,20 @@ const setup = (onToggleSidebar = jest.fn(), voice: ReturnType<typeof machine> | 
 
 /** Height the dock is actually painting, in px. */
 const heightOf = (dock: HTMLElement) => parseInt(dock.style.height, 10);
+
+/**
+ * The nearest box holding BOTH controls — i.e. the cluster they share.
+ *
+ * Neither control's own parent is a handle on it: @hanzo/ui wraps its Button in
+ * a `display: contents` theme span, so the two sit at different depths. Walking
+ * up until the other one is inside asks the question structurally, and survives
+ * any wrapper either of them grows later.
+ */
+const clusterOf = (one: HTMLElement, other: HTMLElement) => {
+  let node = one.parentElement;
+  while (node && !node.contains(other)) node = node.parentElement;
+  return node as HTMLElement;
+};
 
 const dragTo = (handle: HTMLElement, from: number, to: number) => {
   fireEvent.pointerDown(handle, { button: 0, clientY: from, pointerId: 1 });
@@ -95,11 +115,32 @@ describe("the bar is a resize handle", () => {
     expect(handle).toBeInTheDocument();
     expect(handle).toHaveAttribute("aria-orientation", "horizontal");
     expect(handle).toHaveAttribute("tabindex", "0");
-    // Discoverable: the pointer must say "you can drag this".
-    expect(handle.className).toContain("cursor-row-resize");
-    // And it must actually draw something on hover — a grip, not just a cursor.
-    expect(handle.querySelectorAll("span").length).toBeGreaterThanOrEqual(2);
-    expect(handle.innerHTML).toContain("group-hover/dock:bg-foreground");
+    // Discoverable: the pointer must say "you can drag this". Read back through
+    // the cascade, not off whichever class the styling layer spelled it with.
+    expect(getComputedStyle(handle).cursor).toBe("row-resize");
+    // And it must actually draw something — a grip, not just a cursor. Each
+    // affordance is inert and invisible while the bar is at rest, is keyed to the
+    // dock group's hover, focus AND press states — so it fades in for a mouse,
+    // for a keyboard, and mid-drag alike — and hangs off the handle that IS that
+    // group. Both halves have to be present: `$group-dock-hover={{
+    // backgroundColor: "$color" }}` on a SizableText emits
+    // `_bg-_groupdock-hover_color`, `group="dock"` on the handle emits the
+    // `t_group_dock` those are selected against, and gui compiles the pair into
+    // one `.t_group_dock:hover ._bg-_groupdock-hover_color`. A descendant class
+    // with no host above it is dead markup — precisely what the Tailwind-era
+    // `className="group/dock"` left behind — so `closest` is the assertion that
+    // the two halves meet. Whether it then paints is a browser's business: jsdom
+    // has no `:hover`, so that half belongs in an e2e, not here.
+    const affordances = Array.from(handle.querySelectorAll("span"));
+    expect(affordances.length).toBeGreaterThanOrEqual(2);
+    for (const grip of affordances) {
+      expect(getComputedStyle(grip).backgroundColor).toBe("transparent");
+      expect(getComputedStyle(grip).pointerEvents).toBe("none");
+      for (const state of ["hover", "focus", "press"]) {
+        expect(grip.className).toContain(`_bg-_groupdock-${state}_color`);
+      }
+      expect(grip.closest(".t_group_dock")).toBe(handle);
+    }
   });
 
   it("drags UP to make the console taller and back DOWN to shrink it", () => {
@@ -222,12 +263,28 @@ describe("the workspace controls ride far right on the bar", () => {
   });
 
   it("puts both of them to the right of the status readout", () => {
-    const { dock } = setup();
+    setup();
     const ai = screen.getByRole("button", { name: /chat panel/i });
     const mic = screen.getByRole("button", { name: /talk to hanzo/i });
-    const cluster = ai.parentElement as HTMLElement;
+    const status = screen.getByText("Auto-saved");
+
+    // One cluster, not two controls that merely landed in the same dock: the
+    // box they share holds them and leaves the status readout outside it.
+    const cluster = clusterOf(mic, ai);
+    expect(cluster).toContainElement(ai);
     expect(cluster).toContainElement(mic);
-    expect(cluster.className).toContain("right-2");
+    expect(cluster).not.toContainElement(status);
+
+    // …and it rides to the RIGHT of that readout: after it in the bar, floated
+    // over the bar rather than in flow, pinned to the bar's right edge.
+    expect(status.compareDocumentPosition(cluster)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
+    expect(getComputedStyle(cluster).position).toBe("absolute");
+    // gui compiles `right="$2"` to `right: var(--c-space-2)`, and jsdom cannot
+    // resolve a CSS variable — the emitted class is the only honest evidence
+    // available here that a right offset is set at all.
+    expect(cluster).toHaveClass("_r-c-space-2");
   });
 
   it("clicking a control does not resize or toggle the dock", () => {

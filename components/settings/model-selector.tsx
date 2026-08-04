@@ -159,12 +159,14 @@ export function ModelSelector({
           <SizableText fontWeight="500" display="flex" flexDirection="column">Model Information</SizableText>
 
           <YStack gap="$2">
-            <div>
-              <SizableText color="$color11">Context Length:</SizableText>
-              <SizableText fontFamily="$mono" display="flex" flexDirection="column">
-                {(selectedModelInfo.contextLength / 1000).toFixed(0)}K tokens
-              </SizableText>
-            </div>
+            {selectedModelInfo.contextLength !== undefined && (
+              <div>
+                <SizableText color="$color11">Context Length:</SizableText>
+                <SizableText fontFamily="$mono" display="flex" flexDirection="column">
+                  {(selectedModelInfo.contextLength / 1000).toFixed(0)}K tokens
+                </SizableText>
+              </div>
+            )}
             {selectedModelInfo.maxTokens && (
               <div>
                 <SizableText color="$color11">Max Output:</SizableText>

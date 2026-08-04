@@ -9,6 +9,7 @@ import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMe
 import { HanzoLogo } from '@/components/HanzoLogo';
 import {
   Activity,
+  TerminalSquare,
   FolderOpen,
   Folder,
   FolderPlus,
@@ -75,6 +76,7 @@ const PRIMARY_ITEMS: SidebarItem[] = [
   { id: 'resources', label: 'Resources', icon: Sparkles, route: '/resources' },
   { id: 'connectors', label: 'Connectors', icon: Plug, route: '/connectors' },
   { id: 'agents', label: 'Agents', icon: Bot, route: '/agents' },
+  { id: 'sessions', label: 'Sessions', icon: TerminalSquare, route: '/sessions' },
 ];
 
 // ── Projects group ──────────────────────────────────────────────────────────

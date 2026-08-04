@@ -1256,7 +1256,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   height="$4.5" width="$4.5" paddingHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ elevation: showChat ? 1 : undefined, backgroundColor: showChat ? undefined : "transparent", color: showChat ? undefined : "$color11", hoverStyle: showChat ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
                   style={{
                     backgroundColor: showChat ? 'var(--brand-accent)' : undefined,
-                    color: showChat ? 'white' : undefined
+                    color: showChat ? 'var(--brand-accent-fg)' : undefined
                   }}
                   onClick={() => setShowChat(!showChat)}
                 >
@@ -1274,7 +1274,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   height="$4.5" width="$4.5" paddingHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ elevation: showFiles ? 1 : undefined, backgroundColor: showFiles ? undefined : "transparent", color: showFiles ? undefined : "$color11", hoverStyle: showFiles ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
                   style={{
                     backgroundColor: showFiles ? 'var(--brand-accent)' : undefined,
-                    color: showFiles ? 'white' : undefined
+                    color: showFiles ? 'var(--brand-accent-fg)' : undefined
                   }}
                   onClick={() => setShowFiles(!showFiles)}
                 >
@@ -1292,7 +1292,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   height="$4.5" width="$4.5" paddingHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ elevation: showEditor ? 1 : undefined, backgroundColor: showEditor ? undefined : "transparent", color: showEditor ? undefined : "$color11", hoverStyle: showEditor ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
                   style={{
                     backgroundColor: showEditor ? 'var(--brand-accent)' : undefined,
-                    color: showEditor ? 'white' : undefined
+                    color: showEditor ? 'var(--brand-accent-fg)' : undefined
                   }}
                   onClick={() => setShowEditor(!showEditor)}
                 >
@@ -1310,7 +1310,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   height="$4.5" width="$4.5" marginHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ elevation: showPreview ? 1 : undefined, backgroundColor: showPreview ? undefined : "transparent", color: showPreview ? undefined : "$color11", hoverStyle: showPreview ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
                   style={{
                     backgroundColor: showPreview ? 'var(--brand-accent)' : undefined,
-                    color: showPreview ? 'white' : undefined
+                    color: showPreview ? 'var(--brand-accent-fg)' : undefined
                   }}
                   onClick={() => setShowPreview(!showPreview)}
                 >
@@ -1328,7 +1328,7 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
                   height="$4.5" width="$4.5" paddingHorizontal="$1" borderRadius="$1" alignItems="center" justifyContent="center" {...{ elevation: showCheckpoints ? 1 : undefined, backgroundColor: showCheckpoints ? undefined : "transparent", color: showCheckpoints ? undefined : "$color11", hoverStyle: showCheckpoints ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
                   style={{
                     backgroundColor: showCheckpoints ? 'var(--brand-accent)' : undefined,
-                    color: showCheckpoints ? 'white' : undefined
+                    color: showCheckpoints ? 'var(--brand-accent-fg)' : undefined
                   }}
                   onClick={() => setShowCheckpoints(!showCheckpoints)}
                 >
@@ -1581,13 +1581,19 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
             )}
           </YStack>
 
-          {/* Bottom Navigation Bar */}
+          {/* Bottom Navigation Bar — the ACTIVE panel is painted by the brand
+              accent PAIR (`--brand-accent` ground, `--brand-accent-fg` mark), so
+              a monochrome accent still reads; a hard-coded white mark would
+              vanish on it. Same pair, same shape as the desktop toggles above:
+              when active the gui `color` prop steps aside and the inline style
+              supplies both halves. */}
           <YStack position="fixed" bottom="$0" left="$0" right="$0" backgroundColor="$background" borderTopWidth={1} borderColor="$borderColor">
             <XStack justifyContent="center" alignItems="center" padding="$2" gap="$2">
               <Button
-                alignItems="center" justifyContent="center" paddingVertical="$2" paddingHorizontal="$2" borderRadius="$5" elevation={1} {...{ color: activeMobilePanel === 'chat' ? "white" : "$color11", backgroundColor: activeMobilePanel === 'chat' ? undefined : "transparent", hoverStyle: activeMobilePanel === 'chat' ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
+                alignItems="center" justifyContent="center" paddingVertical="$2" paddingHorizontal="$2" borderRadius="$5" elevation={1} {...{ color: activeMobilePanel === 'chat' ? undefined : "$color11", backgroundColor: activeMobilePanel === 'chat' ? undefined : "transparent", hoverStyle: activeMobilePanel === 'chat' ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
                 style={{
                   backgroundColor: activeMobilePanel === 'chat' ? 'var(--brand-accent)' : undefined,
+                  color: activeMobilePanel === 'chat' ? 'var(--brand-accent-fg)' : undefined,
                 }}
                 onClick={() => setActiveMobilePanel('chat')}
               >
@@ -1595,9 +1601,10 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
               </Button>
             
               <Button
-                alignItems="center" justifyContent="center" paddingVertical="$2" paddingHorizontal="$2" borderRadius="$5" elevation={1} {...{ color: activeMobilePanel === 'files' ? "white" : "$color11", backgroundColor: activeMobilePanel === 'files' ? undefined : "transparent", hoverStyle: activeMobilePanel === 'files' ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
+                alignItems="center" justifyContent="center" paddingVertical="$2" paddingHorizontal="$2" borderRadius="$5" elevation={1} {...{ color: activeMobilePanel === 'files' ? undefined : "$color11", backgroundColor: activeMobilePanel === 'files' ? undefined : "transparent", hoverStyle: activeMobilePanel === 'files' ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
                 style={{
                   backgroundColor: activeMobilePanel === 'files' ? 'var(--brand-accent)' : undefined,
+                  color: activeMobilePanel === 'files' ? 'var(--brand-accent-fg)' : undefined,
                 }}
                 onClick={() => setActiveMobilePanel('files')}
               >
@@ -1605,9 +1612,10 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
               </Button>
             
               <Button
-                alignItems="center" justifyContent="center" paddingVertical="$2" paddingHorizontal="$2" borderRadius="$5" elevation={1} {...{ color: activeMobilePanel === 'editor' ? "white" : "$color11", backgroundColor: activeMobilePanel === 'editor' ? undefined : "transparent", hoverStyle: activeMobilePanel === 'editor' ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
+                alignItems="center" justifyContent="center" paddingVertical="$2" paddingHorizontal="$2" borderRadius="$5" elevation={1} {...{ color: activeMobilePanel === 'editor' ? undefined : "$color11", backgroundColor: activeMobilePanel === 'editor' ? undefined : "transparent", hoverStyle: activeMobilePanel === 'editor' ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
                 style={{
                   backgroundColor: activeMobilePanel === 'editor' ? 'var(--brand-accent)' : undefined,
+                  color: activeMobilePanel === 'editor' ? 'var(--brand-accent-fg)' : undefined,
                 }}
                 onClick={() => setActiveMobilePanel('editor')}
               >
@@ -1615,9 +1623,10 @@ export function Workspace({ project, onBack }: WorkspaceProps) {
               </Button>
             
               <Button
-                alignItems="center" justifyContent="center" paddingVertical="$2" paddingHorizontal="$2" borderRadius="$5" elevation={1} {...{ color: activeMobilePanel === 'preview' ? "white" : "$color11", backgroundColor: activeMobilePanel === 'preview' ? undefined : "transparent", hoverStyle: activeMobilePanel === 'preview' ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
+                alignItems="center" justifyContent="center" paddingVertical="$2" paddingHorizontal="$2" borderRadius="$5" elevation={1} {...{ color: activeMobilePanel === 'preview' ? undefined : "$color11", backgroundColor: activeMobilePanel === 'preview' ? undefined : "transparent", hoverStyle: activeMobilePanel === 'preview' ? undefined : {"backgroundColor":"$color3","color":"$color"} }}
                 style={{
                   backgroundColor: activeMobilePanel === 'preview' ? 'var(--brand-accent)' : undefined,
+                  color: activeMobilePanel === 'preview' ? 'var(--brand-accent-fg)' : undefined,
                 }}
                 onClick={() => setActiveMobilePanel('preview')}
               >

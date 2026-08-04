@@ -38,7 +38,7 @@ export function EngagementMetrics({ deploymentId }: EngagementMetricsProps) {
   const fetchEngagementMetrics = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/analytics/${deploymentId}/engagement`);
+      const response = await fetch(`/v1/analytics/${deploymentId}/engagement`);
       if (!response.ok) throw new Error('Failed to fetch engagement metrics');
 
       const metrics: EngagementMetrics = await response.json();

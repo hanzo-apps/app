@@ -4,6 +4,7 @@
  */
 
 import { ProviderId, ProviderSettings } from './types';
+import { DEFAULT_PROVIDER } from './registry';
 
 const API_KEY_PREFIX = 'hanzo_api_key_';
 const SETTINGS_KEY = 'hanzo_provider_settings';
@@ -154,7 +155,7 @@ export function updateProviderSettings(
 
   try {
     const current = getProviderSettings() || {
-      selectedProvider: 'openai' as ProviderId,
+      selectedProvider: DEFAULT_PROVIDER,
       providerKeys: {},
       providerModels: {}
     };
@@ -172,7 +173,7 @@ export function updateProviderSettings(
  */
 export function getSelectedProvider(): ProviderId {
   const settings = getProviderSettings();
-  return settings?.selectedProvider || 'openai';
+  return settings?.selectedProvider || DEFAULT_PROVIDER;
 }
 
 /**

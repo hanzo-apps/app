@@ -28,11 +28,9 @@ import {
   ListTodo,
   ChevronDown,
   Database,
-  Plus,
   Sparkles,
 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Textarea, Button } from '@hanzo/ui';
-import { cn } from '@/lib/utils';
 import { baseEnabled, setBaseEnabled } from '@/lib/base/flag';
 
 export type ComposerMode = 'build' | 'plan';
@@ -274,14 +272,6 @@ export function BuildComposer({
               >
                 <Database size={14} />
                 Base
-              </Button>
-
-              <Button
-                type="button"
-                aria-label="Attach"
-                borderRadius="$5" padding="$2" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
-              >
-                <Plus size={16} />
               </Button>
             </XStack>
 

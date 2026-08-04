@@ -27,7 +27,12 @@ const read = (p: string) => readFileSync(join(ROOT, p), "utf8");
 describe("the contribute widget cannot mount on the builder", () => {
   it("edit.js still treats a missing repo as 'do nothing'", () => {
     const src = read("public/edit.js");
-    expect(src).toMatch(/var REPO = meta\('hanzo:repo'\);\s*\n\s*if \(!REPO\) return;/);
+    // Two facts, checked apart. They used to be one regex requiring the bail to
+    // sit on the line AFTER the declaration, which said nothing about the rule
+    // and broke the moment edit.js grew a host fallback and moved its bail 250
+    // lines down — reporting that a still-honoured contract was gone.
+    expect(src).toMatch(/var REPO = meta\('hanzo:repo'\)/);
+    expect(src).toMatch(/if \(!REPO\) return;/);
   });
 
   it("the root layout is what declares the repo", () => {

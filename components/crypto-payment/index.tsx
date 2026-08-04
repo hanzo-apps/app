@@ -92,7 +92,7 @@ export function CryptoPayment({ open, onOpenChange, onSuccess }: CryptoPaymentPr
     const pricing = CREDIT_PRICING[selectedAmount as keyof typeof CREDIT_PRICING]
     if (pricing && hash) {
       const chainName = SUPPORTED_CHAINS.find(c => c.id === selectedChainId)?.name || 'base'
-      fetch('/api/crypto/payment', {
+      fetch('/v1/crypto/payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -36,7 +36,7 @@ export async function applyProjectDatabaseSchema(projectId: string, ddl: string)
   setProjectSchema(projectId, ddl);
   if (process.env.NEXT_PUBLIC_SERVER_MODE === 'true') {
     try {
-      const res = await fetch(`/api/projects/${projectId}/database/query`, {
+      const res = await fetch(`/v1/builder/${projectId}/database/query`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sql: ddl }),
@@ -59,8 +59,8 @@ export function SchemaEditor({ projectId, enabled, onSchemaChange }: SchemaEdito
   const [schemaKey, setSchemaKey] = useState(0);
   const autoAppliedRef = useRef<string | null>(null);
 
-  const schemaEndpoint = `/api/projects/${projectId}/database/schema`;
-  const queryEndpoint = `/api/projects/${projectId}/database/query`;
+  const schemaEndpoint = `/v1/builder/${projectId}/database/schema`;
+  const queryEndpoint = `/v1/builder/${projectId}/database/query`;
 
   // Auto-apply: if localStorage has schema DDL but the project database has no tables,
   // apply the DDL automatically. This self-heals when the initial application during

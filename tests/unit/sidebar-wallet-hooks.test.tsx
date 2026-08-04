@@ -52,10 +52,18 @@ jest.mock("@hanzo/iam/react", () => ({
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { SidebarWallet } = require("@/components/SidebarWallet");
 
+import { WithGui } from "../gui-wrapper";
+
+// SidebarWallet renders @hanzo/gui primitives, which read a createGui config at
+// render and throw "Missing hanzogui config" without one. The app mounts it once
+// in app/providers.tsx — see tests/gui-wrapper. `wrapper` also applies to
+// rerender(), which is the call this suite is actually about.
+const renderWallet = (ui: React.ReactElement) => render(ui, { wrapper: WithGui });
+
 describe("SidebarWallet — the hook list is the same signed out and signed in", () => {
   it("survives the session landing after an empty first paint", () => {
     session.user = null;
-    const view = render(<SidebarWallet collapsed={false} />);
+    const view = renderWallet(<SidebarWallet collapsed={false} />);
     expect(view.queryByTestId("user-menu")).toBeNull();
 
     session.user = { name: "Zach Kelling", email: "z@hanzo.ai" };

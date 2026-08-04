@@ -47,13 +47,37 @@ const rel = (f: string) => f.replace(ROOT + "/", "");
  * refuses to keep one.
  */
 const SIZES: string[] = (() => {
-  const dts = readFileSync(
-    join(ROOT, "node_modules/@hanzo/ui/dist/primitives/button.d.ts"),
-    "utf8",
+  // FIND the declaration; do not assume where it lives. `primitives/button.d.ts`
+  // held the union once, is a one-line re-export of the gui backend in one
+  // install, and is absent entirely in another — a clean CI install has only
+  // `backends/gui/button.d.ts`. Hardcoding any of those spellings makes this
+  // suite report "the library dropped its sizes" when the library did nothing of
+  // the kind, which is exactly the failure it exists to prevent.
+  const root = join(ROOT, "node_modules/@hanzo/ui/dist");
+  const candidates: string[] = [];
+  const scan = (dir: string) => {
+    for (const e of readdirSync(dir, { withFileTypes: true })) {
+      const p = join(dir, e.name);
+      if (e.isDirectory()) scan(p);
+      else if (e.name === "button.d.ts") candidates.push(p);
+    }
+  };
+  scan(root);
+
+  for (const c of candidates) {
+    const dts = readFileSync(c, "utf8");
+    const line = dts.match(/size\?:\s*([^;]+);/);
+    if (!line) continue; // a re-export barrel declares nothing
+    // Drop `import("@hanzogui/web").SizeTokens` first: its module specifier is
+    // quoted too, and would otherwise be collected as a size named
+    // "@hanzogui/web".
+    const union = line[1].replace(/import\("[^"]+"\)/g, "");
+    const sizes = [...union.matchAll(/"([^"]+)"/g)].map((m) => m[1]);
+    if (sizes.length) return sizes;
+  }
+  throw new Error(
+    `@hanzo/ui declares no button size union — searched ${candidates.length} button.d.ts under ${root}`,
   );
-  const line = dts.match(/size\?:\s*([^;]+);/);
-  if (!line) throw new Error("@hanzo/ui button.d.ts no longer declares a size union");
-  return [...line[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
 })();
 
 /** Every `<Button …>` opening tag in the surface, with its size and className. */

@@ -24,21 +24,27 @@ export type ModelOption = {
 };
 
 // The model the builder opens on when neither storage nor the gateway pick one.
-// Bare `enso` — the rung that picks best. This is the ONE place the default
-// lives; no page, component or env var restates it.
+// This is the ONE place the default lives; no page, component or env var
+// restates it.
 //
-// It costs more than the flash rung and that is the accepted trade. Measured at
-// the family service itself (enso.enso.svc:8080 GET /v1/models, the catalog the
-// gateway proxies): enso is $4/$20 per Mtok against enso-flash's $2/$4 — 2x in,
-// 5x out. Output dominates a builder's spend, so this is a real 5x.
+// WHY NOT `enso`, THE HOUSE FAMILY. It cannot build. zen's identity injection
+// appended Hanzo's identity prompt to the END of the conversation, after the
+// user's turn, and a model reads the final turn as the thing to continue — so
+// every enso rung answered a "build me a page" request by reciting its own
+// identity prompt instead. Measured against this exact builder system prompt:
+// enso and enso-flash returned prose and no HTML, enso-ultra 502'd, while
+// claude-opus-4.8 and gpt-5.2 returned correct multi-page HTML from the
+// identical request. A default that cannot produce a page is not a default.
 //
-// Tier: the same catalog marks enso `min_tier: "trial"`. Commerce maps the
-// starter plan to `trial` (ai `controllers/family_tier.go` commerceTierToLadder),
-// and a new account lands on starter with its auto-credit, so a signed-in user
-// clears this gate. `familyTierAllowed` also fails OPEN when commerce cannot
-// name a tier. Signed-out visitors never generate — /v1/generate is the auth
-// seam — so no reachable session defaults to a denial.
-export const DEFAULT_MODEL = "enso";
+// The root cause is FIXED in hanzoai/zen (withIdentity now places the identity
+// as the last SYSTEM turn, ahead of the user's). THIS LINE GOES BACK TO `enso`
+// once the enso image carries that fix and a build verifies — the house family
+// is the intended default, and it costs less than a resold frontier tier.
+//
+// The rule this applies is the one already written for FALLBACK_MODELS: a model
+// that cannot serve is worse than one that is absent. That goes double for the
+// default, which is what everyone who never opens the picker gets.
+export const DEFAULT_MODEL = "claude-opus-4.8";
 
 // The Hanzo gateway (api.hanzo.ai) serves the Zen/Enso ladder + connected
 // providers AND — since DO GenAI funded the proprietary catalog — a CURATED set
@@ -216,26 +222,26 @@ export function buildModelsFrom(
 // OFFLINE LAST-RESORT ONLY. This is the sole hardcoded list, used solely when
 // the live gateway list is unreachable — the server /v1/models offline path and
 // the client useModels() fallback — so the picker never breaks. It is NOT the
-// source of truth; the gateway is. Keep it to the current Zen 5 ladder. It MUST
-// carry DEFAULT_MODEL: the offline path returns DEFAULT_MODEL verbatim, so a
-// default missing from this list would name a model the picker cannot show.
-// The enso rungs here are the three the family service actually serves
-// (enso.enso.svc:8080 GET /v1/models → enso, enso-flash, enso-ultra). `enso-pro`
-// is deliberately ABSENT: ai synthesizes a listing entry for it from a pin
-// (`controllers/zen_client.go` ensoFam.pins) but the family has no such SKU, so
-// a pick would pass through verbatim and fail at generation. A picker entry that
-// cannot serve is worse than an absent one — list it only once the family does.
+// source of truth; the gateway is. It MUST carry DEFAULT_MODEL: the offline path
+// returns DEFAULT_MODEL verbatim, so a default missing from this list would name
+// a model the picker cannot show.
+//
+// EVERY ENTRY IS VERIFIED AGAINST THE LIVE GATEWAY (`GET /v1/models`). The rule
+// was already written here for `enso-pro` — "a picker entry that cannot serve is
+// worse than an absent one" — and then not applied to the rest of the list: the
+// six `zen5-*` rungs were offered for a family the gateway does not carry a
+// single id of. Picking one sent a dead id, and the empty result read as the
+// model misbehaving rather than as a model that does not exist.
+//
+// The enso rungs are the three the family service serves (enso.enso.svc:8080).
+// `enso-pro` stays deliberately absent: ai synthesizes a listing entry for it
+// from a pin (`controllers/zen_client.go` ensoFam.pins) but the family has no
+// such SKU. When the Zen 5 ladder is actually served, add it back here.
 export const FALLBACK_MODELS: ModelOption[] = [
   { value: "enso", label: "Enso" },
   { value: "enso-flash", label: "Enso Flash" },
   { value: "enso-ultra", label: "Enso Ultra" },
-  { value: "zen5-coder", label: "Zen 5 Coder" },
-  { value: "zen5-flash", label: "Zen 5 Flash" },
-  { value: "zen5", label: "Zen 5" },
-  { value: "zen5-pro", label: "Zen 5 Pro" },
-  { value: "zen5-max", label: "Zen 5 Max" },
-  { value: "zen5-nano", label: "Zen 5 Nano" },
-  // Frontier third-party tiers now resold through the gateway (DO GenAI funded).
+  // Frontier third-party tiers resold through the gateway (DO GenAI funded).
   { value: "claude-opus-4.8", label: "Claude Opus 4.8" },
   { value: "gpt-5.2", label: "GPT 5.2" },
 ];

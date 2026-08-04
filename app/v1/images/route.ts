@@ -17,6 +17,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
+import { refusal } from "@/lib/gateway";
 import { session } from "@/lib/iam";
 import { requireSameOrigin } from "@/lib/org/csrf";
 
@@ -67,14 +68,8 @@ export async function POST(request: NextRequest) {
 
   if (!gateway.ok) {
     const detail = await gateway.text().catch(() => "");
-    if (gateway.status === 401 || gateway.status === 403) return unauthorized();
-    return NextResponse.json(
-      {
-        ok: false,
-        message: detail || `Gateway error (${gateway.status}) while generating.`,
-      },
-      { status: 502 }
-    );
+    const { body: refused, status } = refusal(gateway.status, detail);
+    return NextResponse.json(refused, { status });
   }
 
   const data = await gateway.json().catch(() => null);

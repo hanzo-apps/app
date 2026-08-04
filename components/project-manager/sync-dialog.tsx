@@ -29,7 +29,7 @@ export function SyncDialog({ open, onOpenChange, onSyncComplete }: SyncDialogPro
   const checkAuth = async () => {
     setAuthLoading(true);
     try {
-      const response = await fetch('/api/auth/me');
+      const response = await fetch('/v1/auth/me');
       const data = await response.json();
       setAuthenticated(data.authenticated);
     } catch {

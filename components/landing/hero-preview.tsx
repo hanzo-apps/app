@@ -80,13 +80,13 @@ function VibeApp({ v, compact }: { v: number; compact?: boolean }): ReactElement
           Vibe Check
         </SizableText>
         {v >= 2 && !compact && (
-          <SizableText alignItems="center" gap="$1" fontFamily="$mono" fontSize={8} color="$green8">
-            <SizableText height="$1" width="$1" borderRadius="$10" backgroundColor="$green8" className="livedot" />
+          <SizableText alignItems="center" gap="$1" fontFamily="$mono" fontSize={8} color="$color">
+            <SizableText height="$1" width="$1" borderRadius="$10" backgroundColor="$color" className="livedot" />
             realtime · Base
           </SizableText>
         )}
         {v >= 2 && compact && (
-          <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$green8" className="livedot" />
+          <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color" className="livedot" />
         )}
       </XStack>
 
@@ -312,7 +312,7 @@ export default function HeroPreview() {
               </Button>
             </XStack>
             <SizableText
-              alignItems="center" gap="$1" borderRadius="$3" paddingHorizontal="$2" paddingVertical="$1" fontSize={10} fontWeight="600" {...{ backgroundColor: live ? "$green8" : "$color12", color: live ? "$green8" : "$background" }}
+              alignItems="center" gap="$1" borderRadius="$3" borderWidth={1} paddingHorizontal="$2" paddingVertical="$1" fontSize={10} fontWeight="600" {...{ backgroundColor: live ? "$color4" : "$color12", borderColor: live ? "$color" : "$color12", color: live ? "$color" : "$background" }}
             >
               {live ? (
                 <>
@@ -399,8 +399,8 @@ export default function HeroPreview() {
                 <SizableText flexShrink={0} alignItems="center" gap="$1">
                   {live ? (
                     <>
-                      <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$green8" className="livedot" />
-                      <SizableText display="none" fontFamily="$mono" fontSize={8} color="$green8">
+                      <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color" className="livedot" />
+                      <SizableText display="none" fontFamily="$mono" fontSize={8} color="$color">
                         Live
                       </SizableText>
                     </>
@@ -453,8 +453,8 @@ export default function HeroPreview() {
           <SizableText marginLeft="auto" flexShrink={0} alignItems="center" gap="$1.5">
             {live ? (
               <>
-                <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$green8" className="livedot" />
-                <SizableText color="$green8">Live at {SLUG}</SizableText>
+                <SizableText height="$1.5" width="$1.5" borderRadius="$10" backgroundColor="$color" className="livedot" />
+                <SizableText color="$color">Live at {SLUG}</SizableText>
               </>
             ) : phase === "publishing" ? (
               <>

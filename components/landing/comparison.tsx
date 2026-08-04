@@ -404,7 +404,7 @@ export default function Comparison() {
                           <SizableText alignItems="center" gap="$2">
                             {r.name}
                             {r.hanzo && (
-                              <SizableText borderRadius="$10" borderWidth={1} borderColor="$green8" backgroundColor="$green8" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={9} color="$green4">
+                              <SizableText borderRadius="$10" borderWidth={1} borderColor="$color" backgroundColor="$color4" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={9} color="$color">
                                 Best
                               </SizableText>
                             )}
@@ -455,11 +455,11 @@ export default function Comparison() {
               return (
                 <Reveal
                   key={r.name}
-                  borderRadius={16} borderWidth={1} borderColor="rgba(52,211,153,0.25)" backgroundColor="var(--muted)" padding="$4"
+                  borderRadius={16} borderWidth={1} borderColor="$color" backgroundColor="var(--muted)" padding="$4"
                 >
                   <XStack marginBottom="$4" alignItems="center" gap="$2">
                     <H3 fontSize="$6" fontWeight="500" color="$color">{r.name}</H3>
-                    <SizableText borderRadius="$10" borderWidth={1} borderColor="$green8" backgroundColor="$green8" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={9} color="$green4">
+                    <SizableText borderRadius="$10" borderWidth={1} borderColor="$color" backgroundColor="$color4" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={9} color="$color">
                       Best overall
                     </SizableText>
                   </XStack>

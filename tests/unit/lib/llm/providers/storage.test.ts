@@ -136,7 +136,7 @@ describe('Provider Storage', () => {
 
     it('should return default provider if none set', () => {
       const provider = getSelectedProvider();
-      expect(provider).toBe('openai');
+      expect(provider).toBe('hanzo');
     });
   });
 

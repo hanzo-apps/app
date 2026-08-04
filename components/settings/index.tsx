@@ -3,8 +3,7 @@
 import { YStack, H3, Paragraph, XStack, H4, SizableText } from '@hanzo/gui';
 import { useState, useEffect } from 'react';
 import { configManager, AppSettings, CostSettings } from '@/lib/config/storage';
-import { Button, Input, Label, Switch, toast, Collapsible, CollapsibleContent, CollapsibleTrigger, Tabs, TabsList, TabsTrigger } from '@hanzo/ui';
-import { useTheme } from 'next-themes';
+import { Button, Input, Label, Switch, toast, Collapsible, CollapsibleContent, CollapsibleTrigger } from '@hanzo/ui';
 import { DollarSign, AlertTriangle, Info, Download, Upload, Database, ChevronDown, Palette } from 'lucide-react';
 import { CostCalculator } from '@/lib/llm/cost-calculator';
 import { AboutModal } from '@/components/about-modal';
@@ -18,8 +17,6 @@ interface SettingsPanelProps {
 export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
   const [_settings, setSettings] = useState<AppSettings>({});
   const [costSettings, setCostSettings] = useState<CostSettings>({});
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
   const [aboutModalOpen, setAboutModalOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
@@ -38,7 +35,6 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
     // Load settings on mount
     setSettings(configManager.getSettings());
     setCostSettings(configManager.getCostSettings());
-    setMounted(true);
   }, []);
 
   const updateSetting = <K extends keyof AppSettings>(
@@ -156,25 +152,9 @@ export function SettingsPanel({ onClose: _onClose }: SettingsPanelProps) {
               Configure your preferences and display options
             </Paragraph>
             <YStack rowGap="$4">
-              {/* Theme */}
-              <div>
-                <Label htmlFor="theme">Theme</Label>
-                <Tabs
-                  value={mounted ? theme || 'dark' : 'dark'}
-                  onValueChange={(value: string) => {
-                    setTheme(value);
-                    updateSetting('theme', value as 'light' | 'dark' | 'system');
-                  }}
-                  w="100%"
-                  mt="$2"
-                >
-                  <TabsList w="100%">
-                    <TabsTrigger value="dark" flex={1}>Dark</TabsTrigger>
-                    <TabsTrigger value="light" flex={1}>Light</TabsTrigger>
-                    <TabsTrigger value="system" flex={1}>System</TabsTrigger>
-                  </TabsList>
-                </Tabs>
-              </div>
+              {/* No theme tabs: hanzo.app is dark-only and the theme is FORCED in
+                  app/providers.tsx, so Light/System could only write a preference
+                  nothing reads. */}
 
               {/* Telemetry */}
               <XStack alignItems="center" justifyContent="space-between">

@@ -424,8 +424,11 @@ function NewProjectInner() {
               </YStack>
             </XStack>
 
+            {/* Neutral, not amber: the icon and the sentence already carry the
+                degraded state, so the hue was both off-palette and the least
+                accessible half of the signal. */}
             {!galleryLoading && !galleryLive && (
-              <SizableText marginBottom="$4" alignItems="flex-start" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$yellow9" backgroundColor="$yellow9" paddingHorizontal="$3" paddingVertical="$2.5" fontSize="$1" color="$yellow4" display="flex" flexDirection="row">
+              <SizableText marginBottom="$4" alignItems="flex-start" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" paddingVertical="$2.5" fontSize="$1" color="$color11" display="flex" flexDirection="row">
                 <CloudOff size={16} />
                 <span>Showing built-in starters — the live gallery is unreachable right now.</span>
               </SizableText>

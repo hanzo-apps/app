@@ -59,6 +59,12 @@ const declared = (): Set<string> => {
       join(ROOT, "node_modules/@hanzo/brand/styles/variables.css"),
       "utf8",
     ),
+    // app/gui.css is loaded too (`import "./gui.css"` in app/layout.tsx) and is
+    // BOTH a declarer and a referencer: the generated @hanzo/gui sheet declares
+    // its own `--t###` / `--colorN` scale and then reads it back. Omitting it
+    // here while `referenced()` walks it made the suite report ~740 of gui.css's
+    // own tokens as undeclared — a self-inflicted red that hid real ones.
+    readFileSync(join(ROOT, "app/gui.css"), "utf8"),
   ];
   const set = new Set<string>();
   for (const sheet of sheets) {

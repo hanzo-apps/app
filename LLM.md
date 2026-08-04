@@ -176,3 +176,55 @@ Verify font work with CDP `CSS.getPlatformFontsForNode` (`familyName` +
 `isCustomFont`) and `FontFace.status`. Never `document.fonts.check()` — it returns
 true even on a page with zero `@font-face` rules, so it proves nothing.
 
+
+
+### A refusal is not an outage — `lib/gateway.ts`
+
+The gateway states a reason when it refuses, and every route used to read it
+into a `detail` local and drop it: 401 and 403 both collapsed into
+`{ openLogin: true, message: "Sign in to build" }`, everything else became a 502
+the builder renders as "unavailable — try again in a minute". So a revoked key
+read as an outage. The platform owner spent an afternoon waiting for a healthy
+service while his key had simply been replaced — the gateway had said exactly
+that, naming the key prefix and the mint URL, and we threw the sentence away.
+
+`refusal(status, detail)` is the ONE translation. It returns an envelope and a
+status, never a Response, so each route keeps its own headers and the mapping
+stays a pure function the tests read directly:
+
+- **401 — the credential.** A JWKS-verified session (`lib/iam.ts`, `exp`
+  honored) is what got the request to the gateway at all, so signing in again
+  changes nothing; what was rejected is the credential behind the session.
+  Never `openLogin` here — that loop IS the time-waster.
+- **403 — permission.** Real credential, healthy service, this identity is not
+  allowed. Retrying cannot help, so it never suggests it.
+- **402 — credit.** Keeps `needCredits` so the usage modal still opens.
+- **anything else — the service.** The only case where "try again" is honest,
+  and the only user of `UNAVAILABLE`.
+
+`openLogin` still belongs to the genuinely-unauthenticated case, which each
+route checks before it ever calls the gateway. Those two conditions sharing one
+response was the whole bug.
+
+`reason()` is strict JSON (`msg`, `error.message`, `error`, `message`) and
+returns `""` for an HTML error page — dumping markup into a toast is worse than
+the honest generic. It redacts `hk-…` to a prefix at the boundary rather than
+trusting every upstream to have been careful, and caps at 300 chars.
+
+`useCallAi` imports the same `UNAVAILABLE` string so both sides of the boundary
+say it in one voice, and no longer toasts errors itself — `ask-ai`'s
+`handleError` already toasts every result exactly once, so the hook doing it too
+was two toasts per failure.
+
+**Landmine — the install is broken at HEAD, and it is not this change.**
+`pnpm install --frozen-lockfile` (the CI default) FAILS: the lockfile says
+`@hanzo/ui@^8.0.31` and `react-resizable-panels@^4.7.4` while package.json says
+`^8.0.33` and dropped the panels dep. Regenerating the lock resolves
+`@hanzo/ui@8.0.39`, which peer-requires `@hanzo/gui >= 8.0.0` — but this app
+pins `@hanzo/gui@7.3.0`, so pnpm installs a SECOND `@hanzogui/*@8.0.0` tree and
+two Tamagui runtimes crash prerender with `Cannot create proxy with a non-object
+as target or handler` on `/_not-found`. There is no lockfile state that builds:
+either the manifest goes back to `^8.0.31` or `@hanzo/gui` moves to 8.x (the
+phased migration in `components/editor/CLAUDE.md`). Three unit suites
+(`control-scale`, `hanzo-ui-button-aschild`, `overlay`) fail under 8.0.39 for
+the same reason.

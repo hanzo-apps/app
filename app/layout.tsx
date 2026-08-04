@@ -124,9 +124,18 @@ export default async function RootLayout({
     // tokens, so they have to be readable from `:root` where every other token is
     // declared. On <body> they were invisible to `:root { --font-sans: … }` and to
     // Tailwind's `--default-font-family`, which left <html> itself on the OS stack.
+    //
+    // `dark` is a literal, server-rendered class — the ONE theme authority.
+    // hanzo.app is dark-only, so the theme is a fact of the document, not state to
+    // resolve at runtime. It used to be next-themes with `enableSystem`, which made
+    // TWO authorities that disagreed: next-themes dropped `.dark` when the OS
+    // preferred light while @hanzo/gui's root class stayed `t_dark`, and /catalog
+    // and /gallery painted WHITE (measured). A client controller cannot be the
+    // authority for a constant anyway — it resolves after first paint, so the
+    // correct ground has to be in the markup or the page flashes on the way to it.
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable}`}
+      className={`dark ${geistSans.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
       <body>

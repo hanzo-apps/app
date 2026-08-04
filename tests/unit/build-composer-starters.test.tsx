@@ -26,6 +26,13 @@ jest.mock("@hanzo/event", () => ({
 
 import { BuildComposer } from "@/components/build-composer";
 
+import { WithGui } from "../gui-wrapper";
+
+// BuildComposer renders @hanzo/gui primitives, which read a createGui config at
+// render and throw "Missing hanzogui config" without one. The app mounts it once
+// in app/providers.tsx — see tests/gui-wrapper.
+const renderComposer = (ui: React.ReactElement) => render(ui, { wrapper: WithGui });
+
 const STARTERS = [
   "Internal admin dashboard",
   "AI support chatbot",
@@ -58,7 +65,7 @@ describe("BuildComposer starters", () => {
 
   it("SUBMITS the starter text on one click, with the selected mode", () => {
     const onSubmit = jest.fn();
-    render(<BuildComposer starters={STARTERS} onSubmit={onSubmit} />);
+    renderComposer(<BuildComposer starters={STARTERS} onSubmit={onSubmit} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Realtime chat app" }));
 
@@ -68,7 +75,7 @@ describe("BuildComposer starters", () => {
   });
 
   it("goes through the same submit a typed message uses (seed + /dev push)", () => {
-    render(<BuildComposer starters={STARTERS} />);
+    renderComposer(<BuildComposer starters={STARTERS} />);
 
     fireEvent.click(screen.getByRole("button", { name: "AI support chatbot" }));
 
@@ -81,7 +88,7 @@ describe("BuildComposer starters", () => {
 
   it("submits with the mode the user picked — never silently changes it", () => {
     const onSubmit = jest.fn();
-    render(<BuildComposer starters={STARTERS} onSubmit={onSubmit} />);
+    renderComposer(<BuildComposer starters={STARTERS} onSubmit={onSubmit} />);
 
     openMenu(screen.getByRole("button", { name: /Build/ }));
     fireEvent.click(screen.getByRole("menuitem", { name: /Plan/ }));
@@ -92,7 +99,7 @@ describe("BuildComposer starters", () => {
 
   it("still submits a typed draft on Enter, and does not submit an empty one", () => {
     const onSubmit = jest.fn();
-    render(<BuildComposer onSubmit={onSubmit} />);
+    renderComposer(<BuildComposer onSubmit={onSubmit} />);
 
     const box = screen.getByLabelText("Ask Hanzo to build");
     fireEvent.keyDown(box, { key: "Enter" });
@@ -105,7 +112,7 @@ describe("BuildComposer starters", () => {
 
   it("submits the typed draft — not a click event — from the send button", () => {
     const onSubmit = jest.fn();
-    render(<BuildComposer onSubmit={onSubmit} />);
+    renderComposer(<BuildComposer onSubmit={onSubmit} />);
 
     fireEvent.change(screen.getByLabelText("Ask Hanzo to build"), {
       target: { value: "a budget tracker" },

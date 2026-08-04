@@ -112,11 +112,9 @@ const INDEX_HTML = `<!DOCTYPE html>
     const LABEL = Object.fromEntries(VIBES.map(v => [v.key, v.label]));
     const COLLECTION = 'votes';
 
-    // The builder-origin proxy prefix. Canonical is /v1/base; /api/base is the
-    // legacy alias kept only so this demo works either side of that cutover.
-    // resolveBase() picks whichever the deployment actually mounts.
-    const CANDIDATES = ['/v1/base', '/api/base'];
-    let BASE = CANDIDATES[0];
+    // The builder-origin proxy prefix. There is one: /v1/base. resolveBase()
+    // no longer chooses between prefixes — it only confirms the route is mounted.
+    const BASE = '/v1/base';
 
     // ── Local identity: one stable voter id per browser, so a person has one
     //    current vote that they can change (PATCH), not a pile of duplicates. ──
@@ -359,16 +357,12 @@ const INDEX_HTML = `<!DOCTYPE html>
 
     // ── Boot: pick the live proxy prefix, then load + connect ────────────────
     async function resolveBase() {
-      for (const prefix of CANDIDATES) {
-        try {
-          const res = await fetch(prefix + '/collections/' + COLLECTION + '/records?perPage=1', { headers: { accept: 'application/json' } });
-          // A JSON body (200 / 401 / 404-collection) means this proxy route is live.
-          // An HTML 404 means the route isn't mounted here → try the next candidate.
-          const ct = res.headers.get('content-type') || '';
-          if (ct.includes('json')) { BASE = prefix; return true; }
-        } catch (_) {}
-      }
-      return false;
+      try {
+        const res = await fetch(BASE + '/collections/' + COLLECTION + '/records?perPage=1', { headers: { accept: 'application/json' } });
+        // A JSON body (200 / 401 / 404-collection) means the proxy route is live.
+        // An HTML 404 means it is not mounted on this deployment.
+        return (res.headers.get('content-type') || '').includes('json');
+      } catch (_) { return false; }
     }
 
     (async function boot() {

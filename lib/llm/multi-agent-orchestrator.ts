@@ -14,7 +14,7 @@ import { CostCalculator } from './cost-calculator';
 import { ToolCall, UsageInfo, ContentBlock } from './types';
 import { logger } from '@/lib/utils';
 import { toast } from '@hanzo/ui';
-import { registerOpenRouterPricingFromApi, registerPricingFromProviderModels } from './pricing-cache';
+import { registerPricingFromProviderModels } from './pricing-cache';
 import { fetchAvailableModels } from './models-api';
 import { parseStreamingResponse, buildFileTree, ReasoningDetail } from './streaming-parser';
 import { extractPartialContent, getContinuationMarker, PartialContentExtraction } from './json-repair';
@@ -1234,8 +1234,8 @@ write: { "file_path": "${filePath}", "operations": [{"type": "rewrite", "content
     const tools = toolRegistry.getDefinitions(agent.tools);
 
     const apiUrl = typeof window !== 'undefined'
-      ? `${window.location.origin}/api/generate`
-      : '/api/generate';
+      ? `${window.location.origin}/v1/generate`
+      : '/v1/generate';
 
     // Strip ui_metadata from messages
     let sanitizedMessages = messages.map(msg => {
@@ -1415,8 +1415,8 @@ write: { "file_path": "${filePath}", "operations": [{"type": "rewrite", "content
     }
 
     try {
-      const models = await fetchAvailableModels();
-      registerOpenRouterPricingFromApi(models);
+      const models = await fetchAvailableModels('openrouter');
+      registerPricingFromProviderModels('openrouter', models);
       if (configManager.getModelPricing('openrouter', model)) {
         this.pricingEnsured.add(key);
       }

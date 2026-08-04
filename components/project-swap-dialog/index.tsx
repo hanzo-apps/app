@@ -53,7 +53,7 @@ export function ProjectSwapDialog({
       setLoading(true);
       setError(null);
       const res = await fetch(
-        `/api/deployments/${deploymentId}/swap-project?projectId=${encodeURIComponent(newProjectId)}`
+        `/v1/deployments/${deploymentId}/swap-project?projectId=${encodeURIComponent(newProjectId)}`
       );
       if (!res.ok) {
         const data = await res.json();
@@ -72,7 +72,7 @@ export function ProjectSwapDialog({
     try {
       setSwapping(true);
       setError(null);
-      const res = await fetch(`/api/deployments/${deploymentId}/swap-project`, {
+      const res = await fetch(`/v1/deployments/${deploymentId}/swap-project`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ projectId: newProjectId }),

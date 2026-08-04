@@ -1,26 +1,16 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
-import { AppShell } from '@/components/app-shell';
-import { TemplatesView } from '@/components/views/templates-view';
-import { builderLink } from '@/lib/api/projects';
+import { redirect } from 'next/navigation';
 
 /**
- * /templates — the deep-linkable Templates gallery. Mirrors the in-app sidebar
- * view (content-area → TemplatesView) so the same gallery is reachable BOTH by the
- * sidebar (client-side view switch) AND a direct URL. Previously `app/templates/`
- * held only per-template subroutes with no index page, so `/templates` 404'd.
- * Gallery cards fork into the builder via `/dev?template=…` internally; a selected
- * custom template opens in the builder at `/dev`.
+ * /templates → /resources
+ *
+ * Three routes browsed the same starter kits: this one rendered TemplatesView,
+ * /gallery rendered the TemplateGallery inside it, and /resources rendered a
+ * richer gallery of the same catalog with games merged in. One thing, three
+ * doors, each drifting from the others. /resources is the one that survives.
+ *
+ * Only the INDEX moves. The eleven detail pages under /templates/<slug> are real
+ * content with their own URLs and stay exactly where they are.
  */
-export default function TemplatesPage() {
-  const router = useRouter();
-  return (
-    <AppShell currentView="templates">
-      <TemplatesView
-        onProjectSelect={(project) => router.push(builderLink(project.id))}
-        onNavigate={(view) => router.push(view.startsWith('/') ? view : `/${view}`)}
-      />
-    </AppShell>
-  );
+export default function TemplatesIndex() {
+  redirect('/resources');
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText, YStack, XStack, H3, Paragraph } from '@hanzo/gui';
+import { SizableText, YStack, XStack, H3, Paragraph, Anchor } from '@hanzo/gui';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useIam } from '@hanzo/iam/react';
@@ -138,15 +138,33 @@ export default function SignupPage() {
                     Sign in
                   </SizableText></Link>
                 </Paragraph>
+                {/* The documents live on hanzo.ai and are linked, not copied:
+                    one home for the legal text, or two copies drift and the
+                    agreement stops naming what the user actually agreed to.
+                    These were `/terms` and `/privacy` — routes this app does not
+                    have, so both 404'd and signup asked people to accept terms
+                    they could not open. */}
                 <Paragraph fontSize="$1" color="$color11">
                   By signing up, you agree to our{' '}
-                  <Link href="/terms"><SizableText textDecorationLine="underline" hoverStyle={{ color: "$color" }}>
+                  <Anchor
+                    href="https://hanzo.ai/terms"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    textDecorationLine="underline"
+                    hoverStyle={{ color: "$color" }}
+                  >
                     Terms
-                  </SizableText></Link>{' '}
+                  </Anchor>{' '}
                   and{' '}
-                  <Link href="/privacy"><SizableText textDecorationLine="underline" hoverStyle={{ color: "$color" }}>
+                  <Anchor
+                    href="https://hanzo.ai/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    textDecorationLine="underline"
+                    hoverStyle={{ color: "$color" }}
+                  >
                     Privacy Policy
-                  </SizableText></Link>
+                  </Anchor>
                 </Paragraph>
               </SizableText>
             </CardContent>

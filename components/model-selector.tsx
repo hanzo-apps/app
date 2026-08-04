@@ -19,13 +19,13 @@ import {
 } from 'lucide-react';
 import { configManager } from '@/lib/config/storage';
 import { ProviderId, ProviderModel } from '@/lib/llm/providers/types';
-import { getProvider } from '@/lib/llm/providers/registry';
+import { getProvider, getDefaultModel } from '@/lib/llm/providers/registry';
 import { getAvailableModels } from '@/lib/llm/llm-client';
 import {
   fetchAvailableModels,
   formatModelPrice
 } from '@/lib/llm/models-api';
-import { registerOpenRouterPricingFromApi, registerPricingFromProviderModels } from '@/lib/llm/pricing-cache';
+import { registerPricingFromProviderModels } from '@/lib/llm/pricing-cache';
 import { track } from '@/lib/telemetry';
 
 interface ModelSelectorProps {
@@ -79,82 +79,17 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
       if (cachedModels) {
         const modelsFromCache = cachedModels.models as ProviderModel[];
         setModels(modelsFromCache);
-        if (currentProvider === 'openrouter') {
-          registerPricingFromProviderModels('openrouter', modelsFromCache);
-        }
+        registerPricingFromProviderModels(currentProvider, modelsFromCache);
         return;
       }
-      
+
       let loadedModels: ProviderModel[] = [];
-      
-      if (currentProvider === 'openrouter') {
-        // Use the existing OpenRouter models API
-        const availableModels = await fetchAvailableModels();
-        registerOpenRouterPricingFromApi(availableModels);
-        const norm = (desc: unknown): string => {
-          if (typeof desc === 'string') {
-            return desc;
-          }
 
-          if (desc && typeof desc === 'object') {
-            const record = desc as Record<string, unknown>;
-            const candidate = ['description', 'name', 'summary']
-              .map((key) => record[key])
-              .find((value): value is string => typeof value === 'string');
-
-            if (candidate) {
-              return candidate;
-            }
-
-            try {
-              return JSON.stringify(record);
-            } catch {
-              /* ignore */
-            }
-          }
-
-          if (desc == null) {
-            return '';
-          }
-
-          return String(desc);
-        };
-        loadedModels = availableModels.map((model) => {
-          const promptRate = model.pricing?.prompt ? Number(model.pricing.prompt) : undefined;
-          const completionRate = model.pricing?.completion ? Number(model.pricing.completion) : undefined;
-          const reasoningRate = model.pricing?.internal_reasoning ? Number(model.pricing.internal_reasoning) : undefined;
-
-          const normalizeRate = (value?: number) => {
-            if (value === undefined || !Number.isFinite(value)) return undefined;
-            return value * 1_000_000;
-          };
-
-          const normalizedInput = normalizeRate(promptRate);
-          const normalizedOutput = normalizeRate(completionRate);
-          const normalizedReasoning = normalizeRate(reasoningRate);
-
-          const pricing = (normalizedInput !== undefined && normalizedOutput !== undefined)
-            ? {
-                input: normalizedInput,
-                output: normalizedOutput,
-                reasoning: normalizedReasoning
-              }
-            : undefined;
-
-          const providerModel: ProviderModel = {
-            id: model.id,
-            name: model.name,
-            description: norm(model.description),
-            contextLength: model.context_length,
-            maxTokens: model.top_provider?.max_completion_tokens,
-            supportsFunctions: model.supported_parameters?.includes('tools'),
-            supportsVision: model.architecture?.input_modalities?.includes('image'),
-            supportsReasoning: model.supported_parameters?.includes('reasoning'),
-            pricing
-          };
-
-          return providerModel;
-        });
+      if (currentProvider === 'hanzo' || currentProvider === 'openrouter') {
+        // Both publish a public catalogue with prices. One fetch, one adapter —
+        // and it reads the SELECTED provider, so picking Hanzo can no longer
+        // list a third party's model ids.
+        loadedModels = await fetchAvailableModels(currentProvider);
       } else if (currentProvider === 'huggingface') {
         try {
           const hfResponse = await fetch('https://router.huggingface.co/v1/models');
@@ -220,12 +155,11 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
         );
       }
       
-      // Cache the loaded models
+      // Cache the loaded models, and register whatever prices they carry so the
+      // cost calculator quotes the provider's own numbers instead of a default.
       if (loadedModels.length > 0) {
         configManager.setCachedModels(currentProvider, loadedModels);
-        if (currentProvider === 'openrouter') {
-          registerPricingFromProviderModels('openrouter', loadedModels);
-        }
+        registerPricingFromProviderModels(currentProvider, loadedModels);
       }
     } catch (error) {
       logger.error('Failed to load models:', error);
@@ -272,14 +206,18 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
       setSelectedModel(savedModel);
       onChangeRef.current?.(savedModel);
     } else {
-      // No saved model or saved model doesn't exist, use first model
-      const firstModel = models[0]?.id;
-      if (firstModel) {
-        setSelectedModel(firstModel);
+      // Nothing saved: take the provider's declared default, and only fall to
+      // the head of the list if the provider does not serve it. Using models[0]
+      // outright made display ORDER the default — on our own gateway that meant
+      // opening on a resold `claude-*`/`gpt-*` rung instead of Enso.
+      const preferred = getDefaultModel(currentProvider);
+      const nextModel = models.some(m => m.id === preferred) ? preferred : models[0]?.id;
+      if (nextModel) {
+        setSelectedModel(nextModel);
         if (!skipGlobalSync) {
-          configManager.setProviderModel(currentProvider, firstModel);
+          configManager.setProviderModel(currentProvider, nextModel);
         }
-        onChangeRef.current?.(firstModel);
+        onChangeRef.current?.(nextModel);
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -434,7 +372,9 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
           )}
         </XStack>
         <SizableText alignItems="center" gap="$3" fontSize="$1" color="$color11" display="flex" flexDirection="row">
-          <span>Context: {Math.round(model.contextLength / 1000)}K</span>
+          {model.contextLength !== undefined && (
+            <span>Context: {Math.round(model.contextLength / 1000)}K</span>
+          )}
           {model.pricing && (
             model.pricing.input === 0 && model.pricing.output === 0 ? (
               <>
@@ -612,7 +552,9 @@ export function ModelSelector({ provider, value: _value, onChange, className, hi
                       )}
                     </XStack>
                     <SizableText alignItems="center" gap="$3" fontSize="$1" color="$color11" display="flex" flexDirection="row">
-                      <span>Context: {Math.round(model.contextLength / 1000)}K</span>
+                      {model.contextLength !== undefined && (
+                        <span>Context: {Math.round(model.contextLength / 1000)}K</span>
+                      )}
                       {model.pricing && (
                         model.pricing.input === 0 && model.pricing.output === 0 ? (
                           <>

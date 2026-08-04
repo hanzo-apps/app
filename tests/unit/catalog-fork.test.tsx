@@ -13,6 +13,13 @@ import { render, screen } from '@testing-library/react';
 import { CatalogBrowser } from '@/components/catalog-browser';
 import type { CatalogEntry } from '@/lib/catalog';
 
+import { WithGui } from '../gui-wrapper';
+
+// CatalogBrowser renders @hanzo/gui primitives, which read a createGui config at
+// render and throw "Missing hanzogui config" without one. The app mounts it once
+// in app/providers.tsx — see tests/gui-wrapper.
+const renderBrowser = (ui: React.ReactElement) => render(ui, { wrapper: WithGui });
+
 jest.mock('@/lib/catalog', () => {
   const actual = jest.requireActual('@/lib/catalog');
   return { ...actual, searchCatalog: jest.fn() };
@@ -52,7 +59,7 @@ describe('the community lane can be forked from', () => {
         repo: 'https://github.com/hanzoai/folio',
       }),
     ]);
-    render(<CatalogBrowser origin="community" title="Community" />);
+    renderBrowser(<CatalogBrowser origin="community" title="Community" />);
 
     const fork = await screen.findByRole('link', { name: /fork/i });
     expect(fork.getAttribute('href')).toBe(
@@ -64,7 +71,7 @@ describe('the community lane can be forked from', () => {
     respond([
       entry({ id: 'hanzo/demo', name: 'demo', title: 'Demo', forkable: true, url: 'https://demo.example' }),
     ]);
-    render(<CatalogBrowser origin="community" title="Community" />);
+    renderBrowser(<CatalogBrowser origin="community" title="Community" />);
 
     await screen.findByText('Demo');
     expect(screen.queryByRole('link', { name: /fork/i })).toBeNull();

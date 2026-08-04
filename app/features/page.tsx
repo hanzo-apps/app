@@ -1,19 +1,17 @@
 "use client";
 
 import { SizableText, YStack, XStack, H1, Paragraph, H2, H3 } from '@hanzo/gui';
-import { useState } from "react";
 import { Button, Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@hanzo/ui';
 import Link from "next/link";
-import { HanzoLogo } from "@/components/HanzoLogo";
 import SiteFooter from "@/components/landing/site-footer";
-import { ArrowRight, Check, X, Menu, Sparkles, Zap, Brain, Code, Globe, Shield, Database, Rocket, Users, Server, Cloud, Settings, BarChart, Cpu, Layers, GitBranch, MonitorPlay, Package } from "lucide-react";
+import { ArrowRight, Check, X, Sparkles, Zap, Brain, Code, Globe, Shield, Database, Rocket, Users, Server, Cloud, Settings, BarChart, Cpu, Layers, GitBranch, MonitorPlay, Package } from "lucide-react";
 import { useUser } from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
+import Header from "@/components/layout/header";
 
 export default function FeaturesPage() {
   const { openLoginWindow, user } = useUser();
   const router = useRouter();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const coreFeatures = [
     {
@@ -152,121 +150,11 @@ export default function FeaturesPage() {
         <YStack position="absolute" top="20%" left="50%" x="50%" y="50%" width={800} height={600} />
       </YStack>
 
-      {/* Navigation */}
-      <XStack position="relative" zIndex={20} alignItems="center" justifyContent="space-between" paddingHorizontal="$4" paddingVertical="$4" borderBottomWidth={1} borderColor="$borderColor" $md={{ paddingHorizontal: "$6", paddingVertical: "$4.5" }}>
-        <XStack alignItems="center" gap="$5" $md={{ gap: "$7" }}>
-          <Link href="/"><XStack alignItems="center" gap="$2.5">
-            <HanzoLogo size={32} />
-            <SizableText fontSize="$7" fontWeight="500" $md={{ fontSize: "$8" }}>Hanzo</SizableText>
-          </XStack></Link>
-
-          <YStack display="none" alignItems="center" gap="$6">
-            <Link href="/features"><SizableText color="$color" fontWeight="500" fontSize="$3">
-              Features
-            </SizableText></Link>
-            <Link href="/community"><SizableText color="$color11" fontSize="$3" fontWeight="500" hoverStyle={{ color: "$color" }}>
-              Community
-            </SizableText></Link>
-            <Link href="/pricing"><SizableText color="$color11" fontSize="$3" fontWeight="500" hoverStyle={{ color: "$color" }}>
-              Pricing
-            </SizableText></Link>
-            <Link href="/enterprise"><SizableText color="$color11" fontSize="$3" fontWeight="500" hoverStyle={{ color: "$color" }}>
-              Enterprise
-            </SizableText></Link>
-            <Link href="/docs"><SizableText color="$color11" fontSize="$3" fontWeight="500" hoverStyle={{ color: "$color" }}>
-              Docs
-            </SizableText></Link>
-          </YStack>
-        </XStack>
-
-        {/* Desktop Nav Actions */}
-        <YStack display="none" alignItems="center" gap="$4">
-          {user ? (
-            <>
-              <Button
-                onClick={() => router.push('/projects')}
-                variant="ghost"
-                color="$color11" fontSize="$3" fontWeight="500" hoverStyle={{ color: "$color" }}
-              >
-                Dashboard
-              </Button>
-              <Button
-                onClick={() => router.push('/dev')}
-                backgroundColor="$color12" color="$background" fontSize="$3" fontWeight="500" paddingHorizontal="$4.5" paddingVertical="$2.5" borderRadius="$6" hoverStyle={{ backgroundColor: "$color12" }}
-              >
-                Get started
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                onClick={openLoginWindow}
-                variant="ghost"
-                color="$color11" fontSize="$3" fontWeight="500" hoverStyle={{ color: "$color" }}
-              >
-                Log in
-              </Button>
-              <Button
-                onClick={openLoginWindow}
-                backgroundColor="$color12" color="$background" fontSize="$3" fontWeight="500" paddingHorizontal="$4.5" paddingVertical="$2.5" borderRadius="$6" hoverStyle={{ backgroundColor: "$color12" }}
-              >
-                Get started
-              </Button>
-            </>
-          )}
-        </YStack>
-
-        {/* Mobile Menu Button */}
-        <Button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          padding="$2" borderRadius="$5" $md={{ display: "none" }} hoverStyle={{ backgroundColor: "$color3" }}
-        >
-          {mobileMenuOpen ? (
-            <X size={24} />
-          ) : (
-            <Menu size={24} />
-          )}
-        </Button>
-      </XStack>
-
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <YStack position="fixed" top={0} right={0} bottom={0} left={0} backgroundColor="$background" backdropFilter="blur(24px)" zIndex={50} $md={{ display: "none" }}>
-          <YStack height="100%">
-            <XStack alignItems="center" justifyContent="space-between" padding="$4" borderBottomWidth={1} borderColor="$borderColor">
-              <Link href="/"><XStack alignItems="center" gap="$2.5">
-                <HanzoLogo size={32} color="var(--foreground)" />
-                <SizableText fontSize="$7" fontWeight="500">Hanzo</SizableText>
-              </XStack></Link>
-              <Button
-                onClick={() => setMobileMenuOpen(false)}
-                padding="$2" borderRadius="$5" hoverStyle={{ backgroundColor: "$color3" }}
-              >
-                <X size={24} />
-              </Button>
-            </XStack>
-            <YStack flex={1} paddingVertical="$6" paddingHorizontal="$4" overflow="scroll">
-              <YStack rowGap="$5">
-                <Link href="/features"><SizableText fontSize="$8" fontWeight="500" color="$color">
-                  Features
-                </SizableText></Link>
-                <Link href="/community"><SizableText fontSize="$8" fontWeight="500" color="$color11" hoverStyle={{ color: "$color" }}>
-                  Community
-                </SizableText></Link>
-                <Link href="/pricing"><SizableText fontSize="$8" fontWeight="500" color="$color11" hoverStyle={{ color: "$color" }}>
-                  Pricing
-                </SizableText></Link>
-                <Link href="/enterprise"><SizableText fontSize="$8" fontWeight="500" color="$color11" hoverStyle={{ color: "$color" }}>
-                  Enterprise
-                </SizableText></Link>
-                <Link href="/docs"><SizableText fontSize="$8" fontWeight="500" color="$color11" hoverStyle={{ color: "$color" }}>
-                  Docs
-                </SizableText></Link>
-              </YStack>
-            </YStack>
-          </YStack>
-        </YStack>
-      )}
+      {/* The ONE header. This page hand-rolled its own nav and mobile sheet —
+          a second header with different links, different labels ("Log in" vs
+          "Sign In") and no search, on the only page in the app that did not use
+          the shared one. */}
+      <Header />
 
       <YStack position="relative" zIndex={10}>
         {/* Hero Section */}

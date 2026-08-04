@@ -714,7 +714,8 @@ export function AskAI({
         break;
       case "empty_response":
         toast.error(
-          message || "The model didn't return a usable page. Please try again."
+          message ||
+            "The model replied without a page. Try a different model, or check your credits at pay.hanzo.ai."
         );
         break;
       case "network_error":
@@ -1282,7 +1283,7 @@ export function AskAI({
                       : "Build: generate and modify your app"
                   }
                   onClick={() => setMode(m)}
-                  borderRadius="$10" paddingHorizontal="$2.5" paddingVertical="$1" fontWeight="500" textTransform="capitalize" focusVisibleStyle={{ outlineWidth: 0 }} {...{ backgroundColor: mode === m ? "var(--brand-accent)" : undefined, color: mode === m ? "white" : "$color11", hoverStyle: mode === m ? undefined : {"color":"$color"} }}
+                  borderRadius="$10" paddingHorizontal="$2.5" paddingVertical="$1" fontWeight="500" textTransform="capitalize" focusVisibleStyle={{ outlineWidth: 0 }} {...{ backgroundColor: mode === m ? "var(--brand-accent)" : undefined, color: mode === m ? "var(--brand-accent-fg)" : "$color11", hoverStyle: mode === m ? undefined : {"color":"$color"} }}
                 >
                   {m}
                 </Button>
@@ -1312,7 +1313,7 @@ export function AskAI({
   />
             {isAiWorking ? (
               <Button
-                size="iconXs"
+                size="icon"
                 variant="destructive"
                 onClick={stopController}
                 gap="$1" borderRadius="$10"
@@ -1321,7 +1322,7 @@ export function AskAI({
               </Button>
             ) : (
               <Button
-                size="iconXs"
+                size="icon"
                 borderRadius="$10"
                 disabled={
                   isUploading ||

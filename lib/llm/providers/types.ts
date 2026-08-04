@@ -21,7 +21,8 @@ export interface ProviderModel {
   id: string;
   name: string;
   description?: string;
-  contextLength: number;
+  /** Absent when the provider does not publish one — do not substitute a guess. */
+  contextLength?: number;
   maxTokens?: number;
   supportsFunctions?: boolean;
   supportsVision?: boolean;

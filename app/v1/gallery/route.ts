@@ -8,7 +8,7 @@
  * catalog surface — the gallery page, the /dev fork flow, the template-loader,
  * and the onboarding "popular picks" all read from here.
  *
- * One way: `/v1/gallery` (CTO law — same-origin `/v1/*`, never an `/api/`
+ * One way: `/v1/gallery` (CTO law — same-origin `/v1/*`, never an `/v1/`
  * prefix). Distinct from `/v1/templates`, which proxies the cloud's own project
  * templates (a different catalog).
  */

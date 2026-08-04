@@ -12,7 +12,7 @@ import { selectAll, insertInto, updateRow, deleteRow } from './sql';
  * Data browser — the native "admin backend for all collections": list every
  * collection, browse its rows, and add / edit / delete records from a UI (no SQL
  * required). Built on the same schema + query endpoints the rest of the manager
- * uses, so it works for a deployment DB (`/api/admin/deployments/<id>/database/*`)
+ * uses, so it works for a deployment DB (`/v1/admin/deployments/<id>/database/*`)
  * or any Base via `schemaEndpoint` / `queryEndpoint` overrides.
  */
 
@@ -43,8 +43,8 @@ interface DataBrowserProps {
 const PAGE = 200;
 
 export function DataBrowser({ deploymentId, schemaEndpoint, queryEndpoint }: DataBrowserProps) {
-  const schemaUrl = schemaEndpoint || `/api/admin/deployments/${deploymentId}/database/schema`;
-  const queryUrl = queryEndpoint || `/api/admin/deployments/${deploymentId}/database/query`;
+  const schemaUrl = schemaEndpoint || `/v1/admin/deployments/${deploymentId}/database/schema`;
+  const queryUrl = queryEndpoint || `/v1/admin/deployments/${deploymentId}/database/query`;
 
   const [tables, setTables] = useState<TableInfo[]>([]);
   const [selected, setSelected] = useState<string | null>(null);

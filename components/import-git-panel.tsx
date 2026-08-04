@@ -1,6 +1,6 @@
 "use client";
 
-import { YStack, XStack, H2, Paragraph, Image, SizableText, H3 } from '@hanzo/gui';
+import { View, YStack, XStack, H2, Paragraph, Image, SizableText, H3 } from '@hanzo/gui';
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useIam } from "@hanzo/iam/react";
@@ -18,6 +18,19 @@ import {
 } from "lucide-react";
 
 import {
+  Badge,
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  Input,
+  Label,
+  toast,
+} from "@hanzo/ui";
+
+import {
   fetchGitAccounts,
   fetchGitRepos,
   relativeTime,
@@ -29,7 +42,6 @@ import {
 } from "@/lib/api/git";
 import { linkProvider } from "@/lib/hanzo/iam";
 import { isGitUrl, gitUrlGateMessage } from "@/lib/git/url";
-import { toast, Button, Input, Label } from '@hanzo/ui';
 
 /**
  * Provider display metadata — the ONE place icon/label per provider lives.
@@ -61,7 +73,6 @@ export function ImportGitPanel() {
   const [accounts, setAccounts] = useState<GitAccount[]>([]);
   const [providers, setProviders] = useState<GitProviderStatus[]>([]);
   const [active, setActive] = useState<string>("");
-  const [menuOpen, setMenuOpen] = useState(false);
   const [showProviders, setShowProviders] = useState(false);
 
   const [repos, setRepos] = useState<GitRepo[]>([]);
@@ -71,7 +82,6 @@ export function ImportGitPanel() {
 
   const [pasteUrl, setPasteUrl] = useState("");
 
-  const menuRef = useRef<HTMLDivElement>(null);
   // True while the user is off linking GitHub in the hanzo.id account tab, so a
   // return to this tab re-checks the connection (idle refocus stays a no-op).
   const linkPendingRef = useRef(false);
@@ -134,18 +144,6 @@ export function ImportGitPanel() {
       alive = false;
     };
   }, [connected, active, accounts]);
-
-  // Close the account menu on outside click.
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onClick = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
-  }, [menuOpen]);
 
   // Connect GitHub — two honest paths, one per auth state:
   //
@@ -273,135 +271,117 @@ export function ImportGitPanel() {
         <>
           {/* Account dropdown + repo search */}
           <YStack gap="$2" $sm={{ flexDirection: "row", alignItems: "center" }}>
-            <YStack ref={menuRef} position="relative" $sm={{ width: "46%" }}>
-              <Button
-                type="button"
-                onClick={() => setMenuOpen((o) => !o)}
-                height="$7" width="100%" alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" fontSize="$3" color="$color" hoverStyle={{ borderColor: "$color" }}
-              >
-                {(() => {
-                  const Icon =
-                    PROVIDER_META[activeAccount?.provider ?? "github"]?.Icon ?? Github;
-                  return <Icon size={16} color="var(--foreground)" />;
-                })()}
-                {activeAccount?.avatarUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <Image
-                    src={activeAccount.avatarUrl}
-                    alt=""
-                    height="$4.5" width="$4.5" flexShrink={0} borderRadius="$10"
-  />
-                ) : null}
-                <SizableText numberOfLines={1}>{active || "Select account"}</SizableText>
-                <ChevronDown size={16} color="$color11" />
-              </Button>
+            <YStack $sm={{ width: "46%" }}>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="lg" width="100%">
+                    {(() => {
+                      const Icon =
+                        PROVIDER_META[activeAccount?.provider ?? "github"]?.Icon ?? Github;
+                      return <Icon size={16} />;
+                    })()}
+                    {activeAccount?.avatarUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <Image
+                        src={activeAccount.avatarUrl}
+                        alt=""
+                        height="$4.5" width="$4.5" flexShrink={0} borderRadius="$10"
+                      />
+                    ) : null}
+                    <SizableText flex={1} numberOfLines={1}>{active || "Select account"}</SizableText>
+                    <ChevronDown size={16} />
+                  </Button>
+                </DropdownMenuTrigger>
 
-              {menuOpen && (
-                <YStack position="absolute" zIndex={30} marginTop="$1.5" width="100%" minWidth={240} overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" elevation={6}>
-                  <YStack maxHeight={256} paddingVertical="$1" overflow="scroll">
-                    {accounts.map((a) => {
-                      const Icon = PROVIDER_META[a.provider]?.Icon ?? Github;
-                      return (
-                        <Button
-                          key={`${a.provider}:${a.login}`}
-                          type="button"
-                          onClick={() => {
-                            setActive(a.login);
-                            setSearch("");
-                            setMenuOpen(false);
-                          }}
-                          width="100%" alignItems="center" gap="$2.5" paddingHorizontal="$3" paddingVertical="$2" textAlign="left" fontSize="$3" hoverStyle={{ backgroundColor: "$color3" }} {...{ color: a.login === active ? "$color" : "$color11" }}
-                        >
-                          {a.avatarUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <Image src={a.avatarUrl} alt="" height="$4.5" width="$4.5" borderRadius="$10" />
-                          ) : (
-                            <Icon size={16} color="var(--muted-foreground)" />
-                          )}
-                          <SizableText numberOfLines={1}>{a.login}</SizableText>
-                          <SizableText marginLeft="auto" fontSize={11} color="$color11">
-                            {a.provider === "gitlab"
-                              ? "GitLab"
-                              : a.type === "org"
-                                ? "Org"
-                                : "Personal"}
-                          </SizableText>
-                        </Button>
-                      );
-                    })}
-                  </YStack>
-                  <YStack borderTopWidth={1} borderColor="$borderColor">
-                    <Button
-                      type="button"
-                      onClick={connectGithub}
-                      width="100%" alignItems="center" gap="$2.5" paddingHorizontal="$3" paddingVertical="$2.5" textAlign="left" fontSize="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
-                    >
-                      <Plus size={16} />
-                      Add GitHub Account
-                    </Button>
-                    <Button
-                      type="button"
-                      onClick={connectGitlab}
-                      width="100%" alignItems="center" gap="$2.5" paddingHorizontal="$3" paddingVertical="$2.5" textAlign="left" fontSize="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
-                    >
-                      <GitlabIcon size={16} />
-                      Add GitLab Account
-                      {!gitlabConnectable && (
-                        <SizableText marginLeft="auto" borderRadius="$10" borderWidth={1} borderColor="$yellow9" backgroundColor="$yellow9" paddingHorizontal="$2" paddingVertical="$0.5" fontSize={10} fontWeight="500" color="$yellow4">
-                          Needs setup
-                        </SizableText>
-                      )}
-                    </Button>
-                    <Button
-                      type="button"
-                      onClick={() => setShowProviders((s) => !s)}
-                      width="100%" alignItems="center" gap="$2.5" paddingHorizontal="$3" paddingVertical="$2.5" textAlign="left" fontSize="$3" color="$color11" hoverStyle={{ backgroundColor: "$color3", color: "$color" }}
-                    >
-                      <RefreshCw size={16} />
-                      Providers
-                    </Button>
-                    {showProviders && (
-                      <YStack gap="$1.5" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$2">
-                        <SizableText paddingHorizontal="$1" fontSize={11} textTransform="uppercase" letterSpacing={0.4} color="$color11">
-                          Providers
-                        </SizableText>
-                        <SizableText alignItems="center" gap="$1.5" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$1" color="$color">
-                          <Github size={14} /> GitHub
-                        </SizableText>
-                        {gitlabConnectable ? (
-                          <Button
-                            type="button"
-                            onClick={connectGitlab}
-                            alignItems="center" gap="$1.5" borderRadius="$3" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$1" color="$color" hoverStyle={{ borderColor: "$color" }}
-                          >
-                            <GitlabIcon size={14} /> GitLab
-                          </Button>
+                {/* Sized by its content, not by the trigger: the menu panel
+                    already caps height to the room it measured and width to the
+                    phone, so pinning the trigger width only forced wraps. */}
+                <DropdownMenuContent align="start" minWidth={240}>
+                  {accounts.map((a) => {
+                    const Icon = PROVIDER_META[a.provider]?.Icon ?? Github;
+                    return (
+                      <DropdownMenuItem
+                        key={`${a.provider}:${a.login}`}
+                        onSelect={() => {
+                          setActive(a.login);
+                          setSearch("");
+                        }}
+                      >
+                        {a.avatarUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <Image src={a.avatarUrl} alt="" height="$4.5" width="$4.5" borderRadius="$10" />
                         ) : (
-                          <SizableText
-                            alignItems="center" gap="$1.5" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$1" color="$color11"
-                            title="GitLab connect is being set up"
-                          >
-                            <GitlabIcon size={14} /> GitLab · Setup
-                          </SizableText>
+                          <Icon size={16} />
                         )}
-                        <SizableText alignItems="center" gap="$1.5" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$1.5" fontSize="$1" color="$color11">
-                          <Globe size={14} /> Bitbucket · Soon
+                        <SizableText numberOfLines={1}>{a.login}</SizableText>
+                        <SizableText marginLeft="auto" fontSize={11} color="$color11">
+                          {a.provider === "gitlab"
+                            ? "GitLab"
+                            : a.type === "org"
+                              ? "Org"
+                              : "Personal"}
                         </SizableText>
-                      </YStack>
+                      </DropdownMenuItem>
+                    );
+                  })}
+
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem onSelect={connectGithub}>
+                    <Plus size={16} />
+                    Add GitHub Account
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={connectGitlab}>
+                    <GitlabIcon size={16} />
+                    Add GitLab Account
+                    {!gitlabConnectable && (
+                      <Badge variant="outline" marginLeft="auto">
+                        Needs setup
+                      </Badge>
                     )}
-                  </YStack>
-                </YStack>
-              )}
+                  </DropdownMenuItem>
+                  {/* Stays open: this row reveals the provider list in place, so
+                      selecting it must not dismiss the surface it reveals. */}
+                  <DropdownMenuItem onSelect={(e) => { e?.preventDefault(); setShowProviders((s) => !s); }}>
+                    <RefreshCw size={16} />
+                    Providers
+                  </DropdownMenuItem>
+                  {showProviders && (
+                    <YStack gap="$1.5" borderTopWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$2">
+                      <SizableText paddingHorizontal="$1" fontSize={11} textTransform="uppercase" letterSpacing={0.4} color="$color11">
+                        Providers
+                      </SizableText>
+                      <Badge variant="outline" gap="$1.5">
+                        <Github size={14} /> GitHub
+                      </Badge>
+                      {gitlabConnectable ? (
+                        <Button variant="outline" size="sm" onClick={connectGitlab}>
+                          <GitlabIcon size={14} /> GitLab
+                        </Button>
+                      ) : (
+                        <Badge variant="outline" gap="$1.5" title="GitLab connect is being set up">
+                          <GitlabIcon size={14} /> GitLab · Setup
+                        </Badge>
+                      )}
+                      <Badge variant="outline" gap="$1.5">
+                        <Globe size={14} /> Bitbucket · Soon
+                      </Badge>
+                    </YStack>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </YStack>
 
             <YStack position="relative" flex={1}>
-              <Search size={16} color="$color11" />
+              <View position="absolute" left={12} top={0} bottom={0} zIndex={10} justifyContent="center" pointerEvents="none">
+                <Search size={16} color="$color11" />
+              </View>
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search repositories…"
-                height="$7" width="100%" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingLeft={36} paddingRight="$3" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ borderColor: "$color", outlineWidth: 0 }}
-  />
+                height="$7" paddingLeft={36}
+              />
             </YStack>
           </YStack>
 
@@ -448,10 +428,10 @@ export function ImportGitPanel() {
                     </SizableText>
                   </YStack>
                   <Button
-                    type="button"
+                    variant="outline"
+                    size="sm"
                     onClick={() => importRepo(r.cloneUrl)}
                     disabled={Boolean(importing)}
-                    height="$6" flexShrink={0} alignItems="center" gap="$1" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3" fontSize="$1" fontWeight="500" color="$color" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }} disabledStyle={{ opacity: 0.5 }}
                   >
                     {importing === r.cloneUrl ? (
                       <Loader2 size={14} />
@@ -486,13 +466,11 @@ export function ImportGitPanel() {
               if (e.key === "Enter") submitPaste();
             }}
             placeholder="git.hanzo.ai/hanzoai/app  ·  github.com/org/repo  ·  git@…"
-            height={36} flex={1} borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$3" fontSize="$3" color="$color" placeholderTextColor="$color11" focusStyle={{ borderColor: "$color", outlineWidth: 0 }}
-  />
+            height={36} flex={1}
+          />
           <Button
-            type="button"
             onClick={submitPaste}
             disabled={!isGitUrl(pasteUrl) || Boolean(importing)}
-            height={36} flexShrink={0} alignItems="center" borderRadius="$5" backgroundColor="$color12" paddingHorizontal="$4" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }} disabledStyle={{ opacity: 0.4 }}
           >
             Import
           </Button>
@@ -522,26 +500,14 @@ function ConnectCta({
         with automatic builds on every push.
       </Paragraph>
       <XStack marginTop="$4.5" flexWrap="wrap" alignItems="center" justifyContent="center" gap="$2">
-        <Button
-          type="button"
-          onClick={onConnect}
-          alignItems="center" gap="$2" borderRadius="$5" backgroundColor="$color12" paddingHorizontal="$4" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$background" hoverStyle={{ backgroundColor: "$color12" }}
-        >
+        <Button onClick={onConnect}>
           <Github size={16} />
           Connect GitHub
         </Button>
-        <Button
-          type="button"
-          onClick={onConnectGitlab}
-          alignItems="center" gap="$2" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$4" paddingVertical="$2.5" fontSize="$3" fontWeight="500" color="$color" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}
-        >
+        <Button variant="outline" onClick={onConnectGitlab}>
           <GitlabIcon size={16} />
           Connect GitLab
-          {!gitlabConnectable && (
-            <SizableText borderRadius="$10" borderWidth={1} borderColor="$yellow9" backgroundColor="$yellow9" paddingHorizontal="$2" paddingVertical="$0.5" fontSize={10} fontWeight="500" color="$yellow4">
-              Needs setup
-            </SizableText>
-          )}
+          {!gitlabConnectable && <Badge variant="outline">Needs setup</Badge>}
         </Button>
       </XStack>
     </SizableText>

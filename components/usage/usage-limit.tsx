@@ -37,7 +37,14 @@ export function UsageLimitProvider({ children }: { children: ReactNode }) {
   return (
     <UsageLimitContext.Provider value={api}>
       {children}
-      <UsageLimitDialog open={open} onOpenChange={setOpen} />
+      {/* Mounted only while open. This provider wraps the ROOT layout, so an
+          always-mounted dialog rendered on every page — and @hanzo/ui's Dialog
+          runs DialogSheetController -> useAdaptIsActive -> useMedia even when
+          closed, which throws during prerender ("Cannot create proxy with a
+          non-object as target or handler"). That took down pages that import
+          nothing themselves, which is what made it hard to find. A closed modal
+          has nothing to render, so gating the mount costs nothing. */}
+      {open && <UsageLimitDialog open={open} onOpenChange={setOpen} />}
     </UsageLimitContext.Provider>
   );
 }

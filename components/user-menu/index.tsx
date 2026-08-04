@@ -1,6 +1,6 @@
 'use client';
 
-import { SizableText, YStack, Paragraph, XStack } from '@hanzo/gui';
+import { SizableText, YStack, Paragraph } from '@hanzo/gui';
 import {
   CirclePlus,
   FolderCode,
@@ -13,24 +13,14 @@ import {
   Sparkles,
   User,
   DollarSign,
-  Sun,
-  Moon,
-  Monitor,
 } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { useTheme } from "next-themes";
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, Avatar, AvatarFallback, AvatarImage, Button } from '@hanzo/ui';
 import { useUser } from "@/hooks/useUser";
 
 export const UserMenu = ({ className }: { className?: string }) => {
   const { logout, user } = useUser();
-  // Theme via the ONE controller (next-themes) — same source as settings + sonner.
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  const activeTheme = mounted ? theme ?? "system" : "system";
 
   // Identity is resolved ONCE, in useUser — never re-derived per surface.
   const displayName = user?.name || "User";
@@ -139,34 +129,8 @@ export const UserMenu = ({ className }: { className?: string }) => {
 
         <DropdownMenuSeparator />
 
-        {/* Theme — discoverable light/dark/system here instead of only buried in
-            Settings. Drives the ONE next-themes source (consistent app-wide). */}
-        <YStack paddingHorizontal="$2" paddingVertical="$1.5">
-          <XStack alignItems="center" justifyContent="space-between" gap="$2">
-            <SizableText fontSize="$1" color="$color11">Theme</SizableText>
-            <XStack alignItems="center" gap="$0.5" borderRadius="$3" backgroundColor="$color3" padding="$0.5">
-              {([
-                { v: "light", Icon: Sun, label: "Light" },
-                { v: "dark", Icon: Moon, label: "Dark" },
-                { v: "system", Icon: Monitor, label: "System" },
-              ] as const).map(({ v, Icon, label }) => (
-                <Button
-                  key={v}
-                  type="button"
-                  onClick={() => setTheme(v)}
-                  title={`${label} theme`}
-                  aria-label={`${label} theme`}
-                  aria-pressed={activeTheme === v}
-                  alignItems="center" justifyContent="center" borderRadius="$2" padding="$1.5" {...{ backgroundColor: activeTheme === v ? "$background" : undefined, color: activeTheme === v ? "$color" : "$color11", elevation: activeTheme === v ? 1 : undefined, hoverStyle: activeTheme === v ? undefined : {"color":"$color"} }}
-                >
-                  <Icon size={16} />
-                </Button>
-              ))}
-            </XStack>
-          </XStack>
-        </YStack>
-
-        <DropdownMenuSeparator />
+        {/* No theme switcher: hanzo.app is dark-only, forced in app/providers.tsx.
+            A light/system toggle here would change nothing on screen. */}
 
         <DropdownMenuItem
           onClick={() => {

@@ -62,7 +62,7 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
     if (!deployment) return;
     try {
       setLoading(true);
-      const response = await fetch(`/api/analytics/${deployment.id}/overview`);
+      const response = await fetch(`/v1/analytics/${deployment.id}/overview`);
 
       if (response.status === 401) {
         window.location.href = '/admin/login';
@@ -91,7 +91,7 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
   const fetchStorage = async () => {
     if (!deployment) return;
     try {
-      const response = await fetch(`/api/analytics/${deployment.id}/storage`);
+      const response = await fetch(`/v1/analytics/${deployment.id}/storage`);
 
       if (response.status === 401) {
         window.location.href = '/admin/login';
@@ -115,7 +115,7 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
   const handleExport = async () => {
     if (!deployment) return;
     try {
-      const response = await fetch(`/api/analytics/${deployment.id}/export`, {
+      const response = await fetch(`/v1/analytics/${deployment.id}/export`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ format: 'csv', type: 'all' }),
@@ -152,7 +152,7 @@ export function AnalyticsDashboard({ deployment, isOpen, onClose }: AnalyticsDas
     }
 
     try {
-      const response = await fetch(`/api/analytics/${deployment.id}/clear?type=all`, {
+      const response = await fetch(`/v1/analytics/${deployment.id}/clear?type=all`, {
         method: 'DELETE',
       });
 

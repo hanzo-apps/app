@@ -11,6 +11,11 @@
  * the workspace). Content is a scrollable flex child so each page owns its own
  * scroll region beside the in-flow sidebar.
  *
+ * There is no mode bar. hanzo.app IS the dev surface — the app builder and the
+ * work around it — and hanzo.chat is the chat surface, until the two converge on
+ * one thing. A three-way switcher across surfaces that do not yet behave alike
+ * advertises a choice the product has not made.
+ *
  * The shell also owns the ⌘K command palette: a global keydown opens it, the
  * sidebar's "Search" item opens it (`onOpenSearch`), and it renders here so it is
  * reachable from every content page.
@@ -80,7 +85,6 @@ export function AppShell({ children, currentView = 'templates' }: AppShellProps)
             <Menu size={20} />
           </Button>
           <HanzoLogo size={20} color="var(--foreground)" />
-          <SizableText fontSize="$3" fontWeight="500">Hanzo App</SizableText>
           <Button
             onClick={() => setPaletteOpen(true)}
             aria-label="Search"

@@ -4,7 +4,8 @@ import { SizableText, Paragraph, XStack, YStack } from '@hanzo/gui';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
-import { AppShell } from '@/components/app-shell';
+import Header from '@/components/layout/header';
+import SiteFooter from '@/components/landing/site-footer';
 import { GamePlayer } from '@/components/games/game-player';
 import { getGame, isPlayable, isPlaceholderBuild } from '@/data/games-catalog';
 
@@ -14,7 +15,8 @@ export default function GamePlay() {
 
   if (!game || !isPlayable(game)) {
     return (
-      <AppShell currentView="games">
+      <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
+        <Header />
         <SizableText flex={1} flexDirection="column" alignItems="center" justifyContent="center" gap="$4" backgroundColor="$background" color="$color" display="flex">
           <Paragraph fontSize="$6" color="$color11">
             {game ? `${game.name} has no in-browser build.` : 'Game not found.'}
@@ -23,12 +25,14 @@ export default function GamePlay() {
             Back
           </SizableText></Link>
         </SizableText>
-      </AppShell>
+        <SiteFooter />
+      </SizableText>
     );
   }
 
   return (
-    <AppShell currentView="games">
+    <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
+      <Header />
       <SizableText flex={1} flexDirection="column" backgroundColor="$background" color="$color" display="flex">
         <XStack alignItems="center" gap="$4" borderBottomWidth={1} borderColor="$borderColor" paddingHorizontal="$5" paddingVertical="$3">
           <Link
@@ -47,6 +51,7 @@ export default function GamePlay() {
           <GamePlayer gameId={game.id} title={game.name} />
         </YStack>
       </SizableText>
-    </AppShell>
+      <SiteFooter />
+    </SizableText>
   );
 }

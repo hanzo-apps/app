@@ -18,6 +18,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
+import { refusal } from "@/lib/gateway";
 import { session } from "@/lib/iam";
 import { isCrossSite } from "@/lib/csrf";
 
@@ -50,11 +51,9 @@ export async function GET(request: NextRequest) {
   }
 
   if (!gateway.ok) {
-    if (gateway.status === 401 || gateway.status === 403) return unauthorized();
-    return NextResponse.json(
-      { ok: false, message: `Gateway error (${gateway.status})` },
-      { status: 502, headers: NO_STORE }
-    );
+    const detail = await gateway.text().catch(() => "");
+    const { body, status } = refusal(gateway.status, detail);
+    return NextResponse.json(body, { status, headers: NO_STORE });
   }
 
   // The cloud contract is {agents:[...]}; forward it verbatim so the client
@@ -109,7 +108,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (gateway.status === 401 || gateway.status === 403) return unauthorized();
+  if (gateway.status === 401 || gateway.status === 403) {
+    const detail = await gateway.text().catch(() => "");
+    const { body, status } = refusal(gateway.status, detail);
+    return NextResponse.json(body, { status, headers: NO_STORE });
+  }
 
   const created = await gateway.json().catch(() => null);
   if (created && gateway.ok) {

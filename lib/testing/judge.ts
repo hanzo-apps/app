@@ -180,9 +180,13 @@ export async function runJudgeEvaluation(
   } else if (config.provider === 'gemini') {
     responseText = await callGemini(config.apiKey, config.model, SYSTEM_PROMPT, userMessage);
   } else {
-    const baseUrl = providerConfig.baseUrl || 'https://openrouter.ai/api/v1';
+    // Every registry provider states a baseUrl. Falling back to a third party's
+    // when one is missing would send the user's key somewhere they never chose.
+    if (!providerConfig?.baseUrl) {
+      throw new Error(`Judge provider ${config.provider} has no API endpoint configured`);
+    }
     responseText = await callOpenAICompatible(
-      baseUrl, config.apiKey, config.model, config.provider, SYSTEM_PROMPT, userMessage
+      providerConfig.baseUrl, config.apiKey, config.model, config.provider, SYSTEM_PROMPT, userMessage
     );
   }
 

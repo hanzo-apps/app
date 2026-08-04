@@ -15,7 +15,7 @@ export function ProjectCard({ project }: { project: Project }) {
         href={`/projects/${project.space_id}`}
       ><YStack position="relative" backgroundColor="$background" borderRadius="$8" overflow="hidden" height="$18" width="100%" alignItems="center" justifyContent="flex-end" paddingHorizontal="$3" borderWidth={1} borderColor="$borderColor">
         <iframe
-          src={`/api/preview/${project.space_id}`}
+          src={`/v1/preview/${project.space_id}`}
           frameBorder="0"
           className="thumb-frame"
         ></iframe>

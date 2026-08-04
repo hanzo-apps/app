@@ -1,7 +1,7 @@
 'use client';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { XStack } from '@hanzo/gui';
+import { View, XStack } from '@hanzo/gui';
 import { useState } from "react";
 
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@hanzo/ui';
@@ -35,21 +35,25 @@ export function DeployButton({
           <Popover>
             <PopoverTrigger asChild>
               <div>
+                {/* ONE Publish. It used to be two whole buttons, one per
+                    breakpoint (narrow-only / wide-only), which renders twice
+                    the moment either variant fails to compile — and it did: the
+                    toolbar showed Publish above Publish. A control that exists
+                    twice can also be CLICKED twice, so the duplicate was not
+                    only ugly.
+
+                    Now the breakpoint moves the smallest thing that differs —
+                    the icon — so the worst a media-query failure can do is show
+                    an icon on a narrow screen, never a second Publish. */}
                 <Button
                   variant="default"
                   size="sm"
-                  height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1" $lg={{ display: "none" }}
+                  height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1"
                   disabled={disabled}
                 >
-                  <Save size={14} />
-                  {disabled ? "Building…" : "Publish"}
-                </Button>
-                <Button
-                  variant="default"
-                  size="sm"
-                  height={28} paddingHorizontal="$2.5" fontSize="$1" $lg={{ display: "none" }}
-                  disabled={disabled}
-                >
+                  <View $lg={{ display: "none" }}>
+                    <Save size={14} />
+                  </View>
                   {disabled ? "Building…" : "Publish"}
                 </Button>
               </div>
@@ -63,27 +67,18 @@ export function DeployButton({
             </PopoverContent>
           </Popover>
         ) : (
-          <>
-            <Button
-              variant="default"
-              size="sm"
-              height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1" $lg={{ display: "none" }}
-              onClick={() => setOpen(true)}
-              disabled={disabled}
-            >
+          <Button
+            variant="default"
+            size="sm"
+            height={28} gap="$1.5" paddingHorizontal="$2.5" fontSize="$1"
+            onClick={() => setOpen(true)}
+            disabled={disabled}
+          >
+            <View $lg={{ display: "none" }}>
               <Save size={14} />
-              {disabled ? "Building…" : "Publish"}
-            </Button>
-            <Button
-              variant="default"
-              size="sm"
-              height={28} paddingHorizontal="$2.5" fontSize="$1" $lg={{ display: "none" }}
-              onClick={() => setOpen(true)}
-              disabled={disabled}
-            >
-              {disabled ? "Building…" : "Publish"}
-            </Button>
-          </>
+            </View>
+            {disabled ? "Building…" : "Publish"}
+          </Button>
         )}
         <LoginModal
           open={open}
@@ -91,7 +86,7 @@ export function DeployButton({
           pages={pages}
           title="Log In to publish your Project"
           description="Log in with your Hanzo account to publish your project and increase your monthly free limit."
-  />
+        />
       </XStack>
     </XStack>
   );

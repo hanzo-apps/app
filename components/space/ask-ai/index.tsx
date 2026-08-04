@@ -19,7 +19,7 @@ export const AskAi = () => {
         <XStack alignItems="center" justifyContent="space-between" gap="$2" paddingHorizontal="$4" paddingBottom="$3">
           <XStack flex={1} justifyContent="flex-start">
             <Button
-              size="iconXs"
+              size="icon"
               variant="outline"
               borderColor="$borderColor" color="$color11" hoverStyle={{ borderColor: "$color", color: "$color" }}
             >
@@ -31,7 +31,7 @@ export const AskAi = () => {
               <Settings size={16} />
               Settings
             </Button>
-            <Button size="iconXs">
+            <Button size="icon">
               <ArrowUp size={16} />
             </Button>
           </XStack>

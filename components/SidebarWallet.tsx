@@ -18,7 +18,7 @@
 import { YStack } from '@hanzo/gui';
 import {useRouter} from 'next/navigation'
 import {User, Wallet} from 'lucide-react'
-import {UserMenu, resolveIdentity, useUserTheme} from '@hanzo/iam/react'
+import {UserMenu, resolveIdentity} from '@hanzo/iam/react'
 
 import {useUser} from '@/hooks/useUser'
 import {useOrg} from '@/lib/org/client'
@@ -44,13 +44,25 @@ export function SidebarWallet({collapsed}: {collapsed: boolean}) {
   const {ctx} = useOrg()
   const router = useRouter()
   const {phase, balance} = useCloudBalance()
-  // EVERY hook this component calls is called HERE, before the first `return`.
-  // `useUserTheme` used to sit below `if (!user) return null`, so the signed-out
-  // first paint ran a shorter hook list than the paint after the session
-  // resolved — React #310 ("rendered more hooks than during the previous
-  // render"), thrown during a commit and therefore fatal to the whole tree, not
-  // just to this control. It took down every page that mounts the shell.
-  const theme = useUserTheme()
+  // NO `useUserTheme()`, and therefore no `theme` prop on UserMenu (@hanzo/iam
+  // hides the light/dark/system control when it is omitted). That hook is a THEME
+  // CONTROLLER, not a read: on mount it calls applyTheme(mode), which for the
+  // default `system` resolves `prefers-color-scheme` and does
+  // `documentElement.classList.toggle('dark', resolved === 'dark')` plus
+  // data-theme and style.colorScheme.
+  //
+  // hanzo.app is dark-only and the ONE authority is the literal `dark` class the
+  // server renders (app/layout.tsx). This hook was a second one that disagreed —
+  // and because it rides the SIDEBAR, it fired on every shell route while the
+  // marketing pages were untouched, which is exactly the shape of the bug:
+  // /catalog and /gallery painted WHITE on an OS set to light while / and
+  // /pricing stayed black. Measured: `dark` was stripped ~857ms after load, only
+  // under `prefers-color-scheme: light`.
+  //
+  // EVERY hook this component calls is still called before the first `return` —
+  // a hook below `if (!user) return null` gives the signed-out first paint a
+  // shorter hook list than the paint after the session resolves (React #310,
+  // thrown during commit and fatal to the whole tree, not just this control).
   const cents = spendableCents(balance)
 
   if (!user) return null
@@ -82,7 +94,6 @@ export function SidebarWallet({collapsed}: {collapsed: boolean}) {
         isAuthenticated
         onSignOut={() => void logout()}
         align="up"
-        theme={theme}
         settingsUrl="/profile"
         settingsLabel="Profile & settings"
         usageUrl={`${BILLING_URL}/usage`}

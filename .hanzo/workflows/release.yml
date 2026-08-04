@@ -133,6 +133,45 @@ jobs:
           registry: ghcr.io
           username: hanzo-dev
           password: ${{ secrets.GH_PAT }}
+      # The publishable ingest key, from KMS — the only store secrets come from.
+      # It used to read `secrets.EVENT_INGEST_KEY`, a repo secret, which put the
+      # same credential in a second place with its own rotation story.
+      #
+      # Same KMS surface and same key name the shared hanzoai/ci reusable uses for
+      # `build_secrets`, so the key has ONE name and ONE home no matter which
+      # pipeline builds. This repo builds bespoke (it is not on the reusable), so
+      # the fetch is spelled out here.
+      #
+      # Absence is ANNOUNCED, not swallowed. Non-fatal on purpose — a KMS hiccup
+      # must not block shipping the product — but it lands as a red annotation.
+      - name: Fetch the ingest key from KMS
+        id: ingest
+        env:
+          KMS_CLIENT_ID: ${{ secrets.KMS_CLIENT_ID }}
+          KMS_CLIENT_SECRET: ${{ secrets.KMS_CLIENT_SECRET }}
+          KMS_ENDPOINT: ${{ vars.KMS_ENDPOINT || 'https://kms.hanzo.ai' }}
+        run: |
+          set -uo pipefail
+          if [ -z "${KMS_CLIENT_ID:-}" ] || [ -z "${KMS_CLIENT_SECRET:-}" ]; then
+            echo "::error::KMS credentials absent — shipping a bundle with no ingest key; every track/identify/group it emits will be dropped"
+            exit 0
+          fi
+          TOKEN=$(curl -sf "$KMS_ENDPOINT/v1/kms/auth/login" \
+            -H 'Content-Type: application/json' \
+            -d "{\"clientId\":\"$KMS_CLIENT_ID\",\"clientSecret\":\"$KMS_CLIENT_SECRET\"}" \
+            | jq -r '.accessToken // empty')
+          if [ -z "$TOKEN" ]; then
+            echo "::error::KMS login failed — shipping a bundle with no ingest key"; exit 0
+          fi
+          V=$(curl -sf "$KMS_ENDPOINT/v1/kms/orgs/hanzo/secrets/deploy/EVENT_INGEST_KEY?env=prod" \
+            -H "Authorization: Bearer $TOKEN" | jq -r '.secret.value // empty')
+          if [ -z "$V" ]; then
+            echo "::error::EVENT_INGEST_KEY absent from KMS (hanzo/deploy env=prod) — shipping a bundle with no ingest key"; exit 0
+          fi
+          echo "::add-mask::$V"
+          echo "key=$V" >> "$GITHUB_OUTPUT"
+          echo "ingest key resolved (${#V} chars)"
+
       - name: Build + push ghcr.io/hanzoai/app
         uses: docker/build-push-action@v6
         with:
@@ -142,11 +181,12 @@ jobs:
           push: true
           tags: ghcr.io/hanzoai/app:${{ steps.ver.outputs.version_v }}
           provenance: false
-          # Without this the shipped bundle carries no ingest key and every
-          # logged-out pageview is refused 403 by api.hanzo.ai. Build-time by
-          # necessity: Next inlines NEXT_PUBLIC_* into the client bundle.
+          # Without this the bundle ships unkeyed, so every beacon takes cloud's
+          # anonymous lane — which admits pageview and error, DROPS track/identify/
+          # group, and still answers 200. Build-time by necessity: Next inlines
+          # NEXT_PUBLIC_* into the client bundle.
           build-args: |
-            NEXT_PUBLIC_HANZO_INGEST_KEY=${{ secrets.EVENT_INGEST_KEY }}
+            EVENT_INGEST_KEY=${{ steps.ingest.outputs.key }}
       - name: Verify the pushed image is pullable (guard the image ⇔ tag invariant)
         # build-push-action can exit 0 while the manifest isn't yet resolvable at the
         # registry (or a partial push). If we tag git anyway, the CR bump lands on a
@@ -178,4 +218,66 @@ jobs:
               && echo "tag mirrored to GitHub" \
               || echo "GitHub tag mirror failed (non-fatal — mirror by hand: git push origin ${{ steps.ver.outputs.version_v }})"
           fi
-          echo "Pushed image + tag ${{ steps.ver.outputs.version_v }} — bump the operator CR (universe: hanzo-app.yaml) to deploy."
+
+      # THE DEPLOY, AND THE ONLY ONE. cd.hanzo.ai watches hanzoai/universe — a git
+      # generator over charts/app/values/*/*.yaml — not the registry. Until the
+      # values file moves, a pushed image is bytes nothing points at.
+      #
+      # This step used to be a sentence: "Pushed image + tag … — bump the operator
+      # CR (universe: hanzo-app.yaml) to deploy." Whether a release shipped then
+      # depended on whether a person read the log, and mostly it did not: v1.42.224
+      # built green and was still not running 13 minutes later, while the profile
+      # fix it carried was reported broken by the user who asked for it.
+      #
+      # pin.sh is the fleet's one pinning path (its own header documents the same
+      # outage class elsewhere). It resolves tag AND digest from ONE registry GET,
+      # so the pair cannot drift — two lookups at two moments is exactly how a pin
+      # comes to name one image and run another, and that failure SUCCEEDS: the pod
+      # reports the tag and serves the other bytes.
+      - name: Ship it (pin universe → cd.hanzo.ai deploys)
+        env:
+          KMS_CLIENT_ID: ${{ secrets.KMS_CLIENT_ID }}
+          KMS_CLIENT_SECRET: ${{ secrets.KMS_CLIENT_SECRET }}
+          KMS_ENDPOINT: ${{ vars.KMS_ENDPOINT || 'https://kms.hanzo.ai' }}
+          KMS_ORG: ${{ vars.KMS_ORG || 'hanzo' }}
+          KMS_SECRET_ENV: ${{ vars.KMS_SECRET_ENV || 'prod' }}
+          # pin.sh probes the registry before it moves anything; these let it read
+          # a private manifest instead of falling back to anonymous.
+          GHCR_USER: ${{ secrets.GHCR_USER }}
+          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+        run: |
+          set -euo pipefail
+          VERSION="${{ steps.ver.outputs.version_v }}"
+
+          # Secrets come from KMS, never from a file or a repo variable.
+          KMS_TOKEN=$(curl -fsS "${KMS_ENDPOINT}/v1/kms/auth/login" \
+            -H 'Content-Type: application/json' \
+            -d "{\"clientId\":\"${KMS_CLIENT_ID}\",\"clientSecret\":\"${KMS_CLIENT_SECRET}\"}" \
+            | jq -r '.accessToken // empty')
+          [ -n "$KMS_TOKEN" ] || { echo "::error::KMS login failed at ${KMS_ENDPOINT} — image ${VERSION} is pushed but NOT deployed"; exit 1; }
+
+          PIN_TOKEN=$(curl -fsS \
+            "${KMS_ENDPOINT}/v1/kms/orgs/${KMS_ORG}/secrets/deploy/UNIVERSE_PIN_TOKEN?env=${KMS_SECRET_ENV}" \
+            -H "Authorization: Bearer ${KMS_TOKEN}" | jq -r '.secret.value // empty')
+          [ -n "$PIN_TOKEN" ] || { echo "::error::UNIVERSE_PIN_TOKEN missing in KMS at ${KMS_ORG}/deploy (env ${KMS_SECRET_ENV}) — image ${VERSION} is pushed but NOT deployed"; exit 1; }
+          echo "::add-mask::${PIN_TOKEN}"
+
+          git clone --quiet --depth 1 \
+            "https://x-access-token:${PIN_TOKEN}@git.hanzo.ai/hanzo/universe" /tmp/universe
+
+          # Another service can land its own pin between our clone and our push. A
+          # shallow clone has no common history to rebase onto, so RE-APPLY rather
+          # than merge. Pinning is idempotent and derives everything from the file
+          # it finds, so the retry also re-checks the monotonic guard.
+          for attempt in 1 2 3 4 5; do
+            /tmp/universe/charts/app/pin.sh hanzo-app "$VERSION"
+
+            if git -C /tmp/universe push --quiet origin HEAD:main 2>/dev/null; then
+              echo "pinned hanzo-app to ${VERSION} — cd.hanzo.ai rolls it out"; exit 0
+            fi
+
+            echo "universe moved under us (attempt ${attempt}/5) — re-applying on the new tip"
+            git -C /tmp/universe fetch --quiet --depth 1 origin main
+            git -C /tmp/universe reset --quiet --hard origin/main
+          done
+          echo "::error::could not push the pin after 5 attempts — image ${VERSION} is pushed but NOT deployed"; exit 1

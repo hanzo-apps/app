@@ -74,7 +74,7 @@ export function HeatmapViewer({ deploymentId, pages }: HeatmapViewerProps) {
         params.set('device', deviceFilter);
       }
 
-      const response = await fetch(`/api/analytics/${deploymentId}/heatmap?${params}`);
+      const response = await fetch(`/v1/analytics/${deploymentId}/heatmap?${params}`);
       if (!response.ok) throw new Error('Failed to fetch heatmap data');
 
       const heatmapData: HeatmapData = await response.json();

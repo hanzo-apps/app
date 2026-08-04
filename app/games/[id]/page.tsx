@@ -18,7 +18,8 @@ import {
   Globe,
   Check,
 } from 'lucide-react';
-import { AppShell } from '@/components/app-shell';
+import Header from '@/components/layout/header';
+import SiteFooter from '@/components/landing/site-footer';
 import {
   getGame,
   studioHref,
@@ -48,14 +49,16 @@ export default function GameDetail() {
 
   if (!game) {
     return (
-      <AppShell currentView="games">
+      <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
+        <Header />
         <SizableText flex={1} flexDirection="column" alignItems="center" justifyContent="center" gap="$4" backgroundColor="$background" color="$color" display="flex">
           <Paragraph fontSize="$6" color="$color11">Game not found.</Paragraph>
           <Link href="/games"><SizableText color="$color" textDecorationLine="underline">
             Back to games
           </SizableText></Link>
         </SizableText>
-      </AppShell>
+        <SiteFooter />
+      </SizableText>
     );
   }
 
@@ -67,7 +70,8 @@ export default function GameDetail() {
   };
 
   return (
-    <AppShell currentView="games">
+    <SizableText minHeight="100%" backgroundColor="$background" color="$color" display="flex" flexDirection="column">
+      <Header />
       <SizableText flex={1} backgroundColor="$background" color="$color" overflow="scroll" display="flex" flexDirection="column">
         <YStack width="100%" maxWidth={1024} alignSelf="center" paddingHorizontal="$5" paddingVertical="$6">
           <Link
@@ -255,7 +259,8 @@ export default function GameDetail() {
           </YStack>
         </YStack>
       </SizableText>
-    </AppShell>
+      <SiteFooter />
+    </SizableText>
   );
 }
 

@@ -4,6 +4,7 @@
  */
 
 import { ProviderId } from './providers/types';
+import { providers } from './providers/registry';
 import { UsageInfo } from './types';
 import { configManager, type ProviderPricingEntry } from '@/lib/config/storage';
 import { logger } from '@/lib/utils';
@@ -192,18 +193,12 @@ export class CostCalculator {
     }
   }
 
+  // The registry is the list of providers. A hand-kept copy of it lived here and
+  // had drifted: hanzo, minimax, llamacpp and openai-codex were missing, so the
+  // live prices the picker had already cached were ignored for them and every
+  // call was quoted at DEFAULT_PRICING instead.
   private static isKnownProvider(provider: string): provider is ProviderId {
-    return (
-      provider === 'openrouter' ||
-      provider === 'openai' ||
-      provider === 'anthropic' ||
-      provider === 'groq' ||
-      provider === 'gemini' ||
-      provider === 'huggingface' ||
-      provider === 'ollama' ||
-      provider === 'lmstudio' ||
-      provider === 'sambanova'
-    );
+    return provider in providers;
   }
   
   /**

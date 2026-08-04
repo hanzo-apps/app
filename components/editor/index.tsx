@@ -245,7 +245,11 @@ export const AppEditor = ({
 
   return (
     <OrgProvider>
-    <YStack height="100dvh" backgroundColor="$background">
+    {/* overflow="hidden" as well as the exact height: the height alone only says
+        how tall this is, not that nothing may escape it. One child that forgets
+        minHeight={0} would otherwise put the whole app back on a scrolling
+        document, and that failure is invisible until a thread gets long enough. */}
+    <YStack height="100dvh" overflow="hidden" backgroundColor="$background">
       <Header
         tab={currentTab}
         onNewTab={setCurrentTab}
@@ -289,7 +293,15 @@ export const AppEditor = ({
           <DeployButton pages={pages} prompts={prompts} disabled={isAiWorking} />
         )}
       </Header>
-      <XStack backgroundColor="$background" flex={1} width="100%" position="relative" $lg={{ flexDirection: "column", height: "calc(100%-82px)" }}>
+      {/* minHeight={0} is what keeps the builder a fixed shell instead of a long
+          page. A flex child defaults to `min-height: auto`, which means it will
+          NOT shrink below its own content — so a long thread grew this row past
+          the 100dvh section, the DOCUMENT scrolled, and the header scrolled off
+          the top with it. The toolbar (Preview/Code/Publish) disappearing mid-build
+          is that, and it takes the user's bearings with it. Bounded, the row is
+          held to the viewport and the panes scroll INSIDE it, which is what the
+          chat pane's own `minHeight={0} flex={1}` below already assumed. */}
+      <XStack backgroundColor="$background" flex={1} minHeight={0} width="100%" position="relative" $lg={{ flexDirection: "column", height: "calc(100%-82px)" }}>
         {/* LEFT — the chat pane, ALWAYS chat (never code). The composer is pinned
             to the bottom of this flex-col (AskAI is `mt-auto`), so messages scroll
             above it. Desktop: docked left unless collapsed; mobile: shown only on

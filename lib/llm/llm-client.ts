@@ -7,7 +7,7 @@ export async function validateApiKey(apiKey: string, provider: ProviderId): Prom
   if (!apiKey) return false;
 
   try {
-    const response = await fetch('/api/validate-key', {
+    const response = await fetch('/v1/validate-key', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -30,7 +30,9 @@ export async function validateApiKey(apiKey: string, provider: ProviderId): Prom
 }
 
 export async function getAvailableModels(apiKey?: string, provider?: ProviderId): Promise<string[]> {
-  const currentProvider = provider || configManager.getSelectedProvider() || 'openrouter';
+  // getSelectedProvider() always resolves — a second fallback here was a third
+  // opinion about the default, and it named a competitor.
+  const currentProvider = provider || configManager.getSelectedProvider();
   const providerConfig = getProvider(currentProvider);
   const key = apiKey || configManager.getProviderApiKey(currentProvider);
 
@@ -39,7 +41,7 @@ export async function getAvailableModels(apiKey?: string, provider?: ProviderId)
   }
 
   try {
-    const response = await fetch('/api/models', {
+    const response = await fetch('/v1/models', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

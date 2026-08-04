@@ -97,7 +97,7 @@ export default function BillingPage() {
   const fetchBillingData = useCallback(async () => {
     try {
       // Fetch usage data
-      const usageResponse = await fetch('/api/usage');
+      const usageResponse = await fetch('/v1/usage');
       if (usageResponse.ok) {
         const usageData = await usageResponse.json();
         if (usageData.usage?.api_calls) {
@@ -106,7 +106,7 @@ export default function BillingPage() {
       }
 
       // Fetch subscription status
-      const subResponse = await fetch('/api/commerce/subscription');
+      const subResponse = await fetch('/v1/commerce/subscription');
       if (subResponse.ok) {
         const subData = await subResponse.json();
         if (subData.subscription) {
@@ -124,7 +124,7 @@ export default function BillingPage() {
       }
 
       // Fetch invoices from Hanzo Commerce
-      const invoiceResponse = await fetch('/api/commerce/invoices');
+      const invoiceResponse = await fetch('/v1/commerce/invoices');
       if (invoiceResponse.ok) {
         const invoiceData = await invoiceResponse.json();
         if (invoiceData.invoices) {

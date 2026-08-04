@@ -30,11 +30,16 @@ ENV NEXT_BUILD_ONLY=true
 # provisioned.
 #
 # It must be a BUILD ARG: Next inlines NEXT_PUBLIC_* at build time, so setting it
-# on the pod is too late. Safe to ship in the bundle — pk_ is ingest-only by
+# on the pod is too late. Safe to ship in the bundle — pk- is ingest-only by
 # construction (publishable.go keeps the prefix out of the bearer/principal path),
 # so it can write events and cannot read anything.
-ARG NEXT_PUBLIC_EVENT_INGEST_KEY
-ENV NEXT_PUBLIC_EVENT_INGEST_KEY=$NEXT_PUBLIC_EVENT_INGEST_KEY
+#
+# EVENT_INGEST_KEY is the name in KMS and on the --build-arg; NEXT_PUBLIC_ is added
+# here because that prefix is what makes Next inline a var. The prefix is a property
+# of this build, so it is applied in this build file and the secret store keeps the
+# ONE plain name — the same arrangement hanzo.chat's Vite build uses with VITE_.
+ARG EVENT_INGEST_KEY
+ENV NEXT_PUBLIC_EVENT_INGEST_KEY=$EVENT_INGEST_KEY
 
 # CI=false so Next generates the clientReferenceManifest (it skips it when
 # CI=true, which GitHub Actions sets and leaks into the Docker build).

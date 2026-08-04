@@ -31,7 +31,9 @@ import {
   UPDATE_PAGE_START,
   UPDATE_PAGE_END,
 } from "@/lib/prompts";
+import { applyEdit } from "@/lib/edit/apply";
 import { resolveModelId } from "@/lib/providers";
+import { refusal } from "@/lib/gateway";
 import { session } from "@/lib/iam";
 import { requireSameOrigin } from "@/lib/org/csrf";
 import { Page } from "@/types";
@@ -47,11 +49,10 @@ const HANZO_AI_BASE_URL =
 const MAX_TOKENS = 128_000;
 
 // Builder model resolution: kill retired/dead ids (resolveModelId), then honor
-// what remains. Both zen5-coder (the code-specialized default, glm-5.2) and the
-// Enso family (claude-opus-4-8) now STREAM reliably — the Enso streaming seam was
-// fixed at the source (deploy/enso rebuilt on zen v1.4.3), verified live — so an
-// explicit or persisted Enso pick is served as Enso. `auto` still routes via the
-// gateway. (DEFAULT_MODEL stays zen5-coder for a fresh builder session.)
+// what remains. `auto` routes via the gateway; everything else is sent verbatim.
+// The default is DEFAULT_MODEL (lib/providers.ts) and is stated ONLY there — this
+// comment used to name zen5-coder, a model the gateway carries no id of, which is
+// exactly the drift that makes a stale default look like a misbehaving model.
 const builderModel = (model: string | undefined | null): string =>
   resolveModelId(model);
 
@@ -69,15 +70,6 @@ const unauthorized = () =>
   NextResponse.json(
     { ok: false, openLogin: true, message: "Sign in to build" },
     { status: 401 }
-  );
-
-// The gateway reports the org is out of credit (402 Payment Required). Surface
-// it as a STRUCTURED signal (status 402 + needCredits) so the client raises the
-// "Need more usage?" modal instead of masking it as a generic 502 failure.
-const insufficientCredits = (detail?: string) =>
-  NextResponse.json(
-    { ok: false, needCredits: true, message: detail || "You're out of credits." },
-    { status: 402 }
   );
 
 type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
@@ -162,16 +154,8 @@ export async function POST(request: NextRequest) {
 
   if (!gateway.ok || !gateway.body) {
     const detail = await gateway.text().catch(() => "");
-    if (gateway.status === 401 || gateway.status === 403) return unauthorized();
-    if (gateway.status === 402) return insufficientCredits(detail);
-    return NextResponse.json(
-      {
-        ok: false,
-        message:
-          detail || `Gateway error (${gateway.status}) while generating.`,
-      },
-      { status: 502 }
-    );
+    const { body, status } = refusal(gateway.status, detail);
+    return NextResponse.json(body, { status });
   }
 
   const encoder = new TextEncoder();
@@ -181,8 +165,15 @@ export async function POST(request: NextRequest) {
   const response = new NextResponse(stream.readable, {
     headers: {
       "Content-Type": "text/plain; charset=utf-8",
-      "Cache-Control": "no-cache",
+      // `no-transform` and `X-Accel-Buffering: no` are what keep this a STREAM
+      // across the proxies in front of it. Without them an intermediary is free
+      // to buffer the whole body before forwarding any of it — the builder then
+      // shows nothing for the length of the generation, and a proxy that gives
+      // up mid-buffer truncates the page instead of delivering it. The sibling
+      // stream (app/v1/chat/completions) has always sent both; this one did not.
+      "Cache-Control": "no-cache, no-transform",
       Connection: "keep-alive",
+      "X-Accel-Buffering": "no",
     },
   });
 
@@ -293,15 +284,8 @@ export async function PATCH(request: NextRequest) {
 
   if (!gateway.ok || !gateway.body) {
     const detail = await gateway.text().catch(() => "");
-    if (gateway.status === 401 || gateway.status === 403) return unauthorized();
-    if (gateway.status === 402) return insufficientCredits(detail);
-    return NextResponse.json(
-      {
-        ok: false,
-        message: detail || `Gateway error (${gateway.status}) while planning.`,
-      },
-      { status: 502 }
-    );
+    const { body, status } = refusal(gateway.status, detail);
+    return NextResponse.json(body, { status });
   }
 
   const encoder = new TextEncoder();
@@ -311,8 +295,15 @@ export async function PATCH(request: NextRequest) {
   const response = new NextResponse(stream.readable, {
     headers: {
       "Content-Type": "text/plain; charset=utf-8",
-      "Cache-Control": "no-cache",
+      // `no-transform` and `X-Accel-Buffering: no` are what keep this a STREAM
+      // across the proxies in front of it. Without them an intermediary is free
+      // to buffer the whole body before forwarding any of it — the builder then
+      // shows nothing for the length of the generation, and a proxy that gives
+      // up mid-buffer truncates the page instead of delivering it. The sibling
+      // stream (app/v1/chat/completions) has always sent both; this one did not.
+      "Cache-Control": "no-cache, no-transform",
       Connection: "keep-alive",
+      "X-Accel-Buffering": "no",
     },
   });
 
@@ -422,15 +413,8 @@ export async function PUT(request: NextRequest) {
 
   if (!gateway.ok) {
     const detail = await gateway.text().catch(() => "");
-    if (gateway.status === 401 || gateway.status === 403) return unauthorized();
-    if (gateway.status === 402) return insufficientCredits(detail);
-    return NextResponse.json(
-      {
-        ok: false,
-        message: detail || `Gateway error (${gateway.status}) while editing.`,
-      },
-      { status: 502 }
-    );
+    const { body, status } = refusal(gateway.status, detail);
+    return NextResponse.json(body, { status });
   }
 
   const data = await gateway.json();
@@ -585,15 +569,23 @@ function applyEdits(
           pageHtml = `${replaceBlock}\n${pageHtml}`;
           updatedLines.push([1, replaceBlock.split("\n").length]);
         } else {
-          const blockPosition = pageHtml.indexOf(searchBlock);
-          if (blockPosition !== -1) {
-            const beforeText = pageHtml.substring(0, blockPosition);
+          // Matching used to be `indexOf(searchBlock)` — an exact byte compare
+          // including the delimiters' own newlines — and a miss did NOTHING,
+          // silently. A model that re-indents its quote by a space produced a
+          // page identical to the one it was asked to change, and the only
+          // account of it was "the edit didn't match this page". applyEdit
+          // degrades exact → trimmed → whitespace-insensitive, and refuses a
+          // relaxed match that names more than one place rather than editing
+          // the wrong part of someone's page.
+          const applied = applyEdit(pageHtml, searchBlock, replaceBlock);
+          if (applied.ok) {
+            const beforeText = pageHtml.substring(0, applied.index);
             const startLineNumber = beforeText.split("\n").length;
             const replaceLines = replaceBlock.split("\n").length;
             const endLineNumber = startLineNumber + replaceLines - 1;
 
             updatedLines.push([startLineNumber, endLineNumber]);
-            pageHtml = pageHtml.replace(searchBlock, replaceBlock);
+            pageHtml = applied.html;
           }
         }
 

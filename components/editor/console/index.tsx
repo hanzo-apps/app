@@ -124,7 +124,7 @@ export function Console({
             else return;
             e.preventDefault();
           }}
-          position="absolute" top={0} right={0} bottom={0} left={0} cursor="row-resize" userSelect="none" borderTopWidth={1} borderColor="$borderColor" focusVisibleStyle={{ outlineWidth: 0 }} className="group/dock"
+          position="absolute" top={0} right={0} bottom={0} left={0} cursor="row-resize" userSelect="none" borderTopWidth={1} borderColor="$borderColor" focusVisibleStyle={{ outlineWidth: 0 }} group="dock"
         >
           {/* The affordance: a hairline that lifts and a grip that fades in on
               hover, focus or drag. Nothing is drawn while the bar is at rest. */}
