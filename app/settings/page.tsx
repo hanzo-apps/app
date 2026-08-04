@@ -209,33 +209,47 @@ export default function SettingsPage() {
               </YStack>
             </TabsContent>
 
+            {/* One subject, one action — the last tab still laying itself out
+                by hand. It offered TWO full-width bars that both went to
+                /billing: an accent "Upgrade to Pro" and an outline "Manage
+                Billing", stacked 16px apart, 862px wide each, one label
+                centred and the other flush left (justify-content center vs
+                flex-start — measured). Two controls for one destination cannot
+                agree on anything; one control has nothing to disagree with,
+                and WHICH one it is, is the plan. */}
             <TabsContent value="billing">
-              <YStack {...panel} rowGap="$4" padding="$5">
-                {/* The plan is READ, never assumed. This panel used to hardcode
-                    "Current Plan: Free" and "0 / 100 AI generations used this
-                    month" — two assertions about a customer's account that
-                    nothing had ever asked commerce about, shown identically to
-                    someone paying us every month. A number nobody measured is
-                    worse than no number, so the generations line is gone rather
-                    than replaced with another guess; usage lives on /billing,
-                    which actually reads it. */}
-                <Paragraph fontSize="$3" color="$color">
-                  {plan.phase === "loading"
-                    ? "Current Plan: …"
-                    : plan.phase === "unknown"
-                      ? "Current Plan: unavailable"
-                      : `Current Plan: ${plan.tier || "Free"}`}
-                </Paragraph>
-                {unpaid(plan) && (
-                  <Button {...accent} width="100%" onClick={() => router.push("/billing")}>
-                    Upgrade to Pro
-                  </Button>
-                )}
-                <Anchor href="/billing">
-                  <Button variant="outline" width="100%" justifyContent="flex-start">
-                    Manage Billing
-                  </Button>
-                </Anchor>
+              <YStack {...rows}>
+                <XStack {...row}>
+                  <YStack minWidth={0} rowGap="$1">
+                    <SizableText fontSize="$3" fontWeight="500" color="$color">Plan</SizableText>
+                    {/* The plan is READ, never assumed. This panel used to
+                        hardcode "Current Plan: Free" and "0 / 100 AI
+                        generations used this month" — two assertions about a
+                        customer's account that nothing had ever asked commerce
+                        about, shown identically to someone paying us every
+                        month. `unknown` stays its own answer: a request that
+                        never landed is not evidence of a free account. Usage
+                        lives on /billing, which actually reads it. */}
+                    <Paragraph fontSize="$1" color="$color11">
+                      {plan.phase === "loading"
+                        ? "…"
+                        : plan.phase === "unknown"
+                          ? "Unavailable"
+                          : plan.tier || "Free"}
+                    </Paragraph>
+                  </YStack>
+                  {/* The loud one appears only when we KNOW the caller pays for
+                      nothing; loading and unknown get the neutral action. */}
+                  {unpaid(plan) ? (
+                    <Button size="sm" {...accent} onClick={() => router.push("/billing")}>
+                      Upgrade to Pro
+                    </Button>
+                  ) : (
+                    <Button size="sm" variant="outline" onClick={() => router.push("/billing")}>
+                      Manage billing
+                    </Button>
+                  )}
+                </XStack>
               </YStack>
             </TabsContent>
           </Tabs>
