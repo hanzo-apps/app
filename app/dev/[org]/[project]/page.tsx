@@ -22,6 +22,7 @@ import { useParams } from "next/navigation";
 import { LockKeyhole } from "lucide-react";
 import { AppEditor } from "@/components/editor";
 import { fetchProject, fetchProjectSite, toEditorProject } from "@/lib/api/projects";
+import { providerFromRepoUrl, fetchGitCommits, fetchCommitPages } from "@/lib/api/git";
 import { currentOrg, setCurrentOrg } from "@/lib/org-scope";
 import type { Page, Project as EditorProject } from "@/types";
 
@@ -83,7 +84,27 @@ export default function ProjectDevPage() {
 
       const name = record?.name || slug;
       (window as any).__projectName = name;
-      if (site.pages.length > 0) setPages(site.pages);
+      // Pages: the published artifact first. But the wildcard currently serves the
+      // console shell for many hosts, so site.pages comes back empty — and opening
+      // a blank canvas over a project with real committed work reads as data loss.
+      // When empty and the project has a repo, reconstruct the latest SAVED version
+      // from git (the same forge reconstruction the history Preview uses).
+      let restoredPages = site.pages;
+      if (restoredPages.length === 0 && record?.repo?.url) {
+        const provider = providerFromRepoUrl(record.repo.url);
+        const repoRef = provider === "hanzo" ? slug : record.repo.url;
+        try {
+          const { commits } = await fetchGitCommits(provider, repoRef, record.repo.branch || "main");
+          if (commits.length) {
+            const gitPages = await fetchCommitPages(provider, repoRef, commits[0].sha);
+            if (gitPages?.length) restoredPages = gitPages;
+          }
+        } catch {
+          /* forge unreachable — fall through to whatever the site returned */
+        }
+        if (!alive) return;
+      }
+      if (restoredPages.length > 0) setPages(restoredPages);
       // Give the editor the project's real IDENTITY (name, slug, repo). This is
       // what stops an open from reading as "new" — it fixes the status bar
       // ("Not saved · 1 file"), the Save-vs-Deploy button, per-turn commits
