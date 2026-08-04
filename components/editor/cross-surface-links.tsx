@@ -1,6 +1,6 @@
 "use client";
 
-import { YStack, Anchor, SizableText } from '@hanzo/gui';
+import { XStack, YStack, Anchor, SizableText } from '@hanzo/gui';
 import { useEffect, useState } from "react";
 import { MessageSquare, LayoutGrid } from "lucide-react";
 

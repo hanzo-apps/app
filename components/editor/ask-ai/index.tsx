@@ -1261,7 +1261,7 @@ export function AskAI({
                             : "More composer modes"
                         }
                         borderRadius="$10"
-                        color={modes.length > 0 ? "var(--brand-accent)" : "$color11"}
+                        {...{ color: modes.length > 0 ? "var(--brand-accent)" : "$color11" }}
                       >
                         <MoreHorizontal size={16} />
                       </Button>

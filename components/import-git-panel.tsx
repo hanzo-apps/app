@@ -408,7 +408,7 @@ export function ImportGitPanel() {
                   key={r.fullName}
                   group alignItems="center" gap="$3" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" paddingHorizontal="$3.5" paddingVertical="$2.5" hoverStyle={{ borderColor: "$color", backgroundColor: "$color3" }}
                 >
-                  <XStack height="$6" width="$6" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" color="$color11">
+                  <XStack height="$6" width="$6" flexShrink={0} alignItems="center" justifyContent="center" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" {...{ color: "$color11" }}>
                     {(() => {
                       const Icon = PROVIDER_META[r.provider]?.Icon ?? Github;
                       return <Icon size={16} />;
