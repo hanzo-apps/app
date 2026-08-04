@@ -21,7 +21,7 @@
  */
 
 export type CommitOutcome =
-  | { ok: true; repo: string; commit: string | null }
+  | { ok: true; repo: string; commit: string | null; linked: boolean }
   | { ok: false; reason: string; unconfigured?: boolean };
 
 const inFlight = new Map<string, Promise<CommitOutcome>>();
@@ -50,7 +50,7 @@ export async function commitTurn(
         body: JSON.stringify({ name, pages, message }),
       });
       const body = (await res.json().catch(() => null)) as
-        | { ok?: boolean; repo?: string; commit?: string | null; message?: string }
+        | { ok?: boolean; repo?: string; commit?: string | null; message?: string; linked?: boolean }
         | null;
       if (res.status === 501) {
         // The forge is not wired on this deployment. Not an error the user did.
@@ -59,7 +59,7 @@ export async function commitTurn(
       if (!res.ok || !body?.ok) {
         return { ok: false as const, reason: body?.message || `git returned ${res.status}` };
       }
-      return { ok: true as const, repo: body.repo ?? key, commit: body.commit ?? null };
+      return { ok: true as const, repo: body.repo ?? key, commit: body.commit ?? null, linked: body.linked === true };
     } catch (e) {
       return { ok: false as const, reason: e instanceof Error ? e.message : "git unreachable" };
     }

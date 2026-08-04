@@ -31,6 +31,23 @@ export const runtime = 'nodejs';
 const MAX_PAGES = 50;
 const MAX_BYTES = 12 * 1024 * 1024;
 
+/** The caller's subscription slug, or '' — asked of the same /v1/entitlements the
+ *  paywall reads, so a native commit and the upgrade prompt cannot disagree. Any
+ *  failure answers '' (attribution stays), which is the safe direction. */
+async function resolveTier(token: string): Promise<string> {
+  try {
+    const res = await fetch(`${cloudBase()}/v1/entitlements`, {
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+      cache: 'no-store',
+    });
+    if (!res.ok) return '';
+    const data = (await res.json()) as { tier?: unknown };
+    return typeof data?.tier === 'string' ? data.tier : '';
+  } catch {
+    return '';
+  }
+}
+
 export async function POST(request: NextRequest) {
   const csrf = requireSameOrigin(request);
   if (csrf) return csrf;
@@ -82,7 +99,10 @@ export async function POST(request: NextRequest) {
       repo,
       branch,
       pages.map((p) => ({ path: p.path, content: p.html ?? '' })),
-      commitMessage((body?.message || 'Update from hanzo.app').slice(0, 500), {}),
+      commitMessage((body?.message || 'Update from hanzo.app').slice(0, 500), {
+        omitAttribution: (body as { omitAttribution?: boolean } | null)?.omitAttribution === true,
+        tier: await resolveTier(id.token),
+      }),
     );
     // LINK IT. The history panel finds commits through `project.repo` — without
     // this, repos are created and committed to and the UI can see none of it, so
@@ -92,8 +112,9 @@ export async function POST(request: NextRequest) {
     // Best-effort: the commit is already durable, and a project with no record
     // yet (a brand-new build) has nothing to patch. Failing the request here
     // would discard a successful commit over a bookkeeping step.
+    let linked = false;
     try {
-      await fetch(`${cloudBase()}/v1/projects/${encodeURIComponent(repo)}`, {
+      const patch = await fetch(`${cloudBase()}/v1/projects/${encodeURIComponent(repo)}`, {
         method: 'PATCH',
         headers: {
           Authorization: `Bearer ${id.token}`,
@@ -102,8 +123,9 @@ export async function POST(request: NextRequest) {
         body: JSON.stringify({ repo: { url: created.html_url, branch } }),
         cache: 'no-store',
       });
+      linked = patch.ok;
     } catch {
-      /* the repo is committed; the link is a convenience the UI re-reads later */
+      /* the repo is committed; the link is retriable next turn */
     }
 
     return NextResponse.json({
@@ -112,6 +134,11 @@ export async function POST(request: NextRequest) {
       url: created.html_url,
       branch,
       commit,
+      // The history panel reads commits through `project.repo`. When the link did
+      // not land — no project record yet, or cloud refused — say so, so the client
+      // can retry the PATCH on the next turn instead of showing an empty history
+      // it has no reason to distrust.
+      linked,
     });
   } catch (e) {
     const status = e instanceof ForgeError ? e.status : 502;

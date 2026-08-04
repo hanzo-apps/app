@@ -348,6 +348,19 @@ function Dev() {
     } catch {
       // localStorage may be unavailable; window.__initialPrompt is sufficient.
     }
+    // Strip ?prompt= from the URL once consumed. Left in place, every RELOAD of a
+    // seeded link re-stages the prompt and burns an AI turn re-applying it as an
+    // edit — the query is a one-shot handoff exactly like the localStorage seed,
+    // and the localStorage one is already removed on read (app/dev/page.tsx).
+    try {
+      if (typeof window !== "undefined" && new URL(window.location.href).searchParams.has("prompt")) {
+        const u = new URL(window.location.href);
+        u.searchParams.delete("prompt");
+        window.history.replaceState(null, "", u.pathname + u.search + u.hash);
+      }
+    } catch {
+      /* URL API unavailable — the localStorage seed is still one-shot */
+    }
     setSeedReady(true);
   }, [repoUrl, seedPrompt, seedReady]);
 
