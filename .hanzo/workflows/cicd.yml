@@ -1,0 +1,44 @@
+name: CI/CD
+
+# The canonical caller. All real config is the repo-root hanzo.yml; this file is
+# the ~7-line import, same shape as hanzoai/hanzo.ai, cloud, commerce, console.
+#
+# WHY .hanzo AND NOT .github. github.com/hanzoai has ZERO self-hosted runners
+# (`gh api /orgs/hanzoai/actions/runners` → total_count 0). hanzoai/ci's jobs
+# run on `hanzo-build-linux-amd64`, a label only the git.hanzo.ai `git-runner`
+# StatefulSet advertises — it registers against GIT_INSTANCE_URL, the forge and
+# nothing else. A .github copy of this file would not fail; it would QUEUE until
+# the 24h timeout, which is the failure that looks like nothing at all. Gitea
+# also reads workflows from the FIRST of WORKFLOW_DIRS present in the commit
+# (listWorkflowsInDirs breaks on the first hit), and .hanzo/workflows exists
+# here — so .github is already dark on this forge either way.
+#
+# The `uses:` names the .hanzo path because ResolveUses enforces that same
+# allowlist on the REFERENCED path. hanzoai/ci publishes build.yml at both paths
+# from one tag; this is the same pipeline at the same @v1.
+#
+# WHAT THIS CLOSES, given release.yml already runs the same suites. release.yml
+# gates the IMAGE (`needs: test`) and nothing else:
+#   * it carries `paths-ignore: .github/**, .hanzo/workflows/**, **.md`, so a
+#     push touching only those runs no suite at all today;
+#   * it has no `pull_request:` trigger, so a PR is ungated until it merges.
+# This runs hanzo.yml's `test:` on every push and every PR. It builds nothing:
+# hanzo.yml declares no `images:` (deliberately — read its header), so the
+# reusable logs "test-only caller, skipping build" and there is still exactly
+# one builder of ghcr.io/hanzoai/app.
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: cicd-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cicd:
+    uses: hanzoai/ci/.hanzo/workflows/build.yml@v1
+    secrets: inherit
