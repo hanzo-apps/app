@@ -33,6 +33,7 @@ import {
 } from '@/components/overlay';
 import { AppShell } from '@/components/app-shell';
 import { MarkdownRenderer } from '@/components/markdown-renderer';
+import { DEFAULT_MODEL } from '@/lib/providers';
 import { useModels } from '@/lib/hooks/use-models';
 import { readSseDeltas } from '@/lib/chat/sse';
 import { cn } from '@/lib/utils';
@@ -52,11 +53,22 @@ interface Message {
   error?: boolean;
 }
 
-/** Chat is zen-only by direction; the picker never offers third-party ids. */
-const zenOnly = (models: { value: string; label: string }[]) =>
-  models.filter((m) => /^zen/i.test(m.value));
+/**
+ * Chat offers the HOUSE families only, by direction — the picker never shows a
+ * third-party id (claude-*, gpt-*), whatever the gateway resells.
+ *
+ * Both house families count. This read `^zen` alone, and the gateway carries no
+ * zen id at all, so the filter emptied the picker and the hardcoded `zen5`
+ * default answered 403 — the chat page could not send a message. Enso is the
+ * house frontier family and is what the gateway actually serves; zen stays in
+ * the pattern so the ladder reappears here the moment it is served again.
+ */
+const houseOnly = (models: { value: string; label: string }[]) =>
+  models.filter((m) => /^(zen|enso)/i.test(m.value));
 
-const CHAT_DEFAULT = 'zen5';
+// The default is DEFAULT_MODEL — stated ONCE, in lib/providers.ts. A second
+// literal here is how this page came to name a model nothing serves.
+const CHAT_DEFAULT = DEFAULT_MODEL;
 
 async function api<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, {
@@ -70,7 +82,7 @@ async function api<T>(url: string, init?: RequestInit): Promise<T> {
 
 export default function ChatPage() {
   const { models: allModels } = useModels();
-  const models = zenOnly(allModels);
+  const models = houseOnly(allModels);
   const [model, setModel] = useState(CHAT_DEFAULT);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);

@@ -48,11 +48,10 @@ const HANZO_AI_BASE_URL =
 const MAX_TOKENS = 128_000;
 
 // Builder model resolution: kill retired/dead ids (resolveModelId), then honor
-// what remains. Both zen5-coder (the code-specialized default, glm-5.2) and the
-// Enso family (claude-opus-4-8) now STREAM reliably — the Enso streaming seam was
-// fixed at the source (deploy/enso rebuilt on zen v1.4.3), verified live — so an
-// explicit or persisted Enso pick is served as Enso. `auto` still routes via the
-// gateway. (DEFAULT_MODEL stays zen5-coder for a fresh builder session.)
+// what remains. `auto` routes via the gateway; everything else is sent verbatim.
+// The default is DEFAULT_MODEL (lib/providers.ts) and is stated ONLY there — this
+// comment used to name zen5-coder, a model the gateway carries no id of, which is
+// exactly the drift that makes a stale default look like a misbehaving model.
 const builderModel = (model: string | undefined | null): string =>
   resolveModelId(model);
 

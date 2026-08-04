@@ -34,6 +34,7 @@ import { Badge } from "@hanzo/ui";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@hanzo/ui";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import { AppShell } from "@/components/app-shell";
+import { DEFAULT_MODEL } from "@/lib/providers";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
@@ -259,7 +260,7 @@ export default function AgentsPage() {
                   onClick={() => {
                     setForm({
                       name: "",
-                      model: agents[0]?.model || "zen5",
+                      model: agents[0]?.model || DEFAULT_MODEL,
                       instructions: "",
                     });
                     setCreating(true);
@@ -367,7 +368,7 @@ export default function AgentsPage() {
                     }
                   />
                   <Input
-                    placeholder="Model (e.g. zen5)"
+                    placeholder={`Model (e.g. ${DEFAULT_MODEL})`}
                     className="bg-card border-border"
                     value={form.model}
                     disabled={submitting}

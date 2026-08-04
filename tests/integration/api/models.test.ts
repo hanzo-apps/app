@@ -22,6 +22,7 @@ import { server } from "../../../jest.setup";
 import { IAM, CLIENT_ID, iamHandlers, mint } from "../../iam-fixture";
 
 import { GET as listModels } from "@/app/v1/models/route";
+import { DEFAULT_MODEL, FALLBACK_MODELS } from "@/lib/providers";
 
 const GATEWAY = "https://api.hanzo.ai/v1";
 
@@ -50,19 +51,25 @@ describe("BFF: GET /v1/models", () => {
     expect(res.status).toBe(200);
     expect(body.ok).toBe(true);
     expect(body.fallback).toBe(true);
-    // Offline default is DEFAULT_MODEL verbatim — bare `enso`, the rung that
-    // picks best — and it IS a FALLBACK_MODELS entry, so the offline default is
-    // selectable in the picker.
-    expect(body.defaultModel).toBe("enso");
-    expect(body.models).toHaveLength(11);
+    expect(body.models).toHaveLength(FALLBACK_MODELS.length);
     const offlineIds = body.models.map((m: { value: string }) => m.value);
+    // Offline default is DEFAULT_MODEL verbatim, and it MUST be a
+    // FALLBACK_MODELS entry — otherwise the offline default names a model the
+    // picker cannot show. Asserted against the constants, not a copy of their
+    // current values, so changing the default cannot leave this test agreeing
+    // with itself while the product disagrees.
+    expect(body.defaultModel).toBe(DEFAULT_MODEL);
+    expect(offlineIds).toContain(DEFAULT_MODEL);
     // The three enso rungs the family actually serves. `enso-pro` is listed by
     // ai from a pin but the family has no such SKU, so it must NOT appear.
     expect(offlineIds).toContain("enso");
     expect(offlineIds).toContain("enso-flash");
     expect(offlineIds).toContain("enso-ultra");
     expect(offlineIds).not.toContain("enso-pro");
-    expect(offlineIds).toContain("zen5-coder");
+    // The zen5 ladder is NOT served by the gateway (GET /v1/models carries no
+    // zen id at all), so it must not be offered: picking one sent a dead id and
+    // the empty result read as the model misbehaving.
+    expect(offlineIds.some((id: string) => id.startsWith("zen5"))).toBe(false);
     expect(res.headers.get("cache-control")).toBe("no-store");
   });
 
@@ -126,7 +133,7 @@ describe("BFF: GET /v1/models", () => {
     const body = await res.json();
     expect(res.status).toBe(200);
     expect(body.fallback).toBe(true);
-    expect(body.models).toHaveLength(11);
+    expect(body.models).toHaveLength(FALLBACK_MODELS.length);
   });
 
   it("falls back (200) when the gateway serves no build models", async () => {
