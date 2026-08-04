@@ -25,7 +25,6 @@ const PROTECTED_PREFIXES = [
   "/dev",
   "/profile",
   "/projects",
-  "/sessions",
   "/settings",
   "/skills",
   "/usage",

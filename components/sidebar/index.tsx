@@ -76,7 +76,7 @@ const PRIMARY_ITEMS: SidebarItem[] = [
   { id: 'resources', label: 'Resources', icon: Sparkles, route: '/resources' },
   { id: 'connectors', label: 'Connectors', icon: Plug, route: '/connectors' },
   { id: 'agents', label: 'Agents', icon: Bot, route: '/agents' },
-  { id: 'sessions', label: 'Sessions', icon: TerminalSquare, route: '/sessions' },
+  { id: 'sessions', label: 'Terminals', icon: TerminalSquare, route: 'https://tabs.hanzo.ai/app' },
 ];
 
 // ── Projects group ──────────────────────────────────────────────────────────
