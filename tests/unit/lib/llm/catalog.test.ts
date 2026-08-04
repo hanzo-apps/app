@@ -178,7 +178,7 @@ describe('the catalogue follows the selected provider', () => {
       expect(model.id).not.toContain('/');
     }
     expect(models.map((m) => m.id).sort()).toEqual(
-      ['claude-4.5-sonnet', 'claude-haiku-4-5', 'claude-opus-4.8', 'enso', 'wan2-2-t2v-a14b'],
+      ['anthropic-claude-opus-5', 'claude-4.5-sonnet', 'claude-haiku-4-5', 'enso', 'wan2-2-t2v-a14b'],
     );
   });
 

@@ -241,7 +241,12 @@ export const FALLBACK_MODELS: ModelOption[] = [
   { value: "enso", label: "Enso" },
   { value: "enso-flash", label: "Enso Flash" },
   { value: "enso-ultra", label: "Enso Ultra" },
-  // Frontier third-party tiers resold through the gateway (DO GenAI funded).
+  // Frontier tiers resold through the gateway. Opus 5 is the default the builder
+  // opens on; the rest are the ladder the offline fallback still names when the
+  // live /v1/models list cannot be reached.
+  { value: "anthropic-claude-opus-5", label: "Claude Opus 5" },
   { value: "claude-opus-4.8", label: "Claude Opus 4.8" },
   { value: "gpt-5.2", label: "GPT 5.2" },
+  { value: "kimi-k3", label: "Kimi K3" },
+  { value: "glm-5.2", label: "GLM 5.2" },
 ];
