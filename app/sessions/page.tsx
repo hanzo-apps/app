@@ -50,8 +50,12 @@ export default async function SessionsPage() {
 
   return (
     <AppShell currentView="sessions">
-    <main className="mx-auto max-w-6xl px-6 py-10">
-      <header className="mb-8">
+    {/* The workspace is the page. A terminal measured 74px tall in landscape under
+        279px of chrome — a title, a subtitle, and margins sized for a document.
+        The heading is worth its height on a wide screen and nowhere else, and the
+        width cap that suits prose wastes 480px of a 1920 display on a terminal.  */}
+    <main className="flex h-[calc(100dvh-3rem)] w-full flex-col px-2 py-2 md:h-[calc(100dvh-0rem)] md:px-6 md:py-6 xl:mx-auto xl:max-w-[1800px]">
+      <header className="mb-4 hidden lg:block">
         <h1 className="text-2xl font-semibold tracking-tight">Sessions</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Everything running on {me.orgDisplay || me.org}&rsquo;s machines, by machine.

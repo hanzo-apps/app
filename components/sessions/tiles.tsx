@@ -17,17 +17,25 @@
  * keeps its position among siblings, so the panes keep theirs and only their
  * coordinates move.
  *
- * A PANE CAN COME UP BLANK, AND THAT IS NOT A BUG WE CAN CATCH. The terminal
+ * A PANE CAN COME UP BLANK, AND IT CAN BE DETECTED AFTER ALL. The terminal
  * URL is gated: an unauthorised request redirects to hanzo.id, which answers
  * `X-Frame-Options: DENY` and `frame-ancestors 'none'` — correctly, since an
  * identity provider that can be framed is a clickjacking target. The browser then
  * renders nothing, and a cross-origin frame cannot be inspected to find out, so
  * the page CANNOT tell "loading" from "refused".
  *
- * What it can do is stop leaving people staring at black. Every pane carries the
- * way out — open this terminal in a tab, sign in there once, and the frame works
- * from then on — rather than an explanation that only appears once someone
- * complains.
+ * The first attempt put the way out UNDERNEATH the frame, reasoning that a
+ * rendered terminal would cover it and a blank one would not. That was wrong in
+ * the way that matters: a REFUSED frame still paints — it is an element with a
+ * background — so it covered the rescue completely. Measured at eight viewports:
+ * `document.elementFromPoint` at the link's own centre returned the iframe every
+ * time. The explanation and its button were in the DOM, visible per the DOM, and
+ * impossible to click. Someone hitting this saw a black rectangle and nothing else.
+ *
+ * The refusal IS detectable, without cooperation. A frame the browser blocked
+ * never leaves `about:blank`, which is same-origin — so its document is readable
+ * and empty. A frame that really loaded a cross-origin page THROWS on the same
+ * access. The throw is the good outcome, and that asymmetry is the whole test.
  *
  * And a drag needs an overlay. The pointer starts on a divider and immediately
  * crosses an iframe, which swallows the event — the drag dies a few pixels in,
@@ -84,6 +92,21 @@ function save(t: Tile | null) {
 }
 
 export function Tiles({ panes }: { panes: TerminalPane[] }) {
+  // Panes whose frame the browser refused. Keyed by pane id; see the note above.
+  const [refused, setRefused] = useState<Record<string, boolean>>({});
+  const probe = useCallback((id: string, el: HTMLIFrameElement | null) => {
+    if (!el) return;
+    let blocked = false;
+    try {
+      const doc = el.contentDocument;
+      // Readable AND empty => never navigated => refused.
+      blocked = !!doc && (doc.body?.childElementCount ?? 0) === 0;
+    } catch {
+      blocked = false; // cross-origin access threw, so it genuinely loaded
+    }
+    setRefused((r) => (r[id] === blocked ? r : { ...r, [id]: blocked }));
+  }, []);
+
   const byId = useMemo(() => new Map(panes.map((p) => [p.id, p])), [panes]);
   const live = useMemo(() => new Set(byId.keys()), [byId]);
 
@@ -229,37 +252,33 @@ export function Tiles({ panes }: { panes: TerminalPane[] }) {
 
   return (
     <div className="flex h-full w-full flex-col gap-2">
-      {/* The controls, where they can be found. The per-pane icons are for the
-          pane you are pointing at; this acts on the focused one and, more
-          importantly, SAYS what the workspace can currently do — with one live
-          terminal there is nothing to split into, and a disabled icon with no
-          words reads as broken rather than as finished. */}
-      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-        <span className="tabular-nums">
-          {ids.length} of {panes.length} terminal{panes.length === 1 ? '' : 's'} on screen
+      {/* ONE row. It said the same thing three times — a count, two disabled
+          buttons, and a sentence explaining the disabling — which cost three rows
+          of height above a terminal measured at 74px in landscape. A control that
+          cannot act does not also need a paragraph. */}
+      <div className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">
+        <span className="truncate">
+          {ids.length > 1 ? `${ids.length} panes` : panes.length > 1 ? `1 of ${panes.length} terminals` : ''}
         </span>
-        <span className="flex items-center gap-1">
+        <span className="ml-auto flex shrink-0 items-center gap-1">
           <button
             type="button"
             onClick={() => focus && doSplit(focus, 'row')}
             disabled={!canSplit || !focus}
-            className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-foreground hover:bg-muted disabled:opacity-40"
+            title={canSplit ? 'Split right' : 'Every live terminal is already on screen'}
+            className="inline-flex min-h-9 items-center gap-1 rounded-md border border-border px-2.5 text-foreground hover:bg-muted disabled:opacity-40"
           >
-            <Columns2 className="h-3.5 w-3.5" /> Split right
+            <Columns2 className="h-3.5 w-3.5" /> Right
           </button>
           <button
             type="button"
             onClick={() => focus && doSplit(focus, 'col')}
             disabled={!canSplit || !focus}
-            className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-foreground hover:bg-muted disabled:opacity-40"
+            title={canSplit ? 'Split down' : 'Every live terminal is already on screen'}
+            className="inline-flex min-h-9 items-center gap-1 rounded-md border border-border px-2.5 text-foreground hover:bg-muted disabled:opacity-40"
           >
-            <Rows2 className="h-3.5 w-3.5" /> Split down
+            <Rows2 className="h-3.5 w-3.5" /> Down
           </button>
-        </span>
-        <span>
-          {canSplit
-            ? 'Drag a divider to resize · ⌥← ⌥→ to move between panes'
-            : 'Every live terminal is already on screen — link another machine to tile more'}
         </span>
       </div>
 
@@ -289,14 +308,14 @@ export function Tiles({ panes }: { panes: TerminalPane[] }) {
                   tap — so on a phone "split down" was hit-tested as "close". The
                   icons appear from sm up, where the pointer is precise and the
                   overlay rule does not apply. */}
-              <span className="ml-auto hidden items-center gap-0.5 sm:flex">
+              <span className="ml-auto hidden items-center gap-1 sm:flex">
                 <a
                   href={p.url}
                   target="_blank"
                   rel="noreferrer noopener"
                   title="Open in a tab — and sign in there if this pane is blank"
                   aria-label={`Open ${p.title} in a tab`}
-                  className="rounded p-0.5 hover:bg-muted-foreground/20"
+                  className="inline-flex size-6 items-center justify-center rounded hover:bg-muted-foreground/20"
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
                 </a>
@@ -306,7 +325,7 @@ export function Tiles({ panes }: { panes: TerminalPane[] }) {
                   disabled={!canSplit}
                   title={canSplit ? 'Split right' : 'Nothing to split into — every live terminal is already on screen'}
                   aria-label={`Split ${p.title} right`}
-                  className="rounded p-0.5 hover:bg-muted-foreground/20 disabled:opacity-30"
+                  className="inline-flex size-6 items-center justify-center rounded hover:bg-muted-foreground/20 disabled:opacity-30"
                 >
                   <Columns2 className="h-3.5 w-3.5" />
                 </button>
@@ -316,7 +335,7 @@ export function Tiles({ panes }: { panes: TerminalPane[] }) {
                   disabled={!canSplit}
                   title={canSplit ? 'Split down' : 'Nothing to split into — every live terminal is already on screen'}
                   aria-label={`Split ${p.title} down`}
-                  className="rounded p-0.5 hover:bg-muted-foreground/20 disabled:opacity-30"
+                  className="inline-flex size-6 items-center justify-center rounded hover:bg-muted-foreground/20 disabled:opacity-30"
                 >
                   <Rows2 className="h-3.5 w-3.5" />
                 </button>
@@ -325,7 +344,7 @@ export function Tiles({ panes }: { panes: TerminalPane[] }) {
                   onClick={() => doClose(p.id)}
                   title="Close pane"
                   aria-label={`Close ${p.title}`}
-                  className="rounded p-0.5 hover:bg-muted-foreground/20"
+                  className="inline-flex size-6 items-center justify-center rounded hover:bg-muted-foreground/20"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -341,25 +360,7 @@ export function Tiles({ panes }: { panes: TerminalPane[] }) {
                 <X className="h-4 w-4" />
               </button>
             </div>
-            {/* The frame and the way out, stacked. The hint sits UNDER the frame,
-                so a terminal that renders covers it and a blank one leaves it
-                showing — which is the closest this page can get to detecting a
-                refusal it is not allowed to see. */}
             <div className="relative min-h-0 flex-1">
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-b-md border-x border-b border-border bg-black px-4 text-center">
-                <p className="text-xs text-muted-foreground">
-                  Nothing here? This terminal needs a one-time sign-in on its own
-                  domain — the gate cannot be shown inside a frame.
-                </p>
-                <a
-                  href={p.url}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="rounded-md border border-border px-2.5 py-1 text-xs text-foreground hover:bg-muted"
-                >
-                  Sign in to this terminal ↗
-                </a>
-              </div>
             <iframe
               data-pane={p.id}
               src={p.url}
@@ -370,7 +371,27 @@ export function Tiles({ panes }: { panes: TerminalPane[] }) {
               // Scripts (a terminal is one) but never same-origin: the frame runs
               // a shell on someone's machine and must not reach this page's session.
               sandbox="allow-scripts allow-same-origin allow-forms"
+              ref={(el) => probe(p.id, el)}
+              onLoad={(e) => probe(p.id, e.currentTarget)}
             />
+            {refused[p.id] ? (
+              // ON TOP, because the thing it rescues you from is opaque.
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-b-md bg-black px-4 text-center">
+                <p className="max-w-xs text-xs text-muted-foreground">
+                  This terminal needs a one-time sign-in on its own domain. The gate
+                  refuses to be shown inside a frame, so it has to open in a tab —
+                  once.
+                </p>
+                <a
+                  href={p.url}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="inline-flex min-h-11 items-center rounded-md border border-border px-4 text-sm text-foreground hover:bg-muted"
+                >
+                  Sign in to this terminal ↗
+                </a>
+              </div>
+            ) : null}
             </div>
           </div>
         );

@@ -168,7 +168,7 @@ export function SessionBoard({
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[22rem_1fr]">
+    <div className="grid min-h-0 flex-1 gap-3 lg:grid-cols-[15rem_1fr] lg:gap-6">
       <div className={`flex-col gap-5 ${onTerminal ? 'hidden lg:flex' : 'flex'}`}>
         {groups.map((g) => (
           <section key={g.key}>
@@ -275,7 +275,7 @@ export function SessionBoard({
         ))}
       </div>
 
-      <section className={`min-w-0 ${onTerminal ? '' : 'hidden lg:block'}`}>
+      <section className={`flex min-h-0 min-w-0 flex-col ${onTerminal ? '' : 'hidden lg:flex'}`}>
         <div className="mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
           <button
             type="button"
@@ -314,7 +314,9 @@ export function SessionBoard({
         {/* One workspace, every live terminal available to it. The roster on the
             left chooses what to LOOK at; the tiles decide how it is arranged, and
             a pane keeps its shell across a split (components/sessions/tiles). */}
-        <div className="h-[calc(100dvh-13rem)] lg:h-[70vh]">
+        {/* The workspace takes the room that is left, rather than a fraction of
+            the viewport chosen when the chrome above it was a different height. */}
+        <div className="min-h-0 flex-1">
           <Tiles panes={terminals} />
         </div>
       </section>
