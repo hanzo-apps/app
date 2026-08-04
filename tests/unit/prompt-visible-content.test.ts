@@ -58,3 +58,33 @@ describe('the builder prompt never ships hide-until-JS content', () => {
     expect(examples.toLowerCase()).not.toContain('aos');
   });
 });
+
+describe('the builder prompt loads each library once', () => {
+  for (const [name, prompt] of Object.entries({
+    INITIAL_SYSTEM_PROMPT,
+    FOLLOW_UP_SYSTEM_PROMPT,
+  })) {
+    it(`${name} does not load feather-icons twice`, () => {
+      // It used to pull the SAME library from unpkg AND jsdelivr, in the prose
+      // and in every example. Two copies cannot make the icons more likely to
+      // appear; they only add a second origin that can fail or hang.
+      const loads = (prompt.match(/<script src="[^"]*feather[^"]*"><\/script>/g) ?? []).length;
+      const origins = new Set(
+        (prompt.match(/https?:\/\/[^/"]+\/[^"]*feather[^"]*/g) ?? []).map(
+          (u) => new URL(u).host,
+        ),
+      );
+      // Asserted as "no origins beyond the first" so a failure PRINTS the extra
+      // hosts rather than just a count.
+      expect([...origins].slice(1)).toEqual([]);
+      expect(loads).toBeLessThanOrEqual(2); // one per example template, at most
+    });
+
+    it(`${name} has no top-level destructure that throws when a CDN is slow`, () => {
+      // `const { animate } = anime;` in its own <script> is block-scoped, so no
+      // later script could use it — and it throws ReferenceError outright if the
+      // CDN has not landed. It could only ever do harm.
+      expect(prompt).not.toMatch(/const\s*\{[^}]*\}\s*=\s*anime\s*;/);
+    });
+  }
+});
