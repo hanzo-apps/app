@@ -4,6 +4,7 @@ import { YStack, XStack, H3, Paragraph, H4 } from '@hanzo/gui';
 import { PublishSettings, ComplianceConfig } from '@/lib/vfs/types';
 import { Label, Input, Textarea, Switch, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import { Shield, Info, Cookie } from 'lucide-react';
+import { panel, row } from "@/lib/chrome";
 
 interface ComplianceTabProps {
   settings: PublishSettings;
@@ -36,12 +37,12 @@ export function ComplianceTab({ settings, onChange }: ComplianceTabProps) {
       </XStack>
 
       {/* Enable Compliance Banner */}
-      <XStack alignItems="center" justifyContent="space-between" padding="$4" borderWidth={1} borderRadius="$5">
+      <XStack {...panel} {...row}>
         <YStack rowGap="$1">
-          <Label htmlFor="compliance-enabled" fontSize="$4">
+          <Label htmlFor="compliance-enabled" fontSize="$3" fontWeight="500">
             Enable Consent Banner
           </Label>
-          <Paragraph fontSize="$3" color="$color11">
+          <Paragraph fontSize="$1" color="$color11">
             Show a cookie consent banner to visitors
           </Paragraph>
         </YStack>
@@ -215,15 +216,15 @@ export function ComplianceTab({ settings, onChange }: ComplianceTabProps) {
             </YStack>
 
             {/* Block Analytics Toggle */}
-            <XStack alignItems="center" justifyContent="space-between" padding="$4" borderWidth={1} borderRadius="$5">
+            <XStack {...panel} {...row}>
               <YStack rowGap="$1" flex={1}>
                 <XStack alignItems="center" gap="$2">
-                  <Label htmlFor="block-analytics" fontSize="$4">
+                  <Label htmlFor="block-analytics" fontSize="$3" fontWeight="500">
                     Block Analytics Until Consent
                   </Label>
                   <Cookie size={16} />
                 </XStack>
-                <Paragraph fontSize="$3" color="$color11">
+                <Paragraph fontSize="$1" color="$color11">
                   Prevent analytics tracking until user accepts
                 </Paragraph>
               </YStack>
