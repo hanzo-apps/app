@@ -64,7 +64,11 @@ RUN CI=false pnpm run build && \
       echo "ERROR: clientReferenceManifest not generated (CI env leak?)" && exit 1; \
     fi && \
     if [ -z "${NEXT_PUBLIC_EVENT_INGEST_KEY}" ]; then \
-      echo "WARNING: NEXT_PUBLIC_EVENT_INGEST_KEY empty — bundle ships unkeyed; logged-out beacons are refused"; \
+      echo "ERROR: NEXT_PUBLIC_EVENT_INGEST_KEY is empty after a successful build."; \
+      echo "       This was a WARNING, and a warning is how an unkeyed bundle ships"; \
+      echo "       from a green run. The ARG gate above should have caught it, so"; \
+      echo "       reaching here means the ENV was cleared between the two."; \
+      exit 1; \
     elif grep -rqF "${NEXT_PUBLIC_EVENT_INGEST_KEY}" .next/static; then \
       echo "Build OK — ingest key inlined into .next/static, verified"; \
     else \
