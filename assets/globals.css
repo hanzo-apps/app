@@ -752,6 +752,23 @@ kbd {
 .hiw-grid { display: grid; gap: 1px; overflow: hidden; border-radius: 16px; border: 1px solid var(--border); background: var(--muted); }
 @media (min-width: 768px) { .hiw-grid { grid-template-columns: repeat(3, 1fr); } }
 
+/* A card grid. `{/* Grid *\/}` on /templates sat above a plain YStack — the
+   conversion dropped `grid-cols-1 md:grid-cols-2 lg:grid-cols-3` and left one
+   card per row. Nobody noticed because the cards were also being cropped to a
+   30px bar, so a single column looked like a list on purpose.
+
+   auto-fill + minmax means NO breakpoints: the column count follows the space
+   available, so it is correct at 390 and at 1920 and at every width between,
+   including ones no breakpoint names. @hanzo/ui is shipping a Grid primitive
+   with exactly this behaviour — when it lands, this class is deleted and the
+   markup takes the component. */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+  gap: 18px;
+  align-items: start;
+}
+
 /* Mobile-only chrome — hidden from md up. !important so the gate beats
    runtime-injected atomic display classes regardless of sheet order. */
 @media (min-width: 768px) { .md-hidden { display: none !important; } }
