@@ -249,7 +249,7 @@ export default function KanbanBoard() {
                         <CardTitle fontSize="$3" fontWeight="500">
                           {task.title}
                         </CardTitle>
-                        <Button variant="ghost" size="icon" height="$5" width="$5" marginRight="-2" marginTop="-1">
+                        <Button variant="ghost" size="icon" height="$5" width="$5" marginRight="$-2" marginTop="$-1">
                           <MoreHorizontal size={12} />
                         </Button>
                       </XStack>

@@ -79,7 +79,7 @@ function Card({
 }) {
   const href = e.url || e.repo;
   return (
-    <YStack group position="relative" gap="$2" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$4" hoverStyle={{ y: "-1", borderColor: "$color" }} $sm={{ padding: "$4.5" }}>
+    <YStack group position="relative" gap="$2" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color3" padding="$4" hoverStyle={{ y: "$-1", borderColor: "$color" }} $sm={{ padding: "$4.5" }}>
       <XStack alignItems="center" gap="$2">
         <SizableText borderRadius="$10" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$2" paddingVertical="$0.5" fontFamily="$mono" fontSize={10} color="$color11">
           {e.org}

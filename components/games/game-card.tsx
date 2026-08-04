@@ -30,7 +30,7 @@ export function GameCard({ game }: { game: GameEntry }) {
       href={`/games/${game.id}`}
       data-testid="game-card"
       aria-label={`${game.name} — ${game.genre}`}
-    ><YStack group height="100%" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "-1", borderColor: "$color" }}>
+    ><YStack group height="100%" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "$-1", borderColor: "$color" }}>
       {/* Header band — engine + play status */}
       <XStack alignItems="center" justifyContent="space-between" borderBottomWidth={1} borderColor="$borderColor" backgroundColor="$background" paddingHorizontal="$4" paddingVertical="$3">
         <SizableText display="inline-flex" alignItems="center" gap="$2" fontSize="$3" fontWeight="500" color="$color">

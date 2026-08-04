@@ -272,7 +272,7 @@ export function TemplateDetail({
                   <Link
                     key={r.slug}
                     href={`/templates/${r.slug}`}
-                  ><YStack group className="zoom-scope" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" hoverStyle={{ y: "-0.5", borderColor: "$color06", backgroundColor: "$color2" }}>
+                  ><YStack group className="zoom-scope" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$color2" hoverStyle={{ y: "$-0.5", borderColor: "$color06", backgroundColor: "$color2" }}>
                     <YStack position="relative" overflow="hidden" backgroundColor="$color3">
                       <TemplateThumb
                         name={r.name}

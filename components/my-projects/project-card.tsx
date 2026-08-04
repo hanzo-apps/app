@@ -22,7 +22,7 @@ export function ProjectCard({ project }: { project: Project }) {
 
         <Button
           variant="default"
-          width="100%" y="100%" $group-hover={{ y: "-3" }}
+          width="100%" y="100%" $group-hover={{ y: "$-3" }}
         >
           Open project
         </Button>

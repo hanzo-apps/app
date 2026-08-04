@@ -435,7 +435,7 @@ function NewProjectInner() {
               </XStack>
             )}
 
-            <YStack marginRight="-2" maxHeight={420} rowGap="$2" paddingRight="$2" overflow="scroll" className="thin-scrollbar">
+            <YStack marginRight="$-2" maxHeight={420} rowGap="$2" paddingRight="$2" overflow="scroll" className="thin-scrollbar">
               {galleryLoading
                 ? Array.from({ length: 5 }).map((_, i) => (
                     <YStack

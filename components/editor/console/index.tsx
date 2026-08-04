@@ -141,7 +141,7 @@ export function Console({
           {/* The affordance: a hairline that lifts and a grip that fades in on
               hover, focus or drag. Nothing is drawn while the bar is at rest. */}
           <SizableText pointerEvents="none" position="absolute" left="$0" right="$0" top="$0" height={1} backgroundColor="transparent" $group-hover={{ backgroundColor: "$color06" }} $group-focus={{ backgroundColor: "$color06" }} $group-press={{ backgroundColor: "$color" }} />
-          <SizableText pointerEvents="none" position="absolute" left="50%" top={3} height="$1" width="$6" x="50%" borderRadius="$10" backgroundColor="transparent" $group-hover={{ backgroundColor: "$color06" }} $group-focus={{ backgroundColor: "$color06" }} $group-press={{ backgroundColor: "$color" }} />
+          <SizableText pointerEvents="none" position="absolute" left="50%" top={3} height="$1" width="$6" x="-50%" borderRadius="$10" backgroundColor="transparent" $group-hover={{ backgroundColor: "$color06" }} $group-focus={{ backgroundColor: "$color06" }} $group-press={{ backgroundColor: "$color" }} />
         </YStack>
 
         {/* Far LEFT — the chat/AI panel toggle. It shows and hides the LEFT pane,

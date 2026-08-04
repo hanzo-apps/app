@@ -200,7 +200,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
                 <Button
                   key={template.slug}
                   onClick={() => handleTemplateSelect(template)}
-                  flexDirection="column" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" group className="zoom-scope" hoverStyle={{ borderColor: "$color", y: "-0.5" }}
+                  flexDirection="column" overflow="hidden" borderRadius="$5" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" group className="zoom-scope" hoverStyle={{ borderColor: "$color", y: "$-0.5" }}
                 >
                   <YStack position="relative" backgroundColor="$background" overflow="hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}

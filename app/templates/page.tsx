@@ -237,7 +237,7 @@ function ResourceCard({
     <Button
       type="button"
       onClick={() => onOpen(item)}
-      group className="zoom-scope" flexDirection="column" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "-1", borderColor: "$color" }}
+      group className="zoom-scope" flexDirection="column" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "$-1", borderColor: "$color" }}
     >
       <YStack position="relative" overflow="hidden" backgroundColor="$background">
         {item.hasImage ? (

@@ -107,7 +107,7 @@ export default function DashboardPage() {
                 ?.scrollIntoView({ behavior: "smooth", block: "start" })
             }
             variant="ghost"
-            group position="absolute" bottom="$5" left="50%" x="50%" flexDirection="column" alignItems="center" gap="$1"
+            group position="absolute" bottom="$5" left="50%" x="-50%" flexDirection="column" alignItems="center" gap="$1"
           >
             <SizableText fontFamily="$mono" fontSize={10} color="$color11" $group-hover={{ color: "$color" }}>
               Your projects
@@ -188,7 +188,7 @@ export default function DashboardPage() {
                       <Link
                         key={t.slug}
                         href="/templates"
-                      ><XStack group className="zoom-scope" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "-0.5", borderColor: "$color" }}>
+                      ><XStack group className="zoom-scope" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "$-0.5", borderColor: "$color" }}>
                         <YStack position="relative" overflow="hidden" backgroundColor="$background">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <Image
@@ -235,7 +235,7 @@ function ProjectGrid({
           <Button
             key={p.id}
             onClick={() => onOpen(p)}
-            group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "-0.5", borderColor: "$color", backgroundColor: "$color3" }}
+            group overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "$-0.5", borderColor: "$color", backgroundColor: "$color3" }}
           >
             {/* Real thumbnail: the live site itself (inert); monogram otherwise. */}
             <YStack position="relative">

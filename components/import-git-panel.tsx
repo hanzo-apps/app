@@ -386,7 +386,7 @@ export function ImportGitPanel() {
           </YStack>
 
           {/* Repo list */}
-          <YStack marginRight="-2" marginTop="$3" maxHeight={300} rowGap="$2" paddingRight="$2" overflow="scroll" className="thin-scrollbar">
+          <YStack marginRight="$-2" marginTop="$3" maxHeight={300} rowGap="$2" paddingRight="$2" overflow="scroll" className="thin-scrollbar">
             {loadingRepos ? (
               Array.from({ length: 4 }).map((_, i) => (
                 <YStack
