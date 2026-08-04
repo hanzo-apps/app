@@ -644,7 +644,7 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
             href={`https://x.com/intent/post?text=${shareText}&url=${enc}`}
             target="_blank"
             rel="noopener noreferrer"
-            alignItems="center" gap="$1.5" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$color06", color: "$color" }}
+            display="inline-flex" alignItems="center" gap="$1.5" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$color06", color: "$color" }}
           >
             Post on X
           </Anchor>
@@ -652,7 +652,7 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
             href={`https://www.linkedin.com/sharing/share-offsite/?url=${enc}`}
             target="_blank"
             rel="noopener noreferrer"
-            alignItems="center" gap="$1.5" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$color06", color: "$color" }}
+            display="inline-flex" alignItems="center" gap="$1.5" borderRadius="$3" borderWidth={1} borderColor="$borderColor" paddingHorizontal="$3" paddingVertical="$1.5" fontSize="$1" color="$color11" hoverStyle={{ borderColor: "$color06", color: "$color" }}
           >
             Share on LinkedIn
           </Anchor>

@@ -158,7 +158,7 @@ export function BuildTranscript({ build }: { build: Build }) {
                 const isUser = t.actor === "user" || t.kind === "message" && t.actor === "user";
                 return (
                   <SizableText key={t.turn} position="relative" paddingBottom="$7" className="last-flat">
-                    <SizableText position="absolute" left={-31} height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background">
+                    <XStack position="absolute" left={-31} height="$4.5" width="$4.5" alignItems="center" justifyContent="center" borderRadius="$10" borderWidth={1} borderColor="$borderColor" backgroundColor="$background">
                       {isUser ? (
                         <User size={10} />
                       ) : t.kind === "status" ? (
@@ -166,7 +166,7 @@ export function BuildTranscript({ build }: { build: Build }) {
                       ) : (
                         <Bot size={10} />
                       )}
-                    </SizableText>
+                    </XStack>
 
                     <XStack flexWrap="wrap" alignItems="baseline" gap="$2">
                       <SizableText fontFamily="$mono" fontSize={11} color="$color11">

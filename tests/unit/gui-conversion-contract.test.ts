@@ -123,14 +123,25 @@ describe("3. lineHeight is a length, not a ratio", () => {
   });
 });
 
-describe("4. transforms cannot take percentages", () => {
-  it("no percentage in x/y/translate props (gui strips the % and keeps the number)", () => {
-    // `x="-50%"` compiles to translateX(-50px). On a 900px element that is a
-    // 400px error, and nothing warns.
+describe("4. a length needs a unit or a token", () => {
+  // Percentages are NOT the bug here, though they look like one: gui's
+  // normalizeValueWithProperty appends `px` to NUMBERS and returns strings
+  // untouched, so `x="-50%"` really does emit translateX(-50%) on web. Verified
+  // in @hanzogui/web/dist/esm/helpers/normalizeValueWithProperty.mjs.
+  //
+  // That same rule is what makes a bare numeric STRING fatal. `-mr-2` was
+  // rewritten as marginRight="-2", which passes through verbatim to
+  // `margin-right:-2` — no unit, invalid, dropped by the parser. It has to be
+  // `"$-2"` (the space token) or `{-8}` (a number gui can unit).
+  const SPACE = /\b(top|right|bottom|left|start|end|margin[A-Za-z]*|padding[A-Za-z]*|gap|rowGap|columnGap|x|y|translateX|translateY)(=|:\s*)"(-?[0-9]+(?:\.[0-9]+)?)"/;
+
+  it("no bare unitless number in a string on a space prop", () => {
     const bad = allTags
+      // Raw SVG (`<rect x="0" y="10">`) is lowercase and legitimately unitless.
+      .filter((t) => /^[A-Z]/.test(t.name))
       .flatMap((t) => {
-        const m = t.text.match(/\s(x|y|translateX|translateY)="(-?[0-9.]+%)"/);
-        return m ? [`${at(t)} ${m[1]}="${m[2]}"`] : [];
+        const m = t.text.match(SPACE);
+        return m ? [`${at(t)} ${m[1]}${m[2].trim()}"${m[3]}"`] : [];
       });
     expect(bad).toEqual([]);
   });

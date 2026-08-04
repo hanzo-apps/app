@@ -424,6 +424,20 @@ a {
     --control-h: 2.75rem; /* 44px — Apple HIG minimum, WCAG 2.5.8 with room over */
   }
 
+  /* iOS Safari zooms the whole viewport when a field it is focusing renders
+     text under 16px, and then leaves it zoomed — the page is off-centre for
+     every tap after. The type scale cannot supply the floor: it deliberately
+     has NO 16, `$5` was collapsed onto 15 to retire the 16px base. So this is
+     not a type decision at all, it is a platform constraint, and it applies
+     only where a soft keyboard exists. Desktop keeps the designed 14/15.
+
+     Specificity is the whole trick: gui compiles `fontSize` to a single atomic
+     class (0,1,0), which beats a bare `input` (0,0,1). The two :not()s carry
+     this to (0,2,1) so it lands without !important. */
+  :is(input, textarea, select):not([type='checkbox']):not([type='radio']) {
+    font-size: 16px;
+  }
+
   /* A full-width bare button is a ROW in a stack, so it takes case 1: real height,
      which grows the stack's pitch with it. Measured why this is separate — the two
      footer rows sit 6px apart, so as 31px boxes with 44px overlays they clipped each
