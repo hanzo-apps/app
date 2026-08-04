@@ -1205,9 +1205,18 @@ button:not([data-slot="button"]):not([class*="rounded-xl"]):not([class*="rounded
    the call site.
 
    Pair with `overflow: hidden` on the card (the `rows` recipe does) so the
-   separators stop at the radius instead of poking through the rounded corner. */
+   separators stop at the radius instead of poking through the rounded corner.
+
+   `--borderColor`, not `--border`. They are two different greys — rgb(36,36,36)
+   and rgb(38,38,38), measured — and the card's own edge is drawn with the
+   first, because `panel` asks for Tamagui's `$borderColor`. A separator on the
+   second puts two hairlines two units apart inside one card: invisible on its
+   own, and exactly the drift that ends with nobody knowing which grey a
+   hairline is meant to be. It also re-bases with the theme scope the way the
+   card's border does, so the two stay equal inside a nested theme instead of
+   only matching at the root. */
 .hz-rows > * + * {
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--borderColor, var(--border));
 }
 
 /* The scrim under a dialog.
