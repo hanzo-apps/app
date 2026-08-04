@@ -196,7 +196,7 @@ export function OrgSwitcher({ direction = "down" }: { direction?: "up" | "down" 
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Filter organizations…"
-                    flex={1} backgroundColor="transparent" fontSize="$3" outlineWidth={0} placeholderTextColor="$color11"
+                    flex={1} backgroundColor="transparent" fontSize="$3" borderWidth={0} outlineWidth={0} placeholderTextColor="$color11"
   />
                 </XStack>
                 <Paragraph paddingHorizontal="$2" paddingVertical="$1" fontSize={10} fontWeight="500" letterSpacing={0.4} color="$color11">

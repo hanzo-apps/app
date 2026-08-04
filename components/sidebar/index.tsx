@@ -620,7 +620,7 @@ function ReferralDialog({ onClose }: { onClose: () => void }) {
             readOnly
             value={link}
             onFocus={(e) => e.currentTarget.select()}
-            minWidth={0} flex={1} backgroundColor="transparent" paddingHorizontal="$2" fontSize="$3" color="$color" outlineWidth={0}
+            minWidth={0} flex={1} backgroundColor="transparent" paddingHorizontal="$2" fontSize="$3" color="$color" borderWidth={0} outlineWidth={0}
             aria-label="Your referral link"
   />
           <Button

@@ -1192,7 +1192,7 @@ export function AskAI({
             ref={textareaRef}
             disabled={isUploading}
             style={{ height: composerH, maxHeight: "40dvh" }}
-            width="100%" backgroundColor="transparent" fontSize="$3" outlineWidth={0} color="$color" placeholderTextColor="$color11" padding="$4" overflow="scroll" {...{ paddingTop: selectedElement && !isAiWorking ? "$2.5" : undefined, opacity: isAiWorking && !isUploading ? 1 : undefined }}
+            width="100%" backgroundColor="transparent" fontSize="$3" borderWidth={0} outlineWidth={0} color="$color" placeholderTextColor="$color11" padding="$4" overflow="scroll" {...{ paddingTop: selectedElement && !isAiWorking ? "$2.5" : undefined, opacity: isAiWorking && !isUploading ? 1 : undefined }}
             placeholder={
               isAiWorking
                 ? // Empty while working (unless queueing) so no text sits UNDER
