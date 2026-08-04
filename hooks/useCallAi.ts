@@ -4,6 +4,7 @@ import { Page } from "@/types";
 import { parsePages, parseSinglePage, stripThinkBlocks } from "@/lib/format-pages";
 import { setLastGenerationRequestId } from "@/lib/reward-signal";
 import { deadLinks } from "@/lib/pages/links";
+import { responsiveIssues } from "@/lib/pages/responsive";
 import { baseEnabled } from "@/lib/base/flag";
 // UNAVAILABLE is the ONE honest message for a failure THIS side detects: the
 // socket died, or the response arrived without a body. The caller's handleError
@@ -270,8 +271,20 @@ export const useCallAi = ({
               // wrote is otherwise found by clicking it, which is the worst
               // moment to find it. Reported, not repaired — rewriting someone's
               // markup on a guess is a bigger liberty than naming the problem.
+              // Both checks read the built output, so neither guesses at intent.
+              // Reported in one message rather than two toasts: a build with a
+              // dead nav usually also has the layout problem that came with it,
+              // and stacking notifications buries the first.
               const dead = deadLinks(newPages);
-              if (dead.length) {
+              const unfit = responsiveIssues(newPages);
+              if (!dead.length && unfit.length) {
+                const first = unfit[0];
+                toast.error(
+                  unfit.length === 1
+                    ? `${first.from}: ${first.problem}${first.detail ? ` (${first.detail})` : ""}.`
+                    : `${unfit.length} things will not render on a phone (first: ${first.from} — ${first.problem}).`,
+                );
+              } else if (dead.length) {
                 const first = dead[0];
                 toast.error(
                   dead.length === 1
