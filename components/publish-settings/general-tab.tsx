@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { PublishSettings, Project } from '@/lib/vfs/types';
 import { Label, Input, Switch, Badge, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import { Globe, AlertTriangle } from 'lucide-react';
+import { panel, row } from "@/lib/chrome";
 
 interface GeneralTabProps {
   settings: PublishSettings;
@@ -40,12 +41,12 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
           <H3 fontSize="$6" fontWeight="500" marginBottom="$4">Publishing Status</H3>
         </div>
 
-        <XStack alignItems="center" justifyContent="space-between" padding="$4" borderWidth={1} borderRadius="$5">
+        <XStack {...panel} {...row}>
           <YStack rowGap="$1">
-            <Label htmlFor="enabled" fontSize="$4">
+            <Label htmlFor="enabled" fontSize="$3" fontWeight="500">
               Published
             </Label>
-            <Paragraph fontSize="$3" color="$color11">
+            <Paragraph fontSize="$1" color="$color11">
               Make this deployment publicly accessible
             </Paragraph>
           </YStack>
@@ -56,12 +57,12 @@ export function GeneralTab({ settings, onChange, projectId, deploymentId, projec
   />
         </XStack>
 
-        <XStack alignItems="center" justifyContent="space-between" padding="$4" borderWidth={1} borderRadius="$5">
+        <XStack {...panel} {...row}>
           <YStack rowGap="$1">
-            <Label htmlFor="under-construction" fontSize="$4">
+            <Label htmlFor="under-construction" fontSize="$3" fontWeight="500">
               Under Construction
             </Label>
-            <Paragraph fontSize="$3" color="$color11">
+            <Paragraph fontSize="$1" color="$color11">
               Show maintenance overlay on live deployment
             </Paragraph>
           </YStack>

@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 
 import { AppShell } from "@/components/app-shell";
-import { accent, screen } from "@/lib/chrome";
+import { accent, panel, screen } from "@/lib/chrome";
 import { HanzoLogo } from "@/components/HanzoLogo";
 import {
   fetchProject,
@@ -299,22 +299,36 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <YStack
-      borderRadius="$8" borderWidth={1} padding="$4.5" {...{ borderColor: danger ? "$red9" : "$borderColor", backgroundColor: danger ? "$red9" : "$color3" }}
-    >
+    // `panel`, like every other surface in the app. This drew itself: radius
+    // $8 where the recipe says $6, and — the real bug — `$color3` as its fill.
+    // $color3 is the SELECTED-state token, the "you are here" highlight the
+    // sidebar and the tabs use. Seven sections permanently wearing the selected
+    // look is the state having no picture left to draw with.
+    //
+    // Danger says danger with its EDGE. It used to say it with `$red9` as the
+    // background — a solid saturated red card, the loudest object on a
+    // monochrome page, for a section whose whole job is to be found only when
+    // you are looking for it. Colour is an accent here, so the border carries
+    // it and the surface stays on the ladder with its six neighbours.
+    <YStack {...panel} padding="$4.5" borderColor={danger ? "$red9" : "$borderColor"}>
       <XStack marginBottom="$4" alignItems="center" gap="$2">
         <Icon size={16} color={danger ? "rgba(248,113,113,0.7)" : "var(--muted-foreground)"} />
-        <H2 fontSize="$3" fontWeight="500" color="$color">{title}</H2>
+        <H2 fontSize="$3" fontWeight="500" color={danger ? "$red10" : "$color"}>{title}</H2>
       </XStack>
       <YStack rowGap="$3">{children}</YStack>
     </YStack>
   );
 }
 
+// The form label, at the SAME size and colour as /settings' ("Default AI
+// Model") — $3 in $color. It was $1 in $color11, which is the register this
+// app uses for the sentence UNDER a control, so the thing you must read to use
+// the field was quieter than the aside explaining it. Two specs for one idea,
+// two routes apart; this is the one that names something.
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <Label>
-      <SizableText marginBottom="$1.5" fontSize="$1" color="$color11">{label}</SizableText>
+      <SizableText marginBottom="$2" fontSize="$3" fontWeight="500" color="$color">{label}</SizableText>
       {children}
     </Label>
   );

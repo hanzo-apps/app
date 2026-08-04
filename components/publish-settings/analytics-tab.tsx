@@ -4,6 +4,7 @@ import { YStack, XStack, H3, Paragraph, H4, SizableText } from '@hanzo/gui';
 import { PublishSettings, AnalyticsConfig } from '@/lib/vfs/types';
 import { Label, Input, Textarea, Switch, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hanzo/ui';
 import { Shield, Info } from 'lucide-react';
+import { panel, rows, row } from "@/lib/chrome";
 
 interface AnalyticsTabProps {
   settings: PublishSettings;
@@ -36,12 +37,12 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
       </XStack>
 
       {/* Enable Analytics */}
-      <XStack alignItems="center" justifyContent="space-between" padding="$4" borderWidth={1} borderRadius="$5">
+      <XStack {...panel} {...row}>
         <YStack rowGap="$1">
-          <Label htmlFor="analytics-enabled" fontSize="$4">
+          <Label htmlFor="analytics-enabled" fontSize="$3" fontWeight="500">
             Enable Analytics
           </Label>
-          <Paragraph fontSize="$3" color="$color11">
+          <Paragraph fontSize="$1" color="$color11">
             Track page views and visitor statistics
           </Paragraph>
         </YStack>
@@ -97,10 +98,10 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
                   </div>
 
                   {/* Feature Toggles */}
-                  <YStack rowGap="$3">
-                    <XStack alignItems="center" justifyContent="space-between" padding="$3" borderWidth={1} borderRadius="$5">
+                  <YStack {...rows}>
+                    <XStack {...row}>
                       <YStack rowGap="$1">
-                        <Label htmlFor="feature-basic" fontWeight="500">Basic Tracking</Label>
+                        <Label htmlFor="feature-basic" fontSize="$3" fontWeight="500">Basic Tracking</Label>
                         <Paragraph fontSize="$1" color="$color11">Pageviews, referrers, device type</Paragraph>
                       </YStack>
                       <Switch
@@ -115,9 +116,9 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
   />
                     </XStack>
 
-                    <XStack alignItems="center" justifyContent="space-between" padding="$3" borderWidth={1} borderRadius="$5">
+                    <XStack {...row}>
                       <YStack rowGap="$1">
-                        <Label htmlFor="feature-heatmaps" fontWeight="500">Heatmaps</Label>
+                        <Label htmlFor="feature-heatmaps" fontSize="$3" fontWeight="500">Heatmaps</Label>
                         <Paragraph fontSize="$1" color="$color11">Click coordinates and scroll tracking</Paragraph>
                       </YStack>
                       <Switch
@@ -132,9 +133,9 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
   />
                     </XStack>
 
-                    <XStack alignItems="center" justifyContent="space-between" padding="$3" borderWidth={1} borderRadius="$5">
+                    <XStack {...row}>
                       <YStack rowGap="$1">
-                        <Label htmlFor="feature-sessions" fontWeight="500">Session Recording</Label>
+                        <Label htmlFor="feature-sessions" fontSize="$3" fontWeight="500">Session Recording</Label>
                         <Paragraph fontSize="$1" color="$color11">Journey paths and page flows</Paragraph>
                       </YStack>
                       <Switch
@@ -149,9 +150,9 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
   />
                     </XStack>
 
-                    <XStack alignItems="center" justifyContent="space-between" padding="$3" borderWidth={1} borderRadius="$5">
+                    <XStack {...row}>
                       <YStack rowGap="$1">
-                        <Label htmlFor="feature-performance" fontWeight="500">Performance Metrics</Label>
+                        <Label htmlFor="feature-performance" fontSize="$3" fontWeight="500">Performance Metrics</Label>
                         <Paragraph fontSize="$1" color="$color11">Core Web Vitals monitoring</Paragraph>
                       </YStack>
                       <Switch
@@ -166,9 +167,9 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
   />
                     </XStack>
 
-                    <XStack alignItems="center" justifyContent="space-between" padding="$3" borderWidth={1} borderRadius="$5">
+                    <XStack {...row}>
                       <YStack rowGap="$1">
-                        <Label htmlFor="feature-engagement" fontWeight="500">Engagement Tracking</Label>
+                        <Label htmlFor="feature-engagement" fontSize="$3" fontWeight="500">Engagement Tracking</Label>
                         <Paragraph fontSize="$1" color="$color11">Time on page, scroll depth</Paragraph>
                       </YStack>
                       <Switch
@@ -183,9 +184,9 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
   />
                     </XStack>
 
-                    <XStack alignItems="center" justifyContent="space-between" padding="$3" borderWidth={1} borderRadius="$5">
+                    <XStack {...row}>
                       <YStack rowGap="$1">
-                        <Label htmlFor="feature-custom" fontWeight="500">Custom Events</Label>
+                        <Label htmlFor="feature-custom" fontSize="$3" fontWeight="500">Custom Events</Label>
                         <Paragraph fontSize="$1" color="$color11">Goal and conversion tracking</Paragraph>
                       </YStack>
                       <Switch
@@ -352,15 +353,15 @@ export function AnalyticsTab({ settings, onChange }: AnalyticsTabProps) {
               <H4 fontWeight="500" marginBottom="$4">Privacy Settings</H4>
             </div>
 
-            <XStack alignItems="center" justifyContent="space-between" padding="$4" borderWidth={1} borderRadius="$5">
+            <XStack {...panel} {...row}>
               <YStack rowGap="$1" flex={1}>
                 <XStack alignItems="center" gap="$2">
-                  <Label htmlFor="privacy-mode" fontSize="$4">
+                  <Label htmlFor="privacy-mode" fontSize="$3" fontWeight="500">
                     Privacy Mode
                   </Label>
                   <Shield size={16} />
                 </XStack>
-                <Paragraph fontSize="$3" color="$color11">
+                <Paragraph fontSize="$1" color="$color11">
                   Anonymize IPs and disable cookies for GDPR compliance
                 </Paragraph>
               </YStack>
