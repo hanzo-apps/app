@@ -37,6 +37,11 @@ const safeJsonParse = (text: string): any | null => {
 // ledger's join key) reaches the reward-signal store — without ever corrupting
 // the page parser.
 const ROUTED_MODEL_SEP = "\u001e";
+
+/** A single continuation may take this long before it is abandoned — long
+ *  enough for the REMAINDER of one document, short enough that a hung stream
+ *  cannot lock the composer. */
+const CONTINUATION_TIMEOUT_MS = 90_000;
 const splitSideChannel = (
   text: string
 ): { content: string; model: string | null; id: string | null } => {
@@ -112,8 +117,9 @@ export const useCallAi = ({
     try {
       onNewPrompt(prompt);
 
-      /** One generate call. `continueFrom` resumes a cut-off document. */
-      const ask = (continueFrom?: string) =>
+      /** One generate call. `continueFrom` resumes a cut-off document; `extra`
+       *  is an additional signal (a timeout) so a continuation cannot hang. */
+      const ask = (continueFrom?: string, extra?: AbortSignal) =>
         fetch("/v1/generate", {
           method: "POST",
           body: JSON.stringify({
@@ -128,7 +134,13 @@ export const useCallAi = ({
             "Content-Type": "application/json",
             "x-forwarded-for": window.location.hostname,
           },
-          signal: abortController.signal,
+          // AbortSignal.any is recent; fall back to the timeout alone where it is
+          // absent — still bounds the hang, and the loop already re-checks the
+          // user abort between attempts.
+          signal:
+            extra && typeof AbortSignal.any === "function"
+              ? AbortSignal.any([abortController.signal, extra])
+              : extra || abortController.signal,
         });
 
       const request = await ask();
@@ -230,6 +242,16 @@ export const useCallAi = ({
             // keeps stopping would spend real credit chasing itself. Two covers
             // the ordinary long build; a document still open after that is a
             // different problem and gets reported rather than retried.
+            //
+            // BEST-EFFORT AND BOUNDED. A continuation that stalls must never
+            // lock the composer: `await reader.read()` on a hung stream does not
+            // throw, it waits forever, and the flag that says "AI is working"
+            // would never clear — the "wait for the AI to finish generating"
+            // that never finishes. So each attempt carries a timeout, and the
+            // whole thing is wrapped: on any stall or error we KEEP the build we
+            // have, stop retrying, and fall through to clear the flag and report
+            // truncation. The continuation improves the result; it may not hold
+            // it hostage.
             let attempts = 0;
             while (
               attempts < 2 &&
@@ -237,20 +259,26 @@ export const useCallAi = ({
               unterminatedDocument(splitSideChannel(contentResponse).content)
             ) {
               attempts += 1;
-              const more = await ask(splitSideChannel(contentResponse).content);
-              if (!more.ok || !more.body) break;
-              const contReader = more.body.getReader();
-              // Appended verbatim: the model was told to emit only what is
-              // missing, so the join is a concatenation. Trimming or re-parsing
-              // here would be a second opinion about where the file resumes.
-              for (;;) {
-                const chunk = await contReader.read();
-                if (chunk.done) break;
-                contentResponse += decoder.decode(chunk.value, { stream: true });
-                formatPages(contentResponse);
-                onScrollToBottom();
+              try {
+                const more = await ask(
+                  splitSideChannel(contentResponse).content,
+                  AbortSignal.timeout(CONTINUATION_TIMEOUT_MS),
+                );
+                if (!more.ok || !more.body) break;
+                const contReader = more.body.getReader();
+                for (;;) {
+                  const chunk = await contReader.read();
+                  if (chunk.done) break;
+                  contentResponse += decoder.decode(chunk.value, { stream: true });
+                  formatPages(contentResponse);
+                  onScrollToBottom();
+                }
+                newPages = formatPages(contentResponse);
+              } catch {
+                // Stall or network error on the continuation — deliver what the
+                // first pass produced rather than hang or discard it.
+                break;
               }
-              newPages = formatPages(contentResponse);
             }
 
             const cut = unterminatedDocument(splitSideChannel(contentResponse).content)

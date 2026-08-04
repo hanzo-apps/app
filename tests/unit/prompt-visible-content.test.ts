@@ -127,3 +127,11 @@ describe('the builder prompt loads each library once', () => {
     });
   }
 });
+
+describe('the builder prompt forbids referencing files it will not create', () => {
+  const { INITIAL_SYSTEM_PROMPT } = jest.requireActual('@/lib/prompts');
+  it('tells the model to inline JS/CSS, not reference a missing local file', () => {
+    expect(INITIAL_SYSTEM_PROMPT).toMatch(/SELF-CONTAINED FILES/i);
+    expect(INITIAL_SYSTEM_PROMPT).toContain('app.js');
+  });
+});
