@@ -559,7 +559,7 @@ export function HistoryPanel({
       isBusy={busyKey === rev.key}
       isPreviewing={rev.kind === "commit" && previewingSha === rev.sha}
       previewBusy={rev.kind === "commit" && previewBusy === rev.sha}
-      canPreview={Boolean(repo && repo.provider !== "hanzo")}
+      canPreview={Boolean(repo)}
       providerLabel={repo ? PROVIDER_LABEL[repo.provider] : ""}
       onRestore={() => restore(rev)}
       onBookmark={() => toggleBookmark(rev.key)}
