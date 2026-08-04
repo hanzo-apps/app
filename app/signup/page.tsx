@@ -139,15 +139,31 @@ export default function SignupPage() {
                     Sign in
                   </Link>
                 </p>
+                {/* The documents live on hanzo.ai and are linked, not copied:
+                    one home for the legal text, or two copies drift and the
+                    agreement stops naming what the user actually agreed to.
+                    These were `/terms` and `/privacy` — routes this app does not
+                    have, so both 404'd and signup asked people to accept terms
+                    they could not open. */}
                 <p className="text-xs text-muted-foreground">
                   By signing up, you agree to our{' '}
-                  <Link href="/terms" className="underline hover:text-foreground">
+                  <a
+                    href="https://hanzo.ai/terms"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline hover:text-foreground"
+                  >
                     Terms
-                  </Link>{' '}
+                  </a>{' '}
                   and{' '}
-                  <Link href="/privacy" className="underline hover:text-foreground">
+                  <a
+                    href="https://hanzo.ai/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline hover:text-foreground"
+                  >
                     Privacy Policy
-                  </Link>
+                  </a>
                 </p>
               </div>
             </CardContent>
