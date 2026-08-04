@@ -138,7 +138,7 @@ export default function DashboardPage() {
                   </TabsList>
 
                   <Link
-                    href={tab === "templates" ? "/resources" : "/projects"}
+                    href={tab === "templates" ? "/templates" : "/projects"}
                   ><SizableText fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}>
                     Browse all →
                   </SizableText></Link>
@@ -181,13 +181,13 @@ export default function DashboardPage() {
   />
                 </TabsContent>
 
-                {/* Templates — a peek at the gallery; Browse all → /resources. */}
+                {/* Templates — a peek at the gallery; Browse all → /templates. */}
                 <TabsContent value="templates">
                   <YStack gap="$4">
                     {templates.map((t) => (
                       <Link
                         key={t.slug}
-                        href="/resources"
+                        href="/templates"
                       ><XStack group className="zoom-scope" overflow="hidden" borderRadius="$8" borderWidth={1} borderColor="$borderColor" backgroundColor="$background" hoverStyle={{ y: "-0.5", borderColor: "$color" }}>
                         <YStack position="relative" overflow="hidden" backgroundColor="$background">
                           {/* eslint-disable-next-line @next/next/no-img-element */}

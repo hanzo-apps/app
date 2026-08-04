@@ -11,6 +11,7 @@ import Header from "@/components/layout/header";
 import Reveal from "@/components/landing/reveal";
 import LazySection from "@/components/landing/lazy-section";
 import { TemplateThumb } from "@/components/template-thumb";
+import { TEMPLATE_SHOTS } from "@/lib/template-shots";
 import { BuildComposer, type ComposerMode } from "@/components/build-composer";
 import { ProjectThumb } from "@/components/project-thumb";
 
@@ -33,6 +34,17 @@ import {
   snapshotCatalog,
   popularTemplates,
 } from "@/lib/gallery-catalog";
+
+// The strip shows only templates with a hand-QC'd real screenshot, exactly one
+// per slug — a generated placeholder tile on the landing page reads as broken.
+function qcTemplates(templates: GalleryTemplate[]): GalleryTemplate[] {
+  const seen = new Set<string>();
+  return popularTemplates(templates, 100).filter((t) => {
+    if (!TEMPLATE_SHOTS.has(t.slug) || seen.has(t.slug)) return false;
+    seen.add(t.slug);
+    return true;
+  });
+}
 
 interface LandingProject {
   slug: string;
@@ -70,7 +82,7 @@ export default function LandingPage() {
   // snapshot seeds them instantly, then the live catalog (gallery.hanzo.ai)
   // refreshes below.
   const [starterTemplates, setStarterTemplates] = useState<GalleryTemplate[]>(
-    () => popularTemplates(snapshotCatalog().templates, 100),
+    () => qcTemplates(snapshotCatalog().templates),
   );
 
   // Fetch the user's REAL projects from the ONE canonical org store (the same
@@ -126,7 +138,7 @@ export default function LandingPage() {
       .then((res) => res.json())
       .then((data) => {
         if (alive && Array.isArray(data.templates) && data.templates.length) {
-          setStarterTemplates(popularTemplates(data.templates, 100));
+          setStarterTemplates(qcTemplates(data.templates));
         }
       })
       .catch(() => {});
@@ -223,14 +235,24 @@ export default function LandingPage() {
                           edge-faded (.hz-strip in globals.css), lazy thumbs. */}
                       <XStack className="hz-strip" flexWrap="nowrap" gap={10}>
                         {starterTemplates.map((t) => (
-                          <Button
+                          /* A card, not a control: @hanzo/ui Button pins the
+                             size variant's height (30px) over height="auto",
+                             and overflow=hidden then crops the thumb to a thin
+                             band. A clickable stack sizes from content. */
+                          <YStack
                             key={t.slug}
-                            type="button"
-                            variant="ghost"
+                            role="button"
+                            tabIndex={0}
                             onClick={() => startFromTemplate(t)}
-                            width={216} flexShrink={0} height="auto" padding={0} flexDirection="column" alignItems="stretch" group className="zoom-scope hz-strip-card" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" hoverStyle={{ borderColor: "$color02", backgroundColor: "$color005" }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                startFromTemplate(t);
+                              }
+                            }}
+                            cursor="pointer" width={280} flexShrink={0} group className="zoom-scope hz-strip-card" overflow="hidden" borderRadius="$6" borderWidth={1} borderColor="$borderColor" backgroundColor="$color002" hoverStyle={{ borderColor: "$color02", backgroundColor: "$color005" }} focusVisibleStyle={{ outlineWidth: 0 }}
                           >
-                            <YStack position="relative" overflow="hidden" aspectRatio={16 / 10} backgroundColor="$color002">
+                            <YStack position="relative" overflow="hidden" height={175} backgroundColor="$color002">
                               <TemplateThumb
                                 name={t.displayName}
                                 category={t.category}
@@ -238,21 +260,21 @@ export default function LandingPage() {
                                 className="zoom-target"
   />
                             </YStack>
-                            <YStack paddingHorizontal="$2.5" paddingVertical="$2">
-                              <Paragraph numberOfLines={1} fontSize="$1" fontWeight="500" color="$color11">
+                            <YStack paddingHorizontal="$3" paddingVertical="$2.5">
+                              <Paragraph numberOfLines={1} fontSize="$2" fontWeight="500" color="$color">
                                 {t.displayName}
                               </Paragraph>
                               <Paragraph numberOfLines={1} fontSize={11} color="$color10">
                                 {t.category}
                               </Paragraph>
                             </YStack>
-                          </Button>
+                          </YStack>
                         ))}
                       </XStack>
                     </YStack>
                     <YStack marginTop="$3" alignItems="center">
                       <Link
-                        href="/gallery"
+                        href="/templates"
                       ><SizableText fontSize="$1" color="$color11" hoverStyle={{ color: "$color" }}>
                         Browse all templates →
                       </SizableText></Link>

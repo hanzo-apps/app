@@ -14,16 +14,19 @@
 
 import { useEffect, useState } from 'react';
 
-import { API_BASE } from '@/lib/platform';
 
 export interface Plan {
   slug: string;
   name: string;
+  /** One-line pitch, straight from the catalog row. */
+  description: string;
   /** Monthly price, USD cents. */
   price: number;
   /** Annual price per month, USD cents. 0 when not offered. */
   priceAnnual: number;
   category: string;
+  /** Feature bullets, straight from the catalog row. */
+  features: string[];
   /** Billed per seat — the headline price is per seat, not per org. */
   perSeat: boolean;
   /** Not self-serve: talk to sales. Never send these to checkout. */
@@ -33,9 +36,11 @@ export interface Plan {
 interface RawPlan {
   slug?: string;
   name?: string;
+  description?: string;
   price?: number;
   priceAnnual?: number;
   category?: string;
+  features?: unknown;
   perSeat?: boolean;
   contactSales?: boolean;
 }
@@ -45,17 +50,21 @@ function normalize(p: RawPlan): Plan | null {
   return {
     slug: p.slug,
     name: p.name || p.slug,
+    description: p.description || '',
     price: typeof p.price === 'number' ? p.price : 0,
     priceAnnual: typeof p.priceAnnual === 'number' ? p.priceAnnual : 0,
     category: p.category || '',
+    features: Array.isArray(p.features) ? p.features.filter((f): f is string => typeof f === 'string') : [],
     perSeat: Boolean(p.perSeat),
     contactSales: Boolean(p.contactSales),
   };
 }
 
-/** Fetch the live catalog. Throws on transport/HTTP failure — never guesses. */
+/** Fetch the live catalog. Throws on transport/HTTP failure — never guesses.
+ *  Same-origin: the gateway grants no CORS to app origins, so the browser goes
+ *  through this app's `/v1/billing/plans` proxy of the same catalog. */
 export async function fetchPlans(): Promise<Map<string, Plan>> {
-  const res = await fetch(`${API_BASE}/v1/billing/plans`, {
+  const res = await fetch('/v1/billing/plans', {
     headers: { Accept: 'application/json' },
     cache: 'no-store',
   });

@@ -187,7 +187,7 @@ export function DevOnboarding({ initialPrompt = "", onComplete }: DevOnboardingP
               <H3 fontSize="$6" fontWeight="500" color="$color">
                 Start from a template
               </H3>
-              <Link href="/gallery">
+              <Link href="/templates">
                 <Button variant="ghost" size="sm" gap="$2">
                   <Globe size={16} />
                   Browse all

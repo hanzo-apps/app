@@ -477,7 +477,7 @@ function NewProjectInner() {
             </YStack>
 
             <Link
-              href="/gallery"
+              href="/templates"
             ><XStack marginTop="$4" alignItems="center" gap="$1">
               <SizableText fontSize="$3" color="$color11" hoverStyle={{ color: "$color" }}>Browse all templates</SizableText>
               <ChevronRight size={16} />

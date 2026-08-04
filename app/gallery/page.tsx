@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
 
-/** /gallery → /resources — it rendered `TemplateGallery`, which /resources
- *  renders too, from the same catalog. A synonym is not a surface. */
+/** /gallery → /templates — same surface, nav-canonical name. */
 export default function GalleryIndex() {
-  redirect('/resources');
+  redirect('/templates');
 }

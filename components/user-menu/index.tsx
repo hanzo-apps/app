@@ -88,7 +88,7 @@ export const UserMenu = ({ className }: { className?: string }) => {
               Import Project
             </DropdownMenuItem>
           </Link>
-          <Link href="/gallery">
+          <Link href="/templates">
             <DropdownMenuItem>
               <Sparkles size={16} />
               Gallery

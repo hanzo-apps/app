@@ -95,7 +95,7 @@ describe("UI centralization — every component comes from @hanzo/ui", () => {
       "app/features/page.tsx",
       "app/learn/page.tsx",
       "app/playground/page.tsx",
-      "app/resources/page.tsx",
+      "app/templates/page.tsx",
       "app/signup/page.tsx",
       "app/templates/analytics-dashboard/page.tsx",
       "app/templates/blog-platform/page.tsx",
