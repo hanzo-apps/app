@@ -37,7 +37,7 @@ interface ProvidersProps {
  */
 export function Providers({ children }: ProvidersProps) {
   return (
-    <GuiProvider config={guiConfig} defaultTheme="dark">
+    <GuiProvider config={guiConfig} defaultTheme="dark" disableInjectCSS>
       <IamClientProvider>
         <Toaster theme="dark" richColors position="bottom-center" />
         <AnalyticsRoot>
